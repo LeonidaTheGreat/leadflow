@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO2026 - Autonomous Agent Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-primary: #0b1020;
+      --bg-card: #131a33;
+      --bg-card-ok: #132a13;
+      --bg-card-warn: #2a2613;
+      --bg-card-error: #2a1313;
+      --border-default: #24305f;
+      --border-ok: #2a5b2a;
+      --border-warn: #5b5a2a;
+      --border-error: #5b2a2a;
+      --text-primary: #e8ecff;
+      --text-muted: #a8b3dd;
+      --text-ok: #57d98d;
+      --text-warn: #ffd166;
+      --text-error: #ff6b6b;
+      --accent: #9ecbff;
+      --accent-hover: #b8daff;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-active { background: var(--bg-card-ok); color: var(--text-ok); border: 1px solid var(--border-ok); }
+    .status-paused { background: var(--bg-card-warn); color: var(--text-warn); border: 1px solid var(--border-warn); }
+    
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    
+    /* Budget Card */
+    .budget-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    
+    .budget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .budget-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .budget-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .budget-input {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 6px;
+      width: 80px;
+      font-size: 14px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg-primary);
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--accent);
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-primary);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .progress-ok { background: var(--text-ok); }
+    .progress-warn { background: var(--text-warn); }
+    .progress-error { background: var(--text-error); }
+    
+    .budget-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 12px;
+    }
+    
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    /* Task Grid */
+    .section {
+      margin-bottom: 32px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .task-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 16px;
+    }
+    
+    .task-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s;
+    }
+    
+    .task-card:hover {
+      border-color: var(--accent);
+    }
+    
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    
+    .task-title {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.4;
+      flex: 1;
+    }
+    
+    .task-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    
+    .status-ready { background: var(--bg-card-ok); color: var(--text-ok); }
+    .status-in_progress { background: #1a3a5c; color: var(--accent); }
+    .status-blocked { background: var(--bg-card-warn); color: var(--text-warn); }
+    .status-done { background: var(--bg-card-ok); color: var(--text-ok); opacity: 0.7; }
+    .status-failed { background: var(--bg-card-error); color: var(--text-error); }
+    
+    .task-meta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    .task-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .task-cost {
+      margin-left: auto;
+      font-weight: 600;
+    }
+    
+    .cost-ok { color: var(--text-ok); }
+    .cost-warn { color: var(--text-warn); }
+    .cost-error { color: var(--text-error); }
+    
+    .task-barrier {
+      font-size: 12px;
+      color: var(--text-warn);
+      background: var(--bg-card-warn);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    
+    .error {
+      background: var(--bg-card-error);
+      border: 1px solid var(--border-error);
+      color: var(--text-error);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    
+    /* Refresh Button */
+    .refresh-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .last-updated {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px dashed var(--border-default);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      🤖 BO2026 Autonomy Dashboard
+      <span id="system-status" class="status-badge status-active">Active</span>
+    </h1>
+    <p class="subtitle">8/10 Autonomous Agent Swarm • Source of Truth: Supabase</p>
+    
+    <!-- Budget Control -->
+    <div class="budget-card">
+      <div class="budget-header">
+        <div class="budget-title">💰 Daily Budget Control</div>
+        <div class="budget-controls">
+          <span style="color: var(--text-muted); font-size: 14px;">$</span>
+          <input type="number" id="budget-input" class="budget-input" value="5" min="1" max="100">
+          <button class="btn btn-primary" onclick="updateBudget()">Update</button>
+          <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button>
+        </div>
+      </div>
+      
+      <div class="progress-bar">
+        <div id="budget-progress" class="progress-fill progress-ok" style="width: 0%"></div>
+      </div>
+      
+      <div class="budget-stats">
+        <div class="stat">
+          <span class="stat-label">Daily Budget</span>
+          <span id="budget-total" class="stat-value">$5.00</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Spent Today</span>
+          <span id="budget-spent" class="stat-value">$0.00</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Remaining</span>
+          <span id="budget-remaining" class="stat-value">$5.00</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Active Tasks</span>
+          <span id="active-count" class="stat-value">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Error Display -->
+    <div id="error-display" class="error" style="display: none;"></div>
+    
+    <!-- Loading State -->
+    <div id="loading" class="loading">Loading tasks from Supabase...</div>
+    
+    <!-- Ready Tasks -->
+    <div id="ready-section" class="section" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">▶️ Ready to Spawn</h2>
+        <span id="ready-count" class="task-count">0 tasks</span>
+      </div>
+      <div id="ready-tasks" class="task-grid"></div>
+    </div>
+    
+    <!-- In Progress -->
+    <div id="progress-section" class="section" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">⚡ In Progress</h2>
+        <span id="progress-count" class="task-count">0 tasks</span>
+      </div>
+      <div id="progress-tasks" class="task-grid"></div>
+    </div>
+    
+    <!-- Blocked -->
+    <div id="blocked-section" class="section" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">⏸️ Blocked</h2>
+        <span id="blocked-count" class="task-count">0 tasks</span>
+      </div>
+      <div id="blocked-tasks" class="task-grid"></div>
+    </div>
+    
+    <!-- Completed -->
+    <div id="done-section" class="section" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">✅ Completed Today</h2>
+        <span id="done-count" class="task-count">0 tasks</span>
+      </div>
+      <div id="done-tasks" class="task-grid"></div>
+    </div>
+    
+    <div class="refresh-bar">
+      <span class="last-updated">Last updated: <span id="last-update">Never</span></span>
+      <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh Now</button>
+    </div>
+  </div>
+
+  <script>
+    // Supabase config - in production, these should be environment variables
+    const SUPABASE_URL = localStorage.getItem('supabase_url') || '';
+    const SUPABASE_KEY = localStorage.getItem('supabase_key') || '';
+    
+    let supabase = null;
+    let currentBudget = 5.00;
+    let tasks = [];
+    
+    // Initialize
+    async function init() {
+      if (!SUPABASE_URL || !SUPABASE_KEY) {
+        showError('Supabase not configured. Set credentials in localStorage (supabase_url, supabase_key)');
+        return;
+      }
+      
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      await refreshData();
+      
+      // Auto-refresh every 30 seconds
+      setInterval(refreshData, 30000);
+    }
+    
+    // Fetch tasks from Supabase
+    async function refreshData() {
+      document.getElementById('loading').style.display = 'block';
+      hideError();
+      
+      try {
+        // Get today's spend
+        const today = new Date().toISOString().split('T')[0];
+        const { data: completedTasks, error: spendError } = await supabase
+          .from('tasks')
+          .select('actual_cost_usd')
+          .gte('completed_at', today)
+          .lt('completed_at', today + 'T23:59:59');
+        
+        if (spendError) throw spendError;
+        
+        const spentToday = completedTasks?.reduce((sum, t) => sum + (t.actual_cost_usd || 0), 0) || 0;
+        
+        // Get all tasks
+        const { data: allTasks, error: tasksError } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('priority', { ascending: true })
+          .order('created_at', { ascending: false });
+        
+        if (tasksError) throw tasksError;
+        
+        tasks = allTasks || [];
+        
+        // Update budget display
+        updateBudgetDisplay(spentToday);
+        
+        // Render tasks
+        renderTasks(tasks);
+        
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        
+      } catch (error) {
+        showError('Failed to load data: ' + error.message);
+        document.getElementById('loading').style.display = 'none';
+      }
+    }
+    
+    // Update budget display
+    function updateBudgetDisplay(spent) {
+      const remaining = currentBudget - spent;
+      const percentUsed = (spent / currentBudget) * 100;
+      
+      document.getElementById('budget-total').textContent = `$${currentBudget.toFixed(2)}`;
+      document.getElementById('budget-spent').textContent = `$${spent.toFixed(2)}`;
+      document.getElementById('budget-remaining').textContent = `$${remaining.toFixed(2)}`;
+      
+      const progressEl = document.getElementById('budget-progress');
+      progressEl.style.width = `${Math.min(percentUsed, 100)}%`;
+      
+      if (percentUsed < 50) {
+        progressEl.className = 'progress-fill progress-ok';
+      } else if (percentUsed < 80) {
+        progressEl.className = 'progress-fill progress-warn';
+      } else {
+        progressEl.className = 'progress-fill progress-error';
+      }
+    }
+    
+    // Render tasks by status
+    function renderTasks(tasks) {
+      const byStatus = {
+        ready: tasks.filter(t => t.status === 'ready'),
+        in_progress: tasks.filter(t => t.status === 'in_progress'),
+        blocked: tasks.filter(t => t.status === 'blocked'),
+        done: tasks.filter(t => t.status === 'done' && isToday(t.completed_at))
+      };
+      
+      document.getElementById('active-count').textContent = byStatus.in_progress.length;
+      
+      renderSection('ready', byStatus.ready);
+      renderSection('progress', byStatus.in_progress);
+      renderSection('blocked', byStatus.blocked);
+      renderSection('done', byStatus.done);
+    }
+    
+    function renderSection(status, tasks) {
+      const section = document.getElementById(`${status}-section`);
+      const container = document.getElementById(`${status}-tasks`);
+      const count = document.getElementById(`${status}-count`);
+      
+      if (tasks.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+      
+      section.style.display = 'block';
+      count.textContent = `${tasks.length} task${tasks.length !== 1 ? 's' : ''}`;
+      
+      container.innerHTML = tasks.map(task => `
+        <div class="task-card">
+          <div class="task-header">
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <span class="task-status status-${task.status}">${formatStatus(task.status)}</span>
+          </div>
+          <div class="task-meta">
+            <span>👤 ${task.agent_id || 'unassigned'}</span>
+            <span>🤖 ${task.model || 'kimi'}</span>
+            <span>⏱️ ${task.estimated_hours || 1}h</span>
+            <span class="task-cost ${getCostClass(task.estimated_cost_usd)}">
+              $${(task.estimated_cost_usd || 0).toFixed(2)}
+            </span>
+          </div>
+          ${task.blocker ? `<div class="task-barrier">⛔ Blocked: ${escapeHtml(task.blocker)}</div>` : ''}
+          ${task.status === 'ready' ? `
+            <div class="task-actions">
+              <button class="btn btn-primary btn-small" onclick="spawnTask('${task.id}')">▶ Spawn</button>
+              <button class="btn btn-secondary btn-small" onclick="downgradeTask('${task.id}')">↓ Downgrade</button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+    
+    // Update budget
+    async function updateBudget() {
+      const newBudget = parseFloat(document.getElementById('budget-input').value);
+      if (isNaN(newBudget) || newBudget < 1) {
+        showError('Budget must be at least $1');
+        return;
+      }
+      
+      currentBudget = newBudget;
+      
+      // In production, this would update the dispatcher config
+      // For now, just update the display
+      await refreshData();
+      
+      alert(`Budget updated to $${newBudget.toFixed(2)}/day. Restart dispatcher to apply.`);
+    }
+    
+    // Spawn task
+    async function spawnTask(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      
+      try {
+        // Write spawn config
+        const spawnConfig = {
+          task: task.title,
+          agentId: task.agent_id,
+          model: task.model,
+          prompt: `Task: ${task.title}\n\nAcceptance Criteria:\n${(task.acceptance_criteria || []).join('\n')}`,
+          timeout: (task.estimated_hours || 1) * 3600,
+          taskId: task.id
+        };
+        
+        // In real implementation, this would trigger the dispatcher
+        console.log('Spawning:', spawnConfig);
+        alert(`Spawning task: ${task.title}\nModel: ${task.model}\nCost: $${(task.estimated_cost_usd || 0).toFixed(2)}`);
+        
+      } catch (error) {
+        showError('Failed to spawn: ' + error.message);
+      }
+    }
+    
+    // Downgrade task to cheaper model
+    async function downgradeTask(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      
+      const downgradePath = ['sonnet', 'haiku', 'kimi', 'qwen'];
+      const currentIndex = downgradePath.indexOf(task.model);
+      const nextModel = downgradePath[Math.min(currentIndex + 1, downgradePath.length - 1)];
+      
+      if (nextModel === task.model) {
+        alert('Already at cheapest model (qwen/free)');
+        return;
+      }
+      
+      try {
+        const hours = task.estimated_hours || 1;
+        const costs = { qwen: 0, kimi: 0.30, haiku: 0.50, sonnet: 2.00 };
+        const newCost = costs[nextModel] * hours;
+        
+        const { error } = await supabase
+          .from('tasks')
+          .update({ 
+            model: nextModel,
+            estimated_cost_usd: newCost
+          })
+          .eq('id', taskId);
+        
+        if (error) throw error;
+        
+        alert(`Downgraded ${task.model} → ${nextModel}\nNew cost: $${newCost.toFixed(2)}`);
+        await refreshData();
+        
+      } catch (error) {
+        showError('Failed to downgrade: ' + error.message);
+      }
+    }
+    
+    // Helpers
+    function formatStatus(status) {
+      return status.replace(/_/g, ' ');
+    }
+    
+    function getCostClass(cost) {
+      if (!cost || cost <= 1) return 'cost-ok';
+      if (cost <= 3) return 'cost-warn';
+      return 'cost-error';
+    }
+    
+    function isToday(dateStr) {
+      if (!dateStr) return false;
+      const date = new Date(dateStr);
+      const today = new Date();
+      return date.toDateString() === today.toDateString();
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function showError(message) {
+      const el = document.getElementById('error-display');
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+    
+    function hideError() {
+      document.getElementById('error-display').style.display = 'none';
+    }
+    
+    // Start
+    init();
+  </script>
+</body>
+</html>

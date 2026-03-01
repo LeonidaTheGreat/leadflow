@@ -1,0 +1,64 @@
+🎉 PILOT COMPLETE!
+==================
+
+Congratulations {{firstName}},
+
+You've officially completed the 30-day LeadFlow Pilot Program! Thank you for being one of our pioneering agents and helping us build something truly valuable for the real estate industry.
+
+🏆 PILOT AGENT CERTIFICATE
+==========================
+This certifies that {{fullName}} of {{brokerage}} has successfully completed the LeadFlow Pilot Program and contributed valuable feedback to shape the future of real estate technology.
+
+YOUR PILOT JOURNEY
+==================
+• 30 Days in Pilot
+• 5 Emails Completed
+
+━━━━━━━━━━━━━━━━━━━━━
+
+🚀 WHAT HAPPENS NEXT?
+=====================
+
+1. YOUR PILOT ACCESS CONTINUES
+   Keep using LeadFlow with full features for another 7 days while you decide.
+
+2. EXCLUSIVE PILOT PRICING  
+   As a thank you, lock in 40% off our standard plan for life (this week only).
+   Claim discount: {{upgradeUrl}}
+
+3. BECOME A LEADFLOW CHAMPION
+   Join our referral program and earn $200 for every agent you refer.
+   Get referral link: {{referralUrl}}
+
+4. STAY CONNECTED
+   You'll receive monthly product updates and early access to new features.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+SCHEDULE EXIT INTERVIEW
+=======================
+Help us improve by sharing your detailed feedback:
+{{calendarLink}}
+
+Continue to dashboard:
+{{dashboardUrl}}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+💰 KNOW OTHER AGENTS WHO'D LOVE LEADFLOW?
+
+Share your unique referral link and earn $200 for each agent who signs up:
+{{referralUrl}}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+We genuinely appreciate your time, feedback, and partnership over the past 30 days. Agents like you are why we built LeadFlow, and we can't wait to continue supporting your success.
+
+Here's to closing more deals with less effort! 🥂
+
+The Entire LeadFlow Team
+
+---
+LeadFlow Pilot Program | Complete
+Questions? Reply to this email anytime.
+Unsubscribe: {{unsubscribeUrl}}

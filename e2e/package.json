@@ -1,0 +1,19 @@
+{
+  "name": "leadflow-e2e-tests",
+  "version": "1.0.0",
+  "description": "E2E Tests for LeadFlow Agent Onboarding",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:mobile": "playwright test --project=MobileChrome --project=MobileSafari",
+    "test:api": "playwright test --grep '@api'",
+    "test:happy": "playwright test --grep '@happy-path'",
+    "test:error": "playwright test --grep '@error'"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.0",
+    "dotenv": "^16.4.0"
+  }
+}

@@ -1,0 +1,41 @@
+Hey {{firstName}},
+
+It's been a few days since you started your LeadFlow pilot. How's everything going so far?
+
+We analyzed data from 100+ agents who completed our pilot, and we noticed patterns among those who saw the best results. Here are the top 3 things they did in their first week:
+
+1️⃣ CONNECTED THEIR CRM ON DAY ONE
+Agents who integrated their CRM within 24 hours saved an average of 5 hours/week on manual data entry.
+
+Haven't connected yours yet? Do it now:
+{{dashboardUrl}}/integrations
+
+2️⃣ IMPORTED AT LEAST 50 LEADS
+Having a meaningful sample size helps you see LeadFlow's AI prioritization in action. More data = smarter insights.
+
+Import your leads:
+{{dashboardUrl}}/leads/import
+
+3️⃣ SET UP THEIR FIRST AUTOMATION
+Even a simple "welcome" email sequence can re-engage old leads. One agent recovered a $2.1M listing from a lead they hadn't contacted in 8 months!
+
+Create automation:
+{{dashboardUrl}}/automations
+
+━━━━━━━━━━━━━━━━━━━━━
+📊 PILOT STAT
+━━━━━━━━━━━━━━━━━━━━━
+
+73% of pilot agents who completed these 3 steps renewed their subscription.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+Quick question: What's been your biggest challenge so far? Hit reply and let us know — we're here to help.
+
+Keep up the great work!
+
+Sarah from LeadFlow
+
+---
+LeadFlow Pilot Program | Day 3 of 30
+Unsubscribe: {{unsubscribeUrl}}

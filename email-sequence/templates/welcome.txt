@@ -1,0 +1,33 @@
+Hi {{firstName}},
+
+Welcome to the LeadFlow Pilot Program! We're thrilled to have you from {{brokerage}} on board. Your pilot officially starts on {{startDate}}.
+
+Over the next 30 days, you'll experience how LeadFlow helps top-performing agents like you close more deals with less effort.
+
+WHAT TO EXPECT DURING YOUR PILOT:
+===============================
+
+Week 1: Get set up and explore core features
+Week 2: Import leads and test automation workflows  
+Week 3: Track your results and optimize
+Week 4: Provide feedback and decide on next steps
+
+YOUR FIRST STEP
+===============
+Access your personalized dashboard and complete your profile setup:
+
+{{dashboardUrl}}
+
+Need help getting started? Schedule a 15-minute onboarding call with our team:
+{{calendarLink}}
+
+Questions? Just reply to this email — it goes straight to our pilot support team.
+
+Excited to see what you accomplish!
+
+The LeadFlow Team
+
+---
+You're receiving this because you enrolled in the LeadFlow Pilot Program.
+LeadFlow AI, Inc. | San Francisco, CA
+Unsubscribe: {{unsubscribeUrl}}

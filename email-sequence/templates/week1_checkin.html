@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 1 Check-in</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
+    .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 40px 30px; text-align: center; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; }
+    .header p { color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; }
+    .content { padding: 40px 30px; }
+    .greeting { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .text { margin-bottom: 20px; color: #4a4a4a; }
+    .progress-bar { background: #e5e7eb; border-radius: 10px; height: 20px; margin: 25px 0; overflow: hidden; }
+    .progress-fill { background: linear-gradient(90deg, #3b82f6, #2563eb); height: 100%; width: 33%; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; }
+    .milestone-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0; }
+    .milestone-box h3 { margin: 0 0 15px; color: #1e40af; }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li { padding: 10px 0; border-bottom: 1px solid #dbeafe; display: flex; align-items: center; }
+    .checklist li:last-child { border-bottom: none; }
+    .check-icon { width: 24px; height: 24px; background: #10b981; border-radius: 50%; margin-right: 12px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+    .pending-icon { width: 24px; height: 24px; border: 2px solid #d1d5db; border-radius: 50%; margin-right: 12px; display: inline-flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 14px; }
+    .success-story { background: #fef3c7; border-radius: 12px; padding: 24px; margin: 25px 0; }
+    .success-story h4 { margin: 0 0 12px; color: #92400e; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .success-story p { margin: 0; font-style: italic; color: #78350f; }
+    .success-story .author { margin-top: 12px; font-weight: 600; font-style: normal; color: #92400e; }
+    .cta-button { display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 20px 0; }
+    .footer { background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb; }
+    .footer p { color: #6b7280; font-size: 14px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Week 1 Check-in</h1>
+      <p>You're 1/3 of the way through your pilot!</p>
+    </div>
+    
+    <div class="content">
+      <p class="greeting">Hi {{firstName}},</p>
+      
+      <p class="text">Congratulations! You've completed your first week with LeadFlow. Here's where you stand:</p>
+      
+      <div class="progress-bar">
+        <div class="progress-fill">Week 1 ✓</div>
+      </div>
+      
+      <div class="milestone-box">
+        <h3>📋 Your Week 1 Milestones</h3>
+        <ul class="checklist">
+          <li><span class="check-icon">✓</span> Account activated and profile completed</li>
+          <li><span class="check-icon">✓</span> Explored the dashboard</li>
+          <li><span class="pending-icon">○</span> Import your leads (if you haven't yet)</li>
+          <li><span class="pending-icon">○</span> Set up your first automation</li>
+        </ul>
+      </div>
+      
+      <div class="success-story">
+        <h4>💡 Success Story from a Fellow Agent</h4>
+        <p>"In my first week, I imported 200 old leads from a spreadsheet I'd ignored for months. LeadFlow's AI scored them and I found 12 hot prospects I'd completely forgotten about. Closed one of them for $890K last month!"</p>
+        <p class="author">— Michael R., Compass, San Diego</p>
+      </div>
+      
+      <p class="text"><strong>This week's focus:</strong> If you haven't already, import your leads and let LeadFlow's AI work its magic. The agents who see the biggest ROI are those who give the system enough data to analyze patterns.</p>
+      
+      <center>
+        <a href="{{dashboardUrl}}/leads/import" class="cta-button">Import Your Leads</a>
+      </center>
+      
+      <p class="text"><strong>Need help?</strong> Our team is standing by. Reply to this email or <a href="{{calendarLink}}" style="color: #2563eb; text-decoration: underline;">schedule a quick call</a>.</p>
+      
+      <p class="text">Onward to week 2!<br><strong>The LeadFlow Team</strong></p>
+    </div>
+    
+    <div class="footer">
+      <p>LeadFlow Pilot Program | Week 1 of 4 Complete</p>
+      <p><a href="{{unsubscribeUrl}}" style="color: #9ca3af;">Unsubscribe</a></p>
+    </div>
+  </div>
+</body>
+</html>

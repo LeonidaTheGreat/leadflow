@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Feedback Request</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
+    .header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); padding: 40px 30px; text-align: center; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; }
+    .header p { color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; }
+    .content { padding: 40px 30px; }
+    .greeting { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .text { margin-bottom: 20px; color: #4a4a4a; }
+    .progress-bar { background: #e5e7eb; border-radius: 10px; height: 20px; margin: 25px 0; overflow: hidden; }
+    .progress-fill { background: linear-gradient(90deg, #8b5cf6, #7c3aed); height: 100%; width: 50%; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; }
+    .survey-box { background: #faf5ff; border: 2px solid #e9d5ff; border-radius: 12px; padding: 30px; margin: 25px 0; text-align: center; }
+    .survey-box h3 { margin: 0 0 10px; color: #6b21a8; }
+    .survey-box p { color: #7c3aed; margin-bottom: 20px; }
+    .rating-scale { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+    .rating-btn { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #c4b5fd; background: white; color: #6d28d9; font-size: 20px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    .rating-btn:hover { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    .rating-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-top: 8px; padding: 0 20px; }
+    .quick-question { background: #f3f4f6; border-radius: 12px; padding: 24px; margin: 25px 0; }
+    .quick-question h4 { margin: 0 0 15px; color: #374151; }
+    .options { display: flex; flex-wrap: wrap; gap: 10px; }
+    .option-btn { background: white; border: 1px solid #d1d5db; padding: 10px 20px; border-radius: 20px; font-size: 14px; color: #374151; text-decoration: none; display: inline-block; transition: all 0.2s; }
+    .option-btn:hover { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    .cta-button { display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 20px 0; }
+    .time-badge { display: inline-block; background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 15px; }
+    .footer { background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb; }
+    .footer p { color: #6b7280; font-size: 14px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎯 Quick Check-in</h1>
+      <p>Your feedback shapes LeadFlow's future</p>
+    </div>
+    
+    <div class="content">
+      <p class="greeting">Hi {{firstName}},</p>
+      
+      <p class="text">You're halfway through your LeadFlow pilot! We hope you're already seeing the value, but we want to make sure we're building exactly what agents like you need.</p>
+      
+      <div class="progress-bar">
+        <div class="progress-fill">50% Complete</div>
+      </div>
+      
+      <center>
+        <span class="time-badge">⏱️ Takes 2 minutes</span>
+      </center>
+      
+      <div class="survey-box">
+        <h3>How would you rate your LeadFlow experience so far?</h3>
+        <p>Click a number below to share your rating</p>
+        <div class="rating-scale">
+          <a href="{{feedbackUrl}}?rating=1" class="rating-btn">1</a>
+          <a href="{{feedbackUrl}}?rating=2" class="rating-btn">2</a>
+          <a href="{{feedbackUrl}}?rating=3" class="rating-btn">3</a>
+          <a href="{{feedbackUrl}}?rating=4" class="rating-btn">4</a>
+          <a href="{{feedbackUrl}}?rating=5" class="rating-btn">5</a>
+          <a href="{{feedbackUrl}}?rating=6" class="rating-btn">6</a>
+          <a href="{{feedbackUrl}}?rating=7" class="rating-btn">7</a>
+          <a href="{{feedbackUrl}}?rating=8" class="rating-btn">8</a>
+          <a href="{{feedbackUrl}}?rating=9" class="rating-btn">9</a>
+          <a href="{{feedbackUrl}}?rating=10" class="rating-btn">10</a>
+        </div>
+        <div class="rating-labels">
+          <span>Not great</span>
+          <span>Amazing!</span>
+        </div>
+      </div>
+      
+      <div class="quick-question">
+        <h4>What's been most valuable so far? (Click all that apply)</h4>
+        <div class="options">
+          <a href="{{feedbackUrl}}?value=ai_scoring" class="option-btn">AI lead scoring</a>
+          <a href="{{feedbackUrl}}?value=automation" class="option-btn">Automated follow-ups</a>
+          <a href="{{feedbackUrl}}?value=dashboard" class="option-btn">Dashboard insights</a>
+          <a href="{{feedbackUrl}}?value=time_saving" class="option-btn">Time savings</a>
+          <a href="{{feedbackUrl}}?value=crm_sync" class="option-btn">CRM integration</a>
+        </div>
+      </div>
+      
+      <center>
+        <a href="{{feedbackUrl}}" class="cta-button">Give Full Feedback (2 min)</a>
+      </center>
+      
+      <p class="text"><strong>Why your feedback matters:</strong> As a pilot agent, your input directly influences what we build next. Features you've suggested have already made it into our roadmap.</p>
+      
+      <p class="text">Thanks for being an essential part of LeadFlow's journey!<br><strong>Jennifer from Product</strong></p>
+    </div>
+    
+    <div class="footer">
+      <p>LeadFlow Pilot Program | Day 15 of 30</p>
+      <p><a href="{{unsubscribeUrl}}" style="color: #9ca3af;">Unsubscribe</a></p>
+    </div>
+  </div>
+</body>
+</html>

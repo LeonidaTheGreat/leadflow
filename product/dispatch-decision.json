@@ -1,0 +1,159 @@
+{
+  "timestamp": "2026-02-24T13:45:59.190Z",
+  "tasksReady": [
+    {
+      "name": "Agent Onboarding UI",
+      "priority": "P0",
+      "status": "ready",
+      "impact": "critical",
+      "estimatedMinutes": 240,
+      "unblocks": [
+        "Pilot Recruitment"
+      ],
+      "spawnConfig": {
+        "agentId": "dev",
+        "model": "sonnet"
+      }
+    },
+    {
+      "name": "Cal.com Booking Links",
+      "priority": "P0",
+      "status": "ready",
+      "impact": "critical",
+      "estimatedMinutes": 180,
+      "unblocks": [
+        "Pilot Recruitment",
+        "First Pilot",
+        "Booking Flow"
+      ],
+      "spawnConfig": {
+        "agentId": "dev",
+        "model": "sonnet"
+      }
+    },
+    {
+      "name": "PostHog Analytics Setup",
+      "priority": "P2",
+      "status": "ready",
+      "impact": "high",
+      "estimatedMinutes": 120,
+      "unblocks": [
+        "Metrics Dashboard",
+        "Performance Tracking"
+      ],
+      "spawnConfig": {
+        "agentId": "analytics",
+        "model": "kimi"
+      }
+    },
+    {
+      "name": "Stripe Billing Integration",
+      "priority": "P1",
+      "status": "ready",
+      "impact": "high",
+      "estimatedMinutes": 240,
+      "unblocks": [
+        "Paid Launch",
+        "$20K MRR"
+      ],
+      "spawnConfig": {
+        "agentId": "dev",
+        "model": "sonnet"
+      }
+    },
+    {
+      "name": "First Pilot Validation",
+      "priority": "P0",
+      "status": "ready",
+      "impact": "critical",
+      "estimatedMinutes": 180,
+      "unblocks": [
+        "Conversion Optimization",
+        "MVP Refinement"
+      ],
+      "spawnConfig": {
+        "agentId": "qc",
+        "model": "haiku"
+      }
+    },
+    {
+      "name": "Conversion Optimization",
+      "priority": "P1",
+      "status": "ready",
+      "impact": "high",
+      "estimatedMinutes": 240,
+      "unblocks": [
+        "Scale Phase"
+      ],
+      "spawnConfig": {
+        "agentId": "product",
+        "model": "sonnet"
+      }
+    },
+    {
+      "name": "Second Batch (10 agents)",
+      "priority": "P1",
+      "status": "ready",
+      "impact": "high",
+      "estimatedMinutes": 240,
+      "unblocks": [
+        "$20K MRR"
+      ]
+    }
+  ],
+  "tasksBlocked": [
+    {
+      "name": "Pilot Deployment",
+      "priority": "P0",
+      "status": "blocked",
+      "blocker": "Blocked: Agent Onboarding UI must be complete first",
+      "impact": "critical",
+      "estimatedMinutes": 120,
+      "unblocks": [
+        "Pilot Validation",
+        "Revenue"
+      ],
+      "spawnConfig": {
+        "agentId": "dev",
+        "model": "sonnet"
+      }
+    },
+    {
+      "name": "Pilot Recruitment (3 agents)",
+      "priority": "P1",
+      "status": "blocked",
+      "blocker": "Agent Onboarding UI and Cal.com Booking must be complete",
+      "impact": "critical",
+      "estimatedMinutes": 300,
+      "unblocks": [
+        "First Revenue",
+        "Use Case Data"
+      ],
+      "spawnConfig": {
+        "agentId": "marketing",
+        "model": "kimi"
+      }
+    }
+  ],
+  "recommended": {
+    "task": {
+      "name": "Agent Onboarding UI",
+      "priority": "P0",
+      "status": "ready",
+      "impact": "critical",
+      "estimatedMinutes": 240,
+      "unblocks": [
+        "Pilot Recruitment"
+      ],
+      "spawnConfig": {
+        "agentId": "dev",
+        "model": "sonnet"
+      }
+    },
+    "reason": "Priority: P0 | Impact: critical",
+    "expectedUnblocks": [
+      "Pilot Recruitment"
+    ]
+  },
+  "action": "spawn"
+}

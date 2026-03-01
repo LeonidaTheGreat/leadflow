@@ -1,0 +1,16 @@
+## Directive Compliance Confirmation
+
+**Directive**: All docs for Business Opportunities 2026 initiative must be in Google Drive folder `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE`. Do not create docs in root.
+
+**Status**: ✅ COMPLIANT
+
+- No documents created in Google Drive root
+- Research document saved locally only (pending auth to upload to correct folder)
+- All future documents will be created in `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE`
+
+**Authentication Required**: Browser-based OAuth needed to access Google Drive:
+```
+gog auth add leonidathegreat@gmail.com --services drive
+```
+
+Once authenticated, I will immediately upload the research document to the specified folder.

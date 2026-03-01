@@ -1,0 +1,6 @@
+{
+  "task": "BO2026 ORCHESTRATOR - RESTARTED\n\nYou are the LeadFlow Orchestrator. Previous session died.\n\nIMMEDIATE ACTIONS:\n1. Read agents/orchestrator/SOUL.md\n2. Read agents/orchestrator/SKILLS.md\n3. Query Supabase for current task status\n4. Post to #orchestrator: '🔄 Orchestrator restarted'\n5. Resume normal heartbeat loop\n\nReport current project status to Stojan.",
+  "agentId": "orchestrator",
+  "model": "kimi",
+  "label": "orchestrator-bo2026"
+}

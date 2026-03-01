@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro Tips for Your First Week</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 30px; text-align: center; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; }
+    .header p { color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; }
+    .content { padding: 40px 30px; }
+    .greeting { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .text { margin-bottom: 20px; color: #4a4a4a; }
+    .tip-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 24px; margin: 20px 0; }
+    .tip-card h3 { margin: 0 0 12px; color: #166534; font-size: 18px; display: flex; align-items: center; }
+    .tip-card h3 span { margin-right: 10px; font-size: 24px; }
+    .tip-card p { margin: 0; color: #374151; }
+    .tip-number { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #10b981; color: white; border-radius: 50%; font-weight: 700; font-size: 14px; margin-right: 12px; }
+    .cta-button { display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 20px 0; }
+    .stats-box { background: #fef3c7; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center; }
+    .stats-box .number { font-size: 36px; font-weight: 800; color: #d97706; }
+    .stats-box .label { font-size: 14px; color: #92400e; margin-top: 5px; }
+    .footer { background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb; }
+    .footer p { color: #6b7280; font-size: 14px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>💡 Pro Tips for Week 1</h1>
+      <p>What successful agents do first with LeadFlow</p>
+    </div>
+    
+    <div class="content">
+      <p class="greeting">Hey {{firstName}},</p>
+      
+      <p class="text">It's been a few days since you started your LeadFlow pilot. How's everything going so far?</p>
+      
+      <p class="text">We analyzed data from 100+ agents who completed our pilot, and we noticed patterns among those who saw the best results. Here are the top 3 things they did in their first week:</p>
+      
+      <div class="tip-card">
+        <h3><span class="tip-number">1</span> Connected their CRM on day one</h3>
+        <p>Agents who integrated their CRM within 24 hours saved an average of 5 hours/week on manual data entry. Haven't connected yours yet? <a href="{{dashboardUrl}}/integrations" style="color: #059669; text-decoration: underline;">Do it now →</a></p>
+      </div>
+      
+      <div class="tip-card">
+        <h3><span class="tip-number">2</span> Imported at least 50 leads</h3>
+        <p>Having a meaningful sample size helps you see LeadFlow's AI prioritization in action. More data = smarter insights. <a href="{{dashboardUrl}}/leads/import" style="color: #059669; text-decoration: underline;">Import your leads →</a></p>
+      </div>
+      
+      <div class="tip-card">
+        <h3><span class="tip-number">3</span> Set up their first automation</h3>
+        <p>Even a simple "welcome" email sequence can re-engage old leads. One agent recovered a $2.1M listing from a lead they hadn't contacted in 8 months! <a href="{{dashboardUrl}}/automations" style="color: #059669; text-decoration: underline;">Create automation →</a></p>
+      </div>
+      
+      <div class="stats-box">
+        <div class="number">73%</div>
+        <div class="label">of pilot agents who completed these 3 steps renewed their subscription</div>
+      </div>
+      
+      <p class="text"><strong>Quick question:</strong> What's been your biggest challenge so far? Hit reply and let us know — we're here to help.</p>
+      
+      <p class="text">Keep up the great work!<br><strong>Sarah from LeadFlow</strong></p>
+    </div>
+    
+    <div class="footer">
+      <p>LeadFlow Pilot Program | Day 3 of 30</p>
+      <p><a href="{{unsubscribeUrl}}" style="color: #9ca3af;">Unsubscribe</a></p>
+    </div>
+  </div>
+</body>
+</html>

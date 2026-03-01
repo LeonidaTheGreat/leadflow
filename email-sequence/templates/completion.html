@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pilot Complete!</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; }
+    .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 50px 30px; text-align: center; }
+    .header .celebration { font-size: 60px; margin-bottom: 10px; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; }
+    .header p { color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; }
+    .content { padding: 40px 30px; }
+    .greeting { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .text { margin-bottom: 20px; color: #4a4a4a; }
+    .achievement-box { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 16px; padding: 30px; margin: 25px 0; text-align: center; }
+    .achievement-box h2 { margin: 0 0 10px; color: #92400e; font-size: 22px; }
+    .achievement-box p { margin: 0; color: #78350f; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
+    .stat-card { background: #f9fafb; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #e5e7eb; }
+    .stat-card .number { font-size: 32px; font-weight: 800; color: #059669; }
+    .stat-card .label { font-size: 13px; color: #6b7280; margin-top: 5px; }
+    .next-steps { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 24px; margin: 25px 0; }
+    .next-steps h3 { margin: 0 0 15px; color: #166534; }
+    .next-steps ol { margin: 0; padding-left: 20px; }
+    .next-steps li { margin-bottom: 12px; color: #374151; }
+    .next-steps li strong { color: #166534; }
+    .cta-primary { display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; text-decoration: none; padding: 18px 36px; border-radius: 8px; font-weight: 700; font-size: 16px; margin: 10px 0; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+    .cta-secondary { display: inline-block; background: #ffffff; color: #d97706; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; margin: 10px 5px; border: 2px solid #f59e0b; }
+    .referral-box { background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center; }
+    .referral-box h4 { margin: 0 0 10px; color: #1e40af; }
+    .referral-box p { margin: 0 0 15px; color: #3b82f6; }
+    .footer { background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb; }
+    .footer p { color: #6b7280; font-size: 14px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="celebration">🎉</div>
+      <h1>Pilot Complete!</h1>
+      <p>You did it, {{firstName}}!</p>
+    </div>
+    
+    <div class="content">
+      <p class="greeting">Congratulations {{firstName}},</p>
+      
+      <p class="text">You've officially completed the 30-day LeadFlow Pilot Program! Thank you for being one of our pioneering agents and helping us build something truly valuable for the real estate industry.</p>
+      
+      <div class="achievement-box">
+        <h2>🏆 Pilot Agent Certificate</h2>
+        <p>This certifies that <strong>{{fullName}}</strong> of <strong>{{brokerage}}</strong> has successfully completed the LeadFlow Pilot Program and contributed valuable feedback to shape the future of real estate technology.</p>
+      </div>
+      
+      <h3 style="text-align: center; margin: 30px 0 20px; color: #374151;">Your Pilot Journey</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="number">30</div>
+          <div class="label">Days in Pilot</div>
+        </div>
+        <div class="stat-card">
+          <div class="number">5</div>
+          <div class="label">Emails Completed</div>
+        </div>
+      </div>
+      
+      <div class="next-steps">
+        <h3>🚀 What happens next?</h3>
+        <ol>
+          <li><strong>Your pilot access continues</strong> — Keep using LeadFlow with full features for another 7 days while you decide</li>
+          <li><strong>Exclusive pilot pricing</strong> — As a thank you, lock in 40% off our standard plan for life (this week only)</li>
+          <li><strong>Become a LeadFlow Champion</strong> — Join our referral program and earn $200 for every agent you refer</li>
+          <li><strong>Stay connected</strong> — You'll receive monthly product updates and early access to new features</li>
+        </ol>
+      </div>
+      
+      <center>
+        <a href="{{upgradeUrl}}" class="cta-primary">Claim Your 40% Pilot Discount</a>
+      </center>
+      
+      <center>
+        <a href="{{calendarLink}}" class="cta-secondary">Schedule Exit Interview</a>
+        <a href="{{dashboardUrl}}" class="cta-secondary">Continue to Dashboard</a>
+      </center>
+      
+      <div class="referral-box">
+        <h4>💰 Know other agents who'd love LeadFlow?</h4>
+        <p>Share your unique referral link and earn $200 for each agent who signs up</p>
+        <a href="{{referralUrl}}" class="cta-secondary" style="border-color: #3b82f6; color: #2563eb;">Get My Referral Link</a>
+      </div>
+      
+      <p class="text">We genuinely appreciate your time, feedback, and partnership over the past 30 days. Agents like you are why we built LeadFlow, and we can't wait to continue supporting your success.</p>
+      
+      <p class="text">Here's to closing more deals with less effort! 🥂<br><strong>The Entire LeadFlow Team</strong></p>
+    </div>
+    
+    <div class="footer">
+      <p>LeadFlow Pilot Program | Complete</p>
+      <p>Questions? Reply to this email anytime.</p>
+      <p><a href="{{unsubscribeUrl}}" style="color: #9ca3af;">Unsubscribe</a></p>
+    </div>
+  </div>
+</body>
+</html>

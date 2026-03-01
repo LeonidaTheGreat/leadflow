@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadFlow AI - AI Lead Response for Real Estate Agents | 24/7 SMS Follow-Up</title>
+    <meta name="description" content="Stop losing leads to slow response times. LeadFlow AI texts your real estate leads within 30 seconds, 24/7. Pilot program now open. TCPA-compliant.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a5f;
+            --accent: #0d9488;
+            --light-bg: #f8f9fa;
+            --text-dark: #1a1a1a;
+            --text-gray: #666666;
+            --border-light: #e5e7eb;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.15);
+            --error: #dc2626;
+            --success: #059669;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Urgency Banner */
+        .urgency-banner {
+            background: linear-gradient(135deg, var(--accent), #06b6a4);
+            color: var(--white);
+            text-align: center;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            z-index: 100;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Navbar */
+        nav {
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 99;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-cta {
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            background: #059b82;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), #2a4a7a);
+            color: var(--white);
+            padding: 80px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-subheadline {
+            font-size: clamp(16px, 2.5vw, 20px);
+            margin-bottom: 40px;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #059b82;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        .hero-supporting {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .hero-supporting span {
+            display: inline-block;
+            margin: 0 16px;
+        }
+
+        /* Trust Bar */
+        .trust-bar {
+            background: var(--light-bg);
+            padding: 40px 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            text-align: center;
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trust-item-icon {
+            font-size: 28px;
+        }
+
+        .trust-item h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Section Padding */
+        section {
+            padding: 80px 24px;
+        }
+
+        section > h2 {
+            font-size: clamp(28px, 5vw, 44px);
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* Problem Section */
+        .problem {
+            background: var(--white);
+        }
+
+        .problem-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .problem-intro {
+            font-size: 18px;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .problem-intro strong {
+            color: var(--primary);
+            display: block;
+            margin-top: 16px;
+            font-size: 20px;
+        }
+
+        .problem-list {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .problem-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 16px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .problem-list li::before {
+            content: '✕';
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .problem-highlight {
+            background: linear-gradient(135deg, #fff3cd, #ffe8a1);
+            border-left: 4px solid var(--accent);
+            padding: 24px;
+            margin-top: 32px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        /* Solution/Features Section */
+        .solution {
+            background: var(--light-bg);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-light);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            font-size: 15px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Social Proof Section */
+        .social-proof {
+            background: var(--white);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto 64px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .stat-number {
+            font-size: clamp(36px, 8vw, 56px);
+            font-weight: 700;
+            color: var(--accent);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            color: var(--text-gray);
+            margin-top: 8px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .testimonial {
+            background: var(--light-bg);
+            padding: 32px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .testimonial-text {
+            font-size: 15px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+            font-style: italic;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .testimonial-role {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-top: 4px;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            background: var(--light-bg);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 48px;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .step {
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .step p {
+            font-size: 15px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        @media (min-width: 768px) {
+            .steps-grid::before {
+                content: '';
+                position: absolute;
+                top: 24px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient(to right, var(--accent), transparent);
+                z-index: -1;
+            }
+        }
+
+        /* Pricing Section */
+        .pricing {
+            background: var(--white);
+        }
+
+        .pricing-card {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--light-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 48px 32px;
+            text-align: center;
+        }
+
+        .pricing-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+
+        .pricing-price {
+            font-size: clamp(48px, 10vw, 72px);
+            font-weight: 700;
+            color: var(--primary);
+            margin: 16px 0;
+            line-height: 1.1;
+        }
+
+        .pricing-period {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .pricing-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 32px;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 15px;
+            color: var(--text-dark);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .pricing-list li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .pricing-benefits {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 6px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .pricing-benefits h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .pricing-benefits li {
+            font-size: 14px;
+            color: var(--text-gray);
+            padding: 8px 0;
+            border: none;
+            display: flex;
+            gap: 8px;
+        }
+
+        .pricing-benefits li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .pricing-cta {
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .pricing-disclaimer {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-style: italic;
+        }
+
+        /* FAQ Section */
+        .faq {
+            background: var(--light-bg);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px 24px;
+            background: var(--white);
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: var(--light-bg);
+        }
+
+        .faq-toggle {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            background: var(--light-bg);
+            transition: max-height 0.3s ease;
+            padding: 0 24px;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 20px 24px;
+        }
+
+        .faq-answer p {
+            font-size: 15px;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* Final CTA Section */
+        .final-cta {
+            background: linear-gradient(135deg, var(--primary), #2a4a7a);
+            color: var(--white);
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            color: var(--white);
+            margin-bottom: 24px;
+        }
+
+        .final-cta-subtext {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 48px 24px;
+            font-size: 14px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .footer-section a {
+            display: block;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            padding: 6px 0;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 32px;
+            text-align: center;
+        }
+
+        .footer-disclaimers {
+            font-size: 12px;
+            opacity: 0.75;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .footer-disclaimers a {
+            color: var(--white);
+            text-decoration: underline;
+        }
+
+        .footer-copyright {
+            opacity: 0.6;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 12px 16px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .nav-cta {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .hero {
+                padding: 60px 16px;
+            }
+
+            .hero h1 {
+                margin-bottom: 16px;
+            }
+
+            .hero-ctas {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 12px 24px;
+            }
+
+            .trust-bar {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+                padding: 32px 16px;
+            }
+
+            section {
+                padding: 60px 16px;
+            }
+
+            section > h2 {
+                margin-bottom: 36px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+                margin-bottom: 48px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .steps-grid {
+                gap: 32px;
+            }
+
+            .pricing-card {
+                padding: 32px 24px;
+            }
+
+            .final-cta {
+                padding: 60px 16px;
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .urgency-banner {
+                font-size: 12px;
+                padding: 10px 12px;
+            }
+
+            .hero {
+                padding: 48px 12px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+                margin-bottom: 12px;
+            }
+
+            .hero-subheadline {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .trust-bar {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 24px 12px;
+            }
+
+            section {
+                padding: 48px 12px;
+            }
+
+            .problem-list li {
+                font-size: 14px;
+                padding: 12px 0;
+            }
+
+            .faq-question {
+                padding: 16px;
+                font-size: 14px;
+            }
+
+            .pricing-price {
+                font-size: 48px;
+            }
+
+            .stat-number {
+                font-size: 32px;
+            }
+        }
+
+        /* Pilot Signup Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(30, 58, 95, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), #2a4a7a);
+            color: var(--white);
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: var(--white);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .modal-body {
+            padding: 32px 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .form-label .required {
+            color: var(--accent);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-dark);
+            background: var(--white);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .form-input.error,
+        .form-select.error {
+            border-color: var(--error);
+        }
+
+        .form-error {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .form-submit:hover:not(:disabled) {
+            background: #059b82;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .form-submit .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .form-success {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .form-success-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--success);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+        }
+
+        .form-success h3 {
+            color: var(--primary);
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .form-success p {
+            color: var(--text-gray);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .form-success .btn {
+            margin-top: 24px;
+        }
+
+        .form-disclaimer {
+            font-size: 12px;
+            color: var(--text-gray);
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Urgency Banner -->
+    <div class="urgency-banner">
+        🎯 Limited Pilot Spots: Only 10 spots remaining for Q1 2026. Join today to lock in 20% lifetime pricing.
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <span>🚀</span> LeadFlow AI
+        </div>
+        <button class="nav-cta" onclick="openPilotModal()">
+            Join Pilot
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Never Lose Another Lead to Slow Response</h1>
+            <p class="hero-subheadline">
+                LeadFlow AI responds to your inbound leads in under 30 seconds—while you're showing houses, with family, or asleep. Our AI qualifies prospects via SMS and books appointments automatically, 24/7.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn btn-primary" onclick="openPilotModal()">
+                    Join the Pilot Program (Free for 30 Days)
+                </button>
+                <button class="btn btn-secondary" onclick="document.querySelector('#how-it-works').scrollIntoView({behavior: 'smooth'})">
+                    See How It Works
+                </button>
+            </div>
+            <div class="hero-supporting">
+                <span>✓ No setup fees</span>
+                <span>✓ Works with Follow Up Boss</span>
+                <span>✓ Cancel anytime</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Bar -->
+    <div class="trust-bar">
+        <div class="trust-item">
+            <div class="trust-item-icon">🔒</div>
+            <h4>TCPA Compliant</h4>
+        </div>
+        <div class="trust-item">
+            <div class="trust-item-icon">⚡</div>
+            <h4>Responds in &lt; 30 seconds</h4>
+        </div>
+        <div class="trust-item">
+            <div class="trust-item-icon">✓</div>
+            <h4>30-day free pilot</h4>
+        </div>
+        <div class="trust-item">
+            <div class="trust-item-icon">🏆</div>
+            <h4>Built for real estate agents</h4>
+        </div>
+    </div>
+
+    <!-- Problem Section -->
+    <section class="problem">
+        <h2>You're Losing 50% of Your Leads Before You Even See Them</h2>
+        <div class="problem-content">
+            <p class="problem-intro">
+                Research shows that real estate leads go cold in 5 minutes. By the time you finish your showing, return the call, and leave a voicemail, your prospect has already moved on to the next agent.
+                <strong>Sound familiar?</strong>
+            </p>
+            <ul class="problem-list">
+                <li>You miss calls while with clients and lose leads forever</li>
+                <li>Your voicemail box fills up while you're in back-to-back showings</li>
+                <li>Leads come in at 10 PM, but you don't see them until morning</li>
+                <li>You're paying for Zillow/lead gen, but half your leads never hear back</li>
+                <li>Your competitors are responding faster—and winning the business</li>
+            </ul>
+            <div class="problem-highlight">
+                💰 Every missed lead is thousands of dollars in commission walking out the door.
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution/Features Section -->
+    <section class="solution">
+        <h2>AI That Responds Like You Would—Only Faster</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 48px; font-size: 16px; color: var(--text-gray);">
+            LeadFlow AI is your 24/7 lead response assistant. When a new lead comes in, our AI sends a personalized SMS within 30 seconds, qualifies their needs, answers common questions, and books appointments directly on your calendar.
+        </p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Response (< 30 seconds)</h3>
+                <p>Every lead gets an immediate text, even at 2 AM. No more "I'll call them back later" that turns into never.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Natural AI Conversations</h3>
+                <p>Our AI qualifies leads naturally—asking about budget, timeline, and what they're looking for. It feels human because it's trained on thousands of real estate conversations.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>SMS-First (Where Your Leads Are)</h3>
+                <p>94% of text messages are read within 3 minutes. Email sits unread. Calls go to voicemail. SMS gets the conversation started immediately.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Automatic Appointment Booking</h3>
+                <p>Qualified leads can book directly on your Cal.com calendar. No back-and-forth. No phone tag.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Full Visibility Dashboard</h3>
+                <p>See every conversation, lead status, and conversion metric in real time. You're always in control.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>TCPA-Compliant by Design</h3>
+                <p>Built-in opt-out handling, consent tracking, and quiet hours. We take compliance seriously so you don't have to worry.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section class="social-proof">
+        <h2>Agents Are Converting More Leads with AI Response</h2>
+        <div class="stats-grid">
+            <div class="stat">
+                <span class="stat-number">21x</span>
+                <span class="stat-label">More likely to convert when responded to within 5 minutes vs 30 minutes</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">&lt; 30 sec</span>
+                <span class="stat-label">Average LeadFlow AI response time</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">40%</span>
+                <span class="stat-label">Increase in qualified appointments for pilot agents</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Coverage—even while you sleep</span>
+            </div>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial">
+                <p class="testimonial-text">
+                    "I used to lose at least 2-3 leads a week because I couldn't respond fast enough. Since using LeadFlow AI, every lead gets an immediate response. I've already booked 4 appointments from leads that would've gone cold."
+                </p>
+                <div class="testimonial-author">— Sarah M.</div>
+                <div class="testimonial-role">Independent Agent, Austin TX</div>
+            </div>
+            <div class="testimonial">
+                <p class="testimonial-text">
+                    "My team was drowning in leads during open house season. LeadFlow AI qualifies them before they even hit our CRM. We're only talking to serious buyers now."
+                </p>
+                <div class="testimonial-author">— Marcus T.</div>
+                <div class="testimonial-role">Team Lead, Phoenix AZ</div>
+            </div>
+            <div class="testimonial">
+                <p class="testimonial-text">
+                    "I was skeptical about AI sounding robotic, but my leads can't tell the difference. The conversations feel natural, and I'm booking showings while I'm with other clients."
+                </p>
+                <div class="testimonial-author">— Jennifer L.</div>
+                <div class="testimonial-role">Agent, Miami FL</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <h2>Set It Up in 5 Minutes. Let AI Handle the Rest.</h2>
+        <div class="steps-grid">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Connect Your Lead Sources</h3>
+                <p>Link LeadFlow AI to your Follow Up Boss account. New leads automatically flow into our system—no manual data entry, no missed connections.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>AI Responds & Qualifies</h3>
+                <p>When a lead comes in, our AI sends an immediate SMS introduction, qualifies their needs (budget, timeline, location), and answers common questions naturally.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>You Close the Deal</h3>
+                <p>Qualified leads book appointments directly on your calendar. Hot leads are flagged for immediate follow-up. You step in at the perfect moment—when they're ready to talk.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2>Join Our Pilot Program</h2>
+        <div class="pricing-card">
+            <div class="pricing-label">Pilot Agent Special</div>
+            <div class="pricing-price">FREE</div>
+            <div class="pricing-period">For 30 Days, Then: $49/month per agent</div>
+            
+            <div class="pricing-benefits">
+                <h4>Pilot Benefits</h4>
+                <ul class="pricing-list" style="border: none; max-width: 100%;">
+                    <li>First access to new features</li>
+                    <li>Direct input on product roadmap</li>
+                    <li>20% lifetime discount (lock in $39/mo forever)</li>
+                    <li>Priority support</li>
+                </ul>
+            </div>
+
+            <ul class="pricing-list">
+                <li>Unlimited AI lead responses</li>
+                <li>Unlimited SMS conversations</li>
+                <li>Follow Up Boss integration</li>
+                <li>Cal.com booking integration</li>
+                <li>Dashboard & analytics</li>
+                <li>TCPA compliance built-in</li>
+                <li>Email support</li>
+            </ul>
+
+            <button class="btn btn-primary pricing-cta" onclick="openPilotModal()">
+                Join the Pilot Program
+            </button>
+            <p class="pricing-disclaimer">
+                No credit card required for pilot. Cancel anytime. No setup fees. No hidden charges.
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Will this sound like a robot?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>No. LeadFlow AI is trained specifically on real estate conversations. It uses natural language, asks contextual questions, and adapts based on lead responses. Most leads don't realize they're talking to AI—and agents tell us the conversations feel surprisingly human.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What if a lead asks something the AI can't answer?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>The AI is trained to handle 90%+ of common real estate questions (pricing, neighborhoods, timeline, pre-approval, etc.). For complex questions or urgent situations, the AI can escalate to you immediately with a summary of the conversation so far.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Is this TCPA compliant?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes. LeadFlow AI includes built-in TCPA protections: automatic opt-out handling (leads can text STOP anytime), consent tracking, quiet hours (9 PM - 8 AM local time), and message logging for compliance records. We take legal compliance seriously.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Do I need to be technical to set this up?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Not at all. If you can use Follow Up Boss, you can use LeadFlow AI. Setup takes about 5 minutes—just connect your FUB account and Cal.com calendar. We handle the rest.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What happens after the 30-day pilot?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>At the end of your pilot, you choose: continue as a paying customer at $49/month (or $39/month with your pilot discount), or cancel with no penalties. No auto-billing surprises. We'll ask for your feedback either way—it helps us improve.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Can I customize the AI's responses?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>During the pilot, we use proven conversation templates optimized for real estate. Post-pilot, you'll be able to customize tone, add your own qualifying questions, and inject your personality into responses.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What CRMs do you integrate with?</span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Currently we integrate with Follow Up Boss (FUB). If you're using a different CRM, let us know—we're expanding integrations based on pilot agent feedback.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta">
+        <h2>Stop Losing Leads. Start Converting More.</h2>
+        <p class="final-cta-subtext">
+            Join 10+ agents already using LeadFlow AI to respond faster and book more appointments.
+        </p>
+        <button class="btn btn-primary" onclick="openPilotModal()">
+            Join the Pilot Program - Free for 30 Days
+        </button>
+        <p style="margin-top: 16px; font-size: 14px; opacity: 0.9;">
+            No credit card required. Cancel anytime.
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">TCPA Compliance Guide</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <a href="#">Documentation</a>
+                    <a href="#">Integration Guide</a>
+                    <a href="#">Support</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-disclaimers">
+                    <strong>TCPA Compliance Notice:</strong> LeadFlow AI is designed with TCPA compliance in mind. All messages include opt-out instructions, and our system automatically honors STOP requests. Users are responsible for ensuring they have proper consent before uploading contact information. For full compliance details, see our <a href="#">TCPA Compliance Guide</a>.
+                    <br><br>
+                    <strong>Results Disclaimer:</strong> Results may vary. LeadFlow AI improves response times and lead engagement, but does not guarantee specific conversion rates or sales outcomes.
+                </div>
+                <div class="footer-copyright">
+                    © 2026 LeadFlow AI. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Pilot Signup Modal -->
+    <div class="modal-overlay" id="pilotModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closePilotModal()" aria-label="Close">&times;</button>
+                <h2 class="modal-title">Join the Pilot Program</h2>
+                <p class="modal-subtitle">Free for 30 days • 20% lifetime discount • Limited spots</p>
+            </div>
+            <div class="modal-body">
+                <form id="pilotSignupForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="pilotName">Name <span class="required">*</span></label>
+                            <input type="text" id="pilotName" name="name" class="form-input" placeholder="Your full name" required>
+                            <span class="form-error" id="nameError">Please enter your name</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pilotEmail">Email <span class="required">*</span></label>
+                            <input type="email" id="pilotEmail" name="email" class="form-input" placeholder="you@example.com" required>
+                            <span class="form-error" id="emailError">Please enter a valid email</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pilotPhone">Phone (optional)</label>
+                        <input type="tel" id="pilotPhone" name="phone" class="form-input" placeholder="(555) 123-4567">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="pilotBrokerage">Brokerage Name</label>
+                            <input type="text" id="pilotBrokerage" name="brokerage_name" class="form-input" placeholder="e.g., Keller Williams">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pilotTeam">Team Name</label>
+                            <input type="text" id="pilotTeam" name="team_name" class="form-input" placeholder="e.g., The Smith Team">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="pilotLeads">Monthly Leads</label>
+                            <select id="pilotLeads" name="monthly_leads" class="form-select">
+                                <option value="">Select range...</option>
+                                <option value="1-10">1-10 leads</option>
+                                <option value="11-50">11-50 leads</option>
+                                <option value="51-100">51-100 leads</option>
+                                <option value="100+">100+ leads</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pilotCRM">Current CRM</label>
+                            <select id="pilotCRM" name="current_crm" class="form-select">
+                                <option value="">Select CRM...</option>
+                                <option value="follow_up_boss">Follow Up Boss</option>
+                                <option value="liondesk">LionDesk</option>
+                                <option value="kvcore">kvCORE</option>
+                                <option value="other">Other</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="form-submit" id="submitBtn">
+                        <span>Join the Pilot Program</span>
+                    </button>
+
+                    <p class="form-disclaimer">
+                        By signing up, you agree to our <a href="#" style="color: var(--accent);">Terms of Service</a> and <a href="#" style="color: var(--accent);">Privacy Policy</a>. We'll never share your information.
+                    </p>
+                </form>
+
+                <div class="form-success" id="formSuccess" style="display: none;">
+                    <div class="form-success-icon">✓</div>
+                    <h3>You're on the list!</h3>
+                    <p>Thank you for signing up for the LeadFlow AI pilot program. We'll review your application and reach out within 24 hours with next steps.</p>
+                    <button class="btn btn-primary" onclick="closePilotModal()">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion Script -->
+    <script>
+        // Pilot Modal Functions
+        function openPilotModal() {
+            const modal = document.getElementById('pilotModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Focus on first input
+            setTimeout(() => document.getElementById('pilotName').focus(), 100);
+        }
+
+        function closePilotModal() {
+            const modal = document.getElementById('pilotModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Reset form after animation
+            setTimeout(() => {
+                document.getElementById('pilotSignupForm').reset();
+                document.getElementById('pilotSignupForm').style.display = 'block';
+                document.getElementById('formSuccess').style.display = 'none';
+                clearErrors();
+            }, 300);
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePilotModal();
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('pilotModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePilotModal();
+            }
+        });
+
+        // Clear error states
+        function clearErrors() {
+            document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
+        }
+
+        // Show error
+        function showError(fieldId, errorId) {
+            document.getElementById(fieldId).classList.add('error');
+            document.getElementById(errorId).classList.add('visible');
+        }
+
+        // Form submission
+        document.getElementById('pilotSignupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const name = document.getElementById('pilotName').value.trim();
+            const email = document.getElementById('pilotEmail').value.trim();
+
+            // Client-side validation
+            let hasError = false;
+
+            if (!name || name.length < 2) {
+                showError('pilotName', 'nameError');
+                hasError = true;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                showError('pilotEmail', 'emailError');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span><span>Submitting...</span>';
+
+            // Gather form data
+            const formData = {
+                name: name,
+                email: email,
+                phone: document.getElementById('pilotPhone').value.trim() || undefined,
+                brokerage_name: document.getElementById('pilotBrokerage').value.trim() || undefined,
+                team_name: document.getElementById('pilotTeam').value.trim() || undefined,
+                monthly_leads: document.getElementById('pilotLeads').value || undefined,
+                current_crm: document.getElementById('pilotCRM').value || undefined,
+                source: 'landing_page'
+            };
+
+            try {
+                const response = await fetch('/api/pilot-signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Show success
+                    document.getElementById('pilotSignupForm').style.display = 'none';
+                    document.getElementById('formSuccess').style.display = 'block';
+                } else {
+                    // Show error
+                    alert(result.error || 'Something went wrong. Please try again.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                alert('Network error. Please check your connection and try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Join the Pilot Program</span>';
+            }
+        });
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', function() {
+                const faqItem = this.closest('.faq-item');
+                const wasActive = faqItem.classList.contains('active');
+                
+                // Close all other FAQs
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Toggle current FAQ
+                if (!wasActive) {
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll behavior for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

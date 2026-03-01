@@ -1,0 +1,41 @@
+{
+  "agentId": "dev",
+  "taskId": "Stripe Billing Integration",
+  "passed": false,
+  "testsRun": 4,
+  "testsPassed": 1,
+  "results": [
+    {
+      "name": "build",
+      "required": true,
+      "success": false,
+      "duration": 1594,
+      "error": "Command failed: npm run build\nnpm error Missing script: \"build\"\nnpm error\nnpm error To see a list of scripts, run:\nnpm error   npm run\nnpm error A complete log of this run can be found in: /Users/clawdbot/.npm/_logs/2026-02-25T04_09_33_278Z-debug-0.log\n",
+      "code": 1
+    },
+    {
+      "name": "lint",
+      "required": false,
+      "success": false,
+      "duration": 2158,
+      "error": "Command failed: npm run lint\nnpm error Missing script: \"lint\"\nnpm error\nnpm error Did you mean this?\nnpm error   npm link # Symlink a package folder\nnpm error\nnpm error To see a list of scripts, run:\nnpm error   npm run\nnpm error A complete log of this run can be found in: /Users/clawdbot/.npm/_logs/2026-02-25T04_09_34_188Z-debug-0.log\n",
+      "code": 1
+    },
+    {
+      "name": "unit-tests",
+      "required": true,
+      "success": true,
+      "duration": 3051,
+      "output": "\n> fub-ai-lead-response@1.0.0 test\n> node integration/test-e2e-flow.js --passWithNoTests\n\n🚀 Starting E2E Test Suite\n\n\n🧪 TEST 1: FUB API Connectivity\n✅ PASS: FUB API is accessible\n\n🧪 TEST 2: Twilio API Connectivity\n✅ PASS: Twilio API is accessible\n\n🧪 TEST 3: Create Lead in FUB\n✅ PASS: Lead created in FUB (ID: 77)\n\n🧪 TEST 4: Fetch Lead from FUB\n✅ PASS: Lead fetched successfully\n   Name: Test Lead_1771992578492\n   Phone: 4165551234\n   Stage: Lead\n\n🧪 TEST 5: Consent & DNC Validation\n✅ PASS: Le"
+    },
+    {
+      "name": "typecheck",
+      "required": true,
+      "success": false,
+      "duration": 6473,
+      "error": "Command failed: npx tsc --noEmit",
+      "code": 1
+    }
+  ],
+  "timestamp": "2026-02-25T04:09:45.534Z"
+}

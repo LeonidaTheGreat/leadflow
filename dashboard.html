@@ -1,0 +1,992 @@
+<!doctype html>
+<!-- 
+  Dashboard HTML - Full Supabase Integration
+  All data loaded dynamically from Supabase
+  Auto-refresh: 60 seconds
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
+  <title>LeadFlow AI — Live Execution Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-primary: #0b1020;
+      --bg-card: #131a33;
+      --bg-card-ok: #132a13;
+      --bg-card-warn: #2a2613;
+      --bg-card-error: #2a1313;
+      --border-default: #24305f;
+      --border-ok: #2a5b2a;
+      --border-warn: #5b5a2a;
+      --border-error: #5b2a2a;
+      --text-primary: #e8ecff;
+      --text-muted: #a8b3dd;
+      --text-ok: #57d98d;
+      --text-warn: #ffd166;
+      --text-error: #ff6b6b;
+      --accent: #9ecbff;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { touch-action: manipulation; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: 1400px; margin: 24px auto; padding: 0 16px; }
+    h1, h2, h3 { margin: 0.2rem 0 1rem; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; margin-top: 24px; }
+    h3 { font-size: 16px; margin-top: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .card { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 12px; padding: 14px; }
+    .card.ok { background: var(--bg-card-ok); border-color: var(--border-ok); }
+    .card.warn { background: var(--bg-card-warn); border-color: var(--border-warn); }
+    .card.error { background: var(--bg-card-error); border-color: var(--border-error); }
+    .kpi { font-size: 28px; font-weight: 700; }
+    .kpi.small { font-size: 20px; }
+    .muted { color: var(--text-muted); font-size: 12px; }
+    .small { font-size: 11px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #1e2a58; border: 1px solid #30418a; font-size: 12px; }
+    .ok { color: var(--text-ok); font-weight: 700; }
+    .warn { color: var(--text-warn); font-weight: 700; }
+    .bad { color: var(--text-error); font-weight: 700; }
+    
+    /* Table with horizontal scroll on mobile */
+    .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 12px; overflow: hidden; font-size: 13px; min-width: 500px; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border-default); text-align: left; vertical-align: top; }
+    th { background: #161f43; font-weight: 600; }
+    .loading { color: var(--text-muted); font-style: italic; }
+    .error { color: var(--text-error); }
+    
+    /* Mobile Navigation */
+    .nav-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 24px; cursor: pointer; padding: 8px; }
+    .nav-menu { display: none; }
+    
+    /* Touch-friendly elements */
+    button, select, .card { touch-action: manipulation; }
+    
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .wrap { margin: 12px auto; padding: 0 12px; }
+      h1 { font-size: 22px; }
+      h2 { font-size: 18px; margin-top: 20px; }
+      h3 { font-size: 14px; margin-top: 12px; }
+      .grid { grid-template-columns: 1fr; }
+      .grid4 { grid-template-columns: 1fr; }
+      .kpi { font-size: 24px; }
+      .kpi.small { font-size: 18px; }
+      .card { padding: 12px; }
+      th, td { padding: 8px; font-size: 12px; }
+      table { font-size: 12px; }
+      
+      /* Mobile nav */
+      .nav-toggle { display: block; }
+      .nav-menu { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary); z-index: 1000; padding: 20px; }
+      .nav-menu.active { display: block; }
+      .nav-menu-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text-primary); font-size: 28px; cursor: pointer; }
+      .nav-menu-items { display: flex; flex-direction: column; gap: 16px; margin-top: 60px; }
+      .nav-menu-items a { color: var(--text-primary); text-decoration: none; font-size: 18px; padding: 12px; border-radius: 8px; background: var(--bg-card); }
+      .nav-menu-items a:active { background: var(--border-default); }
+    }
+    
+    /* Tablet styles */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    /* Desktop styles */
+    @media (min-width: 1025px) {
+      .grid4 { grid-template-columns: repeat(4, 1fr); }
+    }
+    
+    /* Scrollbar styling for mobile table overflow */
+    .table-wrapper::-webkit-scrollbar { height: 6px; }
+    .table-wrapper::-webkit-scrollbar-track { background: var(--bg-primary); }
+    .table-wrapper::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+    .table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+<!-- Mobile Navigation Menu -->
+<div id="nav-menu" class="nav-menu">
+  <button class="nav-menu-close" onclick="toggleNav()">&times;</button>
+  <div class="nav-menu-items">
+    <a href="#system-status" onclick="toggleNav()">System Status</a>
+    <a href="#kpi-cards" onclick="toggleNav()">Key Metrics</a>
+    <a href="#spawn-health" onclick="toggleNav()">Spawn Health</a>
+    <a href="#task-queue" onclick="toggleNav()">Task Queue</a>
+    <a href="#agent-activity" onclick="toggleNav()">Agent Activity</a>
+    <a href="#completed-work" onclick="toggleNav()">Completed Work</a>
+    <a href="#action-items" onclick="toggleNav()">Action Items</a>
+    <a href="#product-quality" onclick="toggleNav()">Product Quality</a>
+    <a href="#qc-status" onclick="toggleNav()">QC Status</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- HEADER -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+    <div>
+      <h1 id="project-name">LeadFlow Real Estate AI — Live Dashboard</h1>
+      <div id="project-subtitle" class="muted">Loading from Supabase...</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="nav-toggle" onclick="toggleNav()" aria-label="Open menu">&#9776;</button>
+      <div id="project-status" class="loading">Loading...</div>
+    </div>
+  </div>
+
+  <!-- SYSTEM STATUS -->
+  <h2 id="system-status">📊 System Status</h2>
+  <div id="system-components" class="grid"><div class="loading">Loading components...</div></div>
+
+  <!-- KPI CARDS -->
+  <h2>🎯 Key Metrics</h2>
+  <div id="kpi-cards" class="grid4">
+    <div class="card"><div class="muted">Days to MVP</div><div class="loading">...</div></div>
+    <div class="card"><div class="muted">Pilot Agents</div><div class="loading">...</div></div>
+    <div class="card"><div class="muted">System Health</div><div class="loading">...</div></div>
+    <div class="card"><div class="muted">Blockers</div><div class="loading">...</div></div>
+  </div>
+
+  <!-- SPAWN HEALTH -->
+  <h2 id="spawn-health">🩺 Spawn Health</h2>
+  <div id="spawn-health-content" class="grid4">
+    <div class="card"><div class="muted">Alive</div><div class="loading">...</div></div>
+    <div class="card"><div class="muted">Retrying</div><div class="loading">...</div></div>
+    <div class="card"><div class="muted">Zombied</div><div class="loading">...</div></div>
+    <div class="card"><div class="muted">Failed</div><div class="loading">...</div></div>
+  </div>
+
+  <!-- TASK QUEUE -->
+  <h2 id="task-queue">🚀 Task Queue</h2>
+  <div id="task-queue-content"><div class="loading">Loading tasks...</div></div>
+
+  <!-- AGENT ACTIVITY -->
+  <h2 id="agent-activity">🤖 Agent Activity</h2>
+  <div id="agent-activity-content" class="grid"><div class="loading">Loading agents...</div></div>
+
+  <!-- COMPLETED WORK -->
+  <h2 id="completed-work">📋 Completed Work</h2>
+  <div id="completed-work-content"><div class="loading">Loading completed work...</div></div>
+
+  <!-- ACTION ITEMS -->
+  <h2 id="action-items">⚠️ Action Items</h2>
+  <div id="action-items-content"><div class="loading">Loading action items...</div></div>
+
+  <!-- OPTIMIZATION MODE -->
+  <h2 id="optimization-mode">⚡ Optimization Mode</h2>
+  <div id="optimization-mode-content" class="card"><div class="loading">Loading optimization settings...</div></div>
+
+  <!-- ORCHESTRATOR QUALITY (from metrics table) -->
+  <h2 id="orchestrator-quality">🤖 Orchestrator Quality</h2>
+  <div id="orchestrator-quality-content" class="card"><div class="loading">Loading decision metrics...</div></div>
+
+  <!-- PRODUCT QUALITY (UC progress + E2E) -->
+  <h2 id="product-quality">📦 Product Quality</h2>
+  <div id="product-quality-content" class="card"><div class="loading">Loading product metrics...</div></div>
+
+  <!-- QC STATUS (from code_reviews) -->
+  <h2 id="qc-status">✅ QC Status</h2>
+  <div id="qc-status-content" class="card"><div class="loading">Loading QC data...</div></div>
+
+  <!-- COST TRACKING -->
+  <h2 id="cost-tracking">💰 Cost Summary</h2>
+  <div id="cost-tracking-content" class="card"><div class="loading">Loading costs...</div></div>
+
+  <!-- FOOTER -->
+  <div class="card" style="margin-top:24px;text-align:center;">
+    <div class="muted">Source: Supabase | Auto-refresh: 60s | <span id="last-updated">Never</span></div>
+  </div>
+</div>
+
+<script>
+// Supabase Configuration
+const SUPABASE_URL = 'https://fptrokacdwzlmflyczdz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHJva2FjZHd6bG1mbHljemR6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTcxMTgxNSwiZXhwIjoyMDg3Mjg3ODE1fQ.NcGeeYQyTaY3n-w22yjxUPxJ5ZC4v6b3Kv7gnr0TGcU';
+
+const PROJECT_ID = 'bo2026';
+
+let sb = null;
+
+// Initialize
+function init() {
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log('✅ Supabase connected');
+    loadAllData();
+    subscribeToChanges();
+  } catch (e) {
+    console.error('❌ Failed to connect:', e);
+    showError('Failed to connect to Supabase');
+  }
+}
+
+// Load all dashboard data
+async function loadAllData() {
+  await Promise.all([
+    loadProjectMetadata(),
+    loadSystemComponents(),
+    loadKPIs(),
+    loadSpawnHealth(),
+    loadTaskQueue(),
+    loadAgents(),
+    loadCompletedWork(),
+    loadOptimizationMode(),
+    loadActionItems(),
+    loadOrchestratorStats(),
+    loadProductQuality(),
+    loadQCStatus(),
+    loadCostTracking()
+  ]);
+  
+  document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+}
+
+// Project Metadata
+async function loadProjectMetadata() {
+  const { data, error } = await sb
+    .from('project_metadata')
+    .select('*')
+    .eq('project_id', PROJECT_ID)
+    .single();
+  
+  if (error || !data) {
+    console.error('Failed to load project metadata:', error);
+    return;
+  }
+  
+  // Calculate current day based on start_date or default to Feb 15, 2026
+  const startDate = new Date(data.start_date || '2026-02-15');
+  const today = new Date();
+  const dayNum = Math.max(1, Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)));
+  const daysRemaining = Math.max(0, (data.deadline_days || 60) - dayNum);
+  
+  // Update project name in header
+  const projectName = data.project_name || 'LeadFlow Real Estate AI';
+  document.getElementById('project-name').textContent = `${projectName} — Live Dashboard`;
+  
+  // Update subtitle with goal
+  document.getElementById('project-subtitle').textContent = `${data.goal || '$20K MRR within 60 days'}`;
+  
+  // Update status display
+  const statusColorClass = data.overall_status === 'ACTIVE' ? 'ok' : 
+                           data.overall_status === 'AT_RISK' ? 'warn' : 'bad';
+  
+  document.getElementById('project-status').innerHTML = `
+    <div style="text-align:right;">
+      <div class="${statusColorClass}" style="font-size:24px;font-weight:700;">${data.status_color || '🟢'} ${data.overall_status || 'ACTIVE'}</div>
+      <div class="muted">Day ${dayNum} of ${data.deadline_days || 60}</div>
+      <div class="muted">${daysRemaining} days remaining</div>
+    </div>
+  `;
+  
+  console.log(`📊 Project metadata loaded: ${projectName}, Day ${dayNum} of ${data.deadline_days || 60}`);
+}
+
+// System Components
+async function loadSystemComponents() {
+  const { data, error } = await sb
+    .from('system_components')
+    .select('*')
+    .eq('project_id', PROJECT_ID)
+    .order('category');
+  
+  if (error || !data) {
+    document.getElementById('system-components').innerHTML = '<div class="error">Failed to load</div>';
+    return;
+  }
+  
+  const html = data.map(comp => `
+    <div class="card ${comp.status === 'healthy' || comp.status === 'LIVE' ? 'ok' : comp.status === 'warning' ? 'warn' : ''}">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong>${comp.component_name}</strong>
+        <span class="pill">${comp.status_emoji || '●'} ${comp.status}</span>
+      </div>
+      <div class="muted small">${comp.details || ''}</div>
+    </div>
+  `).join('');
+  
+  document.getElementById('system-components').innerHTML = html;
+}
+
+// KPIs
+async function loadKPIs() {
+  // Get project metadata for deadline
+  const { data: metadata } = await sb
+    .from('project_metadata')
+    .select('start_date, deadline_days')
+    .eq('project_id', PROJECT_ID)
+    .single();
+  
+  // Get task counts
+  const { data: tasks } = await sb
+    .from('tasks')
+    .select('status')
+    .eq('project_id', PROJECT_ID);
+  
+  const blocked = (tasks || []).filter(t => t.status === 'blocked').length;
+  const done = (tasks || []).filter(t => t.status === 'done').length;
+  const total = tasks ? tasks.length : 0;
+  
+  // Get system components for health
+  const { data: components } = await sb
+    .from('system_components')
+    .select('status')
+    .eq('project_id', PROJECT_ID);
+
+  const healthyStatuses = ['healthy', 'LIVE', 'READY', 'TESTED', 'VERIFIED'];
+  const healthyCount = (components || []).filter(c => healthyStatuses.includes(c.status)).length;
+  const totalComponents = components ? components.length : 0;
+
+  // Calculate days using project metadata
+  const startDate = new Date(metadata?.start_date || '2026-02-15');
+  const deadlineDays = metadata?.deadline_days || 60;
+  const today = new Date();
+  const dayNum = Math.max(1, Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)));
+  const daysRemaining = Math.max(0, deadlineDays - dayNum);
+
+  document.getElementById('kpi-cards').innerHTML = `
+    <div class="card">
+      <div class="muted">Days Remaining</div>
+      <div class="kpi ${daysRemaining < 14 ? 'warn' : 'ok'}">${daysRemaining}</div>
+      <div class="muted">Day ${dayNum} of ${deadlineDays}</div>
+    </div>
+    <div class="card">
+      <div class="muted">Tasks</div>
+      <div class="kpi">${done} / ${total}</div>
+      <div class="muted">${total - done - blocked} remaining</div>
+    </div>
+    <div class="card">
+      <div class="muted">System Health</div>
+      <div class="kpi ${healthyCount === totalComponents ? 'ok' : 'warn'}">${healthyCount}/${totalComponents}</div>
+      <div class="muted">Components healthy</div>
+    </div>
+    <div class="card">
+      <div class="muted">Blockers</div>
+      <div class="kpi ${blocked > 0 ? 'warn' : 'ok'}">${blocked}</div>
+      <div class="muted">${blocked > 0 ? 'Needs attention' : 'No blockers'}</div>
+    </div>
+  `;
+}
+
+// Task Queue
+async function loadTaskQueue() {
+  const { data, error } = await sb
+    .from('tasks')
+    .select('*')
+    .eq('project_id', PROJECT_ID)
+    .order('priority');
+  
+  if (error || !data) {
+    document.getElementById('task-queue-content').innerHTML = '<div class="error">Failed to load tasks</div>';
+    return;
+  }
+  
+  const ready = data.filter(t => t.status === 'ready');
+  const inProgress = data.filter(t => t.status === 'in_progress');
+  const blocked = data.filter(t => t.status === 'blocked');
+  
+  let html = `
+    <div class="card" style="margin-bottom:12px;">
+      <strong>Queue Health:</strong> 
+      <span class="ok">Ready: ${ready.length}</span> | 
+      <span class="warn">In Progress: ${inProgress.length}</span> | 
+      <span class="bad">Blocked: ${blocked.length}</span> | 
+      <span class="ok">Done: ${data.filter(t => t.status === 'done').length}</span>
+    </div>
+  `;
+  
+  if (inProgress.length > 0) {
+    html += '<h3>⚡ In Progress</h3><div class="table-wrapper"><table><tr><th>Task</th><th>Agent</th><th>PID</th><th>Model</th><th>Retries</th><th>Started</th></tr>';
+    inProgress.sort((a, b) => new Date(b.started_at || 0) - new Date(a.started_at || 0)).forEach(t => {
+      const ago = t.started_at ? (() => { const d = Date.now() - new Date(t.started_at).getTime(); const m = Math.floor(d/60000); const h = Math.floor(m/60); return h > 0 ? h + 'h ago' : m > 0 ? m + 'm ago' : 'just now'; })() : '-';
+      const sc = t.spawn_config || {};
+      const pid = sc.pid || '-';
+      const ss = sc.spawn_status || '';
+      const pidDot = ss === 'running' ? '<span style="color:#57d98d;">●</span>' : ss === 'spawned' ? '<span style="color:#ffd166;">●</span>' : '<span style="color:#a8b3dd;">●</span>';
+      const retries = (t.retry_count || 0) + '/' + (t.max_retries || 3);
+      const errIcon = t.last_error ? ' <span title="' + escapeHtml(t.last_error) + '" style="cursor:help;color:#ff6b6b;">⚠</span>' : '';
+      html += `<tr><td style="cursor:pointer;" onclick="showTaskDetail('${t.id}')">${escapeHtml(t.title)}${errIcon}</td><td>${escapeHtml(t.agent_id) || '-'}</td><td>${pidDot} <span class="mono small">${pid}</span></td><td><span class="pill">${t.model || 'kimi'}</span></td><td>${retries}</td><td>${ago}</td></tr>`;
+    });
+    html += '</table></div>';
+  }
+
+  if (ready.length > 0) {
+    html += '<h3 style="margin-top:16px;">▶️ Ready to Spawn</h3><div class="table-wrapper"><table><tr><th>Task</th><th>Agent</th><th>Model</th><th>Cost</th></tr>';
+    ready.slice(0, 5).forEach(t => {
+      html += `<tr><td>${t.title}</td><td>${t.agent_id || '-'}</td><td><span class="pill">${t.model || 'kimi'}</span></td><td>$${(t.estimated_cost_usd || 0).toFixed(2)}</td></tr>`;
+    });
+    html += '</table></div>';
+  }
+  
+  if (blocked.length > 0) {
+    html += '<h3 style="margin-top:16px;">⏸️ Blocked</h3><ul>';
+    blocked.slice(0, 3).forEach(t => {
+      html += `<li><strong>${t.title}</strong> - ${t.blocked_reason || 'Unknown blocker'}</li>`;
+    });
+    html += '</ul>';
+  }
+  
+  document.getElementById('task-queue-content').innerHTML = html;
+}
+
+// Agents — derived from tasks table
+async function loadAgents() {
+  const { data: tasks, error } = await sb
+    .from('tasks')
+    .select('*')
+    .eq('project_id', PROJECT_ID);
+
+  if (error || !tasks) {
+    document.getElementById('agent-activity-content').innerHTML = '<div class="error">Failed to load tasks</div>';
+    return;
+  }
+
+  // Dynamic agent discovery from tasks table
+  const agentIds = [...new Set(tasks.map(t => t.agent_id).filter(Boolean))];
+  const agentLabels = {
+    'dev': 'Dev', 'qc': 'QC', 'analytics': 'Analytics',
+    'marketing': 'Marketing', 'design': 'Design', 'product-manager': 'Product Manager',
+    'product': 'Product'
+  };
+
+  const agentData = agentIds.map(agentId => {
+    const agentTasks = tasks.filter(t => t.agent_id === agentId);
+    const inProgress = agentTasks.filter(t => t.status === 'in_progress');
+    const done = agentTasks.filter(t => t.status === 'done');
+    const ready = agentTasks.filter(t => t.status === 'ready');
+    const blocked = agentTasks.filter(t => t.status === 'blocked');
+    const total = agentTasks.length;
+    const progress = total > 0 ? Math.round((done.length / total) * 100) : 0;
+    const currentTasks = inProgress
+      .sort((a, b) => new Date(b.started_at || 0) - new Date(a.started_at || 0))
+      .slice(0, 3);
+    const status = inProgress.length > 0 ? 'ACTIVE'
+      : blocked.length > 0 ? 'BLOCKED'
+      : ready.length > 0 ? 'READY'
+      : done.length > 0 ? 'COMPLETE' : 'IDLE';
+    const lastActivity = inProgress.length > 0
+      ? inProgress.sort((a, b) => new Date(b.started_at || 0) - new Date(a.started_at || 0))[0].started_at
+      : done.length > 0
+      ? done.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))[0].updated_at
+      : null;
+    return { agentId, label: agentLabels[agentId] || agentId, status, progress, currentTasks, blockedTasks: blocked, readyCount: ready.length, doneCount: done.length, totalCount: total, lastActivity };
+  }).filter(a => a.totalCount > 0);
+
+  if (agentData.length === 0) {
+    document.getElementById('agent-activity-content').innerHTML = '<div class="muted">No agent activity yet</div>';
+    return;
+  }
+
+  const html = agentData.map(agent => {
+    const statusClass = agent.status === 'ACTIVE' ? 'ok' : agent.status === 'BLOCKED' ? 'error' : agent.status === 'COMPLETE' ? 'ok' : '';
+    const statusDot = agent.status === 'ACTIVE' ? 'ok' : agent.status === 'BLOCKED' ? 'bad' : agent.status === 'COMPLETE' ? 'ok' : 'warn';
+    const timeAgo = agent.lastActivity ? (() => {
+      const diff = Date.now() - new Date(agent.lastActivity).getTime();
+      const mins = Math.floor(diff / 60000);
+      const hrs = Math.floor(mins / 60);
+      return hrs > 0 ? hrs + 'h ago' : mins > 0 ? mins + 'm ago' : 'just now';
+    })() : null;
+    const progressBar = '<div style="background:#1e2a58;border-radius:4px;height:4px;margin:8px 0;"><div style="background:' + (agent.progress >= 80 ? '#57d98d' : agent.progress >= 50 ? '#ffd166' : '#ff6b6b') + ';width:' + agent.progress + '%;height:4px;border-radius:4px;transition:width 0.3s;"></div></div>';
+    const currentTasksHtml = agent.currentTasks.length > 0
+      ? agent.currentTasks.map(t => '<div style="margin-top:4px;font-size:11px;display:flex;justify-content:space-between;align-items:center;"><span style="color:#e8ecff;cursor:pointer;" onclick="showTaskDetail(\'' + t.id + '\')" title="Click for details">⚡ ' + t.title + '</span><span class="pill" style="font-size:10px;">' + (t.model || 'kimi') + '</span></div>').join('')
+      : '<div class="muted small" style="margin-top:4px;">No active tasks</div>';
+    const blockedHtml = agent.blockedTasks.length > 0
+      ? '<div style="margin-top:6px;font-size:11px;color:#ff6b6b;">⏸ ' + agent.blockedTasks[0].title + (agent.blockedTasks[0].blocked_reason ? ': ' + agent.blockedTasks[0].blocked_reason : '') + '</div>'
+      : '';
+    return '<div class="card ' + statusClass + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+        '<div><span class="' + statusDot + '">●</span><strong style="margin-left:4px;">' + agent.label + '</strong></div>' +
+        '<span class="pill" style="font-size:10px;">' + agent.status + '</span>' +
+      '</div>' +
+      progressBar +
+      '<div style="font-size:11px;color:#a8b3dd;display:flex;justify-content:space-between;">' +
+        '<span>' + agent.doneCount + ' done / ' + agent.totalCount + ' total</span>' +
+        (timeAgo ? '<span>' + timeAgo + '</span>' : '') +
+      '</div>' +
+      currentTasksHtml + blockedHtml +
+    '</div>';
+  }).join('');
+
+  document.getElementById('agent-activity-content').innerHTML = html;
+}
+
+// Task detail modal
+function showTaskDetail(taskId) {
+  sb.from('tasks').select('*').eq('id', taskId).single().then(function(result) {
+    var t = result.data;
+    var error = result.error;
+    if (error || !t) return;
+    var existing = document.getElementById('task-modal');
+    if (existing) existing.remove();
+    var modal = document.createElement('div');
+    modal.id = 'task-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;';
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = '<div style="background:#131a33;border:1px solid #24305f;border-radius:16px;padding:24px;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">' +
+        '<h3 style="margin:0;font-size:16px;">' + t.title + '</h3>' +
+        '<button onclick="document.getElementById(\'task-modal\').remove()" style="background:none;border:none;color:#a8b3dd;font-size:20px;cursor:pointer;padding:0 0 0 16px;">✕</button>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:16px;">' +
+        '<div><span class="muted">Status</span><br><strong>' + t.status + '</strong></div>' +
+        '<div><span class="muted">Agent</span><br><strong>' + (t.agent_id || '-') + '</strong></div>' +
+        '<div><span class="muted">Model</span><br><strong>' + (t.model || 'kimi') + '</strong></div>' +
+        '<div><span class="muted">Est. Cost</span><br><strong>$' + (t.estimated_cost_usd || 0).toFixed(2) + '</strong></div>' +
+        '<div><span class="muted">Priority</span><br><strong>' + (t.priority || '-') + '</strong></div>' +
+        '<div><span class="muted">Started</span><br><strong>' + (t.started_at ? new Date(t.started_at).toLocaleString() : '-') + '</strong></div>' +
+      '</div>' +
+      (t.description ? '<div style="font-size:12px;margin-bottom:12px;"><span class="muted">Description</span><br><div style="margin-top:4px;color:#e8ecff;line-height:1.6;">' + t.description + '</div></div>' : '') +
+      (t.acceptance_criteria ? '<div style="font-size:12px;margin-bottom:12px;"><span class="muted">Acceptance Criteria</span><br><div style="margin-top:4px;color:#e8ecff;line-height:1.6;">' + t.acceptance_criteria + '</div></div>' : '') +
+      (t.blocked_reason ? '<div style="font-size:12px;color:#ff6b6b;"><span class="muted">Blocked:</span> ' + escapeHtml(t.blocked_reason) + '</div>' : '') +
+      // Spawn Diagnostics section
+      (function() {
+        var sc = t.spawn_config;
+        if (!sc) return '';
+        var diagHtml = '<div style="margin-top:16px;"><strong style="font-size:13px;">Spawn Diagnostics</strong>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;margin-top:8px;">' +
+            '<div><span class="muted">PID</span><br><strong>' + (sc.pid || '-') + '</strong></div>' +
+            '<div><span class="muted">Status</span><br><strong>' + (sc.spawn_status || 'unknown') + '</strong></div>' +
+            '<div><span class="muted">Spawned</span><br><strong>' + (sc.spawned_at ? new Date(sc.spawned_at).toLocaleString() : '-') + '</strong></div>' +
+            '<div><span class="muted">Retries</span><br><strong>' + (t.retry_count || 0) + '/' + (t.max_retries || 3) + '</strong></div>' +
+            '<div><span class="muted">Died at</span><br><strong>' + (sc.died_at ? new Date(sc.died_at).toLocaleString() : '-') + '</strong></div>' +
+            '<div><span class="muted">Last Alive</span><br><strong>' + (sc.last_seen_alive ? new Date(sc.last_seen_alive).toLocaleString() : '-') + '</strong></div>' +
+          '</div></div>';
+        return diagHtml;
+      })() +
+      // Last Error section
+      (t.last_error ? '<div style="margin-top:12px;"><strong style="font-size:13px;">Last Error</strong>' +
+        '<pre style="margin-top:6px;padding:10px;background:#1a0a0a;border:1px solid #5b2a2a;border-radius:8px;color:#ff6b6b;font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">' +
+        escapeHtml(t.last_error) + '</pre></div>' : '') +
+    '</div>';
+    document.body.appendChild(modal);
+  });
+}
+
+// Completed Work
+async function loadCompletedWork() {
+  const { data, error } = await sb
+    .from('completed_work')
+    .select('*')
+    .eq('project_id', PROJECT_ID)
+    .eq('status', 'COMPLETE')
+    .order('completed_date', { ascending: false })
+    .limit(10);
+  
+  if (error || !data) {
+    document.getElementById('completed-work-content').innerHTML = '<div class="error">Failed to load</div>';
+    return;
+  }
+  
+  if (data.length === 0) {
+    document.getElementById('completed-work-content').innerHTML = '<div class="muted">No completed work yet</div>';
+    return;
+  }
+  
+  const html = `
+    <div class="table-wrapper"><table>
+      <tr><th>Work</th><th>UC</th><th>Description</th><th>Hours</th></tr>
+      ${data.map(w => `
+        <tr>
+          <td><strong>${w.work_name}</strong></td>
+          <td>${w.use_case || '-'}</td>
+          <td class="small">${w.description || '-'}</td>
+          <td>${w.hours_spent || 0}h</td>
+        </tr>
+      `).join('')}
+    </table></div>
+    <div style="margin-top:8px;"><strong>Total:</strong> ${data.reduce((s, w) => s + (w.hours_spent || 0), 0).toFixed(1)}h completed</div>
+  `;
+  
+  document.getElementById('completed-work-content').innerHTML = html;
+}
+
+// Action Items
+async function loadActionItems() {
+  const { data, error } = await sb
+    .from('action_items')
+    .select('*')
+    .eq('project_id', PROJECT_ID)
+    .neq('status', 'resolved')
+    .order('priority');
+  
+  if (error || !data) {
+    document.getElementById('action-items-content').innerHTML = '<div class="error">Failed to load</div>';
+    return;
+  }
+  
+  if (data.length === 0) {
+    document.getElementById('action-items-content').innerHTML = '<span class="ok">✅ No outstanding action items</span>';
+    return;
+  }
+  
+  const html = data.map(item => {
+    const pri = item.priority === 1 ? '🔴 CRITICAL' : item.priority === 2 ? '🟡 HIGH' : '🟢 NORMAL';
+    return `
+      <div class="card ${item.priority === 1 ? 'error' : item.priority === 2 ? 'warn' : ''}" style="margin-bottom:8px;">
+        <strong>${item.title}</strong> <span class="pill">${pri}</span>
+        <div class="small" style="margin-top:4px;">
+          <span class="muted">Type:</span> ${item.type} | 
+          <span class="muted">Status:</span> ${item.status} | 
+          <span class="muted">Awaiting:</span> ${item.awaiting_input || '-'}
+        </div>
+        <div class="small" style="margin-top:4px;">${item.action_needed || ''}</div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('action-items-content').innerHTML = html;
+}
+
+// Orchestrator Quality — from metrics table
+async function loadOrchestratorStats() {
+  try {
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: recentMetrics } = await sb
+      .from('metrics').select('data')
+      .eq('project_id', PROJECT_ID).eq('domain', 'orchestrator').eq('metric_type', 'heartbeat')
+      .gte('timestamp', since)
+      .order('timestamp', { ascending: false });
+
+    if (!recentMetrics || recentMetrics.length === 0) {
+      document.getElementById('orchestrator-quality-content').innerHTML = '<div class="muted">No orchestrator metrics yet (heartbeats write to metrics table)</div>';
+      return;
+    }
+
+    const totalHeartbeats = recentMetrics.length;
+    const totalSpawned = recentMetrics.reduce((s, m) => s + (m.data.spawned_count || 0), 0);
+    const totalCompleted = recentMetrics.reduce((s, m) => s + (m.data.completed_count || 0), 0);
+    const totalErrors = recentMetrics.reduce((s, m) => s + (m.data.error_count || 0), 0);
+
+    document.getElementById('orchestrator-quality-content').innerHTML = `
+      <div class="grid4">
+        <div style="text-align:center;">
+          <div class="muted">Heartbeats (24h)</div>
+          <div class="kpi">${totalHeartbeats}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Agents Spawned</div>
+          <div class="kpi">${totalSpawned}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Tasks Completed</div>
+          <div class="kpi ok">${totalCompleted}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Errors</div>
+          <div class="kpi ${totalErrors > 0 ? 'bad' : 'ok'}">${totalErrors}</div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    document.getElementById('orchestrator-quality-content').innerHTML = '<div class="muted">Orchestrator metrics not available</div>';
+  }
+}
+
+// Product Quality — UC progress + E2E
+async function loadProductQuality() {
+  try {
+    const { data: ucs } = await sb.from('use_cases').select('id, name, implementation_status, phase, priority');
+    if (!ucs || ucs.length === 0) {
+      document.getElementById('product-quality-content').innerHTML = '<div class="muted">No use cases defined yet. Run seed script.</div>';
+      return;
+    }
+
+    const complete = ucs.filter(u => u.implementation_status === 'complete').length;
+    const partial = ucs.filter(u => u.implementation_status === 'partial').length;
+    const ready = ucs.filter(u => u.implementation_status === 'ready').length;
+    const notStarted = ucs.filter(u => u.implementation_status === 'not_started').length;
+    const total = ucs.length;
+    const pct = total > 0 ? Math.round((complete / total) * 100) : 0;
+
+    // E2E pass rate
+    const { data: tests } = await sb.from('e2e_test_specs').select('last_result');
+    const totalTests = (tests || []).length;
+    const passing = (tests || []).filter(t => t.last_result === 'pass').length;
+    const testPct = totalTests > 0 ? Math.round((passing / totalTests) * 100) : 0;
+
+    // Shippable milestones
+    const { data: milestones } = await sb.from('metrics').select('data')
+      .eq('project_id', PROJECT_ID).eq('domain', 'product').eq('metric_type', 'shippable_milestone')
+      .order('timestamp', { ascending: false }).limit(5);
+
+    let html = `
+      <div class="grid4">
+        <div style="text-align:center;">
+          <div class="muted">UC Completion</div>
+          <div class="kpi ${pct >= 80 ? 'ok' : pct >= 50 ? 'warn' : ''}">${pct}%</div>
+          <div class="muted">${complete}/${total} complete</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">In Progress</div>
+          <div class="kpi small">${partial + ready}</div>
+          <div class="muted">${partial} partial, ${ready} ready</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Not Started</div>
+          <div class="kpi small">${notStarted}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">E2E Pass Rate</div>
+          <div class="kpi ${testPct >= 80 ? 'ok' : testPct >= 50 ? 'warn' : ''}">${totalTests > 0 ? testPct + '%' : 'N/A'}</div>
+          <div class="muted">${passing}/${totalTests} tests</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="background:#1e2a58;border-radius:4px;height:8px;">
+          <div style="background:#57d98d;width:${pct}%;height:8px;border-radius:4px;transition:width 0.3s;"></div>
+        </div>
+      </div>`;
+
+    if (milestones && milestones.length > 0) {
+      html += '<div style="margin-top:12px;font-size:12px;"><strong>Recent Shippable Milestones:</strong>';
+      milestones.forEach(m => {
+        html += '<div class="muted" style="margin-top:2px;">&#x2714; ' + escapeHtml(m.data.use_case_id + ' — ' + m.data.name) + '</div>';
+      });
+      html += '</div>';
+    }
+
+    document.getElementById('product-quality-content').innerHTML = html;
+  } catch (e) {
+    document.getElementById('product-quality-content').innerHTML = '<div class="muted">Product quality data not available</div>';
+  }
+}
+
+// QC Status — from code_reviews table
+async function loadQCStatus() {
+  try {
+    const { data: reviews } = await sb
+      .from('code_reviews').select('*')
+      .eq('project_id', PROJECT_ID)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (!reviews || reviews.length === 0) {
+      document.getElementById('qc-status-content').innerHTML = '<div class="muted">No code reviews yet. QC loop creates reviews when PRs are opened.</div>';
+      return;
+    }
+
+    const pending = reviews.filter(r => r.status === 'pending').length;
+    const approved = reviews.filter(r => r.status === 'approved').length;
+    const changesReq = reviews.filter(r => r.status === 'changes_requested').length;
+    const merged = reviews.filter(r => r.status === 'merged').length;
+    const total = reviews.length;
+    const approvalRate = total > 0 ? Math.round(((approved + merged) / total) * 100) : 0;
+
+    let html = `
+      <div class="grid4">
+        <div style="text-align:center;">
+          <div class="muted">Pending</div>
+          <div class="kpi ${pending > 0 ? 'warn' : 'ok'}">${pending}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Approved</div>
+          <div class="kpi ok">${approved}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Changes Req.</div>
+          <div class="kpi ${changesReq > 0 ? 'bad' : 'ok'}">${changesReq}</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="muted">Approval Rate</div>
+          <div class="kpi ${approvalRate >= 70 ? 'ok' : 'warn'}">${approvalRate}%</div>
+        </div>
+      </div>`;
+
+    // Recent reviews list
+    const recent = reviews.slice(0, 5);
+    if (recent.length > 0) {
+      html += '<div class="table-wrapper" style="margin-top:12px;"><table><tr><th>PR</th><th>Branch</th><th>Status</th><th>Reviewer</th></tr>';
+      recent.forEach(r => {
+        const statusClass = r.status === 'approved' || r.status === 'merged' ? 'ok' : r.status === 'changes_requested' ? 'bad' : 'warn';
+        html += '<tr><td>#' + (r.pr_number || '-') + '</td><td class="mono small">' + escapeHtml(r.branch_name || '-') + '</td><td><span class="' + statusClass + '">' + r.status + '</span></td><td>' + escapeHtml(r.reviewer_agent || '-') + '</td></tr>';
+      });
+      html += '</table></div>';
+    }
+
+    document.getElementById('qc-status-content').innerHTML = html;
+  } catch (e) {
+    document.getElementById('qc-status-content').innerHTML = '<div class="muted">QC data not available</div>';
+  }
+}
+
+// Cost Tracking
+async function loadCostTracking() {
+  const { data, error } = await sb
+    .from('cost_tracking')
+    .select('*')
+    .eq('project_id', PROJECT_ID)
+    .order('updated_date', { ascending: false })
+    .limit(1)
+    .single();
+  
+  if (error || !data) {
+    document.getElementById('cost-tracking-content').innerHTML = '<div class="muted">Cost data not available</div>';
+    return;
+  }
+  
+  const percent = data.spend_percent || 0;
+  
+  document.getElementById('cost-tracking-content').innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+      <span>Budget Used: <strong>$${(data.actual_cost_usd || data.estimated_cost_usd || 0).toFixed(2)}</strong> / $${(data.budget_limit_usd || 500).toFixed(2)}</span>
+      <span class="${percent > 80 ? 'bad' : percent > 50 ? 'warn' : 'ok'}">${percent.toFixed(1)}%</span>
+    </div>
+    <div style="background:var(--bg-primary);height:8px;border-radius:4px;overflow:hidden;">
+      <div style="background:${percent > 80 ? 'var(--text-error)' : percent > 50 ? 'var(--text-warn)' : 'var(--text-ok)'};height:100%;width:${Math.min(percent, 100)}%;"></div>
+    </div>
+    ${data.breakdown ? `<div class="small" style="margin-top:8px;">Breakdown: ${Object.entries(data.breakdown).map(([k,v]) => k + ': $' + v.toFixed(2)).join(', ')}</div>` : ''}
+  `;
+}
+
+// Load Optimization Mode (from Supabase metrics table)
+async function loadOptimizationMode() {
+  try {
+    const { data, error } = await sb
+      .from('metrics')
+      .select('data, timestamp')
+      .eq('project_id', PROJECT_ID)
+      .eq('domain', 'orchestrator')
+      .eq('metric_type', 'optimization_mode')
+      .order('timestamp', { ascending: false })
+      .limit(1)
+      .single();
+
+    const modeConfig = {
+      'speed': { emoji: '⚡', name: 'Speed Priority', color: 'ok', desc: 'Maximum throughput' },
+      'balanced': { emoji: '⚖️', name: 'Balanced', color: 'ok', desc: 'Default sweet spot' },
+      'cost': { emoji: '💰', name: 'Cost Optimized', color: 'warn', desc: 'Minimize spend' },
+      'quality': { emoji: '✓', name: 'Quality Priority', color: 'ok', desc: 'Max success rate' }
+    };
+
+    if (error || !data) throw new Error('no data');
+    const modeName = data.data?.mode || 'balanced';
+    const config = modeConfig[modeName] || modeConfig['balanced'];
+    const updatedAt = data.data?.updated_at || data.timestamp;
+
+    document.getElementById('optimization-mode-content').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div>
+          <span style="font-size:24px;">${config.emoji}</span>
+          <strong style="margin-left:8px;">${config.name}</strong>
+          <span class="pill ${config.color}" style="margin-left:8px;">${modeName.toUpperCase()}</span>
+        </div>
+        <div class="muted small">Updated: ${new Date(updatedAt).toLocaleTimeString()}</div>
+      </div>
+      <div class="muted">${config.desc}</div>
+      <div style="margin-top:12px;font-size:11px;">
+        <span class="muted">Commands:</span>
+        <code>!optimize speed</code> |
+        <code>!optimize balanced</code> |
+        <code>!optimize cost</code> |
+        <code>!optimize quality</code>
+      </div>
+    `;
+  } catch (e) {
+    document.getElementById('optimization-mode-content').innerHTML = `
+      <div class="muted">Optimization mode: Balanced (default)</div>
+      <div style="margin-top:8px;font-size:11px;">
+        Use Telegram commands to change: !optimize &lt;mode&gt;
+      </div>
+    `;
+  }
+}
+
+// Escape HTML to prevent XSS in dynamic content
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Spawn Health — reads spawn_config from tasks
+async function loadSpawnHealth() {
+  const { data, error } = await sb
+    .from('tasks')
+    .select('id, status, spawn_config, retry_count, max_retries, last_error')
+    .eq('project_id', PROJECT_ID)
+    .not('spawn_config', 'is', null)
+    .in('status', ['in_progress', 'ready', 'failed']);
+
+  if (error || !data) {
+    document.getElementById('spawn-health-content').innerHTML = '<div class="error">Failed to load spawn data</div>';
+    return;
+  }
+
+  let alive = 0, retrying = 0, zombied = 0, failed = 0;
+  for (const t of data) {
+    const ss = t.spawn_config?.spawn_status || 'spawned';
+    if (t.status === 'failed' || ss === 'failed') { failed++; }
+    else if (ss === 'zombie') { zombied++; }
+    else if ((t.retry_count || 0) > 0 && t.status === 'ready') { retrying++; }
+    else if (ss === 'running' || ss === 'spawned') { alive++; }
+  }
+
+  document.getElementById('spawn-health-content').innerHTML = `
+    <div class="card ${alive > 0 ? 'ok' : ''}">
+      <div class="muted">Alive</div>
+      <div class="kpi ok">${alive}</div>
+      <div class="muted">Running agents</div>
+    </div>
+    <div class="card ${retrying > 0 ? 'warn' : ''}">
+      <div class="muted">Retrying</div>
+      <div class="kpi warn">${retrying}</div>
+      <div class="muted">Queued for retry</div>
+    </div>
+    <div class="card ${zombied > 0 ? 'warn' : ''}">
+      <div class="muted">Zombied</div>
+      <div class="kpi ${zombied > 0 ? 'warn' : 'ok'}">${zombied}</div>
+      <div class="muted">Dead processes</div>
+    </div>
+    <div class="card ${failed > 0 ? 'error' : ''}">
+      <div class="muted">Failed</div>
+      <div class="kpi ${failed > 0 ? 'bad' : 'ok'}">${failed}</div>
+      <div class="muted">Retries exhausted</div>
+    </div>
+  `;
+}
+
+// Subscribe to real-time changes
+function subscribeToChanges() {
+  if (!sb) return;
+  
+  const channels = ['tasks', 'completed_work', 'action_items', 'use_cases', 'code_reviews', 'metrics'];
+  
+  channels.forEach(table => {
+    sb
+      .channel(table + '_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
+        console.log(`🔄 ${table} updated, refreshing...`);
+        loadAllData();
+      })
+      .subscribe();
+  });
+  
+  console.log('👁️ Real-time subscriptions active');
+}
+
+// Mobile nav toggle
+function toggleNav() {
+  const nav = document.getElementById('nav-menu');
+  nav.classList.toggle('active');
+  document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
+}
+
+// Show error
+function showError(msg) {
+  document.querySelectorAll('.loading').forEach(el => {
+    el.innerHTML = `<span class="error">${msg}</span>`;
+  });
+}
+
+// Auto-refresh every 60 seconds
+setInterval(loadAllData, 60000);
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

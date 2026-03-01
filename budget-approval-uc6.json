@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-02-25T03:55:00Z",
+  "type": "budget_approval",
+  "task": "TASK-002 UC-6 Cal.com Booking Confirmation",
+  "approved_by": "Stojan",
+  "amount": 8.00,
+  "model": "sonnet",
+  "reason": "Critical path - unblocks Pilot Deployment and Recruitment",
+  "status": "approved"
+}

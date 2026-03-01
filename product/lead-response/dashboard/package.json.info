@@ -1,0 +1,27 @@
+# Key Dependencies Installed
+
+## Production
+- next@16.1.6 (App Router)
+- react@19.x
+- @supabase/supabase-js (database client)
+- @ai-sdk/anthropic (Claude integration)
+- ai (Vercel AI SDK)
+- zod (schema validation)
+
+## Development
+- typescript
+- @types/node
+- @types/react
+- @types/react-dom
+- tailwindcss
+- eslint
+- eslint-config-next
+
+## UI Components (shadcn)
+- button
+- card
+- table
+- badge
+
+All dependencies verified and installed successfully.
+Build passes with placeholder environment variables.

@@ -1,0 +1,395 @@
+{
+  "phase": "Phase 3: UC-7/8 Decomposition & Restart Plan",
+  "generated_at": "2026-02-25T10:35:00Z",
+  "status": "READY_TO_SPAWN",
+  
+  "uc7_decomposition": [
+    {
+      "milestone_id": "UC7-M1",
+      "name": "API Endpoint & Database Schema",
+      "description": "Create /api/sms/send-manual/route.ts endpoint with lead permission validation and message persistence",
+      "effort_hours": 2,
+      "success_criteria": [
+        "POST /api/sms/send-manual accepts lead_id, message_body, ai_assist boolean",
+        "Endpoint validates agent has permission for lead (via lead_agent_id)",
+        "Message stored in Supabase messages table with all metadata",
+        "Returns {success: true, message_id, status} on success",
+        "Returns {success: false, error} with proper error codes on failure",
+        "TypeScript strict mode: zero errors",
+        "Unit tests: 5/5 passing"
+      ],
+      "technical_notes": "Build on existing sendSms() in lib/twilio.ts. No new dependencies. Use existing lead permission pattern from UC-6.",
+      "dependencies": [
+        "UC-1 complete (Twilio integration working)",
+        "UC-6 complete (lead_agent_id mapping exists)"
+      ],
+      "files_to_create": [
+        "app/api/sms/send-manual/route.ts"
+      ],
+      "files_to_modify": [
+        "lib/twilio.ts (ensure sendSms supports manual sends)"
+      ],
+      "blockers_or_gaps": []
+    },
+    {
+      "milestone_id": "UC7-M2",
+      "name": "Message Thread UI Component",
+      "description": "Build MessageThread component to display conversation history with proper styling and timestamps",
+      "effort_hours": 1.5,
+      "success_criteria": [
+        "Displays chronological message history (inbound gray, outbound blue, AI purple)",
+        "Shows timestamp + delivery status (sent/delivered/failed) for each message",
+        "Mobile-responsive layout (tested on 375px width)",
+        "Handles empty state (no messages) gracefully",
+        "Auto-scrolls to latest message on mount",
+        "Component renders without errors in React StrictMode"
+      ],
+      "technical_notes": "Use existing dashboard styling pattern from lead detail page. Consider virtual scrolling for 100+ messages later.",
+      "dependencies": [
+        "UC7-M1 (API endpoint provides data)",
+        "Lead detail page exists (verified in DASHBOARD.md)"
+      ],
+      "files_to_create": [
+        "components/dashboard/MessageThread.tsx"
+      ],
+      "files_to_modify": [],
+      "blockers_or_gaps": []
+    },
+    {
+      "milestone_id": "UC7-M3",
+      "name": "SMS Composer & AI Assist",
+      "description": "Build SmsComposer with input field, AI Assist button (generates contextual suggestions), and Send button with validation",
+      "effort_hours": 2.5,
+      "success_criteria": [
+        "Text input allows up to 160 characters (single SMS)",
+        "Character counter shows remaining characters",
+        "AI Assist button triggers AI endpoint with conversation context",
+        "Suggested response appears in modal/popover for agent approval",
+        "Agent can edit suggestion before confirming",
+        "Send button disabled until message > 0 characters",
+        "Opt-out compliance check: verify lead.consent_sms before sending",
+        "UX: loading state during AI generation (spinner, disabled button)"
+      ],
+      "technical_notes": "AI Assist calls /api/sms/ai-suggest endpoint (new). Feed last 5 messages + lead profile. Use Claude for suggestions.",
+      "dependencies": [
+        "UC7-M1 (send-manual endpoint working)",
+        "UC7-M2 (MessageThread component available)"
+      ],
+      "files_to_create": [
+        "components/dashboard/SmsComposer.tsx",
+        "app/api/sms/ai-suggest/route.ts"
+      ],
+      "files_to_modify": [
+        "app/dashboard/leads/[id]/page.tsx (integrate both components)"
+      ],
+      "blockers_or_gaps": [
+        "AI model selection: Use Claude Haiku (fast, low cost) for suggestions"
+      ]
+    },
+    {
+      "milestone_id": "UC7-M4",
+      "name": "Integration & E2E Testing",
+      "description": "Wire components into lead detail page, test full flow, verify Twilio delivery, build test suite",
+      "effort_hours": 0.5,
+      "success_criteria": [
+        "Lead detail page shows MessageThread + SmsComposer side-by-side",
+        "E2E flow: agent types message → clicks Send → message appears in thread with 'sent' status",
+        "Delivery status updates in real-time (or within 5s via polling)",
+        "Opt-out check prevents sending to opted_out leads (shows error message)",
+        "Manual test with real Twilio number receives SMS",
+        "All TypeScript errors resolved",
+        "Lighthouse performance: >85 on lead detail page"
+      ],
+      "technical_notes": "Use existing polling pattern or WebSocket for real-time updates. Can start with polling (simpler), add WS later if needed.",
+      "dependencies": [
+        "UC7-M1 (API working)",
+        "UC7-M2 (MessageThread ready)",
+        "UC7-M3 (SmsComposer ready)"
+      ],
+      "files_to_create": [
+        "tests/uc7-e2e.test.ts"
+      ],
+      "files_to_modify": [
+        "app/dashboard/leads/[id]/page.tsx"
+      ],
+      "blockers_or_gaps": []
+    }
+  ],
+
+  "uc8_decomposition": [
+    {
+      "milestone_id": "UC8-M1",
+      "name": "Sequence Schema & Data Model",
+      "description": "Create lead_sequences table, define sequence types, triggers, and state machine in code",
+      "effort_hours": 1.5,
+      "success_criteria": [
+        "Supabase migration creates lead_sequences table with schema: {lead_id, sequence_type, step, last_sent_at, next_send_at, status, created_at, updated_at}",
+        "Sequence types enum: 'no_response' | 'post_viewing' | 'no_show' | 'nurture'",
+        "Sequence templates defined in lib/sequences.ts with message bodies",
+        "State machine allows transitions: active → paused → completed, never reverse",
+        "Migration is idempotent (can run multiple times safely)",
+        "Database indexes on (lead_id, sequence_type) and (next_send_at) for efficient cron queries"
+      ],
+      "technical_notes": "Use Supabase migrations pattern from existing schema. No external APIs needed for this milestone.",
+      "dependencies": [],
+      "files_to_create": [
+        "supabase/migrations/004_lead_sequences_table.sql",
+        "lib/sequences.ts (templates + helpers)"
+      ],
+      "files_to_modify": [],
+      "blockers_or_gaps": []
+    },
+    {
+      "milestone_id": "UC8-M2",
+      "name": "Cron Job Handler & Trigger Logic",
+      "description": "Build /api/cron/follow-up/route.ts that runs hourly, identifies leads needing follow-up, and queues SMS",
+      "effort_hours": 2.5,
+      "success_criteria": [
+        "Cron handler accepts GET requests (Vercel cron trigger)",
+        "Queries leads with conditions: no_response (24h no message), post_viewing (4h after booking), no_show (30m after missed booking), nurture (7 days no activity)",
+        "Respects opt-outs: skips leads with lead.consent_sms = false or lead.dnc = true",
+        "Respects quiet hours: does not send between 9pm-12am lead timezone",
+        "Fetches conversation history for each lead to pass to AI",
+        "Calls AI for each lead to generate contextual follow-up message",
+        "For each SMS: calls /api/sms/send-manual internally (reuses UC-7 endpoint)",
+        "Updates lead_sequences: sets last_sent_at, calculates next_send_at (for next trigger delay)",
+        "Logs results: {processed: N, sent: N, skipped: N, errors: N}",
+        "Includes error handling: if AI fails, log and retry next hour (don't crash cron)"
+      ],
+      "technical_notes": "Use Vercel Cron (free on Pro plan). Cron should run ~5-10 seconds per 100 leads (batch operations). Can fetch data in batches of 50.",
+      "dependencies": [
+        "UC8-M1 (schema exists)",
+        "UC7 M1 (send-manual endpoint works, can call it from cron)"
+      ],
+      "files_to_create": [
+        "app/api/cron/follow-up/route.ts",
+        "lib/cron.ts (batch query helpers)"
+      ],
+      "files_to_modify": [
+        "vercel.json (add crons schedule)"
+      ],
+      "blockers_or_gaps": [
+        "Timezone handling: needs lead timezone from profile (may need to add field to database or assume UTC initially)"
+      ]
+    },
+    {
+      "milestone_id": "UC8-M3",
+      "name": "Sequence Controls & State Management",
+      "description": "Implement pause/resume logic, max 3 messages per sequence, reset on lead response",
+      "effort_hours": 1.5,
+      "success_criteria": [
+        "Pause mechanism: if lead responds to follow-up, set sequence.status = 'paused' (no more messages until manual reset)",
+        "Max messages: after 3 SMS sent for sequence_type, set status = 'completed'",
+        "Response detection: check if last_message_at > last_sent_at (indicates lead replied)",
+        "Manual pause/resume: agents can pause sequences from dashboard (future UI, logic in place)",
+        "Cron respects all state: only sends if status = 'active' AND step < 3",
+        "Logging: every state transition logged with timestamp",
+        "No race conditions: database constraints prevent concurrent updates"
+      ],
+      "technical_notes": "Use database constraints and atomic transactions to prevent race conditions. Simple state machine, no external libraries needed.",
+      "dependencies": [
+        "UC8-M1 (schema)",
+        "UC8-M2 (cron reads state)"
+      ],
+      "files_to_create": [],
+      "files_to_modify": [
+        "lib/sequences.ts (add state transition logic)",
+        "app/api/cron/follow-up/route.ts (add max-message + response checks)"
+      ],
+      "blockers_or_gaps": []
+    },
+    {
+      "milestone_id": "UC8-M4",
+      "name": "Testing & Deployment",
+      "description": "Build test suite, manual testing with fake leads, verify cron runs hourly, deploy to Vercel",
+      "effort_hours": 1.5,
+      "success_criteria": [
+        "Unit tests: sequence trigger logic (no_response, post_viewing, etc.) - 8+ tests passing",
+        "Integration test: create test lead, manually trigger cron, verify SMS sent and sequence state updated",
+        "Cron schedule verified: vercel.json has correct schedule (0 * * * * = top of every hour)",
+        "Manual cron test: call /api/cron/follow-up?test=true, observe logs, verify no side effects",
+        "Quiet hours respected: test does not send during 9pm-12am",
+        "Opt-out respected: test does not send to opted_out leads",
+        "No TypeScript errors",
+        "Build succeeds on Vercel (deploy preview)",
+        "Cron runs successfully at least once (observe in Vercel cron logs)"
+      ],
+      "technical_notes": "Use ?test=true query param to run cron without actually sending SMS (dry-run mode for testing).",
+      "dependencies": [
+        "UC8-M1 (schema)",
+        "UC8-M2 (cron logic)",
+        "UC8-M3 (state controls)"
+      ],
+      "files_to_create": [
+        "tests/uc8-cron.test.ts",
+        "tests/uc8-e2e-manual.md (manual test instructions)"
+      ],
+      "files_to_modify": [
+        "app/api/cron/follow-up/route.ts (add ?test mode)"
+      ],
+      "blockers_or_gaps": []
+    }
+  ],
+
+  "execution_plan": {
+    "recommended_order": "SEQUENTIAL_WITH_DEPENDENCY_GATING",
+    "rationale": "UC-7 must complete before UC-8 cron can call send-manual endpoint. However, UC-7-M1/M2/M3 can happen in parallel; only M4 needs to wait. UC-8-M1 can start immediately in parallel with UC-7.",
+    "timeline": {
+      "phase_1_parallel": {
+        "duration": "~4 hours",
+        "tasks": [
+          "UC7-M1: API Endpoint (2h)",
+          "UC7-M2: MessageThread UI (1.5h)",
+          "UC8-M1: Sequence Schema (1.5h)"
+        ],
+        "start_condition": "Spawn with UC-7/8 requirements",
+        "completion_gate": "All 3 milestones complete + tests pass"
+      },
+      "phase_2_sequential": {
+        "duration": "~3 hours",
+        "tasks": [
+          "UC7-M3: SmsComposer & AI Assist (2.5h)",
+          "UC8-M2: Cron Handler (2.5h)"
+        ],
+        "start_condition": "Phase 1 complete AND UC7-M1 endpoint verified working",
+        "completion_gate": "UC7-M3 SmsComposer integrated, UC8-M2 cron logic done"
+      },
+      "phase_3_final": {
+        "duration": "~3 hours",
+        "tasks": [
+          "UC7-M4: E2E Integration & Testing (0.5h)",
+          "UC8-M3: Sequence Controls (1.5h)",
+          "UC8-M4: Cron Testing & Deploy (1.5h)"
+        ],
+        "start_condition": "Phase 2 complete",
+        "completion_gate": "All E2E tests pass, both UCs ready for pilot"
+      }
+    },
+    "total_effort": "26 hours (as specified in DASHBOARD.md)",
+    "breakdown": {
+      "UC-7": "6 hours (M1: 2h + M2: 1.5h + M3: 2.5h + M4: 0.5h)",
+      "UC-8": "12 hours (M1: 1.5h + M2: 2.5h + M3: 1.5h + M4: 1.5h)"
+    },
+    "sprint_schedule": {
+      "ideal": "Single ~26h sprint (2-3 days continuous, or 4-5 days at 6h/day)",
+      "flexible": "Phase 1 (4h) → review/rest → Phase 2 (3h) → rest → Phase 3 (3h)",
+      "checkpoint_1": "After Phase 1: UC-7 API works, UC-8 schema valid",
+      "checkpoint_2": "After Phase 2: UC-7 UI components wired, UC-8 cron logic complete",
+      "checkpoint_3": "After Phase 3: Full E2E tests pass, ready to merge to main"
+    }
+  },
+
+  "resource_gaps": [
+    {
+      "gap": "AI Suggest Endpoint (/api/sms/ai-suggest)",
+      "impact": "UC7-M3 requires this endpoint to generate AI suggestions",
+      "status": "NOT_YET_CREATED",
+      "resolution": "Create app/api/sms/ai-suggest/route.ts. Call Claude Haiku with conversation context + lead profile. Return {suggestion: string, confidence: float}. Low priority for AI model (Haiku is sufficient)."
+    },
+    {
+      "gap": "Lead Timezone Field (Optional)",
+      "impact": "UC8-M2 quiet hours feature requires lead timezone for accurate 9pm-12am check",
+      "status": "OPTIONAL_NICE_TO_HAVE",
+      "resolution": "If not available: assume UTC for MVP, add field later. Can hardcode 9pm EST for testing."
+    },
+    {
+      "gap": "Vercel Pro Plan Confirmation",
+      "impact": "UC-8 requires Vercel Cron which is only available on Pro plan",
+      "status": "ASSUMBED_AVAILABLE",
+      "resolution": "Confirm account has Vercel Pro. If not, upgrade or implement alternative cron (e.g., external cron service like cron-job.org). Estimated cost: $20/month for Vercel Pro."
+    },
+    {
+      "gap": "Test Twilio Number",
+      "impact": "UC7-M4 E2E testing requires ability to receive test SMS",
+      "status": "ASSUMBED_AVAILABLE",
+      "resolution": "Use existing Twilio dev number or create test number. Cost: $1/month for test number."
+    }
+  ],
+
+  "dependency_graph": {
+    "critical_path": [
+      "UC6 Complete (verified) →",
+      "UC7-M1 (API endpoint) →",
+      "UC7-M2 (MessageThread) →",
+      "UC7-M3 (SmsComposer) →",
+      "UC7-M4 (Integration) →",
+      "UC8-M2 (Cron depends on send-manual)"
+    ],
+    "parallel_opportunities": [
+      "UC7-M1/M2/M3 in parallel (but M4 needs all 3)",
+      "UC8-M1 in parallel with UC7-M1/M2/M3 (can start immediately)"
+    ],
+    "blocking_milestones": {
+      "UC7-M4": "Blocks UC8-M2 (needs send-manual working)",
+      "UC8-M2": "Blocks UC8-M3 (state controls depend on cron logic)",
+      "UC8-M3": "Blocks UC8-M4 (testing needs full state machine)"
+    }
+  },
+
+  "success_metrics": {
+    "uc7_success": "Agent can view lead message history, type custom SMS, click 'AI Assist' for suggestions, send message, and see delivery status in real-time",
+    "uc8_success": "Cron runs hourly, identifies leads needing follow-up (24h no response, 4h post-booking, etc.), generates contextual AI messages, sends via Twilio, updates sequence state, respects opt-outs and quiet hours",
+    "combined_success": "Both UCs deployed to production, fully tested, zero TypeScript errors, ready for pilot recruitment"
+  },
+
+  "known_risks": [
+    {
+      "risk": "AI Suggest endpoint latency",
+      "severity": "MEDIUM",
+      "mitigation": "Use Claude Haiku (fast), set 5s timeout, show spinner to user"
+    },
+    {
+      "risk": "Race condition in sequence state updates",
+      "severity": "MEDIUM",
+      "mitigation": "Use database constraints + atomic transactions, test concurrency"
+    },
+    {
+      "risk": "Cron job fails silently",
+      "severity": "HIGH",
+      "mitigation": "Comprehensive logging, monitor Vercel cron logs, add alerts if needed"
+    },
+    {
+      "risk": "Timezone handling in quiet hours",
+      "severity": "LOW",
+      "mitigation": "Start with UTC/EST assumption, add field later"
+    }
+  ],
+
+  "ready_to_spawn": true,
+  "spawn_recommendation": {
+    "target": "Dev Agent (from business-opportunities-2026/agents/dev/)",
+    "context_to_provide": [
+      "This decomposition JSON (full milestones + criteria)",
+      "UC-7 task file (TASK-003-uc7-dashboard-manual-sms.md)",
+      "UC-8 task file (TASK-004-uc8-follow-up-sequences.md)",
+      "UC-6 completion report (reference implementation pattern)",
+      "Project .project.json (goal: $20K MRR, deadline: 60 days)",
+      "Existing codebase structure (point to repo)"
+    ],
+    "suggested_prompt": "You are the Dev Agent for LeadFlow AI (business-opportunities-2026 project). UC-6 is complete. UC-7 (Dashboard Manual SMS) and UC-8 (Follow-up Sequences) are now queued. I've decomposed both into milestones with clear success criteria. Execute in this order: Phase 1 (4h parallel): UC7-M1 API + UC7-M2 MessageThread + UC8-M1 Schema. Phase 2 (3h): UC7-M3 SmsComposer + UC8-M2 Cron. Phase 3 (3h): UC7-M4 Integration + UC8-M3 Controls + UC8-M4 Testing. Checkpoint after each phase. Goal: 26 hours total, both UCs production-ready for pilot launch.",
+    "success_definition": "All milestones complete with green checkmarks, E2E tests pass, zero TypeScript errors, code merged to main and deployed to Vercel staging.",
+    "escalation_path": "If blocked for >30 min, report blocker to orchestrator. If unclear on requirement, ask for clarification before proceeding."
+  },
+
+  "deliverables": {
+    "code": [
+      "API routes (send-manual, ai-suggest, cron follow-up)",
+      "React components (MessageThread, SmsComposer)",
+      "Database migrations (lead_sequences table)",
+      "Test suites (UC7 E2E, UC8 cron tests)",
+      "Updated vercel.json with cron schedule"
+    ],
+    "documentation": [
+      "Updated TASK-003-COMPLETED.md (UC-7 completion report)",
+      "Updated TASK-004-COMPLETED.md (UC-8 completion report)",
+      "Deployment checklist (env vars, Cal.com setup)",
+      "Test results (all tests passing)"
+    ],
+    "deployment": [
+      "Code merged to main branch",
+      "Vercel deployment preview tested and approved",
+      "Cron verified running hourly (check Vercel logs)",
+      "E2E test with real Twilio number"
+    ]
+  }
+}

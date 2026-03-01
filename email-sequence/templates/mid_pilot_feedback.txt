@@ -1,0 +1,49 @@
+Hi {{firstName}},
+
+You're halfway through your LeadFlow pilot! We hope you're already seeing the value, but we want to make sure we're building exactly what agents like you need.
+
+━━━━━━━━━━━━━━━━━━━━━
+PROGRESS: 50% Complete (Day 15 of 30)
+━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ QUICK FEEDBACK (Takes 2 minutes)
+=====================================
+
+How would you rate your LeadFlow experience so far?
+
+[1] [2] [3] [4] [5] [6] [7] [8] [9] [10]
+Not great                              Amazing!
+
+Share your rating:
+{{feedbackUrl}}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+WHAT'S BEEN MOST VALUABLE SO FAR?
+==================================
+Click all that apply:
+
+→ AI lead scoring: {{feedbackUrl}}?value=ai_scoring
+→ Automated follow-ups: {{feedbackUrl}}?value=automation  
+→ Dashboard insights: {{feedbackUrl}}?value=dashboard
+→ Time savings: {{feedbackUrl}}?value=time_saving
+→ CRM integration: {{feedbackUrl}}?value=crm_sync
+
+━━━━━━━━━━━━━━━━━━━━━
+
+Give full feedback (2 minutes):
+{{feedbackUrl}}
+
+━━━━━━━━━━━━━━━━━━━━━
+
+WHY YOUR FEEDBACK MATTERS
+=========================
+As a pilot agent, your input directly influences what we build next. Features you've suggested have already made it into our roadmap.
+
+Thanks for being an essential part of LeadFlow's journey!
+
+Jennifer from Product
+
+---
+LeadFlow Pilot Program | Day 15 of 30
+Unsubscribe: {{unsubscribeUrl}}

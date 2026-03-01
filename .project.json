@@ -1,0 +1,252 @@
+{
+  "id": "bo2026-leadflow-ai",
+  "name": "LeadFlow AI",
+  "created": "2026-02-10",
+  "status": "active",
+  "orchestrator_session": "agent:main:subagent:1dea30f0-b3bd-45bb-9b67-b1dacc2e4c1f",
+  "orchestrator_mode": "option-a-persistent-leadflow-active",
+  "orchestrator_delivery_topic": "LeadFlow",
+  "orchestrator_delivery_chat": "-1003852328909",
+  "orchestrator_delivery_topic_id": "10788",
+  "last_updated": "2026-02-25T12:08:00-05:00",
+  "template": {
+    "name": "project-pod-v1",
+    "version": "1.0",
+    "source": "/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/templates/project-pod-v1",
+    "last_check": "2026-02-25",
+    "migration_phase": "1-foundation"
+  },
+  "goal": "$20K MRR",
+  "deadline": "60 days from 2026-02-15",
+  "domain": "real-estate",
+  "metrics": {
+    "days_to_deadline": 53,
+    "tasks_total": 28,
+    "tasks_completed": 18,
+    "tasks_blocked": 1,
+    "daily_spend_usd": 8.50,
+    "projected_total_spend": 450.00,
+    "pilot_agents": 0,
+    "qualified_leads": 0,
+    "current_mrr": 0
+  },
+  "template_tracking": {
+    "auto_update": false,
+    "notify_on_new_version": true,
+    "last_review": "2026-02-25",
+    "approved_migrations": [],
+    "rejected_migrations": [],
+    "custom_overrides": [
+      "agents/orchestrator/SOUL.md",
+      "agents/orchestrator/SKILLS.md",
+      "agents/orchestrator/curiosity.md",
+      "agents/marketing/SOUL.md",
+      "agents/marketing/SKILLS.md",
+      "agents/dev/SOUL.md",
+      "agents/dev/SKILLS.md"
+    ],
+    "proposed_improvements": [
+      {
+        "id": "bo2026-tmpl-001",
+        "title": "Dev Self-Test Checklist",
+        "date": "2026-02-23",
+        "status": "proposed",
+        "path": "proposals/template-improvement-2026-02-23-001.md"
+      },
+      {
+        "id": "bo2026-tmpl-002",
+        "title": "Autonomous Feedback Loop System",
+        "date": "2026-02-23",
+        "status": "proposed",
+        "path": "proposals/template-improvement-2026-02-23-autonomous-feedback-loop.md"
+      }
+    ],
+    "drift_notes": "Orchestrator customized for real estate domain. Dev and Marketing agents migrated to SOUL/SKILLS pattern. First template improvement proposed (dev self-test checklist) based on FUB token expiration issue."
+  },
+  "agents": {
+    "orchestrator": {
+      "status": "active",
+      "persona_path": "agents/orchestrator/SOUL.md",
+      "skills_path": "agents/orchestrator/SKILLS.md",
+      "notes_path": "agents/orchestrator/NOTES/",
+      "initialized": "2026-02-25",
+      "current_task": "Continuous monitoring + autonomous dispatch"
+    },
+    "dev": {
+      "status": "complete",
+      "progress": "100%",
+      "current_task": "UC-6/7/8 COMPLETE - Feature development done",
+      "completed_tasks": [
+        "TASK-001: Outbound Message Storage Fix",
+        "TASK-002: UC-6 Cal.com Booking Confirmation",
+        "TASK-003: UC-7 Dashboard Manual SMS",
+        "TASK-004: UC-8 Follow-up Sequences"
+      ],
+      "task_files": [
+        "UC-7-8-COMPLETE.md",
+        "agents/dev/TASK-002-COMPLETED.md"
+      ],
+      "notes_file": "UC-7-8-COMPLETE.md",
+      "blocker": null,
+      "last_completed": "2026-02-25T11:04:00-05:00",
+      "persona_path": "agents/dev/SOUL.md",
+      "skills_path": "agents/dev/SKILLS.md",
+      "notes_path": "agents/dev/NOTES/",
+      "migrated": "2026-02-23"
+    },
+    "marketing": {
+      "status": "ready",
+      "progress": "40%",
+      "current_task": "Landing page copy COMPLETE - Pilot recruitment ON HOLD (user directive)",
+      "completed_tasks": [
+        "Landing page copywriting"
+      ],
+      "blocker": "User decision: Marketing timing (HOLD directive active)",
+      "blocker_owner": "User (Stojan)",
+      "unblocked_by": "Dev UC-6/7/8 complete (2026-02-25)",
+      "persona_path": "agents/marketing/SOUL.md",
+      "skills_path": "agents/marketing/SKILLS.md",
+      "notes_path": "agents/marketing/NOTES/",
+      "notes_file": "agents/marketing/NOTES/landing-page-copy.md",
+      "created": "2026-02-23"
+    },
+    "design": {
+      "status": "blocked",
+      "progress": "90%",
+      "current_task": "Landing page ready - WAITING FOR COPY HANDOFF",
+      "blocker": "Needs copy from Marketing (COPY IS READY BUT NOT TRANSFERRED)",
+      "blocker_owner": "Orchestrator (handoff coordination)",
+      "blocker_notes": "Marketing completed copy on 2026-02-24. Design not notified yet. Need to coordinate handoff."
+    },
+    "qc": {
+      "status": "complete",
+      "progress": "100%",
+      "current_task": "Compliance audit COMPLETE - System pilot-ready",
+      "completed_tasks": [
+        "TCPA compliance review",
+        "SMS template audit",
+        "Consent flow verification",
+        "Opt-out handling test",
+        "Quiet hours enforcement",
+        "Audit trail validation"
+      ],
+      "blocker": null,
+      "last_completed": "2026-02-25T11:15:00-05:00",
+      "notes_file": "QC_AUDIT_SUMMARY.md"
+    },
+    "analytics": {
+      "status": "complete",
+      "progress": "100%",
+      "current_task": "KPI dashboard COMPLETE - 6 metrics live",
+      "completed_tasks": [
+        "Messages sent metric",
+        "Delivery rate tracking",
+        "Response rate calculation",
+        "Sequence completion tracking",
+        "Lead conversion tracking",
+        "Response time analysis",
+        "Real-time visualization",
+        "Auto-refresh setup"
+      ],
+      "blocker": null,
+      "last_completed": "2026-02-25T11:05:00-05:00",
+      "notes_file": "product/lead-response/dashboard/ANALYTICS_README.md"
+    }
+  },
+  "recent_completions": [
+    {
+      "date": "2026-02-25T11:04:00-05:00",
+      "task": "UC-7 & UC-8 Complete",
+      "agent": "dev",
+      "impact": "MVP feature-complete"
+    },
+    {
+      "date": "2026-02-25T11:05:00-05:00",
+      "task": "Analytics KPI Dashboard",
+      "agent": "analytics",
+      "impact": "Pilot metrics tracking ready"
+    },
+    {
+      "date": "2026-02-25T11:15:00-05:00",
+      "task": "QC Compliance Audit",
+      "agent": "qc",
+      "impact": "Legal clearance for pilot"
+    },
+    {
+      "date": "2026-02-25T11:06:00-05:00",
+      "task": "Dashboard Polish & UX",
+      "agent": "dev",
+      "impact": "Production-ready user experience"
+    },
+    {
+      "date": "2026-02-24T22:43:00-05:00",
+      "task": "Landing Page Copy",
+      "agent": "marketing",
+      "impact": "Unblocks Design completion"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blocker-001",
+      "title": "Design waiting for copy handoff",
+      "agent": "design",
+      "blocker_type": "coordination",
+      "created": "2026-02-24",
+      "status": "active",
+      "resolution_plan": "Orchestrator to coordinate handoff of completed copy to Design",
+      "priority": "high",
+      "estimated_resolution": "2026-02-25 (today)"
+    },
+    {
+      "id": "blocker-002",
+      "title": "Marketing recruitment on HOLD",
+      "agent": "marketing",
+      "blocker_type": "user_decision",
+      "created": "2026-02-24",
+      "status": "active",
+      "resolution_plan": "Awaiting user go-ahead",
+      "priority": "medium",
+      "estimated_resolution": "TBD (user-dependent)"
+    }
+  ],
+  "next_actions": {
+    "immediate": [
+      {
+        "task": "Unblock Design with copy handoff",
+        "owner": "orchestrator",
+        "effort": "0.5h",
+        "status": "ready"
+      },
+      {
+        "task": "Pilot Onboarding Guide",
+        "owner": "marketing OR orchestrator",
+        "effort": "2-3h",
+        "status": "ready"
+      },
+      {
+        "task": "Email Notifications",
+        "owner": "dev",
+        "effort": "2-3h",
+        "status": "ready"
+      },
+      {
+        "task": "Load Testing",
+        "owner": "qc",
+        "effort": "2-3h",
+        "status": "ready"
+      }
+    ],
+    "awaiting_user": [
+      {
+        "decision": "Marketing timing",
+        "context": "UC-7/8 done, system pilot-ready, waiting for go-ahead",
+        "impact": "Pilot recruitment start date"
+      },
+      {
+        "decision": "Pricing model",
+        "context": "Need to finalize pilot pricing (free vs paid beta)",
+        "impact": "Stripe integration timing"
+      }
+    ]
+  }
+}

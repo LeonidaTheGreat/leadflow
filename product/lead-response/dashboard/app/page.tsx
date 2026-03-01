@@ -1,0 +1,174 @@
+'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+
+export default function HomePage() {
+  const [testResult, setTestResult] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const testWebhook = async () => {
+    setIsLoading(true)
+    setTestResult(null)
+    try {
+      const response = await fetch('/api/webhook/fub', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'lead.created',
+          data: {
+            id: 'test-' + Date.now(),
+            firstName: 'Test',
+            lastName: 'User',
+            phoneNumber: '+14165550000',
+            email: 'test@example.com',
+            source: 'Website',
+            status: 'New Lead',
+            consents: { sms: true }
+          }
+        })
+      })
+      const data = await response.json()
+      setTestResult(JSON.stringify(data, null, 2))
+    } catch (error) {
+      setTestResult('Error: ' + (error as Error).message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
+          <nav className="flex items-center gap-4">
+            <Link 
+              href="/dashboard" 
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
+            >
+              Dashboard
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <main className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
+            AI-Powered Lead Response
+          </h2>
+          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
+            Instantly qualify and respond to real estate leads using Claude AI.
+            Never miss another opportunity.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link 
+              href="/dashboard"
+              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+            >
+              Open Dashboard
+            </Link>
+            <button 
+              onClick={testWebhook}
+              disabled={isLoading}
+              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isLoading ? 'Testing...' : 'Test Webhook'}
+            </button>
+          </div>
+          
+          {testResult && (
+            <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg text-left">
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Result:</p>
+              <pre className="text-xs font-mono text-slate-600 dark:text-slate-400 overflow-x-auto">
+                {testResult}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        {/* Features */}
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FeatureCard 
+            title="AI Qualification"
+            description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
+            icon="🤖"
+          />
+          <FeatureCard 
+            title="Instant SMS"
+            description="Automatically send personalized SMS responses within seconds of lead creation."
+            icon="📱"
+          />
+          <FeatureCard 
+            title="CRM Integration"
+            description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
+            icon="🔗"
+          />
+        </div>
+
+        {/* API Endpoints */}
+        <div className="mt-20 max-w-2xl mx-auto">
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-8">API Endpoints</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800">
+                <tr>
+                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 dark:text-white">Endpoint</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 dark:text-white">Method</th>
+                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 dark:text-white">Description</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                <tr>
+                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/webhook</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Generic lead webhook</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/webhook/fub</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Follow Up Boss webhook</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/sms/send</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Send SMS</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/sms/status</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Twilio status callback</td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/booking</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">GET</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Get booking link</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 dark:border-slate-800 mt-20">
+        <div className="container mx-auto px-4 py-8 text-center text-slate-600 dark:text-slate-400">
+          <p>Built with Next.js 15, shadcn/ui, Supabase, and Claude AI</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h3>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}

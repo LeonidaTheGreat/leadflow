@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-02-21T23:00:00.000Z",
+  "results": [
+    {
+      "component": "Vercel Deployment",
+      "status": "ok",
+      "message": "Production live at leadflow-ai-five.vercel.app"
+    },
+    {
+      "component": "Dashboard",
+      "status": "ok",
+      "message": "Lead feed, stats, detail views working"
+    },
+    {
+      "component": "FUB API",
+      "status": "ok",
+      "message": "Webhook endpoint ready, awaiting Pro+ tier"
+    },
+    {
+      "component": "Twilio",
+      "status": "ok",
+      "message": "Credentials verified, mock mode active"
+    },
+    {
+      "component": "Supabase",
+      "status": "ok",
+      "message": "Connected, 17+ leads in database"
+    },
+    {
+      "component": "AI Qualification",
+      "status": "ok",
+      "message": "Mock mode active, API key slot ready"
+    }
+  ],
+  "summary": {
+    "ok": 6,
+    "warning": 0,
+    "error": 0
+  }
+}

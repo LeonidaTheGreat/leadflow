@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>ai.openclaw.bo2026.heartbeat</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/scripts/heartbeat.sh</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/clawdbot/.openclaw/workspace/business-opportunities-2026</string>
+    
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <!-- Run every 30 minutes (1800 seconds) — hot path handled by realtime-dispatcher -->
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>StandardOutPath</key>
+    <string>/tmp/openclaw/bo2026-heartbeat.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/tmp/openclaw/bo2026-heartbeat-error.log</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>

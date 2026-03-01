@@ -1,0 +1,44 @@
+Hi {{firstName}},
+
+Congratulations! You've completed your first week with LeadFlow. Here's where you stand:
+
+━━━━━━━━━━━━━━━━━━━━━
+PROGRESS: Week 1 ✓ (33% Complete)
+━━━━━━━━━━━━━━━━━━━━━
+
+YOUR WEEK 1 MILESTONES
+======================
+✓ Account activated and profile completed
+✓ Explored the dashboard  
+○ Import your leads (if you haven't yet)
+○ Set up your first automation
+
+━━━━━━━━━━━━━━━━━━━━━
+
+💡 SUCCESS STORY FROM A FELLOW AGENT
+
+"In my first week, I imported 200 old leads from a spreadsheet I'd ignored for months. LeadFlow's AI scored them and I found 12 hot prospects I'd completely forgotten about. Closed one of them for $890K last month!"
+
+— Michael R., Compass, San Diego
+
+━━━━━━━━━━━━━━━━━━━━━
+
+THIS WEEK'S FOCUS
+=================
+If you haven't already, import your leads and let LeadFlow's AI work its magic. The agents who see the biggest ROI are those who give the system enough data to analyze patterns.
+
+Import your leads:
+{{dashboardUrl}}/leads/import
+
+━━━━━━━━━━━━━━━━━━━━━
+
+Need help? Our team is standing by. Reply to this email or schedule a quick call:
+{{calendarLink}}
+
+Onward to week 2!
+
+The LeadFlow Team
+
+---
+LeadFlow Pilot Program | Week 1 of 4 Complete
+Unsubscribe: {{unsubscribeUrl}}

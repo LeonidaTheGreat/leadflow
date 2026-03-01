@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-02-24T14:20:00-05:00",
+  "source": "scripts/validate-dashboard.js",
+  "dashboardPath": "/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/dashboard.html",
+  "results": {
+    "KICKOFF_BANNER": {
+      "found": true,
+      "elementId": "kickoff-banner",
+      "elementClass": "card ok kickoff-status",
+      "text": "Kickoff Status: PROJECT KICKOFF — DAY 7 OF 60"
+    },
+    "AGENTS_OBJECT": {
+      "found": true,
+      "agentCount": 5
+    },
+    "BLOCKED_BANNER": {
+      "found": true
+    },
+    "NEXT_ACTION": {
+      "found": true
+    }
+  },
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "valid": true
+  },
+  "message": "Dashboard validation PASSED - all required elements found"
+}

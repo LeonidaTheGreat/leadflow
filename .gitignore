@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Build output
+.next/
+.vercel
+dist/
+build/
+
+# Runtime state
+.activity-state.json
+.budget-config.json
+.current-optimization-mode.json
+.dashboard-orchestrator-stats.json
+.forecasts.jsonl
+.goal-preview.json
+.health-state.json
+.latest-forecast.json
+.learnings.json
+.orchestrator-accuracy.json
+.orchestrator-alerts.jsonl
+.orchestrator-daily-report.json
+.orchestrator-decisions.jsonl
+.predictions.jsonl
+.realtime-dispatcher.log
+.recovery-state.json
+.notifications.json
+budget-tracker.json
+spawn-queue.json
+agents.json
+swarm-config.json
+strategy-config.json
+orchestrator-watchdog.log
+leadflow.db
+
+# Logs
+*.log
+spawn-logs/
+completion-reports/
+reports/
+
+# OpenClaw / Claude workspace
+.openclaw/
+.claude/
+memory/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test results (runtime)
+e2e-*-results*.json
+*-test-results*.json
+*.log

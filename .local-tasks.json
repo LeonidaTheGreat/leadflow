@@ -1,0 +1,341 @@
+[
+  {
+    "id": "local-1771968192318-fr2o5255w",
+    "title": "Inbound SMS Handler",
+    "description": "Impact: critical. Unblocks: Agent Onboarding UI, Cal.com Booking Links",
+    "project_id": "bo2026",
+    "agent_id": "dev",
+    "model": "sonnet",
+    "status": "done",
+    "priority": 1,
+    "estimated_cost_usd": 4,
+    "estimated_hours": 2,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Inbound SMS Handler",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Agent Onboarding UI",
+      "Unblocks: Cal.com Booking Links"
+    ],
+    "tags": [
+      "P0",
+      "critical",
+      "Agent Onboarding UI",
+      "Cal.com Booking Links"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.315Z"
+  },
+  {
+    "id": "local-1771968192319-779d9ybqy",
+    "title": "Agent Onboarding UI",
+    "description": "Impact: critical. Unblocks: Pilot Recruitment",
+    "project_id": "bo2026",
+    "agent_id": "dev",
+    "model": "haiku",
+    "status": "done",
+    "priority": 1,
+    "estimated_cost_usd": 8,
+    "estimated_hours": 4,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Agent Onboarding UI",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Pilot Recruitment"
+    ],
+    "tags": [
+      "P0",
+      "critical",
+      "Pilot Recruitment"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.319Z",
+    "started_at": null,
+    "spawn_config": null,
+    "updated_at": "2026-02-25T04:09:31.515Z",
+    "stalled_at": "2026-02-25T16:42:33.983Z",
+    "stall_age_hours": 13,
+    "completed_at": "2026-02-25T16:51:19.351Z"
+  },
+  {
+    "id": "local-1771968192319-w6t1zq2xk",
+    "title": "Cal.com Booking Links",
+    "description": "Impact: critical. Unblocks: Pilot Recruitment, First Pilot, Booking Flow",
+    "project_id": "bo2026",
+    "agent_id": "dev",
+    "model": "haiku",
+    "status": "done",
+    "priority": 1,
+    "estimated_cost_usd": 6,
+    "estimated_hours": 3,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Cal.com Booking Links",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Pilot Recruitment",
+      "Unblocks: First Pilot",
+      "Unblocks: Booking Flow"
+    ],
+    "tags": [
+      "P0",
+      "critical",
+      "Pilot Recruitment",
+      "First Pilot",
+      "Booking Flow"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.319Z",
+    "started_at": "2026-02-25T04:09:31.509Z",
+    "spawn_config": {
+      "task": "Cal.com Booking Links",
+      "agentId": "dev",
+      "model": "haiku",
+      "prompt": "Task: Cal.com Booking Links\n\nDescription: Impact: critical. Unblocks: Pilot Recruitment, First Pilot, Booking Flow\n\nPriority: P1\nEstimated Time: 3 hours\n\nAcceptance Criteria:\n- [ ] Complete Cal.com Booking Links\n- [ ] All tests pass\n- [ ] Update task status\n- [ ] Unblocks: Pilot Recruitment\n- [ ] Unblocks: First Pilot\n- [ ] Unblocks: Booking Flow\n\nSuccess Criteria:\n- All tests pass\n- Code deployed (if applicable)\n- Changes documented\n- Status updated in task tracker\n\nTask ID: local-1771968192319-w6t1zq2xk\n\nGo!",
+      "timeout": 10800,
+      "taskId": "local-1771968192319-w6t1zq2xk",
+      "priority": 1
+    },
+    "updated_at": "2026-02-25T04:09:31.509Z",
+    "completed_at": "2026-02-25T16:42:33.981Z"
+  },
+  {
+    "id": "local-1771968192320-8tty5z6zk",
+    "title": "Pilot Deployment",
+    "description": "Impact: critical. Unblocks: Pilot Validation, Revenue",
+    "project_id": "bo2026",
+    "agent_id": "dev",
+    "model": "sonnet",
+    "status": "done",
+    "priority": 1,
+    "estimated_cost_usd": 4,
+    "estimated_hours": 2,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Pilot Deployment",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Pilot Validation",
+      "Unblocks: Revenue"
+    ],
+    "tags": [
+      "P0",
+      "critical",
+      "Pilot Validation",
+      "Revenue"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.320Z",
+    "dependencies": [
+      {
+        "taskId": "local-1771968192319-779d9ybqy",
+        "type": "hard"
+      }
+    ],
+    "unblocked_at": "2026-02-25T16:53:54.159Z",
+    "completed_at": "2026-02-25T17:01:00Z"
+  },
+  {
+    "id": "local-1771968192321-4s9msvskw",
+    "title": "Pilot Recruitment (3 agents)",
+    "description": "Impact: critical. Unblocks: First Revenue, Use Case Data",
+    "project_id": "bo2026",
+    "agent_id": "marketing",
+    "model": "kimi",
+    "status": "ready",
+    "priority": 2,
+    "estimated_cost_usd": 1.5,
+    "estimated_hours": 5,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Pilot Recruitment (3 agents)",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: First Revenue",
+      "Unblocks: Use Case Data"
+    ],
+    "tags": [
+      "P1",
+      "critical",
+      "First Revenue",
+      "Use Case Data"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.321Z",
+    "dependencies": [
+      {
+        "taskId": "local-1771968192319-779d9ybqy",
+        "type": "hard"
+      }
+    ],
+    "unblocked_at": "2026-02-25T16:53:54.162Z"
+  },
+  {
+    "id": "local-1771968192322-v79hnnszu",
+    "title": "PostHog Analytics Setup",
+    "description": "Impact: high. Unblocks: Metrics Dashboard",
+    "project_id": "bo2026",
+    "agent_id": "analytics",
+    "model": "kimi",
+    "status": "ready",
+    "priority": 3,
+    "estimated_cost_usd": 0.6,
+    "estimated_hours": 2,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete PostHog Analytics Setup",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Metrics Dashboard"
+    ],
+    "tags": [
+      "P2",
+      "high",
+      "Metrics Dashboard"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.322Z"
+  },
+  {
+    "id": "local-1771968192323-f1dyh7u6j",
+    "title": "Stripe Billing Integration",
+    "description": "Impact: high. Unblocks: Paid Launch, $20K MRR",
+    "project_id": "bo2026",
+    "agent_id": "dev",
+    "model": "haiku",
+    "status": "done",
+    "priority": 2,
+    "estimated_cost_usd": 8,
+    "estimated_hours": 4,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Stripe Billing Integration",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Paid Launch",
+      "Unblocks: $20K MRR"
+    ],
+    "tags": [
+      "P1",
+      "high",
+      "Paid Launch",
+      "$20K MRR"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.323Z",
+    "started_at": null,
+    "spawn_config": null,
+    "updated_at": "2026-02-25T04:09:31.522Z",
+    "stalled_at": "2026-02-25T16:42:33.983Z",
+    "stall_age_hours": 13,
+    "completed_at": "2026-02-25T16:52:55.140Z"
+  },
+  {
+    "id": "local-1771968192324-ows8253a5",
+    "title": "First Pilot Validation",
+    "description": "Impact: critical. Unblocks: Conversion Optimization",
+    "project_id": "bo2026",
+    "agent_id": "qc",
+    "model": "haiku",
+    "status": "in_progress",
+    "priority": 1,
+    "estimated_cost_usd": 0.8999999999999999,
+    "estimated_hours": 3,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete First Pilot Validation",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Conversion Optimization"
+    ],
+    "tags": [
+      "P0",
+      "critical",
+      "Conversion Optimization"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.324Z",
+    "dependencies": [
+      {
+        "taskId": "local-1771968192320-8tty5z6zk",
+        "type": "hard"
+      }
+    ],
+    "unblocked_at": "2026-02-25T17:03:45.473Z",
+    "started_at": "2026-02-25T17:10:23.390Z",
+    "spawn_config": {
+      "task": "First Pilot Validation",
+      "agentId": "qc",
+      "model": "haiku",
+      "prompt": "See PILOT-VALIDATION-SPAWN.md for full task details and acceptance criteria."
+    }
+  },
+  {
+    "id": "local-1771968192324-p9xwywub3",
+    "title": "Conversion Optimization",
+    "description": "Impact: high. Unblocks: Scale Phase",
+    "project_id": "bo2026",
+    "agent_id": "product",
+    "model": "sonnet",
+    "status": "blocked",
+    "priority": 2,
+    "estimated_cost_usd": 8,
+    "estimated_hours": 4,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Conversion Optimization",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Scale Phase"
+    ],
+    "tags": [
+      "P1",
+      "high",
+      "Scale Phase"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:23:12.324Z",
+    "dependencies": [
+      {
+        "taskId": "local-1771968192324-ows8253a5",
+        "type": "hard"
+      }
+    ]
+  },
+  {
+    "id": "local-1771968308458-uthapjjkn",
+    "title": "Cal.com Booking Links (TASK-002: UC-6)",
+    "description": "Impact: critical. Unblocks: Pilot Recruitment, First Pilot, Booking Flow",
+    "project_id": "bo2026",
+    "agent_id": "dev",
+    "model": "sonnet",
+    "status": "done",
+    "started_at": "2026-02-25T03:53:00Z",
+    "spawned_by": "orchestrator",
+    "spawn_approved_by": "Stojan",
+    "priority": 1,
+    "estimated_cost_usd": 6,
+    "estimated_hours": 3,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Complete Cal.com Booking Links",
+      "All tests pass",
+      "Update task status",
+      "Unblocks: Pilot Recruitment",
+      "Unblocks: First Pilot",
+      "Unblocks: Booking Flow"
+    ],
+    "tags": [
+      "P0",
+      "critical",
+      "Pilot Recruitment",
+      "First Pilot",
+      "Booking Flow"
+    ],
+    "metadata": {},
+    "created_at": "2026-02-24T21:25:08.458Z",
+    "completed_at": "2026-02-25T16:42:33.983Z"
+  }
+]

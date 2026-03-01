@@ -1,0 +1,11 @@
+{
+  "Inbound SMS Handler": "201f7914-230a-4af2-8ba0-a11c67b413fe",
+  "Agent Onboarding UI": "fc6f42ec-9535-45f6-9883-25e8c73958b8",
+  "Cal.com Booking Links": "6e4a2546-5ba1-4ce6-9ab8-41368d1f56a2",
+  "Pilot Deployment": "f65e7bdd-ce07-42b6-898c-b346d86dfcb3",
+  "Pilot Recruitment (3 agents)": "fbb78f15-db40-46f0-a45f-51a2c6a0e044",
+  "PostHog Analytics Setup": "8af0afd8-00ba-4ec8-b7cd-e1044f6683b1",
+  "Stripe Billing Integration": "943086cf-7f5b-43f5-8502-4daa4be8fee4",
+  "First Pilot Validation": "20f892d7-63a5-4137-9e9a-09b0b086dcd8",
+  "Conversion Optimization": "77482dec-2269-4848-a586-d90fd747b390"
+}

@@ -1,0 +1,8 @@
+{
+  "task": "Agent Onboarding UI",
+  "agentId": "dev",
+  "model": "sonnet",
+  "prompt": "Task: Agent Onboarding UI\n\nPriority: P0\nImpact: critical\nEstimated: 240 minutes\n\nContext:\n- Project Goal: $20K MRR in 60 days (Day 14/60)\n- Unblocks: Pilot Recruitment\n- Current Blockers: None\n\nSuccess Criteria:\n- All tests pass\n- Code deployed\n- Changes pushed to main\n- Status documented\n\nGo!",
+  "timeout": 16200,
+  "priority": 5
+}

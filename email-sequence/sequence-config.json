@@ -1,0 +1,62 @@
+{
+  "sequenceName": "LeadFlow Pilot Onboarding",
+  "version": "1.0.0",
+  "targetAudience": "Real estate agents in LeadFlow pilot program",
+  "totalEmails": 5,
+  "provider": "resend",
+  "fromEmail": "pilot@leadflow.ai",
+  "fromName": "LeadFlow Pilot Team",
+  "replyTo": "support@leadflow.ai",
+  "personalizationTokens": {
+    "agentName": "{{agent.firstName}}",
+    "agentFullName": "{{agent.fullName}}",
+    "brokerage": "{{agent.brokerage}}",
+    "startDate": "{{agent.pilotStartDate}}",
+    "startDateFormatted": "{{agent.pilotStartDate | formatDate:'MMMM d, yyyy'}}",
+    "agentId": "{{agent.id}}",
+    "dashboardUrl": "{{agent.dashboardUrl}}",
+    "calendarLink": "{{agent.onboardingCalendarLink}}"
+  },
+  "emails": [
+    {
+      "id": "welcome",
+      "trigger": "immediate (on pilot enrollment)",
+      "delay": "0 hours",
+      "subjectLineA": "Welcome to LeadFlow Pilot, {{agent.firstName}}! 🚀",
+      "subjectLineB": "{{agent.firstName}}, your LeadFlow pilot access is ready",
+      "previewText": "Let's get you set up for success in the next 30 days"
+    },
+    {
+      "id": "day3_tips",
+      "trigger": "time-based",
+      "delay": "72 hours from start",
+      "subjectLineA": "Pro tips for your first week with LeadFlow",
+      "subjectLineB": "{{agent.firstName}}, here's what top agents do first",
+      "previewText": "Quick wins to maximize your pilot experience"
+    },
+    {
+      "id": "week1_checkin",
+      "trigger": "time-based",
+      "delay": "7 days from start",
+      "subjectLineA": "How's your first week going, {{agent.firstName}}?",
+      "subjectLineB": "Week 1 check-in + quick wins from other agents",
+      "previewText": "Let's make sure you're on track for pilot success"
+    },
+    {
+      "id": "mid_pilot_feedback",
+      "trigger": "time-based",
+      "delay": "15 days from start",
+      "subjectLineA": "Quick feedback: {{agent.firstName}}, how are we doing?",
+      "subjectLineB": "Mid-pilot check: 2 minutes, huge impact",
+      "previewText": "Your feedback shapes LeadFlow's future"
+    },
+    {
+      "id": "completion",
+      "trigger": "time-based",
+      "delay": "30 days from start",
+      "subjectLineA": "{{agent.firstName}}, your pilot completion + next steps",
+      "subjectLineB": "Pilot complete! Here's what happens next 🎉",
+      "previewText": "Thank you for being a LeadFlow pilot agent"
+    }
+  ]
+}

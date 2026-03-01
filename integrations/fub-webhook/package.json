@@ -1,0 +1,15 @@
+{
+  "name": "fub-ai-webhook",
+  "version": "1.0.0",
+  "description": "Webhook to sync AI-qualified leads to Follow Up Boss CRM",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-webhook.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0",
+    "express": "^4.18.0"
+  }
+}
