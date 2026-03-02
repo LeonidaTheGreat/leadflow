@@ -18,7 +18,7 @@ const { spawn, execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const { TaskStore } = require('./task-store')
-const { getConfig } = require('./project-config-loader')
+const { getConfig, buildProjectContext } = require('./project-config-loader')
 
 const QUEUE_PATH = path.join(__dirname, 'spawn-queue.json')
 const SPAWN_LOGS_DIR = path.join(__dirname, 'spawn-logs')
@@ -229,8 +229,29 @@ async function run() {
         }
       }
 
+      // Inject project context so agents know where they are and what exists
+      const projectCtx = buildProjectContext()
+      message += `\n\n## PROJECT CONTEXT`
+      message += `\n**Project:** ${projectCtx.project_name} (${projectCtx.project_id})`
+      message += `\n**Project Directory:** \`${projectCtx.project_dir}\``
+      message += `\n`
+      message += `\n### CRITICAL RULES`
+      message += `\n1. **FIRST:** \`cd ${projectCtx.project_dir}\` before doing ANY work`
+      message += `\n2. ALL files you create/modify MUST be within this directory`
+      message += `\n3. NEVER create files in your agent workspace directory`
+      message += `\n4. Use absolute paths for requires: \`require('${projectCtx.project_dir}/<module>')\``
+      if (Object.keys(projectCtx.reference_docs).length > 0) {
+        message += `\n`
+        message += `\n### Key Reference Documents`
+        for (const [key, absPath] of Object.entries(projectCtx.reference_docs)) {
+          message += `\n- **${key}:** \`${absPath}\``
+        }
+        message += `\n`
+        message += `\nRead CLAUDE.md for full project context before starting work.`
+      }
+
       message += `\n\nCheck the project task store for full details. Execute the task, update status when done.`
-      message += `\n\nWhen finished, write a completion report:\n  const { reportSuccess, reportFailure } = require('./subagent-completion-report');\n  reportSuccess('${taskId}', testResults, filesCreated, filesModified, reportPath);`
+      message += `\n\nWhen finished, write a completion report:\n  const { reportSuccess, reportFailure } = require('${projectCtx.project_dir}/subagent-completion-report');\n  reportSuccess('${taskId}', testResults, filesCreated, filesModified, reportPath);`
 
       // Branch-based dev workflow: create feature branch for dev/design agents
       const projectDir = path.join(__dirname)

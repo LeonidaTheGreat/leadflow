@@ -3,6 +3,13 @@
   "project_name": "LeadFlow AI",
   "project_dir": "/Users/clawdbot/projects/leadflow",
 
+  "reference_docs": {
+    "project_context": "CLAUDE.md",
+    "use_cases": "USE_CASES.md",
+    "business_strategy": "PMF.md",
+    "dashboard": "DASHBOARD.md"
+  },
+
   "telegram": {
     "chat_id": "-1003852328909",
     "thread_id": "10788"

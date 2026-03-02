@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
-const { getConfig } = require('./project-config-loader')
+const { getConfig, buildProjectContext } = require('./project-config-loader')
 
 /**
  * TaskStore - Database-backed task management for 8/10 autonomy
@@ -117,7 +117,7 @@ class TaskStore {
       parent_task_id: task.parent_task_id || task.parentTaskId || null,
       acceptance_criteria: task.acceptance_criteria || task.acceptanceCriteria || [],
       tags: task.tags || [],
-      metadata: task.metadata || {},
+      metadata: { ...(task.metadata || {}), _project: buildProjectContext() },
       use_case_id: task.use_case_id || null,
       prd_id: task.prd_id || null,
       branch_name: task.branch_name || null,

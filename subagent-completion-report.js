@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getConfig } = require('./project-config-loader');
 
 const COMPLETION_DIR = path.join(__dirname, 'completion-reports');
 
@@ -43,7 +44,8 @@ function writeCompletionReport(report) {
   const filepath = path.join(COMPLETION_DIR, filename);
   
   const fullReport = {
-    version: '1.0',
+    version: '1.1',
+    project_id: getConfig().project_id,
     timestamp,
     taskId: report.taskId,
     status: report.status,

@@ -78,4 +78,26 @@ function getDashboardDir(config) {
   return path.join(__dirname, cfg.deployment.dashboard_dir)
 }
 
-module.exports = { loadProjectConfig, getConfig, clearCache, getDayNumber, getDashboardDir }
+/**
+ * Build a project context object suitable for injection into tasks and spawn messages.
+ * Resolves reference_docs relative paths to absolute paths.
+ * @param {object} [config] - Config object (uses cached if not provided)
+ * @returns {{ project_id: string, project_name: string, project_dir: string, reference_docs: Object<string, string> }}
+ */
+function buildProjectContext(config) {
+  const cfg = config || getConfig()
+  const referenceDocs = {}
+  if (cfg.reference_docs) {
+    for (const [key, rel] of Object.entries(cfg.reference_docs)) {
+      referenceDocs[key] = path.join(cfg.project_dir, rel)
+    }
+  }
+  return {
+    project_id: cfg.project_id,
+    project_name: cfg.project_name,
+    project_dir: cfg.project_dir,
+    reference_docs: referenceDocs
+  }
+}
+
+module.exports = { loadProjectConfig, getConfig, clearCache, getDayNumber, getDashboardDir, buildProjectContext }
