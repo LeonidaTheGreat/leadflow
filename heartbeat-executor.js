@@ -342,7 +342,8 @@ class HeartbeatExecutor {
           await this.handleTestFailure(taskId, {
             allPassed: false,
             error: report.error,
-            retryRecommendation: report.retryRecommendation
+            retryRecommendation: report.retryRecommendation,
+            diagnosis: report.diagnosis || null
           })
           this.completed.push({ id: taskId, title: taskInfo?.title || taskId, agent: taskInfo?.agent_id || '-' })
         }
@@ -390,21 +391,45 @@ class HeartbeatExecutor {
     this.learner.recordFailure(task, testResults?.error || 'unknown', failureCount)
     recordOutcome(taskId, 'incorrect')
 
+    // Build enriched description from QC diagnosis if available
+    const diagnosis = testResults?.diagnosis
+    let enrichedDescription = task.description || ''
+    if (diagnosis) {
+      console.log(`   🔍 QC diagnosis available: ${diagnosis.symptom || 'no symptom'}`)
+      enrichedDescription = [
+        `## Previous Attempt Failed — QC Diagnosis`,
+        `**Symptom:** ${diagnosis.symptom || 'unknown'}`,
+        `**Root Cause:** ${diagnosis.rootCause || 'unknown'}`,
+        `**Suggested Fix:** ${diagnosis.suggestedFix || 'unknown'}`,
+        diagnosis.verifySteps?.length > 0
+          ? `**Verify:** ${diagnosis.verifySteps.map((s, i) => `${i + 1}. ${s}`).join('; ')}`
+          : '',
+        ``,
+        `## Original Task`,
+        task.description || task.title
+      ].filter(Boolean).join('\n')
+    }
+
     if (failureCount === 1) {
-      // First failure - RETRY with better model
+      // First failure - RETRY with better model + diagnosis context
       console.log(`   🔄 First failure - will retry with escalated model`)
       recordDecision({
         decision_type: DECISION_TYPES.MODEL_SELECTION,
         task_id: taskId,
         chosen_model: this.escalateModel(task.model),
-        context: { failure_count: failureCount, previous_model: task.model }
+        context: { failure_count: failureCount, previous_model: task.model, has_diagnosis: !!diagnosis }
       })
-      await this.store.updateTask(taskId, {
+      const updateFields = {
         status: 'ready',
         failure_count: failureCount,
         retry_with_model: this.escalateModel(task.model)
-      })
-      this.actions.push(`Retry ${taskId} with ${this.escalateModel(task.model)}`)
+      }
+      if (diagnosis) {
+        updateFields.description = enrichedDescription
+        updateFields.last_error = `QC: ${diagnosis.symptom} — Fix: ${diagnosis.suggestedFix}`
+      }
+      await this.store.updateTask(taskId, updateFields)
+      this.actions.push(`Retry ${taskId} with ${this.escalateModel(task.model)}${diagnosis ? ' + QC diagnosis' : ''}`)
     } else if (failureCount === 2 && task.estimated_hours > 3) {
       // Second failure + large task - DECOMPOSE
       console.log(`   ✂️ Second failure on large task - decomposing...`)
@@ -422,11 +447,14 @@ class HeartbeatExecutor {
         task_id: taskId,
         context: { failure_count: failureCount, model: task.model }
       })
+      const pmDescription = diagnosis
+        ? `Failed ${failureCount}x.\n\n## QC Diagnosis\n**Symptom:** ${diagnosis.symptom}\n**Root Cause:** ${diagnosis.rootCause}\n**Suggested Fix:** ${diagnosis.suggestedFix}\n\nReview if spec is clear and requirements are achievable.`
+        : `Failed ${failureCount}x. Last error: ${task.last_error || testResults?.error || 'unknown'}\nReview if spec is clear and requirements are achievable.`
       await this.store.createTask({
         title: `PM Review: "${task.title}" failed ${failureCount}x`,
         agent_id: 'product', status: 'ready', priority: 1,
         use_case_id: task.use_case_id, tags: ['review', 'spec-clarity'],
-        description: `Failed ${failureCount}x. Last error: ${task.last_error || testResults?.error || 'unknown'}\nReview if spec is clear and requirements are achievable.`,
+        description: pmDescription,
         metadata: { created_by: 'orchestrator', escalation_from: task.id }
       })
       await this.store.updateTask(taskId, { status: 'failed', failure_count: failureCount })

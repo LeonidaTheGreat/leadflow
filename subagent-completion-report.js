@@ -31,6 +31,11 @@ if (!fs.existsSync(COMPLETION_DIR)) {
  * @param {string} report.completionReportPath - Path to detailed report
  * @param {string} [report.error] - Error message if failed
  * @param {string} [report.retryRecommendation] - 'retry', 'decompose', 'escalate'
+ * @param {Object} [report.diagnosis] - Structured diagnostic (for QC rejections)
+ * @param {string} [report.diagnosis.symptom] - What is visibly wrong
+ * @param {string} [report.diagnosis.rootCause] - Why it's wrong
+ * @param {string} [report.diagnosis.suggestedFix] - Exact steps to fix it
+ * @param {string[]} [report.diagnosis.verifySteps] - How to verify the fix worked
  */
 function writeCompletionReport(report) {
   const timestamp = new Date().toISOString();
@@ -48,6 +53,7 @@ function writeCompletionReport(report) {
     completionReportPath: report.completionReportPath,
     error: report.error || null,
     retryRecommendation: report.retryRecommendation || null,
+    diagnosis: report.diagnosis || null,
     metadata: {
       processed: false,
       processedAt: null,

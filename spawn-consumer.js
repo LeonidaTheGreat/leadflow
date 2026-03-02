@@ -270,7 +270,32 @@ async function run() {
         message += `\n3. Check for security issues (no hardcoded secrets, no SQL injection, no XSS)`
         message += `\n4. Verify acceptance criteria are met`
         message += `\n5. Use \`gh pr review ${taskDetail.pr_number} --approve\` or \`--request-changes\``
-        message += `\nReport results as structured JSON in your completion.`
+        message += `\n\n## CRITICAL: Structured Completion Report`
+        message += `\nWhen you are done, write a completion report using the helpers in subagent-completion-report.js.`
+        message += `\n\n**If APPROVING:**`
+        message += `\n\`\`\``
+        message += `\nconst { reportSuccess } = require('./subagent-completion-report');`
+        message += `\nreportSuccess('${taskId}', { passed: N, total: N, passRate: 1 }, [], [], null);`
+        message += `\n\`\`\``
+        message += `\n\n**If REJECTING — you MUST include a structured diagnosis:**`
+        message += `\n\`\`\``
+        message += `\nconst { writeCompletionReport } = require('./subagent-completion-report');`
+        message += `\nwriteCompletionReport({`
+        message += `\n  taskId: '${taskId}',`
+        message += `\n  status: 'failed',`
+        message += `\n  error: 'Brief error summary',`
+        message += `\n  testResults: { passed: N, total: N, passRate: N/N },`
+        message += `\n  retryRecommendation: 'retry',  // or 'decompose' or 'escalate'`
+        message += `\n  diagnosis: {`
+        message += `\n    symptom: 'What is visibly wrong (e.g. "Tests fail with MODULE_NOT_FOUND")',`
+        message += `\n    rootCause: 'Why it is wrong (e.g. "Script references ./config but file was not created")',`
+        message += `\n    suggestedFix: 'Exact steps to fix (e.g. "Create config.js with X exports, then run npm test")',`
+        message += `\n    verifySteps: ['Step 1 to verify fix', 'Step 2 to verify fix']`
+        message += `\n  },`
+        message += `\n  filesCreated: [], filesModified: [], completionReportPath: null`
+        message += `\n});`
+        message += `\n\`\`\``
+        message += `\n\nThe diagnosis is REQUIRED for rejections — without it, the next agent will repeat the same mistake.`
       }
 
       const openclawAgentId = resolveAgentId(agentId)
