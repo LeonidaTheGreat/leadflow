@@ -159,6 +159,7 @@ async function seedGTMUseCases() {
       .from('use_cases')
       .insert({
         id: uc.id,
+        project_id: PROJECT_ID,
         prd_id: prdId,
         name: uc.name,
         description: uc.description,

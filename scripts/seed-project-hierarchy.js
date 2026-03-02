@@ -8,6 +8,10 @@
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const { createClient } = require('@supabase/supabase-js')
+const { getConfig } = require('../project-config-loader')
+
+const config = getConfig()
+const PROJECT_ID = config.project_id
 
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -22,24 +26,24 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 })
 
 const prds = [
-  { id: 'PRD-CORE-SMS', title: 'Core SMS Lead Response', status: 'approved', description: 'Core lead response via SMS in <30 seconds' },
-  { id: 'PRD-BILLING', title: 'Billing & Subscriptions', status: 'approved', description: 'Stripe-based billing with tiered subscriptions' },
-  { id: 'PRD-INTEGRATIONS', title: 'CRM & Calendar Integrations', status: 'approved', description: 'FUB CRM and Cal.com calendar integrations' },
+  { id: 'PRD-CORE-SMS', project_id: PROJECT_ID, title: 'Core SMS Lead Response', status: 'approved', description: 'Core lead response via SMS in <30 seconds' },
+  { id: 'PRD-BILLING', project_id: PROJECT_ID, title: 'Billing & Subscriptions', status: 'approved', description: 'Stripe-based billing with tiered subscriptions' },
+  { id: 'PRD-INTEGRATIONS', project_id: PROJECT_ID, title: 'CRM & Calendar Integrations', status: 'approved', description: 'FUB CRM and Cal.com calendar integrations' },
 ]
 
 const useCases = [
-  { id: 'UC-1', prd_id: 'PRD-CORE-SMS', name: 'Lead-Initiated SMS', description: 'Respond to inbound lead SMS messages with AI-generated responses', implementation_status: 'complete', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-2', prd_id: 'PRD-CORE-SMS', name: 'FUB New Lead Auto-SMS', description: 'Automatically send SMS when new lead appears in FUB CRM', implementation_status: 'ready', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-3', prd_id: 'PRD-CORE-SMS', name: 'FUB Status Change', description: 'Trigger SMS workflows on FUB lead status changes', implementation_status: 'ready', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-4', prd_id: 'PRD-CORE-SMS', name: 'FUB Agent Assignment', description: 'Handle agent assignment changes in FUB CRM', implementation_status: 'partial', priority: 2, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-5', prd_id: 'PRD-CORE-SMS', name: 'Lead Opt-Out', description: 'Process STOP/opt-out messages and update CRM', implementation_status: 'complete', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-6', prd_id: 'PRD-INTEGRATIONS', name: 'Cal.com Booking', description: 'Book appointments via Cal.com from SMS conversations', implementation_status: 'not_started', priority: 2, phase: 'Phase 2', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-7', prd_id: 'PRD-CORE-SMS', name: 'Dashboard Manual SMS', description: 'Send manual SMS from dashboard interface', implementation_status: 'not_started', priority: 3, phase: 'Phase 2', workflow: ['product', 'design', 'dev', 'qc'] },
-  { id: 'UC-8', prd_id: 'PRD-CORE-SMS', name: 'Follow-up Sequences', description: 'Automated multi-step follow-up SMS sequences', implementation_status: 'not_started', priority: 2, phase: 'Phase 2', workflow: ['product', 'dev', 'qc'] },
-  { id: 'UC-9', prd_id: 'PRD-BILLING', name: 'Customer Sign-Up Flow', description: 'Stripe checkout + onboarding for new customers', implementation_status: 'not_started', priority: 1, phase: 'Phase 3', workflow: ['product', 'design', 'dev', 'qc'], depends_on: [] },
-  { id: 'UC-10', prd_id: 'PRD-BILLING', name: 'Billing Portal', description: 'Customer self-serve billing management via Stripe portal', implementation_status: 'not_started', priority: 2, phase: 'Phase 3', workflow: ['product', 'design', 'dev', 'qc'], depends_on: ['UC-9'] },
-  { id: 'UC-11', prd_id: 'PRD-BILLING', name: 'Subscription Lifecycle', description: 'Handle upgrades, downgrades, cancellations, renewals', implementation_status: 'not_started', priority: 2, phase: 'Phase 3', workflow: ['product', 'dev', 'qc'], depends_on: ['UC-9'] },
-  { id: 'UC-12', prd_id: 'PRD-BILLING', name: 'MRR Reporting', description: 'Monthly recurring revenue tracking and analytics dashboard', implementation_status: 'not_started', priority: 3, phase: 'Phase 3', workflow: ['product', 'analytics'], depends_on: ['UC-11'] },
+  { id: 'UC-1', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'Lead-Initiated SMS', description: 'Respond to inbound lead SMS messages with AI-generated responses', implementation_status: 'complete', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-2', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'FUB New Lead Auto-SMS', description: 'Automatically send SMS when new lead appears in FUB CRM', implementation_status: 'ready', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-3', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'FUB Status Change', description: 'Trigger SMS workflows on FUB lead status changes', implementation_status: 'ready', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-4', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'FUB Agent Assignment', description: 'Handle agent assignment changes in FUB CRM', implementation_status: 'partial', priority: 2, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-5', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'Lead Opt-Out', description: 'Process STOP/opt-out messages and update CRM', implementation_status: 'complete', priority: 1, phase: 'Phase 1', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-6', project_id: PROJECT_ID, prd_id: 'PRD-INTEGRATIONS', name: 'Cal.com Booking', description: 'Book appointments via Cal.com from SMS conversations', implementation_status: 'not_started', priority: 2, phase: 'Phase 2', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-7', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'Dashboard Manual SMS', description: 'Send manual SMS from dashboard interface', implementation_status: 'not_started', priority: 3, phase: 'Phase 2', workflow: ['product', 'design', 'dev', 'qc'] },
+  { id: 'UC-8', project_id: PROJECT_ID, prd_id: 'PRD-CORE-SMS', name: 'Follow-up Sequences', description: 'Automated multi-step follow-up SMS sequences', implementation_status: 'not_started', priority: 2, phase: 'Phase 2', workflow: ['product', 'dev', 'qc'] },
+  { id: 'UC-9', project_id: PROJECT_ID, prd_id: 'PRD-BILLING', name: 'Customer Sign-Up Flow', description: 'Stripe checkout + onboarding for new customers', implementation_status: 'not_started', priority: 1, phase: 'Phase 3', workflow: ['product', 'design', 'dev', 'qc'], depends_on: [] },
+  { id: 'UC-10', project_id: PROJECT_ID, prd_id: 'PRD-BILLING', name: 'Billing Portal', description: 'Customer self-serve billing management via Stripe portal', implementation_status: 'not_started', priority: 2, phase: 'Phase 3', workflow: ['product', 'design', 'dev', 'qc'], depends_on: ['UC-9'] },
+  { id: 'UC-11', project_id: PROJECT_ID, prd_id: 'PRD-BILLING', name: 'Subscription Lifecycle', description: 'Handle upgrades, downgrades, cancellations, renewals', implementation_status: 'not_started', priority: 2, phase: 'Phase 3', workflow: ['product', 'dev', 'qc'], depends_on: ['UC-9'] },
+  { id: 'UC-12', project_id: PROJECT_ID, prd_id: 'PRD-BILLING', name: 'MRR Reporting', description: 'Monthly recurring revenue tracking and analytics dashboard', implementation_status: 'not_started', priority: 3, phase: 'Phase 3', workflow: ['product', 'analytics'], depends_on: ['UC-11'] },
 ]
 
 async function seed() {

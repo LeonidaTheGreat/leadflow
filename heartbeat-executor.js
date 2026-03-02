@@ -105,6 +105,8 @@ class HeartbeatExecutor {
       await this.runSelfHealChecks()
       // 5c. SMOKE TESTS — verify live product health
       await this.runSmokeTests()
+      // 5c2. SYNC PRODUCT COMPONENTS — persist smoke results + product status to Supabase
+      await this.syncProductComponents()
       // 5d. BUILD HEALTH — verify dashboard builds cleanly
       await this.checkBuildHealth()
       // 5e. REVENUE INTELLIGENCE — collect metrics, check goals (Loop 5)
@@ -727,6 +729,7 @@ class HeartbeatExecutor {
     console.log('\n5c. Running smoke tests...')
     try {
       const results = await smokeTests.runAll()
+      this.smokeResults = results // store for syncProductComponents
       const total = results.passed.length + results.failed.length
 
       if (results.failed.length === 0) {
@@ -734,6 +737,13 @@ class HeartbeatExecutor {
       } else {
         const failedNames = results.failed.map(f => f.id).join(', ')
         console.log(`   🔬 Smoke: ${results.passed.length}/${total} — ${failedNames} FAILED`)
+      }
+
+      // Build smoke_test_id → product lookup for UC linkage
+      const products = this.config.products || []
+      const smokeToProduct = {}
+      for (const p of products) {
+        if (p.smoke_test_id) smokeToProduct[p.smoke_test_id] = p
       }
 
       const state = smokeTests.loadState()
@@ -822,12 +832,14 @@ class HeartbeatExecutor {
           }
           smokeTests.saveState(state)
 
+          const linkedProduct = smokeToProduct[failure.id]
           const devDescription = [
             `## Smoke Test Still Failing (Attempt ${retryCount + 1}/${MAX_SMOKE_RETRIES})`,
             `**Test:** ${failure.name} (${failure.id})`,
             `**Severity:** ${failure.severity}`,
             `**Detail:** ${failure.detail}`,
             `**URL:** ${smokeTests.tests.find(t => t.id === failure.id)?.url || 'dynamic'}`,
+            linkedProduct ? `**Product:** ${linkedProduct.name} (${linkedProduct.url || linkedProduct.local_path || 'no URL'})` : '',
             `**Previous attempts:** ${retryCount} (all failed to resolve the smoke test)`,
             ``,
             devAttemptContext,
@@ -842,7 +854,7 @@ class HeartbeatExecutor {
             ``,
             `DO NOT report success unless you made actual code changes. The orchestrator's smoke test loop`,
             `will automatically verify whether your fix worked on the next heartbeat cycle.`
-          ].join('\n')
+          ].filter(Boolean).join('\n')
 
           await this.store.createTask({
             title: devTitle,
@@ -852,7 +864,8 @@ class HeartbeatExecutor {
             priority: 1,
             tags: ['smoke-test', 'automated', 'fix', `retry-${retryCount + 1}`],
             description: devDescription,
-            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, retry: retryCount + 1, model_cost: modelCost }
+            use_case_id: linkedProduct?.uc_id || null,
+            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, product_id: linkedProduct?.id || null, retry: retryCount + 1, model_cost: modelCost }
           })
 
           console.log(`   🔬 Dev retry ${retryCount + 1}/${MAX_SMOKE_RETRIES}: ${devTitle}`)
@@ -883,12 +896,14 @@ class HeartbeatExecutor {
           state.results[failure.id] = { ...testState, devRetries: 1, totalCost: 0 }
           smokeTests.saveState(state)
 
+          const linkedProduct2 = smokeToProduct[failure.id]
           const devDescription = [
             `## Smoke Test Still Failing After QC Investigation (Attempt 1/${MAX_SMOKE_RETRIES})`,
             `**Test:** ${failure.name} (${failure.id})`,
             `**Severity:** ${failure.severity}`,
             `**Detail:** ${failure.detail}`,
             `**URL:** ${smokeTests.tests.find(t => t.id === failure.id)?.url || 'dynamic'}`,
+            linkedProduct2 ? `**Product:** ${linkedProduct2.name} (${linkedProduct2.url || linkedProduct2.local_path || 'no URL'})` : '',
             ``,
             qcDiagnosis || `QC investigated but did not fix the issue. Previous task: ${existingSmoke.id}`,
             ``,
@@ -900,7 +915,7 @@ class HeartbeatExecutor {
             ``,
             `DO NOT report success unless you made actual code changes. The orchestrator's smoke test loop`,
             `will automatically verify whether your fix worked on the next heartbeat cycle.`
-          ].join('\n')
+          ].filter(Boolean).join('\n')
 
           await this.store.createTask({
             title: devTitle,
@@ -910,7 +925,8 @@ class HeartbeatExecutor {
             priority: failure.severity === 'critical' ? 1 : 2,
             tags: ['smoke-test', 'automated', 'fix', 'retry-1'],
             description: devDescription,
-            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, escalated_from: existingSmoke.id, retry: 1 }
+            use_case_id: linkedProduct2?.uc_id || null,
+            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, product_id: linkedProduct2?.id || null, escalated_from: existingSmoke.id, retry: 1 }
           })
 
           console.log(`   🔬 Escalated to dev: ${devTitle}`)
@@ -935,16 +951,18 @@ class HeartbeatExecutor {
           smokeTests.saveState(state)
         }
 
+        const linkedProduct3 = smokeToProduct[failure.id]
         const description = [
           `## Smoke Test Failure`,
           `**Test:** ${failure.name} (${failure.id})`,
           `**Severity:** ${failure.severity}`,
           `**Detail:** ${failure.detail}`,
           `**URL:** ${smokeTests.tests.find(t => t.id === failure.id)?.url || 'dynamic'}`,
+          linkedProduct3 ? `**Product:** ${linkedProduct3.name} (${linkedProduct3.url || linkedProduct3.local_path || 'no URL'})` : '',
           `**Time:** ${new Date().toISOString()}`,
           ``,
           `Investigate the root cause and report findings using the structured completion report.`
-        ].join('\n')
+        ].filter(Boolean).join('\n')
 
         await this.store.createTask({
           title: smokeTitle,
@@ -954,7 +972,8 @@ class HeartbeatExecutor {
           priority: failure.severity === 'critical' ? 1 : 3,
           tags: ['smoke-test', 'automated'],
           description,
-          metadata: { created_by: 'orchestrator', smoke_test_id: failure.id }
+          use_case_id: linkedProduct3?.uc_id || null,
+          metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, product_id: linkedProduct3?.id || null }
         })
 
         console.log(`   🔬 Created QC task: ${smokeTitle} (model: ${model})`)
@@ -990,6 +1009,119 @@ class HeartbeatExecutor {
     } catch (err) {
       console.warn('   ⚠️ Smoke tests failed:', err.message)
       this.errors.push(`Smoke tests: ${err.message}`)
+    }
+  }
+
+  async syncProductComponents() {
+    console.log('\n5c2. Syncing product components to Supabase...')
+    try {
+      const products = this.config.products || []
+      if (products.length === 0) {
+        console.log('   📦 No products defined in config')
+        return
+      }
+
+      const results = this.smokeResults || { passed: [], failed: [] }
+      const passedIds = new Set(results.passed.map(p => p.id))
+      const failedIds = new Set(results.failed.map(f => f.id))
+
+      // A. Persist smoke test results to metrics table
+      const sb = this.store.supabase
+      if (results.passed.length + results.failed.length > 0) {
+        await sb
+          .from('metrics')
+          .insert({
+            project_id: this.projectId,
+            domain: 'smoke_tests',
+            metric_type: 'smoke_results',
+            data: {
+              passed: results.passed.map(p => ({ id: p.id, name: p.name })),
+              failed: results.failed.map(f => ({ id: f.id, name: f.name, severity: f.severity }))
+            },
+            timestamp: new Date().toISOString()
+          })
+        console.log(`   📊 Smoke results persisted to metrics table`)
+      }
+
+      // B. Sync products to system_components table
+      for (const product of products) {
+        let status, emoji
+        if (!product.url && !product.smoke_test_id) {
+          status = 'PLANNED'
+          emoji = '📋'
+        } else if (product.smoke_test_id && failedIds.has(product.smoke_test_id)) {
+          status = 'DOWN'
+          emoji = '🔴'
+        } else if (product.smoke_test_id && passedIds.has(product.smoke_test_id)) {
+          status = 'LIVE'
+          emoji = '🟢'
+        } else {
+          status = 'PLANNED'
+          emoji = '📋'
+        }
+
+        const row = {
+          project_id: this.projectId,
+          component_name: product.name,
+          category: 'product',
+          status,
+          status_emoji: emoji,
+          details: product.description,
+          verified_date: new Date().toISOString(),
+          metadata: {
+            product_id: product.id,
+            type: product.type,
+            url: product.url || null,
+            test_url: product.test_url || null,
+            local_path: product.local_path || null,
+            smoke_test_id: product.smoke_test_id || null,
+            uc_id: product.uc_id || null
+          }
+        }
+
+        // Upsert: match on project_id + component_name + category
+        const { data: existing } = await sb
+          .from('system_components')
+          .select('id')
+          .eq('project_id', this.projectId)
+          .eq('component_name', product.name)
+          .eq('category', 'product')
+          .maybeSingle()
+
+        if (existing) {
+          await sb
+            .from('system_components')
+            .update(row)
+            .eq('id', existing.id)
+        } else {
+          await sb
+            .from('system_components')
+            .insert(row)
+        }
+      }
+
+      console.log(`   📦 Synced ${products.length} products to system_components`)
+
+      // Validate UC references: warn if a product's uc_id doesn't exist in Supabase
+      const productsWithUC = products.filter(p => p.uc_id)
+      if (productsWithUC.length > 0) {
+        const ucIds = productsWithUC.map(p => p.uc_id)
+        const { data: existingUCs } = await sb
+          .from('use_cases')
+          .select('id')
+          .in('id', ucIds)
+        const existingSet = new Set((existingUCs || []).map(u => u.id))
+        for (const p of productsWithUC) {
+          if (!existingSet.has(p.uc_id)) {
+            console.warn(`   ⚠️ Product "${p.name}" references UC ${p.uc_id} which does not exist`)
+          }
+        }
+      }
+
+      this.actions.push(`Product sync: ${products.length} components updated`)
+    } catch (err) {
+      console.warn('   ⚠️ Product component sync failed:', err.message)
+      this.errors.push(`Product sync: ${err.message}`)
     }
   }
 
@@ -1447,6 +1579,7 @@ class HeartbeatExecutor {
     try {
       const { data: incompleteUCs } = await this.store.supabase
         .from('use_cases').select('*')
+        .eq('project_id', this.projectId)
         .in('implementation_status', ['not_started', 'partial'])
         .order('priority', { ascending: true })
 
@@ -1485,7 +1618,9 @@ class HeartbeatExecutor {
 
       // Check completed UCs for dependency resolution
       const { data: completedUCData } = await this.store.supabase
-        .from('use_cases').select('id').eq('implementation_status', 'complete')
+        .from('use_cases').select('id')
+        .eq('project_id', this.projectId)
+        .eq('implementation_status', 'complete')
       const completedUCs = new Set((completedUCData || []).map(u => u.id))
 
       const AGENT_LABELS = this.config.agents.labels

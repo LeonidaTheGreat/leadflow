@@ -65,6 +65,57 @@
     }
   ],
 
+  "products": [
+    {
+      "id": "customer-dashboard",
+      "name": "Customer Dashboard",
+      "type": "web",
+      "url": "https://leadflow-ai-five.vercel.app",
+      "test_url": "https://leadflow-ai-five.vercel.app/api/health",
+      "smoke_test_id": "vercel-dashboard",
+      "uc_id": "UC-9",
+      "description": "Next.js customer-facing dashboard"
+    },
+    {
+      "id": "fub-webhook",
+      "name": "FUB Webhook API",
+      "type": "api",
+      "url": "https://fub-inbound-webhook.vercel.app",
+      "test_url": "https://fub-inbound-webhook.vercel.app/health",
+      "smoke_test_id": "vercel-health",
+      "uc_id": "UC-1",
+      "description": "Follow Up Boss inbound webhook processor"
+    },
+    {
+      "id": "landing-page",
+      "name": "Landing Page",
+      "type": "web",
+      "url": null,
+      "local_path": "product/marketing/landing-page/",
+      "smoke_test_id": null,
+      "uc_id": "gtm-landing-page",
+      "description": "Marketing landing page (built, awaiting deployment)"
+    },
+    {
+      "id": "internal-dashboard",
+      "name": "Internal Dashboard",
+      "type": "web",
+      "url": "http://127.0.0.1:8787/dashboard.html",
+      "smoke_test_id": "dashboard-local",
+      "uc_id": null,
+      "description": "Orchestration dashboard (local, Tailscale accessible)"
+    },
+    {
+      "id": "billing-flow",
+      "name": "Billing Flow",
+      "type": "web",
+      "url": "https://leadflow-ai-five.vercel.app/settings",
+      "smoke_test_id": "vercel-dashboard",
+      "uc_id": "UC-10",
+      "description": "Stripe billing integration (part of customer dashboard)"
+    }
+  ],
+
   "agents": {
     "id_map": {
       "product": "product-manager"

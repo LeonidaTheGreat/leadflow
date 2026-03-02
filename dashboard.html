@@ -114,6 +114,7 @@
   <button class="nav-menu-close" onclick="toggleNav()">&times;</button>
   <div class="nav-menu-items">
     <a href="#system-status" onclick="toggleNav()">System Status</a>
+    <a href="#product-components" onclick="toggleNav()">Product Components</a>
     <a href="#kpi-cards" onclick="toggleNav()">Key Metrics</a>
     <a href="#spawn-health" onclick="toggleNav()">Spawn Health</a>
     <a href="#task-queue" onclick="toggleNav()">Task Queue</a>
@@ -138,9 +139,20 @@
     </div>
   </div>
 
+  <!-- PROJECT FILTER (hidden when only 1 project) -->
+  <div id="project-filter-bar" style="display:none;margin-bottom:16px;">
+    <select id="project-selector" onchange="switchProject(this.value)" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--fg);font-size:14px;">
+      <option value="">All Projects</option>
+    </select>
+  </div>
+
   <!-- SYSTEM STATUS -->
   <h2 id="system-status">📊 System Status</h2>
   <div id="system-components" class="grid"><div class="loading">Loading components...</div></div>
+
+  <!-- PRODUCT COMPONENTS -->
+  <h2 id="product-components">🧩 Product Components</h2>
+  <div id="product-components-content" class="grid"><div class="loading">Loading products...</div></div>
 
   <!-- KPI CARDS -->
   <h2>🎯 Key Metrics</h2>
@@ -207,7 +219,9 @@
 const SUPABASE_URL = 'https://fptrokacdwzlmflyczdz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHJva2FjZHd6bG1mbHljemR6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTcxMTgxNSwiZXhwIjoyMDg3Mjg3ODE1fQ.NcGeeYQyTaY3n-w22yjxUPxJ5ZC4v6b3Kv7gnr0TGcU';
 
-const PROJECT_ID = 'bo2026';
+const urlParams = new URLSearchParams(window.location.search);
+const PROJECT_FILTER = urlParams.get('project') || null;
+const PROJECT_ID = PROJECT_FILTER || 'bo2026';
 
 let sb = null;
 
@@ -216,6 +230,7 @@ function init() {
   try {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     console.log('✅ Supabase connected');
+    loadProjectFilter();
     loadAllData();
     subscribeToChanges();
   } catch (e) {
@@ -224,11 +239,43 @@ function init() {
   }
 }
 
+// Project filter: populate dropdown from distinct project_ids
+async function loadProjectFilter() {
+  try {
+    const { data } = await sb
+      .from('project_metadata')
+      .select('project_id, project_name');
+    if (!data || data.length <= 1) return; // hide when 1 or fewer projects
+    const selector = document.getElementById('project-selector');
+    for (const row of data) {
+      const opt = document.createElement('option');
+      opt.value = row.project_id;
+      opt.textContent = row.project_name || row.project_id;
+      if (row.project_id === PROJECT_ID) opt.selected = true;
+      selector.appendChild(opt);
+    }
+    document.getElementById('project-filter-bar').style.display = 'block';
+  } catch (e) {
+    console.warn('Project filter load failed:', e.message);
+  }
+}
+
+function switchProject(projectId) {
+  const url = new URL(window.location);
+  if (projectId) {
+    url.searchParams.set('project', projectId);
+  } else {
+    url.searchParams.delete('project');
+  }
+  window.location = url;
+}
+
 // Load all dashboard data
 async function loadAllData() {
   await Promise.all([
     loadProjectMetadata(),
     loadSystemComponents(),
+    loadProductComponents(),
     loadKPIs(),
     loadSpawnHealth(),
     loadTaskQueue(),
@@ -310,6 +357,78 @@ async function loadSystemComponents() {
   `).join('');
   
   document.getElementById('system-components').innerHTML = html;
+}
+
+// Product Components
+async function loadProductComponents() {
+  let query = sb
+    .from('system_components')
+    .select('*')
+    .eq('category', 'product')
+    .order('project_id')
+    .order('component_name');
+
+  if (PROJECT_FILTER) {
+    query = query.eq('project_id', PROJECT_FILTER);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data || data.length === 0) {
+    document.getElementById('product-components-content').innerHTML =
+      '<div class="card muted">No product components synced yet. Run heartbeat to populate.</div>';
+    return;
+  }
+
+  // Group by project_id when showing all projects
+  const projects = {};
+  for (const comp of data) {
+    const pid = comp.project_id || 'unknown';
+    if (!projects[pid]) projects[pid] = [];
+    projects[pid].push(comp);
+  }
+
+  const projectIds = Object.keys(projects);
+  const multiProject = projectIds.length > 1;
+
+  let html = '';
+  for (const pid of projectIds) {
+    if (multiProject) {
+      html += `<div class="muted small" style="margin:12px 0 6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${pid}</div>`;
+    }
+    html += projects[pid].map(comp => renderProductCard(comp)).join('');
+  }
+
+  document.getElementById('product-components-content').innerHTML = html;
+}
+
+function renderProductCard(comp) {
+  const meta = comp.metadata || {};
+  const isLive = comp.status === 'LIVE';
+  const isDown = comp.status === 'DOWN';
+  const cardClass = isLive ? 'ok' : isDown ? 'error' : '';
+  const url = meta.url;
+  const testUrl = meta.test_url;
+  const linkUrl = meta.type === 'api' ? testUrl : url;
+  const linkLabel = meta.type === 'api' ? 'Test →' : 'Open →';
+  const ucBadge = meta.uc_id ? `<span class="pill" style="font-size:11px;">${meta.uc_id}</span>` : '';
+  const verified = comp.verified_date
+    ? new Date(comp.verified_date).toLocaleString()
+    : 'Never';
+
+  return `
+    <div class="card ${cardClass}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong>${comp.component_name}</strong>
+        <div style="display:flex;gap:6px;align-items:center;">${ucBadge}<span class="pill">${comp.status_emoji || '●'} ${comp.status}</span></div>
+      </div>
+      <div class="muted small" style="margin-bottom:6px;">${comp.details || ''}</div>
+      ${url ? `<div class="small" style="word-break:break-all;margin-bottom:4px;">${url}</div>` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        ${linkUrl ? `<a href="${linkUrl}" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;">${linkLabel}</a>` : '<span></span>'}
+        <span class="muted small">Checked: ${verified}</span>
+      </div>
+    </div>`;
 }
 
 // KPIs
