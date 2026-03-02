@@ -4,7 +4,7 @@
 
 DOC_TITLE="Design Agent - UX Patterns & Direction"
 FOLDER_ID="13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE"
-SOURCE_FILE="/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/design/Design_Agent_UX_Patterns_Direction.md"
+SOURCE_FILE="/Users/clawdbot/projects/leadflow/agents/design/Design_Agent_UX_Patterns_Direction.md"
 
 echo "=========================================="
 echo "Design Agent - Google Doc Upload Helper"

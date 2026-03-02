@@ -1,7 +1,7 @@
 {
   "timestamp": "2026-02-24T14:20:00-05:00",
   "source": "scripts/validate-dashboard.js",
-  "dashboardPath": "/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/dashboard.html",
+  "dashboardPath": "/Users/clawdbot/projects/leadflow/dashboard.html",
   "results": {
     "KICKOFF_BANNER": {
       "found": true,

@@ -14,7 +14,7 @@ Supabase's REST API and JavaScript client don't support executing DDL statements
 
 File location:
 ```
-/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/supabase-schema-migration.sql
+/Users/clawdbot/projects/leadflow/supabase-schema-migration.sql
 ```
 
 Content includes:

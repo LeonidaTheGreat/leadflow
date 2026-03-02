@@ -3,7 +3,7 @@
 # spawn-orchestrator.sh
 # Spawns the BO2026 Orchestrator agent
 
-cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026
+cd /Users/clawdbot/projects/leadflow
 
 echo "🚀 Spawning BO2026 Orchestrator..."
 

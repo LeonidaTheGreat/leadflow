@@ -34,7 +34,7 @@ author: Orchestrator Subagent
 
 Full decomposition saved to:
 ```
-/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/dev/PHASE-3-DECOMPOSITION.json
+/Users/clawdbot/projects/leadflow/agents/dev/PHASE-3-DECOMPOSITION.json
 ```
 
 **Format:** Machine-readable JSON with all milestones, effort estimates, success criteria, dependencies, and deployment checklist.
@@ -109,7 +109,7 @@ Full decomposition saved to:
 
 ## Spawn Recommendation
 
-**Target:** Dev Agent (business-opportunities-2026/agents/dev/)
+**Target:** Dev Agent (leadflow/agents/dev/)
 
 **Prompt Template:**
 ```
@@ -144,8 +144,8 @@ START NOW. No waiting.
 - **UC-7 Spec:** `TASK-003-uc7-dashboard-manual-sms.md`
 - **UC-8 Spec:** `TASK-004-uc8-follow-up-sequences.md`
 - **UC-6 Example:** `TASK-002-COMPLETED.md` (reference implementation quality)
-- **Dashboard:** `/business-opportunities-2026/DASHBOARD.md`
-- **Use Cases:** `/business-opportunities-2026/USE_CASES.md`
+- **Dashboard:** `/leadflow/DASHBOARD.md`
+- **Use Cases:** `/leadflow/USE_CASES.md`
 
 ---
 

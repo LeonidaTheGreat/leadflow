@@ -7,7 +7,7 @@
 ## Completed Tasks
 
 ### 1. Repository Structure ✅
-- Created `/business-opportunities-2026/product/lead-response/`
+- Created `/leadflow/product/lead-response/`
 - Initialized Next.js 15 with TypeScript
 - Set up shadcn/ui with Neutral theme
 - Added ESLint configuration

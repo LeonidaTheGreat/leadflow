@@ -615,7 +615,7 @@ RECOMMENDATION: [ ] GO  [ ] NO-GO  [ ] RESEARCH MORE
 ## Folder Compliance Confirmation
 
 ✅ **Compliant with directive:** All QC Agent documents are in the correct location:
-- Local workspace: `business-opportunities-2026/agents/qc/`
+- Local workspace: `leadflow/agents/qc/`
 - Google Drive target: Folder `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE` (Business Opportunities 2026)
 
 **Action needed:** Leonida to create Google Doc from content above in the specified folder.

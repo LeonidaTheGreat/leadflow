@@ -36,7 +36,7 @@ FUB API key `fka_0GF88QEK0i53EfnxyoCHs95JeBPkIcB6zb` has expired.
 ### Step 2: Update Local Environment
 
 ```bash
-cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026/product/lead-response/dashboard
+cd /Users/clawdbot/projects/leadflow/product/lead-response/dashboard
 
 # Update .env.local
 # Replace: FUB_API_KEY=fka_0GF88QEK0i53EfnxyoCHs95JeBPkIcB6zb

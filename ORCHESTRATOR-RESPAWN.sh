@@ -4,7 +4,7 @@
 
 TASK="ORCHESTRATOR MONITORING CYCLE - LeadFlow AI
 
-You are the Orchestrator for LeadFlow AI (business-opportunities-2026 project).
+You are the Orchestrator for LeadFlow AI (leadflow project).
 
 **Previous cycle:** See ORCHESTRATOR-REPORT-*-*.md for last check
 **State file:** .orchestrator-state.json

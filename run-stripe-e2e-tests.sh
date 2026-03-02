@@ -65,7 +65,7 @@ echo -e "${YELLOW}🚀 Starting test execution...${NC}"
 echo ""
 
 # Run the tests
-node /Users/clawdbot/.openclaw/workspace/projects/leadflow/e2e-stripe-integration-test.js
+node "$(dirname "$0")/e2e-stripe-integration-test.js"
 
 test_exit_code=$?
 

@@ -6,7 +6,7 @@
 **Target**: Small service businesses (1-10 employees) in North America
 
 ## Deliverables Location
-All files are in `/Users/clawdbot/.openclaw/workspace/projects/leadflow/pilot_recruitment/`:
+All files are in `/Users/clawdbot/projects/leadflow/pilot_recruitment/`:
 
 1. **qualification_criteria.md** - Prospect scoring rubric and qualification questions
 2. **prospect_profiles.md** - 8 pre-qualified prospects with contact info

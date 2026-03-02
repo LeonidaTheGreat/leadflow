@@ -213,7 +213,7 @@ Log Metrics for Dashboard
 ## File Structure
 
 ```
-business-opportunities-2026/
+leadflow/
 ├── .notifications.json          # ← NEW: Configurable targets
 ├── .project.json                # Project metadata
 ├── task-tracker.json            # Source of truth
@@ -274,7 +274,7 @@ launchctl list | grep bo2026.heartbeat
 tail -f /tmp/openclaw/bo2026-heartbeat.log
 
 # Manual run
-cd business-opportunities-2026 && bash scripts/heartbeat.sh
+cd leadflow && bash scripts/heartbeat.sh
 ```
 
 ### Notification Config

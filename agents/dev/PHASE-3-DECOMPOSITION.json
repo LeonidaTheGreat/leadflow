@@ -357,7 +357,7 @@
 
   "ready_to_spawn": true,
   "spawn_recommendation": {
-    "target": "Dev Agent (from business-opportunities-2026/agents/dev/)",
+    "target": "Dev Agent (from leadflow/agents/dev/)",
     "context_to_provide": [
       "This decomposition JSON (full milestones + criteria)",
       "UC-7 task file (TASK-003-uc7-dashboard-manual-sms.md)",
@@ -366,7 +366,7 @@
       "Project .project.json (goal: $20K MRR, deadline: 60 days)",
       "Existing codebase structure (point to repo)"
     ],
-    "suggested_prompt": "You are the Dev Agent for LeadFlow AI (business-opportunities-2026 project). UC-6 is complete. UC-7 (Dashboard Manual SMS) and UC-8 (Follow-up Sequences) are now queued. I've decomposed both into milestones with clear success criteria. Execute in this order: Phase 1 (4h parallel): UC7-M1 API + UC7-M2 MessageThread + UC8-M1 Schema. Phase 2 (3h): UC7-M3 SmsComposer + UC8-M2 Cron. Phase 3 (3h): UC7-M4 Integration + UC8-M3 Controls + UC8-M4 Testing. Checkpoint after each phase. Goal: 26 hours total, both UCs production-ready for pilot launch.",
+    "suggested_prompt": "You are the Dev Agent for LeadFlow AI (leadflow project). UC-6 is complete. UC-7 (Dashboard Manual SMS) and UC-8 (Follow-up Sequences) are now queued. I've decomposed both into milestones with clear success criteria. Execute in this order: Phase 1 (4h parallel): UC7-M1 API + UC7-M2 MessageThread + UC8-M1 Schema. Phase 2 (3h): UC7-M3 SmsComposer + UC8-M2 Cron. Phase 3 (3h): UC7-M4 Integration + UC8-M3 Controls + UC8-M4 Testing. Checkpoint after each phase. Goal: 26 hours total, both UCs production-ready for pilot launch.",
     "success_definition": "All milestones complete with green checkmarks, E2E tests pass, zero TypeScript errors, code merged to main and deployed to Vercel staging.",
     "escalation_path": "If blocked for >30 min, report blocker to orchestrator. If unclear on requirement, ask for clarification before proceeding."
   },

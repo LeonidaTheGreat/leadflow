@@ -39,7 +39,7 @@ This will open a browser window to authorize access. Once authenticated, I can:
 ## Document Ready for Upload
 
 **File**: `Product Executive - Initial Research.md`  
-**Location**: `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/product-executive/`  
+**Location**: `/Users/clawdbot/projects/leadflow/agents/product-executive/`  
 **Status**: Complete and ready for Google Drive upload to specified folder
 
 ## Confirmation

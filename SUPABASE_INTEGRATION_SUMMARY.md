@@ -70,7 +70,7 @@ node orchestrator-supabase.js critical   # See all P0 tasks
 - ✅ Groups by status
 - ✅ Displays costs & agents
 
-**View:** Open `file:///Users/clawdbot/.openclaw/workspace/business-opportunities-2026/dashboard-simple.html` in browser
+**View:** Open `file:///Users/clawdbot/.openclaw/workspace/leadflow/dashboard-simple.html` in browser
 
 ---
 

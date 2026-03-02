@@ -280,7 +280,7 @@ Based on initial research alone:
 ## Document Links
 
 - **Master Index**: https://docs.google.com/document/d/1odY6WzO8jDY_Ic-P057U8UNfXFximsTfSlHzF0Z3Fn8/edit
-- **Agent Workspace**: `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/product-executive/`
+- **Agent Workspace**: `/Users/clawdbot/projects/leadflow/agents/product-executive/`
 
 ---
 

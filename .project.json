@@ -12,7 +12,7 @@
   "template": {
     "name": "project-pod-v1",
     "version": "1.0",
-    "source": "/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/templates/project-pod-v1",
+    "source": "/Users/clawdbot/projects/leadflow/templates/project-pod-v1",
     "last_check": "2026-02-25",
     "migration_phase": "1-foundation"
   },

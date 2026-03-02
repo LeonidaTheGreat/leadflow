@@ -4,7 +4,7 @@
 # Checks if orchestrator is alive, respawns if dead
 # Run this every 5 minutes via cron
 
-cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026
+cd /Users/clawdbot/projects/leadflow
 
 HEARTBEAT_FILE=".orchestrator-heartbeat"
 MAX_AGE_MINUTES=10

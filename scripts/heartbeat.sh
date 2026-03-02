@@ -13,7 +13,7 @@ echo "======================================"
 echo "Started: $(date)"
 echo ""
 
-cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026
+cd /Users/clawdbot/projects/leadflow
 
 # 1. Dashboard Auto-Sync (every run)
 echo "📊 Step 1: Dashboard Auto-Sync"
@@ -31,7 +31,7 @@ if [ "$MINUTE" == "00" ] || [ "$MINUTE" == "15" ] || [ "$MINUTE" == "30" ] || [ 
     if [ -f "product/lead-response/dashboard/scripts/task-dispatcher.ts" ]; then
         cd product/lead-response/dashboard
         npx ts-node scripts/task-dispatcher.ts 2>&1 || echo "⚠️ Task dispatcher failed"
-        cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026
+        cd /Users/clawdbot/projects/leadflow
     else
         echo "⚠️ Task dispatcher not found"
     fi

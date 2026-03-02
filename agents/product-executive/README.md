@@ -6,7 +6,7 @@ Lead the cross-functional agent swarm to identify, evaluate, and recommend busin
 ## Key Documents
 - Master Index: https://docs.google.com/document/d/1odY6WzO8jDY_Ic-P057U8UNfXFximsTfSlHzF0Z3Fn8/edit
 - **Google Drive Folder**: `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE` (Business Opportunities 2026)
-- This Workspace: /Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/product-executive/
+- This Workspace: /Users/clawdbot/projects/leadflow/agents/product-executive/
 
 ## Compliance Notes
 - ⚠️ Google Drive auth requires browser flow - pending authentication

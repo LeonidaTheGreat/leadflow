@@ -133,7 +133,7 @@ Successfully created a comprehensive E2E test suite for the Agent Onboarding UI 
 
 ### Installation
 ```bash
-cd /Users/clawdbot/.openclaw/workspace/projects/leadflow/e2e
+cd /Users/clawdbot/projects/leadflow/e2e
 npm install
 npx playwright install chromium firefox webkit
 ```
@@ -216,7 +216,7 @@ For any bugs found during test execution:
 ## File Structure
 
 ```
-/Users/clawdbot/.openclaw/workspace/projects/leadflow/e2e/
+/Users/clawdbot/projects/leadflow/e2e/
 ├── package.json                    # NPM configuration
 ├── playwright.config.ts            # Playwright config
 ├── .env.example                    # Environment template

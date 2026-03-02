@@ -3,7 +3,7 @@ title: LeadFlow API Design Document
 author: Stojan
 date: 2026-02-21
 tags: [api, design, leadflow, integration]
-project: business-opportunities-2026
+project: leadflow
 priority: high
 status: draft
 category: technical-spec

@@ -8,15 +8,15 @@ echo "=========================="
 # Check for existing dashboard files
 echo ""
 echo "Dashboard files:"
-find /Users/clawdbot/.openclaw/workspace/business-opportunities-2026 -maxdepth 1 -name "*dashboard*" -type f 2>/dev/null | while read f; do
+find /Users/clawdbot/projects/leadflow -maxdepth 1 -name "*dashboard*" -type f 2>/dev/null | while read f; do
   echo "  ✅ $(basename $f)"
 done
 
 # Check hosted version
 echo ""
 echo "Hosted dashboard:"
-if curl -s http://127.0.0.1:8787/business-opportunities-2026/dashboard.html > /dev/null 2>&1; then
-  echo "  ✅ https://stojanadmins-mac-mini.tail3ca16c.ts.net/business-opportunities-2026/dashboard.html"
+if curl -s http://127.0.0.1:8787/leadflow/dashboard.html > /dev/null 2>&1; then
+  echo "  ✅ https://stojanadmins-mac-mini.tail3ca16c.ts.net/leadflow/dashboard.html"
 else
   echo "  ⚠️  Not responding on localhost:8787"
 fi
@@ -24,7 +24,7 @@ fi
 # Check manifest exists
 echo ""
 echo "Manifest:"
-if [ -f "/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/FILE_MANIFEST.md" ]; then
+if [ -f "/Users/clawdbot/projects/leadflow/FILE_MANIFEST.md" ]; then
   echo "  ✅ FILE_MANIFEST.md exists"
 else
   echo "  ❌ FILE_MANIFEST.md missing"

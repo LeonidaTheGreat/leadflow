@@ -11,7 +11,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-const BO2026_ROOT = '/Users/clawdbot/.openclaw/workspace/business-opportunities-2026'
+const BO2026_ROOT = '/Users/clawdbot/projects/leadflow'
 const NOTIFICATION_STATE_FILE = path.join(BO2026_ROOT, '.agent-notifications.json')
 
 interface NotificationState {

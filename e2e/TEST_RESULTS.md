@@ -214,7 +214,7 @@ For any bugs found during testing, use this format:
 
 ### Prerequisites
 ```bash
-cd /Users/clawdbot/.openclaw/workspace/projects/leadflow/e2e
+cd /Users/clawdbot/projects/leadflow/e2e
 npm install
 npx playwright install chromium firefox webkit
 ```

@@ -49,7 +49,7 @@ At session start, load:
 3. HEARTBEAT.md
 4. SKILLS.md (if present)
 5. Project references from:
-- /Users/clawdbot/.openclaw/workspace/projects/leadflow
+- /Users/clawdbot/projects/leadflow
 
 ## Responsibilities
 - Proactive orchestration for LeadFlow

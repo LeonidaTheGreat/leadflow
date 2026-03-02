@@ -10,8 +10,8 @@
 ## Completed Tasks
 
 ### ✅ 1. Read Directive and Agent Config
-- Reviewed `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/DIRECTIVE.md`
-- Reviewed `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/AGENT_CONFIG.md`
+- Reviewed `/Users/clawdbot/projects/leadflow/DIRECTIVE.md`
+- Reviewed `/Users/clawdbot/projects/leadflow/AGENT_CONFIG.md`
 - Understood mission: $20k MRR in 2 months via LLM-driven products
 
 ### ✅ 2. Research: LLM Risks, Compliance & Failure Modes
@@ -24,7 +24,7 @@ Researched and documented:
 - Business/operational failure modes
 
 ### ✅ 3. Created QC Workspace
-- Workspace: `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/qc/`
+- Workspace: `/Users/clawdbot/projects/leadflow/agents/qc/`
 
 ### ✅ 4. Deliverable: Risk & Compliance Framework
 Created comprehensive document: `RISK_FRAMEWORK.md`
@@ -150,7 +150,7 @@ Created comprehensive document: `RISK_FRAMEWORK.md`
 - **Status:** Awaiting creation via `gog` CLI (requires interactive auth)
 
 **Ready-to-paste content available at:**
-`/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/qc/GOOGLE_DOC_CONTENT.md`
+`/Users/clawdbot/projects/leadflow/agents/qc/GOOGLE_DOC_CONTENT.md`
 
 **Command for Leonida to create:**
 ```

@@ -1,16 +1,16 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-01T23:02:17.027Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-01T23:45:50.171Z | Source: `use_cases` + `prds` tables
 
-**Progress: 11/12 complete**
+**Progress: 12/12 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
-| UC-2 | FUB New Lead Auto-SMS | Phase 1 | complete | 1 | defined | PM > Dev > QC |
+| UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-1 | Lead-Initiated SMS | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-9 | Customer Sign-Up Flow | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
-| UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
+| UC-2 | FUB New Lead Auto-SMS | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | UC-3 | FUB Status Change | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
@@ -18,16 +18,16 @@
 | UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
 | UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
-| UC-12 | MRR Reporting | Phase 3 | not_started | 3 | defined | PM > Analytics |
+| UC-12 | MRR Reporting | Phase 3 | complete | 3 | defined | PM > Analytics |
 
 ## Phase: Phase 1
 
-### UC-2 — FUB New Lead Auto-SMS
+### UC-5 — Lead Opt-Out
 
 - **PRD:** Core SMS Lead Response
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Automatically send SMS when new lead appears in FUB CRM
+- **Description:** Process STOP/opt-out messages and update CRM
 - **Workflow:** PM > Dev > QC
 
 ### UC-1 — Lead-Initiated SMS
@@ -38,12 +38,12 @@
 - **Description:** Respond to inbound lead SMS messages with AI-generated responses
 - **Workflow:** PM > Dev > QC
 
-### UC-5 — Lead Opt-Out
+### UC-2 — FUB New Lead Auto-SMS
 
 - **PRD:** Core SMS Lead Response
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Process STOP/opt-out messages and update CRM
+- **Description:** Automatically send SMS when new lead appears in FUB CRM
 - **Workflow:** PM > Dev > QC
 
 ### UC-3 — FUB Status Change
@@ -94,7 +94,7 @@
 ### UC-12 — MRR Reporting
 
 - **PRD:** Billing & Subscriptions
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 3
 - **Description:** Monthly recurring revenue tracking and analytics dashboard
 - **Depends on:** UC-11

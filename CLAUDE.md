@@ -56,7 +56,7 @@ All agents point to this directory. Active agents:
 - leadflow-design — design
 
 ## Critical Rules
-- This directory is a symlink from `~/projects/leadflow` → `.openclaw/workspace/projects/leadflow`
+- This repo lives at `~/projects/leadflow` (GitHub: `LeonidaTheGreat/leadflow`)
 - OpenClaw agents are actively running against this codebase
 - Always run `npm test` before suggesting any deployment
 - Stripe and Supabase are in production — be careful with any data scripts

@@ -28,12 +28,12 @@ The complete design document has been created and is available at:
 
 **Primary Location**:
 ```
-/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/design/Design_Agent_UX_Patterns_Direction.md
+/Users/clawdbot/projects/leadflow/agents/design/Design_Agent_UX_Patterns_Direction.md
 ```
 
 **Project Root Copy**:
 ```
-/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/Design_Agent_UX_Patterns_Direction.md
+/Users/clawdbot/projects/leadflow/Design_Agent_UX_Patterns_Direction.md
 ```
 
 ### Document Contents
@@ -55,7 +55,7 @@ The document includes all required deliverables:
 ### Option 1: Manual Upload (Immediate)
 1. Open Google Drive folder: `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE`
 2. Create new Google Doc titled: "Design Agent - UX Patterns & Direction"
-3. Copy content from: `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/design/Design_Agent_UX_Patterns_Direction.md`
+3. Copy content from: `/Users/clawdbot/projects/leadflow/agents/design/Design_Agent_UX_Patterns_Direction.md`
 4. Paste into Google Doc
 
 ### Option 2: Provide Keyring Password

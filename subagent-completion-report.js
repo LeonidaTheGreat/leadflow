@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const COMPLETION_DIR = '/Users/clawdbot/.openclaw/workspace/projects/leadflow/completion-reports';
+const COMPLETION_DIR = path.join(__dirname, 'completion-reports');
 
 // Ensure directory exists
 if (!fs.existsSync(COMPLETION_DIR)) {

@@ -12,5 +12,5 @@
   "estimatedCost": 9,
   "reason": "Cost $9.00 exceeds daily budget $5",
   "action": "review_and_approve",
-  "approveCommand": "cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026/product && node auto-spawn.js --force"
+  "approveCommand": "cd /Users/clawdbot/projects/leadflow/product && node auto-spawn.js --force"
 }

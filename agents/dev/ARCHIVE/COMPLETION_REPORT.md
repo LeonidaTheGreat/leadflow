@@ -3,7 +3,7 @@
 ## Completed: Technical Landscape & Feasibility Research
 
 ### Deliverable Created
-**File**: `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/dev/technical-landscape-feasibility.md`
+**File**: `/Users/clawdbot/projects/leadflow/agents/dev/technical-landscape-feasibility.md`
 
 **Google Doc Status**: Ready to upload to Drive as "Dev Agent - Technical Landscape & Feasibility"
 
@@ -99,7 +99,7 @@ To assess specific product proposals, I need:
 ---
 
 ## Workspace Created
-`/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/dev/`
+`/Users/clawdbot/projects/leadflow/agents/dev/`
 
 Ready to support Phase 2 (Evaluation) and Phase 3 (Execution Planning).
 

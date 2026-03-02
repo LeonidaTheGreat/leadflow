@@ -46,7 +46,7 @@
 ### Step 1: Copy SQL
 
 ```bash
-cat /Users/clawdbot/.openclaw/workspace/business-opportunities-2026/supabase-schema-migration.sql
+cat /Users/clawdbot/projects/leadflow/supabase-schema-migration.sql
 ```
 
 ### Step 2: Paste into Supabase

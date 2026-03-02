@@ -10,7 +10,7 @@ echo "🚀 Setting up BO2026 Autonomous System"
 echo "======================================="
 echo ""
 
-BO2026_DIR="/Users/clawdbot/.openclaw/workspace/business-opportunities-2026"
+BO2026_DIR="/Users/clawdbot/projects/leadflow"
 LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
 
 # 1. Make scripts executable

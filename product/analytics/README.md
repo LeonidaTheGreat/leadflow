@@ -132,7 +132,7 @@
 ## 📁 File Structure
 
 ```
-/workspace/business-opportunities-2026/product/analytics/
+/workspace/leadflow/product/analytics/
 ├── README.md                    (this file)
 ├── posthog-setup.md             # Event tracking & funnels
 ├── stripe-integration.md        # Billing & MRR tracking

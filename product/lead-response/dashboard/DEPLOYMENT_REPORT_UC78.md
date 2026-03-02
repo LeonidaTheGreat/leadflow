@@ -96,7 +96,7 @@ Upgrade to the Pro plan to unlock all Cron Jobs features on Vercel.
 
 **Option 2: Supabase CLI (if auth configured)**
 ```bash
-cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026/product/lead-response/dashboard
+cd /Users/clawdbot/projects/leadflow/product/lead-response/dashboard
 supabase db push
 ```
 

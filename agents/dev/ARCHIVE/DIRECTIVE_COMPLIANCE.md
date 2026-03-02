@@ -8,8 +8,8 @@
 
 ### Local Files Created (Temporary)
 The following files were created locally during development:
-- `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/dev/technical-landscape-feasibility.md`
-- `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/agents/dev/COMPLETION_REPORT.md`
+- `/Users/clawdbot/projects/leadflow/agents/dev/technical-landscape-feasibility.md`
+- `/Users/clawdbot/projects/leadflow/agents/dev/COMPLETION_REPORT.md`
 
 ### Google Drive Upload Required
 **Target Location**: Business Opportunities 2026 folder (ID: `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE`)

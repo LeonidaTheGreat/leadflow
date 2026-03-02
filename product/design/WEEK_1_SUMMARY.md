@@ -9,7 +9,7 @@
 ## 📦 Deliverables Completed
 
 ### 1. ✅ Agent Dashboard Wireframes (3 Screens)
-**File:** `/workspace/business-opportunities-2026/product/design/wireframes/DASHBOARD_WIREFRAMES.md`
+**File:** `/workspace/leadflow/product/design/wireframes/DASHBOARD_WIREFRAMES.md`
 
 **Screens:**
 1. **Lead Feed** (Incoming Leads)
@@ -43,7 +43,7 @@
 ---
 
 ### 2. ✅ SMS Message Templates (5 Templates)
-**File:** `/workspace/business-opportunities-2026/product/design/templates/SMS_MESSAGE_TEMPLATES.md`
+**File:** `/workspace/leadflow/product/design/templates/SMS_MESSAGE_TEMPLATES.md`
 
 **Templates Ready to Use:**
 
@@ -109,7 +109,7 @@
 ---
 
 ### 3. ✅ Brand Identity
-**File:** `/workspace/business-opportunities-2026/product/design/brand-identity/BRAND_GUIDELINES.md`
+**File:** `/workspace/leadflow/product/design/brand-identity/BRAND_GUIDELINES.md`
 
 **Color Palette:**
 - **Primary:** Slate-900 (#0f172a) — trust, primary actions
@@ -150,7 +150,7 @@
 ---
 
 ### 4. ✅ Landing Page Design
-**File:** `/workspace/business-opportunities-2026/product/design/landing-page/LANDING_PAGE_DESIGN.md`
+**File:** `/workspace/leadflow/product/design/landing-page/LANDING_PAGE_DESIGN.md`
 
 **Page Sections (10 total):**
 
@@ -185,7 +185,7 @@
 ---
 
 ### 5. ✅ Design System Implementation
-**File:** `/workspace/business-opportunities-2026/product/design/brand-identity/tailwind-config.js`
+**File:** `/workspace/leadflow/product/design/brand-identity/tailwind-config.js`
 
 **Tailwind Configuration Includes:**
 - Custom color palette (LeadFlow brand colors)
@@ -212,7 +212,7 @@
 ---
 
 ### 6. ✅ Component Library
-**File:** `/workspace/business-opportunities-2026/product/design/brand-identity/COMPONENT_LIBRARY.md`
+**File:** `/workspace/leadflow/product/design/brand-identity/COMPONENT_LIBRARY.md`
 
 **Copy-Paste Ready Components:**
 - **Buttons** (5 variants: Primary, Secondary, Ghost, Danger, Icon)
@@ -275,7 +275,7 @@
 ## 📁 Project Structure
 
 ```
-business-opportunities-2026/product/design/
+leadflow/product/design/
 ├── brand-identity/
 │   ├── BRAND_GUIDELINES.md
 │   ├── tailwind-config.js

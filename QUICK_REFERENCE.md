@@ -7,14 +7,14 @@
 ## What You See
 
 ### 1. **Live Dashboard** (Open in Browser)
-📍 `file:///Users/clawdbot/.openclaw/workspace/business-opportunities-2026/dashboard-simple.html`
+📍 `file:///Users/clawdbot/projects/leadflow/dashboard-simple.html`
 
 - Auto-refreshes every 10 seconds
 - Shows: Ready | In Progress | Blocked | Done
 - Shows cost per task
 
 ### 2. **Dashboard.md** (Local File)
-📍 `/Users/clawdbot/.openclaw/workspace/business-opportunities-2026/DASHBOARD.md`
+📍 `/Users/clawdbot/projects/leadflow/DASHBOARD.md`
 
 - Auto-generated snapshot
 - Updated every time a task changes status
@@ -88,7 +88,7 @@ Me: Same as before, except now I'm syncing everything to Supabase.
 
 **In Terminal:** 
 ```bash
-cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026
+cd /Users/clawdbot/projects/leadflow
 node orchestrator-supabase.js status      # Queue health
 node orchestrator-supabase.js queue        # Full queue
 ```

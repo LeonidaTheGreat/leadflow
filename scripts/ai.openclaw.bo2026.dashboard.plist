@@ -16,7 +16,7 @@
     </array>
     
     <key>WorkingDirectory</key>
-    <string>/Users/clawdbot/.openclaw/workspace/business-opportunities-2026</string>
+    <string>/Users/clawdbot/projects/leadflow</string>
     
     <key>RunAtLoad</key>
     <true/>

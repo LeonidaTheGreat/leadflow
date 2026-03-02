@@ -336,7 +336,7 @@ Status: ✅ WORKING
 
 ### Quick Start
 ```bash
-cd /Users/clawdbot/.openclaw/workspace/projects/leadflow
+cd /Users/clawdbot/projects/leadflow
 node stripe-e2e-test-v2.js
 ```
 
