@@ -14,6 +14,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '.env') })
  *   4. spawnAgents()             -- Cross-loop learning + budget check + spawn
  *   5. checkBlockers()           -- Check blocked tasks
  *  5b. runSelfHealChecks()       -- Self-heal (Loop 4)
+ *  5c. runSmokeTests()           -- Verify live product health
  *   6. replenishQueue()          -- UC roadmap -> tasks (Loop 1)
  *  6b. processProductFeedback()  -- Feedback -> PM tasks (Loop 3)
  *  6c. checkPRReviews()          -- Merge/rework PRs (Loop 2)
@@ -31,6 +32,7 @@ const { autoDecompose } = require('./auto-decompose')
 const { recordDecision, recordOutcome, DECISION_TYPES } = require('./orchestrator-decision-tracker')
 const { LearningSystem } = require('./learning-system')
 const { runHealthChecks, healIssue } = require('./self-heal')
+const smokeTests = require('./smoke-tests')
 const {
   BUDGET_DAILY_LIMIT, BUDGET_MIN_FOR_SPAWN, BUDGET_TRACKER_PATH,
   checkBudget: wfCheckBudget, recordSpawn: wfRecordSpawn,
@@ -95,6 +97,8 @@ class HeartbeatExecutor {
       await this.checkBlockers()
       // 5b. SELF-HEAL checks
       await this.runSelfHealChecks()
+      // 5c. SMOKE TESTS — verify live product health
+      await this.runSmokeTests()
       // 6. CHECK queue depth - create tasks if low
       await this.replenishQueue()
       // 6b. PROCESS product feedback
@@ -555,6 +559,99 @@ class HeartbeatExecutor {
       }
     } catch (err) {
       console.warn('   ⚠️ Self-heal check failed:', err.message)
+    }
+  }
+
+  async runSmokeTests() {
+    console.log('\n5c. Running smoke tests...')
+    try {
+      const results = await smokeTests.runAll()
+      const total = results.passed.length + results.failed.length
+
+      if (results.failed.length === 0) {
+        console.log(`   🔬 Smoke: ${total}/${total} passed`)
+      } else {
+        const failedNames = results.failed.map(f => f.id).join(', ')
+        console.log(`   🔬 Smoke: ${results.passed.length}/${total} — ${failedNames} FAILED`)
+      }
+
+      const state = smokeTests.loadState()
+
+      // Handle failures: create QC investigation tasks
+      for (const failure of results.failed) {
+        const taskTitle = `Smoke: ${failure.name} failing`
+
+        // Dedup: skip if an open task already exists
+        const existing = await this.store.findTaskByTitle(taskTitle)
+        if (existing && !['done', 'failed'].includes(existing.status)) {
+          console.log(`   ⏭️ Task already open: ${taskTitle}`)
+          continue
+        }
+
+        // Model selection: critical + no cloud spawn in 24h → haiku; else qwen3.5
+        let model = 'qwen3.5'
+        const testState = state.results[failure.id] || {}
+        const lastCloud = testState.lastCloudSpawn ? new Date(testState.lastCloudSpawn) : null
+        const cloudCooldownExpired = !lastCloud || (Date.now() - lastCloud > 24 * 60 * 60 * 1000)
+
+        // Check global cloud smoke count for today
+        const today = new Date().toISOString().split('T')[0]
+        const cloudCountToday = Object.values(state.results)
+          .filter(r => r.lastCloudSpawn && r.lastCloudSpawn.startsWith(today))
+          .length
+
+        if (failure.severity === 'critical' && cloudCooldownExpired && cloudCountToday < 1) {
+          model = 'haiku'
+          state.results[failure.id] = { ...testState, lastCloudSpawn: new Date().toISOString() }
+          smokeTests.saveState(state)
+        }
+
+        const description = [
+          `## Smoke Test Failure`,
+          `**Test:** ${failure.name} (${failure.id})`,
+          `**Severity:** ${failure.severity}`,
+          `**Detail:** ${failure.detail}`,
+          `**URL:** ${smokeTests.tests.find(t => t.id === failure.id)?.url || 'dynamic'}`,
+          `**Time:** ${new Date().toISOString()}`,
+          ``,
+          `Investigate the root cause and report findings using the structured completion report.`
+        ].join('\n')
+
+        await this.store.createTask({
+          title: taskTitle,
+          agent_id: 'qc',
+          status: 'ready',
+          model,
+          priority: failure.severity === 'critical' ? 1 : 3,
+          tags: ['smoke-test', 'automated'],
+          description,
+          metadata: { created_by: 'orchestrator', smoke_test_id: failure.id }
+        })
+
+        console.log(`   🔬 Created task: ${taskTitle} (model: ${model})`)
+        this.actions.push(`Smoke fail → QC: ${failure.name} (${model})`)
+      }
+
+      // Auto-resolve: passing tests with open tasks → mark done
+      for (const pass of results.passed) {
+        const taskTitle = `Smoke: ${pass.name} failing`
+        const existing = await this.store.findTaskByTitle(taskTitle)
+        if (existing && !['done', 'failed'].includes(existing.status)) {
+          await this.store.updateTask(existing.id, {
+            status: 'done',
+            completed_at: new Date().toISOString(),
+            last_error: 'Auto-resolved: smoke test passing again'
+          })
+          console.log(`   ✅ Auto-resolved: ${taskTitle}`)
+          this.actions.push(`Smoke auto-resolved: ${pass.name}`)
+        }
+      }
+
+      // Add summary to actions for Telegram
+      this.actions.push(`Smoke tests: ${results.passed.length}/${total} passed`)
+    } catch (err) {
+      console.warn('   ⚠️ Smoke tests failed:', err.message)
+      this.errors.push(`Smoke tests: ${err.message}`)
     }
   }
 

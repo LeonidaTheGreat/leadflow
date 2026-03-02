@@ -278,6 +278,12 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     return null
   }
 
+  // Guard: skip tasks with no agent_id (spawn-consumer will reject them anyway)
+  if (!task.agent_id) {
+    console.log(`   ⚠️ Skipping ${task.title} — no agent_id assigned`)
+    return null
+  }
+
   // Cross-loop learning: check if this task type has recommendations
   try {
     const recs = learner.getRecommendations(task)

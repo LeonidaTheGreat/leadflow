@@ -261,6 +261,33 @@ async function run() {
         }
       }
 
+      // QC agent: smoke-test investigation (no PR, has smoke-test tag)
+      if (agentId === 'qc' && taskDetail?.tags?.includes('smoke-test') && !taskDetail?.pr_number) {
+        message += `\n\n## Smoke Test Investigation`
+        message += `\nA production smoke test failed. Your job:`
+        message += `\n1. Read the failure details below`
+        message += `\n2. Investigate root cause (check deployment, env vars, logs, code)`
+        message += `\n3. If you can fix it directly, fix it and report success`
+        message += `\n4. If it needs a dev task, report failure with diagnosis + retryRecommendation='retry'`
+        message += `\n5. If it needs human action (env vars, external config), report with retryRecommendation='escalate'`
+        message += `\n\nWrite a completion report with structured diagnosis (symptom, rootCause, suggestedFix, verifySteps).`
+        message += `\n\n\`\`\``
+        message += `\nconst { writeCompletionReport } = require('./subagent-completion-report');`
+        message += `\nwriteCompletionReport({`
+        message += `\n  taskId: '${taskId}',`
+        message += `\n  status: 'completed',  // or 'failed' if you can't fix it`
+        message += `\n  diagnosis: {`
+        message += `\n    symptom: 'What the smoke test reported',`
+        message += `\n    rootCause: 'Why it failed',`
+        message += `\n    suggestedFix: 'How to fix it',`
+        message += `\n    verifySteps: ['Step 1', 'Step 2']`
+        message += `\n  },`
+        message += `\n  retryRecommendation: 'retry' | 'escalate',`
+        message += `\n  filesCreated: [], filesModified: [], completionReportPath: null`
+        message += `\n});`
+        message += `\n\`\`\``
+      }
+
       // QC agent: include PR context if available
       if (agentId === 'qc' && taskDetail?.pr_number) {
         message += `\nReview PR #${taskDetail.pr_number} on branch ${taskDetail.branch_name || 'unknown'}.`
