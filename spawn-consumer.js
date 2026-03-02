@@ -285,7 +285,7 @@ async function run() {
         message += `\n  status: 'failed',`
         message += `\n  error: 'Brief error summary',`
         message += `\n  testResults: { passed: N, total: N, passRate: N/N },`
-        message += `\n  retryRecommendation: 'retry',  // or 'decompose' or 'escalate'`
+        message += `\n  retryRecommendation: '...',  // MUST match your diagnosis — see rules below`
         message += `\n  diagnosis: {`
         message += `\n    symptom: 'What is visibly wrong (e.g. "Tests fail with MODULE_NOT_FOUND")',`
         message += `\n    rootCause: 'Why it is wrong (e.g. "Script references ./config but file was not created")',`
@@ -295,6 +295,10 @@ async function run() {
         message += `\n  filesCreated: [], filesModified: [], completionReportPath: null`
         message += `\n});`
         message += `\n\`\`\``
+        message += `\n\n**retryRecommendation MUST be derived from rootCause:**`
+        message += `\n- \`'retry'\` — the fix is code-level and another agent can do it (e.g. "forgot to run script", "wrong import path")`
+        message += `\n- \`'decompose'\` — the task is too broad/complex for a single agent (e.g. "touches 5 services", "needs both frontend + backend + DB migration")`
+        message += `\n- \`'escalate'\` — the fix requires human action or is outside agent capability (e.g. "missing env var in Vercel", "needs Stripe dashboard config", "spec is ambiguous")`
         message += `\n\nThe diagnosis is REQUIRED for rejections — without it, the next agent will repeat the same mistake.`
       }
 

@@ -410,14 +410,28 @@ class HeartbeatExecutor {
       ].filter(Boolean).join('\n')
     }
 
-    if (failureCount === 1) {
-      // First failure - RETRY with better model + diagnosis context
-      console.log(`   🔄 First failure - will retry with escalated model`)
+    // QC recommendation overrides the default failure-count ladder when diagnosis is present.
+    // The recommendation is grounded in root-cause analysis, so it's more informed than
+    // a mechanical retry counter.
+    const qcRecommendation = testResults?.retryRecommendation
+    const action = qcRecommendation && diagnosis
+      ? qcRecommendation  // trust diagnosis-grounded recommendation
+      : failureCount === 1 ? 'retry'
+      : (failureCount === 2 && task.estimated_hours > 3) ? 'decompose'
+      : (failureCount >= 3 || task.model === 'opus') ? 'escalate'
+      : 'retry'
+
+    if (qcRecommendation && diagnosis) {
+      console.log(`   🎯 QC recommends '${qcRecommendation}' based on: ${diagnosis.rootCause}`)
+    }
+
+    if (action === 'retry') {
+      console.log(`   🔄 Retrying with escalated model (failure #${failureCount})`)
       recordDecision({
         decision_type: DECISION_TYPES.MODEL_SELECTION,
         task_id: taskId,
         chosen_model: this.escalateModel(task.model),
-        context: { failure_count: failureCount, previous_model: task.model, has_diagnosis: !!diagnosis }
+        context: { failure_count: failureCount, previous_model: task.model, has_diagnosis: !!diagnosis, qc_recommendation: qcRecommendation || null }
       })
       const updateFields = {
         status: 'ready',
@@ -430,22 +444,20 @@ class HeartbeatExecutor {
       }
       await this.store.updateTask(taskId, updateFields)
       this.actions.push(`Retry ${taskId} with ${this.escalateModel(task.model)}${diagnosis ? ' + QC diagnosis' : ''}`)
-    } else if (failureCount === 2 && task.estimated_hours > 3) {
-      // Second failure + large task - DECOMPOSE
-      console.log(`   ✂️ Second failure on large task - decomposing...`)
+    } else if (action === 'decompose') {
+      console.log(`   ✂️ Decomposing task${qcRecommendation ? ' (QC recommended)' : ''}...`)
       recordDecision({
         decision_type: DECISION_TYPES.DECOMPOSITION_TIMING,
         task_id: taskId,
-        context: { failure_count: failureCount, estimated_hours: task.estimated_hours }
+        context: { failure_count: failureCount, estimated_hours: task.estimated_hours, qc_recommendation: qcRecommendation || null }
       })
       await this.decomposeTask(taskId)
-    } else if (failureCount >= 3 || task.model === 'opus') {
-      // Third failure or already using best model - ESCALATE to PM
-      console.log(`   📤 Multiple failures - escalating to PM`)
+    } else if (action === 'escalate') {
+      console.log(`   📤 Escalating to PM${qcRecommendation ? ' (QC recommended)' : ''}`)
       recordDecision({
         decision_type: DECISION_TYPES.ESCALATION_DECISION,
         task_id: taskId,
-        context: { failure_count: failureCount, model: task.model }
+        context: { failure_count: failureCount, model: task.model, qc_recommendation: qcRecommendation || null }
       })
       const pmDescription = diagnosis
         ? `Failed ${failureCount}x.\n\n## QC Diagnosis\n**Symptom:** ${diagnosis.symptom}\n**Root Cause:** ${diagnosis.rootCause}\n**Suggested Fix:** ${diagnosis.suggestedFix}\n\nReview if spec is clear and requirements are achievable.`
@@ -458,7 +470,7 @@ class HeartbeatExecutor {
         metadata: { created_by: 'orchestrator', escalation_from: task.id }
       })
       await this.store.updateTask(taskId, { status: 'failed', failure_count: failureCount })
-      this.actions.push(`Escalated ${taskId} to PM after ${failureCount} failures`)
+      this.actions.push(`Escalated ${taskId} to PM after ${failureCount} failures${qcRecommendation ? ' (QC recommended)' : ''}`)
     }
   }
   async createFollowUpTasks(task) {
