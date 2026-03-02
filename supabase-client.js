@@ -19,6 +19,7 @@
 const { createClient } = require('@supabase/supabase-js')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '.env') })
+const { getConfig } = require('./project-config-loader')
 
 class SupabaseTaskClient {
   constructor() {
@@ -33,7 +34,7 @@ class SupabaseTaskClient {
       auth: { autoRefreshToken: false, persistSession: false }
     })
 
-    this.projectId = 'bo2026'
+    this.projectId = getConfig().project_id
   }
 
   // ============== QUEUE OPERATIONS ==============

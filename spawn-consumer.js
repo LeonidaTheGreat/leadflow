@@ -18,6 +18,7 @@ const { spawn, execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const { TaskStore } = require('./task-store')
+const { getConfig } = require('./project-config-loader')
 
 const QUEUE_PATH = path.join(__dirname, 'spawn-queue.json')
 const SPAWN_LOGS_DIR = path.join(__dirname, 'spawn-logs')
@@ -27,10 +28,7 @@ const store = new TaskStore()
 // Workflows use short names ('product', 'dev', 'qc') but OpenClaw may use
 // different identifiers. This mapping lives at the spawn boundary so we don't
 // need to change every workflow array or seed data row.
-const AGENT_ID_MAP = {
-  'product': 'product-manager'
-  // All others (dev, qc, design, analytics, marketing) match exactly
-}
+const AGENT_ID_MAP = getConfig().agents.id_map
 
 function resolveAgentId(taskAgentId) {
   return AGENT_ID_MAP[taskAgentId] || taskAgentId

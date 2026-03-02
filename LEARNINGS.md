@@ -416,22 +416,10 @@ const prompt = fillTemplate(promptTemplate, task);
 | Date | Change | Impact |
 |------|--------|--------|
 | 2026-02-24 | Initial learning system | Baseline |
-| | Dashboard decompose on creation | +50% success |
-| | Integration → Sonnet by default | +35% success |
-| | Acceptance criteria requirement | +20% success |
 
 ---
 
-**Next Review:** Weekly (every 7 days)  
-**Next Update:** After every task completion/failure
-
----
-
-*LEARNINGS.md - Living document for continuous improvement*
-
----
-
-## Critical Failure Patterns (New)
+## Critical Failure Patterns
 
 ### Pattern: "Script Created But Not Executed"
 **Task:** a7768902-37c3-41da-8b48-9b8a6e05cc2d  
@@ -443,5 +431,15 @@ const prompt = fillTemplate(promptTemplate, task);
 - All deployment tasks must include explicit "execute" not "create script" 
 - QC must verify deployment works before marking done
 - Add `requires_qc: true` metadata to all production deployment tasks
+- Orchestrator must not mark tasks done without QC verification
 
 **Recorded:** 2026-03-02
+
+---
+
+**Next Review:** Weekly (every 7 days)  
+**Next Update:** After every task completion/failure
+
+---
+
+*LEARNINGS.md - Living document for continuous improvement*

@@ -17,16 +17,18 @@
 const ProjectQuery = require('./query-project')
 const fs = require('fs')
 const path = require('path')
+const { getConfig, getDayNumber } = require('./project-config-loader')
 
 async function generateDashboard() {
+  const config = getConfig()
   const query = new ProjectQuery()
   const project = await query.getFullProject()
 
-  const timestamp = new Date().toLocaleString('en-US', { 
+  const timestamp = new Date().toLocaleString('en-US', {
     timeZone: 'America/Toronto'
   })
 
-  const dayNum = Math.ceil((new Date() - new Date('2026-02-15')) / (1000 * 60 * 60 * 24))
+  const dayNum = getDayNumber(config)
 
   // Build markdown
   let md = `---

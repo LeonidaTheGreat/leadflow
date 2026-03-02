@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
+const { getConfig } = require('./project-config-loader')
 
 /**
  * TaskStore - Database-backed task management for 8/10 autonomy
@@ -36,7 +37,7 @@ class TaskStore {
       this.useLocalFallback = false
     }
 
-    this.projectId = 'bo2026'
+    this.projectId = getConfig().project_id
     this.subscribers = []
   }
 

@@ -26,7 +26,8 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { autoRefreshToken: false, persistSession: false }
 })
 
-const PROJECT_ID = 'bo2026'
+const { getConfig } = require('../project-config-loader')
+const PROJECT_ID = getConfig().project_id
 
 async function collectE2EFailures() {
   console.log('Checking E2E test failures...')

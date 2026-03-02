@@ -11,27 +11,19 @@
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const { getConfig } = require('./project-config-loader')
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ── Constants (loaded from project config) ──────────────────────────────────
 
-const BUDGET_DAILY_LIMIT = 20.00
-const BUDGET_MIN_FOR_SPAWN = 0.50
+const _cfg = getConfig()
+const BUDGET_DAILY_LIMIT = _cfg.budget.daily_limit
+const BUDGET_MIN_FOR_SPAWN = _cfg.budget.min_for_spawn
 const BUDGET_TRACKER_PATH = path.join(__dirname, 'budget-tracker.json')
 
-const AGENT_LABELS = {
-  product: 'PM', dev: 'Dev', design: 'Design',
-  qc: 'QC', analytics: 'Analytics', marketing: 'Marketing'
-}
+const AGENT_LABELS = _cfg.agents.labels
 
 // Cost per hour by model (USD). Qwen runs locally on MLX = free.
-const MODEL_COSTS = {
-  'qwen': 0.00,
-  'qwen3.5': 0.00,
-  'kimi': 0.30,
-  'haiku': 0.50,
-  'sonnet': 2.00,
-  'opus': 8.00
-}
+const MODEL_COSTS = _cfg.budget.model_costs
 
 /**
  * Estimate task cost based on model and hours.

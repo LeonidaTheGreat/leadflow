@@ -13,17 +13,19 @@
 const SupabaseTaskClient = require('./supabase-client')
 const fs = require('fs')
 const path = require('path')
+const { getConfig, getDayNumber } = require('./project-config-loader')
 
 async function generateDashboard() {
+  const config = getConfig()
   const client = new SupabaseTaskClient()
   const queue = await client.getQueue()
   const summary = await client.getSummary()
 
-  const timestamp = new Date().toLocaleString('en-US', { 
+  const timestamp = new Date().toLocaleString('en-US', {
     timeZone: 'America/Toronto'
   })
 
-  const dayNum = Math.ceil((new Date() - new Date('2026-02-15')) / (1000 * 60 * 60 * 24))
+  const dayNum = getDayNumber(config)
 
   // Build markdown
   let md = `---
@@ -166,8 +168,12 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $${summary.total_estimated_cost}  
+**Estimated project cost:** $${summary.total_estimated_cost}
 **Cost per task:** Avg \$${(parseFloat(summary.total_estimated_cost) / summary.total).toFixed(2)}
+
+---
+
+${await generateRevenueSection()}
 
 ---
 
@@ -214,6 +220,70 @@ if (require.main === module) {
       console.error('Error:', err.message)
       process.exit(1)
     })
+}
+
+/**
+ * Generate the revenue intelligence dashboard section.
+ * Reads from revenue_metrics and project_goals tables.
+ * Non-fatal — returns placeholder if tables don't exist yet.
+ */
+async function generateRevenueSection() {
+  try {
+    const { createClient } = require('@supabase/supabase-js')
+    const supabaseUrl = process.env.SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!supabaseUrl || !supabaseKey) return '## 💵 Revenue Intelligence\n\n*Supabase not configured*'
+
+    const sb = createClient(supabaseUrl, supabaseKey, { auth: { autoRefreshToken: false, persistSession: false } })
+    const projectId = config.project_id
+
+    // Latest revenue metrics
+    const { data: metrics } = await sb
+      .from('revenue_metrics')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('date', { ascending: false })
+      .limit(1)
+
+    // Active goals
+    const { data: goals } = await sb
+      .from('project_goals')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('status', 'active')
+
+    let section = '## 💵 Revenue Intelligence (Loop 5)\n\n'
+
+    if (metrics && metrics.length > 0) {
+      const m = metrics[0]
+      const mrr = (m.mrr_cents / 100).toFixed(2)
+      section += `| Metric | Value |\n|--------|-------|\n`
+      section += `| **Current MRR** | $${mrr} |\n`
+      section += `| **Active Subscribers** | ${m.active_subscribers} |\n`
+      section += `| **Trial Users** | ${m.trial_users} |\n`
+      section += `| **Conversion Rate** | ${(m.conversion_rate * 100).toFixed(1)}% |\n`
+      section += `| **ARPU** | $${(m.arpu_cents / 100).toFixed(2)} |\n`
+      section += `| **Last Updated** | ${m.date} |\n\n`
+    } else {
+      section += '*No revenue data collected yet*\n\n'
+    }
+
+    if (goals && goals.length > 0) {
+      section += '### Goal Progress\n\n'
+      section += '| Goal | Target | Current | Gap | Trajectory | Days Left |\n'
+      section += '|------|--------|---------|-----|------------|----------|\n'
+      for (const g of goals) {
+        const targetDate = new Date(g.target_date)
+        const daysLeft = Math.max(0, Math.ceil((targetDate - new Date()) / (1000 * 60 * 60 * 24)))
+        const emoji = g.trajectory === 'on_track' ? '🟢' : g.trajectory === 'ahead' ? '🔵' : g.trajectory === 'behind' ? '🟡' : '🔴'
+        section += `| ${g.goal_type.toUpperCase()} | $${Number(g.target_value).toLocaleString()} | $${Number(g.current_value).toLocaleString()} | ${g.gap_percent}% | ${emoji} ${g.trajectory} | ${daysLeft}d |\n`
+      }
+    }
+
+    return section
+  } catch (err) {
+    return `## 💵 Revenue Intelligence\n\n*Revenue tables not yet created — run migration 005*\n`
+  }
 }
 
 module.exports = generateDashboard

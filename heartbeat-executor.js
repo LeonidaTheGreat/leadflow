@@ -44,6 +44,7 @@ const {
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const { getConfig, getDayNumber, getDashboardDir } = require('./project-config-loader')
 // Constants
 const HEARTBEAT_LOG_PATH = path.join(__dirname, 'ORCHESTRATOR-HEARTBEAT-LOG.md')
 const MAX_SPAWNS_PER_HEARTBEAT = 2
@@ -77,7 +78,8 @@ class HeartbeatExecutor {
   constructor() {
     this.store = new TaskStore()
     this.learner = new LearningSystem()
-    this.projectId = 'bo2026'
+    this.config = getConfig()
+    this.projectId = this.config.project_id
     this.actions = []
     this.spawned = []
     this.completed = []
@@ -87,6 +89,8 @@ class HeartbeatExecutor {
     console.log('🫀 LeadFlow Orchestrator Heartbeat')
     console.log('====================================')
     try {
+      // 0. CHECK GOAL STATE — set urgency mode based on goal trajectory
+      await this.checkGoalState()
       // 1. QUERY Supabase for current state
       await this.queryState()
       // 2. DETECT zombie tasks (in_progress but no activity)
@@ -103,7 +107,11 @@ class HeartbeatExecutor {
       await this.runSmokeTests()
       // 5d. BUILD HEALTH — verify dashboard builds cleanly
       await this.checkBuildHealth()
-      // 6. CHECK queue depth - create tasks if low
+      // 5e. REVENUE INTELLIGENCE — collect metrics, check goals (Loop 5)
+      await this.collectRevenueIntelligence()
+      // 5f. DISTRIBUTION HEALTH — detect traffic/conversion issues (Loop 6)
+      await this.checkDistributionHealth()
+      // 6. CHECK queue depth - create tasks if low (revenue-aware)
       await this.replenishQueue()
       // 6b. PROCESS product feedback
       await this.processProductFeedback()
@@ -124,6 +132,51 @@ class HeartbeatExecutor {
       await this.reportError(err)
     }
   }
+  // ── Step 0: Goal-Driven Mode ──────────────────────────────────────────
+
+  async checkGoalState() {
+    console.log('0️⃣ Checking goal state...')
+    try {
+      if (!this.store.supabase) return
+
+      const { data: goals } = await this.store.supabase
+        .from('project_goals')
+        .select('*')
+        .eq('project_id', this.projectId)
+        .eq('status', 'active')
+
+      if (!goals || goals.length === 0) {
+        this.urgencyMode = 'normal'
+        return
+      }
+
+      // Determine urgency from worst-performing goal
+      const trajectories = goals.map(g => g.trajectory).filter(Boolean)
+      if (trajectories.includes('critical')) {
+        this.urgencyMode = 'critical'
+        console.log('   🔴 CRITICAL — goal critically behind, speed mode active')
+      } else if (trajectories.includes('behind')) {
+        this.urgencyMode = 'behind'
+        console.log('   🟡 BEHIND — goal behind schedule, boosting revenue UCs')
+      } else {
+        this.urgencyMode = 'normal'
+        console.log('   🟢 ON TRACK')
+      }
+
+      // In critical mode, try to switch optimizer to speed
+      if (this.urgencyMode === 'critical') {
+        try {
+          const optimizer = require('./optimizer')
+          optimizer.setMode('speed')
+          this.actions.push('Optimizer: switched to speed mode (goal critical)')
+        } catch {}
+      }
+    } catch (err) {
+      console.warn('   ⚠️ Goal state check failed (non-fatal):', err.message)
+      this.urgencyMode = 'normal'
+    }
+  }
+
   async queryState() {
     console.log('\n1️⃣ Querying task state...')
     try {
@@ -926,7 +979,7 @@ class HeartbeatExecutor {
   async checkAndDeploy() {
     try {
       const { execSync } = require('child_process')
-      const dashboardDir = require('path').join(__dirname, 'product', 'lead-response', 'dashboard')
+      const dashboardDir = getDashboardDir(this.config)
 
       // Get last commit timestamp touching dashboard source
       const lastCommit = execSync(
@@ -954,24 +1007,44 @@ class HeartbeatExecutor {
         return
       }
 
-      // Deploy directly (fast, non-interactive, < 60s)
-      console.log('   🚀 Auto-deploying dashboard to Vercel...')
-      const output = execSync(
-        '/opt/homebrew/bin/vercel --prod --yes 2>&1',
-        { cwd: dashboardDir, encoding: 'utf-8', timeout: 120000 }
-      )
+      // Deploy with safety net (rollback on smoke test failure)
+      console.log('   🚀 Auto-deploying dashboard to Vercel (with safety net)...')
+      try {
+        const { safeDeploy } = require('./orchestrator/deploy-safety')
+        const result = await safeDeploy({ postDeployWaitMs: 15000 })
 
-      // Check for success
-      if (output.includes('Production:') || output.includes('Aliased:')) {
-        require('fs').writeFileSync(deployStatePath, JSON.stringify({
-          deployedAt: new Date().toISOString(),
-          trigger: 'auto-deploy',
-          lastCommit
-        }, null, 2))
-        console.log('   🚀 Deploy: ✅ success')
-        this.actions.push('Auto-deployed dashboard to Vercel')
-      } else {
-        console.log('   🚀 Deploy: ⚠️ unexpected output')
+        if (result.success) {
+          require('fs').writeFileSync(deployStatePath, JSON.stringify({
+            deployedAt: new Date().toISOString(),
+            trigger: 'auto-deploy-safe',
+            lastCommit,
+            commit: result.deployedCommit
+          }, null, 2))
+          console.log('   🚀 Deploy: ✅ success (verified by smoke tests)')
+          this.actions.push('Auto-deployed dashboard to Vercel (verified)')
+        } else if (result.revertedTo) {
+          console.warn(`   🚀 Deploy: ⚠️ rolled back to ${result.revertedTo.slice(0, 8)}`)
+          this.actions.push(`Deploy rolled back: smoke tests failed after deploy`)
+          this.errors.push(`Deploy rolled back to ${result.revertedTo.slice(0, 8)}`)
+        } else {
+          console.warn(`   🚀 Deploy: ❌ ${result.error || 'failed'}`)
+        }
+      } catch (safeErr) {
+        // Fallback: direct deploy without safety net
+        console.warn('   Safety net failed, attempting direct deploy...')
+        const output = execSync(
+          `${this.config.deployment.deploy_command} 2>&1`,
+          { cwd: dashboardDir, encoding: 'utf-8', timeout: 120000 }
+        )
+        if (output.includes('Production:') || output.includes('Aliased:')) {
+          require('fs').writeFileSync(deployStatePath, JSON.stringify({
+            deployedAt: new Date().toISOString(),
+            trigger: 'auto-deploy-fallback',
+            lastCommit
+          }, null, 2))
+          console.log('   🚀 Deploy: ✅ success (fallback, no safety net)')
+          this.actions.push('Auto-deployed dashboard (fallback)')
+        }
       }
     } catch (err) {
       // Deploy failed — don't create a task, just log.
@@ -1141,6 +1214,59 @@ class HeartbeatExecutor {
     }
     this.actions.push(`Checked ${this.blockedTasks.length} blocked tasks`)
   }
+
+  // ── Loop 5: Revenue Intelligence ────────────────────────────────────────
+
+  async collectRevenueIntelligence() {
+    console.log('\n5e. Revenue intelligence (Loop 5)...')
+    try {
+      const { collectRevenue } = require('./scripts/revenue-collector')
+      const result = await collectRevenue()
+      this.revenueGoals = result.goals || []
+
+      const offTrack = this.revenueGoals.filter(g => !g.onTrack)
+      if (offTrack.length > 0) {
+        console.log(`   ⚠️ ${offTrack.length} goal(s) off-track — revenue-aware prioritization active`)
+        this.actions.push(`Revenue: ${offTrack.length} goal(s) off-track`)
+      } else if (this.revenueGoals.length > 0) {
+        console.log('   Revenue goals on track')
+      } else {
+        console.log('   No active revenue goals')
+      }
+    } catch (err) {
+      // Non-fatal — revenue collection failure shouldn't block the heartbeat
+      console.warn('   ⚠️ Revenue collection failed (non-fatal):', err.message)
+    }
+  }
+
+  // ── Loop 6: Distribution Health ──────────────────────────────────────────
+
+  async checkDistributionHealth() {
+    console.log('\n5f. Distribution health (Loop 6)...')
+    try {
+      const { collectDistribution, checkDistributionHealth: checkHealth, createDistributionTasks } = require('./scripts/distribution-collector')
+
+      // Collect metrics (best-effort from available sources)
+      await collectDistribution()
+
+      // Check for distribution issues
+      const issues = await checkHealth()
+      if (issues.length > 0) {
+        console.log(`   ⚠️ ${issues.length} distribution issue(s) detected`)
+        for (const issue of issues) {
+          console.log(`      [${issue.severity}] ${issue.message}`)
+        }
+        await createDistributionTasks(issues)
+        this.actions.push(`Distribution: ${issues.length} issue(s) → tasks created`)
+      } else {
+        console.log('   Distribution health OK')
+      }
+    } catch (err) {
+      // Non-fatal — distribution check failure shouldn't block the heartbeat
+      console.warn('   ⚠️ Distribution check failed (non-fatal):', err.message)
+    }
+  }
+
   async replenishQueue() {
     console.log('\n6️⃣ Checking queue depth...')
     if (this.status.ready >= 2) {
@@ -1165,6 +1291,19 @@ class HeartbeatExecutor {
         return
       }
 
+      // Revenue-aware priority boost: when goals are off-track,
+      // high-impact UCs get their priority multiplied (lower = higher priority)
+      const revenueOffTrack = (this.revenueGoals || []).some(g => !g.onTrack)
+      if (revenueOffTrack) {
+        const IMPACT_MULTIPLIER = { high: 0.3, medium: 0.6, low: 1.0, none: 1.0 }
+        for (const uc of incompleteUCs) {
+          const multiplier = IMPACT_MULTIPLIER[uc.revenue_impact] || 1.0
+          uc._effective_priority = Math.max(1, Math.round((uc.priority || 5) * multiplier))
+        }
+        incompleteUCs.sort((a, b) => (a._effective_priority || a.priority) - (b._effective_priority || b.priority))
+        console.log('   Revenue off-track — boosting revenue-impacting UCs')
+      }
+
       // Check which UCs already have active tasks
       const allTasks = await this.store.getTasks()
       const activeUCs = new Set(allTasks
@@ -1185,7 +1324,7 @@ class HeartbeatExecutor {
         .from('use_cases').select('id').eq('implementation_status', 'complete')
       const completedUCs = new Set((completedUCData || []).map(u => u.id))
 
-      const AGENT_LABELS = { product: 'PM', dev: 'Dev', design: 'Design', qc: 'QC', analytics: 'Analytics', marketing: 'Marketing' }
+      const AGENT_LABELS = this.config.agents.labels
       let created = 0
 
       for (const uc of incompleteUCs) {
@@ -1242,8 +1381,8 @@ class HeartbeatExecutor {
       return
     }
     // Build report
-    const dayNum = Math.ceil((new Date() - new Date('2026-02-15')) / (1000 * 60 * 60 * 24))
-    let report = `🤖 LeadFlow Orchestrator — Day ${dayNum}/60\n\n`
+    const dayNum = getDayNumber(this.config)
+    let report = `🤖 ${this.config.reporting.report_prefix} — Day ${dayNum}/${this.config.reporting.day_target}\n\n`
     report += `Queue: ${this.status.ready} ready | ${this.status.inProgress} active | ${this.status.blocked} blocked\n`
     if (this.spawned.length > 0) {
       report += `\n🚀 Spawned:\n`
@@ -1262,11 +1401,11 @@ class HeartbeatExecutor {
     fs.writeFileSync(reportPath, JSON.stringify({
       report,
       timestamp: new Date().toISOString(),
-      target: 'telegram:-1003852328909',
-      threadId: '10788'
+      target: `telegram:${this.config.telegram.chat_id}`,
+      threadId: this.config.telegram.thread_id
     }, null, 2))
-    console.log('   Report ready for Telegram (topic 10788)')
-    this.actions.push('Report prepared for topic 10788')
+    console.log(`   Report ready for Telegram (topic ${this.config.telegram.thread_id})`)
+    this.actions.push(`Report prepared for topic ${this.config.telegram.thread_id}`)
   }
   async logHeartbeat() {
     console.log('\n8️⃣ Logging heartbeat...')
@@ -1365,7 +1504,7 @@ ${JSON.stringify(logs, null, 2)}
     fs.writeFileSync(reportPath, JSON.stringify({
       report: `🚨 Orchestrator Error\n\n${err.message}`,
       timestamp: new Date().toISOString(),
-      target: '-1003852328909:topic:10788',
+      target: `${this.config.telegram.chat_id}:topic:${this.config.telegram.thread_id}`,
       isError: true
     }, null, 2))
   }

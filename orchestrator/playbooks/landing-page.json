@@ -1,0 +1,71 @@
+{
+  "name": "Landing Page",
+  "description": "Marketing landing page with signup form, social proof, and conversion tracking.",
+  "prds": [
+    {
+      "title": "Landing Page & Conversion",
+      "description": "High-converting landing page targeting the ICP with clear value proposition.",
+      "use_cases": [
+        {
+          "id": "lp-hero",
+          "name": "Hero Section & Value Prop",
+          "description": "Above-the-fold hero section with headline, subheadline, CTA button, and hero image/demo.",
+          "workflow": ["marketing", "design", "dev", "qc"],
+          "priority": 1,
+          "revenue_impact": "high",
+          "acceptance_criteria": [
+            "Clear headline communicating core value",
+            "Supporting subheadline with specifics",
+            "Primary CTA button above fold",
+            "Hero image or demo preview",
+            "Mobile responsive"
+          ]
+        },
+        {
+          "id": "lp-social-proof",
+          "name": "Social Proof & Testimonials",
+          "description": "Customer logos, testimonials, and metrics that build trust.",
+          "workflow": ["marketing", "design", "dev", "qc"],
+          "priority": 2,
+          "revenue_impact": "medium",
+          "acceptance_criteria": [
+            "At least 3 testimonials or social proof elements",
+            "Customer logos if available",
+            "Key metrics (users, savings, speed)",
+            "Trust badges (security, compliance)"
+          ]
+        },
+        {
+          "id": "lp-pricing",
+          "name": "Pricing Section",
+          "description": "Clear pricing tiers with feature comparison and CTA buttons.",
+          "workflow": ["product", "design", "dev", "qc"],
+          "priority": 1,
+          "revenue_impact": "high",
+          "acceptance_criteria": [
+            "All pricing tiers displayed",
+            "Feature comparison visible",
+            "Most popular plan highlighted",
+            "CTA buttons link to checkout",
+            "FAQ section for pricing questions"
+          ]
+        },
+        {
+          "id": "lp-analytics",
+          "name": "Conversion Tracking",
+          "description": "Analytics and event tracking for funnel optimization.",
+          "workflow": ["dev", "qc"],
+          "priority": 2,
+          "revenue_impact": "medium",
+          "acceptance_criteria": [
+            "Page view tracking",
+            "CTA click tracking",
+            "Signup form submission tracking",
+            "Scroll depth tracking",
+            "UTM parameter capture"
+          ]
+        }
+      ]
+    }
+  ]
+}

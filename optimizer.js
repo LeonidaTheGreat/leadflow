@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getConfig: _getProjectConfig } = require('./project-config-loader');
 
 const CONFIG_PATH = path.join(process.cwd(), 'strategy-config.json');
 const CURRENT_MODE_FILE = path.join(process.cwd(), '.current-optimization-mode.json');
@@ -55,7 +56,7 @@ function setMode(mode) {
     if (url && key) {
       const sb = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
       sb.from('metrics').insert({
-        project_id: 'bo2026', domain: 'orchestrator',
+        project_id: _getProjectConfig().project_id, domain: 'orchestrator',
         metric_type: 'optimization_mode', data: modeData
       }).then(() => {}).catch(() => {});
     }

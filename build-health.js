@@ -18,8 +18,9 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
+const { getDashboardDir } = require('./project-config-loader')
 
-const DASHBOARD_DIR = path.join(__dirname, 'product', 'lead-response', 'dashboard')
+const DASHBOARD_DIR = getDashboardDir()
 const STATE_PATH = path.join(__dirname, '.build-health-state.json')
 const MAX_AGE_MS = 6 * 60 * 60 * 1000 // 6 hours
 

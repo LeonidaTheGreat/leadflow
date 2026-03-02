@@ -33,8 +33,9 @@ const {
 } = require('./workflow-engine')
 const fs = require('fs')
 const path = require('path')
+const { getConfig } = require('./project-config-loader')
 
-const PROJECT_ID = 'bo2026'
+const PROJECT_ID = getConfig().project_id
 const LOG_PATH = path.join(__dirname, '.realtime-dispatcher.log')
 const MAX_LOG_BYTES = 1024 * 1024 // 1 MB
 const RATE_LIMIT_MAX = 20 // events per minute

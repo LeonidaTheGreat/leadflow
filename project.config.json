@@ -1,0 +1,103 @@
+{
+  "project_id": "bo2026",
+  "project_name": "LeadFlow AI",
+  "project_dir": "/Users/clawdbot/projects/leadflow",
+
+  "telegram": {
+    "chat_id": "-1003852328909",
+    "thread_id": "10788"
+  },
+
+  "deployment": {
+    "platform": "vercel",
+    "dashboard_dir": "product/lead-response/dashboard",
+    "deploy_command": "/opt/homebrew/bin/vercel --prod --yes"
+  },
+
+  "build_health": {
+    "dashboard_dir": "product/lead-response/dashboard",
+    "build_command": "npx next build"
+  },
+
+  "smoke_tests": [
+    {
+      "id": "vercel-health",
+      "name": "Vercel /health endpoint",
+      "url": "https://fub-inbound-webhook.vercel.app/health",
+      "severity": "critical",
+      "check_type": "json_status_ok"
+    },
+    {
+      "id": "vercel-root",
+      "name": "Vercel root endpoint",
+      "url": "https://fub-inbound-webhook.vercel.app/",
+      "severity": "warning",
+      "check_type": "http_200"
+    },
+    {
+      "id": "dashboard-local",
+      "name": "Local dashboard",
+      "url": "http://127.0.0.1:8787/dashboard.html",
+      "severity": "warning",
+      "check_type": "html_contains",
+      "expect": "LeadFlow"
+    },
+    {
+      "id": "vercel-dashboard",
+      "name": "Vercel dashboard health",
+      "url": "https://leadflow-ai-five.vercel.app/api/health",
+      "severity": "critical",
+      "check_type": "json_status_ok",
+      "fallback_url": "https://leadflow-ai-five.vercel.app/dashboard"
+    },
+    {
+      "id": "supabase-read",
+      "name": "Supabase read access",
+      "severity": "critical",
+      "check_type": "supabase_read"
+    }
+  ],
+
+  "agents": {
+    "id_map": {
+      "product": "product-manager"
+    },
+    "types": ["dev", "qc", "design", "product", "marketing", "analytics"],
+    "labels": {
+      "product": "PM",
+      "dev": "Dev",
+      "design": "Design",
+      "qc": "QC",
+      "analytics": "Analytics",
+      "marketing": "Marketing"
+    }
+  },
+
+  "budget": {
+    "daily_limit": 20.00,
+    "min_for_spawn": 0.50,
+    "model_costs": {
+      "qwen": 0.00,
+      "qwen3.5": 0.00,
+      "kimi": 0.30,
+      "haiku": 0.50,
+      "sonnet": 2.00,
+      "opus": 8.00
+    }
+  },
+
+  "reporting": {
+    "day_zero": "2026-02-15",
+    "day_target": 60,
+    "report_prefix": "LeadFlow Orchestrator"
+  },
+
+  "goals": [
+    {
+      "type": "mrr",
+      "target": 20000,
+      "target_date": "2026-04-15",
+      "currency": "USD"
+    }
+  ]
+}

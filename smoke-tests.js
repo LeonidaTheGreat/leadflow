@@ -16,6 +16,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const { getConfig } = require('./project-config-loader')
 
 const STATE_PATH = path.join(__dirname, '.smoke-test-state.json')
 
@@ -33,120 +34,90 @@ const COMMON_REJECT_PATTERNS = [
   'Module not found',         // build error
 ]
 
-// ── Test Definitions ────────────────────────────────────────────────────────
+// ── Generic check functions (driven by check_type in config) ────────────────
 
-const tests = [
-  {
-    id: 'vercel-health',
-    name: 'Vercel /health endpoint',
-    url: 'https://fub-inbound-webhook.vercel.app/health',
-    severity: 'critical',
-    rejectPatterns: COMMON_REJECT_PATTERNS,
-    check(response, body) {
-      if (response.status !== 200) {
-        return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
-      }
-      try {
-        const json = JSON.parse(body)
-        if (json.status === 'ok') {
-          return { pass: true, detail: 'status: ok' }
-        }
-        return { pass: false, detail: `status: ${json.status || 'missing'} (expected "ok")` }
-      } catch {
-        return { pass: false, detail: 'Response is not valid JSON' }
-      }
-    }
-  },
-  {
-    id: 'vercel-root',
-    name: 'Vercel root endpoint',
-    url: 'https://fub-inbound-webhook.vercel.app/',
-    severity: 'warning',
-    rejectPatterns: COMMON_REJECT_PATTERNS,
-    check(response) {
-      if (response.status === 200) {
-        return { pass: true, detail: 'HTTP 200' }
-      }
+const CHECK_FUNCTIONS = {
+  json_status_ok(response, body) {
+    if (response.status !== 200) {
       return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
     }
-  },
-  {
-    id: 'dashboard-local',
-    name: 'Local dashboard',
-    // Hit dashboard.html directly — index.html is an HTML redirect that curl doesn't follow
-    url: 'http://127.0.0.1:8787/dashboard.html',
-    severity: 'warning',
-    rejectPatterns: COMMON_REJECT_PATTERNS,
-    check(response, body) {
-      if (response.status !== 200) {
-        return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
+    try {
+      const json = JSON.parse(body)
+      if (json.status === 'ok') {
+        return { pass: true, detail: 'status: ok' }
       }
-      if (body && body.includes('<title>') && body.includes('LeadFlow')) {
-        return { pass: true, detail: 'Dashboard HTML loaded' }
-      }
-      return { pass: false, detail: 'Response missing expected content' }
-    }
-  },
-  {
-    id: 'vercel-dashboard',
-    name: 'Vercel dashboard health',
-    // Try /api/health first; runner falls back to dashboardFallbackUrl if 404
-    url: 'https://leadflow-ai-five.vercel.app/api/health',
-    dashboardFallbackUrl: 'https://leadflow-ai-five.vercel.app/dashboard',
-    severity: 'critical',
-    rejectPatterns: COMMON_REJECT_PATTERNS,
-    check(response, body) {
-      // /api/health returns JSON
-      if (response.headers?.get?.('content-type')?.includes('application/json')) {
-        try {
-          const json = JSON.parse(body)
-          if (response.status === 200 && json.status === 'ok') {
-            return { pass: true, detail: 'All health checks passed' }
-          }
-          const errors = json.errors || []
-          return { pass: false, detail: `${json.status || 'error'}: ${errors.join('; ') || 'unknown'}` }
-        } catch {
-          return { pass: false, detail: 'Health endpoint returned invalid JSON' }
-        }
-      }
-      // Fallback: HTML dashboard page (when /api/health not deployed yet)
-      if (response.status !== 200) {
-        return { pass: false, detail: `HTTP ${response.status}` }
-      }
+      // Health endpoint with errors array
+      const errors = json.errors || []
+      return { pass: false, detail: `status: ${json.status || 'missing'} (expected "ok")${errors.length ? ': ' + errors.join('; ') : ''}` }
+    } catch {
+      // Fallback: if response is HTML (e.g. dashboard page), check for basic markers
       if (body && (body.includes('<title>') || body.includes('__next'))) {
-        return { pass: true, detail: 'Dashboard HTML loaded (health endpoint not deployed yet)' }
+        return { pass: true, detail: 'HTML loaded (health endpoint not deployed yet)' }
       }
-      return { pass: false, detail: 'Dashboard response missing expected content' }
+      return { pass: false, detail: 'Response is not valid JSON' }
     }
   },
-  {
-    id: 'supabase-read',
-    name: 'Supabase read access',
-    url: null, // built dynamically from env
-    severity: 'critical',
-    check(response, body) {
-      if (response.status !== 200) {
-        return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
+
+  http_200(response) {
+    if (response.status === 200) {
+      return { pass: true, detail: 'HTTP 200' }
+    }
+    return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
+  },
+
+  html_contains(response, body, testDef) {
+    if (response.status !== 200) {
+      return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
+    }
+    const expect = testDef.expect || testDef.name
+    if (body && body.includes('<title>') && body.includes(expect)) {
+      return { pass: true, detail: `HTML loaded (contains "${expect}")` }
+    }
+    return { pass: false, detail: 'Response missing expected content' }
+  },
+
+  supabase_read(response, body) {
+    if (response.status !== 200) {
+      return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
+    }
+    try {
+      const data = JSON.parse(body)
+      if (Array.isArray(data) && data.length > 0) {
+        return { pass: true, detail: `Got ${data.length} row(s)` }
       }
-      try {
-        const data = JSON.parse(body)
-        if (Array.isArray(data) && data.length > 0) {
-          return { pass: true, detail: `Got ${data.length} row(s)` }
-        }
-        if (Array.isArray(data) && data.length === 0) {
-          return { pass: false, detail: 'Query returned 0 rows (table may be empty or auth failed silently)' }
-        }
-        // Supabase error object
-        if (data.message || data.error) {
-          return { pass: false, detail: `API error: ${data.message || data.error}` }
-        }
-        return { pass: false, detail: 'Unexpected response shape' }
-      } catch {
-        return { pass: false, detail: 'Response is not valid JSON' }
+      if (Array.isArray(data) && data.length === 0) {
+        return { pass: false, detail: 'Query returned 0 rows (table may be empty or auth failed silently)' }
       }
+      if (data.message || data.error) {
+        return { pass: false, detail: `API error: ${data.message || data.error}` }
+      }
+      return { pass: false, detail: 'Unexpected response shape' }
+    } catch {
+      return { pass: false, detail: 'Response is not valid JSON' }
     }
   }
-]
+}
+
+// ── Build test definitions from project config ──────────────────────────────
+
+function buildTests() {
+  const config = getConfig()
+  return config.smoke_tests.map(testDef => ({
+    id: testDef.id,
+    name: testDef.name || testDef.id,
+    url: testDef.check_type === 'supabase_read' ? null : testDef.url,
+    dashboardFallbackUrl: testDef.fallback_url || null,
+    severity: testDef.severity || 'warning',
+    rejectPatterns: testDef.check_type !== 'supabase_read' ? COMMON_REJECT_PATTERNS : null,
+    check(response, body) {
+      const fn = CHECK_FUNCTIONS[testDef.check_type]
+      if (!fn) return { pass: false, detail: `Unknown check_type: ${testDef.check_type}` }
+      return fn(response, body, testDef)
+    }
+  }))
+}
+
+const tests = buildTests()
 
 // ── State Management ────────────────────────────────────────────────────────
 

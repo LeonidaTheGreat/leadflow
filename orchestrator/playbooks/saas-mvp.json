@@ -1,0 +1,127 @@
+{
+  "name": "SaaS MVP",
+  "description": "Standard SaaS product: authentication, billing, dashboard, API, landing page, and onboarding.",
+  "prds": [
+    {
+      "title": "Core Product",
+      "description": "Core SaaS product features: authentication, user management, and main dashboard.",
+      "use_cases": [
+        {
+          "id": "core-auth",
+          "name": "User Authentication",
+          "description": "Email/password signup, login, password reset, session management.",
+          "workflow": ["product", "dev", "qc"],
+          "priority": 1,
+          "revenue_impact": "high",
+          "acceptance_criteria": [
+            "Email signup with validation",
+            "Login with session persistence",
+            "Password reset flow",
+            "Protected routes require authentication",
+            "Logout clears session"
+          ]
+        },
+        {
+          "id": "core-dashboard",
+          "name": "User Dashboard",
+          "description": "Main product dashboard showing key metrics, recent activity, and quick actions.",
+          "workflow": ["product", "design", "dev", "qc"],
+          "priority": 2,
+          "revenue_impact": "medium",
+          "acceptance_criteria": [
+            "Dashboard loads within 2s",
+            "Shows key product metrics",
+            "Recent activity feed",
+            "Quick action buttons",
+            "Mobile responsive"
+          ]
+        },
+        {
+          "id": "core-settings",
+          "name": "User Settings",
+          "description": "Account settings: profile, notifications, integrations, billing link.",
+          "workflow": ["product", "design", "dev", "qc"],
+          "priority": 3,
+          "revenue_impact": "low",
+          "acceptance_criteria": [
+            "Profile editing works",
+            "Notification preferences saved",
+            "Integration status visible",
+            "Link to billing portal"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Billing & Subscriptions",
+      "description": "Stripe-powered billing: subscription plans, checkout, customer portal, webhooks.",
+      "use_cases": [
+        {
+          "id": "billing-checkout",
+          "name": "Subscription Checkout",
+          "description": "Stripe Checkout integration for subscription signup with multiple plan tiers.",
+          "workflow": ["product", "dev", "qc"],
+          "priority": 1,
+          "revenue_impact": "high",
+          "acceptance_criteria": [
+            "Pricing page shows all tiers",
+            "Stripe Checkout session created correctly",
+            "Success/cancel redirect pages",
+            "Subscription stored in database",
+            "Webhook handles checkout.session.completed"
+          ]
+        },
+        {
+          "id": "billing-portal",
+          "name": "Customer Billing Portal",
+          "description": "Stripe Customer Portal for self-service billing management.",
+          "workflow": ["dev", "qc"],
+          "priority": 2,
+          "revenue_impact": "medium",
+          "acceptance_criteria": [
+            "Portal session creation endpoint",
+            "Users can update payment method",
+            "Users can cancel subscription",
+            "Portal redirect back to app"
+          ]
+        },
+        {
+          "id": "billing-webhooks",
+          "name": "Billing Webhooks",
+          "description": "Handle Stripe webhooks for subscription lifecycle events.",
+          "workflow": ["dev", "qc"],
+          "priority": 1,
+          "revenue_impact": "high",
+          "acceptance_criteria": [
+            "Webhook signature verification",
+            "Handle subscription.created/updated/deleted",
+            "Handle invoice.paid/payment_failed",
+            "Update user status in database",
+            "Retry handling for failed deliveries"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "API & Integrations",
+      "description": "REST API for the core product plus third-party integrations.",
+      "use_cases": [
+        {
+          "id": "api-core",
+          "name": "Core REST API",
+          "description": "RESTful API with authentication, rate limiting, and standard CRUD operations.",
+          "workflow": ["product", "dev", "qc"],
+          "priority": 2,
+          "revenue_impact": "medium",
+          "acceptance_criteria": [
+            "JWT or session-based auth",
+            "Rate limiting per user",
+            "Standard CRUD endpoints",
+            "Error responses follow RFC 7807",
+            "API documentation generated"
+          ]
+        }
+      ]
+    }
+  ]
+}
