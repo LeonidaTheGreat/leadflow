@@ -1,5 +1,5 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-01T23:45:50.423Z
+Last updated: 2026-03-02T01:05:15.858Z
 ## Recent Heartbeats
 ```json
 [
@@ -312,9 +312,47 @@ Last updated: 2026-03-01T23:45:50.423Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-02T00:05:15.264Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 59,
+      "total": 68
+    },
+    "actions": [
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":59,\"total\":68}",
+      "Reset zombie: Fix: Dashboard Completed Tasks showing stale data (retry 1/3)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-02T01:05:15.766Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 60,
+      "total": 69
+    },
+    "actions": [
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":60,\"total\":69}",
+      "Reset zombie: Fix: Deployed dashboard missing SUPABASE_SERVICE_ROLE_KEY (retry 1/3)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
-- Total heartbeats: 16
-- Last status: {"ready":0,"inProgress":2,"blocked":0,"done":58,"total":68}
+- Total heartbeats: 18
+- Last status: {"ready":0,"inProgress":1,"blocked":0,"done":60,"total":69}

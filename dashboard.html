@@ -566,42 +566,91 @@ function showTaskDetail(taskId) {
   });
 }
 
-// Completed Work
+// Completed Work - queries both completed_work and tasks tables
 async function loadCompletedWork() {
-  const { data, error } = await sb
-    .from('completed_work')
-    .select('*')
-    .eq('project_id', PROJECT_ID)
-    .eq('status', 'COMPLETE')
-    .order('completed_date', { ascending: false })
-    .limit(10);
+  // Query completed_work table (legacy data)
+  const { data: completedWork, error: cwError } = await sb
+    .from("completed_work")
+    .select("*")
+    .eq("project_id", PROJECT_ID)
+    .eq("status", "COMPLETE");
   
-  if (error || !data) {
-    document.getElementById('completed-work-content').innerHTML = '<div class="error">Failed to load</div>';
+  // Query tasks table where status="done" (primary source)
+  const { data: doneTasks, error: tasksError } = await sb
+    .from("tasks")
+    .select("*")
+    .eq("project_id", PROJECT_ID)
+    .eq("status", "done")
+    .order("completed_at", { ascending: false });
+  
+  if ((cwError && tasksError) || (!completedWork?.length && !doneTasks?.length)) {
+    document.getElementById("completed-work-content").innerHTML = '<div class="muted">No completed work yet</div>';
     return;
   }
   
-  if (data.length === 0) {
-    document.getElementById('completed-work-content').innerHTML = '<div class="muted">No completed work yet</div>';
+  // Normalize completed_work entries
+  const cwItems = (completedWork || []).map(w => ({
+    title: w.work_name,
+    useCase: w.use_case,
+    description: w.description,
+    completedAt: w.completed_date,
+    hours: w.hours_spent || 0,
+    agent: w.agent_id || "-",
+    model: "-",
+    cost: 0,
+    source: "completed_work"
+  }));
+  
+  // Normalize done tasks
+  const taskItems = (doneTasks || []).map(t => ({
+    title: t.title,
+    useCase: t.use_case_id,
+    description: t.description,
+    completedAt: t.completed_at,
+    hours: t.estimated_hours || 0,
+    agent: t.agent_id || "-",
+    model: t.model || "-",
+    cost: t.actual_cost_usd || t.estimated_cost_usd || 0,
+    source: "tasks"
+  }));
+  
+  // Combine and sort by completion date (newest first)
+  const allItems = [...cwItems, ...taskItems]
+    .filter(item => item.completedAt)
+    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
+    .slice(0, 20);
+  
+  if (allItems.length === 0) {
+    document.getElementById("completed-work-content").innerHTML = '<div class="muted">No completed work yet</div>';
     return;
   }
   
   const html = `
     <div class="table-wrapper"><table>
-      <tr><th>Work</th><th>UC</th><th>Description</th><th>Hours</th></tr>
-      ${data.map(w => `
+      <tr><th>Task</th><th>Agent</th><th>Model</th><th>Completed</th><th>Cost</th></tr>
+      ${allItems.map(item => {
+        const ago = (() => {
+          const d = Date.now() - new Date(item.completedAt).getTime();
+          const days = Math.floor(d / 86400000);
+          const hours = Math.floor((d % 86400000) / 3600000);
+          if (days > 0) return days + "d ago";
+          if (hours > 0) return hours + "h ago";
+          return "just now";
+        })();
+        return `
         <tr>
-          <td><strong>${w.work_name}</strong></td>
-          <td>${w.use_case || '-'}</td>
-          <td class="small">${w.description || '-'}</td>
-          <td>${w.hours_spent || 0}h</td>
+          <td><strong>${escapeHtml(item.title)}</strong></td>
+          <td>${escapeHtml(item.agent)}</td>
+          <td><span class="pill">${item.model}</span></td>
+          <td>${ago}</td>
+          <td>$${item.cost.toFixed(2)}</td>
         </tr>
-      `).join('')}
+      `}).join("")}
     </table></div>
-    <div style="margin-top:8px;"><strong>Total:</strong> ${data.reduce((s, w) => s + (w.hours_spent || 0), 0).toFixed(1)}h completed</div>
+    <div style="margin-top:8px;"><strong>Total:</strong> ${allItems.length} completed (${doneTasks?.length || 0} from tasks, ${completedWork?.length || 0} from legacy)</div>
   `;
   
-  document.getElementById('completed-work-content').innerHTML = html;
+  document.getElementById("completed-work-content").innerHTML = html;
 }
 
 // Action Items

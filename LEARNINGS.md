@@ -428,3 +428,20 @@ const prompt = fillTemplate(promptTemplate, task);
 ---
 
 *LEARNINGS.md - Living document for continuous improvement*
+
+---
+
+## Critical Failure Patterns (New)
+
+### Pattern: "Script Created But Not Executed"
+**Task:** a7768902-37c3-41da-8b48-9b8a6e05cc2d  
+**Type:** environment_issue  
+**What happened:** Dev agent created `set-vercel-env.sh` script but did not run `vercel env add` command. Marked task "complete — awaiting manual config" without verification.  
+**Impact:** Deployment remained broken, user discovered failure  
+**Root Cause:** No execution requirement in prompt; no QC verification  
+**Fix:** 
+- All deployment tasks must include explicit "execute" not "create script" 
+- QC must verify deployment works before marking done
+- Add `requires_qc: true` metadata to all production deployment tasks
+
+**Recorded:** 2026-03-02
