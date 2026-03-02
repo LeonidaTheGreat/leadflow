@@ -161,16 +161,19 @@ class TaskStore {
     if (this.useLocalFallback) {
       return this.localTasks.find(t => t.title === title) || null
     }
-    
+
     const { data, error } = await this.supabase
       .from('tasks')
       .select('*')
       .eq('title', title)
       .eq('project_id', this.projectId)
-      .maybeSingle()
-    
+      .order('created_at', { ascending: false })
+
     if (error) throw error
-    return data
+    if (!data || data.length === 0) return null
+    // Prefer active tasks over completed/failed ones
+    const active = data.find(t => !['done', 'failed', 'completed', 'decomposed'].includes(t.status))
+    return active || data[0]
   }
   
   async getTasks(filters = {}) {
