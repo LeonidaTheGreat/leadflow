@@ -178,6 +178,38 @@ async function run() {
       if (taskDetail?.metadata?.chain_from) message += `\n\nThis continues from prior task ${taskDetail.metadata.chain_from}.`
       if (taskDetail?.metadata?.workflow_step != null) message += `\nWorkflow step: ${taskDetail.metadata.workflow_step + 1}/${taskDetail.metadata.workflow_total || '?'}`
       if (taskDetail?.retry_count > 0) message += `\n\n⚠️ This is retry #${taskDetail.retry_count}. Previous error: ${taskDetail.last_error || 'unknown'}`
+
+      // Inject failure patterns from learning system so agents avoid repeating mistakes
+      try {
+        const { LearningSystem } = require('./learning-system')
+        const learning = new LearningSystem()
+        const recs = learning.getRecommendations(taskDetail || { title, id: taskId })
+
+        // Also scan recent failures for tasks with similar titles or types
+        const taskType = learning.classifyTaskType(taskDetail || { title })
+        const recentFailures = (learning.learnings.taskOutcomes || [])
+          .filter(o => !o.success && o.taskType === taskType)
+          .slice(-5)
+
+        if (recentFailures.length > 0 || recs.length > 0) {
+          message += `\n\n## ⚠️ FAILURE PATTERNS — READ BEFORE STARTING`
+          message += `\nThe learning system has recorded these issues for similar tasks:`
+          for (const f of recentFailures) {
+            message += `\n- **${f.failureReason || 'unknown'}**: ${f.title} (${f.timestamp?.slice(0, 10) || 'recent'})`
+          }
+          for (const r of recs) {
+            message += `\n- **${r.type}**: ${r.reason}`
+          }
+          message += `\n\n**CRITICAL RULES based on past failures:**`
+          message += `\n- You MUST execute commands directly — do NOT create scripts and leave them unrun`
+          message += `\n- You MUST verify your work actually took effect (check output, hit URLs, read logs)`
+          message += `\n- If a previous attempt failed, explain what you are doing differently this time`
+        }
+      } catch (learnErr) {
+        // Non-fatal: learning context is advisory
+        console.warn(`   ⚠️ Learning context injection failed (non-fatal): ${learnErr.message}`)
+      }
+
       // Inject completed work context so agent knows what to skip
       if (taskDetail?.use_case_id) {
         try {
