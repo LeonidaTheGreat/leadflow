@@ -70,6 +70,24 @@ const tests = [
     }
   },
   {
+    id: 'vercel-dashboard',
+    name: 'Vercel dashboard',
+    url: 'https://leadflow-ldpn8lez6-stojans-projects-7db98187.vercel.app/dashboard',
+    severity: 'critical',
+    check(response, body) {
+      if (response.status === 404) {
+        return { pass: false, detail: 'HTTP 404 — dashboard route not found' }
+      }
+      if (response.status !== 200) {
+        return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
+      }
+      if (body && (body.includes('<title>') || body.includes('__next'))) {
+        return { pass: true, detail: 'Dashboard HTML loaded' }
+      }
+      return { pass: false, detail: 'Response missing expected dashboard content' }
+    }
+  },
+  {
     id: 'supabase-read',
     name: 'Supabase read access',
     url: null, // built dynamically from env

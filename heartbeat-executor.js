@@ -577,24 +577,88 @@ class HeartbeatExecutor {
 
       const state = smokeTests.loadState()
 
-      // Handle failures: create QC investigation tasks
+      // Handle failures: escalation ladder
+      // 1st failure (no prior task) → QC investigation
+      // Still failing after QC completed → dev fix task with QC diagnosis
       for (const failure of results.failed) {
-        const taskTitle = `Smoke: ${failure.name} failing`
+        const smokeTitle = `Smoke: ${failure.name} failing`
+        const devTitle = `Fix: ${failure.name} (smoke)`
 
-        // Dedup: skip if an open task already exists
-        const existing = await this.store.findTaskByTitle(taskTitle)
-        if (existing && !['done', 'failed'].includes(existing.status)) {
-          console.log(`   ⏭️ Task already open: ${taskTitle}`)
+        // Dedup: skip if an open task (QC or dev) already exists
+        const existingSmoke = await this.store.findTaskByTitle(smokeTitle)
+        const existingDev = await this.store.findTaskByTitle(devTitle)
+        if (existingSmoke && !['done', 'failed'].includes(existingSmoke.status)) {
+          console.log(`   ⏭️ QC task already open: ${smokeTitle}`)
+          continue
+        }
+        if (existingDev && !['done', 'failed'].includes(existingDev.status)) {
+          console.log(`   ⏭️ Dev task already open: ${devTitle}`)
           continue
         }
 
+        // Escalation: if QC already completed but smoke still fails → create dev task
+        if (existingSmoke && existingSmoke.status === 'done') {
+          // Extract diagnosis from completed QC task
+          const diagnosis = existingSmoke.description || ''
+          const lastError = existingSmoke.last_error || ''
+
+          // Also check spawn logs for structured diagnosis
+          let qcDiagnosis = ''
+          if (existingSmoke.spawn_config?.log_prefix) {
+            const logTail = readLogTail(`${existingSmoke.spawn_config.log_prefix}.stdout.log`, 60, 8192)
+            // Extract diagnosis fields from log
+            const symptomMatch = logTail.match(/symptom['":\s]+['"]([^'"]+)/i)
+            const rootCauseMatch = logTail.match(/rootCause['":\s]+['"]([^'"]+)/i)
+            const suggestedFixMatch = logTail.match(/suggestedFix['":\s]+['"]([^'"]+)/i)
+            if (rootCauseMatch) {
+              qcDiagnosis = [
+                `## QC Diagnosis (from previous investigation)`,
+                symptomMatch ? `**Symptom:** ${symptomMatch[1]}` : '',
+                `**Root Cause:** ${rootCauseMatch[1]}`,
+                suggestedFixMatch ? `**Suggested Fix:** ${suggestedFixMatch[1]}` : '',
+              ].filter(Boolean).join('\n')
+            }
+          }
+
+          const devDescription = [
+            `## Smoke Test Still Failing After QC Investigation`,
+            `**Test:** ${failure.name} (${failure.id})`,
+            `**Severity:** ${failure.severity}`,
+            `**Detail:** ${failure.detail}`,
+            `**URL:** ${smokeTests.tests.find(t => t.id === failure.id)?.url || 'dynamic'}`,
+            ``,
+            qcDiagnosis || `QC investigated but did not fix the issue. Previous task: ${existingSmoke.id}`,
+            ``,
+            `## Your Job`,
+            `1. Apply the fix described in the QC diagnosis above`,
+            `2. Verify the fix works (hit the URL, check the response)`,
+            `3. Commit and push your changes`,
+            `4. Report success or failure using subagent-completion-report.js`
+          ].join('\n')
+
+          await this.store.createTask({
+            title: devTitle,
+            agent_id: 'dev',
+            status: 'ready',
+            model: 'qwen3.5',
+            priority: failure.severity === 'critical' ? 1 : 2,
+            tags: ['smoke-test', 'automated', 'fix'],
+            description: devDescription,
+            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, escalated_from: existingSmoke.id }
+          })
+
+          console.log(`   🔬 Escalated to dev: ${devTitle}`)
+          this.actions.push(`Smoke escalated → Dev: ${failure.name}`)
+          continue
+        }
+
+        // First failure: create QC investigation task
         // Model selection: critical + no cloud spawn in 24h → haiku; else qwen3.5
         let model = 'qwen3.5'
         const testState = state.results[failure.id] || {}
         const lastCloud = testState.lastCloudSpawn ? new Date(testState.lastCloudSpawn) : null
         const cloudCooldownExpired = !lastCloud || (Date.now() - lastCloud > 24 * 60 * 60 * 1000)
 
-        // Check global cloud smoke count for today
         const today = new Date().toISOString().split('T')[0]
         const cloudCountToday = Object.values(state.results)
           .filter(r => r.lastCloudSpawn && r.lastCloudSpawn.startsWith(today))
@@ -618,7 +682,7 @@ class HeartbeatExecutor {
         ].join('\n')
 
         await this.store.createTask({
-          title: taskTitle,
+          title: smokeTitle,
           agent_id: 'qc',
           status: 'ready',
           model,
@@ -628,22 +692,24 @@ class HeartbeatExecutor {
           metadata: { created_by: 'orchestrator', smoke_test_id: failure.id }
         })
 
-        console.log(`   🔬 Created task: ${taskTitle} (model: ${model})`)
+        console.log(`   🔬 Created QC task: ${smokeTitle} (model: ${model})`)
         this.actions.push(`Smoke fail → QC: ${failure.name} (${model})`)
       }
 
-      // Auto-resolve: passing tests with open tasks → mark done
+      // Auto-resolve: passing tests with open tasks (QC or dev) → mark done
       for (const pass of results.passed) {
-        const taskTitle = `Smoke: ${pass.name} failing`
-        const existing = await this.store.findTaskByTitle(taskTitle)
-        if (existing && !['done', 'failed'].includes(existing.status)) {
-          await this.store.updateTask(existing.id, {
-            status: 'done',
-            completed_at: new Date().toISOString(),
-            last_error: 'Auto-resolved: smoke test passing again'
-          })
-          console.log(`   ✅ Auto-resolved: ${taskTitle}`)
-          this.actions.push(`Smoke auto-resolved: ${pass.name}`)
+        const titles = [`Smoke: ${pass.name} failing`, `Fix: ${pass.name} (smoke)`]
+        for (const taskTitle of titles) {
+          const existing = await this.store.findTaskByTitle(taskTitle)
+          if (existing && !['done', 'failed'].includes(existing.status)) {
+            await this.store.updateTask(existing.id, {
+              status: 'done',
+              completed_at: new Date().toISOString(),
+              last_error: 'Auto-resolved: smoke test passing again'
+            })
+            console.log(`   ✅ Auto-resolved: ${taskTitle}`)
+            this.actions.push(`Smoke auto-resolved: ${pass.name}`)
+          }
         }
       }
 
