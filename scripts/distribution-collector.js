@@ -238,12 +238,13 @@ async function createDistributionTasks(issues) {
   const { TaskStore } = require('../task-store')
   const store = new TaskStore()
 
+  // Map distribution issue templates to seeded use case IDs (from seed-gtm-use-cases.js)
   const UC_WORKFLOWS = {
-    'landing-page': { workflow: ['product', 'marketing', 'design', 'dev', 'qc'], name: 'Create Landing Page' },
-    'signup-flow': { workflow: ['product', 'design', 'dev', 'qc'], name: 'Build Signup Flow' },
-    'onboarding-improvement': { workflow: ['product', 'design', 'dev', 'qc'], name: 'Improve Onboarding' },
-    'conversion-optimization': { workflow: ['analytics', 'product', 'dev', 'qc'], name: 'Optimize Conversion' },
-    'content-marketing': { workflow: ['product', 'marketing', 'qc'], name: 'Content Marketing Campaign' }
+    'landing-page': { workflow: ['product', 'marketing', 'design', 'dev', 'qc'], name: 'Create Landing Page', use_case_id: 'gtm-landing-page' },
+    'signup-flow': { workflow: ['product', 'design', 'dev', 'qc'], name: 'Build Signup Flow', use_case_id: 'gtm-signup-flow' },
+    'onboarding-improvement': { workflow: ['product', 'design', 'dev', 'qc'], name: 'Improve Onboarding', use_case_id: 'gtm-onboarding' },
+    'conversion-optimization': { workflow: ['analytics', 'product', 'dev', 'qc'], name: 'Optimize Conversion', use_case_id: 'gtm-conversion' },
+    'content-marketing': { workflow: ['product', 'marketing', 'qc'], name: 'Content Marketing Campaign', use_case_id: 'gtm-content' }
   }
 
   for (const issue of issues) {
@@ -261,11 +262,13 @@ async function createDistributionTasks(issues) {
       status: 'ready',
       model: 'sonnet',
       priority: issue.severity === 'critical' ? 1 : 2,
+      use_case_id: template.use_case_id || null,
       tags: ['distribution', 'automated', issue.severity],
       description: [
         `Distribution Issue: ${issue.message}`,
         '',
         `Template: ${issue.uc_template}`,
+        `Use Case: ${template.use_case_id || 'N/A'}`,
         `Workflow: ${template.workflow.join(' → ')}`,
         `Severity: ${issue.severity}`,
         '',

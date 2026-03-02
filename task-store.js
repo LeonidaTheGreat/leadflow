@@ -96,12 +96,21 @@ class TaskStore {
   // ============== CRUD Operations ==============
   
   async createTask(task) {
-    // DUPLICATE PREVENTION: Only block against active tasks (ready/in_progress/blocked).
-    // Completed or failed tasks should not prevent new work with the same title.
+    // DUPLICATE PREVENTION: Block against active tasks AND recently completed tasks.
     const existing = await this.findTaskByTitle(task.title)
     if (existing && !['done', 'failed', 'completed', 'decomposed'].includes(existing.status)) {
       console.warn(`[TaskStore] Duplicate prevented: Task '${task.title}' already active (${existing.id}, status: ${existing.status})`)
       return existing
+    }
+    // Cooldown: don't recreate tasks completed within 24h (prevents infinite loops
+    // from condition-monitoring systems like distribution/revenue health checks)
+    if (existing && ['done', 'completed'].includes(existing.status) && existing.completed_at) {
+      const completedAt = new Date(existing.completed_at)
+      const hoursSince = (Date.now() - completedAt.getTime()) / (1000 * 60 * 60)
+      if (hoursSince < 24) {
+        console.warn(`[TaskStore] Cooldown: Task '${task.title}' completed ${hoursSince.toFixed(1)}h ago (${existing.id})`)
+        return existing
+      }
     }
     
     const taskData = {
