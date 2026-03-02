@@ -95,10 +95,11 @@ class TaskStore {
   // ============== CRUD Operations ==============
   
   async createTask(task) {
-    // DUPLICATE PREVENTION: Check if task with same title already exists
+    // DUPLICATE PREVENTION: Only block against active tasks (ready/in_progress/blocked).
+    // Completed or failed tasks should not prevent new work with the same title.
     const existing = await this.findTaskByTitle(task.title)
-    if (existing) {
-      console.warn(`[TaskStore] Duplicate prevented: Task '${task.title}' already exists (${existing.id})`)
+    if (existing && !['done', 'failed', 'completed', 'decomposed'].includes(existing.status)) {
+      console.warn(`[TaskStore] Duplicate prevented: Task '${task.title}' already active (${existing.id}, status: ${existing.status})`)
       return existing
     }
     

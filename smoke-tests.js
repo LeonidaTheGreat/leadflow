@@ -19,6 +19,20 @@ const path = require('path')
 
 const STATE_PATH = path.join(__dirname, '.smoke-test-state.json')
 
+// ── Shared reject patterns ──────────────────────────────────────────────────
+// If any of these appear in a response body, the test fails even on HTTP 200.
+// This catches the whole class of "page loads but app is broken" issues:
+// missing env vars, failed SSR, error boundaries, etc.
+const COMMON_REJECT_PATTERNS = [
+  'is required',              // missing config: "supabaseKey is required"
+  'Missing or invalid',       // env var errors
+  'APPLICATION_ERROR',        // Vercel/Next.js error page
+  'Internal Server Error',    // generic server error in HTML
+  'NEXT_REDIRECT',            // Next.js redirect error leaked to client
+  'Cannot read properties of undefined',  // runtime crash in SSR
+  'Module not found',         // build error
+]
+
 // ── Test Definitions ────────────────────────────────────────────────────────
 
 const tests = [
@@ -27,6 +41,7 @@ const tests = [
     name: 'Vercel /health endpoint',
     url: 'https://fub-inbound-webhook.vercel.app/health',
     severity: 'critical',
+    rejectPatterns: COMMON_REJECT_PATTERNS,
     check(response, body) {
       if (response.status !== 200) {
         return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
@@ -47,6 +62,7 @@ const tests = [
     name: 'Vercel root endpoint',
     url: 'https://fub-inbound-webhook.vercel.app/',
     severity: 'warning',
+    rejectPatterns: COMMON_REJECT_PATTERNS,
     check(response) {
       if (response.status === 200) {
         return { pass: true, detail: 'HTTP 200' }
@@ -71,20 +87,36 @@ const tests = [
   },
   {
     id: 'vercel-dashboard',
-    name: 'Vercel dashboard',
-    url: 'https://leadflow-ldpn8lez6-stojans-projects-7db98187.vercel.app/dashboard',
+    name: 'Vercel dashboard health',
+    url: 'https://leadflow-ldpn8lez6-stojans-projects-7db98187.vercel.app/api/health',
     severity: 'critical',
     check(response, body) {
       if (response.status === 404) {
-        return { pass: false, detail: 'HTTP 404 — dashboard route not found' }
+        return { pass: false, detail: 'Health endpoint not deployed (/api/health returns 404)' }
+      }
+      if (response.status === 503) {
+        // 503 = degraded — parse the errors
+        try {
+          const json = JSON.parse(body)
+          const errors = json.errors || []
+          return { pass: false, detail: `Degraded: ${errors.join('; ') || 'unknown'}` }
+        } catch {
+          return { pass: false, detail: `HTTP 503 — degraded (unparseable response)` }
+        }
       }
       if (response.status !== 200) {
         return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
       }
-      if (body && (body.includes('<title>') || body.includes('__next'))) {
-        return { pass: true, detail: 'Dashboard HTML loaded' }
+      try {
+        const json = JSON.parse(body)
+        if (json.status === 'ok') {
+          return { pass: true, detail: 'All checks passed' }
+        }
+        const errors = json.errors || []
+        return { pass: false, detail: `Status: ${json.status} — ${errors.join('; ')}` }
+      } catch {
+        return { pass: false, detail: 'Response is not valid JSON' }
       }
-      return { pass: false, detail: 'Response missing expected dashboard content' }
     }
   },
   {
@@ -184,7 +216,15 @@ async function runAll() {
       clearTimeout(timeout)
 
       const body = await response.text()
-      const result = test.check(response, body)
+      let result = test.check(response, body)
+
+      // Reject pattern check: even if check() passed, fail if body contains error patterns
+      if (result.pass && test.rejectPatterns && body) {
+        const matched = test.rejectPatterns.find(p => body.includes(p))
+        if (matched) {
+          result = { pass: false, detail: `Body contains error pattern: "${matched}"` }
+        }
+      }
 
       const entry = {
         id: test.id, name: test.name, severity: test.severity,
