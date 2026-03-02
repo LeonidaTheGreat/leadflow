@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import * as crypto from 'crypto';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingSubmission } from '@/lib/types/onboarding';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Password hashing (for demo - in production use bcrypt or argon2)
 function hashPassword(password: string): string {

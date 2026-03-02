@@ -89,8 +89,8 @@ const tests = [
     id: 'vercel-dashboard',
     name: 'Vercel dashboard health',
     // Try /api/health first; runner falls back to dashboardFallbackUrl if 404
-    url: 'https://leadflow-ldpn8lez6-stojans-projects-7db98187.vercel.app/api/health',
-    dashboardFallbackUrl: 'https://leadflow-ldpn8lez6-stojans-projects-7db98187.vercel.app/dashboard',
+    url: 'https://leadflow-ai-five.vercel.app/api/health',
+    dashboardFallbackUrl: 'https://leadflow-ai-five.vercel.app/dashboard',
     severity: 'critical',
     rejectPatterns: COMMON_REJECT_PATTERNS,
     check(response, body) {

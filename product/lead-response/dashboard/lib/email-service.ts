@@ -3,13 +3,22 @@
  * UC-11: Subscription Lifecycle Management
  */
 
-import { Resend } from 'resend'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseServer as supabase } from '@/lib/supabase-server'
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Lazy-load Resend to avoid build error when package isn't installed
+let _resend: any = null
+async function getResend() {
+  if (_resend) return _resend
+  if (!process.env.RESEND_API_KEY) return null
+  try {
+    // @ts-expect-error — resend may not be installed; caught at runtime
+    const { Resend } = await import('resend')
+    _resend = new Resend(process.env.RESEND_API_KEY)
+    return _resend
+  } catch {
+    return null
+  }
+}
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'billing@leadflow.ai'
 const COMPANY_NAME = 'LeadFlow AI'
@@ -250,6 +259,7 @@ async function sendEmail(
   metadata?: any
 ): Promise<boolean> {
   try {
+    const resend = await getResend()
     // If Resend not configured, log and return success (for testing)
     if (!resend) {
       console.log(`📧 Email queued (Resend not configured): ${emailType} to ${to}`)

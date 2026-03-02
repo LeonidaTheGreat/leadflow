@@ -3,12 +3,8 @@
  * Helper functions for sequence control
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { supabaseServer as supabase } from '@/lib/supabase-server'
 import type { LeadSequence, SequenceStatus, SequenceType, CreateSequenceParams, UpdateSequenceParams } from './types/sequences'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 /**
  * Create a new sequence for a lead

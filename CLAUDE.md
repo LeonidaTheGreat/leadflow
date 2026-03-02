@@ -98,6 +98,50 @@ The live execution dashboard runs as a static HTML file served over HTTP (not `f
   - `/live` → BO2026 dashboard on port 3000
   - Config is persistent (survives reboots). Do NOT reconfigure or remove Tailscale serve.
 
+## Vercel Deployment
+
+Two separate Vercel projects deploy different parts of the codebase:
+
+| Project | Production URL | Source Directory | What |
+|---------|---------------|-----------------|------|
+| `leadflow-ai` | `leadflow-ai-five.vercel.app` | `product/lead-response/dashboard/` | Next.js customer dashboard |
+| `fub-inbound-webhook` | `fub-inbound-webhook.vercel.app` | repo root (`server.js`) | FUB webhook API |
+
+### Deploying the Dashboard (leadflow-ai)
+```bash
+cd ~/projects/leadflow/product/lead-response/dashboard
+vercel --prod
+```
+- The directory is linked to the `leadflow-ai` project via `.vercel/project.json`
+- Framework: Next.js — `npm run build` → `next build`
+- Node.js 24.x
+- Env vars are configured in Vercel project settings (not local `.env`)
+- No GitHub auto-deploy — all deployments are CLI-only
+
+### Deploying the Webhook (fub-inbound-webhook)
+```bash
+cd ~/projects/leadflow
+vercel --prod
+```
+- Root `.vercel/project.json` points to `fub-inbound-webhook`
+- Uses `@vercel/node` to run `server.js`
+
+### Vercel CLI
+- Installed at `/opt/homebrew/bin/vercel` (v50.17.1)
+- Authenticated as `madzunkov-3285` under team `stojans-projects-7db98187`
+- Non-interactive flags: `--yes --scope stojans-projects-7db98187` (or use `--prod` after linking)
+
+### Health Check
+- Dashboard health endpoint: `/api/health` (server-side, checks env vars + Supabase connectivity)
+- Smoke tests run every heartbeat via `smoke-tests.js` — checks both Vercel projects
+- Failures auto-spawn QC → dev investigation pipeline
+
+### Important
+- Do NOT run `vercel link` in the repo root (it's already linked to `fub-inbound-webhook`)
+- Do NOT run `vercel link` in `product/lead-response/dashboard/` (already linked to `leadflow-ai`)
+- After merging code that affects the dashboard, deploy with `cd product/lead-response/dashboard && vercel --prod`
+- Vercel env vars are separate from local `.env` files — changes to one do not affect the other
+
 ## Generated Files (auto-updated every heartbeat)
 The following .md files are **auto-generated** from Supabase by `scripts/generate-project-docs.js`. They regenerate every heartbeat — do NOT manually edit them:
 - `USE_CASES.md` — from `use_cases` + `prds` tables

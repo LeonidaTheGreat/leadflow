@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { ConversationView } from '@/components/dashboard/ConversationView'
 import { LeadDetailHeader } from '@/components/dashboard/LeadDetailHeader'
 import { LeadQualificationCard } from '@/components/dashboard/LeadQualificationCard'
@@ -9,11 +9,6 @@ interface LeadDetailPageProps {
     id: string
   }>
 }
-
-// Server-side Supabase client (safe for server components)
-const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim()
-const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim()
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function getLead(id: string) {
   const { data: lead } = await supabase

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server';
 
 // Simple in-memory rate limiting (per-IP)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -128,19 +128,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
+    // Check Supabase configuration
+    if (!isSupabaseConfigured()) {
       console.error('Missing Supabase configuration');
       return NextResponse.json(
         { success: false, error: 'Server configuration error' },
         { status: 500, headers: corsHeaders }
       );
     }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Prepare data for insertion
     const signupData: PilotSignupRequest = {

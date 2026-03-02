@@ -1,26 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { generateAiSmsResponse } from '@/lib/ai'
 import { sendSms } from '@/lib/twilio'
 import { createMessage } from '@/lib/supabase'
 
 /**
  * GET /api/cron/follow-up
- * 
+ *
  * UC-8: Follow-up Sequences Cron Handler
- * 
+ *
  * Triggers:
  * - no_response: 24h after last outbound message with no response
  * - post_viewing: 4h after booking/showing
  * - no_show: 30m after missed appointment
  * - nurture: 7d general nurture sequence
- * 
+ *
  * Runs every hour via Vercel Cron
  */
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 // Quiet hours: 9 PM - 9 AM local time (Toronto timezone)
 function isQuietHours(): boolean {

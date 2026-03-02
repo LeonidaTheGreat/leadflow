@@ -15,6 +15,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '.env') })
  *   5. checkBlockers()           -- Check blocked tasks
  *  5b. runSelfHealChecks()       -- Self-heal (Loop 4)
  *  5c. runSmokeTests()           -- Verify live product health
+ *  5d. checkBuildHealth()         -- Verify dashboard builds cleanly
  *   6. replenishQueue()          -- UC roadmap -> tasks (Loop 1)
  *  6b. processProductFeedback()  -- Feedback -> PM tasks (Loop 3)
  *  6c. checkPRReviews()          -- Merge/rework PRs (Loop 2)
@@ -33,6 +34,7 @@ const { recordDecision, recordOutcome, DECISION_TYPES } = require('./orchestrato
 const { LearningSystem } = require('./learning-system')
 const { runHealthChecks, healIssue } = require('./self-heal')
 const smokeTests = require('./smoke-tests')
+const buildHealth = require('./build-health')
 const {
   BUDGET_DAILY_LIMIT, BUDGET_MIN_FOR_SPAWN, BUDGET_TRACKER_PATH,
   checkBudget: wfCheckBudget, recordSpawn: wfRecordSpawn,
@@ -99,6 +101,8 @@ class HeartbeatExecutor {
       await this.runSelfHealChecks()
       // 5c. SMOKE TESTS — verify live product health
       await this.runSmokeTests()
+      // 5d. BUILD HEALTH — verify dashboard builds cleanly
+      await this.checkBuildHealth()
       // 6. CHECK queue depth - create tasks if low
       await this.replenishQueue()
       // 6b. PROCESS product feedback
@@ -718,6 +722,85 @@ class HeartbeatExecutor {
     } catch (err) {
       console.warn('   ⚠️ Smoke tests failed:', err.message)
       this.errors.push(`Smoke tests: ${err.message}`)
+    }
+  }
+
+  async checkBuildHealth() {
+    console.log('\n5d. Checking dashboard build health...')
+    try {
+      const result = await buildHealth.checkBuildHealth()
+
+      if (result.skipped) {
+        console.log(`   🏗️ Build: skipped (${result.reason})`)
+        if (result.errors && result.errors.length > 0) {
+          console.log(`   ⚠️ Last known errors: ${result.errors.length}`)
+        }
+        return
+      }
+
+      if (result.pass) {
+        console.log('   🏗️ Build: ✅ passes')
+
+        // Auto-resolve any open build-fix tasks
+        const taskTitle = 'Fix: Dashboard build errors'
+        const existing = await this.store.findTaskByTitle(taskTitle)
+        if (existing && !['done', 'failed'].includes(existing.status)) {
+          await this.store.updateTask(existing.id, {
+            status: 'done',
+            completed_at: new Date().toISOString(),
+            last_error: 'Auto-resolved: dashboard build passing again'
+          })
+          console.log('   ✅ Auto-resolved build-fix task')
+          this.actions.push('Build auto-resolved: dashboard builds cleanly')
+        }
+        return
+      }
+
+      // Build failed — create a dev task with error details
+      const taskTitle = 'Fix: Dashboard build errors'
+      const existing = await this.store.findTaskByTitle(taskTitle)
+      if (existing && !['done', 'failed'].includes(existing.status)) {
+        console.log('   ⏭️ Build-fix task already open')
+        return
+      }
+
+      const errorSummary = result.errors.map(e =>
+        `- **${e.file}${e.line ? `:${e.line}` : ''}**: ${e.message}`
+      ).join('\n')
+
+      const description = [
+        `## Dashboard Build Failing`,
+        `The Next.js dashboard (\`product/lead-response/dashboard/\`) fails to build.`,
+        `This blocks deployment of any code changes including health endpoints and bug fixes.`,
+        ``,
+        `## Errors`,
+        errorSummary,
+        ``,
+        `## How to Fix`,
+        `1. \`cd product/lead-response/dashboard\``,
+        `2. \`npx next build\` to reproduce`,
+        `3. Fix each error above`,
+        `4. Verify build passes`,
+        `5. Deploy: \`vercel --prod\``,
+        `6. Report via subagent-completion-report.js`,
+      ].join('\n')
+
+      await this.store.createTask({
+        title: taskTitle,
+        agent_id: 'dev',
+        status: 'ready',
+        model: 'qwen3.5',
+        priority: 1,
+        tags: ['build-health', 'automated', 'critical'],
+        description,
+        metadata: { created_by: 'orchestrator', error_count: result.errors.length }
+      })
+
+      console.log(`   🏗️ Build: ❌ ${result.errors.length} error(s) — created dev task`)
+      this.actions.push(`Build health: ${result.errors.length} error(s) → dev task created`)
+    } catch (err) {
+      console.warn('   ⚠️ Build health check failed:', err.message)
+      this.errors.push(`Build health: ${err.message}`)
     }
   }
 

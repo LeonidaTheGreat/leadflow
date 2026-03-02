@@ -1,8 +1,16 @@
 'use client'
 
 import React from 'react'
-import posthog from 'posthog-js'
 import { PostHogEvents } from './posthog-config'
+
+// Use window.posthog (loaded via PostHogProvider) instead of importing posthog-js directly.
+// This avoids a build error when posthog-js isn't in package.json and matches
+// the SSR-safe pattern used in lib/analytics/index.ts.
+function captureEvent(event: string, properties?: Record<string, any>) {
+  if (typeof window !== 'undefined' && (window as any).posthog) {
+    (window as any).posthog.capture(event, properties)
+  }
+}
 
 interface Props {
   children: React.ReactNode
@@ -43,7 +51,7 @@ export class PostHogErrorBoundary extends React.Component<Props, State> {
 
     // Report to PostHog
     try {
-      posthog.capture(PostHogEvents.ERROR_BOUNDARY_CAUGHT, {
+      captureEvent(PostHogEvents.ERROR_BOUNDARY_CAUGHT, {
         error_message: error.message,
         error_stack: error.stack,
         error_name: error.name,
@@ -111,7 +119,7 @@ export class RecoverableErrorBoundary extends React.Component<
     console.error('[Recoverable Error Boundary] Caught error:', error, errorInfo)
 
     try {
-      posthog.capture(PostHogEvents.ERROR_BOUNDARY_CAUGHT, {
+      captureEvent(PostHogEvents.ERROR_BOUNDARY_CAUGHT, {
         error_message: error.message,
         error_stack: error.stack,
         error_name: error.name,

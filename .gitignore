@@ -31,6 +31,7 @@ build/
 .realtime-dispatcher.log
 .recovery-state.json
 .smoke-test-state.json
+.build-health-state.json
 .notifications.json
 budget-tracker.json
 spawn-queue.json

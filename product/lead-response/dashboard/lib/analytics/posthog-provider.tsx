@@ -11,6 +11,7 @@ async function loadPostHog() {
   if (posthogModule) return posthogModule;
   
   try {
+    // @ts-expect-error — posthog-js may not be installed; caught at runtime
     posthogModule = await import('posthog-js');
     return posthogModule;
   } catch (e) {

@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingStep } from '@/lib/types/onboarding';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const DRAFT_EXPIRY_HOURS = 48; // Drafts expire after 48 hours
 

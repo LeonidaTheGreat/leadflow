@@ -126,7 +126,7 @@ export function BillingCard({ agentId, className = '' }: BillingCardProps) {
             <div>
               <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Plan</p>
               <p className="text-base font-semibold text-slate-900 dark:text-white mt-0.5">
-                {getPlanDisplayName(billingInfo?.planTier)}
+                {getPlanDisplayName(billingInfo?.planTier ?? null)}
               </p>
               {billingInfo?.planTier && (
                 <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
