@@ -264,27 +264,29 @@ async function run() {
       // QC agent: smoke-test investigation (no PR, has smoke-test tag)
       if (agentId === 'qc' && taskDetail?.tags?.includes('smoke-test') && !taskDetail?.pr_number) {
         message += `\n\n## Smoke Test Investigation`
-        message += `\nA production smoke test failed. Your job is to investigate and either FIX it or DIAGNOSE it.`
+        message += `\nA production smoke test failed. Your job is DIAGNOSIS — find the root cause and report it.`
+        message += `\nThe orchestrator's smoke test loop handles verification automatically every heartbeat.`
         message += `\n`
         message += `\n### CRITICAL RULES`
-        message += `\n- You may ONLY report success if you FIXED the issue AND verified the fix works`
-        message += `\n- "Verified" means you hit the URL and confirmed it returns the expected response`
-        message += `\n- If you cannot fix it yourself, you MUST report FAILURE with a diagnosis`
-        message += `\n- NEVER report success just because you identified the problem — identification is not a fix`
+        message += `\n- Your job is to DIAGNOSE, not just acknowledge the problem`
+        message += `\n- You MUST always report status: 'failed' with a structured diagnosis`
+        message += `\n- The diagnosis must include the specific root cause (file, line, config, env var)`
+        message += `\n- The orchestrator will create a dev task from your diagnosis — make it actionable`
+        message += `\n- NEVER report status: 'completed' — only the smoke test loop can verify the fix`
         message += `\n`
         message += `\n### Steps`
         message += `\n1. Read the failure details in the task description`
         message += `\n2. Investigate root cause (check deployment, env vars, logs, code)`
-        message += `\n3. If you can fix it: fix it, verify the URL works, then report SUCCESS`
-        message += `\n4. If it needs a dev task: report FAILURE with diagnosis + retryRecommendation='retry'`
-        message += `\n5. If it needs human action (env vars, external config): report FAILURE with retryRecommendation='escalate'`
+        message += `\n3. Write a diagnosis with enough detail for a dev agent to fix it`
+        message += `\n4. Set retryRecommendation: 'retry' if a dev agent can fix it`
+        message += `\n5. Set retryRecommendation: 'escalate' if it needs human action (env vars, external config)`
         message += `\n`
-        message += `\n### Report Template`
+        message += `\n### Report Template (ALWAYS use status: 'failed')`
         message += `\n\`\`\``
         message += `\nconst { writeCompletionReport } = require('./subagent-completion-report');`
         message += `\nwriteCompletionReport({`
         message += `\n  taskId: '${taskId}',`
-        message += `\n  status: 'failed',  // ONLY use 'completed' if you fixed AND verified it`
+        message += `\n  status: 'failed',`
         message += `\n  error: 'Brief description of what is wrong',`
         message += `\n  diagnosis: {`
         message += `\n    symptom: 'What the smoke test reported',`
