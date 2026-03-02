@@ -62,7 +62,9 @@ All agents point to this directory. Active agents:
 - Stripe and Supabase are in production — be careful with any data scripts
 - Never modify `agents.json` or agent config files without explicit instruction
 - `.env` and `.env.local` contain production Supabase/Stripe/Twilio credentials — never delete or overwrite
-- System-level backup at `~/.env` (Supabase creds only) — if credentials go missing, restore from `~/.env`
+- System-level backup at `~/.env` (Supabase creds + Telegram bot tokens) — if credentials go missing, restore from `~/.env`
+- `~/.env` contains: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_PASSWORD`, `ORCHESTRATOR_BOT_TOKEN`, `PRODUCT_MANAGER_BOT_TOKEN`
+- `SUPABASE_DB_PASSWORD` is the Postgres password for direct DB connections (migrations, DDL). Present in both `~/.env` and `leadflow/.env`
 - TaskStore has a self-healing fallback chain: `process.env` → `__dirname/.env` → `__dirname/.env.local` → `~/.env`
 
 ## Orchestration (4-Loop Architecture)
