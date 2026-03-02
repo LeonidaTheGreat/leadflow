@@ -333,18 +333,53 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
  */
 function verifyTaskOutput(task) {
   if (!['dev', 'design'].includes(task.agent_id)) return { verified: true }
+
   const branch = task.branch_name
-  if (!branch) return { verified: true, reason: 'no branch assigned' }
-  try {
-    const commits = execSync(
-      `git log --oneline main..${branch} 2>/dev/null | head -5`,
-      { cwd: __dirname, encoding: 'utf-8', timeout: 5000 }
-    ).trim()
-    if (!commits) return { verified: false, reason: 'no commits on branch' }
-    return { verified: true, commits: commits.split('\n').length }
-  } catch {
-    return { verified: true, reason: 'git check failed (non-blocking)' }
+  const isSmokeTask = task.tags?.includes?.('smoke-test')
+
+  // Branch-based tasks: check for commits on the branch
+  if (branch) {
+    try {
+      const commits = execSync(
+        `git log --oneline main..${branch} 2>/dev/null | head -5`,
+        { cwd: __dirname, encoding: 'utf-8', timeout: 5000 }
+      ).trim()
+      if (!commits) return { verified: false, reason: 'no commits on branch' }
+      return { verified: true, commits: commits.split('\n').length }
+    } catch {
+      return { verified: true, reason: 'git check failed (non-blocking)' }
+    }
   }
+
+  // Smoke-test fix tasks (no branch): check for recent commits on HEAD
+  // or uncommitted changes that indicate the agent did something
+  if (isSmokeTask) {
+    try {
+      const spawnedAt = task.spawn_config?.spawnedAt || task.updated_at
+      if (!spawnedAt) return { verified: true, reason: 'no spawn timestamp' }
+
+      // Check for commits since the task was spawned
+      const commits = execSync(
+        `git log --oneline --since="${spawnedAt}" HEAD 2>/dev/null | head -5`,
+        { cwd: __dirname, encoding: 'utf-8', timeout: 5000 }
+      ).trim()
+      if (commits) return { verified: true, commits: commits.split('\n').length }
+
+      // Check for uncommitted changes
+      const diff = execSync(
+        `git diff --stat HEAD 2>/dev/null`,
+        { cwd: __dirname, encoding: 'utf-8', timeout: 5000 }
+      ).trim()
+      if (diff) return { verified: true, reason: 'uncommitted changes detected' }
+
+      return { verified: false, reason: 'no code changes (no commits or diffs since spawn)' }
+    } catch {
+      return { verified: true, reason: 'git check failed (non-blocking)' }
+    }
+  }
+
+  // No branch, not a smoke task — pass through
+  return { verified: true, reason: 'no branch assigned' }
 }
 
 // ── Exports ──────────────────────────────────────────────────────────────────

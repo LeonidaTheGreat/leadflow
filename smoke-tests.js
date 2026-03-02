@@ -73,16 +73,18 @@ const tests = [
   {
     id: 'dashboard-local',
     name: 'Local dashboard',
-    url: 'http://127.0.0.1:8787/',
+    // Hit dashboard.html directly — index.html is an HTML redirect that curl doesn't follow
+    url: 'http://127.0.0.1:8787/dashboard.html',
     severity: 'warning',
+    rejectPatterns: COMMON_REJECT_PATTERNS,
     check(response, body) {
       if (response.status !== 200) {
         return { pass: false, detail: `HTTP ${response.status} (expected 200)` }
       }
-      if (body && body.includes('<title>')) {
-        return { pass: true, detail: 'HTML with <title> tag' }
+      if (body && body.includes('<title>') && body.includes('LeadFlow')) {
+        return { pass: true, detail: 'Dashboard HTML loaded' }
       }
-      return { pass: false, detail: 'Response missing <title> tag' }
+      return { pass: false, detail: 'Response missing expected content' }
     }
   },
   {

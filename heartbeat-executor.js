@@ -581,12 +581,21 @@ class HeartbeatExecutor {
 
       const state = smokeTests.loadState()
 
-      // Handle failures: escalation ladder
-      // 1st failure (no prior task) → QC investigation
-      // Still failing after QC completed → dev fix task with QC diagnosis
+      // Handle failures: escalation ladder with circuit breaker
+      // 1st failure → QC diagnosis
+      // QC done but still failing → dev fix (with QC + dev prior attempt context)
+      // After MAX_RETRIES dev attempts → circuit breaker, block + alert human
+      //
+      // Model ladder: qwen3.5 (free) → kimi2.5 ($0.30) → sonnet ($2.00)
+      // Cost cap: max $3 total per smoke test before circuit breaker
+      const MAX_SMOKE_RETRIES = 3
+      const SMOKE_COST_CAP = 3.00
+      const MODEL_LADDER = ['qwen3.5', 'kimi2.5', 'sonnet']
+
       for (const failure of results.failed) {
         const smokeTitle = `Smoke: ${failure.name} failing`
         const devTitle = `Fix: ${failure.name} (smoke)`
+        const testState = state.results[failure.id] || {}
 
         // Dedup: skip if an open task (QC or dev) already exists
         const existingSmoke = await this.store.findTaskByTitle(smokeTitle)
@@ -600,17 +609,106 @@ class HeartbeatExecutor {
           continue
         }
 
-        // Escalation: if QC already completed but smoke still fails → create dev task
+        // Track retry count in state file
+        const retryCount = testState.devRetries || 0
+
+        // Circuit breaker: stop creating tasks after MAX_RETRIES or cost cap
+        const totalCost = testState.totalCost || 0
+        if (retryCount >= MAX_SMOKE_RETRIES || totalCost >= SMOKE_COST_CAP) {
+          // Only alert once per day
+          const lastAlert = testState.lastCircuitBreakerAlert
+          const today = new Date().toISOString().split('T')[0]
+          if (!lastAlert || !lastAlert.startsWith(today)) {
+            const reason = retryCount >= MAX_SMOKE_RETRIES
+              ? `${retryCount} failed fix attempts`
+              : `cost cap reached ($${totalCost.toFixed(2)}/$${SMOKE_COST_CAP})`
+            console.log(`   🛑 Circuit breaker: ${failure.name} — ${reason} — needs human`)
+            this.actions.push(`🛑 HUMAN NEEDED: ${failure.name} — ${reason}`)
+            state.results[failure.id] = { ...testState, lastCircuitBreakerAlert: new Date().toISOString() }
+            smokeTests.saveState(state)
+          } else {
+            console.log(`   🛑 Circuit breaker active: ${failure.name} (${retryCount} retries, $${totalCost.toFixed(2)} spent)`)
+          }
+          continue
+        }
+
+        // Escalation: if dev already completed but smoke still fails → extract what dev tried, retry with context
+        if (existingDev && existingDev.status === 'done') {
+          // Extract what the dev agent tried from spawn logs
+          let devAttemptContext = ''
+          if (existingDev.spawn_config?.log_prefix) {
+            const logTail = readLogTail(`${existingDev.spawn_config.log_prefix}.stdout.log`, 80, 8192)
+            if (logTail.length > 50) {
+              // Extract meaningful lines (skip noise)
+              const meaningful = logTail.split('\n')
+                .filter(l => l.includes('fix') || l.includes('error') || l.includes('commit') ||
+                             l.includes('changed') || l.includes('modified') || l.includes('symptom') ||
+                             l.includes('root') || l.includes('cause') || l.includes('tried'))
+                .slice(0, 10)
+                .join('\n')
+              if (meaningful) {
+                devAttemptContext = `## Previous Dev Attempt #${retryCount} (FAILED — smoke still failing)\n${meaningful}`
+              }
+            }
+          }
+          if (!devAttemptContext) {
+            devAttemptContext = `## Previous Dev Attempt #${retryCount}\nAgent reported completion but smoke test still fails. The previous fix was insufficient or incorrect.`
+          }
+
+          // Increment retry counter + pick model from ladder
+          const model = MODEL_LADDER[Math.min(retryCount, MODEL_LADDER.length - 1)]
+          const modelCost = { 'qwen3.5': 0, 'kimi2.5': 0.30, 'sonnet': 2.00 }[model] || 0
+          state.results[failure.id] = {
+            ...testState,
+            devRetries: retryCount + 1,
+            totalCost: (testState.totalCost || 0) + modelCost
+          }
+          smokeTests.saveState(state)
+
+          const devDescription = [
+            `## Smoke Test Still Failing (Attempt ${retryCount + 1}/${MAX_SMOKE_RETRIES})`,
+            `**Test:** ${failure.name} (${failure.id})`,
+            `**Severity:** ${failure.severity}`,
+            `**Detail:** ${failure.detail}`,
+            `**URL:** ${smokeTests.tests.find(t => t.id === failure.id)?.url || 'dynamic'}`,
+            `**Previous attempts:** ${retryCount} (all failed to resolve the smoke test)`,
+            ``,
+            devAttemptContext,
+            ``,
+            `## Your Job`,
+            `The previous fix did NOT work — the smoke test still fails.`,
+            `1. Read the previous attempt context above to understand what was already tried`,
+            `2. Try a DIFFERENT approach than what was attempted before`,
+            `3. Make actual code changes, commit, and push`,
+            `4. If the fix requires a Vercel deploy, run: cd product/lead-response/dashboard && vercel --prod`,
+            `5. Report via subagent-completion-report.js — include exactly what files you changed and why`,
+            ``,
+            `DO NOT report success unless you made actual code changes. The orchestrator's smoke test loop`,
+            `will automatically verify whether your fix worked on the next heartbeat cycle.`
+          ].join('\n')
+
+          await this.store.createTask({
+            title: devTitle,
+            agent_id: 'dev',
+            status: 'ready',
+            model,
+            priority: 1,
+            tags: ['smoke-test', 'automated', 'fix', `retry-${retryCount + 1}`],
+            description: devDescription,
+            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, retry: retryCount + 1, model_cost: modelCost }
+          })
+
+          console.log(`   🔬 Dev retry ${retryCount + 1}/${MAX_SMOKE_RETRIES}: ${devTitle}`)
+          this.actions.push(`Smoke dev retry ${retryCount + 1}: ${failure.name}`)
+          continue
+        }
+
+        // Escalation: if QC already completed but smoke still fails → create first dev task
         if (existingSmoke && existingSmoke.status === 'done') {
           // Extract diagnosis from completed QC task
-          const diagnosis = existingSmoke.description || ''
-          const lastError = existingSmoke.last_error || ''
-
-          // Also check spawn logs for structured diagnosis
           let qcDiagnosis = ''
           if (existingSmoke.spawn_config?.log_prefix) {
             const logTail = readLogTail(`${existingSmoke.spawn_config.log_prefix}.stdout.log`, 60, 8192)
-            // Extract diagnosis fields from log
             const symptomMatch = logTail.match(/symptom['":\s]+['"]([^'"]+)/i)
             const rootCauseMatch = logTail.match(/rootCause['":\s]+['"]([^'"]+)/i)
             const suggestedFixMatch = logTail.match(/suggestedFix['":\s]+['"]([^'"]+)/i)
@@ -624,8 +722,12 @@ class HeartbeatExecutor {
             }
           }
 
+          // Initialize retry counter for dev attempts
+          state.results[failure.id] = { ...testState, devRetries: 1, totalCost: 0 }
+          smokeTests.saveState(state)
+
           const devDescription = [
-            `## Smoke Test Still Failing After QC Investigation`,
+            `## Smoke Test Still Failing After QC Investigation (Attempt 1/${MAX_SMOKE_RETRIES})`,
             `**Test:** ${failure.name} (${failure.id})`,
             `**Severity:** ${failure.severity}`,
             `**Detail:** ${failure.detail}`,
@@ -635,9 +737,12 @@ class HeartbeatExecutor {
             ``,
             `## Your Job`,
             `1. Apply the fix described in the QC diagnosis above`,
-            `2. Verify the fix works (hit the URL, check the response)`,
-            `3. Commit and push your changes`,
-            `4. Report success or failure using subagent-completion-report.js`
+            `2. Make actual code changes, commit, and push`,
+            `3. If the fix requires a Vercel deploy, run: cd product/lead-response/dashboard && vercel --prod`,
+            `4. Report via subagent-completion-report.js — include exactly what files you changed and why`,
+            ``,
+            `DO NOT report success unless you made actual code changes. The orchestrator's smoke test loop`,
+            `will automatically verify whether your fix worked on the next heartbeat cycle.`
           ].join('\n')
 
           await this.store.createTask({
@@ -646,9 +751,9 @@ class HeartbeatExecutor {
             status: 'ready',
             model: 'qwen3.5',
             priority: failure.severity === 'critical' ? 1 : 2,
-            tags: ['smoke-test', 'automated', 'fix'],
+            tags: ['smoke-test', 'automated', 'fix', 'retry-1'],
             description: devDescription,
-            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, escalated_from: existingSmoke.id }
+            metadata: { created_by: 'orchestrator', smoke_test_id: failure.id, escalated_from: existingSmoke.id, retry: 1 }
           })
 
           console.log(`   🔬 Escalated to dev: ${devTitle}`)
@@ -659,7 +764,6 @@ class HeartbeatExecutor {
         // First failure: create QC investigation task
         // Model selection: critical + no cloud spawn in 24h → haiku; else qwen3.5
         let model = 'qwen3.5'
-        const testState = state.results[failure.id] || {}
         const lastCloud = testState.lastCloudSpawn ? new Date(testState.lastCloudSpawn) : null
         const cloudCooldownExpired = !lastCloud || (Date.now() - lastCloud > 24 * 60 * 60 * 1000)
 
@@ -700,7 +804,7 @@ class HeartbeatExecutor {
         this.actions.push(`Smoke fail → QC: ${failure.name} (${model})`)
       }
 
-      // Auto-resolve: passing tests with open tasks (QC or dev) → mark done
+      // Auto-resolve: passing tests with open tasks (QC or dev) → mark done + reset retries
       for (const pass of results.passed) {
         const titles = [`Smoke: ${pass.name} failing`, `Fix: ${pass.name} (smoke)`]
         for (const taskTitle of titles) {
@@ -714,6 +818,13 @@ class HeartbeatExecutor {
             console.log(`   ✅ Auto-resolved: ${taskTitle}`)
             this.actions.push(`Smoke auto-resolved: ${pass.name}`)
           }
+        }
+        // Reset retry counter, cost, and circuit breaker when test passes
+        const passState = state.results[pass.id]
+        if (passState && (passState.devRetries || passState.lastCircuitBreakerAlert || passState.totalCost)) {
+          state.results[pass.id] = { ...passState, devRetries: 0, totalCost: 0, lastCircuitBreakerAlert: null }
+          smokeTests.saveState(state)
+          console.log(`   🔄 Reset retry counter for ${pass.id}`)
         }
       }
 
@@ -753,6 +864,9 @@ class HeartbeatExecutor {
           console.log('   ✅ Auto-resolved build-fix task')
           this.actions.push('Build auto-resolved: dashboard builds cleanly')
         }
+
+        // Auto-deploy: if dashboard source is newer than last deploy, deploy it
+        await this.checkAndDeploy()
         return
       }
 
@@ -801,6 +915,68 @@ class HeartbeatExecutor {
     } catch (err) {
       console.warn('   ⚠️ Build health check failed:', err.message)
       this.errors.push(`Build health: ${err.message}`)
+    }
+  }
+
+  /**
+   * Auto-deploy: if dashboard files have been committed since the last deploy,
+   * and the build passes, deploy to Vercel automatically.
+   * This closes the loop: code change → build passes → deploy → smoke test verifies.
+   */
+  async checkAndDeploy() {
+    try {
+      const { execSync } = require('child_process')
+      const dashboardDir = require('path').join(__dirname, 'product', 'lead-response', 'dashboard')
+
+      // Get last commit timestamp touching dashboard source
+      const lastCommit = execSync(
+        `git log -1 --format="%aI" -- app/ components/ lib/ 2>/dev/null`,
+        { cwd: dashboardDir, encoding: 'utf-8', timeout: 5000 }
+      ).trim()
+      if (!lastCommit) return
+
+      // Check deploy state
+      const deployStatePath = require('path').join(__dirname, '.last-deploy.json')
+      let lastDeployTime = null
+      try {
+        const ds = JSON.parse(require('fs').readFileSync(deployStatePath, 'utf-8'))
+        lastDeployTime = ds.deployedAt
+      } catch {}
+
+      if (lastDeployTime && new Date(lastCommit) <= new Date(lastDeployTime)) {
+        return // Already deployed
+      }
+
+      // Dedup: don't deploy if a deploy task is already open
+      const deployTitle = 'Deploy: Dashboard to Vercel'
+      const existingDeploy = await this.store.findTaskByTitle(deployTitle)
+      if (existingDeploy && !['done', 'failed'].includes(existingDeploy.status)) {
+        return
+      }
+
+      // Deploy directly (fast, non-interactive, < 60s)
+      console.log('   🚀 Auto-deploying dashboard to Vercel...')
+      const output = execSync(
+        '/opt/homebrew/bin/vercel --prod --yes 2>&1',
+        { cwd: dashboardDir, encoding: 'utf-8', timeout: 120000 }
+      )
+
+      // Check for success
+      if (output.includes('Production:') || output.includes('Aliased:')) {
+        require('fs').writeFileSync(deployStatePath, JSON.stringify({
+          deployedAt: new Date().toISOString(),
+          trigger: 'auto-deploy',
+          lastCommit
+        }, null, 2))
+        console.log('   🚀 Deploy: ✅ success')
+        this.actions.push('Auto-deployed dashboard to Vercel')
+      } else {
+        console.log('   🚀 Deploy: ⚠️ unexpected output')
+      }
+    } catch (err) {
+      // Deploy failed — don't create a task, just log.
+      // Build-health already gates this, so deploy failures are likely transient.
+      console.warn(`   🚀 Deploy: ❌ ${err.message?.split('\n')[0] || 'failed'}`)
     }
   }
 
