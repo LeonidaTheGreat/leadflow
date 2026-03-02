@@ -207,6 +207,8 @@ async function chainTask(store, task, projectId) {
     agent_id: nextAgent, status: 'ready', model,
     priority: task.priority, parent_task_id: task.id,
     use_case_id: task.use_case_id, prd_id: task.prd_id,
+    branch_name: nextAgent === 'qc' ? task.branch_name : null,
+    pr_number: nextAgent === 'qc' ? task.pr_number : null,
     estimated_cost_usd: estimateCost(model, task.estimated_hours || 1),
     tags: [nextAgent === 'qc' ? 'test' : 'feature'],
     description,

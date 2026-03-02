@@ -117,6 +117,8 @@ class HeartbeatExecutor {
       await this.processProductFeedback()
       // 6c. CHECK PR reviews
       await this.checkPRReviews()
+      // 6d. CLEANUP stale branches
+      await this.cleanupStaleBranches()
       // 7. UPDATE dashboard
       await this.updateDashboard()
       // 8. REPORT to Telegram
@@ -429,6 +431,15 @@ class HeartbeatExecutor {
         recordOutcome(taskId, 'correct')
       }
 
+      // Create PR for dev/design tasks with a branch (bridges dev completion → QC review)
+      if (task && ['dev', 'design'].includes(task.agent_id) && task.branch_name) {
+        const prNumber = await this.createPRForTask(task)
+        if (prNumber) {
+          task.pr_number = prNumber
+          this.actions.push(`Created PR #${prNumber} for ${task.branch_name}`)
+        }
+      }
+
       // Chain to next workflow step
       if (task) await this.createFollowUpTasks(task)
 
@@ -544,6 +555,99 @@ class HeartbeatExecutor {
       }
     } catch (err) {
       console.warn(`   ⚠️ Follow-up task creation failed for ${task.use_case_id}:`, err.message)
+    }
+  }
+
+  /**
+   * Create a GitHub PR for a completed dev/design task.
+   * This is the missing link: dev completion → PR → QC review.
+   */
+  async createPRForTask(task) {
+    const projectDir = path.join(__dirname)
+    const branch = task.branch_name
+    if (!branch) return null
+
+    try {
+      // Check if branch has commits ahead of main
+      let commitCount = 0
+      try {
+        const out = execSync(`git rev-list main..${branch} --count`, {
+          cwd: projectDir, encoding: 'utf-8', timeout: 5000
+        }).trim()
+        commitCount = parseInt(out, 10) || 0
+      } catch {
+        // Branch may not exist locally
+        return null
+      }
+
+      // If 0 commits, check for uncommitted work and auto-commit
+      if (commitCount === 0) {
+        try {
+          execSync(`git checkout ${branch}`, { cwd: projectDir, stdio: 'pipe', timeout: 5000 })
+          const status = execSync('git status --porcelain', {
+            cwd: projectDir, encoding: 'utf-8', timeout: 5000
+          }).trim()
+          if (status) {
+            execSync('git add -A', { cwd: projectDir, stdio: 'pipe', timeout: 5000 })
+            execSync(`git commit -m "feat: ${task.title.replace(/"/g, '\\"')}"`, {
+              cwd: projectDir, stdio: 'pipe', timeout: 10000
+            })
+            commitCount = 1
+            console.log(`   Auto-committed uncommitted work on ${branch}`)
+          }
+        } catch (err) {
+          console.warn(`   ⚠️ Auto-commit failed: ${err.message}`)
+        } finally {
+          try { execSync('git checkout main', { cwd: projectDir, stdio: 'pipe', timeout: 5000 }) } catch {}
+        }
+      }
+
+      if (commitCount === 0) {
+        console.log(`   No commits on ${branch} — skipping PR`)
+        return null
+      }
+
+      // Push branch to origin
+      execSync(`git push -u origin ${branch}`, { cwd: projectDir, stdio: 'pipe', timeout: 30000 })
+
+      // Create PR via gh
+      const safeTitle = task.title.replace(/"/g, '\\"').slice(0, 200)
+      const prBody = `Auto-generated PR for task ${task.id}\\n\\nUse case: ${task.use_case_id || 'N/A'}`
+      const prOutput = execSync(
+        `gh pr create --base main --head ${branch} --title "${safeTitle}" --body "${prBody}"`,
+        { cwd: projectDir, encoding: 'utf-8', timeout: 30000 }
+      ).trim()
+
+      // Extract PR number from URL (e.g. https://github.com/org/repo/pull/123)
+      const prMatch = prOutput.match(/\/pull\/(\d+)/)
+      if (!prMatch) {
+        console.warn(`   ⚠️ Could not extract PR number from: ${prOutput}`)
+        return null
+      }
+      const prNumber = parseInt(prMatch[1], 10)
+
+      // Update task's pr_number in Supabase
+      await this.store.updateTask(task.id, { pr_number: prNumber })
+
+      // Insert code_reviews row for QC loop to pick up
+      if (this.store.supabase) {
+        await this.store.supabase.from('code_reviews').insert({
+          project_id: this.projectId,
+          task_id: task.id,
+          pr_number: prNumber,
+          branch_name: branch,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        })
+      }
+
+      console.log(`   📝 Created PR #${prNumber} for ${branch}`)
+      return prNumber
+    } catch (err) {
+      console.warn(`   ⚠️ PR creation failed for ${branch}: ${err.message}`)
+      // Always return to main on failure
+      try { execSync('git checkout main', { cwd: projectDir, stdio: 'pipe' }) } catch {}
+      return null
     }
   }
 
@@ -1109,6 +1213,10 @@ class HeartbeatExecutor {
           if (review.task_id) {
             await this.store.updateTask(review.task_id, { status: 'done', completed_at: new Date().toISOString() })
           }
+          // Delete local branch (gh --delete-branch only deletes remote)
+          if (review.branch_name) {
+            try { execSync(`git branch -d ${review.branch_name}`, { cwd: projectDir, stdio: 'pipe' }) } catch {}
+          }
           console.log(`   ✅ Merged PR #${review.pr_number}`)
           this.actions.push(`Merged PR #${review.pr_number}`)
         } catch (mergeErr) {
@@ -1153,6 +1261,62 @@ class HeartbeatExecutor {
       }
     } catch (err) {
       console.warn('   ⚠️ PR review check failed:', err.message)
+    }
+  }
+
+  async cleanupStaleBranches() {
+    console.log('\n6d. Cleaning up stale branches...')
+    const projectDir = path.join(__dirname)
+    try {
+      const branchOutput = execSync(
+        `git branch --list 'dev/*' 'design/*'`,
+        { cwd: projectDir, encoding: 'utf-8', timeout: 5000 }
+      ).trim()
+
+      if (!branchOutput) {
+        console.log('   No feature branches to clean up')
+        return
+      }
+
+      const branches = branchOutput.split('\n').map(b => b.trim().replace(/^\* /, ''))
+      let cleaned = 0
+
+      for (const branch of branches) {
+        if (!this.store.supabase) continue
+
+        // Find task with this branch_name
+        const { data: tasks } = await this.store.supabase
+          .from('tasks').select('id, status')
+          .eq('project_id', this.projectId)
+          .eq('branch_name', branch)
+          .limit(1)
+
+        const task = tasks?.[0]
+        // Only clean up if task is done/failed (or orphan — no task found)
+        if (task && !['done', 'failed'].includes(task.status)) continue
+
+        // Only delete if branch has 0 commits ahead of main (safe delete)
+        try {
+          const count = execSync(
+            `git rev-list main..${branch} --count 2>/dev/null`,
+            { cwd: projectDir, encoding: 'utf-8', timeout: 5000 }
+          ).trim()
+
+          if (parseInt(count, 10) === 0) {
+            execSync(`git branch -d ${branch}`, { cwd: projectDir, stdio: 'pipe', timeout: 5000 })
+            console.log(`   🗑️ Deleted stale branch: ${branch}`)
+            cleaned++
+          }
+        } catch {}
+      }
+
+      if (cleaned > 0) {
+        this.actions.push(`Cleaned up ${cleaned} stale branch(es)`)
+      } else {
+        console.log('   No stale branches to clean up')
+      }
+    } catch (err) {
+      console.warn('   ⚠️ Branch cleanup failed:', err.message)
     }
   }
 

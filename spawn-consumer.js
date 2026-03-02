@@ -278,6 +278,9 @@ async function run() {
         } catch (branchErr) {
           console.warn(`   ⚠️ Branch creation failed: ${branchErr.message}`)
         }
+
+        // Return to main so next spawn starts from clean base
+        try { execSync('git checkout main', { cwd: projectDir, stdio: 'pipe' }) } catch {}
       }
 
       // QC agent: smoke-test investigation (no PR, has smoke-test tag)
