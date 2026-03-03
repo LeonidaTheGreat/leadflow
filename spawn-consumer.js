@@ -153,7 +153,8 @@ async function run() {
       // Role context FIRST — before description, so the agent knows its role before reading the task
       // Uses shared buildRoleContext from workflow-engine.js (single source of truth for all agents)
       const { buildRoleContext } = require('./workflow-engine')
-      const roleCtx = buildRoleContext(agentId, title, '', {})
+      const taskType = (taskDetail?.tags || []).includes('product-review') ? 'product-review' : undefined
+      const roleCtx = buildRoleContext(agentId, title, '', { taskType })
       if (roleCtx.spawnRole) {
         message += `\n\n${roleCtx.spawnRole}`
       }

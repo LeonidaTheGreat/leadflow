@@ -435,8 +435,56 @@ function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
   const total = opts.workflowTotal || '?'
   const remaining = opts.remainingAgents || ''
 
+  // Product-review variant: PM conducts a structured product review instead of writing a PRD
+  const isProductReview = opts.taskType === 'product-review'
+
   const ROLES = {
-    product: {
+    product: isProductReview ? {
+      directive: `Conduct a product review for: ${ucName}.`,
+      deliverable: `Your deliverable is a PRODUCT REVIEW — walkthrough results, findings, decisions needed, and a verdict.`,
+      spawnRole: [
+        `## YOUR ROLE: Product Manager (Product Review)`,
+        `You are conducting a structured product review. Your job is to evaluate whether the assembled product works as a cohesive whole.`,
+        ``,
+        `### What to do:`,
+        `1. Walk through each URL in the walkthrough_spec (open it, test the user journey)`,
+        `2. Test end-to-end flows: signup → onboarding → dashboard → settings → billing`,
+        `3. Check cross-product navigation: can users move between components seamlessly?`,
+        `4. Verify data flow: does data entered in one component appear correctly in others?`,
+        ``,
+        `### What to look for:`,
+        `- **Auth flow**: Is there login/signup? Does it protect routes? Do sessions persist?`,
+        `- **Navigation continuity**: Can users reach all features from the main UI?`,
+        `- **Data flow**: Do forms save? Does data persist across page refreshes?`,
+        `- **Pricing consistency**: Do displayed prices match Stripe config?`,
+        `- **Error states**: What happens on network errors, invalid input, expired sessions?`,
+        `- **Mobile responsiveness**: Do pages work on mobile viewports?`,
+        ``,
+        `### Severity guide:`,
+        `- **critical**: Product is unusable (broken auth, data loss, crashes)`,
+        `- **high**: Major feature gap (missing navigation, broken integration)`,
+        `- **medium**: Degraded experience (layout issues, confusing UX)`,
+        `- **low**: Polish (typos, alignment, minor styling)`,
+        ``,
+        `### Decisions:`,
+        `When you find an issue that requires an architectural choice (not just a bug fix), create a decision:`,
+        `- **blocking=true** for: auth architecture, pricing strategy, deployment topology, compliance, external service choices`,
+        `- **blocking=false** for: CSS framework, test tooling, component library, file structure, naming conventions`,
+        ``,
+        `### How to submit:`,
+        `Update the \`product_reviews\` row in Supabase with:`,
+        `- \`walkthrough_spec\`: update each step with actual_behavior and status (pass/fail/partial)`,
+        `- \`findings\`: array of {type, severity, summary, details, affected_uc_ids[], suggested_fix}`,
+        `- \`decisions_needed\`: array of {summary, category, options[], recommended, reason, blocking}`,
+        `- \`verdict\`: pass | pass_with_issues | fail`,
+        `- \`readiness_score\`: 0-100 (0=completely broken, 100=production ready)`,
+        `- \`summary\`: one-paragraph executive summary`,
+        `- \`status\`: 'completed'`,
+        `- \`completed_at\`: current timestamp`,
+        ``,
+        `When done, write a completion report with your verdict and key findings.`
+      ].join('\n')
+    } : {
       directive: `Write a PRD for: ${ucName}.`,
       deliverable: `Your deliverable is a SPECIFICATION (requirements, user stories, acceptance criteria) — not implementation.${remaining ? `\nThe next agents in the workflow (${remaining}) will implement it.` : ''}`,
       spawnRole: [

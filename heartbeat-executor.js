@@ -122,6 +122,8 @@ class HeartbeatExecutor {
       await this.checkPRReviews()
       // 6d. CLEANUP stale branches
       await this.cleanupStaleBranches()
+      // 6e. PRODUCT REVIEWS — trigger PM reviews + process completed reviews + decisions
+      await this.checkProductReviews()
       // 7. UPDATE dashboard
       await this.updateDashboard()
       // 8. REPORT to Telegram
@@ -1567,6 +1569,478 @@ class HeartbeatExecutor {
     } catch (err) {
       console.warn('   ⚠️ Branch cleanup failed:', err.message)
     }
+  }
+
+  // ── Step 6e: Product Reviews ──────────────────────────────────────────
+
+  async checkProductReviews() {
+    console.log('\n6e. Product reviews...')
+    if (!this.store.supabase) {
+      console.log('   No Supabase — skipping product reviews')
+      return
+    }
+
+    const reviewConfig = this.config.product_reviews || {}
+    const cooldownDays = reviewConfig.prd_completion_cooldown_days || 7
+    const periodicDays = reviewConfig.periodic_interval_days || 7
+    const reviewModel = reviewConfig.review_model || 'sonnet'
+
+    try {
+      // A. PRD completion trigger — review when all UCs in a PRD are complete
+      const { data: prds } = await this.store.supabase
+        .from('prds').select('id, title, project_id')
+        .eq('project_id', this.projectId)
+        .eq('status', 'approved')
+
+      if (prds?.length > 0) {
+        for (const prd of prds) {
+          const { data: ucs } = await this.store.supabase
+            .from('use_cases').select('id, implementation_status')
+            .eq('project_id', this.projectId)
+            .eq('prd_id', prd.id)
+
+          if (!ucs?.length) continue
+          const allComplete = ucs.every(uc => uc.implementation_status === 'complete')
+          if (!allComplete) continue
+
+          // Check if review already exists (pending/in_progress or recent completed)
+          const { data: existing } = await this.store.supabase
+            .from('product_reviews').select('id, status, completed_at')
+            .eq('project_id', this.projectId)
+            .eq('scope_prd_id', prd.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+
+          const latest = existing?.[0]
+          if (latest) {
+            if (['pending', 'in_progress'].includes(latest.status)) continue
+            if (latest.completed_at) {
+              const daysSince = (Date.now() - new Date(latest.completed_at).getTime()) / (1000 * 60 * 60 * 24)
+              if (daysSince < cooldownDays) continue
+            }
+          }
+
+          const ucIds = ucs.map(u => u.id)
+          const walkthroughSpec = this._buildWalkthroughSpec(this.config.products || [], ucIds)
+          const taskDesc = this._buildReviewTaskDescription(null, prd, ucIds, walkthroughSpec)
+
+          // Create product_reviews row
+          const { data: review } = await this.store.supabase
+            .from('product_reviews').insert({
+              project_id: this.projectId,
+              review_type: 'prd_completion',
+              scope_prd_id: prd.id,
+              scope_uc_ids: ucIds,
+              scope_product_ids: walkthroughSpec.map(s => s.product_id).filter(Boolean),
+              walkthrough_spec: walkthroughSpec,
+              status: 'pending'
+            }).select().single()
+
+          if (review) {
+            // Update review row with self-reference for task description
+            const fullDesc = this._buildReviewTaskDescription(review.id, prd, ucIds, walkthroughSpec)
+
+            // Create PM task
+            const task = await this.store.createTask({
+              title: `PM: Product Review — ${prd.title}`,
+              agent_id: 'product',
+              status: 'ready',
+              model: reviewModel,
+              priority: 1,
+              prd_id: prd.id,
+              tags: ['product-review', 'prd-completion'],
+              description: fullDesc,
+              metadata: { created_by: 'orchestrator', review_id: review.id, review_type: 'prd_completion' }
+            })
+
+            // Link task to review
+            if (task?.id) {
+              await this.store.supabase.from('product_reviews')
+                .update({ task_id: task.id }).eq('id', review.id)
+            }
+
+            console.log(`   📋 PRD completion review created for "${prd.title}" (${ucIds.length} UCs)`)
+            this.actions.push(`Product review triggered: ${prd.title}`)
+          }
+        }
+      }
+
+      // B. Periodic weekly trigger
+      const { data: lastPeriodic } = await this.store.supabase
+        .from('product_reviews').select('id, created_at')
+        .eq('project_id', this.projectId)
+        .eq('review_type', 'periodic')
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      const lastPeriodicDate = lastPeriodic?.[0]?.created_at
+      const daysSinceLastPeriodic = lastPeriodicDate
+        ? (Date.now() - new Date(lastPeriodicDate).getTime()) / (1000 * 60 * 60 * 24)
+        : Infinity
+
+      if (daysSinceLastPeriodic >= periodicDays) {
+        const allProducts = this.config.products || []
+        const walkthroughSpec = this._buildWalkthroughSpec(allProducts, [])
+
+        const { data: review } = await this.store.supabase
+          .from('product_reviews').insert({
+            project_id: this.projectId,
+            review_type: 'periodic',
+            scope_product_ids: allProducts.map(p => p.id),
+            walkthrough_spec: walkthroughSpec,
+            status: 'pending'
+          }).select().single()
+
+        if (review) {
+          const fullDesc = this._buildReviewTaskDescription(review.id, null, [], walkthroughSpec)
+
+          const task = await this.store.createTask({
+            title: `PM: Periodic Product Review`,
+            agent_id: 'product',
+            status: 'ready',
+            model: reviewModel,
+            priority: 2,
+            tags: ['product-review', 'periodic'],
+            description: fullDesc,
+            metadata: { created_by: 'orchestrator', review_id: review.id, review_type: 'periodic' }
+          })
+
+          if (task?.id) {
+            await this.store.supabase.from('product_reviews')
+              .update({ task_id: task.id }).eq('id', review.id)
+          }
+
+          console.log('   📋 Periodic product review created')
+          this.actions.push('Periodic product review triggered')
+        }
+      }
+
+      // C. Process completed reviews + approved decisions
+      await this._processCompletedReviews()
+      await this._processApprovedDecisions()
+      await this._updateProductReadiness()
+      await this._checkBlockingDecisions()
+
+    } catch (err) {
+      console.warn('   ⚠️ Product review check failed (non-fatal):', err.message)
+    }
+  }
+
+  _buildWalkthroughSpec(products, ucIds) {
+    const steps = []
+    for (const product of products) {
+      // Skip products with no URL (not deployed yet)
+      if (!product.url) continue
+      // If ucIds provided, only include products matching those UCs
+      if (ucIds.length > 0 && product.uc_id && !ucIds.includes(product.uc_id)) continue
+
+      steps.push({
+        product_id: product.id,
+        url: product.url,
+        description: product.description || product.name,
+        expected_behavior: `${product.name} loads correctly and is functional`,
+        actual_behavior: null,
+        status: null
+      })
+    }
+
+    // Cross-product journey step if multiple products
+    if (steps.length > 1) {
+      steps.push({
+        product_id: 'cross-product',
+        url: steps[0]?.url,
+        description: 'End-to-end user journey across all products (signup → onboarding → dashboard → settings)',
+        expected_behavior: 'User can navigate seamlessly between all product components',
+        actual_behavior: null,
+        status: null
+      })
+    }
+
+    return steps
+  }
+
+  _buildReviewTaskDescription(reviewId, prd, ucIds, walkthroughSpec) {
+    const lines = []
+
+    if (prd) {
+      lines.push(`## Product Review: ${prd.title}`)
+      lines.push(`Review ID: ${reviewId || '(pending)'}`)
+      lines.push(`PRD: ${prd.id}`)
+      lines.push(`Use Cases: ${ucIds.join(', ')}`)
+    } else {
+      lines.push(`## Periodic Product Review`)
+      lines.push(`Review ID: ${reviewId || '(pending)'}`)
+    }
+
+    lines.push('')
+    lines.push('## Walkthrough Checklist')
+    for (let i = 0; i < walkthroughSpec.length; i++) {
+      const step = walkthroughSpec[i]
+      lines.push(`${i + 1}. **${step.description}**`)
+      if (step.url) lines.push(`   URL: ${step.url}`)
+      lines.push(`   Expected: ${step.expected_behavior}`)
+    }
+
+    lines.push('')
+    lines.push('## Instructions')
+    lines.push('1. Walk through each URL above and test the user journey')
+    lines.push('2. For each step, record actual_behavior and set status to pass/fail/partial')
+    lines.push('3. Document all findings with type, severity, summary, details')
+    lines.push('4. Identify any decisions needed (architectural choices, not bug fixes)')
+    lines.push('5. Set verdict: pass, pass_with_issues, or fail')
+    lines.push('6. Set readiness_score: 0-100')
+    lines.push(`7. Update the product_reviews row (id: ${reviewId}) in Supabase with your results`)
+
+    return lines.join('\n')
+  }
+
+  async _processCompletedReviews() {
+    const { data: completedReviews } = await this.store.supabase
+      .from('product_reviews').select('*')
+      .eq('project_id', this.projectId)
+      .eq('status', 'completed')
+      .is('resulting_uc_ids', null)
+
+    if (!completedReviews?.length) return
+
+    const reviewConfig = this.config.product_reviews || {}
+    const autoTaskSeverities = reviewConfig.finding_auto_task_severities || ['critical', 'high']
+    const implModel = reviewConfig.decision_implementation_model || 'sonnet'
+
+    for (const review of completedReviews) {
+      const resultingDecisionIds = []
+      const resultingTaskIds = []
+
+      // Promote decisions_needed → product_decisions
+      const decisions = review.decisions_needed || []
+      for (const decision of decisions) {
+        const isBlocking = decision.blocking === true
+
+        const decisionData = {
+          project_id: this.projectId,
+          title: decision.summary,
+          description: decision.details || decision.summary,
+          category: decision.category || 'other',
+          options: decision.options || [],
+          recommended_option: decision.recommended,
+          recommendation_reason: decision.reason,
+          blocking: isBlocking,
+          source_review_id: review.id,
+          // Non-blocking decisions auto-approved with PM's recommendation
+          status: isBlocking ? 'proposed' : 'approved',
+          decided_by: isBlocking ? null : 'pm:auto',
+          decided_option: isBlocking ? null : decision.recommended,
+          decision_reason: isBlocking ? null : `Auto-approved (non-blocking). PM recommended: ${decision.reason || decision.recommended}`,
+          decided_at: isBlocking ? null : new Date().toISOString()
+        }
+
+        const { data: created } = await this.store.supabase
+          .from('product_decisions').insert(decisionData).select().single()
+
+        if (created) {
+          resultingDecisionIds.push(created.id)
+          if (isBlocking) {
+            console.log(`   🔴 Blocking decision created: ${decision.summary}`)
+          } else {
+            console.log(`   🟢 Auto-approved decision: ${decision.summary}`)
+          }
+        }
+      }
+
+      // Create PM tasks from critical/high findings
+      const findings = review.findings || []
+      const actionableFindings = findings.filter(f => autoTaskSeverities.includes(f.severity))
+
+      for (const finding of actionableFindings) {
+        const task = await this.store.createTask({
+          title: `PM: Fix ${finding.severity} issue — ${finding.summary}`,
+          agent_id: 'product',
+          status: 'ready',
+          model: implModel,
+          priority: finding.severity === 'critical' ? 1 : 2,
+          tags: ['product-review', 'finding-fix'],
+          description: [
+            `## Product Review Finding (${finding.severity})`,
+            `Source review: ${review.id}`,
+            `Type: ${finding.type || 'unknown'}`,
+            `Summary: ${finding.summary}`,
+            `Details: ${finding.details || 'N/A'}`,
+            `Affected UCs: ${(finding.affected_uc_ids || []).join(', ') || 'N/A'}`,
+            `Suggested fix: ${finding.suggested_fix || 'N/A'}`,
+            '',
+            'Write a UC spec to address this finding. The normal workflow will handle implementation.'
+          ].join('\n'),
+          metadata: { created_by: 'orchestrator', source_review_id: review.id, finding_severity: finding.severity }
+        })
+
+        if (task?.id) resultingTaskIds.push(task.id)
+      }
+
+      // Update review with resulting IDs
+      await this.store.supabase.from('product_reviews')
+        .update({
+          resulting_decision_ids: resultingDecisionIds,
+          resulting_task_ids: resultingTaskIds,
+          resulting_uc_ids: [] // Will be populated when decisions create UCs
+        }).eq('id', review.id)
+
+      console.log(`   ✅ Processed review ${review.id}: ${resultingDecisionIds.length} decisions, ${resultingTaskIds.length} tasks`)
+      this.actions.push(`Processed product review: ${resultingDecisionIds.length} decisions, ${resultingTaskIds.length} tasks`)
+    }
+  }
+
+  async _processApprovedDecisions() {
+    const { data: approvedDecisions } = await this.store.supabase
+      .from('product_decisions').select('*')
+      .eq('project_id', this.projectId)
+      .eq('status', 'approved')
+      .is('resulting_task_ids', null)
+
+    if (!approvedDecisions?.length) return
+
+    const implModel = (this.config.product_reviews || {}).decision_implementation_model || 'sonnet'
+
+    for (const decision of approvedDecisions) {
+      const chosenOption = decision.decided_option
+      const optionDetail = (decision.options || []).find(o => o.id === chosenOption || o.label === chosenOption)
+
+      const task = await this.store.createTask({
+        title: `PM: Implement decision — ${decision.title}`,
+        agent_id: 'product',
+        status: 'ready',
+        model: implModel,
+        priority: 1,
+        tags: ['product-review', 'decision-implementation'],
+        description: [
+          `## Decision Implementation: ${decision.title}`,
+          `Decision ID: ${decision.id}`,
+          `Category: ${decision.category}`,
+          `Chosen option: ${chosenOption}`,
+          optionDetail ? `Option details: ${optionDetail.description || optionDetail.label}` : '',
+          `Reason: ${decision.decision_reason || 'N/A'}`,
+          '',
+          'Write a UC spec (or PRD if needed) to implement this decision.',
+          'Create the use_case row in Supabase with the appropriate workflow.',
+          'The normal workflow pipeline will handle implementation after you spec it.'
+        ].filter(Boolean).join('\n'),
+        metadata: { created_by: 'orchestrator', source_decision_id: decision.id }
+      })
+
+      if (task?.id) {
+        await this.store.supabase.from('product_decisions')
+          .update({ resulting_task_ids: [task.id] }).eq('id', decision.id)
+        console.log(`   📝 Implementation task created for decision: ${decision.title}`)
+      }
+    }
+  }
+
+  async _updateProductReadiness() {
+    // Get latest completed review
+    const { data: latestReview } = await this.store.supabase
+      .from('product_reviews').select('id, verdict, readiness_score, completed_at')
+      .eq('project_id', this.projectId)
+      .eq('status', 'completed')
+      .order('completed_at', { ascending: false })
+      .limit(1)
+
+    // Count open decisions
+    const { count: pendingDecisions } = await this.store.supabase
+      .from('product_decisions').select('id', { count: 'exact', head: true })
+      .eq('project_id', this.projectId)
+      .eq('status', 'proposed')
+
+    const { count: blockingDecisions } = await this.store.supabase
+      .from('product_decisions').select('id', { count: 'exact', head: true })
+      .eq('project_id', this.projectId)
+      .eq('status', 'proposed')
+      .eq('blocking', true)
+
+    // Count open findings (from pending/in_progress reviews)
+    const { data: activeReviews } = await this.store.supabase
+      .from('product_reviews').select('findings')
+      .eq('project_id', this.projectId)
+      .eq('status', 'completed')
+      .order('completed_at', { ascending: false })
+      .limit(1)
+
+    const latestFindings = activeReviews?.[0]?.findings || []
+    const openFindings = {
+      critical: latestFindings.filter(f => f.severity === 'critical').length,
+      high: latestFindings.filter(f => f.severity === 'high').length,
+      medium: latestFindings.filter(f => f.severity === 'medium').length,
+      low: latestFindings.filter(f => f.severity === 'low').length
+    }
+
+    // Derive status
+    let derivedStatus = 'PENDING'
+    const review = latestReview?.[0]
+    if (review) {
+      if (blockingDecisions > 0) {
+        derivedStatus = 'BLOCKED_ON_DECISIONS'
+      } else if (review.verdict === 'pass') {
+        derivedStatus = 'READY'
+      } else if (review.verdict === 'pass_with_issues') {
+        derivedStatus = 'PASS_WITH_ISSUES'
+      } else {
+        derivedStatus = 'NOT_READY'
+      }
+    }
+
+    // Upsert system_components
+    const { data: existingComp } = await this.store.supabase
+      .from('system_components').select('id')
+      .eq('project_id', this.projectId)
+      .eq('category', 'product_readiness')
+      .limit(1)
+
+    const componentData = {
+      project_id: this.projectId,
+      name: 'Product Readiness',
+      category: 'product_readiness',
+      status: derivedStatus,
+      metadata: {
+        readiness_score: review?.readiness_score || null,
+        last_review_id: review?.id || null,
+        last_review_at: review?.completed_at || null,
+        open_findings: openFindings,
+        pending_decisions: pendingDecisions || 0,
+        blocking_decisions: blockingDecisions || 0
+      },
+      updated_at: new Date().toISOString()
+    }
+
+    if (existingComp?.[0]?.id) {
+      await this.store.supabase.from('system_components')
+        .update(componentData).eq('id', existingComp[0].id)
+    } else {
+      await this.store.supabase.from('system_components')
+        .insert(componentData)
+    }
+  }
+
+  async _checkBlockingDecisions() {
+    const { data: blocking } = await this.store.supabase
+      .from('product_decisions').select('id, title, category, created_at')
+      .eq('project_id', this.projectId)
+      .eq('status', 'proposed')
+      .eq('blocking', true)
+
+    if (!blocking?.length) return
+
+    // Rate-limit to once/day via state file
+    const stateFile = path.join(__dirname, '.product-review-state.json')
+    let state = {}
+    try { state = JSON.parse(fs.readFileSync(stateFile, 'utf-8')) } catch {}
+
+    const today = new Date().toISOString().slice(0, 10)
+    if (state.lastBlockingAlert === today) return
+
+    state.lastBlockingAlert = today
+    fs.writeFileSync(stateFile, JSON.stringify(state, null, 2))
+
+    const lines = blocking.map(d => `  🔴 ${d.title} [${d.category}] (id: ${d.id.slice(0, 8)})`)
+    this.actions.push(`⚠️ DECISIONS NEEDED (${blocking.length}):\n${lines.join('\n')}\nUse !decide <id> <option> to approve`)
+    console.log(`   ⚠️ ${blocking.length} blocking decision(s) need human sign-off`)
   }
 
   async spawnAgents() {

@@ -174,5 +174,13 @@
       "target_date": "2026-04-15",
       "currency": "USD"
     }
-  ]
+  ],
+
+  "product_reviews": {
+    "periodic_interval_days": 7,
+    "prd_completion_cooldown_days": 7,
+    "finding_auto_task_severities": ["critical", "high"],
+    "review_model": "sonnet",
+    "decision_implementation_model": "sonnet"
+  }
 }

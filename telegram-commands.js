@@ -353,13 +353,119 @@ function handleSwarmCommand(args) {
 }
 
 /**
- * Main handler
+ * Handle !decide command — approve a product decision
+ * Format: !decide <decision-id> <option-id> [reason...]
+ */
+async function handleDecideCommand(args) {
+  if (!args || args.length < 2) {
+    return `🔴 Usage: !decide <decision-id> <option-id> [reason]
+
+Example: !decide abc123 supabase-auth "Already using Supabase"`;
+  }
+
+  const decisionId = args[0];
+  const optionId = args[1];
+  const reason = args.slice(2).join(' ').replace(/^["']|["']$/g, '') || null;
+
+  try {
+    const { TaskStore } = require('./task-store');
+    const store = new TaskStore();
+    if (!store.supabase) return '❌ No Supabase connection';
+
+    // Find decision by prefix match (allow short IDs)
+    const { data: decisions } = await store.supabase
+      .from('product_decisions').select('id, title, status, options')
+      .eq('status', 'proposed')
+      .ilike('id', `${decisionId}%`);
+
+    if (!decisions?.length) return `❌ No pending decision found matching "${decisionId}"`;
+    if (decisions.length > 1) return `❌ Ambiguous ID "${decisionId}" — matches ${decisions.length} decisions. Use a longer prefix.`;
+
+    const decision = decisions[0];
+
+    const { error } = await store.supabase
+      .from('product_decisions').update({
+        status: 'approved',
+        decided_by: 'human:stojan',
+        decided_option: optionId,
+        decision_reason: reason || `Approved via !decide`,
+        decided_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }).eq('id', decision.id);
+
+    if (error) return `❌ Update failed: ${error.message}`;
+
+    return `✅ Decision approved: ${decision.title}\nOption: ${optionId}${reason ? `\nReason: ${reason}` : ''}\nNext heartbeat will create implementation tasks.`;
+  } catch (err) {
+    return `❌ Error: ${err.message}`;
+  }
+}
+
+/**
+ * Handle !reviews command — show recent product reviews and pending decisions
+ * Format: !reviews [status]
+ */
+async function handleReviewsCommand(args) {
+  try {
+    const { TaskStore } = require('./task-store');
+    const store = new TaskStore();
+    if (!store.supabase) return '❌ No Supabase connection';
+
+    const { getConfig } = require('./project-config-loader');
+    const projectId = getConfig().project_id;
+
+    // Get recent reviews
+    const { data: reviews } = await store.supabase
+      .from('product_reviews').select('id, review_type, verdict, readiness_score, status, created_at, scope_prd_id')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    // Get pending decisions
+    const { data: pendingDecisions } = await store.supabase
+      .from('product_decisions').select('id, title, category, blocking, status, created_at')
+      .eq('project_id', projectId)
+      .eq('status', 'proposed');
+
+    let output = '📋 Product Reviews\n';
+
+    if (reviews?.length) {
+      output += '\nRecent Reviews:\n';
+      for (const r of reviews) {
+        const icon = r.verdict === 'pass' ? '✅' : r.verdict === 'fail' ? '❌' : r.verdict === 'pass_with_issues' ? '⚠️' : '⏳';
+        const score = r.readiness_score != null ? ` (${r.readiness_score}/100)` : '';
+        const date = new Date(r.created_at).toLocaleDateString();
+        output += `  ${icon} ${r.review_type}${r.scope_prd_id ? ` — ${r.scope_prd_id}` : ''} [${r.status}]${score} (${date})\n`;
+      }
+    } else {
+      output += '\nNo reviews yet.\n';
+    }
+
+    if (pendingDecisions?.length) {
+      output += `\n🔴 Pending Decisions (${pendingDecisions.length}):\n`;
+      for (const d of pendingDecisions) {
+        const icon = d.blocking ? '🚫' : '💡';
+        output += `  ${icon} ${d.title} [${d.category}] (${d.id.slice(0, 8)})\n`;
+      }
+      output += '\nUse !decide <id> <option> [reason] to approve';
+    } else {
+      output += '\n✅ No pending decisions.';
+    }
+
+    return output;
+  } catch (err) {
+    return `❌ Error: ${err.message}`;
+  }
+}
+
+/**
+ * Main handler — returns string or Promise<string>
  */
 function handleCommand(input) {
   const parts = input.trim().split(/\s+/);
   const command = parts[0].toLowerCase();
   const args = parts.slice(1);
-  
+
   switch (command) {
     case '!budget':
       return handleBudgetCommand(args);
@@ -375,6 +481,10 @@ function handleCommand(input) {
       return handleSwarmCommand(args);
     case '!status':
       return handleStatusCommand();
+    case '!decide':
+      return handleDecideCommand(args);
+    case '!reviews':
+      return handleReviewsCommand(args);
     default:
       return null; // Not a command we handle
   }
@@ -384,15 +494,21 @@ function handleCommand(input) {
 if (require.main === module) {
   const flag = process.argv[2];
   const input = process.argv[3];
-  
+
   if (flag === '--handle' && input) {
     const response = handleCommand(input);
-    if (response) {
-      console.log(response);
-      process.exit(0);
-    } else {
-      process.exit(1); // Not handled
-    }
+    // Handle both sync and async responses
+    Promise.resolve(response).then(result => {
+      if (result) {
+        console.log(result);
+        process.exit(0);
+      } else {
+        process.exit(1); // Not handled
+      }
+    }).catch(err => {
+      console.error('Error:', err.message);
+      process.exit(1);
+    });
   } else {
     console.log(`
 Telegram Command Handler
@@ -410,8 +526,10 @@ Commands:
   !health              - Run health checks
   !swarm [action]      - Swarm control (on/off/status) - starts OFF
   !status              - Show full status
+  !decide <id> <opt>   - Approve a product decision
+  !reviews [status]    - Show product reviews & decisions
 `);
   }
 }
 
-module.exports = { handleCommand, handleBudgetCommand, handleAccuracyCommand, handleOptimizeCommand, handleGoalCommand, handleHealthCommand, handleSwarmCommand };
+module.exports = { handleCommand, handleBudgetCommand, handleAccuracyCommand, handleOptimizeCommand, handleGoalCommand, handleHealthCommand, handleSwarmCommand, handleDecideCommand, handleReviewsCommand };
