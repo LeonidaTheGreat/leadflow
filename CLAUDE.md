@@ -55,6 +55,12 @@ All agents point to this directory. Active agents:
 - leadflow-marketing — marketing
 - leadflow-design — design
 
+## Working With Stojan
+Stojan's primary goal is **building and improving the system** (orchestrator, heartbeat, agent infrastructure, self-healing). He is NOT asking you to do individual agent tasks (those are for spawned agents). When something is broken:
+1. **Fix the system** so it handles the problem automatically going forward
+2. Only fix individual tasks manually when that's the obvious way to unblock things
+3. Always prefer systemic fixes over one-off patches
+
 ## Critical Rules
 - This repo lives at `~/projects/leadflow` (GitHub: `LeonidaTheGreat/leadflow`)
 - OpenClaw agents are actively running against this codebase
@@ -155,5 +161,5 @@ Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifyi
 
 ## Active Blockers (as of Feb 2026)
 - Pilot agent recruitment pending Stojan approval
-- Landing page needs design handoff
+- Landing Page: ✅ Completed (March 2, 2026) — Ready for deployment
 - A2P 10DLC SMS compliance registration pending
