@@ -116,6 +116,8 @@ function checkBudget() {
 
 /**
  * Append a spawn record to the daily budget tracker.
+ * Always computes cost from current model (not stored estimated_cost_usd)
+ * because the learning system may have changed the model after task creation.
  */
 function recordSpawn(task) {
   const today = new Date().toISOString().split('T')[0]
@@ -126,13 +128,16 @@ function recordSpawn(task) {
       tracker = { date: today, spent: 0, spawns: [] }
     }
   }
-  tracker.spent += task.estimated_cost_usd ?? estimateCost(task.model, task.estimated_hours)
+  // Always compute from current model — estimated_cost_usd may be stale
+  // if the learning system changed the model after task creation
+  const actualCost = estimateCost(task.model, task.estimated_hours)
+  tracker.spent += actualCost
   tracker.spawns.push({
     taskId: task.id,
     task: task.title,
     agentId: task.agent_id,
     model: task.model,
-    estimatedCost: task.estimated_cost_usd,
+    estimatedCost: actualCost,
     time: new Date().toISOString()
   })
   fs.writeFileSync(BUDGET_TRACKER_PATH, JSON.stringify(tracker, null, 2))
@@ -292,8 +297,8 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     } catch {}
   }
 
-  // Dedup: skip if already spawned today (but allow retries)
-  if (alreadySpawnedIds && alreadySpawnedIds.has(task.id) && (task.retry_count || 0) === 0) {
+  // Dedup: skip if already spawned today
+  if (alreadySpawnedIds && alreadySpawnedIds.has(task.id)) {
     console.log(`   ⏭️ Skipping ${task.title} — already spawned today`)
     return null
   }
@@ -310,8 +315,9 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     return null
   }
 
-  if (task.estimated_cost_usd > budget.remaining) {
-    console.log(`   ⚠️ Skipping ${task.title} — over budget`)
+  const spawnCost = estimateCost(task.model, task.estimated_hours)
+  if (spawnCost > budget.remaining) {
+    console.log(`   ⚠️ Skipping ${task.title} — over budget ($${spawnCost.toFixed(2)} > $${budget.remaining.toFixed(2)})`)
     return null
   }
 
@@ -328,7 +334,8 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     if (modelRec?.recommendedModel && modelRec.recommendedModel !== task.model) {
       console.log(`   📊 Learning applied: ${task.model}→${modelRec.recommendedModel} for ${task.agent_id}`)
       task.model = modelRec.recommendedModel
-      await store.updateTask(task.id, { model: task.model })
+      task.estimated_cost_usd = estimateCost(task.model, task.estimated_hours)
+      await store.updateTask(task.id, { model: task.model, estimated_cost_usd: task.estimated_cost_usd })
     }
   } catch {}  // learning system may not have enough data yet
 
@@ -347,7 +354,10 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
   })
 
   recordSpawn(task)
-  budget.remaining -= (task.estimated_cost_usd ?? estimateCost(task.model, task.estimated_hours))
+  budget.remaining -= estimateCost(task.model, task.estimated_hours)
+
+  // Track in dedup set so same heartbeat batch doesn't double-spawn
+  if (alreadySpawnedIds) alreadySpawnedIds.add(task.id)
 
   queueForSpawn(task)
 
