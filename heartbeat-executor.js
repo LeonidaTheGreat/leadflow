@@ -1799,6 +1799,7 @@ class HeartbeatExecutor {
 
       // C. Process completed reviews + approved decisions
       await this._processCompletedReviews()
+      await this._autoApproveNonBlockingDecisions()
       await this._processApprovedDecisions()
       await this._updateProductReadiness()
       await this._checkBlockingDecisions()
@@ -1995,6 +1996,34 @@ class HeartbeatExecutor {
 
       console.log(`   ✅ Processed review ${review.id}: ${resultingDecisionIds.length} decisions, ${resultingTaskIds.length} tasks`)
       this.actions.push(`Processed product review: ${resultingDecisionIds.length} decisions, ${resultingTaskIds.length} tasks`)
+    }
+  }
+
+  /**
+   * Auto-approve non-blocking decisions that are still 'proposed'.
+   * Decisions can be created by _processCompletedReviews() (which auto-approves inline)
+   * or directly by PM agents (which leave them as 'proposed'). This catches the latter.
+   */
+  async _autoApproveNonBlockingDecisions() {
+    const { data: pending } = await this.store.supabase
+      .from('product_decisions').select('id, title, recommended_option, recommendation_reason')
+      .eq('project_id', this.projectId)
+      .eq('status', 'proposed')
+      .eq('blocking', false)
+
+    if (!pending?.length) return
+
+    for (const d of pending) {
+      await this.store.supabase.from('product_decisions')
+        .update({
+          status: 'approved',
+          decided_by: 'pm:auto',
+          decided_option: d.recommended_option,
+          decision_reason: `Auto-approved (non-blocking). PM recommended: ${d.recommendation_reason || d.recommended_option}`,
+          decided_at: new Date().toISOString()
+        }).eq('id', d.id)
+
+      console.log(`   🟢 Auto-approved non-blocking decision: ${d.title}`)
     }
   }
 
