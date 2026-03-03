@@ -685,11 +685,16 @@ function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
       directive: `Implement: ${ucName}.`,
       deliverable: `Build the feature based on the PRD, copy, and design specs from prior workflow steps.`,
       spawnRole: [
-        `## YOUR ROLE: Developer (Implementation)`,
-        `Your deliverable is WORKING CODE:`,
+        `## YOUR ROLE: Developer (Implementation & Deployment)`,
+        `Your deliverable is WORKING, DEPLOYED CODE:`,
         `1. Implement the feature based on PRD and design specs from prior steps`,
         `2. Write tests for your implementation`,
         `3. Commit and push to your feature branch`,
+        `4. If the task involves deployment (new Vercel project, deploy config, first deploy):`,
+        `   - Set up the deployment target (e.g., \`vercel link\`, configure build settings)`,
+        `   - Run the deploy command (e.g., \`vercel --prod\`)`,
+        `   - Update \`project.config.json\` with the product's url, deploy config, and smoke_test if needed`,
+        `   - Verify the deployment is accessible`,
         `When done, write a completion report. The orchestrator chains to QC.`
       ].join('\n')
     },
@@ -701,7 +706,8 @@ function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
         `Your deliverable is a REVIEW VERDICT:`,
         `1. Run tests — all must pass`,
         `2. Check code quality, security, and acceptance criteria`,
-        `3. Approve or reject with a structured diagnosis`,
+        `3. If a deployment was part of this task, verify the live URL is accessible and functional`,
+        `4. Approve or reject with a structured diagnosis`,
         `When done, write a completion report with your verdict.`
       ].join('\n')
     }
