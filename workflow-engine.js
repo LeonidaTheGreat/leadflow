@@ -68,6 +68,28 @@ function readLogTail(filePath, maxLines = 30, maxBytes = 4096) {
   }
 }
 
+/**
+ * Read an entire log file for completion marker detection.
+ * Agent outputs are typically <10KB so reading the full file is cheap.
+ * This avoids the bug where readLogTail's maxLines cuts off markers
+ * that appear early in output (e.g., "Task Complete" on line 3 of 76).
+ */
+function readLogFull(filePath, maxBytes = 65536) {
+  try {
+    if (!fs.existsSync(filePath)) return ''
+    const stat = fs.statSync(filePath)
+    if (stat.size === 0) return ''
+    const readSize = Math.min(stat.size, maxBytes)
+    const fd = fs.openSync(filePath, 'r')
+    const buf = Buffer.alloc(readSize)
+    fs.readSync(fd, buf, 0, readSize, 0)
+    fs.closeSync(fd)
+    return buf.toString('utf-8')
+  } catch {
+    return ''
+  }
+}
+
 // ── Budget helpers ───────────────────────────────────────────────────────────
 
 /**
@@ -188,7 +210,6 @@ async function chainTask(store, task, projectId) {
   const roleCtx = buildRoleContext(nextAgent, uc.name, '', {
     workflowStep: currentIdx + 1, workflowTotal: uc.workflow.length
   })
-
   let description = `${roleCtx.description}\n\nPrior step by ${task.agent_id} (task ${task.id}).`
   if (relatedWork.length > 0) {
     description += `\n\n## Already Completed Work for ${task.use_case_id}\n`
@@ -506,6 +527,7 @@ module.exports = {
   MODEL_COSTS,
   // Functions
   readLogTail,
+  readLogFull,
   checkBudget,
   estimateCost,
   recordSpawn,

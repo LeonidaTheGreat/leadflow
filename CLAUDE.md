@@ -74,6 +74,10 @@ The system runs 4 automated loops via `heartbeat-executor.js` (every 5 min):
 3. **Product** — feedback ingestion → PM analysis → priority re-ordering
 4. **Learning** — decision tracking → model escalation → self-heal
 
+**Realtime Dispatcher:** `realtime-dispatcher.js` is a **long-running** Supabase Realtime listener (launchd: `ai.openclaw.bo2026.realtime-dispatcher`). It reacts instantly to task status changes (done → chain next, ready → spawn). **IMPORTANT:** It caches Node.js modules at startup. After editing `workflow-engine.js`, `spawn-consumer.js`, or `task-store.js`, restart it with: `launchctl stop ai.openclaw.bo2026.realtime-dispatcher` (KeepAlive auto-restarts). Logs: `/tmp/openclaw/bo2026-realtime-dispatcher.log`.
+
+**Role Directives:** `buildRoleContext()` in `workflow-engine.js` is the single source of truth for agent role enforcement. All task creation paths (replenishQueue, chainTask, spawn-consumer) use it.
+
 **Schema:** `supabase/migrations/004_project_hierarchy.sql` adds: `prds`, `use_cases`, `e2e_test_specs`, `metrics`, `code_reviews`, `product_feedback` + `tasks.use_case_id`, `tasks.branch_name`, `tasks.pr_number`
 
 **Seed data:** `scripts/seed-project-hierarchy.js` (3 PRDs, 12 UCs with workflows)
