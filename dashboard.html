@@ -155,7 +155,7 @@
   <div id="product-components-content" class="grid"><div class="loading">Loading products...</div></div>
 
   <!-- KPI CARDS -->
-  <h2>🎯 Key Metrics</h2>
+  <h2 id="kpi-heading">🎯 Key Metrics</h2>
   <div id="kpi-cards" class="grid4">
     <div class="card"><div class="muted">Days to MVP</div><div class="loading">...</div></div>
     <div class="card"><div class="muted">Pilot Agents</div><div class="loading">...</div></div>
@@ -497,6 +497,7 @@ async function loadKPIs() {
   const dayNum = Math.max(1, Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)));
   const daysRemaining = Math.max(0, deadlineDays - dayNum);
 
+  document.getElementById('kpi-heading').innerHTML = `🎯 Key Metrics<span class="muted small">${projectTag(PROJECT_ID)}</span>`;
   document.getElementById('kpi-cards').innerHTML = `
     <div class="card">
       <div class="muted">Days Remaining</div>
