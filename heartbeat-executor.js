@@ -40,7 +40,8 @@ const {
   checkBudget: wfCheckBudget, recordSpawn: wfRecordSpawn,
   queueForSpawn: wfQueueForSpawn, chainTask, prepareAndQueueSpawn,
   verifyTaskOutput, buildRoleContext, readLogFull,
-  escalateModel: wfEscalateModel, selectInitialModel
+  escalateModel: wfEscalateModel, selectInitialModel,
+  processEscalationResult
 } = require('./workflow-engine')
 const { execSync } = require('child_process')
 const fs = require('fs')
@@ -443,7 +444,56 @@ class HeartbeatExecutor {
     } catch (err) {
       console.warn('   ⚠️ Could not process completion reports:', err.message)
     }
+
+    // Process completed diagnosis tasks (fallback for missed realtime events)
+    await this._processCompletedDiagnoses()
   }
+
+  /**
+   * Fallback handler: find completed escalation-diagnosis tasks whose
+   * original tasks are still blocked, and process them.
+   * The realtime dispatcher handles this on the hot path, but this
+   * catches anything it missed.
+   */
+  async _processCompletedDiagnoses() {
+    if (!this.store.supabase) return
+    try {
+      // Find diagnosis tasks that are done but whose original is still blocked
+      const { data: diagTasks } = await this.store.supabase
+        .from('tasks')
+        .select('*')
+        .eq('project_id', this.projectId)
+        .eq('status', 'done')
+        .contains('tags', ['escalation-diagnosis'])
+        .order('updated_at', { ascending: false })
+        .limit(10)
+
+      if (!diagTasks || diagTasks.length === 0) return
+
+      for (const diag of diagTasks) {
+        const originalId = diag.metadata?.escalation_from
+        if (!originalId) continue
+
+        // Check if original is still blocked (not yet processed)
+        const original = await this.store.getTask(originalId)
+        if (!original || original.status !== 'blocked') continue
+
+        // Check if already processed (fix tasks exist)
+        if (original.metadata?.awaiting_fixes?.length > 0) continue
+
+        console.log(`   🔍 Processing missed diagnosis: ${diag.id} for ${originalId}`)
+        try {
+          const result = await processEscalationResult(this.store, diag, this.projectId)
+          this.actions.push(`Processed diagnosis ${diag.id}: ${result.action} for ${result.originalTaskId}`)
+        } catch (err) {
+          console.warn(`   ⚠️ Failed to process diagnosis ${diag.id}: ${err.message}`)
+        }
+      }
+    } catch (err) {
+      console.warn('   ⚠️ Diagnosis processing failed:', err.message)
+    }
+  }
+
   async handleTaskSuccess(taskId) {
     // Mark task as done and unblock dependents
     try {
@@ -568,24 +618,93 @@ class HeartbeatExecutor {
       })
       await this.decomposeTask(taskId)
     } else if (action === 'escalate') {
-      console.log(`   📤 Escalating to PM${qcRecommendation ? ' (QC recommended)' : ''}`)
+      console.log(`   📤 Escalating to structured diagnosis${qcRecommendation ? ' (QC recommended)' : ''}`)
       recordDecision({
         decision_type: DECISION_TYPES.ESCALATION_DECISION,
         task_id: taskId,
         context: { failure_count: failureCount, model: task.model, qc_recommendation: qcRecommendation || null }
       })
-      const pmDescription = diagnosis
-        ? `Failed ${failureCount}x.\n\n## QC Diagnosis\n**Symptom:** ${diagnosis.symptom}\n**Root Cause:** ${diagnosis.rootCause}\n**Suggested Fix:** ${diagnosis.suggestedFix}\n\nReview if spec is clear and requirements are achievable.`
-        : `Failed ${failureCount}x. Last error: ${task.last_error || testResults?.error || 'unknown'}\nReview if spec is clear and requirements are achievable.`
-      await this.store.createTask({
-        title: `PM Review: "${task.title}" failed ${failureCount}x`,
-        agent_id: 'product', status: 'ready', priority: 1,
-        use_case_id: task.use_case_id, tags: ['review', 'spec-clarity'],
-        description: pmDescription,
-        metadata: { created_by: 'orchestrator', escalation_from: task.id }
+
+      // Collect failure history from all attempts for this task
+      let failureHistory = []
+      try {
+        const { data: failData } = await this.store.supabase
+          .from('tasks').select('last_error, model, retry_count, updated_at')
+          .eq('title', task.title).eq('project_id', this.projectId)
+          .order('updated_at', { ascending: false }).limit(5)
+        failureHistory = (failData || []).map(f => ({
+          error: f.last_error, model: f.model, at: f.updated_at
+        }))
+      } catch {}
+      // Also include current attempt's error
+      if (testResults?.error) {
+        failureHistory.unshift({ error: testResults.error, model: task.model, at: new Date().toISOString() })
+      }
+
+      const failureResConfig = this.config.failure_resolution || {}
+
+      // Check depth limit — don't create diagnosis-of-diagnosis-of-diagnosis
+      const escalationDepth = (task.metadata?.escalation_depth || 0)
+      const maxDepth = failureResConfig.max_escalation_depth || 2
+      if (escalationDepth >= maxDepth) {
+        console.log(`   ⛔ Escalation depth limit (${maxDepth}) reached — marking failed`)
+        await this.store.updateTask(taskId, { status: 'failed', failure_count: failureCount,
+          last_error: `Escalation depth limit (${maxDepth}) reached` })
+        this.actions.push(`Task ${taskId} hit escalation depth limit — failed`)
+        return
+      }
+
+      const diagnosisDesc = [
+        `## Escalation Diagnosis Request`,
+        `Task "${task.title}" has failed ${failureCount} times.`,
+        ``,
+        diagnosis ? `### QC Diagnosis from last attempt` : '',
+        diagnosis ? `**Symptom:** ${diagnosis.symptom}` : '',
+        diagnosis ? `**Root Cause:** ${diagnosis.rootCause}` : '',
+        diagnosis ? `**Suggested Fix:** ${diagnosis.suggestedFix}` : '',
+        diagnosis ? '' : '',
+        `### Failure History`,
+        ...failureHistory.map((f, i) => `${i + 1}. [${f.model || '?'}] ${f.error || 'unknown'} (${f.at || '?'})`),
+        ``,
+        `### Instructions`,
+        `Diagnose the root cause and categorize it. Write a completion report with a structured \`diagnosis\` field.`,
+        `See your role instructions above for the required format and categories.`,
+        ``,
+        `### Original Task`,
+        `Title: ${task.title}`,
+        `Agent: ${task.agent_id}`,
+        `Use Case: ${task.use_case_id || 'none'}`,
+        task.branch_name ? `Branch: ${task.branch_name}` : '',
+        task.description ? `\nOriginal description:\n${task.description.slice(0, 2000)}` : ''
+      ].filter(Boolean).join('\n')
+
+      const diagnosisTask = await this.store.createTask({
+        title: `Diagnose: "${task.title}" (failed ${failureCount}x)`,
+        agent_id: 'product',
+        status: 'ready',
+        model: failureResConfig.diagnosis_model || 'sonnet',
+        priority: 1,
+        tags: ['escalation-diagnosis'],
+        use_case_id: task.use_case_id,
+        description: diagnosisDesc,
+        metadata: {
+          created_by: 'orchestrator',
+          escalation_from: task.id,
+          escalation_depth: escalationDepth + 1,
+          failure_history: failureHistory
+        }
       })
-      await this.store.updateTask(taskId, { status: 'failed', failure_count: failureCount })
-      this.actions.push(`Escalated ${taskId} to PM after ${failureCount} failures${qcRecommendation ? ' (QC recommended)' : ''}`)
+
+      // Block original on diagnosis — not failed, so it's resumable
+      await this.store.updateTask(taskId, {
+        status: 'blocked',
+        failure_count: failureCount,
+        last_error: `Escalated to diagnosis: ${diagnosisTask?.id || 'unknown'}`
+      })
+      if (diagnosisTask?.id) {
+        await this.store.addDependency(taskId, diagnosisTask.id)
+      }
+      this.actions.push(`Escalated ${taskId} to diagnosis (${diagnosisTask?.id}) after ${failureCount} failures`)
     }
   }
   async createFollowUpTasks(task) {
@@ -1178,10 +1297,20 @@ class HeartbeatExecutor {
       // D. Detect products stuck at BUILT with no path to LIVE
       // A product is stuck if: UC complete + no URL + no deploy config + no smoke test
       // This means the system has no way to deploy it or verify it's live.
+      // IMPORTANT: Only flag products that have actual deployable code — not just specs/docs.
       const stuckProducts = products.filter(p => {
         if (!p.uc_id) return false
         const ucStatus = ucStatusMap.get(p.uc_id)
-        return ucStatus === 'complete' && !p.url && !p.deploy?.target_id && !p.smoke_test_id
+        if (ucStatus !== 'complete' || p.url || p.deploy?.target_id || p.smoke_test_id) return false
+        // Check if the product has deployable artifacts (not just .md files)
+        if (p.local_path) {
+          const absPath = path.resolve(__dirname, p.local_path)
+          if (!this._hasDeployableCode(absPath)) {
+            console.log(`   ℹ️ Product "${p.name}" UC complete but no deployable code at ${p.local_path} — needs building, not deploying`)
+            return false
+          }
+        }
+        return true
       })
 
       if (stuckProducts.length > 0) {
@@ -1345,6 +1474,30 @@ class HeartbeatExecutor {
     } catch (err) {
       console.warn('   ⚠️ Product component sync failed:', err.message)
       this.errors.push(`Product sync: ${err.message}`)
+    }
+  }
+
+  /**
+   * Check if a directory contains deployable code (not just docs/specs).
+   * Returns false if directory doesn't exist, is empty, or only has .md files.
+   */
+  _hasDeployableCode(absPath) {
+    try {
+      if (!fs.existsSync(absPath)) return false
+      const entries = fs.readdirSync(absPath, { recursive: true })
+      // Look for any non-markdown file that indicates buildable source
+      const codeExtensions = ['.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.json', '.vue', '.svelte']
+      const hasCode = entries.some(entry => {
+        const ext = path.extname(String(entry)).toLowerCase()
+        // package.json at root level is a strong signal
+        if (String(entry) === 'package.json') return true
+        // index.html at root level is a strong signal
+        if (String(entry) === 'index.html') return true
+        return codeExtensions.includes(ext)
+      })
+      return hasCode
+    } catch {
+      return false // Can't read dir → treat as no code
     }
   }
 

@@ -29,7 +29,7 @@ const {
   checkBudget, BUDGET_MIN_FOR_SPAWN,
   chainTask, prepareAndQueueSpawn,
   readLogTail, readLogFull, COMPLETION_MARKERS,
-  verifyTaskOutput
+  verifyTaskOutput, processEscalationResult
 } = require('./workflow-engine')
 const fs = require('fs')
 const path = require('path')
@@ -198,6 +198,34 @@ class RealtimeDispatcher {
 
       this.log('INFO', `Task completed: ${task.title} (${task.agent_id})`)
 
+      // Verify completion (deployment tasks must update project.config.json, etc.)
+      const { verified, reason } = verifyTaskOutput(task)
+      if (!verified) {
+        this.log('WARN', `Task ${task.title} marked done but verification failed: ${reason}`)
+        const retryCount = task.retry_count || 0
+        const maxRetries = task.max_retries || 3
+        if (retryCount < maxRetries) {
+          await this.store.updateTask(taskId, {
+            status: 'ready',
+            retry_count: retryCount + 1,
+            session_key: null,
+            last_error: `Verification failed: ${reason} (retry ${retryCount + 1}/${maxRetries})`
+          })
+          this.log('INFO', `Reset ${task.title} to ready for retry ${retryCount + 1}/${maxRetries}`)
+          try {
+            this.learner.recordFailure(task, `verification_failed: ${reason}`, retryCount)
+            recordOutcome(taskId, 'incorrect')
+          } catch {}
+        } else {
+          await this.store.updateTask(taskId, {
+            status: 'failed',
+            last_error: `Verification failed after ${maxRetries} retries: ${reason}`
+          })
+          this.log('WARN', `Task ${task.title} failed verification — retries exhausted`)
+        }
+        return
+      }
+
       // Record learning
       try {
         this.learner.recordSuccess(task)
@@ -206,18 +234,30 @@ class RealtimeDispatcher {
         this.log('WARN', `Learning record failed for ${taskId}: ${err.message}`)
       }
 
-      // Chain to next workflow step
-      try {
-        const result = await chainTask(this.store, task, PROJECT_ID)
-        if (result === 'uc_complete') {
-          this.log('INFO', `UC complete: ${task.use_case_id}`)
-        } else if (result?.startsWith('chained:')) {
-          this.log('INFO', `Chained: ${result.replace('chained:', '')} for ${task.use_case_id}`)
-          this.stats.tasksChained++
+      // Handle escalation diagnosis completion (hot path)
+      if (task.tags?.includes('escalation-diagnosis')) {
+        try {
+          const result = await processEscalationResult(this.store, task, PROJECT_ID)
+          this.log('INFO', `Escalation processed: ${result.action} for ${result.originalTaskId} (${result.fixTaskIds.length} fix tasks)`)
+        } catch (err) {
+          this.log('ERROR', `Escalation processing failed for ${taskId}: ${err.message}`)
+          this.stats.errors++
         }
-      } catch (err) {
-        this.log('ERROR', `Chain failed for ${taskId}: ${err.message}`)
-        this.stats.errors++
+        // Don't chain — processEscalationResult handles follow-up
+      } else {
+        // Chain to next workflow step (normal path)
+        try {
+          const result = await chainTask(this.store, task, PROJECT_ID)
+          if (result === 'uc_complete') {
+            this.log('INFO', `UC complete: ${task.use_case_id}`)
+          } else if (result?.startsWith('chained:')) {
+            this.log('INFO', `Chained: ${result.replace('chained:', '')} for ${task.use_case_id}`)
+            this.stats.tasksChained++
+          }
+        } catch (err) {
+          this.log('ERROR', `Chain failed for ${taskId}: ${err.message}`)
+          this.stats.errors++
+        }
       }
 
       // Check for unblocked tasks

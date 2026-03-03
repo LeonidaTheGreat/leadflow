@@ -187,6 +187,18 @@ async function run() {
       if (taskDetail?.metadata?.workflow_step != null) message += `\nWorkflow step: ${taskDetail.metadata.workflow_step + 1}/${taskDetail.metadata.workflow_total || '?'}`
       if (taskDetail?.retry_count > 0) message += `\n\n⚠️ This is retry #${taskDetail.retry_count}. Previous error: ${taskDetail.last_error || 'unknown'}`
 
+      // Inject escalation fix context when task was previously blocked and is now retrying after a fix
+      if (taskDetail?.metadata?.fix_context) {
+        message += `\n\n## 🔧 PREVIOUS FAILURE RESOLVED`
+        message += `\nThis task previously failed and was diagnosed by PM. Here's what happened:`
+        message += `\n**Resolution:** ${taskDetail.metadata.fix_context}`
+        if (taskDetail.metadata.escalation_depth) {
+          message += `\n**Escalation depth:** ${taskDetail.metadata.escalation_depth}`
+        }
+        message += `\n\n**IMPORTANT:** The underlying issue has been fixed. You have a fresh start (retry count reset).`
+        message += `\nApproach this task with the knowledge of what went wrong before, but don't assume the same issue will recur.`
+      }
+
       // Inject failure patterns from learning system so agents avoid repeating mistakes
       try {
         const { LearningSystem } = require('./learning-system')

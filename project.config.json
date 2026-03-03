@@ -104,11 +104,16 @@
       "id": "landing-page",
       "name": "Landing Page",
       "type": "web",
-      "url": null,
-      "local_path": "product/marketing/landing-page/",
-      "smoke_test_id": null,
+      "url": "https://leadflow-ai-five.vercel.app",
+      "local_path": "product/lead-response/dashboard/",
+      "smoke_test_id": "vercel-dashboard",
       "uc_id": "gtm-landing-page",
-      "description": "Marketing landing page (built, awaiting deployment)"
+      "description": "Marketing landing page (integrated into Next.js dashboard root route)",
+      "deploy": {
+        "target_id": "vercel-dashboard",
+        "cwd": "product/lead-response/dashboard",
+        "command": "/opt/homebrew/bin/vercel --prod --yes"
+      }
     },
     {
       "id": "internal-dashboard",
@@ -184,6 +189,14 @@
       "currency": "USD"
     }
   ],
+
+  "failure_resolution": {
+    "escalation_threshold": 3,
+    "max_diagnosis_retries": 2,
+    "max_escalation_depth": 2,
+    "diagnosis_model": "sonnet",
+    "telegram_on_unresolvable": true
+  },
 
   "product_reviews": {
     "periodic_interval_days": 7,

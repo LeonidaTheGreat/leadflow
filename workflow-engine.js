@@ -615,9 +615,48 @@ function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
 
   // Product-review variant: PM conducts a structured product review instead of writing a PRD
   const isProductReview = opts.taskType === 'product-review'
+  const isEscalationDiagnosis = opts.taskType === 'escalation-diagnosis'
 
   const ROLES = {
-    product: isProductReview ? {
+    product: isEscalationDiagnosis ? {
+      directive: `Diagnose why task "${ucName}" failed repeatedly.`,
+      deliverable: `Your deliverable is a STRUCTURED DIAGNOSIS — categorize the root cause, describe what went wrong, and propose a fix plan.`,
+      spawnRole: [
+        `## YOUR ROLE: Product Manager (Escalation Diagnosis)`,
+        `A task has failed ${opts.failureCount || 'multiple'} times. You need to figure out WHY and what to do about it.`,
+        ``,
+        `### What to do:`,
+        `1. Read the failure history provided below`,
+        `2. Check the branch (if any) to see what the dev agent actually did`,
+        `3. Check the UC requirements and PRD to see if specs are clear`,
+        `4. Categorize the root cause into ONE of these categories:`,
+        `   - **spec_unclear**: Requirements are ambiguous — rewrite the UC description/acceptance criteria`,
+        `   - **missing_prerequisite**: Other work needs to happen first (e.g., dependency not deployed)`,
+        `   - **environment_issue**: Tooling, permissions, or infrastructure problem`,
+        `   - **needs_decomposition**: Task is too large, needs splitting into subtasks`,
+        `   - **impossible**: Structurally can't be done, UC should be cancelled or redesigned`,
+        `   - **already_done**: Task was actually completed but verification didn't detect it`,
+        ``,
+        `### Deliverable:`,
+        `Write a completion report with a structured \`diagnosis\` field:`,
+        `\`\`\`json`,
+        `{`,
+        `  "diagnosis": {`,
+        `    "category": "one of the 6 categories above",`,
+        `    "rootCause": "What specifically went wrong",`,
+        `    "summary": "One-line summary",`,
+        `    "fixPlan": [`,
+        `      { "title": "Fix task title", "agent_id": "dev", "description": "What to do" }`,
+        `    ]`,
+        `  }`,
+        `}`,
+        `\`\`\``,
+        ``,
+        `If category is \`spec_unclear\`, update the UC description/acceptance criteria in Supabase directly.`,
+        `If category is \`impossible\`, explain why in detail.`,
+        `If category is \`already_done\`, explain what was actually completed and how to verify.`
+      ].join('\n')
+    } : isProductReview ? {
       directive: `Conduct a product review for: ${ucName}.`,
       deliverable: `Your deliverable is a PRODUCT REVIEW — walkthrough results, findings, decisions needed, and a verdict.`,
       spawnRole: [
@@ -766,6 +805,205 @@ function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
   return { description, spawnRole: role.spawnRole }
 }
 
+// ── Escalation resolution ────────────────────────────────────────────────────
+
+/**
+ * Process a completed escalation diagnosis task.
+ * Reads the PM's diagnosis from the completion report, then:
+ * - spec_unclear: reset original task for retry (PM already fixed spec)
+ * - missing_prerequisite / environment_issue: create fix task(s), wire as dependency
+ * - needs_decomposition: decompose via autoDecompose
+ * - impossible: cancel original, update UC
+ * - already_done: create config-update task
+ *
+ * @param {object} store       - TaskStore instance
+ * @param {object} diagnosisTask - The completed diagnosis task row
+ * @param {string} projectId   - e.g. 'bo2026'
+ * @returns {{ action: string, fixTaskIds: string[], originalTaskId: string }}
+ */
+async function processEscalationResult(store, diagnosisTask, projectId) {
+  const originalTaskId = diagnosisTask.metadata?.escalation_from
+  if (!originalTaskId) {
+    return { action: 'no_escalation_from', fixTaskIds: [], originalTaskId: null }
+  }
+
+  const originalTask = await store.getTask(originalTaskId)
+  if (!originalTask) {
+    return { action: 'original_not_found', fixTaskIds: [], originalTaskId }
+  }
+
+  // Read completion report
+  const completionDir = path.join(__dirname, 'completion-reports')
+  let diagnosis = null
+
+  try {
+    const files = fs.readdirSync(completionDir)
+      .filter(f => f.startsWith(`COMPLETION-${diagnosisTask.id}-`) && f.endsWith('.json'))
+      .sort()
+    if (files.length > 0) {
+      const report = JSON.parse(fs.readFileSync(path.join(completionDir, files[files.length - 1]), 'utf-8'))
+      diagnosis = report.diagnosis || null
+    }
+  } catch {}
+
+  // Fallback: check task metadata for diagnosis (PM may have written it there)
+  if (!diagnosis && diagnosisTask.metadata?.diagnosis) {
+    diagnosis = diagnosisTask.metadata.diagnosis
+  }
+
+  // If no structured diagnosis found, treat as spec_unclear — reset for retry with PM notes
+  if (!diagnosis || !diagnosis.category) {
+    console.log(`   ⚠️ No structured diagnosis from ${diagnosisTask.id} — defaulting to spec_unclear`)
+    await store.updateTask(originalTaskId, {
+      status: 'ready',
+      retry_count: 0,
+      last_error: null,
+      metadata: {
+        ...(originalTask.metadata || {}),
+        fix_context: `PM reviewed but no structured diagnosis. Task reset for fresh retry.`
+      }
+    })
+    return { action: 'spec_unclear_default', fixTaskIds: [], originalTaskId }
+  }
+
+  const category = diagnosis.category
+  const fixTaskIds = []
+
+  switch (category) {
+    case 'spec_unclear': {
+      // PM already rewrote spec in UC. Reset original for retry.
+      await store.updateTask(originalTaskId, {
+        status: 'ready',
+        retry_count: 0,
+        last_error: null,
+        metadata: {
+          ...(originalTask.metadata || {}),
+          fix_context: `PM clarified spec: ${diagnosis.summary || diagnosis.rootCause}`
+        }
+      })
+      break
+    }
+
+    case 'missing_prerequisite':
+    case 'environment_issue': {
+      // Create fix task(s) from PM's fix plan
+      const fixPlan = diagnosis.fixPlan || [{ title: `Fix: ${diagnosis.summary || diagnosis.rootCause}`, agent_id: 'dev', description: diagnosis.rootCause }]
+      for (const fix of fixPlan) {
+        const fixTask = await store.createTask({
+          title: `Fix: ${fix.title || diagnosis.summary} (for: ${originalTask.title})`,
+          agent_id: fix.agent_id || 'dev',
+          status: 'ready',
+          model: selectInitialModel(fix.agent_id || 'dev'),
+          priority: originalTask.priority || 2,
+          tags: ['escalation-fix'],
+          use_case_id: originalTask.use_case_id,
+          branch_name: originalTask.branch_name || null,
+          description: fix.description || `Fix for escalated task: ${diagnosis.rootCause}`,
+          metadata: {
+            created_by: 'orchestrator',
+            fix_for_task: originalTaskId,
+            diagnosis_id: diagnosisTask.id,
+            diagnosis_category: category
+          }
+        })
+        if (fixTask?.id) {
+          await store.addDependency(originalTaskId, fixTask.id)
+          fixTaskIds.push(fixTask.id)
+        }
+      }
+      // Original stays blocked (addDependency already sets it)
+      // Reset retry count so it gets a fresh start after fix
+      await store.updateTask(originalTaskId, {
+        retry_count: 0,
+        metadata: {
+          ...(originalTask.metadata || {}),
+          fix_context: `Diagnosis: ${category} — ${diagnosis.summary || diagnosis.rootCause}`,
+          awaiting_fixes: fixTaskIds
+        }
+      })
+      break
+    }
+
+    case 'needs_decomposition': {
+      try {
+        const { autoDecompose } = require('./auto-decompose')
+        await autoDecompose(originalTaskId, false)
+        await store.updateTask(originalTaskId, { status: 'decomposed' })
+      } catch (err) {
+        console.warn(`   ⚠️ Decomposition failed: ${err.message}`)
+        // Fall back to manual: reset for retry
+        await store.updateTask(originalTaskId, {
+          status: 'ready', retry_count: 0, last_error: null,
+          metadata: { ...(originalTask.metadata || {}), fix_context: 'Decomposition attempted but failed' }
+        })
+      }
+      break
+    }
+
+    case 'impossible': {
+      await store.updateTask(originalTaskId, {
+        status: 'cancelled',
+        last_error: `Cancelled: ${diagnosis.summary || diagnosis.rootCause}`
+      })
+      // Update UC status if needed
+      if (originalTask.use_case_id && store.supabase) {
+        try {
+          await store.supabase.from('use_cases')
+            .update({ implementation_status: 'blocked', updated_at: new Date().toISOString() })
+            .eq('id', originalTask.use_case_id)
+        } catch {}
+      }
+      break
+    }
+
+    case 'already_done': {
+      // Create a targeted verification/config-update task
+      const fixTask = await store.createTask({
+        title: `Verify: ${originalTask.title} (claimed already done)`,
+        agent_id: 'qc',
+        status: 'ready',
+        model: 'qwen3.5',
+        priority: 1,
+        tags: ['escalation-fix'],
+        use_case_id: originalTask.use_case_id,
+        description: `PM diagnosis says this task is already done but verification didn't detect it.\nRoot cause: ${diagnosis.rootCause}\nVerify and update task/UC status accordingly.`,
+        metadata: {
+          created_by: 'orchestrator',
+          fix_for_task: originalTaskId,
+          diagnosis_id: diagnosisTask.id,
+          diagnosis_category: 'already_done'
+        }
+      })
+      if (fixTask?.id) {
+        await store.addDependency(originalTaskId, fixTask.id)
+        fixTaskIds.push(fixTask.id)
+      }
+      await store.updateTask(originalTaskId, {
+        retry_count: 0,
+        metadata: {
+          ...(originalTask.metadata || {}),
+          fix_context: `PM says already done: ${diagnosis.rootCause}`
+        }
+      })
+      break
+    }
+
+    default: {
+      // Unknown category — treat as spec_unclear
+      await store.updateTask(originalTaskId, {
+        status: 'ready', retry_count: 0, last_error: null,
+        metadata: {
+          ...(originalTask.metadata || {}),
+          fix_context: `Unknown diagnosis category "${category}": ${diagnosis.summary || ''}`
+        }
+      })
+    }
+  }
+
+  console.log(`   📋 Escalation processed: ${category} for ${originalTaskId} (${fixTaskIds.length} fix tasks)`)
+  return { action: category, fixTaskIds, originalTaskId }
+}
+
 // ── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -793,5 +1031,6 @@ module.exports = {
   prepareAndQueueSpawn,
   isDeploymentTask,
   verifyTaskOutput,
-  buildRoleContext
+  buildRoleContext,
+  processEscalationResult
 }
