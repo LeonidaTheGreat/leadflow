@@ -151,30 +151,11 @@ async function run() {
       if (taskDetail?.use_case_id) message += `\nUse Case: ${taskDetail.use_case_id}`
 
       // Role context FIRST — before description, so the agent knows its role before reading the task
-      if (agentId === 'product') {
-        message += `\n\n## YOUR ROLE: Product Manager (Specification Only)`
-        message += `\nYou are the PM. You write SPECS, not code. Your SOUL.md says "You don't write code" — that applies here.`
-        message += `\nYour deliverable for this task is a PRD / SPECIFICATION:`
-        message += `\n1. Write or update the PRD (requirements, user stories, acceptance criteria)`
-        message += `\n2. Define E2E test specs in Supabase \`e2e_test_specs\` table`
-        message += `\n3. Update the \`use_cases\` table with acceptance criteria if needed`
-        message += `\n4. DO NOT write code, build UI, create HTML/CSS/JS, or implement features`
-        message += `\n5. DO NOT create files in product/ directories — that's for dev/design agents`
-        message += `\nWhen you finish your spec work, write a completion report. The orchestrator will chain to the next agent in the workflow.`
-      } else if (agentId === 'marketing') {
-        message += `\n\n## YOUR ROLE: Marketing (Content Strategy Only)`
-        message += `\nYour deliverable is CONTENT STRATEGY and COPY:`
-        message += `\n1. Write marketing copy, messaging, positioning, content briefs`
-        message += `\n2. Define content requirements for design/dev to implement`
-        message += `\n3. DO NOT build pages, write HTML/CSS/JS, or implement features`
-        message += `\nWhen done, write a completion report. The orchestrator chains to the next agent.`
-      } else if (agentId === 'analytics') {
-        message += `\n\n## YOUR ROLE: Analytics (Analysis Only)`
-        message += `\nYour deliverable is ANALYSIS and RECOMMENDATIONS:`
-        message += `\n1. Analyze data, identify patterns, produce actionable insights`
-        message += `\n2. Write recommendations for other agents to act on`
-        message += `\n3. DO NOT implement changes — recommend them`
-        message += `\nWhen done, write a completion report. The orchestrator chains to the next agent.`
+      // Uses shared buildRoleContext from workflow-engine.js (single source of truth for all agents)
+      const { buildRoleContext } = require('./workflow-engine')
+      const roleCtx = buildRoleContext(agentId, title, '', {})
+      if (roleCtx.spawnRole) {
+        message += `\n\n${roleCtx.spawnRole}`
       }
 
       // Inject dependency status so agents know what's already shipped

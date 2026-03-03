@@ -39,7 +39,7 @@ const {
   BUDGET_DAILY_LIMIT, BUDGET_MIN_FOR_SPAWN, BUDGET_TRACKER_PATH,
   checkBudget: wfCheckBudget, recordSpawn: wfRecordSpawn,
   queueForSpawn: wfQueueForSpawn, chainTask, prepareAndQueueSpawn,
-  verifyTaskOutput
+  verifyTaskOutput, buildRoleContext
 } = require('./workflow-engine')
 const { execSync } = require('child_process')
 const fs = require('fs')
@@ -1400,6 +1400,18 @@ class HeartbeatExecutor {
     console.log('\n6d. Cleaning up stale branches...')
     const projectDir = path.join(__dirname)
     try {
+      // Ensure we're on main first — spawn-consumer may have left us on a feature branch
+      try {
+        const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', { cwd: projectDir, encoding: 'utf-8', timeout: 5000 }).trim()
+        if (currentBranch !== 'main') {
+          console.log(`   ⚠️ On branch ${currentBranch}, switching to main first`)
+          execSync('git checkout main', { cwd: projectDir, stdio: 'pipe', timeout: 5000 })
+        }
+      } catch (checkoutErr) {
+        console.warn(`   ⚠️ Could not switch to main: ${checkoutErr.message}`)
+        return // Can't clean branches if we can't get to main
+      }
+
       const branchOutput = execSync(
         `git branch --list 'dev/*' 'design/*'`,
         { cwd: projectDir, encoding: 'utf-8', timeout: 5000 }
@@ -1427,7 +1439,7 @@ class HeartbeatExecutor {
         // Only clean up if task is done/failed (or orphan — no task found)
         if (task && !['done', 'failed'].includes(task.status)) continue
 
-        // Only delete if branch has 0 commits ahead of main (safe delete)
+        // Safe delete: -d only works if fully merged, -D for orphans with no task
         try {
           const count = execSync(
             `git rev-list main..${branch} --count 2>/dev/null`,
@@ -1435,8 +1447,14 @@ class HeartbeatExecutor {
           ).trim()
 
           if (parseInt(count, 10) === 0) {
+            // No unique commits — safe to delete
             execSync(`git branch -d ${branch}`, { cwd: projectDir, stdio: 'pipe', timeout: 5000 })
-            console.log(`   🗑️ Deleted stale branch: ${branch}`)
+            console.log(`   🗑️ Deleted stale branch: ${branch} (no unique commits)`)
+            cleaned++
+          } else if (!task) {
+            // Orphan branch with commits but no task — force delete
+            execSync(`git branch -D ${branch}`, { cwd: projectDir, stdio: 'pipe', timeout: 5000 })
+            console.log(`   🗑️ Deleted orphan branch: ${branch} (${count} commits, no task)`)
             cleaned++
           }
         } catch {}
@@ -1639,26 +1657,19 @@ class HeartbeatExecutor {
         const label = AGENT_LABELS[firstAgent] || firstAgent
         const workflowLen = (uc.workflow || []).length
         const ucDesc = uc.description || uc.name
+        const remainingAgents = (uc.workflow || []).slice(1).map(a => AGENT_LABELS[a] || a).join(' → ')
 
-        // Role-aware description: PM gets "Write a PRD for X", not "Create X"
-        let taskDescription
-        if (firstAgent === 'product') {
-          const remainingAgents = (uc.workflow || []).slice(1).map(a => AGENT_LABELS[a] || a).join(' → ')
-          taskDescription = `Write a PRD for: ${uc.name}.\n${ucDesc}\n\nYour deliverable is a SPECIFICATION (requirements, user stories, acceptance criteria) — not implementation.\nThe next agents in the workflow (${remainingAgents}) will implement it.\nWorkflow step 1/${workflowLen}.`
-        } else if (firstAgent === 'marketing') {
-          taskDescription = `Write content strategy and copy for: ${uc.name}.\n${ucDesc}\n\nYour deliverable is COPY and CONTENT BRIEFS — not code or pages.\nWorkflow step 1/${workflowLen}.`
-        } else if (firstAgent === 'analytics') {
-          taskDescription = `Analyze and recommend for: ${uc.name}.\n${ucDesc}\n\nYour deliverable is ANALYSIS and RECOMMENDATIONS — not implementation.\nWorkflow step 1/${workflowLen}.`
-        } else {
-          taskDescription = `${ucDesc}.\nWorkflow step 1/${workflowLen}.`
-        }
+        // Role-aware description from shared buildRoleContext
+        const roleCtx = buildRoleContext(firstAgent, uc.name, ucDesc, {
+          workflowStep: 0, workflowTotal: workflowLen, remainingAgents
+        })
 
         await this.store.createTask({
           title: `${label}: ${uc.id} - ${uc.name}`,
           agent_id: firstAgent, status: 'ready', model: 'qwen3.5',
           priority: uc.priority, use_case_id: uc.id, prd_id: uc.prd_id,
           tags: [firstAgent === 'product' ? 'spec' : 'feature'],
-          description: taskDescription,
+          description: roleCtx.description,
           metadata: { created_by: 'orchestrator', workflow_step: 0, workflow_total: workflowLen }
         })
         console.log(`   ✅ Replenished: ${label} task for ${uc.id} - ${uc.name}`)

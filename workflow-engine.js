@@ -184,25 +184,12 @@ async function chainTask(store, task, projectId) {
     console.warn(`   ⚠️ Completed work query failed (non-fatal): ${err.message}`)
   }
 
-  // Role-aware description for chained tasks
-  let roleDirective
-  if (nextAgent === 'product') {
-    roleDirective = `Write a PRD / specification for: ${uc.name}.\nYour deliverable is REQUIREMENTS, USER STORIES, and ACCEPTANCE CRITERIA — not implementation.`
-  } else if (nextAgent === 'marketing') {
-    roleDirective = `Write marketing copy and content strategy for: ${uc.name}.\nYour deliverable is COPY and CONTENT BRIEFS — not code or pages. Define what the design/dev teams should build.`
-  } else if (nextAgent === 'analytics') {
-    roleDirective = `Analyze and recommend for: ${uc.name}.\nYour deliverable is ANALYSIS and RECOMMENDATIONS — not implementation.`
-  } else if (nextAgent === 'design') {
-    roleDirective = `Create design mockups / wireframes for: ${uc.name}.\nYour deliverable is VISUAL DESIGN — layouts, component specs, and assets for dev to implement.`
-  } else if (nextAgent === 'dev') {
-    roleDirective = `Implement: ${uc.name}.\nBuild the feature based on the PRD and design specs from prior workflow steps.`
-  } else if (nextAgent === 'qc') {
-    roleDirective = `Test and review: ${uc.name}.\nVerify the implementation meets acceptance criteria from the PRD.`
-  } else {
-    roleDirective = `Continue work on: ${uc.name}.`
-  }
+  // Role-aware description from shared buildRoleContext
+  const roleCtx = buildRoleContext(nextAgent, uc.name, '', {
+    workflowStep: currentIdx + 1, workflowTotal: uc.workflow.length
+  })
 
-  let description = `${roleDirective}\n\nPrior step by ${task.agent_id} (task ${task.id}). Workflow step ${currentIdx + 2}/${uc.workflow.length}.`
+  let description = `${roleCtx.description}\n\nPrior step by ${task.agent_id} (task ${task.id}).`
   if (relatedWork.length > 0) {
     description += `\n\n## Already Completed Work for ${task.use_case_id}\n`
     description += `Do NOT re-implement these:\n`
@@ -395,6 +382,118 @@ function verifyTaskOutput(task) {
   return { verified: true, reason: 'no branch assigned' }
 }
 
+// ── Role directives (single source of truth) ─────────────────────────────────
+
+/**
+ * Build a role-aware task description and spawn-message role section for an agent.
+ *
+ * @param {string} agentId     - e.g. 'product', 'marketing', 'dev'
+ * @param {string} ucName      - UC display name, e.g. 'Landing Page'
+ * @param {string} ucDesc      - UC description from Supabase
+ * @param {object} [opts]      - { workflow, workflowStep, workflowTotal, remainingAgents }
+ * @returns {{ description: string, spawnRole: string }}
+ */
+function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
+  const step = opts.workflowStep != null ? opts.workflowStep + 1 : 1
+  const total = opts.workflowTotal || '?'
+  const remaining = opts.remainingAgents || ''
+
+  const ROLES = {
+    product: {
+      directive: `Write a PRD for: ${ucName}.`,
+      deliverable: `Your deliverable is a SPECIFICATION (requirements, user stories, acceptance criteria) — not implementation.${remaining ? `\nThe next agents in the workflow (${remaining}) will implement it.` : ''}`,
+      spawnRole: [
+        `## YOUR ROLE: Product Manager (Specification Only)`,
+        `You are the PM. You write SPECS, not code. Your SOUL.md says "You don't write code" — that applies here.`,
+        `Your deliverable for this task is a PRD / SPECIFICATION:`,
+        `1. Write or update the PRD (requirements, user stories, acceptance criteria)`,
+        `2. Define E2E test specs in Supabase \`e2e_test_specs\` table`,
+        `3. Update the \`use_cases\` table with acceptance criteria if needed`,
+        `4. DO NOT write code, build UI, create HTML/CSS/JS, or implement features`,
+        `5. DO NOT create files in product/ directories — that's for dev/design agents`,
+        `When you finish your spec work, write a completion report. The orchestrator will chain to the next agent in the workflow.`
+      ].join('\n')
+    },
+    marketing: {
+      directive: `Write marketing copy and content strategy for: ${ucName}.`,
+      deliverable: `Your deliverable is COPY and CONTENT BRIEFS — not code or pages. Define what the design/dev teams should build.`,
+      spawnRole: [
+        `## YOUR ROLE: Marketing (Content Strategy Only)`,
+        `Your deliverable is CONTENT STRATEGY and COPY:`,
+        `1. Write marketing copy, messaging, positioning, content briefs`,
+        `2. Define content requirements for design/dev to implement`,
+        `3. DO NOT build pages, write HTML/CSS/JS, or implement features`,
+        `When done, write a completion report. The orchestrator chains to the next agent.`
+      ].join('\n')
+    },
+    analytics: {
+      directive: `Analyze and recommend for: ${ucName}.`,
+      deliverable: `Your deliverable is ANALYSIS and RECOMMENDATIONS — not implementation.`,
+      spawnRole: [
+        `## YOUR ROLE: Analytics (Analysis Only)`,
+        `Your deliverable is ANALYSIS and RECOMMENDATIONS:`,
+        `1. Analyze data, identify patterns, produce actionable insights`,
+        `2. Write recommendations for other agents to act on`,
+        `3. DO NOT implement changes — recommend them`,
+        `When done, write a completion report. The orchestrator chains to the next agent.`
+      ].join('\n')
+    },
+    design: {
+      directive: `Create design mockups / wireframes for: ${ucName}.`,
+      deliverable: `Your deliverable is VISUAL DESIGN — layouts, component specs, and assets for dev to implement. Do not write production code.`,
+      spawnRole: [
+        `## YOUR ROLE: Design (Visual Design Only)`,
+        `Your deliverable is DESIGN SPECS and MOCKUPS:`,
+        `1. Create wireframes, mockups, or component specifications`,
+        `2. Define visual hierarchy, layout, spacing, colors, typography`,
+        `3. Provide design assets or detailed specs for dev to implement`,
+        `4. DO NOT write production HTML/CSS/JS — describe what dev should build`,
+        `When done, write a completion report. The orchestrator chains to the next agent.`
+      ].join('\n')
+    },
+    dev: {
+      directive: `Implement: ${ucName}.`,
+      deliverable: `Build the feature based on the PRD, copy, and design specs from prior workflow steps.`,
+      spawnRole: [
+        `## YOUR ROLE: Developer (Implementation)`,
+        `Your deliverable is WORKING CODE:`,
+        `1. Implement the feature based on PRD and design specs from prior steps`,
+        `2. Write tests for your implementation`,
+        `3. Commit and push to your feature branch`,
+        `When done, write a completion report. The orchestrator chains to QC.`
+      ].join('\n')
+    },
+    qc: {
+      directive: `Test and review: ${ucName}.`,
+      deliverable: `Verify the implementation meets acceptance criteria from the PRD.`,
+      spawnRole: [
+        `## YOUR ROLE: QC (Quality Control)`,
+        `Your deliverable is a REVIEW VERDICT:`,
+        `1. Run tests — all must pass`,
+        `2. Check code quality, security, and acceptance criteria`,
+        `3. Approve or reject with a structured diagnosis`,
+        `When done, write a completion report with your verdict.`
+      ].join('\n')
+    }
+  }
+
+  const role = ROLES[agentId] || {
+    directive: `Continue work on: ${ucName}.`,
+    deliverable: '',
+    spawnRole: ''
+  }
+
+  const description = [
+    role.directive,
+    ucDesc,
+    '',
+    role.deliverable,
+    `Workflow step ${step}/${total}.`
+  ].filter(Boolean).join('\n')
+
+  return { description, spawnRole: role.spawnRole }
+}
+
 // ── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -413,5 +512,6 @@ module.exports = {
   queueForSpawn,
   chainTask,
   prepareAndQueueSpawn,
-  verifyTaskOutput
+  verifyTaskOutput,
+  buildRoleContext
 }
