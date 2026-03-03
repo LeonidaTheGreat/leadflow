@@ -8,7 +8,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
-  <title>LeadFlow AI — Live Execution Dashboard</title>
+  <title>Project Live Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -130,7 +130,7 @@
   <!-- HEADER -->
   <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
     <div>
-      <h1 id="project-name">LeadFlow Real Estate AI — Live Dashboard</h1>
+      <h1 id="project-name">Project Live Dashboard</h1>
       <div id="project-subtitle" class="muted">Loading from Supabase...</div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
@@ -225,39 +225,64 @@ const PROJECT_ID = PROJECT_FILTER || 'bo2026';
 
 let sb = null;
 
+// Project name lookup: project_id → short name (first word of project_name)
+const _projectNames = {};
+
+// Returns " (ShortName)" tag for a project_id, or empty string if unknown
+function projectTag(pid) {
+  if (!pid) return '';
+  const name = _projectNames[pid];
+  if (!name) return ` (${pid})`;
+  return ` (${name})`;
+}
+
 // Initialize
 function init() {
   try {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     console.log('✅ Supabase connected');
-    loadProjectFilter();
-    loadAllData();
-    subscribeToChanges();
+    loadProjectNames().then(() => {
+      loadProjectFilter();
+      loadAllData();
+      subscribeToChanges();
+    });
   } catch (e) {
     console.error('❌ Failed to connect:', e);
     showError('Failed to connect to Supabase');
   }
 }
 
-// Project filter: populate dropdown from distinct project_ids
-async function loadProjectFilter() {
+// Load all project names into the lookup map (must run before other loads)
+async function loadProjectNames() {
   try {
     const { data } = await sb
       .from('project_metadata')
       .select('project_id, project_name');
-    if (!data || data.length <= 1) return; // hide when 1 or fewer projects
-    const selector = document.getElementById('project-selector');
-    for (const row of data) {
-      const opt = document.createElement('option');
-      opt.value = row.project_id;
-      opt.textContent = row.project_name || row.project_id;
-      if (row.project_id === PROJECT_ID) opt.selected = true;
-      selector.appendChild(opt);
+    if (data) {
+      for (const row of data) {
+        // Use first word of project_name as the short label
+        const full = row.project_name || row.project_id;
+        _projectNames[row.project_id] = full.split(/\s+/)[0];
+      }
     }
-    document.getElementById('project-filter-bar').style.display = 'block';
   } catch (e) {
-    console.warn('Project filter load failed:', e.message);
+    console.warn('Project names load failed:', e.message);
   }
+}
+
+// Project filter: populate dropdown from distinct project_ids
+function loadProjectFilter() {
+  const pids = Object.keys(_projectNames);
+  if (pids.length <= 1) return; // hide when 1 or fewer projects
+  const selector = document.getElementById('project-selector');
+  for (const pid of pids) {
+    const opt = document.createElement('option');
+    opt.value = pid;
+    opt.textContent = _projectNames[pid] || pid;
+    if (pid === PROJECT_ID) opt.selected = true;
+    selector.appendChild(opt);
+  }
+  document.getElementById('project-filter-bar').style.display = 'block';
 }
 
 function switchProject(projectId) {
@@ -312,8 +337,13 @@ async function loadProjectMetadata() {
   const daysRemaining = Math.max(0, (data.deadline_days || 60) - dayNum);
   
   // Update project name in header
-  const projectName = data.project_name || 'LeadFlow Real Estate AI';
-  document.getElementById('project-name').textContent = `${projectName} — Live Dashboard`;
+  const projectName = data.project_name || 'Project';
+  if (PROJECT_FILTER) {
+    document.getElementById('project-name').textContent = `Project Live Dashboard — ${projectName}`;
+    document.title = `Project Live Dashboard — ${projectName}`;
+  } else {
+    document.getElementById('project-name').textContent = `Project Live Dashboard`;
+  }
   
   // Update subtitle with goal
   document.getElementById('project-subtitle').textContent = `${data.goal || '$20K MRR within 60 days'}`;
@@ -349,7 +379,7 @@ async function loadSystemComponents() {
   const html = data.map(comp => `
     <div class="card ${comp.status === 'healthy' || comp.status === 'LIVE' ? 'ok' : comp.status === 'warning' ? 'warn' : ''}">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <strong>${comp.component_name}</strong>
+        <strong>${comp.component_name}<span class="muted small">${projectTag(comp.project_id)}</span></strong>
         <span class="pill">${comp.status_emoji || '●'} ${comp.status}</span>
       </div>
       <div class="muted small">${comp.details || ''}</div>
@@ -419,7 +449,7 @@ function renderProductCard(comp) {
   return `
     <div class="card ${cardClass}">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <strong>${comp.component_name}</strong>
+        <strong>${comp.component_name}<span class="muted small">${projectTag(comp.project_id)}</span></strong>
         <div style="display:flex;gap:6px;align-items:center;">${ucBadge}<span class="pill">${comp.status_emoji || '●'} ${comp.status}</span></div>
       </div>
       <div class="muted small" style="margin-bottom:6px;">${comp.details || ''}</div>
@@ -528,7 +558,7 @@ async function loadTaskQueue() {
       const pidDot = ss === 'running' ? '<span style="color:#57d98d;">●</span>' : ss === 'spawned' ? '<span style="color:#ffd166;">●</span>' : '<span style="color:#a8b3dd;">●</span>';
       const retries = (t.retry_count || 0) + '/' + (t.max_retries || 3);
       const errIcon = t.last_error ? ' <span title="' + escapeHtml(t.last_error) + '" style="cursor:help;color:#ff6b6b;">⚠</span>' : '';
-      html += `<tr><td style="cursor:pointer;" onclick="showTaskDetail('${t.id}')">${escapeHtml(t.title)}${errIcon}</td><td>${escapeHtml(t.agent_id) || '-'}</td><td>${pidDot} <span class="mono small">${pid}</span></td><td><span class="pill">${t.model || 'kimi'}</span></td><td>${retries}</td><td>${ago}</td></tr>`;
+      html += `<tr><td style="cursor:pointer;" onclick="showTaskDetail('${t.id}')">${escapeHtml(t.title)}<span class="muted small">${projectTag(t.project_id)}</span>${errIcon}</td><td>${escapeHtml(t.agent_id) || '-'}</td><td>${pidDot} <span class="mono small">${pid}</span></td><td><span class="pill">${t.model || 'kimi'}</span></td><td>${retries}</td><td>${ago}</td></tr>`;
     });
     html += '</table></div>';
   }
@@ -536,7 +566,7 @@ async function loadTaskQueue() {
   if (ready.length > 0) {
     html += '<h3 style="margin-top:16px;">▶️ Ready to Spawn</h3><div class="table-wrapper"><table><tr><th>Task</th><th>Agent</th><th>Model</th><th>Cost</th></tr>';
     ready.slice(0, 5).forEach(t => {
-      html += `<tr><td>${t.title}</td><td>${t.agent_id || '-'}</td><td><span class="pill">${t.model || 'kimi'}</span></td><td>$${(t.estimated_cost_usd || 0).toFixed(2)}</td></tr>`;
+      html += `<tr><td>${t.title}<span class="muted small">${projectTag(t.project_id)}</span></td><td>${t.agent_id || '-'}</td><td><span class="pill">${t.model || 'kimi'}</span></td><td>$${(t.estimated_cost_usd || 0).toFixed(2)}</td></tr>`;
     });
     html += '</table></div>';
   }
@@ -544,7 +574,7 @@ async function loadTaskQueue() {
   if (blocked.length > 0) {
     html += '<h3 style="margin-top:16px;">⏸️ Blocked</h3><ul>';
     blocked.slice(0, 3).forEach(t => {
-      html += `<li><strong>${t.title}</strong> - ${t.blocked_reason || 'Unknown blocker'}</li>`;
+      html += `<li><strong>${t.title}</strong><span class="muted small">${projectTag(t.project_id)}</span> - ${t.blocked_reason || 'Unknown blocker'}</li>`;
     });
     html += '</ul>';
   }
@@ -611,7 +641,7 @@ async function loadAgents() {
     })() : null;
     const progressBar = '<div style="background:#1e2a58;border-radius:4px;height:4px;margin:8px 0;"><div style="background:' + (agent.progress >= 80 ? '#57d98d' : agent.progress >= 50 ? '#ffd166' : '#ff6b6b') + ';width:' + agent.progress + '%;height:4px;border-radius:4px;transition:width 0.3s;"></div></div>';
     const currentTasksHtml = agent.currentTasks.length > 0
-      ? agent.currentTasks.map(t => '<div style="margin-top:4px;font-size:11px;display:flex;justify-content:space-between;align-items:center;"><span style="color:#e8ecff;cursor:pointer;" onclick="showTaskDetail(\'' + t.id + '\')" title="Click for details">⚡ ' + t.title + '</span><span class="pill" style="font-size:10px;">' + (t.model || 'kimi') + '</span></div>').join('')
+      ? agent.currentTasks.map(t => '<div style="margin-top:4px;font-size:11px;display:flex;justify-content:space-between;align-items:center;"><span style="color:#e8ecff;cursor:pointer;" onclick="showTaskDetail(\'' + t.id + '\')" title="Click for details">⚡ ' + t.title + '<span class="muted small">' + projectTag(t.project_id) + '</span></span><span class="pill" style="font-size:10px;">' + (t.model || 'kimi') + '</span></div>').join('')
       : '<div class="muted small" style="margin-top:4px;">No active tasks</div>';
     const blockedHtml = agent.blockedTasks.length > 0
       ? '<div style="margin-top:6px;font-size:11px;color:#ff6b6b;">⏸ ' + agent.blockedTasks[0].title + (agent.blockedTasks[0].blocked_reason ? ': ' + agent.blockedTasks[0].blocked_reason : '') + '</div>'
@@ -717,9 +747,10 @@ async function loadCompletedWork() {
     agent: w.agent_id || "-",
     model: "-",
     cost: 0,
+    project_id: w.project_id,
     source: "completed_work"
   }));
-  
+
   // Normalize done tasks
   const taskItems = (doneTasks || []).map(t => ({
     title: t.title,
@@ -730,6 +761,7 @@ async function loadCompletedWork() {
     agent: t.agent_id || "-",
     model: t.model || "-",
     cost: t.actual_cost_usd || t.estimated_cost_usd || 0,
+    project_id: t.project_id,
     source: "tasks"
   }));
   
@@ -758,7 +790,7 @@ async function loadCompletedWork() {
         })();
         return `
         <tr>
-          <td><strong>${escapeHtml(item.title)}</strong></td>
+          <td><strong>${escapeHtml(item.title)}</strong><span class="muted small">${projectTag(item.project_id)}</span></td>
           <td>${escapeHtml(item.agent)}</td>
           <td><span class="pill">${item.model}</span></td>
           <td>${ago}</td>
@@ -795,7 +827,7 @@ async function loadActionItems() {
     const pri = item.priority === 1 ? '🔴 CRITICAL' : item.priority === 2 ? '🟡 HIGH' : '🟢 NORMAL';
     return `
       <div class="card ${item.priority === 1 ? 'error' : item.priority === 2 ? 'warn' : ''}" style="margin-bottom:8px;">
-        <strong>${item.title}</strong> <span class="pill">${pri}</span>
+        <strong>${item.title}<span class="muted small">${projectTag(item.project_id)}</span></strong> <span class="pill">${pri}</span>
         <div class="small" style="margin-top:4px;">
           <span class="muted">Type:</span> ${item.type} | 
           <span class="muted">Status:</span> ${item.status} | 
