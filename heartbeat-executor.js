@@ -1637,13 +1637,29 @@ class HeartbeatExecutor {
 
         const firstAgent = uc.workflow?.[0] || 'product'
         const label = AGENT_LABELS[firstAgent] || firstAgent
+        const workflowLen = (uc.workflow || []).length
+        const ucDesc = uc.description || uc.name
+
+        // Role-aware description: PM gets "Write a PRD for X", not "Create X"
+        let taskDescription
+        if (firstAgent === 'product') {
+          const remainingAgents = (uc.workflow || []).slice(1).map(a => AGENT_LABELS[a] || a).join(' → ')
+          taskDescription = `Write a PRD for: ${uc.name}.\n${ucDesc}\n\nYour deliverable is a SPECIFICATION (requirements, user stories, acceptance criteria) — not implementation.\nThe next agents in the workflow (${remainingAgents}) will implement it.\nWorkflow step 1/${workflowLen}.`
+        } else if (firstAgent === 'marketing') {
+          taskDescription = `Write content strategy and copy for: ${uc.name}.\n${ucDesc}\n\nYour deliverable is COPY and CONTENT BRIEFS — not code or pages.\nWorkflow step 1/${workflowLen}.`
+        } else if (firstAgent === 'analytics') {
+          taskDescription = `Analyze and recommend for: ${uc.name}.\n${ucDesc}\n\nYour deliverable is ANALYSIS and RECOMMENDATIONS — not implementation.\nWorkflow step 1/${workflowLen}.`
+        } else {
+          taskDescription = `${ucDesc}.\nWorkflow step 1/${workflowLen}.`
+        }
+
         await this.store.createTask({
           title: `${label}: ${uc.id} - ${uc.name}`,
           agent_id: firstAgent, status: 'ready', model: 'qwen3.5',
           priority: uc.priority, use_case_id: uc.id, prd_id: uc.prd_id,
           tags: [firstAgent === 'product' ? 'spec' : 'feature'],
-          description: `${uc.description || uc.name}.\nWorkflow step 1/${(uc.workflow || []).length}.`,
-          metadata: { created_by: 'orchestrator', workflow_step: 0, workflow_total: (uc.workflow || []).length }
+          description: taskDescription,
+          metadata: { created_by: 'orchestrator', workflow_step: 0, workflow_total: workflowLen }
         })
         console.log(`   ✅ Replenished: ${label} task for ${uc.id} - ${uc.name}`)
         this.actions.push(`Replenished: ${label} task for ${uc.id}`)

@@ -149,6 +149,34 @@ async function run() {
       // Build context-rich message
       let message = `You have been assigned a task.\n\nTask: ${title}\nTask ID: ${taskId}`
       if (taskDetail?.use_case_id) message += `\nUse Case: ${taskDetail.use_case_id}`
+
+      // Role context FIRST — before description, so the agent knows its role before reading the task
+      if (agentId === 'product') {
+        message += `\n\n## YOUR ROLE: Product Manager (Specification Only)`
+        message += `\nYou are the PM. You write SPECS, not code. Your SOUL.md says "You don't write code" — that applies here.`
+        message += `\nYour deliverable for this task is a PRD / SPECIFICATION:`
+        message += `\n1. Write or update the PRD (requirements, user stories, acceptance criteria)`
+        message += `\n2. Define E2E test specs in Supabase \`e2e_test_specs\` table`
+        message += `\n3. Update the \`use_cases\` table with acceptance criteria if needed`
+        message += `\n4. DO NOT write code, build UI, create HTML/CSS/JS, or implement features`
+        message += `\n5. DO NOT create files in product/ directories — that's for dev/design agents`
+        message += `\nWhen you finish your spec work, write a completion report. The orchestrator will chain to the next agent in the workflow.`
+      } else if (agentId === 'marketing') {
+        message += `\n\n## YOUR ROLE: Marketing (Content Strategy Only)`
+        message += `\nYour deliverable is CONTENT STRATEGY and COPY:`
+        message += `\n1. Write marketing copy, messaging, positioning, content briefs`
+        message += `\n2. Define content requirements for design/dev to implement`
+        message += `\n3. DO NOT build pages, write HTML/CSS/JS, or implement features`
+        message += `\nWhen done, write a completion report. The orchestrator chains to the next agent.`
+      } else if (agentId === 'analytics') {
+        message += `\n\n## YOUR ROLE: Analytics (Analysis Only)`
+        message += `\nYour deliverable is ANALYSIS and RECOMMENDATIONS:`
+        message += `\n1. Analyze data, identify patterns, produce actionable insights`
+        message += `\n2. Write recommendations for other agents to act on`
+        message += `\n3. DO NOT implement changes — recommend them`
+        message += `\nWhen done, write a completion report. The orchestrator chains to the next agent.`
+      }
+
       // Inject dependency status so agents know what's already shipped
       if (taskDetail?.use_case_id && store.supabase) {
         try {
@@ -281,39 +309,6 @@ async function run() {
 
         // Return to main so next spawn starts from clean base
         try { execSync('git checkout main', { cwd: projectDir, stdio: 'pipe' }) } catch {}
-      }
-
-      // PM: reinforce spec-only role (SOUL.md says "you don't write code" but task ambiguity overrides it)
-      if (agentId === 'product') {
-        message += `\n\n## Product Manager Role`
-        message += `\nYour SOUL.md says "You don't write code" — that applies here.`
-        message += `\nYour deliverable for this task is SPECIFICATION:`
-        message += `\n1. Write or update the PRD (requirements, user stories, acceptance criteria)`
-        message += `\n2. Define E2E test specs in Supabase \`e2e_test_specs\` table`
-        message += `\n3. Update the \`use_cases\` table with acceptance criteria if needed`
-        message += `\n4. DO NOT write code, build UI, create HTML/CSS/JS, or implement features`
-        message += `\n5. DO NOT create files in product/ directories — that's for dev/design agents`
-        message += `\nWhen you finish your spec work, write a completion report. The orchestrator will chain to the next agent in the workflow.`
-      }
-
-      // Marketing: content strategy, not implementation
-      if (agentId === 'marketing') {
-        message += `\n\n## Marketing Role`
-        message += `\nYour deliverable is CONTENT STRATEGY and COPY:`
-        message += `\n1. Write marketing copy, messaging, positioning, content briefs`
-        message += `\n2. Define content requirements for design/dev to implement`
-        message += `\n3. DO NOT build pages, write HTML/CSS/JS, or implement features`
-        message += `\nWhen done, write a completion report. The orchestrator chains to the next agent.`
-      }
-
-      // Analytics: analysis, not implementation
-      if (agentId === 'analytics') {
-        message += `\n\n## Analytics Role`
-        message += `\nYour deliverable is ANALYSIS and RECOMMENDATIONS:`
-        message += `\n1. Analyze data, identify patterns, produce actionable insights`
-        message += `\n2. Write recommendations for other agents to act on`
-        message += `\n3. DO NOT implement changes — recommend them`
-        message += `\nWhen done, write a completion report. The orchestrator chains to the next agent.`
       }
 
       // QC agent: smoke-test investigation (no PR, has smoke-test tag)
