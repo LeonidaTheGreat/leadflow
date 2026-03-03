@@ -278,7 +278,9 @@ async function createDistributionTasks(issues) {
       metadata: {
         created_by: 'distribution-collector',
         issue_type: issue.type,
-        uc_template: issue.uc_template
+        uc_template: issue.uc_template,
+        workflow_step: 0,
+        workflow_total: template.workflow.length
       }
     })
 

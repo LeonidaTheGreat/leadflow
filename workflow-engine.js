@@ -194,7 +194,8 @@ async function chainTask(store, task, projectId) {
   }
 
   const taskMetadata = {
-    created_by: 'orchestrator', chain_from: task.id, workflow_step: currentIdx + 1
+    created_by: 'orchestrator', chain_from: task.id,
+    workflow_step: currentIdx + 1, workflow_total: uc.workflow.length
   }
   if (relatedWork.length > 0) {
     taskMetadata.completed_work_count = relatedWork.length
