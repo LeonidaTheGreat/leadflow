@@ -1175,6 +1175,79 @@ class HeartbeatExecutor {
         }
       }
 
+      // D. Detect products stuck at BUILT with no path to LIVE
+      // A product is stuck if: UC complete + no URL + no deploy config + no smoke test
+      // This means the system has no way to deploy it or verify it's live.
+      const stuckProducts = products.filter(p => {
+        if (!p.uc_id) return false
+        const ucStatus = ucStatusMap.get(p.uc_id)
+        return ucStatus === 'complete' && !p.url && !p.deploy?.target_id && !p.smoke_test_id
+      })
+
+      if (stuckProducts.length > 0) {
+        for (const p of stuckProducts) {
+          console.warn(`   ⚠️ Product "${p.name}" is BUILT (${p.uc_id} complete) but has no deploy config or URL — stuck`)
+        }
+
+        // Create a PM task to spec the deployment (once, not every heartbeat)
+        const stuckStateFile = path.join(__dirname, '.stuck-products-state.json')
+        let stuckState = {}
+        try { stuckState = JSON.parse(fs.readFileSync(stuckStateFile, 'utf-8')) } catch {}
+
+        for (const p of stuckProducts) {
+          const key = p.id
+          const alerted = stuckState[key]
+          if (alerted) continue // already created a task for this
+
+          const existingTask = await this.store.findTaskByTitle(`PM: Spec deployment — ${p.name}`)
+          if (existingTask && !['done', 'failed'].includes(existingTask.status)) continue
+
+          await this.store.createTask({
+            title: `PM: Spec deployment — ${p.name}`,
+            agent_id: 'product',
+            status: 'ready',
+            model: 'sonnet',
+            priority: 2,
+            tags: ['product-review', 'deployment-gap', 'spec'],
+            description: [
+              `## Deployment Gap: ${p.name}`,
+              `Product "${p.name}" (${p.id}) has its UC (${p.uc_id}) marked complete,`,
+              `but has no deployment URL, no deploy config, and no smoke test.`,
+              `It shows as "BUILT" on the dashboard but users cannot access it.`,
+              ``,
+              `Current product config:`,
+              `- url: ${p.url || 'null'}`,
+              `- deploy: ${JSON.stringify(p.deploy || null)}`,
+              `- smoke_test_id: ${p.smoke_test_id || 'null'}`,
+              `- local_path: ${p.local_path || 'null'}`,
+              ``,
+              `## Your Job`,
+              `1. Decide where this product should be deployed (options below)`,
+              `2. Create a use_case row in Supabase with workflow ['dev', 'qc'] to implement the deployment`,
+              `3. The UC spec should include: Vercel project setup, deploy config, smoke test, URL`,
+              ``,
+              `## Deployment Options`,
+              `- **Option A: Integrate into Next.js dashboard** — add as a route (e.g., / or /landing)`,
+              `  Pros: single Vercel project, shared auth/components. Cons: couples marketing to app.`,
+              `- **Option B: Separate Vercel project** — new static site or standalone Next.js`,
+              `  Pros: independent deploy cycle, custom domain. Cons: another project to maintain.`,
+              `- **Option C: Static hosting** (Netlify, GitHub Pages, etc.)`,
+              `  Pros: simple, fast. Cons: yet another platform.`,
+              ``,
+              `Create a decision in product_decisions if this needs human sign-off (blocking=true).`,
+              `Then spec the UC with the chosen (or recommended) approach.`
+            ].join('\n'),
+            metadata: { created_by: 'orchestrator', product_id: p.id, gap_type: 'deployment' }
+          })
+
+          stuckState[key] = new Date().toISOString()
+          console.log(`   📋 Created deployment spec task for stuck product: ${p.name}`)
+          this.actions.push(`Deployment gap detected: ${p.name} → PM task created`)
+        }
+
+        fs.writeFileSync(stuckStateFile, JSON.stringify(stuckState, null, 2))
+      }
+
       this.actions.push(`Product sync: ${products.length} components updated`)
     } catch (err) {
       console.warn('   ⚠️ Product component sync failed:', err.message)
@@ -1738,19 +1811,29 @@ class HeartbeatExecutor {
   _buildWalkthroughSpec(products, ucIds) {
     const steps = []
     for (const product of products) {
-      // Skip products with no URL (not deployed yet)
-      if (!product.url) continue
       // If ucIds provided, only include products matching those UCs
       if (ucIds.length > 0 && product.uc_id && !ucIds.includes(product.uc_id)) continue
 
-      steps.push({
-        product_id: product.id,
-        url: product.url,
-        description: product.description || product.name,
-        expected_behavior: `${product.name} loads correctly and is functional`,
-        actual_behavior: null,
-        status: null
-      })
+      if (product.url) {
+        steps.push({
+          product_id: product.id,
+          url: product.url,
+          description: product.description || product.name,
+          expected_behavior: `${product.name} loads correctly and is functional`,
+          actual_behavior: null,
+          status: null
+        })
+      } else {
+        // Products with no URL are still included — PM should flag deployment gaps
+        steps.push({
+          product_id: product.id,
+          url: null,
+          description: `[NOT DEPLOYED] ${product.description || product.name}`,
+          expected_behavior: `${product.name} should be deployed and accessible via a public URL`,
+          actual_behavior: null,
+          status: null
+        })
+      }
     }
 
     // Cross-product journey step if multiple products
