@@ -536,6 +536,11 @@ class HeartbeatExecutor {
       // Chain to next workflow step
       if (task) await this.createFollowUpTasks(task)
 
+      // Fast-track new UCs created by PM finding-fix tasks
+      if (task?.tags?.includes('finding-fix') && task?.agent_id === 'product') {
+        await this._fastTrackNewUCs(task)
+      }
+
       // Check for unblocked tasks
       const unblocked = await this.store.checkUnblockedTasks(taskId)
       if (unblocked && unblocked.length > 0) {
@@ -546,6 +551,65 @@ class HeartbeatExecutor {
       console.error(`   ⚠️ Failed to handle success for ${taskId}:`, err.message)
     }
   }
+
+  /**
+   * After a PM finding-fix task completes, scan for newly created UCs
+   * and immediately create their first workflow task instead of waiting
+   * for the next replenishQueue() cycle.
+   */
+  async _fastTrackNewUCs(task) {
+    try {
+      const { data: newUCs } = await this.store.supabase
+        .from('use_cases')
+        .select('id, name, description, workflow, priority, revenue_impact, depends_on')
+        .eq('project_id', this.projectId)
+        .eq('implementation_status', 'not_started')
+        .gt('created_at', task.started_at || task.created_at)
+        .order('created_at', { ascending: true })
+
+      if (!newUCs?.length) return
+
+      const { buildRoleContext, selectInitialModel, estimateCost } = require('./workflow-engine')
+
+      for (const uc of newUCs) {
+        if (!uc.workflow?.length) continue
+
+        // Check no task already exists for this UC
+        const { data: existing } = await this.store.supabase
+          .from('tasks')
+          .select('id')
+          .eq('use_case_id', uc.id)
+          .not('status', 'in', '("failed","cancelled")')
+          .limit(1)
+        if (existing?.length) continue
+
+        const firstAgent = uc.workflow[0]
+        const model = selectInitialModel(firstAgent, uc)
+        const roleCtx = buildRoleContext(firstAgent, uc.name, uc.description || '', {
+          workflowStep: 0, workflowTotal: uc.workflow.length
+        })
+
+        await this.store.createTask({
+          title: `${firstAgent === 'product' ? 'PM' : firstAgent.charAt(0).toUpperCase() + firstAgent.slice(1)}: ${uc.id} - ${uc.name}`,
+          agent_id: firstAgent,
+          status: 'ready',
+          model,
+          priority: uc.priority || 2,
+          use_case_id: uc.id,
+          estimated_cost_usd: estimateCost(model, firstAgent),
+          tags: [firstAgent === 'qc' ? 'test' : 'feature'],
+          description: roleCtx.description,
+          metadata: { created_by: 'orchestrator', workflow_step: 0, workflow_total: uc.workflow.length, fast_tracked: true }
+        })
+
+        console.log(`   🚀 Fast-tracked UC ${uc.id} → ${firstAgent} task`)
+        this.actions.push(`Fast-tracked new UC: ${uc.id} → ${firstAgent}`)
+      }
+    } catch (err) {
+      console.warn(`   ⚠️ Fast-track new UCs failed: ${err.message}`)
+    }
+  }
+
   async handleTestFailure(taskId, testResults) {
     // Decision framework from HEARTBEAT.md
     const task = await this.store.getTask(taskId)
@@ -2218,13 +2282,17 @@ class HeartbeatExecutor {
       const actionableFindings = findings.filter(f => autoTaskSeverities.includes(f.severity))
 
       for (const finding of actionableFindings) {
-        const affectedUCs = (finding.affected_uc_ids || []).join(', ')
+        const affectedUCs = finding.affected_uc_ids || []
+        const affectedUCsStr = affectedUCs.join(', ')
+        // If exactly one UC is affected, link the task so chainTask() works on completion
+        const singleUC = affectedUCs.length === 1 ? affectedUCs[0] : null
         const task = await this.store.createTask({
           title: `PM: Spec fix — ${finding.summary}`,
           agent_id: 'product',
           status: 'ready',
           model: implModel,
           priority: finding.severity === 'critical' ? 1 : 2,
+          use_case_id: singleUC,
           tags: ['product-review', 'finding-fix', 'spec'],
           description: [
             `## Product Review Finding (${finding.severity})`,
@@ -2232,7 +2300,7 @@ class HeartbeatExecutor {
             `Type: ${finding.type || 'unknown'}`,
             `Summary: ${finding.summary}`,
             `Details: ${finding.details || 'N/A'}`,
-            `Affected UCs: ${affectedUCs || 'N/A'}`,
+            `Affected UCs: ${affectedUCsStr || 'N/A'}`,
             `Suggested fix: ${finding.suggested_fix || 'N/A'}`,
             '',
             `## Your Job`,
@@ -2250,7 +2318,7 @@ class HeartbeatExecutor {
             `3. Do NOT write code, build UI, or implement fixes yourself`,
             `4. Write a completion report summarizing the UC you created`
           ].join('\n'),
-          metadata: { created_by: 'orchestrator', source_review_id: review.id, finding_severity: finding.severity }
+          metadata: { created_by: 'orchestrator', source_review_id: review.id, finding_severity: finding.severity, affected_uc_ids: affectedUCs }
         })
 
         if (task?.id) resultingTaskIds.push(task.id)

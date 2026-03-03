@@ -459,6 +459,130 @@ async function handleReviewsCommand(args) {
 }
 
 /**
+ * Handle !fix command — create a quick-fix UC and dev task
+ * Format: !fix <description>
+ */
+async function handleFixCommand(args) {
+  try {
+    const desc = args.join(' ').replace(/^["']|["']$/g, '').trim();
+    if (!desc) return '❌ Usage: !fix <description>\nExample: !fix "signup button returns 404"';
+
+    const { TaskStore } = require('./task-store');
+    const store = new TaskStore();
+    if (!store.supabase) return '❌ No Supabase connection';
+
+    const { getConfig } = require('./project-config-loader');
+    const { buildRoleContext, selectInitialModel, estimateCost } = require('./workflow-engine');
+    const projectId = getConfig().project_id;
+
+    // Generate UC id from description
+    const slug = desc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+    const ucId = `fix-${slug}`;
+
+    // Check if UC already exists
+    const { data: existing } = await store.supabase
+      .from('use_cases').select('id').eq('id', ucId).single();
+    if (existing) return `❌ UC "${ucId}" already exists`;
+
+    const workflow = ['dev', 'qc'];
+
+    // Create UC
+    await store.supabase.from('use_cases').insert({
+      id: ucId,
+      name: desc,
+      description: `Quick fix: ${desc}`,
+      workflow,
+      priority: 1,
+      project_id: projectId,
+      implementation_status: 'not_started'
+    });
+
+    // Create first dev task
+    const model = selectInitialModel('dev', { name: desc, priority: 1, workflow });
+    const roleCtx = buildRoleContext('dev', desc, '', { workflowStep: 0, workflowTotal: workflow.length });
+
+    await store.createTask({
+      title: `Dev: ${ucId} - ${desc}`,
+      agent_id: 'dev',
+      status: 'ready',
+      model,
+      priority: 1,
+      use_case_id: ucId,
+      estimated_cost_usd: estimateCost(model, 'dev'),
+      tags: ['feature', 'quick-fix'],
+      description: roleCtx.description,
+      metadata: { created_by: 'telegram-fix', workflow_step: 0, workflow_total: workflow.length }
+    });
+
+    return `✅ Created UC "${ucId}" + dev task. Will chain to QC on completion.`;
+  } catch (err) {
+    return `❌ Error: ${err.message}`;
+  }
+}
+
+/**
+ * Handle !feature command — create a feature UC with PM→Dev→QC workflow
+ * Format: !feature <description>
+ */
+async function handleFeatureCommand(args) {
+  try {
+    const desc = args.join(' ').replace(/^["']|["']$/g, '').trim();
+    if (!desc) return '❌ Usage: !feature <description>\nExample: !feature "add dark mode to dashboard"';
+
+    const { TaskStore } = require('./task-store');
+    const store = new TaskStore();
+    if (!store.supabase) return '❌ No Supabase connection';
+
+    const { getConfig } = require('./project-config-loader');
+    const { buildRoleContext, selectInitialModel, estimateCost } = require('./workflow-engine');
+    const projectId = getConfig().project_id;
+
+    // Generate UC id from description
+    const slug = desc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+    const ucId = `feat-${slug}`;
+
+    // Check if UC already exists
+    const { data: existing } = await store.supabase
+      .from('use_cases').select('id').eq('id', ucId).single();
+    if (existing) return `❌ UC "${ucId}" already exists`;
+
+    const workflow = ['product', 'dev', 'qc'];
+
+    // Create UC
+    await store.supabase.from('use_cases').insert({
+      id: ucId,
+      name: desc,
+      description: `Feature request: ${desc}`,
+      workflow,
+      priority: 2,
+      project_id: projectId,
+      implementation_status: 'not_started'
+    });
+
+    // Create first PM task
+    const model = selectInitialModel('product', { name: desc, priority: 2, workflow });
+    const roleCtx = buildRoleContext('product', desc, '', { workflowStep: 0, workflowTotal: workflow.length });
+
+    await store.createTask({
+      title: `PM: ${ucId} - ${desc}`,
+      agent_id: 'product',
+      status: 'ready',
+      model,
+      priority: 2,
+      use_case_id: ucId,
+      estimated_cost_usd: estimateCost(model, 'product'),
+      tags: ['feature', 'quick-feature'],
+      description: roleCtx.description,
+      metadata: { created_by: 'telegram-feature', workflow_step: 0, workflow_total: workflow.length }
+    });
+
+    return `✅ Created UC "${ucId}" + PM task. Will chain PM→Dev→QC.`;
+  } catch (err) {
+    return `❌ Error: ${err.message}`;
+  }
+}
+
+/**
  * Main handler — returns string or Promise<string>
  */
 function handleCommand(input) {
@@ -485,6 +609,10 @@ function handleCommand(input) {
       return handleDecideCommand(args);
     case '!reviews':
       return handleReviewsCommand(args);
+    case '!fix':
+      return handleFixCommand(args);
+    case '!feature':
+      return handleFeatureCommand(args);
     default:
       return null; // Not a command we handle
   }
@@ -528,8 +656,10 @@ Commands:
   !status              - Show full status
   !decide <id> <opt>   - Approve a product decision
   !reviews [status]    - Show product reviews & decisions
+  !fix <description>   - Quick-fix: create UC + dev task (chains to QC)
+  !feature <desc>      - New feature: create UC + PM task (chains PM→Dev→QC)
 `);
   }
 }
 
-module.exports = { handleCommand, handleBudgetCommand, handleAccuracyCommand, handleOptimizeCommand, handleGoalCommand, handleHealthCommand, handleSwarmCommand, handleDecideCommand, handleReviewsCommand };
+module.exports = { handleCommand, handleBudgetCommand, handleAccuracyCommand, handleOptimizeCommand, handleGoalCommand, handleHealthCommand, handleSwarmCommand, handleDecideCommand, handleReviewsCommand, handleFixCommand, handleFeatureCommand };
