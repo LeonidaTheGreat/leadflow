@@ -1,128 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-02T19:06:18.980Z
+Last updated: 2026-03-03T00:51:22.722Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-02T11:02:38.309Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 65,
-      "total": 72
-    },
-    "actions": [
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":65,\"total\":72}",
-      "Smoke fail → QC: Local dashboard (qwen3.5)",
-      "Smoke tests: 3/4 passed",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-02T11:07:41.279Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 65,
-      "total": 72
-    },
-    "actions": [
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":65,\"total\":72}",
-      "Smoke fail → QC: Local dashboard (qwen3.5)",
-      "Smoke tests: 3/4 passed",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-02T11:12:38.616Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 65,
-      "total": 72
-    },
-    "actions": [
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":65,\"total\":72}",
-      "Smoke fail → QC: Local dashboard (qwen3.5)",
-      "Smoke tests: 3/4 passed",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-02T11:17:57.086Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 65,
-      "total": 72
-    },
-    "actions": [
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":65,\"total\":72}",
-      "Smoke fail → QC: Local dashboard (qwen3.5)",
-      "Smoke tests: 3/4 passed",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-02T11:22:38.236Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 65,
-      "total": 72
-    },
-    "actions": [
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":65,\"total\":72}",
-      "Smoke fail → QC: Local dashboard (qwen3.5)",
-      "Smoke tests: 3/4 passed",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-02T11:27:57.409Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 65,
-      "total": 72
-    },
-    "actions": [
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":65,\"total\":72}",
-      "Smoke fail → QC: Local dashboard (qwen3.5)",
-      "Smoke tests: 3/4 passed",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-02T11:32:37.941Z",
     "status": {
@@ -1988,9 +1868,155 @@ Last updated: 2026-03-02T19:06:18.980Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T00:16:57.590Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 84,
+      "total": 96
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":84,\"total\":96}",
+      "Marked d25429f1-3f85-4667-9d35-c95e08fec270 as done",
+      "Created PR #1 for dev/d25429f1-fix-vercel-dashboard-health-smoke-",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T00:26:22.606Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 84,
+      "total": 96
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":84,\"total\":96}",
+      "Reset zombie: PM: Distribution — Create Landing Page (retry 2/3)",
+      "Reset zombie: PM: Revenue alert — critical (mrr) (retry 1/3)",
+      "Reset zombie: PM: Distribution — Content Marketing Campaign (retry 1/3)",
+      "Smoke dev retry 1: Local dashboard",
+      "Smoke tests: 4/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T00:36:23.191Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 86,
+      "total": 96
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":86,\"total\":96}",
+      "Smoke dev retry 2: Local dashboard",
+      "Smoke tests: 4/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T00:46:59.851Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 86,
+      "total": 96
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":86,\"total\":96}",
+      "Reset zombie: PM: Distribution — Create Landing Page (retry 3/3)",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T00:51:22.111Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 86,
+      "total": 96
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":86,\"total\":96}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T00:51:22.620Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 86,
+      "total": 96
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":86,\"total\":96}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":0,"blocked":0,"done":73,"total":80}
+- Last status: {"ready":0,"inProgress":0,"blocked":0,"done":86,"total":96}
