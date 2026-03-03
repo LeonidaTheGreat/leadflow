@@ -509,7 +509,24 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
 // ── Completion verification ──────────────────────────────────────────────
 
 /**
- * Verify that a dev/design task actually produced commits on its branch.
+ * Detect whether a task involves deployment work.
+ * Deployment tasks must update project.config.json with URL/deploy config.
+ */
+function isDeploymentTask(task) {
+  const tags = task.tags || []
+  if (tags.includes('deployment-gap') || tags.includes('deploy')) return true
+  if (task.use_case_id && /deploy/i.test(task.use_case_id)) return true
+  // Check title/description for deployment + config update instructions
+  const text = ((task.title || '') + ' ' + (task.description || '')).toLowerCase()
+  return /\bdeploy(ment|ing|ed)?\b/.test(text) && /project\.config/i.test(text)
+}
+
+/**
+ * Verify that a dev/design task actually produced meaningful output.
+ * - Branch tasks: must have commits
+ * - Deployment tasks: must have modified project.config.json
+ * - Smoke-test tasks: must have commits or diffs since spawn
+ *
  * Non-blocking: defaults to verified=true if git fails or task isn't dev/design.
  *
  * @param {object} task - Task row with agent_id and branch_name
@@ -520,6 +537,7 @@ function verifyTaskOutput(task) {
 
   const branch = task.branch_name
   const isSmokeTask = task.tags?.includes?.('smoke-test')
+  const isDeployTask = isDeploymentTask(task)
 
   // Branch-based tasks: check for commits on the branch
   if (branch) {
@@ -529,6 +547,19 @@ function verifyTaskOutput(task) {
         { cwd: __dirname, encoding: 'utf-8', timeout: 5000 }
       ).trim()
       if (!commits) return { verified: false, reason: 'no commits on branch' }
+
+      // Deployment tasks: verify project.config.json was modified on the branch
+      // (dev role instructions explicitly say to update it with URL + deploy config)
+      if (isDeployTask) {
+        const configChanged = execSync(
+          `git diff --name-only main..${branch} -- project.config.json 2>/dev/null`,
+          { cwd: __dirname, encoding: 'utf-8', timeout: 5000 }
+        ).trim()
+        if (!configChanged) {
+          return { verified: false, reason: 'deployment task did not update project.config.json (required for deploy tasks)' }
+        }
+      }
+
       return { verified: true, commits: commits.split('\n').length }
     } catch {
       return { verified: true, reason: 'git check failed (non-blocking)' }
@@ -760,6 +791,7 @@ module.exports = {
   queueForSpawn,
   chainTask,
   prepareAndQueueSpawn,
+  isDeploymentTask,
   verifyTaskOutput,
   buildRoleContext
 }
