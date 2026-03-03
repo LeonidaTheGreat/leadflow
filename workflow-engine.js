@@ -434,8 +434,8 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     } catch {}
   }
 
-  // Dedup: skip if already spawned today
-  if (alreadySpawnedIds && alreadySpawnedIds.has(task.id)) {
+  // Dedup: skip if already spawned today (but allow retries — they failed and were reset to ready)
+  if (alreadySpawnedIds && alreadySpawnedIds.has(task.id) && !(task.retry_count > 0)) {
     console.log(`   ⏭️ Skipping ${task.title} — already spawned today`)
     return null
   }
