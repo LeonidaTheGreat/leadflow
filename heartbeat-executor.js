@@ -447,13 +447,30 @@ class HeartbeatExecutor {
     // Mark task as done and unblock dependents
     try {
       const task = await this.store.getTask(taskId)
-      await this.store.updateTask(taskId, { status: 'done', completed_at: new Date().toISOString() })
+      const completedAt = new Date().toISOString()
+      await this.store.updateTask(taskId, { status: 'done', completed_at: completedAt })
       this.actions.push(`Marked ${taskId} as done`)
 
-      // Record learning and decision outcome
+      // Record learning, cost outcome, and decision outcome
       if (task) {
         this.learner.recordSuccess(task)
         recordOutcome(taskId, 'correct')
+
+        // Compute duration and record cost outcome for learning
+        if (task.started_at) {
+          const durationMs = new Date(completedAt).getTime() - new Date(task.started_at).getTime()
+          const durationMinutes = Math.round(durationMs / 60000)
+          const estimatedCost = task.estimated_cost_usd || 0
+          // Feed duration data to learning system for cost calibration
+          this.learner.recordCostOutcome(task, durationMinutes, estimatedCost)
+          // Compute duration-adjusted actual cost estimate
+          const { estimateCost } = require('./workflow-engine')
+          const baseCost = estimateCost(task.model, task.agent_id)
+          const adjustment = this.learner.getCostAdjustment(task.model, task.agent_id)
+          const actualCost = Math.round(baseCost * adjustment * 100) / 100
+          // Persist actual cost to DB
+          await this.store.updateTask(taskId, { actual_cost_usd: actualCost })
+        }
       }
 
       // Create PR for dev/design tasks with a branch (bridges dev completion → QC review)

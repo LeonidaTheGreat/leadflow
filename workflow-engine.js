@@ -32,6 +32,7 @@ const MODEL_COSTS = _cfg.budget.model_costs || {}
 
 /**
  * Estimate task cost based on model and agent role using per-token pricing.
+ * Applies learned cost adjustment from historical task durations if available.
  * Falls back to legacy flat hourly rate if token config is unavailable.
  *
  * @param {string} model   - e.g. 'qwen3.5', 'sonnet', 'kimi'
@@ -44,12 +45,23 @@ function estimateCost(model, hoursOrAgentId) {
 
   // Token-based estimation (preferred)
   if (tokenCost && (tokenCost.input_per_1m != null)) {
-    // Determine agent role for token estimate
     const agentId = typeof hoursOrAgentId === 'string' ? hoursOrAgentId : null
     const tokens = TOKEN_ESTIMATES[agentId] || TOKEN_ESTIMATES.default || { input: 100000, output: 20000 }
     const inputCost = (tokens.input / 1_000_000) * tokenCost.input_per_1m
     const outputCost = (tokens.output / 1_000_000) * tokenCost.output_per_1m
-    return Math.round((inputCost + outputCost) * 100) / 100
+    let baseCost = inputCost + outputCost
+
+    // Apply learned cost adjustment from historical duration data
+    if (agentId) {
+      try {
+        const { LearningSystem } = require('./learning-system')
+        const learner = new LearningSystem()
+        const adjustment = learner.getCostAdjustment(model, agentId)
+        baseCost *= adjustment
+      } catch {} // Learning system may not be available
+    }
+
+    return Math.round(baseCost * 100) / 100
   }
 
   // Legacy flat-rate fallback

@@ -110,13 +110,17 @@ class LearningSystem {
 
   loadLearnings() {
     if (fs.existsSync(LEARNINGS_JSON)) {
-      return JSON.parse(fs.readFileSync(LEARNINGS_JSON, 'utf-8'))
+      const data = JSON.parse(fs.readFileSync(LEARNINGS_JSON, 'utf-8'))
+      // Ensure costHistory exists (added in cost-learning update)
+      if (!data.costHistory) data.costHistory = {}
+      return data
     }
     return {
       taskOutcomes: [],
       patterns: {},
       modelPerformance: {},
       decompositionStats: {},
+      costHistory: {},
       lastUpdated: new Date().toISOString()
     }
   }
@@ -210,6 +214,68 @@ class LearningSystem {
 
     console.log(`✂️  Recorded decomposition: ${subtasks.length} subtasks, ${success ? 'success' : 'partial'}`)
     this.saveLearnings()
+  }
+
+  /**
+   * Record cost outcome for a completed task.
+   * Uses task duration as a proxy for actual token usage:
+   * - Baseline: config token estimates assume ~10 min per session
+   * - Actual duration ratio adjusts the estimate
+   *
+   * @param {object} task - completed task with started_at, completed_at, model, agent_id
+   * @param {number} durationMinutes - actual task duration
+   * @param {number} estimatedCost - cost estimated at spawn time
+   */
+  recordCostOutcome(task, durationMinutes, estimatedCost) {
+    const key = `${task.model || 'unknown'}_${task.agent_id || 'unknown'}`
+
+    if (!this.learnings.costHistory[key]) {
+      this.learnings.costHistory[key] = {
+        model: task.model,
+        agentId: task.agent_id,
+        samples: 0,
+        totalDurationMin: 0,
+        totalEstimatedCost: 0,
+        avgDurationMin: 0,
+        costAdjustment: 1.0
+      }
+    }
+
+    const entry = this.learnings.costHistory[key]
+    entry.samples++
+    entry.totalDurationMin += durationMinutes
+    entry.totalEstimatedCost += estimatedCost
+    entry.avgDurationMin = Math.round(entry.totalDurationMin / entry.samples)
+
+    // Calibrate cost adjustment based on observed duration patterns.
+    // Baseline assumption: a typical session is ~10 minutes.
+    // If sessions consistently run longer/shorter, adjust future estimates.
+    const BASELINE_MINUTES = 10
+    const avgDuration = entry.totalDurationMin / entry.samples
+    const durationRatio = avgDuration / BASELINE_MINUTES
+
+    // Clamp adjustment between 0.2x and 5x to avoid extreme swings
+    entry.costAdjustment = Math.max(0.2, Math.min(5.0, durationRatio))
+
+    this.saveLearnings()
+  }
+
+  /**
+   * Get cost adjustment multiplier for a (model, agentId) pair.
+   * Returns 1.0 (no adjustment) if insufficient data.
+   *
+   * @param {string} model
+   * @param {string} agentId
+   * @returns {number} multiplier to apply to base cost estimate
+   */
+  getCostAdjustment(model, agentId) {
+    const key = `${model || 'unknown'}_${agentId || 'unknown'}`
+    const entry = this.learnings.costHistory?.[key]
+
+    // Require minimum 3 samples before applying adjustments
+    if (!entry || entry.samples < 3) return 1.0
+
+    return entry.costAdjustment
   }
 
   /**
