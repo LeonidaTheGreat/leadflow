@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-03T08:19:52.232Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-03T08:21:24.011Z | Source: `use_cases` + `prds` tables
 
 **Progress: 13/13 complete**
 
