@@ -1,30 +1,33 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-03T08:21:24.099Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-03T17:12:21.040Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 12 specs | 5 pass | 0 fail | 7 not run**
+**Coverage: 15 specs | 5 pass | 0 fail | 10 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
-| UC-1 | UC-1: Lead-Initiated SMS Flow | tests/e2e/uc-1-inbound-sms.test.ts | - | pass |
+| UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
-| UC-11 | UC-11: Subscription Lifecycle | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
+| UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
 | UC-12 | UC-12: MRR Reporting | tests/e2e/uc-12-mrr-reporting.test.ts | - | not_run |
 | UC-2 | UC-2: FUB New Lead Auto-Response | tests/e2e/uc-2-fub-new-lead.test.ts | - | not_run |
 | UC-3 | UC-3: FUB Status Change SMS | tests/e2e/uc-3-fub-status-change.test.ts | - | not_run |
 | UC-4 | UC-4: Agent Assignment Intro SMS | tests/e2e/uc-4-agent-assignment.test.ts | - | not_run |
-| UC-5 | UC-5: Opt-Out Handling | tests/e2e/uc-5-opt-out.test.ts | - | pass |
-| UC-6 | UC-6: Cal.com Booking Confirmation | tests/e2e/uc-6-cal-booking.test.ts | - | pass |
-| UC-7 | UC-7: Dashboard Manual SMS | tests/e2e/uc-7-dashboard-sms.test.ts | - | pass |
-| UC-8 | UC-8: Follow-up Sequences | tests/e2e/uc-8-followup-sequences.test.ts | - | pass |
+| UC-5 | UC-5: Lead Opt-Out Handling | tests/e2e/uc-5-lead-opt-out.test.ts | - | pass |
+| UC-6 | UC-6: Cal.com Booking Integration | tests/e2e/uc-6-calcom-booking.test.ts | - | pass |
+| UC-7 | UC-7: Dashboard Manual SMS | tests/e2e/uc-7-dashboard-manual-sms.test.ts | - | pass |
+| UC-8 | UC-8: Follow-up Sequence Execution | tests/e2e/uc-8-follow-up-sequences.test.ts | - | pass |
 | UC-9 | UC-9: Customer Sign-Up Flow | tests/e2e/uc-9-customer-signup.test.ts | - | not_run |
+| UC-AUTH-FIX-001 | UC-AUTH-FIX-001: Authentication Flow | tests/e2e/auth-flow.test.ts | - | not_run |
+| UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
+| UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
 
 ## UC-1 — Lead-Initiated SMS
 
-### UC-1: Lead-Initiated SMS Flow
+### UC-1: Lead-Initiated SMS Response
 
-- **File:** `tests/e2e/uc-1-inbound-sms.test.ts`
+- **File:** `tests/e2e/uc-1-lead-initiated-sms.test.ts`
 - **Result:** pass
 - **Assertions:**
 ```json
@@ -32,13 +35,7 @@
   {
     "type": "api",
     "expect": 200,
-    "endpoint": "POST /api/webhook/twilio"
-  },
-  {
-    "type": "database",
-    "query": "phone = +12015559999",
-    "table": "leads",
-    "expect": "exists"
+    "endpoint": "POST /webhook/twilio/sms"
   },
   {
     "type": "database",
@@ -47,20 +44,20 @@
     "expect": "exists"
   },
   {
-    "type": "ai",
-    "check": "response.includes('Austin') || response.includes('house')",
-    "expect": true
+    "max": 5000,
+    "type": "time",
+    "metric": "ai_response_generated"
+  },
+  {
+    "max": 30000,
+    "type": "time",
+    "metric": "sms_delivered"
   },
   {
     "type": "database",
-    "query": "direction = 'outbound' AND ai_generated = true",
+    "query": "source = 'ai'",
     "table": "messages",
     "expect": "exists"
-  },
-  {
-    "type": "response",
-    "expect": true,
-    "contains": "<Response><Message>"
   }
 ]
 ```
@@ -76,49 +73,49 @@
 ```json
 [
   {
-    "type": "auth",
-    "action": "login as customer",
-    "expect": "success"
+    "url": "/settings",
+    "type": "ui",
+    "action": "navigate"
   },
   {
     "type": "ui",
-    "action": "navigate to /settings/billing",
-    "expect": "page loads"
-  },
-  {
-    "type": "ui",
-    "check": "plan displays as 'Pro - $149/month'",
-    "expect": true
+    "action": "click",
+    "selector": "billing-section"
   },
   {
     "type": "api",
     "expect": 200,
-    "endpoint": "POST /api/stripe/portal-session"
+    "endpoint": "GET /api/billing/subscription"
   },
   {
-    "type": "response",
+    "type": "ui",
+    "action": "visible",
     "expect": true,
-    "contains": "billing.stripe.com"
+    "selector": "subscription-plan"
   },
   {
-    "type": "stripe_portal",
-    "check": "logo is LeadFlow logo",
-    "expect": true
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "subscription-price"
   },
   {
-    "type": "stripe_portal",
-    "check": "payment methods section visible",
-    "expect": true
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "next-billing-date"
   },
   {
-    "type": "stripe_portal",
-    "action": "add new card",
-    "expect": "success"
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "payment-methods"
   },
   {
-    "type": "webhook",
-    "event": "payment_method.attached",
-    "expect": "received"
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "invoice-history"
   }
 ]
 ```
@@ -126,7 +123,7 @@
 
 ## UC-11 — Subscription Lifecycle
 
-### UC-11: Subscription Lifecycle
+### UC-11: Subscription Upgrade
 
 - **File:** `tests/e2e/uc-11-subscription-lifecycle.test.ts`
 - **Result:** not_run
@@ -134,43 +131,40 @@
 ```json
 [
   {
-    "type": "webhook",
-    "event": "invoice.paid",
-    "expect": "received"
+    "url": "/settings/billing",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "upgrade-button"
+  },
+  {
+    "type": "ui",
+    "value": "Pro",
+    "action": "select",
+    "selector": "plan-pro"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /api/billing/upgrade"
+  },
+  {
+    "type": "stripe",
+    "action": "confirm-proration"
   },
   {
     "type": "database",
-    "query": "current_period_end > NOW()",
-    "table": "customers",
-    "expect": "extended"
-  },
-  {
-    "type": "webhook",
-    "event": "invoice.payment_failed",
-    "expect": "received"
-  },
-  {
-    "type": "database",
-    "query": "status = 'past_due'",
-    "table": "customers",
+    "query": "plan_id = 'pro'",
+    "table": "subscriptions",
     "expect": "exists"
   },
   {
     "type": "email",
-    "expect": "sent",
-    "subject_contains": "Payment Failed"
-  },
-  {
-    "type": "database",
-    "query": "status = 'canceled'",
-    "table": "customers",
-    "expect": "exists"
-  },
-  {
-    "type": "database",
-    "query": "data_retention_until > NOW()",
-    "table": "customers",
-    "expect": "exists"
+    "expect": "upgrade-confirmation",
+    "provider": "sendgrid"
   }
 ]
 ```
@@ -186,35 +180,42 @@
 ```json
 [
   {
+    "url": "/admin/mrr",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
     "type": "api",
     "expect": 200,
-    "endpoint": "GET /api/billing/metrics"
-  },
-  {
-    "path": "mrr",
-    "type": "response",
-    "equals": 59700
-  },
-  {
-    "path": "active_customers",
-    "type": "response",
-    "equals": 4
-  },
-  {
-    "path": "churn_rate",
-    "type": "response",
-    "equals": 20
+    "endpoint": "GET /api/admin/mrr"
   },
   {
     "type": "ui",
-    "check": "MRR displays as '$597'",
-    "expect": true
+    "action": "visible",
+    "expect": true,
+    "selector": "mrr-total"
   },
   {
-    "type": "api",
+    "type": "ui",
+    "action": "visible",
     "expect": true,
-    "endpoint": "GET /api/billing/metrics?export=csv",
-    "content_type": "text/csv"
+    "selector": "mrr-breakdown"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "mrr-trend-chart"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "export-csv"
+  },
+  {
+    "type": "file",
+    "action": "downloaded",
+    "expect": "mrr-report.csv"
   }
 ]
 ```
@@ -242,11 +243,6 @@
     "expect": "exists"
   },
   {
-    "type": "database",
-    "table": "qualifications",
-    "expect": "exists"
-  },
-  {
     "max": 30000,
     "type": "time",
     "metric": "sms_sent_within"
@@ -258,9 +254,10 @@
     "expect": "exists"
   },
   {
-    "type": "api",
-    "expect": "contains SMS activity",
-    "endpoint": "GET /fub/activities"
+    "type": "ui",
+    "action": "verify",
+    "expect": "contains test lead",
+    "selector": "lead-feed"
   }
 ]
 ```
@@ -342,41 +339,34 @@
 
 ## UC-5 — Lead Opt-Out
 
-### UC-5: Opt-Out Handling
+### UC-5: Lead Opt-Out Handling
 
-- **File:** `tests/e2e/uc-5-opt-out.test.ts`
+- **File:** `tests/e2e/uc-5-lead-opt-out.test.ts`
 - **Result:** pass
 - **Assertions:**
 ```json
 [
   {
-    "body": "STOP",
     "type": "api",
     "expect": 200,
-    "endpoint": "POST /api/webhook/twilio"
+    "endpoint": "POST /webhook/twilio/sms"
   },
   {
     "type": "database",
-    "query": "status = 'opted_out'",
+    "query": "opted_out = true",
     "table": "leads",
     "expect": "exists"
   },
   {
     "type": "database",
-    "query": "dnc = true",
-    "table": "leads",
+    "table": "compliance_logs",
     "expect": "exists"
   },
   {
-    "type": "sms",
-    "expect": true,
-    "contains": "unsubscribed"
-  },
-  {
-    "name": "follow_up_blocked",
-    "type": "test",
-    "action": "send SMS to opted-out lead",
-    "expect": "blocked"
+    "type": "blocking",
+    "action": "send_sms",
+    "expect": "blocked",
+    "reason": "opted_out"
   }
 ]
 ```
@@ -384,9 +374,9 @@
 
 ## UC-6 — Cal.com Booking
 
-### UC-6: Cal.com Booking Confirmation
+### UC-6: Cal.com Booking Integration
 
-- **File:** `tests/e2e/uc-6-cal-booking.test.ts`
+- **File:** `tests/e2e/uc-6-calcom-booking.test.ts`
 - **Result:** pass
 - **Assertions:**
 ```json
@@ -394,7 +384,23 @@
   {
     "type": "api",
     "expect": 200,
-    "endpoint": "POST /api/webhook/calcom"
+    "endpoint": "POST /api/integrations/calcom/connect"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /api/booking"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "booking-link"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /webhook/calcom/booking"
   },
   {
     "type": "database",
@@ -402,25 +408,16 @@
     "expect": "exists"
   },
   {
-    "type": "sms",
-    "expect": true,
-    "contains": [
-      "March 1",
-      "2:00 PM",
-      "confirmed"
-    ]
-  },
-  {
     "type": "database",
-    "query": "status = 'appointment'",
-    "table": "leads",
+    "query": "direction = 'outbound'",
+    "table": "messages",
     "expect": "exists"
   },
   {
-    "job": "reminder_sms",
-    "type": "scheduled",
-    "expect": "scheduled",
-    "trigger": "24h before appointment"
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "booking-confirmation"
   }
 ]
 ```
@@ -430,47 +427,42 @@
 
 ### UC-7: Dashboard Manual SMS
 
-- **File:** `tests/e2e/uc-7-dashboard-sms.test.ts`
+- **File:** `tests/e2e/uc-7-dashboard-manual-sms.test.ts`
 - **Result:** pass
 - **Assertions:**
 ```json
 [
   {
+    "url": "/dashboard",
     "type": "ui",
-    "action": "click #send-sms-button",
-    "expect": "modal opens"
+    "action": "navigate"
   },
   {
     "type": "ui",
-    "action": "type message",
-    "expect": "input updates"
+    "action": "click",
+    "selector": "send-message-button"
+  },
+  {
+    "type": "ui",
+    "value": "Test message",
+    "action": "type",
+    "selector": "message-input"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "send-button"
   },
   {
     "type": "api",
     "expect": 200,
-    "endpoint": "POST /api/messages/send"
+    "endpoint": "POST /api/sms/send"
   },
   {
     "type": "database",
-    "query": "status = 'pending'",
+    "query": "source = 'manual'",
     "table": "messages",
-    "expect": "exists (before send)"
-  },
-  {
-    "type": "database",
-    "query": "status = 'sent'",
-    "table": "messages",
-    "expect": "exists (after send)"
-  },
-  {
-    "type": "ui",
-    "action": "check message thread",
-    "expect": "message appears"
-  },
-  {
-    "type": "webhook",
-    "event": "twilio.status_callback",
-    "expect": "delivered status updated"
+    "expect": "exists"
   }
 ]
 ```
@@ -478,45 +470,33 @@
 
 ## UC-8 — Follow-up Sequences
 
-### UC-8: Follow-up Sequences
+### UC-8: Follow-up Sequence Execution
 
-- **File:** `tests/e2e/uc-8-followup-sequences.test.ts`
+- **File:** `tests/e2e/uc-8-follow-up-sequences.test.ts`
 - **Result:** pass
 - **Assertions:**
 ```json
 [
   {
-    "job": "followup-check",
-    "runs": "every hour",
-    "type": "cron",
-    "expect": "executes"
-  },
-  {
     "type": "database",
-    "query": "status = 'active'",
     "table": "sequences",
     "expect": "exists"
   },
   {
-    "type": "ai",
-    "check": "message.contextually_relevant",
-    "expect": true
-  },
-  {
-    "sent": true,
-    "type": "sms"
-  },
-  {
     "type": "database",
-    "query": "completed = true",
     "table": "sequence_steps",
     "expect": "exists"
   },
   {
-    "name": "reply_stops_sequence",
-    "type": "test",
-    "action": "simulate lead reply",
-    "expect": "sequence paused"
+    "max": 70000,
+    "type": "time",
+    "metric": "sequence_step_executed"
+  },
+  {
+    "type": "database",
+    "query": "source = 'sequence'",
+    "table": "messages",
+    "expect": "exists"
   }
 ]
 ```
@@ -532,56 +512,260 @@
 ```json
 [
   {
+    "url": "/",
     "type": "ui",
-    "action": "visit /signup",
-    "expect": "page loads with 3 plan options"
+    "action": "navigate"
   },
   {
     "type": "ui",
-    "action": "select Pro plan",
-    "expect": "Pro highlighted"
+    "action": "visible",
+    "expect": true,
+    "selector": "signup-cta"
   },
   {
     "type": "ui",
-    "action": "fill email, name, phone",
-    "expect": "form validates"
+    "action": "click",
+    "selector": "signup-cta"
+  },
+  {
+    "type": "ui",
+    "value": "Pro",
+    "action": "select",
+    "selector": "plan-pro"
+  },
+  {
+    "type": "ui",
+    "value": "test@example.com",
+    "action": "type",
+    "selector": "email-input"
+  },
+  {
+    "type": "ui",
+    "value": "TestPass123!",
+    "action": "type",
+    "selector": "password-input"
   },
   {
     "type": "api",
     "expect": 200,
-    "endpoint": "POST /api/billing/create-checkout"
+    "endpoint": "POST /auth/signup"
   },
   {
     "type": "redirect",
-    "expect": true,
-    "url_contains": "stripe.com/checkout"
+    "expect": "checkout.stripe.com"
   },
   {
     "type": "stripe",
-    "action": "complete checkout",
-    "expect": "success"
+    "action": "complete-checkout"
   },
   {
     "type": "webhook",
-    "event": "checkout.session.completed",
-    "expect": "received"
-  },
-  {
-    "type": "database",
-    "query": "email = 'test@example.com'",
-    "table": "customers",
-    "expect": "exists"
-  },
-  {
-    "type": "database",
-    "query": "plan_tier = 'pro'",
-    "table": "customers",
-    "expect": "exists"
+    "expect": "customer.subscription.created"
   },
   {
     "type": "redirect",
+    "expect": "/dashboard"
+  },
+  {
+    "type": "database",
+    "table": "subscriptions",
+    "expect": "exists"
+  }
+]
+```
+
+
+## UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
+
+### UC-AUTH-FIX-001: Authentication Flow
+
+- **File:** `tests/e2e/auth-flow.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
     "expect": true,
-    "url_contains": "/onboarding"
+    "selector": "signup-button"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "login-button"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "signup-button"
+  },
+  {
+    "type": "ui",
+    "value": "test@example.com",
+    "action": "type",
+    "selector": "email-input"
+  },
+  {
+    "type": "ui",
+    "value": "TestPass123!",
+    "action": "type",
+    "selector": "password-input"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "submit-signup"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /auth/signup"
+  },
+  {
+    "type": "redirect",
+    "expect": "/dashboard"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "user-menu"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "logout-button"
+  },
+  {
+    "type": "redirect",
+    "expect": "/"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "login-button"
+  }
+]
+```
+
+
+## UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
+
+### UC-BILLING-FIX-001: Billing Integration Error Fix
+
+- **File:** `tests/e2e/billing-integration-fix.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/settings",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "billing-subscription"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /api/billing/subscription"
+  },
+  {
+    "type": "ui",
+    "action": "not-visible",
+    "expect": true,
+    "selector": "error-agent-not-found"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "subscription-plan"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "subscription-price"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "payment-methods"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "invoice-history"
+  },
+  {
+    "type": "database",
+    "query": "user_id IS NOT NULL",
+    "table": "subscriptions",
+    "expect": "exists"
+  }
+]
+```
+
+
+## UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
+
+### UC-DEPLOY-LANDING-001: Landing Page Smoke Test
+
+- **File:** `tests/e2e/landing-page-smoke.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /"
+  },
+  {
+    "url": "/",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "landing-hero"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "cta-button"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "cta-button"
+  },
+  {
+    "type": "redirect",
+    "expect": "/dashboard"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "dashboard-content"
   }
 ]
 ```
