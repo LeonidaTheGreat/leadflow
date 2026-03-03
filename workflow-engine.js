@@ -189,6 +189,21 @@ async function chainTask(store, task, projectId) {
   }
 
   if (currentIdx === uc.workflow.length - 1) {
+    // Bridge QC completion → PR approval
+    if (task.pr_number && store.supabase) {
+      await store.supabase
+        .from('code_reviews')
+        .update({
+          status: 'approved',
+          reviewer_agent: task.agent_id,
+          review_notes: { approved_by: 'qc_workflow', task_id: task.id },
+          updated_at: new Date().toISOString()
+        })
+        .eq('pr_number', task.pr_number)
+        .eq('project_id', projectId)
+        .eq('status', 'pending')
+    }
+
     // Last step — mark UC complete
     await store.supabase.from('use_cases')
       .update({ implementation_status: 'complete', updated_at: new Date().toISOString() })

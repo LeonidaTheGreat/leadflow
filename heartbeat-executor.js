@@ -88,6 +88,7 @@ class HeartbeatExecutor {
   async run() {
     console.log('🫀 LeadFlow Orchestrator Heartbeat')
     console.log('====================================')
+    this._deployedTargets = new Set()
     try {
       // 0. CHECK GOAL STATE — set urgency mode based on goal trajectory
       await this.checkGoalState()
@@ -1253,84 +1254,125 @@ class HeartbeatExecutor {
   }
 
   /**
-   * Auto-deploy: if dashboard files have been committed since the last deploy,
-   * and the build passes, deploy to Vercel automatically.
-   * This closes the loop: code change → build passes → deploy → smoke test verifies.
+   * Find products linked to a UC via uc_id, resolve deploy config, and deploy each.
+   * Deduplicates by target_id within a single heartbeat.
    */
-  async checkAndDeploy() {
+  async triggerDeployForUC(ucId) {
+    const products = (this.config.products || []).filter(p => p.uc_id === ucId && p.deploy?.target_id)
+    if (products.length === 0) return
+
+    for (const product of products) {
+      const config = this.resolveDeployConfig(product.deploy.target_id)
+      if (!config) continue
+      if (this._deployedTargets?.has(config.targetId)) {
+        console.log(`   ⏭️ Already deployed ${config.targetId} this heartbeat`)
+        continue
+      }
+      await this.deployProduct(config, product)
+    }
+  }
+
+  /**
+   * Resolve the canonical deploy config for a target_id.
+   * Products can reference a target_id without full config (e.g., billing-flow
+   * shares vercel-dashboard with customer-dashboard). This finds the canonical owner.
+   */
+  resolveDeployConfig(targetId) {
+    const allProducts = this.config.products || []
+    // Find the canonical product: one that has full deploy config (cwd + command)
+    const canonical = allProducts.find(p =>
+      p.deploy?.target_id === targetId && p.deploy?.cwd && p.deploy?.command
+    )
+    if (!canonical) return null
+    return {
+      targetId,
+      cwd: path.isAbsolute(canonical.deploy.cwd)
+        ? canonical.deploy.cwd
+        : path.join(__dirname, canonical.deploy.cwd),
+      command: canonical.deploy.command,
+      sourceDirs: canonical.deploy.source_dirs || [],
+      postDeployWaitMs: canonical.deploy.post_deploy_wait_ms || 15000,
+      productId: canonical.id
+    }
+  }
+
+  /**
+   * Deploy a specific product using safeDeploy with per-product overrides.
+   * Writes .last-deploy-{targetId}.json on success.
+   */
+  async deployProduct(config, product) {
+    console.log(`   🚀 Deploying ${product.name} (target: ${config.targetId})...`)
     try {
-      const { execSync } = require('child_process')
-      const dashboardDir = getDashboardDir(this.config)
+      const { safeDeploy } = require('./orchestrator/deploy-safety')
+      const result = await safeDeploy({
+        overrideCwd: config.cwd,
+        overrideCommand: config.command,
+        postDeployWaitMs: config.postDeployWaitMs
+      })
 
-      // Get last commit timestamp touching dashboard source
-      const lastCommit = execSync(
-        `git log -1 --format="%aI" -- app/ components/ lib/ 2>/dev/null`,
-        { cwd: dashboardDir, encoding: 'utf-8', timeout: 5000 }
-      ).trim()
-      if (!lastCommit) return
-
-      // Check deploy state
-      const deployStatePath = require('path').join(__dirname, '.last-deploy.json')
-      let lastDeployTime = null
-      try {
-        const ds = JSON.parse(require('fs').readFileSync(deployStatePath, 'utf-8'))
-        lastDeployTime = ds.deployedAt
-      } catch {}
-
-      if (lastDeployTime && new Date(lastCommit) <= new Date(lastDeployTime)) {
-        return // Already deployed
-      }
-
-      // Dedup: don't deploy if a deploy task is already open
-      const deployTitle = 'Deploy: Dashboard to Vercel'
-      const existingDeploy = await this.store.findTaskByTitle(deployTitle)
-      if (existingDeploy && !['done', 'failed'].includes(existingDeploy.status)) {
-        return
-      }
-
-      // Deploy with safety net (rollback on smoke test failure)
-      console.log('   🚀 Auto-deploying dashboard to Vercel (with safety net)...')
-      try {
-        const { safeDeploy } = require('./orchestrator/deploy-safety')
-        const result = await safeDeploy({ postDeployWaitMs: 15000 })
-
-        if (result.success) {
-          require('fs').writeFileSync(deployStatePath, JSON.stringify({
-            deployedAt: new Date().toISOString(),
-            trigger: 'auto-deploy-safe',
-            lastCommit,
-            commit: result.deployedCommit
-          }, null, 2))
-          console.log('   🚀 Deploy: ✅ success (verified by smoke tests)')
-          this.actions.push('Auto-deployed dashboard to Vercel (verified)')
-        } else if (result.revertedTo) {
-          console.warn(`   🚀 Deploy: ⚠️ rolled back to ${result.revertedTo.slice(0, 8)}`)
-          this.actions.push(`Deploy rolled back: smoke tests failed after deploy`)
-          this.errors.push(`Deploy rolled back to ${result.revertedTo.slice(0, 8)}`)
-        } else {
-          console.warn(`   🚀 Deploy: ❌ ${result.error || 'failed'}`)
-        }
-      } catch (safeErr) {
-        // Fallback: direct deploy without safety net
-        console.warn('   Safety net failed, attempting direct deploy...')
-        const output = execSync(
-          `${this.config.deployment.deploy_command} 2>&1`,
-          { cwd: dashboardDir, encoding: 'utf-8', timeout: 120000 }
-        )
-        if (output.includes('Production:') || output.includes('Aliased:')) {
-          require('fs').writeFileSync(deployStatePath, JSON.stringify({
-            deployedAt: new Date().toISOString(),
-            trigger: 'auto-deploy-fallback',
-            lastCommit
-          }, null, 2))
-          console.log('   🚀 Deploy: ✅ success (fallback, no safety net)')
-          this.actions.push('Auto-deployed dashboard (fallback)')
-        }
+      if (result.success) {
+        const stateFile = path.join(__dirname, `.last-deploy-${config.targetId}.json`)
+        fs.writeFileSync(stateFile, JSON.stringify({
+          deployedAt: new Date().toISOString(),
+          trigger: 'post-merge-deploy',
+          productId: config.productId,
+          commit: result.deployedCommit
+        }, null, 2))
+        console.log(`   🚀 Deploy ${config.targetId}: ✅ success`)
+        this.actions.push(`Deployed ${product.name} (${config.targetId})`)
+        this._deployedTargets?.add(config.targetId)
+      } else if (result.revertedTo) {
+        console.warn(`   🚀 Deploy ${config.targetId}: ⚠️ rolled back`)
+        this.actions.push(`Deploy ${product.name} rolled back`)
+        this.errors.push(`Deploy ${config.targetId} rolled back to ${result.revertedTo.slice(0, 8)}`)
+      } else {
+        console.warn(`   🚀 Deploy ${config.targetId}: ❌ ${result.error || 'failed'}`)
       }
     } catch (err) {
-      // Deploy failed — don't create a task, just log.
-      // Build-health already gates this, so deploy failures are likely transient.
-      console.warn(`   🚀 Deploy: ❌ ${err.message?.split('\n')[0] || 'failed'}`)
+      console.warn(`   🚀 Deploy ${config.targetId}: ❌ ${err.message?.split('\n')[0] || 'failed'}`)
+    }
+  }
+
+  /**
+   * Auto-deploy: if source files have been committed since the last deploy,
+   * and the build passes, deploy to Vercel automatically.
+   * Loops over all deployable products. Drift catcher for manual commits.
+   */
+  async checkAndDeploy() {
+    const products = (this.config.products || []).filter(p => p.deploy?.cwd && p.deploy?.command)
+    if (products.length === 0) return
+
+    for (const product of products) {
+      try {
+        const config = this.resolveDeployConfig(product.deploy.target_id)
+        if (!config) continue
+        if (this._deployedTargets?.has(config.targetId)) continue // already deployed this heartbeat
+
+        // Check if source files changed since last deploy
+        const sourceDirArgs = config.sourceDirs.map(d => `-- ${d}`).join(' ')
+        const lastCommit = execSync(
+          `git log -1 --format="%aI" ${sourceDirArgs} 2>/dev/null`,
+          { cwd: config.cwd, encoding: 'utf-8', timeout: 5000 }
+        ).trim()
+        if (!lastCommit) continue
+
+        // Check deploy state for this target
+        const stateFile = path.join(__dirname, `.last-deploy-${config.targetId}.json`)
+        let lastDeployTime = null
+        try {
+          const ds = JSON.parse(fs.readFileSync(stateFile, 'utf-8'))
+          lastDeployTime = ds.deployedAt
+        } catch {}
+
+        if (lastDeployTime && new Date(lastCommit) <= new Date(lastDeployTime)) {
+          continue // Already deployed
+        }
+
+        // Deploy via shared deployProduct method
+        await this.deployProduct(config, product)
+      } catch (err) {
+        console.warn(`   🚀 Deploy ${product.id}: ❌ ${err.message?.split('\n')[0] || 'failed'}`)
+      }
     }
   }
 
@@ -1396,6 +1438,18 @@ class HeartbeatExecutor {
           }
           console.log(`   ✅ Merged PR #${review.pr_number}`)
           this.actions.push(`Merged PR #${review.pr_number}`)
+
+          // Trigger deploy for the UC this PR belongs to
+          if (review.task_id) {
+            try {
+              const mergedTask = await this.store.getTask(review.task_id)
+              if (mergedTask?.use_case_id) {
+                await this.triggerDeployForUC(mergedTask.use_case_id)
+              }
+            } catch (deployErr) {
+              console.warn(`   ⚠️ Post-merge deploy failed: ${deployErr.message}`)
+            }
+          }
         } catch (mergeErr) {
           console.warn(`   ⚠️ Failed to merge PR #${review.pr_number}: ${mergeErr.message}`)
         }

@@ -74,7 +74,14 @@
       "test_url": "https://leadflow-ai-five.vercel.app/api/health",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "UC-9",
-      "description": "Next.js customer-facing dashboard"
+      "description": "Next.js customer-facing dashboard",
+      "deploy": {
+        "target_id": "vercel-dashboard",
+        "cwd": "product/lead-response/dashboard",
+        "command": "/opt/homebrew/bin/vercel --prod --yes",
+        "source_dirs": ["app/", "components/", "lib/"],
+        "post_deploy_wait_ms": 15000
+      }
     },
     {
       "id": "fub-webhook",
@@ -84,7 +91,14 @@
       "test_url": "https://fub-inbound-webhook.vercel.app/health",
       "smoke_test_id": "vercel-health",
       "uc_id": "UC-1",
-      "description": "Follow Up Boss inbound webhook processor"
+      "description": "Follow Up Boss inbound webhook processor",
+      "deploy": {
+        "target_id": "vercel-webhook",
+        "cwd": ".",
+        "command": "/opt/homebrew/bin/vercel --prod --yes",
+        "source_dirs": ["routes/", "lib/", "server.js"],
+        "post_deploy_wait_ms": 10000
+      }
     },
     {
       "id": "landing-page",
@@ -112,7 +126,10 @@
       "url": "https://leadflow-ai-five.vercel.app/settings",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "UC-10",
-      "description": "Stripe billing integration (part of customer dashboard)"
+      "description": "Stripe billing integration (part of customer dashboard)",
+      "deploy": {
+        "target_id": "vercel-dashboard"
+      }
     }
   ],
 

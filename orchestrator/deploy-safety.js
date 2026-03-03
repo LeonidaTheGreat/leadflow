@@ -71,11 +71,14 @@ async function runSmokeTests() {
  * @param {object} [options]
  * @param {number} [options.postDeployWaitMs=30000] - Time to wait after deploy before smoke test
  * @param {number} [options.maxRollbackAttempts=1] - Max number of rollback attempts
+ * @param {string} [options.overrideCwd] - Override working directory (absolute path)
+ * @param {string} [options.overrideCommand] - Override deploy command
  * @returns {{ success: boolean, deployedCommit: string, revertedTo?: string, smokeResults?: object }}
  */
 async function safeDeploy(options = {}) {
   const config = getConfig()
-  const dashboardDir = getDashboardDir(config)
+  const dashboardDir = options.overrideCwd || getDashboardDir(config)
+  const deployCommand = options.overrideCommand || config.deployment.deploy_command
   const state = loadDeployState()
   const postDeployWaitMs = options.postDeployWaitMs || 30000
   const maxRollbackAttempts = options.maxRollbackAttempts || 1
@@ -99,7 +102,7 @@ async function safeDeploy(options = {}) {
   try {
     console.log('  Deploying...')
     deployOutput = execSync(
-      `${config.deployment.deploy_command} 2>&1`,
+      `${deployCommand} 2>&1`,
       { cwd: dashboardDir, encoding: 'utf-8', timeout: 120000 }
     )
 
@@ -175,7 +178,7 @@ async function safeDeploy(options = {}) {
 
       // Redeploy
       execSync(
-        `${config.deployment.deploy_command} 2>&1`,
+        `${deployCommand} 2>&1`,
         { cwd: dashboardDir, encoding: 'utf-8', timeout: 120000 }
       )
 
