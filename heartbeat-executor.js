@@ -249,39 +249,47 @@ class HeartbeatExecutor {
         const { COMPLETION_MARKERS: completionMarkers } = require('./workflow-engine')
         const didComplete = completionMarkers.some(m => stdoutFull.includes(m))
         if (didComplete) {
+          // Check if this was a skip (agent determined role not needed)
+          const wasSkipped = /step skipped/i.test(stdoutFull)
+
           // Verify the agent actually produced commits (not just printed "COMPLETE")
-          const { verified, reason } = verifyTaskOutput(task)
-          if (!verified) {
-            console.log(`      ⚠️ ${task.title} — stdout says COMPLETE but ${reason}`)
-            await this._handleZombie(task, retryCount, maxRetries, `false_completion: ${reason}`)
-            try {
-              this.learner.recordFailure(task, `false_completion: ${reason}`, retryCount)
-              recordOutcome(task.id, 'incorrect')
-            } catch {}
-            zombieCount++
-            continue
+          // Skip verification for skipped steps — they intentionally produce no output
+          if (!wasSkipped) {
+            const { verified, reason } = verifyTaskOutput(task)
+            if (!verified) {
+              console.log(`      ⚠️ ${task.title} — stdout says COMPLETE but ${reason}`)
+              await this._handleZombie(task, retryCount, maxRetries, `false_completion: ${reason}`)
+              try {
+                this.learner.recordFailure(task, `false_completion: ${reason}`, retryCount)
+                recordOutcome(task.id, 'incorrect')
+              } catch {}
+              zombieCount++
+              continue
+            }
           }
-          console.log(`      ✅ ${task.title} — PID ${pid} exited, but stdout shows COMPLETED`)
+
+          const completionType = wasSkipped ? 'skipped' : 'completed'
+          console.log(`      ✅ ${task.title} — PID ${pid} exited, stdout shows ${completionType.toUpperCase()}`)
           // Write the completion JSON that the agent failed to write
           try {
             const { writeCompletionReport } = require('./subagent-completion-report')
             writeCompletionReport({
               taskId: task.id,
-              status: 'completed',
+              status: completionType,
               testResults: { passed: 1, total: 1, passRate: 1 },
               filesCreated: [], filesModified: [],
               completionReportPath: null,
-              metadata: { detectedBy: 'heartbeat-zombie-scan', detectedAt: new Date().toISOString() }
+              metadata: { detectedBy: 'heartbeat-zombie-scan', skipped: wasSkipped, detectedAt: new Date().toISOString() }
             })
           } catch {}
           await this.store.updateTask(task.id, {
             status: 'done',
             completed_at: new Date().toISOString(),
-            spawn_config: { ...spawnConfig, spawn_status: 'completed' },
+            spawn_config: { ...spawnConfig, spawn_status: completionType },
             last_error: null
           })
           this.completed.push({ id: task.id, title: task.title, agent: task.agent_id || '-' })
-          this.actions.push(`Completed (via stdout): ${task.title}`)
+          this.actions.push(`${wasSkipped ? 'Skipped' : 'Completed'} (via stdout): ${task.title}`)
           await this.createFollowUpTasks(task)
           continue
         }
@@ -1055,18 +1063,43 @@ class HeartbeatExecutor {
         console.log(`   📊 Smoke results persisted to metrics table`)
       }
 
-      // B. Sync products to system_components table
+      // B. Fetch UC statuses for products that reference a use case
+      const ucStatusMap = new Map()
+      const productsWithUCForStatus = products.filter(p => p.uc_id)
+      if (productsWithUCForStatus.length > 0) {
+        const { data: ucs } = await sb
+          .from('use_cases')
+          .select('id, implementation_status')
+          .in('id', productsWithUCForStatus.map(p => p.uc_id))
+        for (const uc of (ucs || [])) {
+          ucStatusMap.set(uc.id, uc.implementation_status)
+        }
+      }
+
+      // C. Sync products to system_components table
       for (const product of products) {
         let status, emoji
-        if (!product.url && !product.smoke_test_id) {
-          status = 'PLANNED'
-          emoji = '📋'
-        } else if (product.smoke_test_id && failedIds.has(product.smoke_test_id)) {
+
+        // Priority: smoke test result > UC status > fallback PLANNED
+        if (product.smoke_test_id && failedIds.has(product.smoke_test_id)) {
           status = 'DOWN'
           emoji = '🔴'
         } else if (product.smoke_test_id && passedIds.has(product.smoke_test_id)) {
           status = 'LIVE'
           emoji = '🟢'
+        } else if (product.uc_id && ucStatusMap.has(product.uc_id)) {
+          // No smoke test or not yet deployed — derive from UC status
+          const ucStatus = ucStatusMap.get(product.uc_id)
+          if (ucStatus === 'complete') {
+            status = 'BUILT'
+            emoji = '✅'
+          } else if (ucStatus === 'in_progress') {
+            status = 'IN PROGRESS'
+            emoji = '🔨'
+          } else {
+            status = 'PLANNED'
+            emoji = '📋'
+          }
         } else {
           status = 'PLANNED'
           emoji = '📋'

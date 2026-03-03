@@ -41,7 +41,8 @@ const COMPLETION_MARKERS = [
   'MIGRATION READY', 'Status: COMPLETE', 'TASK COMPLETE',
   'TASK COMPLETED', 'READY FOR INTEGRATION TESTING',
   'phase complete', 'ready for implementation',
-  '\u2705 COMPLETE'  // ✅ COMPLETE — common agent output with emoji
+  '\u2705 COMPLETE',  // ✅ COMPLETE — common agent output with emoji
+  'STEP SKIPPED'  // Agent determined their role isn't needed for this UC
 ]
 
 // ── Log helpers ──────────────────────────────────────────────────────────────
@@ -504,11 +505,14 @@ function buildRoleContext(agentId, ucName, ucDesc, opts = {}) {
     spawnRole: ''
   }
 
+  const skipInstruction = `If this use case does not require your role (e.g., a bug fix doesn't need design, a copy change doesn't need dev), output "STEP SKIPPED: [reason]" and exit immediately. Do not do unnecessary work.`
+
   const description = [
     role.directive,
     ucDesc,
     '',
     role.deliverable,
+    skipInstruction,
     `Workflow step ${step}/${total}.`
   ].filter(Boolean).join('\n')
 

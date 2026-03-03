@@ -338,24 +338,31 @@ class RealtimeDispatcher {
           || /phase complete|ready for (dev|implementation|review)/i.test(stdoutFull)
         if (!didComplete) continue
 
+        // Check if this was a skip (agent determined role not needed)
+        const wasSkipped = /step skipped/i.test(stdoutFull)
+
         // Verify the agent actually produced commits (not just printed "COMPLETE")
-        const { verified, reason } = verifyTaskOutput(task)
-        if (!verified) {
-          this.log('WARN', `Completion scan: ${task.title} — stdout says COMPLETE but ${reason}`)
-          await this.store.updateTask(task.id, {
-            status: 'failed', last_error: `False completion: ${reason}`,
-            spawn_config: { ...sc, spawn_status: 'false_positive' }
-          })
-          try {
-            this.learner.recordFailure(task, `false_completion: ${reason}`, task.retry_count || 0)
-            recordOutcome(task.id, 'incorrect')
-          } catch {}
-          completed++
-          continue
+        // Skip verification for skipped steps — they intentionally produce no output
+        if (!wasSkipped) {
+          const { verified, reason } = verifyTaskOutput(task)
+          if (!verified) {
+            this.log('WARN', `Completion scan: ${task.title} — stdout says COMPLETE but ${reason}`)
+            await this.store.updateTask(task.id, {
+              status: 'failed', last_error: `False completion: ${reason}`,
+              spawn_config: { ...sc, spawn_status: 'false_positive' }
+            })
+            try {
+              this.learner.recordFailure(task, `false_completion: ${reason}`, task.retry_count || 0)
+              recordOutcome(task.id, 'incorrect')
+            } catch {}
+            completed++
+            continue
+          }
         }
 
-        // Agent completed and verified — write completion JSON + mark done
-        this.log('INFO', `Completion scan: ${task.title} — PID ${pid} dead, stdout shows COMPLETED`)
+        // Agent completed (or skipped) — write completion JSON + mark done
+        const completionType = wasSkipped ? 'skipped' : 'completed'
+        this.log('INFO', `Completion scan: ${task.title} — PID ${pid} dead, stdout shows ${completionType.toUpperCase()}`)
 
         // Write the completion JSON that the agent failed to write
         // This makes the system autonomous — no manual intervention needed
@@ -363,11 +370,11 @@ class RealtimeDispatcher {
           const { writeCompletionReport } = require('./subagent-completion-report')
           writeCompletionReport({
             taskId: task.id,
-            status: 'completed',
+            status: completionType,
             testResults: { passed: 1, total: 1, passRate: 1 },
             filesCreated: [], filesModified: [],
             completionReportPath: null,
-            metadata: { detectedBy: 'completion-scan', detectedAt: new Date().toISOString() }
+            metadata: { detectedBy: 'completion-scan', skipped: wasSkipped, detectedAt: new Date().toISOString() }
           })
           this.log('INFO', `Completion scan: wrote COMPLETION JSON for ${task.id}`)
         } catch (err) {
@@ -377,7 +384,7 @@ class RealtimeDispatcher {
         await this.store.updateTask(task.id, {
           status: 'done',
           completed_at: new Date().toISOString(),
-          spawn_config: { ...sc, spawn_status: 'completed' },
+          spawn_config: { ...sc, spawn_status: completionType },
           last_error: null
         })
         completed++
