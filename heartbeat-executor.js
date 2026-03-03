@@ -1197,7 +1197,100 @@ class HeartbeatExecutor {
         for (const p of stuckProducts) {
           const key = p.id
           const alerted = stuckState[key]
-          if (alerted) continue // already created a task for this
+
+          // If already alerted, check if the deployment attempt failed
+          // This closes the feedback loop: stuck → PM → UC → dev → still stuck → retry
+          if (alerted) {
+            const pmTask = await this.store.findTaskByTitle(`PM: Spec deployment — ${p.name}`)
+            if (!pmTask || pmTask.status !== 'done') continue // PM hasn't finished yet
+
+            // PM finished. Check if downstream deployment tasks completed but product is still stuck.
+            // Find deployment-related tasks for this product (failed or done but ineffective)
+            const { data: deployTasks } = await this.store.supabase
+              .from('tasks').select('id, title, status, use_case_id, retry_count, tags')
+              .eq('project_id', this.projectId)
+              .in('status', ['done', 'failed'])
+              .ilike('title', `%${p.name}%`)
+              .order('created_at', { ascending: false })
+              .limit(10)
+
+            const failedDeploy = (deployTasks || []).find(t =>
+              t.status === 'failed' && (t.tags || []).some(tag => /deploy/i.test(tag))
+            )
+            const completedDeploy = (deployTasks || []).find(t =>
+              t.status === 'done' && t.id !== pmTask.id &&
+              ((t.tags || []).some(tag => /deploy/i.test(tag)) || /deploy/i.test(t.title))
+            )
+
+            // Deployment was attempted but product is still stuck
+            if (failedDeploy || completedDeploy) {
+              const reason = failedDeploy
+                ? `deployment task failed (retries: ${failedDeploy.retry_count || 0})`
+                : `deployment task completed but did not update project.config.json`
+
+              console.warn(`   🔁 Product "${p.name}" still stuck after deployment attempt: ${reason}`)
+
+              // Don't create retry if there's already an active deployment task for this product
+              const { data: activeDeploy } = await this.store.supabase
+                .from('tasks').select('id, title, status')
+                .eq('project_id', this.projectId)
+                .in('status', ['ready', 'in_progress'])
+                .ilike('title', `%${p.name}%`)
+                .limit(5)
+              const hasActiveDeployTask = (activeDeploy || []).some(t => /deploy/i.test(t.title))
+              if (hasActiveDeployTask) {
+                console.log(`   ⏳ Active deployment task exists for "${p.name}" — letting it run with verification`)
+                continue
+              }
+
+              // Check for an existing retry task to avoid duplicates
+              const retryTitle = `Dev: Update config — ${p.name}`
+              const existingRetry = await this.store.findTaskByTitle(retryTitle)
+              if (existingRetry && !['done', 'failed'].includes(existingRetry.status)) continue
+
+              // Create a direct dev task with exact instructions (skip PM, we know what's needed)
+              await this.store.createTask({
+                title: retryTitle,
+                agent_id: 'dev',
+                status: 'ready',
+                model: 'haiku',
+                priority: 1,
+                tags: ['deploy', 'config-update', 'retry'],
+                description: [
+                  `## CRITICAL: Update project.config.json for ${p.name}`,
+                  ``,
+                  `A previous deployment task completed but DID NOT update project.config.json.`,
+                  `The product "${p.name}" is still showing as BUILT (not LIVE) on the dashboard.`,
+                  `Previous attempt: ${reason}`,
+                  ``,
+                  `## What You MUST Do`,
+                  `1. Find the deployed URL for "${p.name}" (check Vercel, check local files at ${p.local_path || 'unknown'})`,
+                  `2. Update \`project.config.json\` — find the product entry with id "${p.id}" and set:`,
+                  `   - "url": "<the deployed URL>"`,
+                  `   - "deploy": { "target_id": "<vercel project>", "cwd": "<source dir>", "command": "/opt/homebrew/bin/vercel --prod --yes" }`,
+                  `   - "smoke_test_id": add a matching entry to the smoke_tests array if appropriate`,
+                  `3. Commit and push the changes`,
+                  ``,
+                  `## Current Product Config (from project.config.json)`,
+                  `\`\`\`json`,
+                  JSON.stringify({ id: p.id, name: p.name, url: p.url, local_path: p.local_path, deploy: p.deploy, smoke_test_id: p.smoke_test_id }, null, 2),
+                  `\`\`\``,
+                  ``,
+                  `## IMPORTANT`,
+                  `This task is NOT complete until project.config.json has been updated with a URL.`,
+                  `The orchestrator will verify that project.config.json was modified in your commit.`,
+                  `Do NOT mark this as complete if you cannot find or set up the deployment.`
+                ].join('\n'),
+                metadata: { created_by: 'orchestrator', product_id: p.id, gap_type: 'deployment_retry', previous_attempt: failedDeploy?.id || completedDeploy?.id }
+              })
+
+              // Reset stuck state so we can track this new attempt
+              stuckState[key] = `retry:${new Date().toISOString()}`
+              console.log(`   🔁 Created config-update retry task for stuck product: ${p.name}`)
+              this.actions.push(`Deployment retry: ${p.name} — direct dev task created (previous attempt failed)`)
+            }
+            continue
+          }
 
           const existingTask = await this.store.findTaskByTitle(`PM: Spec deployment — ${p.name}`)
           if (existingTask && !['done', 'failed'].includes(existingTask.status)) continue
