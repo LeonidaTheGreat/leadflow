@@ -149,15 +149,24 @@
   },
 
   "budget": {
-    "daily_limit": 20.00,
+    "daily_limit": 30.00,
     "min_for_spawn": 0.50,
-    "model_costs": {
-      "qwen": 0.00,
-      "qwen3.5": 0.00,
-      "kimi": 0.30,
-      "haiku": 0.50,
-      "sonnet": 2.00,
-      "opus": 8.00
+    "model_token_costs": {
+      "qwen":    { "input_per_1m": 0,     "output_per_1m": 0 },
+      "qwen3.5": { "input_per_1m": 0,     "output_per_1m": 0 },
+      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 2.50 },
+      "haiku":   { "input_per_1m": 1.00,   "output_per_1m": 5.00 },
+      "sonnet":  { "input_per_1m": 3.00,   "output_per_1m": 15.00 },
+      "opus":    { "input_per_1m": 5.00,   "output_per_1m": 25.00 }
+    },
+    "token_estimates": {
+      "product":   { "input": 80000,  "output": 15000 },
+      "dev":       { "input": 200000, "output": 40000 },
+      "qc":        { "input": 120000, "output": 20000 },
+      "design":    { "input": 80000,  "output": 20000 },
+      "marketing": { "input": 60000,  "output": 15000 },
+      "analytics": { "input": 100000, "output": 15000 },
+      "default":   { "input": 100000, "output": 20000 }
     }
   },
 

@@ -22,18 +22,40 @@ const BUDGET_TRACKER_PATH = path.join(__dirname, 'budget-tracker.json')
 
 const AGENT_LABELS = _cfg.agents.labels
 
-// Cost per hour by model (USD). Qwen runs locally on MLX = free.
-const MODEL_COSTS = _cfg.budget.model_costs
+// Per-token pricing by model (USD per 1M tokens).
+// Qwen runs locally on MLX = free. Kimi/Haiku/Sonnet/Opus via API.
+const MODEL_TOKEN_COSTS = _cfg.budget.model_token_costs || {}
+// Estimated tokens per agent role (input + output per session).
+const TOKEN_ESTIMATES = _cfg.budget.token_estimates || {}
+// Legacy flat-rate fallback (kept for backward compat if config not updated)
+const MODEL_COSTS = _cfg.budget.model_costs || {}
 
 /**
- * Estimate task cost based on model and hours.
- * @param {string} model - e.g. 'qwen3.5', 'sonnet'
- * @param {number} [hours=1] - estimated hours
+ * Estimate task cost based on model and agent role using per-token pricing.
+ * Falls back to legacy flat hourly rate if token config is unavailable.
+ *
+ * @param {string} model   - e.g. 'qwen3.5', 'sonnet', 'kimi'
+ * @param {number|string} [hoursOrAgentId=1] - estimated hours (legacy) or agent_id for token estimation
  * @returns {number} estimated cost in USD
  */
-function estimateCost(model, hours = 1) {
-  const key = Object.keys(MODEL_COSTS).find(k => (model || '').toLowerCase().includes(k))
-  return (MODEL_COSTS[key] ?? 1.00) * hours
+function estimateCost(model, hoursOrAgentId) {
+  const modelKey = Object.keys(MODEL_TOKEN_COSTS).find(k => (model || '').toLowerCase().includes(k))
+  const tokenCost = MODEL_TOKEN_COSTS[modelKey]
+
+  // Token-based estimation (preferred)
+  if (tokenCost && (tokenCost.input_per_1m != null)) {
+    // Determine agent role for token estimate
+    const agentId = typeof hoursOrAgentId === 'string' ? hoursOrAgentId : null
+    const tokens = TOKEN_ESTIMATES[agentId] || TOKEN_ESTIMATES.default || { input: 100000, output: 20000 }
+    const inputCost = (tokens.input / 1_000_000) * tokenCost.input_per_1m
+    const outputCost = (tokens.output / 1_000_000) * tokenCost.output_per_1m
+    return Math.round((inputCost + outputCost) * 100) / 100
+  }
+
+  // Legacy flat-rate fallback
+  const legacyKey = Object.keys(MODEL_COSTS).find(k => (model || '').toLowerCase().includes(k))
+  const hours = typeof hoursOrAgentId === 'number' ? hoursOrAgentId : 1
+  return (MODEL_COSTS[legacyKey] ?? 1.00) * hours
 }
 
 const COMPLETION_MARKERS = [
@@ -130,7 +152,7 @@ function recordSpawn(task) {
   }
   // Always compute from current model — estimated_cost_usd may be stale
   // if the learning system changed the model after task creation
-  const actualCost = estimateCost(task.model, task.estimated_hours)
+  const actualCost = estimateCost(task.model, task.agent_id)
   tracker.spent += actualCost
   tracker.spawns.push({
     taskId: task.id,
@@ -257,7 +279,7 @@ async function chainTask(store, task, projectId) {
     use_case_id: task.use_case_id, prd_id: task.prd_id,
     branch_name: nextAgent === 'qc' ? task.branch_name : null,
     pr_number: nextAgent === 'qc' ? task.pr_number : null,
-    estimated_cost_usd: estimateCost(model, task.estimated_hours || 1),
+    estimated_cost_usd: estimateCost(model, nextAgent),
     tags: [nextAgent === 'qc' ? 'test' : 'feature'],
     description,
     metadata: taskMetadata
@@ -315,7 +337,7 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     return null
   }
 
-  const spawnCost = estimateCost(task.model, task.estimated_hours)
+  const spawnCost = estimateCost(task.model, task.agent_id)
   if (spawnCost > budget.remaining) {
     console.log(`   ⚠️ Skipping ${task.title} — over budget ($${spawnCost.toFixed(2)} > $${budget.remaining.toFixed(2)})`)
     return null
@@ -334,7 +356,7 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
     if (modelRec?.recommendedModel && modelRec.recommendedModel !== task.model) {
       console.log(`   📊 Learning applied: ${task.model}→${modelRec.recommendedModel} for ${task.agent_id}`)
       task.model = modelRec.recommendedModel
-      task.estimated_cost_usd = estimateCost(task.model, task.estimated_hours)
+      task.estimated_cost_usd = estimateCost(task.model, task.agent_id)
       await store.updateTask(task.id, { model: task.model, estimated_cost_usd: task.estimated_cost_usd })
     }
   } catch {}  // learning system may not have enough data yet
@@ -354,7 +376,7 @@ async function prepareAndQueueSpawn(store, learner, task, budget, alreadySpawned
   })
 
   recordSpawn(task)
-  budget.remaining -= estimateCost(task.model, task.estimated_hours)
+  budget.remaining -= estimateCost(task.model, task.agent_id)
 
   // Track in dedup set so same heartbeat batch doesn't double-spawn
   if (alreadySpawnedIds) alreadySpawnedIds.add(task.id)
@@ -602,6 +624,8 @@ module.exports = {
   BUDGET_TRACKER_PATH,
   COMPLETION_MARKERS,
   MODEL_COSTS,
+  MODEL_TOKEN_COSTS,
+  TOKEN_ESTIMATES,
   // Functions
   readLogTail,
   readLogFull,

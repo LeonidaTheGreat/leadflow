@@ -88,9 +88,9 @@ class TaskStore {
     fs.writeFileSync(localPath, JSON.stringify(this.localTasks, null, 2))
   }
 
-  _estimateCost(model, hours = 1) {
+  _estimateCost(model, agentIdOrHours) {
     const { estimateCost } = require('./workflow-engine')
-    return estimateCost(model, hours)
+    return estimateCost(model, agentIdOrHours)
   }
 
   // ============== CRUD Operations ==============
@@ -121,7 +121,7 @@ class TaskStore {
       model: task.model || 'qwen3.5',
       status: task.status || 'backlog',
       priority: task.priority || 3,
-      estimated_cost_usd: task.estimated_cost_usd ?? task.estimatedCost ?? this._estimateCost(task.model || 'qwen3.5', task.estimated_hours || task.estimatedHours || 1),
+      estimated_cost_usd: task.estimated_cost_usd ?? task.estimatedCost ?? this._estimateCost(task.model || 'qwen3.5', task.agent_id || task.agentId || 'default'),
       estimated_hours: task.estimated_hours || task.estimatedHours || 1.00,
       parent_task_id: task.parent_task_id || task.parentTaskId || null,
       acceptance_criteria: task.acceptance_criteria || task.acceptanceCriteria || [],
