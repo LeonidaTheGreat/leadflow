@@ -1804,11 +1804,14 @@ class HeartbeatExecutor {
   }
 
   async _processCompletedReviews() {
+    // Guard: only process reviews that haven't had tasks/decisions created yet.
+    // We check resulting_task_ids IS NULL (not resulting_uc_ids) because the update
+    // at the end sets resulting_uc_ids to [] which is NOT null in Postgres.
     const { data: completedReviews } = await this.store.supabase
       .from('product_reviews').select('*')
       .eq('project_id', this.projectId)
       .eq('status', 'completed')
-      .is('resulting_uc_ids', null)
+      .is('resulting_task_ids', null)
 
     if (!completedReviews?.length) return
 
@@ -1861,23 +1864,37 @@ class HeartbeatExecutor {
       const actionableFindings = findings.filter(f => autoTaskSeverities.includes(f.severity))
 
       for (const finding of actionableFindings) {
+        const affectedUCs = (finding.affected_uc_ids || []).join(', ')
         const task = await this.store.createTask({
-          title: `PM: Fix ${finding.severity} issue — ${finding.summary}`,
+          title: `PM: Spec fix — ${finding.summary}`,
           agent_id: 'product',
           status: 'ready',
           model: implModel,
           priority: finding.severity === 'critical' ? 1 : 2,
-          tags: ['product-review', 'finding-fix'],
+          tags: ['product-review', 'finding-fix', 'spec'],
           description: [
             `## Product Review Finding (${finding.severity})`,
             `Source review: ${review.id}`,
             `Type: ${finding.type || 'unknown'}`,
             `Summary: ${finding.summary}`,
             `Details: ${finding.details || 'N/A'}`,
-            `Affected UCs: ${(finding.affected_uc_ids || []).join(', ') || 'N/A'}`,
+            `Affected UCs: ${affectedUCs || 'N/A'}`,
             `Suggested fix: ${finding.suggested_fix || 'N/A'}`,
             '',
-            'Write a UC spec to address this finding. The normal workflow will handle implementation.'
+            `## Your Job`,
+            `You are the PM — you write SPECS, not code.`,
+            `1. Create a new use_case row in Supabase with:`,
+            `   - id: a descriptive ID (e.g. "fix-billing-integration")`,
+            `   - name: short description of what needs fixing`,
+            `   - description: detailed requirements and acceptance criteria`,
+            `   - workflow: ['dev', 'qc'] (or ['design', 'dev', 'qc'] if UI changes needed)`,
+            `   - project_id: '${this.projectId}'`,
+            `   - priority: ${finding.severity === 'critical' ? 1 : 2}`,
+            `   - prd_id: the PRD this finding relates to (check affected UCs)`,
+            `   - implementation_status: 'not_started'`,
+            `2. The orchestrator will automatically pick up the new UC and create dev/qc tasks`,
+            `3. Do NOT write code, build UI, or implement fixes yourself`,
+            `4. Write a completion report summarizing the UC you created`
           ].join('\n'),
           metadata: { created_by: 'orchestrator', source_review_id: review.id, finding_severity: finding.severity }
         })
