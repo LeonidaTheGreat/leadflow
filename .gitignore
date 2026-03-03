@@ -50,7 +50,7 @@ reports/
 
 # OpenClaw / Claude workspace
 .openclaw/
-.claude/
+.claude/projects/
 memory/
 
 # OS
