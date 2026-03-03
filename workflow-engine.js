@@ -184,7 +184,25 @@ async function chainTask(store, task, projectId) {
     console.warn(`   ⚠️ Completed work query failed (non-fatal): ${err.message}`)
   }
 
-  let description = `Continue ${task.use_case_id}. Prior step by ${task.agent_id} (task ${task.id}).`
+  // Role-aware description for chained tasks
+  let roleDirective
+  if (nextAgent === 'product') {
+    roleDirective = `Write a PRD / specification for: ${uc.name}.\nYour deliverable is REQUIREMENTS, USER STORIES, and ACCEPTANCE CRITERIA — not implementation.`
+  } else if (nextAgent === 'marketing') {
+    roleDirective = `Write marketing copy and content strategy for: ${uc.name}.\nYour deliverable is COPY and CONTENT BRIEFS — not code or pages. Define what the design/dev teams should build.`
+  } else if (nextAgent === 'analytics') {
+    roleDirective = `Analyze and recommend for: ${uc.name}.\nYour deliverable is ANALYSIS and RECOMMENDATIONS — not implementation.`
+  } else if (nextAgent === 'design') {
+    roleDirective = `Create design mockups / wireframes for: ${uc.name}.\nYour deliverable is VISUAL DESIGN — layouts, component specs, and assets for dev to implement.`
+  } else if (nextAgent === 'dev') {
+    roleDirective = `Implement: ${uc.name}.\nBuild the feature based on the PRD and design specs from prior workflow steps.`
+  } else if (nextAgent === 'qc') {
+    roleDirective = `Test and review: ${uc.name}.\nVerify the implementation meets acceptance criteria from the PRD.`
+  } else {
+    roleDirective = `Continue work on: ${uc.name}.`
+  }
+
+  let description = `${roleDirective}\n\nPrior step by ${task.agent_id} (task ${task.id}). Workflow step ${currentIdx + 2}/${uc.workflow.length}.`
   if (relatedWork.length > 0) {
     description += `\n\n## Already Completed Work for ${task.use_case_id}\n`
     description += `Do NOT re-implement these:\n`
