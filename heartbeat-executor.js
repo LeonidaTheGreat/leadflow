@@ -1574,6 +1574,30 @@ class HeartbeatExecutor {
         console.log(`   🔧 Created fix task for PR #${review.pr_number}`)
         this.actions.push(`Fix task for PR #${review.pr_number}`)
       }
+
+      // Approve orphaned PRs: pending code_reviews whose task completed
+      // but had no use_case_id (standalone tasks like smoke-test fixes),
+      // so chainTask() never ran to approve them.
+      const { data: pending } = await this.store.supabase
+        .from('code_reviews').select('id, pr_number, task_id, branch_name')
+        .eq('project_id', this.projectId).eq('status', 'pending')
+
+      for (const review of pending || []) {
+        if (!review.task_id) continue
+        try {
+          const task = await this.store.getTask(review.task_id)
+          if (task && task.status === 'done') {
+            await this.store.supabase.from('code_reviews')
+              .update({
+                status: 'approved',
+                reviewer_agent: 'orchestrator',
+                review_notes: { approved_by: 'orphan_cleanup', reason: 'Task completed without UC workflow' },
+                updated_at: new Date().toISOString()
+              }).eq('id', review.id)
+            console.log(`   ✅ Auto-approved orphaned PR #${review.pr_number} (task done, no UC workflow)`)
+          }
+        } catch {}
+      }
     } catch (err) {
       console.warn('   ⚠️ PR review check failed:', err.message)
     }

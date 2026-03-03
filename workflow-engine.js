@@ -390,8 +390,10 @@ async function chainTask(store, task, projectId) {
     agent_id: nextAgent, status: 'ready', model,
     priority: task.priority, parent_task_id: task.id,
     use_case_id: task.use_case_id, prd_id: task.prd_id,
-    branch_name: nextAgent === 'qc' ? task.branch_name : null,
-    pr_number: nextAgent === 'qc' ? task.pr_number : null,
+    // Always propagate branch/PR through the chain so QC can find them
+    // even in multi-step workflows (design → dev → qc)
+    branch_name: task.branch_name || null,
+    pr_number: task.pr_number || null,
     estimated_cost_usd: estimateCost(model, nextAgent),
     tags: [nextAgent === 'qc' ? 'test' : 'feature'],
     description,
