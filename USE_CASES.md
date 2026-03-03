@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-03T00:54:47.831Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-03T02:37:17.852Z | Source: `use_cases` + `prds` tables
 
-**Progress: 13/13 complete**
+**Progress: 12/13 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
@@ -12,12 +12,12 @@
 | UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-3 | FUB Status Change | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | UC-9 | Customer Sign-Up Flow | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
-| gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
-| UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
-| UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
-| UC-10 | Billing Portal | Phase 3 | complete | 2 | defined | PM > Design > Dev > QC |
 | UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
+| gtm-landing-page | Landing Page | - | not_started | 2 | - | PM > Marketing > Design > Dev > QC |
+| UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
+| UC-10 | Billing Portal | Phase 3 | complete | 2 | defined | PM > Design > Dev > QC |
+| UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | UC-12 | MRR Reporting | Phase 3 | complete | 3 | defined | PM > Analytics |
 
@@ -74,15 +74,6 @@
 - **Description:** Stripe checkout + onboarding for new customers
 - **Workflow:** PM > Design > Dev > QC
 
-### UC-11 — Subscription Lifecycle
-
-- **PRD:** Billing & Subscriptions
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Handle upgrades, downgrades, cancellations, renewals
-- **Depends on:** UC-9
-- **Workflow:** PM > Dev > QC
-
 ### UC-10 — Billing Portal
 
 - **PRD:** Billing & Subscriptions
@@ -91,6 +82,15 @@
 - **Description:** Customer self-serve billing management via Stripe portal
 - **Depends on:** UC-9
 - **Workflow:** PM > Design > Dev > QC
+
+### UC-11 — Subscription Lifecycle
+
+- **PRD:** Billing & Subscriptions
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Handle upgrades, downgrades, cancellations, renewals
+- **Depends on:** UC-9
+- **Workflow:** PM > Dev > QC
 
 ### UC-12 — MRR Reporting
 
@@ -102,26 +102,7 @@
 - **Workflow:** PM > Analytics
 
 
-## Phase: Unassigned
-
-### gtm-landing-page — Landing Page
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Create a high-converting landing page that clearly communicates the value proposition, pricing, and includes a signup CTA.
-- **Workflow:** PM > Marketing > Design > Dev > QC
-
-
 ## Phase: Phase 2
-
-### UC-6 — Cal.com Booking
-
-- **PRD:** CRM & Calendar Integrations
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Book appointments via Cal.com from SMS conversations
-- **Workflow:** PM > Dev > QC
 
 ### UC-8 — Follow-up Sequences
 
@@ -131,6 +112,14 @@
 - **Description:** Automated multi-step follow-up SMS sequences
 - **Workflow:** PM > Dev > QC
 
+### UC-6 — Cal.com Booking
+
+- **PRD:** CRM & Calendar Integrations
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Book appointments via Cal.com from SMS conversations
+- **Workflow:** PM > Dev > QC
+
 ### UC-7 — Dashboard Manual SMS
 
 - **PRD:** Core SMS Lead Response
@@ -138,4 +127,15 @@
 - **Priority:** 3
 - **Description:** Send manual SMS from dashboard interface
 - **Workflow:** PM > Design > Dev > QC
+
+
+## Phase: Unassigned
+
+### gtm-landing-page — Landing Page
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 2
+- **Description:** Create a high-converting landing page that clearly communicates the value proposition, pricing, and includes a signup CTA.
+- **Workflow:** PM > Marketing > Design > Dev > QC
 
