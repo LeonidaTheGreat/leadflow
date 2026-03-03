@@ -80,21 +80,13 @@ The system runs 4 automated loops via `heartbeat-executor.js` (every 5 min):
 
 **Full docs:** `docs/4-LOOP-ARCHITECTURE.md`
 
-## Dashboard (`dashboard.html`)
-The live execution dashboard runs as a static HTML file served over HTTP (not `file://`).
+## Dashboard
+The live execution dashboard has moved to `~/.openclaw/dashboard/` — it's a system-level orchestration tool, not a LeadFlow product artifact.
+- **Location:** `~/.openclaw/dashboard/dashboard.html`
+- **HTTP server:** `python3 -m http.server 8787 --bind 127.0.0.1` (managed by launchd via `~/.openclaw/workspace/scripts/dashboard-server.sh`)
 - **Data source:** All sections pull from Supabase (project `bo2026`), never local JSON files
 - **Supabase client variable:** Named `sb` (not `supabase`) to avoid collision with the CDN's global `var supabase`
 - **API key:** Uses the service_role key (anon key is invalid for these tables)
-- **Agent Activity section:** Derived from the `tasks` table grouped by `agent_id`, NOT from the `agents` table
-- **KPI "System Health":** Reads from `system_components` table, not `agents`
-- **KPI "Tasks":** Done/total from `tasks` table
-- **Cost Summary:** Falls back to `estimated_cost_usd` when `actual_cost_usd` is null
-- **Orchestrator Quality section:** Reads from `metrics` table (domain=orchestrator, type=heartbeat)
-- **Product Quality section:** Reads from `use_cases` + `e2e_test_specs` + `metrics` (domain=product)
-- **QC Status section:** Reads from `code_reviews` table
-- **Agent Activity:** Dynamic agent discovery from `SELECT DISTINCT agent_id FROM tasks` (not hardcoded list)
-- **Task Queue order:** In Progress → Ready to Spawn → Blocked
-- **Local HTTP server:** `python3 -m http.server 8787 --bind 127.0.0.1` (managed by launchd, always on)
 - **Tailscale access:** https://stojanadmins-mac-mini.tail3ca16c.ts.net — accessible from all tailnet devices
   - `/` → dashboard on port 8787
   - `/live` → BO2026 dashboard on port 3000

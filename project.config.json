@@ -47,7 +47,7 @@
       "url": "http://127.0.0.1:8787/dashboard.html",
       "severity": "warning",
       "check_type": "html_contains",
-      "expect": "LeadFlow"
+      "expect": "Project Live Dashboard"
     },
     {
       "id": "vercel-dashboard",

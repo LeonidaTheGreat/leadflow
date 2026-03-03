@@ -62,9 +62,10 @@ At session start, load:
 - Markdown dashboards are views; if mismatch, trust Supabase.
 
 ## Dashboard & Tailscale
-- Dashboard served at `http://127.0.0.1:8787` (launchd-managed, always on)
+- Dashboard lives at `~/.openclaw/dashboard/dashboard.html` (system-level, not in this repo)
+- Served at `http://127.0.0.1:8787` (launchd-managed, always on)
 - Exposed via Tailscale serve at: `https://stojanadmins-mac-mini.tail3ca16c.ts.net/`
-  - `/` → LeadFlow dashboard (port 8787)
+  - `/` → Project dashboard (port 8787)
   - `/live` → BO2026 dashboard (port 3000)
 - Do NOT reconfigure, remove, or recreate the Tailscale serve settings
 - Do NOT change the HTTP server bind address or port
