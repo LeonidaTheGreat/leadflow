@@ -39,7 +39,8 @@ const {
   BUDGET_DAILY_LIMIT, BUDGET_MIN_FOR_SPAWN, BUDGET_TRACKER_PATH,
   checkBudget: wfCheckBudget, recordSpawn: wfRecordSpawn,
   queueForSpawn: wfQueueForSpawn, chainTask, prepareAndQueueSpawn,
-  verifyTaskOutput, buildRoleContext, readLogFull
+  verifyTaskOutput, buildRoleContext, readLogFull,
+  escalateModel: wfEscalateModel, selectInitialModel
 } = require('./workflow-engine')
 const { execSync } = require('child_process')
 const fs = require('fs')
@@ -694,16 +695,7 @@ class HeartbeatExecutor {
   }
 
   escalateModel(currentModel) {
-    const hierarchy = ['qwen3.5', 'opus']
-    const currentIndex = hierarchy.indexOf(currentModel)
-    if (currentIndex < hierarchy.length - 1) {
-      return hierarchy[currentIndex + 1]
-    }
-    // Legacy model names → escalate to opus
-    if (['haiku', 'kimi', 'sonnet'].includes(currentModel)) {
-      return 'opus'
-    }
-    return currentModel
+    return wfEscalateModel(currentModel)
   }
   async decomposeTask(taskId) {
     // Use auto-decompose to create properly numbered subtasks
@@ -2254,15 +2246,16 @@ class HeartbeatExecutor {
           workflowStep: 0, workflowTotal: workflowLen, remainingAgents
         })
 
+        const model = selectInitialModel(firstAgent, uc)
         await this.store.createTask({
           title: `${label}: ${uc.id} - ${uc.name}`,
-          agent_id: firstAgent, status: 'ready', model: 'qwen3.5',
+          agent_id: firstAgent, status: 'ready', model,
           priority: uc.priority, use_case_id: uc.id, prd_id: uc.prd_id,
           tags: [firstAgent === 'product' ? 'spec' : 'feature'],
           description: roleCtx.description,
           metadata: { created_by: 'orchestrator', workflow_step: 0, workflow_total: workflowLen }
         })
-        console.log(`   ✅ Replenished: ${label} task for ${uc.id} - ${uc.name}`)
+        console.log(`   ✅ Replenished: ${label} task for ${uc.id} - ${uc.name} (model: ${model})`)
         this.actions.push(`Replenished: ${label} task for ${uc.id}`)
         created++
       }

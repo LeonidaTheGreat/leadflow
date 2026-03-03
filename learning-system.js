@@ -540,12 +540,24 @@ class LearningSystem {
   }
 
   /**
-   * Get next model in escalation chain
+   * Get next model in escalation chain.
+   * Delegates to the shared escalateModel() in workflow-engine.js.
    */
   getNextModel(currentModel) {
-    const chain = ['qwen', 'kimi', 'haiku', 'sonnet', 'opus']
-    const index = chain.indexOf(currentModel?.toLowerCase())
-    return chain[index + 1] || 'opus'
+    try {
+      const { escalateModel } = require('./workflow-engine')
+      return escalateModel(currentModel)
+    } catch {
+      // Fallback if workflow-engine unavailable (e.g., standalone CLI mode)
+      const chain = ['qwen3.5', 'kimi', 'haiku', 'sonnet', 'opus']
+      const lower = (currentModel || '').toLowerCase()
+      for (let i = 0; i < chain.length; i++) {
+        if (lower.includes(chain[i]) || chain[i].includes(lower)) {
+          return chain[Math.min(i + 1, chain.length - 1)]
+        }
+      }
+      return 'sonnet'
+    }
   }
 
   /**

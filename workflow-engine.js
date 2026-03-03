@@ -30,6 +30,102 @@ const TOKEN_ESTIMATES = _cfg.budget.token_estimates || {}
 // Legacy flat-rate fallback (kept for backward compat if config not updated)
 const MODEL_COSTS = _cfg.budget.model_costs || {}
 
+// ── Model ladder ────────────────────────────────────────────────────────────
+// Canonical escalation order: cheapest → most capable.
+// Used by selectInitialModel(), escalateModel(), and the learning system.
+const MODEL_LADDER = ['qwen3.5', 'kimi', 'haiku', 'sonnet', 'opus']
+
+/**
+ * Resolve a model name to its index in MODEL_LADDER.
+ * Handles variants like 'kimi2.5', 'qwen3.5-32b', 'claude-3-sonnet', etc.
+ * Returns -1 if unrecognized.
+ */
+function modelLadderIndex(model) {
+  if (!model) return -1
+  const idx = MODEL_LADDER.indexOf(model)
+  if (idx >= 0) return idx
+  const lower = model.toLowerCase()
+  if (lower.includes('qwen')) return 0
+  if (lower.includes('kimi')) return 1
+  if (lower.includes('haiku')) return 2
+  if (lower.includes('sonnet')) return 3
+  if (lower.includes('opus')) return 4
+  return -1
+}
+
+/**
+ * Escalate to the next model on the ladder.
+ * @param {string} currentModel - current model name
+ * @returns {string} next model (or same if already at top)
+ */
+function escalateModel(currentModel) {
+  const idx = modelLadderIndex(currentModel)
+  if (idx >= 0 && idx < MODEL_LADDER.length - 1) return MODEL_LADDER[idx + 1]
+  if (idx === MODEL_LADDER.length - 1) return currentModel // already at opus
+  return 'sonnet' // unknown model → sonnet (safe middle ground)
+}
+
+// ── Complexity-aware initial model selection ─────────────────────────────────
+
+// Keywords in UC name/description that signal higher complexity
+const COMPLEXITY_HIGH = ['journey', 'full user', 'end-to-end', 'e2e', 'architecture',
+  'migration', 'compliance', 'security', 'multi-product', 'cross-product']
+const COMPLEXITY_MEDIUM = ['auth', 'authentication', 'login', 'signup', 'billing',
+  'subscription', 'payment', 'stripe', 'integration', 'webhook', 'api',
+  'onboarding', 'conversion', 'funnel', 'cal.com', 'twilio', 'sms']
+
+/**
+ * Select the initial model for a task based on agent role and UC complexity.
+ *
+ * Scores complexity from UC name keywords, priority, revenue_impact,
+ * workflow length, and dependency count. Returns the cheapest model
+ * that can handle the task's complexity.
+ *
+ * Score → PM model:  0-2 qwen3.5 | 3-4 kimi | 5+ sonnet
+ * Score → dev model:  0-3 qwen3.5 | 4-5 kimi | 6+ haiku
+ * Other agents:       qwen3.5 (inherit from chained PM model in practice)
+ *
+ * @param {string} agentId - e.g. 'product', 'dev', 'qc'
+ * @param {object} [uc]    - UC metadata { name, description, priority, revenue_impact, workflow, depends_on }
+ * @returns {string} model name from MODEL_LADDER
+ */
+function selectInitialModel(agentId, uc = {}) {
+  const text = ((uc.name || '') + ' ' + (uc.description || '')).toLowerCase()
+
+  let score = 0
+
+  // Keyword signals (take best match from each tier, not cumulative within tier)
+  if (COMPLEXITY_HIGH.some(kw => text.includes(kw))) score += 3
+  if (COMPLEXITY_MEDIUM.some(kw => text.includes(kw))) score += 2
+
+  // UC metadata signals
+  if (uc.priority === 1) score += 2
+  else if (uc.priority === 2) score += 1
+
+  if (uc.revenue_impact === 'high') score += 2
+  else if (uc.revenue_impact === 'medium') score += 1
+
+  if ((uc.workflow || []).length >= 4) score += 1
+  if ((uc.depends_on || []).length >= 2) score += 1
+
+  // PM needs strong reasoning for complex specs
+  if (agentId === 'product') {
+    if (score >= 5) return 'sonnet'
+    if (score >= 3) return 'kimi'
+    return 'qwen3.5'
+  }
+
+  // Dev/design: slightly higher threshold (they execute, PM already reasoned)
+  if (agentId === 'dev' || agentId === 'design') {
+    if (score >= 6) return 'haiku'
+    if (score >= 4) return 'kimi'
+    return 'qwen3.5'
+  }
+
+  // QC, analytics, marketing: default to cheap, inherit via chaining
+  return 'qwen3.5'
+}
+
 /**
  * Estimate task cost based on model and agent role using per-token pricing.
  * Applies learned cost adjustment from historical task durations if available.
@@ -212,7 +308,7 @@ async function chainTask(store, task, projectId) {
   if (!task.use_case_id || !store.supabase) return
 
   const { data: uc } = await store.supabase
-    .from('use_cases').select('workflow, name, shippable_after_step')
+    .from('use_cases').select('workflow, name, description, shippable_after_step, priority, revenue_impact, depends_on')
     .eq('id', task.use_case_id).single()
   if (!uc?.workflow) return
 
@@ -283,7 +379,12 @@ async function chainTask(store, task, projectId) {
     taskMetadata.completed_work_names = relatedWork.map(c => c.name).slice(0, 10)
   }
 
-  const model = task.model || 'qwen3.5'
+  // Inherit model from parent, but floor at UC complexity level
+  // (prevents a stale qwen3.5 PM task from chaining qwen3.5 to dev on a complex UC)
+  const inherited = task.model || 'qwen3.5'
+  const complexityFloor = selectInitialModel(nextAgent, uc)
+  const model = modelLadderIndex(inherited) >= modelLadderIndex(complexityFloor) ? inherited : complexityFloor
+
   await store.createTask({
     title: `${label}: ${task.use_case_id} - ${uc.name}`,
     agent_id: nextAgent, status: 'ready', model,
@@ -637,12 +738,16 @@ module.exports = {
   COMPLETION_MARKERS,
   MODEL_COSTS,
   MODEL_TOKEN_COSTS,
+  MODEL_LADDER,
   TOKEN_ESTIMATES,
   // Functions
   readLogTail,
   readLogFull,
   checkBudget,
   estimateCost,
+  escalateModel,
+  modelLadderIndex,
+  selectInitialModel,
   recordSpawn,
   queueForSpawn,
   chainTask,
