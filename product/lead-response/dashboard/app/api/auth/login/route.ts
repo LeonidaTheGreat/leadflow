@@ -77,7 +77,8 @@ export async function POST(request: NextRequest) {
     }
     const token = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: tokenExpiry })
 
-    return NextResponse.json({
+    // Create response with user data and onboarding status
+    const response = NextResponse.json({
       success: true,
       token,
       sessionId,
@@ -91,6 +92,19 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Set HTTP-only cookie
+    const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60 // 30 days or 24 hours
+    response.cookies.set({
+      name: 'leadflow_token',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: cookieMaxAge,
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
