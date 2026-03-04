@@ -42,6 +42,46 @@ strategy-config.json
 orchestrator-watchdog.log
 leadflow.db
 
+# Orchestration engine (lives in ~/.openclaw/genome/, not this repo)
+# These files are sometimes recreated by spawned agents — ignore them
+heartbeat-executor.js
+heartbeat-wrapper.js
+heartbeat-with-post.js
+workflow-engine.js
+spawn-consumer.js
+realtime-dispatcher.js
+supabase-client.js
+learning-system.js
+orchestrator-decision-tracker.js
+predictive-engine.js
+auto-decompose.js
+smart-spawn.js
+optimizer.js
+forecast.js
+goal-planner.js
+task-evaluation.js
+swarm-coordinator.js
+self-heal.js
+smoke-tests.js
+build-health.js
+orchestrator-healthcheck.js
+orchestrator-task-integrity.js
+daily-self-review.js
+daily-self-review-phase2.js
+telegram-commands.js
+leonida-orchestrator.js
+orchestrator-supabase.js
+orchestrator-heartbeat-update.js
+generate-dashboard-complete.js
+generate-dashboard.js
+generate-dashboard-from-supabase.js
+generate-dashboard-config.js
+validate-dashboard-structure.js
+dashboard-server.js
+sync-dashboard-from-db.js
+budget-dashboard.js
+.self-heal-log.jsonl
+
 # Logs
 *.log
 spawn-logs/
