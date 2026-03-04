@@ -459,21 +459,41 @@ async function handleReviewsCommand(args) {
 }
 
 /**
+ * Parse optional "project: description" prefix from args.
+ * Returns { projectId, desc } — falls back to config default if no prefix.
+ * Format: "leadflow: fix the button" → { projectId: 'leadflow', desc: 'fix the button' }
+ *         "fix the button"           → { projectId: <from config>, desc: 'fix the button' }
+ */
+function parseProjectAndDesc(args) {
+  const raw = args.join(' ').replace(/^["']|["']$/g, '').trim();
+  const { getConfig } = require('./project-config-loader');
+  const defaultProjectId = getConfig().project_id;
+
+  const colonIdx = raw.indexOf(':');
+  if (colonIdx > 0 && colonIdx < 30) {
+    const candidate = raw.slice(0, colonIdx).trim().toLowerCase();
+    // Only treat as project if it looks like an identifier (no spaces)
+    if (/^[a-z0-9_-]+$/.test(candidate)) {
+      return { projectId: candidate, desc: raw.slice(colonIdx + 1).trim() };
+    }
+  }
+  return { projectId: defaultProjectId, desc: raw };
+}
+
+/**
  * Handle !fix command — create a quick-fix UC and dev task
- * Format: !fix <description>
+ * Format: !fix [project:] <description>
  */
 async function handleFixCommand(args) {
   try {
-    const desc = args.join(' ').replace(/^["']|["']$/g, '').trim();
-    if (!desc) return '❌ Usage: !fix <description>\nExample: !fix "signup button returns 404"';
+    const { projectId, desc } = parseProjectAndDesc(args);
+    if (!desc) return '❌ Usage: !fix [project:] <description>\nExample: !fix leadflow: signup button returns 404';
 
     const { TaskStore } = require('./task-store');
     const store = new TaskStore();
     if (!store.supabase) return '❌ No Supabase connection';
 
-    const { getConfig } = require('./project-config-loader');
     const { buildRoleContext, selectInitialModel, estimateCost } = require('./workflow-engine');
-    const projectId = getConfig().project_id;
 
     // Generate UC id from description
     const slug = desc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
@@ -514,7 +534,7 @@ async function handleFixCommand(args) {
       metadata: { created_by: 'telegram-fix', workflow_step: 0, workflow_total: workflow.length }
     });
 
-    return `✅ Created UC "${ucId}" + dev task. Will chain to QC on completion.`;
+    return `✅ [${projectId}] Created UC "${ucId}" + dev task. Will chain to QC on completion.`;
   } catch (err) {
     return `❌ Error: ${err.message}`;
   }
@@ -522,20 +542,18 @@ async function handleFixCommand(args) {
 
 /**
  * Handle !feature command — create a feature UC with PM→Dev→QC workflow
- * Format: !feature <description>
+ * Format: !feature [project:] <description>
  */
 async function handleFeatureCommand(args) {
   try {
-    const desc = args.join(' ').replace(/^["']|["']$/g, '').trim();
-    if (!desc) return '❌ Usage: !feature <description>\nExample: !feature "add dark mode to dashboard"';
+    const { projectId, desc } = parseProjectAndDesc(args);
+    if (!desc) return '❌ Usage: !feature [project:] <description>\nExample: !feature leadflow: add dark mode to dashboard';
 
     const { TaskStore } = require('./task-store');
     const store = new TaskStore();
     if (!store.supabase) return '❌ No Supabase connection';
 
-    const { getConfig } = require('./project-config-loader');
     const { buildRoleContext, selectInitialModel, estimateCost } = require('./workflow-engine');
-    const projectId = getConfig().project_id;
 
     // Generate UC id from description
     const slug = desc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
@@ -576,7 +594,7 @@ async function handleFeatureCommand(args) {
       metadata: { created_by: 'telegram-feature', workflow_step: 0, workflow_total: workflow.length }
     });
 
-    return `✅ Created UC "${ucId}" + PM task. Will chain PM→Dev→QC.`;
+    return `✅ [${projectId}] Created UC "${ucId}" + PM task. Will chain PM→Dev→QC.`;
   } catch (err) {
     return `❌ Error: ${err.message}`;
   }
@@ -656,8 +674,8 @@ Commands:
   !status              - Show full status
   !decide <id> <opt>   - Approve a product decision
   !reviews [status]    - Show product reviews & decisions
-  !fix <description>   - Quick-fix: create UC + dev task (chains to QC)
-  !feature <desc>      - New feature: create UC + PM task (chains PM→Dev→QC)
+  !fix [project:] <desc>    - Quick-fix: UC + dev task (chains to QC)
+  !feature [project:] <desc> - Feature: UC + PM task (chains PM→Dev→QC)
 `);
   }
 }
