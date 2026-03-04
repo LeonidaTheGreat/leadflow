@@ -1,123 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-04T05:08:07.505Z
+Last updated: 2026-03-04T06:16:21.452Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-03T08:39:24.748Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T08:44:23.949Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T08:49:24.148Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T08:54:23.690Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T08:59:24.559Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-03T09:04:25.157Z",
     "status": {
@@ -2408,9 +2293,150 @@ Last updated: 2026-03-04T05:08:07.505Z
     "spawned": 0,
     "completed": 7,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T05:19:32.399Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 7,
+      "blocked": 0,
+      "done": 126,
+      "total": 146
+    },
+    "actions": [
+      "Queried state: {\"ready\":0,\"inProgress\":7,\"blocked\":0,\"done\":126,\"total\":146}",
+      "Reset zombie: Dev: fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs (retry 3/3)",
+      "Reset zombie: QC: fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages (retry 2/3)",
+      "Reset zombie: QC: fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs (retry 1/3)",
+      "Reset zombie: QC: fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection (retry 1/3)",
+      "Reset zombie: QC: feat-add-login-page-with-email-and-password - add login page with email and password (retry 2/3)",
+      "Reset zombie: QC: feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes (retry 2/3)",
+      "Reset zombie: QC: feat-add-session-management-with-server-side- - add session management with server-side tokens (retry 2/3)",
+      "Replenished: Dev task for fix-signup-page-has-no-link-back-to-login-an",
+      "Merged PR #12",
+      "Merged PR #14",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T05:53:10.050Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 6,
+      "blocked": 0,
+      "done": 125,
+      "total": 146
+    },
+    "actions": [
+      "Queried state: {\"ready\":0,\"inProgress\":6,\"blocked\":0,\"done\":125,\"total\":146}",
+      "Reset zombie: QC: fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages (retry 3/3)",
+      "Reset zombie: QC: fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs (retry 2/3)",
+      "Reset zombie: QC: fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection (retry 2/3)",
+      "Reset zombie: QC: feat-add-login-page-with-email-and-password - add login page with email and password (retry 3/3)",
+      "Reset zombie: QC: feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes (retry 3/3)",
+      "Reset zombie: QC: feat-add-session-management-with-server-side- - add session management with server-side tokens (retry 3/3)",
+      "Marked 66e43172-7cd7-4bd9-baaa-cec5624507f7 as done",
+      "Marked 66e43172-7cd7-4bd9-baaa-cec5624507f7 as done",
+      "Replenished: PM task for feat-add-login-page-with-email-and-password",
+      "Replenished: PM task for feat-add-auth-middleware-to-protect-dashboard",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 2,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T06:00:06.937Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 125,
+      "total": 146
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":2,\"blocked\":0,\"done\":125,\"total\":146}",
+      "Rescued: QC feat-add-session-management-with-server-side- (build_error: Max retries exhausted at sp)",
+      "Rescued: QC feat-add-auth-middleware-to-protect-dashboard (unknown: Max retries exhausted at spawn )",
+      "Rescued: QC feat-add-login-page-with-email-and-password (unknown: Max retries exhausted at spawn )",
+      "Rescued: QC fix-landing-page-has-no-links-to-signup-or-o (unknown: Max retries exhausted at spawn )",
+      "Rescued: Dev fix-dashboard-routes-are-publicly-accessible (unknown: Max retries exhausted at spawn )",
+      "Rescued: Dev fix-deployed-pages-not-registered-in-system- (unknown: Max retries exhausted at spawn )",
+      "Rescued: Dev fix-test-gateway-path (unknown: Max retries exhausted at spawn )",
+      "Rescued: Dev fix-signup-page-has-no-link-back-to-login-an (no_commits: False completion: no commits)",
+      "Product sync: 5 components updated",
+      "Build health: 1 error(s) → dev task created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "Smoke tests: JSON object requested, multiple (or no) rows returned"
+    ]
+  },
+  {
+    "timestamp": "2026-03-04T06:01:01.606Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 10,
+      "blocked": 0,
+      "done": 125,
+      "total": 154
+    },
+    "actions": [
+      "Queried state: {\"ready\":0,\"inProgress\":10,\"blocked\":0,\"done\":125,\"total\":154}",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T06:16:21.372Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 126,
+      "total": 155
+    },
+    "actions": [
+      "Queried state: {\"ready\":0,\"inProgress\":5,\"blocked\":0,\"done\":126,\"total\":155}",
+      "Reset zombie: QC (rescue): fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages (retry 1/3)",
+      "Reset zombie: QC (rescue): feat-add-session-management-with-server-side- - add session management with server-side tokens (retry 1/3)",
+      "Reset zombie: QC (rescue): feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes (retry 1/3)",
+      "Reset zombie: QC (rescue): feat-add-login-page-with-email-and-password - add login page with email and password (retry 1/3)",
+      "Marked 09268019-9ca6-450e-a308-a013c0385d20 as done",
+      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
+      "Marked 77f65fba-7fcd-4131-8d16-e0fb848b9bfc as done",
+      "Chained: dev->qc for fix-deployed-pages-not-registered-in-system-",
+      "Marked 957d1e03-3f1b-4bf5-975c-fbabca006220 as done",
+      "Chained: dev->qc for fix-signup-page-has-no-link-back-to-login-an",
+      "Marked 09268019-9ca6-450e-a308-a013c0385d20 as done",
+      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
+      "Marked 77f65fba-7fcd-4131-8d16-e0fb848b9bfc as done",
+      "Chained: dev->qc for fix-deployed-pages-not-registered-in-system-",
+      "Marked 957d1e03-3f1b-4bf5-975c-fbabca006220 as done",
+      "Chained: dev->qc for fix-signup-page-has-no-link-back-to-login-an",
+      "Marked 957d1e03-3f1b-4bf5-975c-fbabca006220 as done",
+      "Chained: dev->qc for fix-signup-page-has-no-link-back-to-login-an",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 7,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":10,"blocked":0,"done":119,"total":142}
+- Last status: {"ready":0,"inProgress":5,"blocked":0,"done":126,"total":155}

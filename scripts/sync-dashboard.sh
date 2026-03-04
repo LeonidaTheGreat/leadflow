@@ -3,7 +3,7 @@
 # Run this automatically via cron or heartbeat
 # Updates dashboard with latest progress without manual intervention
 
-cd /Users/clawdbot/projects/leadflow/product/lead-response/dashboard || exit 1
+cd /Users/clawdbot/.openclaw/workspace/business-opportunities-2026/product/lead-response/dashboard || exit 1
 
 echo "🔄 BO2026 Dashboard Auto-Sync"
 echo "=============================="
