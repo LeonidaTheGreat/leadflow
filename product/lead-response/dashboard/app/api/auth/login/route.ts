@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { logSessionStart } from '@/lib/agent-session'
+import { createSession } from '@/lib/session'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,33 +56,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create server-side session
+    const session = await createSession({
+      userId: user.id,
+      userAgent: request.headers.get('user-agent') || undefined,
+      ipAddress: request.ip || undefined,
+      rememberMe,
+    })
+
     // Update last login timestamp
     await supabase
       .from('real_estate_agents')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
-    // Log session start — inserts into agent_sessions (FR-1)
-    // Failures are handled gracefully inside logSessionStart; login continues even on error
-    const agentSession = await logSessionStart(user.id, request)
-    const sessionId = agentSession?.id ?? null
-
-    // Generate JWT token (include session_id claim when available)
-    const tokenExpiry = rememberMe ? '30d' : '24h'
-    const jwtPayload: Record<string, unknown> = {
-      userId: user.id,
-      email: user.email,
-    }
-    if (sessionId) {
-      jwtPayload.sessionId = sessionId
-    }
-    const token = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: tokenExpiry })
-
     // Create response with user data and onboarding status
     const response = NextResponse.json({
       success: true,
-      token,
-      sessionId,
       user: {
         id: user.id,
         email: user.email,
@@ -96,11 +83,11 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Set HTTP-only cookie
+    // Set HTTP-only cookie with session token
     const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60 // 30 days or 24 hours
     response.cookies.set({
-      name: 'leadflow_token',
-      value: token,
+      name: 'leadflow_session',
+      value: session.token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
