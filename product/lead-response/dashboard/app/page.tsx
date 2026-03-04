@@ -44,10 +44,16 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
           <nav className="flex items-center gap-4">
             <Link 
-              href="/dashboard" 
+              href="/onboarding" 
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
             >
-              Dashboard
+              Get Started
+            </Link>
+            <Link 
+              href="/login" 
+              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Sign In
             </Link>
           </nav>
         </div>
@@ -66,10 +72,16 @@ export default function HomePage() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
-              href="/dashboard"
+              href="/onboarding"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
             >
-              Open Dashboard
+              Get Started Free
+            </Link>
+            <Link 
+              href="/login"
+              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
+            >
+              Sign In
             </Link>
             <button 
               onClick={testWebhook}
