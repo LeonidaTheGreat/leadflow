@@ -14,10 +14,18 @@ const isMockMode = process.env.TWILIO_MOCK_MODE === 'true' || !accountSid
 // Initialize Twilio client (or mock)
 let twilioClient: twilio.Twilio | null = null
 
-if (accountSid && authToken) {
-  twilioClient = twilio(accountSid, authToken)
-} else {
-  console.warn('⚠️  Twilio credentials not set - running in MOCK mode')
+function getTwilioClient(): twilio.Twilio | null {
+  if (twilioClient) return twilioClient
+  
+  const sid = process.env.TWILIO_ACCOUNT_SID
+  const token = process.env.TWILIO_AUTH_TOKEN
+  
+  if (sid && token && sid.startsWith('AC')) {
+    twilioClient = twilio(sid, token)
+    return twilioClient
+  }
+  
+  return null
 }
 
 // ============================================
@@ -60,8 +68,11 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
   // Determine from number based on destination
   const fromNumber = from || getFromNumber(to)
 
+  // Get Twilio client (lazy initialization)
+  const client = getTwilioClient()
+  
   // Mock mode for development/testing
-  if (isMockMode || !twilioClient) {
+  if (isMockMode || !client) {
     console.log('📤 [MOCK SMS]', {
       to,
       from: fromNumber,
@@ -96,7 +107,7 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
         messageParams.statusCallback = statusCallback
       }
 
-      const message = await twilioClient!.messages.create(messageParams)
+      const message = await client.messages.create(messageParams)
 
       console.log('📤 SMS sent:', {
         sid: message.sid,

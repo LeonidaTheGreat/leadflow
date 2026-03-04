@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import twilio from 'twilio'
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID || ''
-const authToken = process.env.TWILIO_AUTH_TOKEN || ''
 const fromNumber = process.env.TWILIO_PHONE_NUMBER || ''
 
-const twilioClient = twilio(accountSid, authToken)
+// Lazy initialization of Twilio client
+function getTwilioClient() {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID
+  const authToken = process.env.TWILIO_AUTH_TOKEN
+  
+  if (!accountSid || !authToken || !accountSid.startsWith('AC')) {
+    throw new Error('Twilio credentials not configured')
+  }
+  
+  return twilio(accountSid, authToken)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +39,7 @@ export async function POST(request: NextRequest) {
     const formattedPhone = `+1${cleanPhone}`
 
     // Send test SMS
+    const twilioClient = getTwilioClient()
     const message = await twilioClient.messages.create({
       body: `Hi! This is a test message from LeadFlow AI. Your SMS integration is working. Test sent by: ${agentName || 'Agent'}`,
       from: fromNumber,
