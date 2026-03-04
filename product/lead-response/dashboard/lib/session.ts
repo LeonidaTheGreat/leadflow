@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { randomBytes } from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,7 +24,10 @@ export interface SessionCreateInput {
 }
 
 export function generateSessionToken(): string {
-  return randomBytes(32).toString('hex')
+  // Use Web Crypto API instead of Node.js crypto for Edge Runtime compatibility
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
 export async function createSession(input: SessionCreateInput): Promise<Session> {
