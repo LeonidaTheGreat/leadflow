@@ -661,6 +661,8 @@ Files:
   }
 }
 
-main().catch(console.error)
+if (require.main === module) {
+  main().catch(console.error)
+}
 
 module.exports = { LearningSystem, DECOMPOSITION_PATTERNS, MODEL_SELECTION_RULES }
