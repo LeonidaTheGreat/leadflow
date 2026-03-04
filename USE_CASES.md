@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-04T04:41:09.490Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-04T05:08:07.224Z | Source: `use_cases` + `prds` tables
 
-**Progress: 15/25 complete**
+**Progress: 15/26 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
@@ -22,12 +22,13 @@
 | fix-test-gateway-path | test gateway path | - | not_started | 1 | - | Dev > QC |
 | fix-signup-page-has-no-link-back-to-login-an | signup page has no link back to login and no login page exists | - | not_started | 1 | - | Dev > QC |
 | fix-dashboard-routes-are-publicly-accessible | dashboard routes are publicly accessible with no auth protection | - | not_started | 1 | - | Dev > QC |
-| UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
-| UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
+| fix-test-genome-separation | test genome separation | - | not_started | 1 | - | Dev > QC |
+| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
 | UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
 | UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
-| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
+| UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
+| UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
 | UC-10 | Billing Portal | Phase 3 | complete | 2 | defined | PM > Design > Dev > QC |
 | UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
@@ -340,6 +341,14 @@
 - **Description:** Quick fix: dashboard routes are publicly accessible with no auth protection
 - **Workflow:** Dev > QC
 
+### fix-test-genome-separation — test genome separation
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Quick fix: test genome separation
+- **Workflow:** Dev > QC
+
 ### gtm-landing-page — Landing Page
 
 - **PRD:** -
@@ -347,6 +356,26 @@
 - **Priority:** 2
 - **Description:** Create a high-converting landing page that clearly communicates the value proposition, pricing, and includes a signup CTA.
 - **Workflow:** PM > Marketing > Design > Dev > QC
+
+
+## Phase: GTM
+
+### gtm-content — Content Marketing Campaign
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Generate traffic through content marketing to address zero visitors issue. Create and distribute valuable content to attract real estate agents to LeadFlow AI.
+- **Acceptance Criteria:**
+  - Content strategy document created (topics, channels, schedule)
+  - Minimum 3 blog posts published on real estate lead generation topics
+  - Social media posts scheduled (LinkedIn, Twitter/X)
+  - Email newsletter campaign drafted
+  - SEO keywords identified and incorporated
+  - Content distribution plan executed
+  - Traffic analytics tracking configured
+  - Lead magnet (guide/checklist) created for email capture
+- **Workflow:** PM > Marketing > QC
 
 
 ## Phase: Phase 2
@@ -397,24 +426,4 @@
   - Delivery status shown (sent, delivered, failed)
   - Message appears in history immediately
 - **Workflow:** PM > Design > Dev > QC
-
-
-## Phase: GTM
-
-### gtm-content — Content Marketing Campaign
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Generate traffic through content marketing to address zero visitors issue. Create and distribute valuable content to attract real estate agents to LeadFlow AI.
-- **Acceptance Criteria:**
-  - Content strategy document created (topics, channels, schedule)
-  - Minimum 3 blog posts published on real estate lead generation topics
-  - Social media posts scheduled (LinkedIn, Twitter/X)
-  - Email newsletter campaign drafted
-  - SEO keywords identified and incorporated
-  - Content distribution plan executed
-  - Traffic analytics tracking configured
-  - Lead magnet (guide/checklist) created for email capture
-- **Workflow:** PM > Marketing > QC
 
