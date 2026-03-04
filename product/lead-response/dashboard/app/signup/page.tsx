@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -471,8 +472,14 @@ function PaidSignupFlow() {
                   </form>
 
                   <div className="mt-6 pt-6 border-t border-slate-700">
+                    <p className="text-sm text-slate-400 text-center mb-2">
+                      Already have an account?{' '}
+                      <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-semibold">
+                        Sign in
+                      </Link>
+                    </p>
                     <p className="text-xs text-slate-400 text-center">
-                      By continuing, you agree to our Terms of Service and Privacy Policy. 
+                      By continuing, you agree to our Terms of Service and Privacy Policy.
                       Your 14-day free trial starts today. No charge until {new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString()}.
                     </p>
                   </div>
