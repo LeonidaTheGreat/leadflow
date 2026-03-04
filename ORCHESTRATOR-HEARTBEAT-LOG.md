@@ -1,30 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-23T05:19:32.272Z
+Last updated: 2026-03-23T08:19:34.416Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-05T06:25:34.238Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
   {
     "timestamp": "2026-03-05T06:25:34.313Z",
     "status": {
@@ -2463,9 +2441,32 @@ Last updated: 2026-03-23T05:19:32.272Z
     "spawned": 0,
     "completed": 1,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T08:19:34.407Z",
+    "status": {
+      "ready": 91,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1210,
+      "total": 1407
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":91,\"inProgress\":1,\"blocked\":0,\"done\":1210,\"total\":1407}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 9/9 passed",
+      "Product sync: 6 components updated",
+      "UC completed (sweep): fix-get-api-internal-pilot-usage-endpoint-does-not-exi",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":42,"inProgress":3,"blocked":0,"done":1152,"total":1294}
+- Last status: {"ready":91,"inProgress":1,"blocked":0,"done":1210,"total":1407}
