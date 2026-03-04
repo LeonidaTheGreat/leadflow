@@ -1,28 +1,227 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-03T17:12:20.943Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-04T04:41:09.490Z | Source: `use_cases` + `prds` tables
 
-**Progress: 13/16 complete**
+**Progress: 15/25 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
+| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | ready | 0 | - | PM > Dev > QC |
+| UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | ready | 0 | - | PM > Design > Dev > QC |
+| feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | not_started | 0 | - | PM > Dev > QC |
+| feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | not_started | 0 | - | PM > Dev > QC |
+| feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | not_started | 0 | - | PM > Dev > QC |
 | UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-9 | Customer Sign-Up Flow | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
-| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | ready | 1 | - | PM > Dev > QC |
 | UC-1 | Lead-Initiated SMS | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-2 | FUB New Lead Auto-SMS | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | UC-3 | FUB Status Change | Phase 1 | complete | 1 | defined | PM > Dev > QC |
-| UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | ready | 1 | - | PM > Design > Dev > QC |
+| fix-landing-page-has-no-links-to-signup-or-o | landing page has no links to signup or onboarding pages | - | not_started | 1 | - | Dev > QC |
+| fix-deployed-pages-not-registered-in-system- | deployed pages not registered in system_components with URLs | - | not_started | 1 | - | Dev > QC |
+| fix-test-gateway-path | test gateway path | - | not_started | 1 | - | Dev > QC |
+| fix-signup-page-has-no-link-back-to-login-an | signup page has no link back to login and no login page exists | - | not_started | 1 | - | Dev > QC |
+| fix-dashboard-routes-are-publicly-accessible | dashboard routes are publicly accessible with no auth protection | - | not_started | 1 | - | Dev > QC |
+| UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
 | UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
-| UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
-| gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
-| UC-10 | Billing Portal | Phase 3 | complete | 2 | defined | PM > Design > Dev > QC |
 | UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
+| gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
 | UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
-| UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | not_started | 2 | - | Dev > QC |
+| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
+| UC-10 | Billing Portal | Phase 3 | complete | 2 | defined | PM > Design > Dev > QC |
+| UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | UC-12 | MRR Reporting | Phase 3 | complete | 3 | defined | PM > Analytics |
+
+## Phase: Phase 3
+
+### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
+
+- **PRD:** Billing & Subscriptions
+- **Status:** ready
+- **Priority:** 0
+- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
+- **Acceptance Criteria:**
+  - Root cause of Agent not found error identified and documented
+  - Billing records created for all 3 pilot agents in Stripe
+  - Agent-billing association lookup fixed in API
+  - Settings > Billing & Subscription loads without errors
+  - Current subscription plan displays correctly
+  - Payment methods list populates
+  - Invoice history visible with download links
+  - Graceful error handling for edge cases implemented
+  - E2E test for billing portal passes
+- **Workflow:** PM > Dev > QC
+
+### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
+
+- **PRD:** Billing & Subscriptions
+- **Status:** ready
+- **Priority:** 0
+- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
+- **Acceptance Criteria:**
+  - Signup button visible on landing page
+  - Login button visible on landing page
+  - Email/password registration form works
+  - Login form works with valid credentials
+  - Password reset flow implemented
+  - Protected routes redirect to login when unauthenticated
+  - Authenticated users see dashboard on login
+  - User session persists across page refreshes
+  - Logout functionality works
+  - Welcome email sent after signup
+  - Auth state reflected in UI (show user name/email)
+- **Workflow:** PM > Design > Dev > QC
+
+### feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
+
+- **PRD:** Billing & Subscriptions
+- **Status:** not_started
+- **Priority:** 0
+- **Description:** Feature request: add auth middleware to protect dashboard and settings routes
+- **Acceptance Criteria:**
+  - Middleware checks for valid Supabase session on protected routes
+  - Unauthenticated users redirected to /login
+  - Protected routes: /dashboard, /dashboard/*, /settings, /settings/*
+  - Public routes remain accessible: /, /login, /signup
+  - Session validation happens server-side for API routes
+  - Client-side route guards prevent flash of protected content
+  - After login, user redirected to originally requested page
+  - Logout clears session and redirects to /login
+  - Session expiry handled gracefully (refresh token flow)
+  - Auth state available via context/hook for UI components
+- **Workflow:** PM > Dev > QC
+
+### feat-add-session-management-with-server-side- — add session management with server-side tokens
+
+- **PRD:** Billing & Subscriptions
+- **Status:** not_started
+- **Priority:** 0
+- **Description:** Feature request: add session management with server-side tokens
+- **Acceptance Criteria:**
+  - Supabase Auth configured for server-side session management
+  - Access token stored securely (httpOnly cookie)
+  - Refresh token rotation implemented
+  - Session expiry handled automatically (token refresh)
+  - Server-side session validation on API requests
+  - Session persistence across page refreshes
+  - Concurrent session handling (multiple devices)
+  - Session revocation on logout
+  - Session timeout after inactivity (configurable)
+  - Secure cookie flags set (Secure, SameSite)
+- **Workflow:** PM > Dev > QC
+
+### feat-add-login-page-with-email-and-password — add login page with email and password
+
+- **PRD:** Billing & Subscriptions
+- **Status:** not_started
+- **Priority:** 0
+- **Description:** Feature request: add login page with email and password
+- **Acceptance Criteria:**
+  - Login page accessible at /login route
+  - Email input field with validation
+  - Password input field with masking
+  - Login button triggers Supabase Auth
+  - Error message displayed for invalid credentials
+  - Successful login redirects to /dashboard
+  - Session persisted across page refreshes
+  - Link to signup page for new users
+  - Link to password reset for forgotten passwords
+  - Responsive design works on mobile devices
+- **Workflow:** PM > Dev > QC
+
+### UC-9 — Customer Sign-Up Flow
+
+- **PRD:** Billing & Subscriptions
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Stripe checkout + onboarding for new customers
+- **Acceptance Criteria:**
+  - Landing page has visible signup CTA
+  - Plan selection clearly shows pricing and features
+  - Email/password registration works (Supabase Auth)
+  - Stripe Checkout session created correctly
+  - Payment processing succeeds >95% of time
+  - Account activated immediately after successful payment
+  - User redirected to dashboard post-signup
+  - Welcome email sent
+- **Workflow:** PM > Design > Dev > QC
+
+### UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Deploy the landing page to Vercel by integrating it into the existing Next.js customer dashboard. Configure the landing page as the root route (/), set up deploy pipeline, create smoke test, and configure production URL.
+- **Acceptance Criteria:**
+  - Landing page integrated into Next.js app at root route (/)
+  - Existing dashboard routes preserved (e.g., /dashboard)
+  - Vercel project configured for production deployment
+  - Deploy pipeline configured (GitHub → Vercel)
+  - Environment variables set (if needed)
+  - Smoke test created and passing
+  - Production URL active and accessible (e.g., leadflow-ai-five.vercel.app)
+  - Landing page displays correctly on production URL
+  - All links on landing page functional
+  - Mobile responsiveness verified
+- **Workflow:** Dev > QC
+
+### UC-11 — Subscription Lifecycle
+
+- **PRD:** Billing & Subscriptions
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Handle upgrades, downgrades, cancellations, renewals
+- **Acceptance Criteria:**
+  - Upgrade processes immediately with proration
+  - Downgrade schedules correctly for next period
+  - Cancellation stops auto-renewal
+  - Access continues until paid period ends
+  - All lifecycle events send confirmation emails
+  - Failed payments retry (Stripe Smart Retries)
+  - Dunning emails sent on failed payment
+  - Grace period before account suspension
+- **Depends on:** UC-9
+- **Workflow:** PM > Dev > QC
+
+### UC-10 — Billing Portal
+
+- **PRD:** Billing & Subscriptions
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Customer self-serve billing management via Stripe portal
+- **Acceptance Criteria:**
+  - Billing section loads without errors
+  - Current subscription plan displayed
+  - Monthly price shown
+  - Next billing date visible
+  - Payment methods listed
+  - Invoice history with download links
+  - Update payment method works
+  - Link to Stripe Customer Portal works
+  - Graceful error handling if billing data missing
+- **Depends on:** UC-9
+- **Workflow:** PM > Design > Dev > QC
+
+### UC-12 — MRR Reporting
+
+- **PRD:** Billing & Subscriptions
+- **Status:** complete
+- **Priority:** 3
+- **Description:** Monthly recurring revenue tracking and analytics dashboard
+- **Acceptance Criteria:**
+  - MRR calculated accurately from Stripe data
+  - Breakdown by plan tier (Starter/Pro/Team/Brokerage)
+  - New MRR (new customers this month)
+  - Churned MRR (cancellations)
+  - Expansion MRR (upgrades)
+  - Contraction MRR (downgrades)
+  - Net MRR growth rate
+  - Dashboard updates in real-time or near-real-time
+  - Export to CSV available
+- **Depends on:** UC-11
+- **Workflow:** PM > Analytics
+
 
 ## Phase: Phase 1
 
@@ -99,140 +298,47 @@
 - **Workflow:** PM > Dev > QC
 
 
-## Phase: Phase 3
+## Phase: Unassigned
 
-### UC-9 — Customer Sign-Up Flow
-
-- **PRD:** Billing & Subscriptions
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Stripe checkout + onboarding for new customers
-- **Acceptance Criteria:**
-  - Landing page has visible signup CTA
-  - Plan selection clearly shows pricing and features
-  - Email/password registration works (Supabase Auth)
-  - Stripe Checkout session created correctly
-  - Payment processing succeeds >95% of time
-  - Account activated immediately after successful payment
-  - User redirected to dashboard post-signup
-  - Welcome email sent
-- **Workflow:** PM > Design > Dev > QC
-
-### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
-
-- **PRD:** Billing & Subscriptions
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
-- **Acceptance Criteria:**
-  - Root cause of Agent not found error identified and documented
-  - Billing records created for all 3 pilot agents in Stripe
-  - Agent-billing association lookup fixed in API
-  - Settings > Billing & Subscription loads without errors
-  - Current subscription plan displays correctly
-  - Payment methods list populates
-  - Invoice history visible with download links
-  - Graceful error handling for edge cases implemented
-  - E2E test for billing portal passes
-- **Workflow:** PM > Dev > QC
-
-### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
-
-- **PRD:** Billing & Subscriptions
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
-- **Acceptance Criteria:**
-  - Signup button visible on landing page
-  - Login button visible on landing page
-  - Email/password registration form works
-  - Login form works with valid credentials
-  - Password reset flow implemented
-  - Protected routes redirect to login when unauthenticated
-  - Authenticated users see dashboard on login
-  - User session persists across page refreshes
-  - Logout functionality works
-  - Welcome email sent after signup
-  - Auth state reflected in UI (show user name/email)
-- **Workflow:** PM > Design > Dev > QC
-
-### UC-11 — Subscription Lifecycle
-
-- **PRD:** Billing & Subscriptions
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Handle upgrades, downgrades, cancellations, renewals
-- **Acceptance Criteria:**
-  - Upgrade processes immediately with proration
-  - Downgrade schedules correctly for next period
-  - Cancellation stops auto-renewal
-  - Access continues until paid period ends
-  - All lifecycle events send confirmation emails
-  - Failed payments retry (Stripe Smart Retries)
-  - Dunning emails sent on failed payment
-  - Grace period before account suspension
-- **Depends on:** UC-9
-- **Workflow:** PM > Dev > QC
-
-### UC-10 — Billing Portal
-
-- **PRD:** Billing & Subscriptions
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Customer self-serve billing management via Stripe portal
-- **Acceptance Criteria:**
-  - Billing section loads without errors
-  - Current subscription plan displayed
-  - Monthly price shown
-  - Next billing date visible
-  - Payment methods listed
-  - Invoice history with download links
-  - Update payment method works
-  - Link to Stripe Customer Portal works
-  - Graceful error handling if billing data missing
-- **Depends on:** UC-9
-- **Workflow:** PM > Design > Dev > QC
-
-### UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
+### fix-landing-page-has-no-links-to-signup-or-o — landing page has no links to signup or onboarding pages
 
 - **PRD:** -
 - **Status:** not_started
-- **Priority:** 2
-- **Description:** Deploy the landing page to Vercel by integrating it into the existing Next.js customer dashboard. Configure the landing page as the root route (/), set up deploy pipeline, create smoke test, and configure production URL.
-- **Acceptance Criteria:**
-  - Landing page integrated into Next.js app at root route (/)
-  - Existing dashboard routes preserved (e.g., /dashboard)
-  - Vercel project configured for production deployment
-  - Deploy pipeline configured (GitHub → Vercel)
-  - Environment variables set (if needed)
-  - Smoke test created and passing
-  - Production URL active and accessible (e.g., leadflow-ai-five.vercel.app)
-  - Landing page displays correctly on production URL
-  - All links on landing page functional
-  - Mobile responsiveness verified
+- **Priority:** 1
+- **Description:** Quick fix: landing page has no links to signup or onboarding pages
 - **Workflow:** Dev > QC
 
-### UC-12 — MRR Reporting
+### fix-deployed-pages-not-registered-in-system- — deployed pages not registered in system_components with URLs
 
-- **PRD:** Billing & Subscriptions
-- **Status:** complete
-- **Priority:** 3
-- **Description:** Monthly recurring revenue tracking and analytics dashboard
-- **Acceptance Criteria:**
-  - MRR calculated accurately from Stripe data
-  - Breakdown by plan tier (Starter/Pro/Team/Brokerage)
-  - New MRR (new customers this month)
-  - Churned MRR (cancellations)
-  - Expansion MRR (upgrades)
-  - Contraction MRR (downgrades)
-  - Net MRR growth rate
-  - Dashboard updates in real-time or near-real-time
-  - Export to CSV available
-- **Depends on:** UC-11
-- **Workflow:** PM > Analytics
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Quick fix: deployed pages not registered in system_components with URLs
+- **Workflow:** Dev > QC
 
+### fix-test-gateway-path — test gateway path
 
-## Phase: Unassigned
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Quick fix: test gateway path
+- **Workflow:** Dev > QC
+
+### fix-signup-page-has-no-link-back-to-login-an — signup page has no link back to login and no login page exists
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Quick fix: signup page has no link back to login and no login page exists
+- **Workflow:** Dev > QC
+
+### fix-dashboard-routes-are-publicly-accessible — dashboard routes are publicly accessible with no auth protection
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Quick fix: dashboard routes are publicly accessible with no auth protection
+- **Workflow:** Dev > QC
 
 ### gtm-landing-page — Landing Page
 
@@ -291,4 +397,24 @@
   - Delivery status shown (sent, delivered, failed)
   - Message appears in history immediately
 - **Workflow:** PM > Design > Dev > QC
+
+
+## Phase: GTM
+
+### gtm-content — Content Marketing Campaign
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Generate traffic through content marketing to address zero visitors issue. Create and distribute valuable content to attract real estate agents to LeadFlow AI.
+- **Acceptance Criteria:**
+  - Content strategy document created (topics, channels, schedule)
+  - Minimum 3 blog posts published on real estate lead generation topics
+  - Social media posts scheduled (LinkedIn, Twitter/X)
+  - Email newsletter campaign drafted
+  - SEO keywords identified and incorporated
+  - Content distribution plan executed
+  - Traffic analytics tracking configured
+  - Lead magnet (guide/checklist) created for email capture
+- **Workflow:** PM > Marketing > QC
 

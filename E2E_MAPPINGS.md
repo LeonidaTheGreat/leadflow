@@ -1,12 +1,15 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-03T17:12:21.040Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-04T04:41:09.599Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 15 specs | 5 pass | 0 fail | 10 not run**
+**Coverage: 18 specs | 5 pass | 0 fail | 13 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
+| feat-add-auth-middleware-to-protect-dashboard | Auth Middleware - Protect Dashboard Routes | tests/e2e/auth-middleware.test.ts | - | not_run |
+| feat-add-login-page-with-email-and-password | Login Page with Email and Password | tests/e2e/login-page.test.ts | - | not_run |
+| feat-add-session-management-with-server-side- | Session Management with Server-Side Tokens | tests/e2e/session-management.test.ts | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
 | UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
@@ -22,6 +25,201 @@
 | UC-AUTH-FIX-001 | UC-AUTH-FIX-001: Authentication Flow | tests/e2e/auth-flow.test.ts | - | not_run |
 | UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
 | UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
+
+## feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
+
+### Auth Middleware - Protect Dashboard Routes
+
+- **File:** `tests/e2e/auth-middleware.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/dashboard",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "redirect",
+    "expect": "/login"
+  },
+  {
+    "url": "/settings",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "redirect",
+    "expect": "/login"
+  },
+  {
+    "url": "/",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "landing-content"
+  },
+  {
+    "type": "api",
+    "expect": 401,
+    "endpoint": "GET /api/user (no auth)"
+  },
+  {
+    "type": "ui",
+    "email": "test@example.com",
+    "action": "login",
+    "password": "TestPass123!"
+  },
+  {
+    "url": "/dashboard",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "dashboard-content"
+  }
+]
+```
+
+
+## feat-add-login-page-with-email-and-password — add login page with email and password
+
+### Login Page with Email and Password
+
+- **File:** `tests/e2e/login-page.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/login",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "email-input"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "password-input"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "login-button"
+  },
+  {
+    "type": "ui",
+    "value": "test@example.com",
+    "action": "type",
+    "selector": "email-input"
+  },
+  {
+    "type": "ui",
+    "value": "TestPass123!",
+    "action": "type",
+    "selector": "password-input"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "login-button"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /auth/login"
+  },
+  {
+    "type": "redirect",
+    "expect": "/dashboard"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "user-menu"
+  }
+]
+```
+
+
+## feat-add-session-management-with-server-side- — add session management with server-side tokens
+
+### Session Management with Server-Side Tokens
+
+- **File:** `tests/e2e/session-management.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "ui",
+    "email": "test@example.com",
+    "action": "login",
+    "password": "TestPass123!"
+  },
+  {
+    "name": "sb-access-token",
+    "type": "cookie",
+    "expect": "exists"
+  },
+  {
+    "name": "sb-access-token",
+    "type": "cookie",
+    "expect": "httpOnly"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /api/user"
+  },
+  {
+    "url": "/dashboard",
+    "type": "ui",
+    "action": "refresh"
+  },
+  {
+    "type": "ui",
+    "action": "visible",
+    "expect": true,
+    "selector": "dashboard-content"
+  },
+  {
+    "name": "sb-refresh-token",
+    "type": "cookie",
+    "expect": "exists"
+  },
+  {
+    "type": "ui",
+    "action": "logout"
+  },
+  {
+    "name": "sb-access-token",
+    "type": "cookie",
+    "expect": "not-exists"
+  },
+  {
+    "type": "redirect",
+    "expect": "/login"
+  }
+]
+```
+
 
 ## UC-1 — Lead-Initiated SMS
 
