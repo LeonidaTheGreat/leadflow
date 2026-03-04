@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 18 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/4/2026, 12:08:07 AM
+**Last Updated:** 3/4/2026, 1:16:21 AM
 
 ---
 
@@ -33,25 +33,23 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 9 | Blocked: 0 | Done: 122
+**Queue Health:** Ready: 0 | In Progress: 7 | Blocked: 0 | Done: 126
 
 ### ▶️ Ready to Spawn (0 tasks)
 
 *No ready tasks*
 
-### ⚡ In Progress (9 tasks)
+### ⚡ In Progress (7 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs | dev | kimi |
-| QC: fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages | qc | kimi |
-| QC: fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs | qc | kimi |
-| QC: fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection | qc | kimi |
-| QC: fix-test-genome-separation - test genome separation | qc | kimi |
-| QC: fix-test-genome-separation - test genome separation | qc | kimi |
-| QC: feat-add-login-page-with-email-and-password - add login page with email and password | qc | kimi |
-| QC: feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes | qc | kimi |
-| QC: feat-add-session-management-with-server-side- - add session management with server-side tokens | qc | qwen3.5 |
+| QC (rescue): fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages | qc | qwen3.5 |
+| Dev (rescue): fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection | dev | haiku |
+| Dev (rescue): fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs | dev | kimi |
+| QC: fix-signup-page-has-no-link-back-to-login-an - signup page has no link back to login and no login page exists | qc | kimi |
+| QC (rescue): feat-add-session-management-with-server-side- - add session management with server-side tokens | qc | kimi |
+| QC (rescue): feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes | qc | qwen3.5 |
+| QC (rescue): feat-add-login-page-with-email-and-password - add login page with email and password | qc | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -109,22 +107,15 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $98.16
-**Cost per task:** Avg $0.68
-
----
-
-## 💵 Revenue Intelligence
-
-*Revenue tables not yet created — run migration 005*
-
+**Estimated project cost:** $100.04  
+**Cost per task:** Avg $0.65
 
 ---
 
 ## 🎯 Next Actions
 
 1. 🔴 No ready tasks
-2. ⚡ **9 agents active**
+2. ⚡ **7 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

@@ -657,7 +657,7 @@ async function main() {
 
     // Write results
     const fs = require('fs');
-    const resultsFile = require('path').join(__dirname, 'e2e-stripe-test-results-v2.json');
+    const resultsFile = '/Users/clawdbot/.openclaw/workspace/projects/leadflow/e2e-stripe-test-results-v2.json';
 
     fs.writeFileSync(resultsFile, JSON.stringify({
       timestamp: new Date().toISOString(),

@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-04T05:08:07.224Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-04T06:16:21.227Z | Source: `use_cases` + `prds` tables
 
-**Progress: 15/26 complete**
+**Progress: 17/27 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
@@ -22,15 +22,16 @@
 | fix-test-gateway-path | test gateway path | - | not_started | 1 | - | Dev > QC |
 | fix-signup-page-has-no-link-back-to-login-an | signup page has no link back to login and no login page exists | - | not_started | 1 | - | Dev > QC |
 | fix-dashboard-routes-are-publicly-accessible | dashboard routes are publicly accessible with no auth protection | - | not_started | 1 | - | Dev > QC |
-| fix-test-genome-separation | test genome separation | - | not_started | 1 | - | Dev > QC |
+| fix-status | status | - | complete | 1 | - | Dev > QC |
+| fix-test-genome-separation | test genome separation | - | complete | 1 | - | Dev > QC |
 | gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
-| UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
 | UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
-| UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
 | UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
+| UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | UC-10 | Billing Portal | Phase 3 | complete | 2 | defined | PM > Design > Dev > QC |
 | UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
+| UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | UC-12 | MRR Reporting | Phase 3 | complete | 3 | defined | PM > Analytics |
 
@@ -148,25 +149,6 @@
   - Welcome email sent
 - **Workflow:** PM > Design > Dev > QC
 
-### UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Deploy the landing page to Vercel by integrating it into the existing Next.js customer dashboard. Configure the landing page as the root route (/), set up deploy pipeline, create smoke test, and configure production URL.
-- **Acceptance Criteria:**
-  - Landing page integrated into Next.js app at root route (/)
-  - Existing dashboard routes preserved (e.g., /dashboard)
-  - Vercel project configured for production deployment
-  - Deploy pipeline configured (GitHub → Vercel)
-  - Environment variables set (if needed)
-  - Smoke test created and passing
-  - Production URL active and accessible (e.g., leadflow-ai-five.vercel.app)
-  - Landing page displays correctly on production URL
-  - All links on landing page functional
-  - Mobile responsiveness verified
-- **Workflow:** Dev > QC
-
 ### UC-11 — Subscription Lifecycle
 
 - **PRD:** Billing & Subscriptions
@@ -203,6 +185,25 @@
   - Graceful error handling if billing data missing
 - **Depends on:** UC-9
 - **Workflow:** PM > Design > Dev > QC
+
+### UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Deploy the landing page to Vercel by integrating it into the existing Next.js customer dashboard. Configure the landing page as the root route (/), set up deploy pipeline, create smoke test, and configure production URL.
+- **Acceptance Criteria:**
+  - Landing page integrated into Next.js app at root route (/)
+  - Existing dashboard routes preserved (e.g., /dashboard)
+  - Vercel project configured for production deployment
+  - Deploy pipeline configured (GitHub → Vercel)
+  - Environment variables set (if needed)
+  - Smoke test created and passing
+  - Production URL active and accessible (e.g., leadflow-ai-five.vercel.app)
+  - Landing page displays correctly on production URL
+  - All links on landing page functional
+  - Mobile responsiveness verified
+- **Workflow:** Dev > QC
 
 ### UC-12 — MRR Reporting
 
@@ -341,10 +342,18 @@
 - **Description:** Quick fix: dashboard routes are publicly accessible with no auth protection
 - **Workflow:** Dev > QC
 
+### fix-status — status
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Quick fix: status
+- **Workflow:** Dev > QC
+
 ### fix-test-genome-separation — test genome separation
 
 - **PRD:** -
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 1
 - **Description:** Quick fix: test genome separation
 - **Workflow:** Dev > QC
@@ -380,6 +389,21 @@
 
 ## Phase: Phase 2
 
+### UC-8 — Follow-up Sequences
+
+- **PRD:** Core SMS Lead Response
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Automated multi-step follow-up SMS sequences
+- **Acceptance Criteria:**
+  - Sequences configurable per lead stage
+  - Time delays between steps (1h, 4h, 24h, etc.)
+  - Sequence stops if lead responds
+  - Sequence stops if lead books appointment
+  - Sequence stops if lead opts out
+  - Active sequences visible in dashboard
+- **Workflow:** PM > Dev > QC
+
 ### UC-6 — Cal.com Booking
 
 - **PRD:** CRM & Calendar Integrations
@@ -395,21 +419,6 @@
   - Booking appears in dashboard
   - Activity logged in FUB timeline
   - Agent receives notification
-- **Workflow:** PM > Dev > QC
-
-### UC-8 — Follow-up Sequences
-
-- **PRD:** Core SMS Lead Response
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Automated multi-step follow-up SMS sequences
-- **Acceptance Criteria:**
-  - Sequences configurable per lead stage
-  - Time delays between steps (1h, 4h, 24h, etc.)
-  - Sequence stops if lead responds
-  - Sequence stops if lead books appointment
-  - Sequence stops if lead opts out
-  - Active sequences visible in dashboard
 - **Workflow:** PM > Dev > QC
 
 ### UC-7 — Dashboard Manual SMS

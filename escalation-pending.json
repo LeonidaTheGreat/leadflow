@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-02-24T23:05:36.590Z",
+  "type": "max_retries_exceeded",
+  "config": {
+    "task": "Stripe Billing Integration",
+    "agentId": "dev",
+    "model": "opus",
+    "prompt": "[RETRY 1/3] Previous attempt failed: Self-test failed\n\nTask: Stripe Billing Integration\n\nDescription: No description\n\nPriority: P2\nEstimated Time: 1 hours\n\nAcceptance Criteria:\n\n\nSuccess Criteria:\n- All tests pass\n- Code deployed (if applicable)\n- Changes documented\n- Status updated in task tracker\n\nTask ID: 943086cf-7f5b-43f5-8502-4daa4be8fee4\n\nGo!",
+    "timeout": 3600,
+    "taskId": "943086cf-7f5b-43f5-8502-4daa4be8fee4",
+    "priority": 2,
+    "testResults": {
+      "agentId": "dev",
+      "taskId": "Stripe Billing Integration",
+      "passed": false,
+      "testsRun": 4,
+      "testsPassed": 1,
+      "results": [
+        {
+          "name": "build",
+          "required": true,
+          "success": false,
+          "duration": 72,
+          "error": "Command failed: npm run build\nnpm error Missing script: \"build\"\nnpm error\nnpm error To see a list of scripts, run:\nnpm error   npm run\nnpm error A complete log of this run can be found in: /Users/clawdbot/.npm/_logs/2026-02-24T23_05_34_989Z-debug-0.log\n",
+          "code": 1
+        },
+        {
+          "name": "lint",
+          "required": false,
+          "success": false,
+          "duration": 130,
+          "error": "Command failed: npm run lint\nnpm error Missing script: \"lint\"\nnpm error\nnpm error Did you mean this?\nnpm error   npm link # Symlink a package folder\nnpm error\nnpm error To see a list of scripts, run:\nnpm error   npm run\nnpm error A complete log of this run can be found in: /Users/clawdbot/.npm/_logs/2026-02-24T23_05_35_061Z-debug-0.log\n",
+          "code": 1
+        },
+        {
+          "name": "unit-tests",
+          "required": true,
+          "success": true,
+          "duration": 959,
+          "output": "\n> fub-ai-lead-response@1.0.0 test\n> node integration/test-e2e-flow.js --passWithNoTests\n\n🚀 Starting E2E Test Suite\n\n\n🧪 TEST 1: FUB API Connectivity\n✅ PASS: FUB API is accessible\n\n🧪 TEST 2: Twilio API Connectivity\n✅ PASS: Twilio API is accessible\n\n🧪 TEST 3: Create Lead in FUB\n✅ PASS: Lead created in FUB (ID: 74)\n\n🧪 TEST 4: Fetch Lead from FUB\n✅ PASS: Lead fetched successfully\n   Name: Test Lead_1771974335666\n   Phone: 4165551234\n   Stage: Lead\n\n🧪 TEST 5: Consent & DNC Validation\n✅ PASS: Le"
+        },
+        {
+          "name": "typecheck",
+          "required": true,
+          "success": false,
+          "duration": 460,
+          "error": "Command failed: npx tsc --noEmit",
+          "code": 1
+        }
+      ],
+      "timestamp": "2026-02-24T23:05:36.570Z"
+    },
+    "testPassed": false,
+    "retryAttempt": 1,
+    "previousModel": "sonnet",
+    "failureReason": "Self-test failed"
+  },
+  "recoveryState": {
+    "taskId": "Stripe Billing Integration",
+    "attempt": 2,
+    "history": [
+      {
+        "attempt": 0,
+        "model": "sonnet",
+        "error": "Self-test failed",
+        "time": "2026-02-24T23:05:36.365Z"
+      }
+    ],
+    "lastError": "Self-test failed"
+  },
+  "reason": "Already at max model (Opus)",
+  "action": "human_intervention_required",
+  "options": [
+    "Override and retry with same model",
+    "Escalate to higher model (increased cost)",
+    "Break task into smaller pieces",
+    "Abandon task"
+  ]
+}
