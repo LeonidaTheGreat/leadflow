@@ -1,0 +1,101 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import bcrypt from 'bcryptjs'
+import { createSession } from '@/lib/session'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+export async function POST(request: NextRequest) {
+  try {
+    const { email, password, rememberMe } = await request.json()
+
+    // Validate input
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: 'Email and password are required' },
+        { status: 400 }
+      )
+    }
+
+    // Find user by email
+    const { data: user, error: userError } = await supabase
+      .from('agents')
+      .select('id, email, password_hash, first_name, last_name, email_verified')
+      .eq('email', email.toLowerCase())
+      .single()
+
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      )
+    }
+
+    // Check if email is verified
+    if (!user.email_verified) {
+      return NextResponse.json(
+        { error: 'Please verify your email before signing in' },
+        { status: 403 }
+      )
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash)
+
+    if (!isValidPassword) {
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      )
+    }
+
+    // Create server-side session
+    const session = await createSession({
+      userId: user.id,
+      userAgent: request.headers.get('user-agent') || undefined,
+      ipAddress: request.ip || undefined,
+      rememberMe,
+    })
+
+    // Update last login timestamp
+    await supabase
+      .from('agents')
+      .update({ last_login_at: new Date().toISOString() })
+      .eq('id', user.id)
+
+    // Create response with cookie
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      }
+    })
+
+    // Set HTTP-only cookie with session token
+    const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60 // 30 days or 24 hours
+    response.cookies.set({
+      name: 'leadflow_session',
+      value: session.token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: cookieMaxAge,
+      path: '/',
+    })
+
+    return response
+
+  } catch (error) {
+    console.error('Login error:', error)
+    return NextResponse.json(
+      { error: 'An unexpected error occurred' },
+      { status: 500 }
+    )
+  }
+}

@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-03T17:12:21.127Z | Source: `prds` table
+> Generated: 2026-03-04T04:03:37.671Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
