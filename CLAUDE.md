@@ -67,20 +67,20 @@ All agents point to this directory. Active agents:
 - `SUPABASE_DB_PASSWORD` is the Postgres password for direct DB connections (migrations, DDL). Present in both `~/.env` and `leadflow/.env`
 - TaskStore has a self-healing fallback chain: `process.env` → `__dirname/.env` → `__dirname/.env.local` → `~/.env`
 
-## Orchestration (4-Loop Architecture)
-The system runs 4 automated loops via `heartbeat-executor.js` (every 5 min):
-1. **Execution** — UC roadmap → queue replenishment → workflow chaining → UC completion
-2. **QC** — feature branches → PRs → QC review → auto-merge/rework → CI
-3. **Product** — feedback ingestion → PM analysis → priority re-ordering
-4. **Learning** — decision tracking → model escalation → self-heal
+## Orchestration (Genome — extracted to `~/.openclaw/genome/`)
+The orchestration engine ("Genome") has been extracted to its own repo: `LeonidaTheGreat/openclaw-genome`.
+All heartbeat, spawning, learning, health, and dashboard generation code now lives in `~/.openclaw/genome/`.
 
-**Realtime Dispatcher:** `realtime-dispatcher.js` is a **long-running** Supabase Realtime listener (launchd: `ai.openclaw.bo2026.realtime-dispatcher`). It reacts instantly to task status changes (done → chain next, ready → spawn). **IMPORTANT:** It caches Node.js modules at startup. After editing `workflow-engine.js`, `spawn-consumer.js`, or `task-store.js`, restart it with: `launchctl stop ai.openclaw.bo2026.realtime-dispatcher` (KeepAlive auto-restarts). Logs: `/tmp/openclaw/bo2026-realtime-dispatcher.log`.
+**What stays in this repo:**
+- `project.config.json` — project identity card (read by Genome)
+- `project-config-loader.js` → symlink to `~/.openclaw/genome/core/`
+- `task-store.js` → symlink to `~/.openclaw/genome/core/`
+- `subagent-completion-report.js` → symlink to `~/.openclaw/genome/core/`
+- Product code: `server.js`, `routes/`, `lib/`, `product/`
 
-**Role Directives:** `buildRoleContext()` in `workflow-engine.js` is the single source of truth for agent role enforcement. All task creation paths (replenishQueue, chainTask, spawn-consumer) use it.
+**Genome docs:** `~/.openclaw/genome/CLAUDE.md`, `~/.openclaw/genome/ARCHITECTURE.md`
 
-**Schema:** `supabase/migrations/004_project_hierarchy.sql` adds: `prds`, `use_cases`, `e2e_test_specs`, `metrics`, `code_reviews`, `product_feedback` + `tasks.use_case_id`, `tasks.branch_name`, `tasks.pr_number`
-
-**Seed data:** `scripts/seed-project-hierarchy.js` (3 PRDs, 12 UCs with workflows)
+**Realtime Dispatcher:** Long-running service at `~/.openclaw/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.bo2026.realtime-dispatcher`
 
 **Full docs:** `docs/4-LOOP-ARCHITECTURE.md`
 
