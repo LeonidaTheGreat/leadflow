@@ -153,6 +153,11 @@
     }
   },
 
+  "default_workflow": {
+    "feature": ["product", "marketing", "design", "dev", "qc"],
+    "fix": ["dev", "qc"]
+  },
+
   "budget": {
     "daily_limit": 30.00,
     "min_for_spawn": 0.50,
