@@ -372,7 +372,7 @@ async function handleStatusChanged(fubLead: any, resourceIds?: number[], uri?: s
 
   const { data: lead } = await supabaseAdmin
     .from('leads')
-    .select('*, agent:agents(*)')
+    .select('*, agent:real_estate_agents(*)')
     .eq('fub_id', fubLead.id)
     .single() as { data: Lead | null }
 
@@ -523,7 +523,7 @@ async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
     .from('real_estate_agents')
     .select('*')
-    .eq('is_active', true)
+    .eq('status', 'active')
     .limit(1)
 
   return agents?.[0] || null
