@@ -62,7 +62,8 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
-    phone: ''
+    phone: '',
+    password: ''
   })
 
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
@@ -78,7 +79,7 @@ export default function SignupPage() {
   }
 
   const validateForm = () => {
-    if (!formData.email || !formData.name || !formData.phone) {
+    if (!formData.email || !formData.name || !formData.phone || !formData.password) {
       setError('All fields are required')
       return false
     }
@@ -97,6 +98,12 @@ export default function SignupPage() {
       return false
     }
 
+    // Password validation (min 8 chars)
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return false
+    }
+
     return true
   }
 
@@ -110,30 +117,31 @@ export default function SignupPage() {
     setError(null)
 
     try {
-      // Step 1: Create customer record
-      const customerResponse = await fetch('/api/customers/create', {
+      // Step 1: Create agent record with password
+      const agentResponse = await fetch('/api/agents/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
           name: formData.name,
-          phone: formData.phone
+          phone: formData.phone,
+          password: formData.password
         })
       })
 
-      if (!customerResponse.ok) {
-        const errorData = await customerResponse.json()
-        throw new Error(errorData.error || 'Failed to create customer')
+      if (!agentResponse.ok) {
+        const errorData = await agentResponse.json()
+        throw new Error(errorData.error || 'Failed to create account')
       }
 
-      const { customerId } = await customerResponse.json()
+      const { agentId } = await agentResponse.json()
 
       // Step 2: Create Stripe checkout session
       const checkoutResponse = await fetch('/api/billing/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customerId,
+          agentId,
           email: formData.email,
           plan: selectedPlan.id,
           priceId: selectedPlan.priceId
@@ -331,6 +339,22 @@ export default function SignupPage() {
                         className="bg-slate-900 border-slate-600 text-white"
                         required
                         disabled={loading}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="password" className="text-white mb-2 block">Password *</Label>
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        placeholder="Create a strong password (min 8 characters)"
+                        className="bg-slate-900 border-slate-600 text-white"
+                        required
+                        disabled={loading}
+                        minLength={8}
                       />
                     </div>
 
