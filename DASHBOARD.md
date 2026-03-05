@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 19 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/5/2026, 11:21:56 AM
+**Last Updated:** 3/5/2026, 11:37:52 AM
 
 ---
 
@@ -33,20 +33,25 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 4 | Blocked: 0 | Done: 149
+**Queue Health:** Ready: 0 | In Progress: 9 | Blocked: 0 | Done: 149
 
 ### ▶️ Ready to Spawn (0 tasks)
 
 *No ready tasks*
 
-### ⚡ In Progress (4 tasks)
+### ⚡ In Progress (9 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
 | PM: Spec fix — Onboarding completion fails - 500 error on /api/agents/onboard | product | sonnet |
+| Dev: fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | dev | kimi |
+| PM: Spec fix — Onboarding STILL broken - 500 error on /api/agents/onboard | product | sonnet |
+| PM: Spec fix — Webhook does NOT persist leads to database | product | sonnet |
+| PM: Spec fix — SMS sending is MOCK, not real Twilio | product | sonnet |
 | PM: Analyze bug feedback | product | qwen3.5 |
 | PM: Journey Review — New Agent Signup | product | sonnet |
 | PM: Journey Review — Lead Response Flow | product | sonnet |
+| PM: Spec fix — AI response uses hardcoded templates, not Claude | product | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +109,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $105.40
+**Estimated project cost:** $107.91
 **Cost per task:** Avg $0.58
 
 ---
@@ -119,7 +124,7 @@ All technical work complete. System ready for pilot launch.
 ## 🎯 Next Actions
 
 1. 🔴 No ready tasks
-2. ⚡ **4 agents active**
+2. ⚡ **9 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

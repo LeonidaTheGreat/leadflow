@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email already exists
     const { data: existingUser } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id')
       .eq('email', email.toLowerCase())
       .single()
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Create agent account
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .insert({
         email: email.toLowerCase(),
         password_hash: hashedPassword,

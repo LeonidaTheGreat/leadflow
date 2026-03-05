@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     // Validate agent exists in database
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id')
       .eq('id', agentId)
       .single()
