@@ -1,15 +1,15 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-05T05:53:23.849Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-05T08:16:21.177Z | Source: `use_cases` + `prds` tables
 
-**Progress: 25/29 complete**
+**Progress: 26/29 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
 | feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | complete | 0 | - | PM > Dev > QC |
-| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | ready | 0 | - | PM > Dev > QC |
+| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | ready | 0 | - | PM > Design > Dev > QC |
 | fix-deployed-pages-not-registered-in-system- | deployed pages not registered in system_components with URLs | - | stuck | 1 | - | Dev > QC |
@@ -28,11 +28,11 @@
 | UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
 | UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
-| UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
+| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
 | UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
 | feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | Phase 3 | complete | 2 | - | PM > Dev > QC |
 | UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
-| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
+| UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | UC-12 | MRR Reporting | Phase 3 | complete | 3 | defined | PM > Analytics |
 | feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | Phase 3 | complete | 3 | - | PM > Dev > QC |
@@ -80,7 +80,7 @@
 ### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
 
 - **PRD:** Billing & Subscriptions
-- **Status:** ready
+- **Status:** complete
 - **Priority:** 0
 - **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
 - **Acceptance Criteria:**
