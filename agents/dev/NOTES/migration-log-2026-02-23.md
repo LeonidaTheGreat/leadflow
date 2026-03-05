@@ -52,7 +52,7 @@ Added mandatory self-test checklist to SOUL.md:
 - SMS: delivery, compliance, capture
 - AI: generation, quality, edge cases
 
-This addresses the template improvement proposed earlier (bo2026-tmpl-001).
+This addresses the template improvement proposed earlier (leadflow-tmpl-001).
 
 ### Skill Definitions
 10 defined skills with clear acceptance criteria:

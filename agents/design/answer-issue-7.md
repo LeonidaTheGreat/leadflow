@@ -2,7 +2,7 @@
 
 **Document**: Answer to Research Questions  
 **Date**: February 14, 2026  
-**Agent**: bo2026-design  
+**Agent**: leadflow-design  
 **Status**: Complete
 
 ---

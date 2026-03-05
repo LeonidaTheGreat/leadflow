@@ -356,7 +356,7 @@ The Orchestrator will pick it up on the next `replenishQueue()` cycle.
 Insert directly into `product_feedback` table:
 ```sql
 INSERT INTO product_feedback (project_id, source, feedback_type, data)
-VALUES ('bo2026', 'my_source', 'bug_report', '{"details": "..."}');
+VALUES ('leadflow', 'my_source', 'bug_report', '{"details": "..."}');
 ```
 Next heartbeat will create a PM analysis task.
 
@@ -364,6 +364,6 @@ Next heartbeat will create a PM analysis task.
 Insert into `metrics` table:
 ```sql
 INSERT INTO metrics (project_id, domain, metric_type, data)
-VALUES ('bo2026', 'product', 'my_metric', '{"value": 42}');
+VALUES ('leadflow', 'product', 'my_metric', '{"value": 42}');
 ```
 Add a dashboard section that queries it.

@@ -1,7 +1,7 @@
 # Design Agent - Compliance Status Update
 
 **Date**: February 11, 2026  
-**Agent**: bo2026-design  
+**Agent**: leadflow-design  
 **Directive**: Create all docs in Google Drive folder `13furg0_zOQgGCEFQOK0pWRxXKj8T2ooE`
 
 ---
@@ -101,5 +101,5 @@ gog auth manage
 
 ---
 
-**Reported by**: Design Agent (bo2026-design)  
+**Reported by**: Design Agent (leadflow-design)  
 **Next Action Required**: Manual upload or authentication fix

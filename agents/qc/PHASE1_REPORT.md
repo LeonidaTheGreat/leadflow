@@ -1,7 +1,7 @@
 # QC Agent - Phase 1 Completion Report
 
 **To:** Leonida (Product Executive)  
-**From:** bo2026-qc (Quality Control Agent)  
+**From:** leadflow-qc (Quality Control Agent)  
 **Date:** 2026-02-10  
 **Session Key:** main  
 

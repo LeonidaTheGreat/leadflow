@@ -1,15 +1,29 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-04T05:08:07.317Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-05T05:53:23.924Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 18 specs | 5 pass | 0 fail | 13 not run**
+**Coverage: 32 specs | 5 pass | 0 fail | 27 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
 | feat-add-auth-middleware-to-protect-dashboard | Auth Middleware - Protect Dashboard Routes | tests/e2e/auth-middleware.test.ts | - | not_run |
 | feat-add-login-page-with-email-and-password | Login Page with Email and Password | tests/e2e/login-page.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
+| feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | Protected routes with auth | - | - | not_run |
 | feat-add-session-management-with-server-side- | Session Management with Server-Side Tokens | tests/e2e/session-management.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Failed sync retry | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Dashboard reflects sync | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Removed page marked deprecated | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | URL change updated | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | New deployment detected | - | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
 | UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
@@ -158,6 +172,115 @@
 ```
 
 
+## feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
+
+### Public routes pass
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All return 200"
+]
+```
+
+### Failed route reported
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Failure shown with details"
+]
+```
+
+### All routes discovered
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All expected routes found"
+]
+```
+
+### Deployment blocked
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Deployment prevented"
+]
+```
+
+### Execution under 30s
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Completes in < 30 seconds"
+]
+```
+
+### Route Discovery Smoke Test
+
+- **File:** `tests/e2e/route-discovery-smoke.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /login"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /signup"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /dashboard (with auth)"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /settings (with auth)"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /integrations (with auth)"
+  },
+  {
+    "type": "report",
+    "format": "json",
+    "include": "all_routes_status"
+  }
+]
+```
+
+### Protected routes with auth
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Returns 200 with auth",
+  "Returns 401 without auth"
+]
+```
+
+
 ## feat-add-session-management-with-server-side- — add session management with server-side tokens
 
 ### Session Management with Server-Side Tokens
@@ -217,6 +340,107 @@
     "type": "redirect",
     "expect": "/login"
   }
+]
+```
+
+
+## feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
+
+### Failed sync retry
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Sync succeeds on retry"
+]
+```
+
+### Dashboard reflects sync
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All components match system_components"
+]
+```
+
+### Auto-Sync Deployed Pages to System Components
+
+- **File:** `tests/e2e/auto-sync-deployed-pages.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "trigger",
+    "action": "heartbeat"
+  },
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "GET /api/vercel/deployments"
+  },
+  {
+    "type": "database",
+    "query": "url IS NOT NULL",
+    "table": "system_components",
+    "expect": "exists"
+  },
+  {
+    "type": "database",
+    "query": "status = live",
+    "table": "system_components",
+    "expect": "exists"
+  },
+  {
+    "max": 300000,
+    "type": "time",
+    "metric": "sync_completion"
+  }
+]
+```
+
+### Removed page marked deprecated
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Status changed to deprecated"
+]
+```
+
+### URL change updated
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "URL updated to new value"
+]
+```
+
+### Manual sync trigger
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Components updated without waiting for heartbeat"
+]
+```
+
+### New deployment detected
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "New entry exists",
+  "URL is correct",
+  "Status is live"
 ]
 ```
 

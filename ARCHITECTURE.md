@@ -1,10 +1,10 @@
 ---
-title: BO2026 Architecture Summary
+title: LeadFlow Architecture Summary
 author: Stojan & Leonida
 date: 2026-02-23
 ---
 
-# BO2026 Autonomous System Architecture
+# LeadFlow Autonomous System Architecture
 
 ## Overview
 
@@ -255,23 +255,23 @@ leadflow/
 ### Dashboard Server
 ```bash
 # Check status
-launchctl list | grep bo2026.dashboard
+launchctl list | grep leadflow.dashboard
 
 # View logs
-tail -f /tmp/openclaw/bo2026-dashboard.log
+tail -f /tmp/openclaw/leadflow-dashboard.log
 
 # Restart
-launchctl unload ~/Library/LaunchAgents/ai.openclaw.bo2026.dashboard.plist
-launchctl load ~/Library/LaunchAgents/ai.openclaw.bo2026.dashboard.plist
+launchctl unload ~/Library/LaunchAgents/ai.openclaw.leadflow.dashboard.plist
+launchctl load ~/Library/LaunchAgents/ai.openclaw.leadflow.dashboard.plist
 ```
 
 ### Heartbeat
 ```bash
 # Check status
-launchctl list | grep bo2026.heartbeat
+launchctl list | grep leadflow.heartbeat
 
 # View logs
-tail -f /tmp/openclaw/bo2026-heartbeat.log
+tail -f /tmp/openclaw/leadflow-heartbeat.log
 
 # Manual run
 cd leadflow && bash scripts/heartbeat.sh

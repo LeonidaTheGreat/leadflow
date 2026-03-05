@@ -20,7 +20,7 @@ File location:
 Content includes:
 - 7 tables (project_metadata, system_components, agents, completed_work, action_items, cost_tracking, dashboard_snapshots)
 - Indexes for performance
-- Initial data for bo2026 project
+- Initial data for leadflow project
 
 ### Step 2: Run in Supabase Dashboard
 

@@ -80,7 +80,7 @@ All heartbeat, spawning, learning, health, and dashboard generation code now liv
 
 **Genome docs:** `~/.openclaw/genome/CLAUDE.md`, `~/.openclaw/genome/ARCHITECTURE.md`
 
-**Realtime Dispatcher:** Long-running service at `~/.openclaw/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.bo2026.realtime-dispatcher`
+**Realtime Dispatcher:** Long-running service at `~/.openclaw/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.leadflow.realtime-dispatcher`
 
 **Full docs:** `docs/4-LOOP-ARCHITECTURE.md`
 
@@ -88,12 +88,12 @@ All heartbeat, spawning, learning, health, and dashboard generation code now liv
 The live execution dashboard has moved to `~/.openclaw/dashboard/` — it's a system-level orchestration tool, not a LeadFlow product artifact.
 - **Location:** `~/.openclaw/dashboard/dashboard.html`
 - **HTTP server:** `python3 -m http.server 8787 --bind 127.0.0.1` (managed by launchd via `~/.openclaw/workspace/scripts/dashboard-server.sh`)
-- **Data source:** All sections pull from Supabase (project `bo2026`), never local JSON files
+- **Data source:** All sections pull from Supabase (project `leadflow`), never local JSON files
 - **Supabase client variable:** Named `sb` (not `supabase`) to avoid collision with the CDN's global `var supabase`
 - **API key:** Uses the service_role key (anon key is invalid for these tables)
 - **Tailscale access:** https://stojanadmins-mac-mini.tail3ca16c.ts.net — accessible from all tailnet devices
   - `/` → dashboard on port 8787
-  - `/live` → BO2026 dashboard on port 3000
+  - `/live` → LeadFlow dashboard on port 3000
   - Config is persistent (survives reboots). Do NOT reconfigure or remove Tailscale serve.
 
 ## Vercel Deployment

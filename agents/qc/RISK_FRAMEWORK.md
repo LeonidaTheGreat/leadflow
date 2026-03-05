@@ -1,6 +1,6 @@
 # QC Agent - Risk & Compliance Framework
 
-**Agent:** bo2026-qc (Quality Control)  
+**Agent:** leadflow-qc (Quality Control)  
 **Created:** 2026-02-10  
 **Status:** Phase 1 - Opportunity Discovery  
 **Purpose:** Risk assessment framework for Business Opportunities 2026 initiative
@@ -590,11 +590,11 @@ RECOMMENDATION: ☐ GO  ☐ NO-GO  ☐ RESEARCH MORE
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2026-02-10 | bo2026-qc | Initial framework creation |
+| 1.0 | 2026-02-10 | leadflow-qc | Initial framework creation |
 
 **Next Review:** 2026-02-17  
 **Review Cycle:** Weekly during active phases  
-**Owner:** Quality Control Agent (bo2026-qc)
+**Owner:** Quality Control Agent (leadflow-qc)
 
 ---
 

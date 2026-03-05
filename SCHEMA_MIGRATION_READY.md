@@ -4,7 +4,7 @@
 
 ✅ **supabase-schema-migration.sql** (9.4 KB)
 - 7 new tables with full schema
-- Initial data for bo2026 project
+- Initial data for leadflow project
 - Includes all project metadata, system components, agents, etc.
 - Ready to paste into Supabase SQL editor
 

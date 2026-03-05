@@ -20,7 +20,7 @@ Once in Supabase, both DASHBOARD.md and dashboard.html can be **fully generated*
 Project-level configuration and overall status.
 
 ```sql
-project_id          -- 'bo2026' (unique identifier)
+project_id          -- 'leadflow' (unique identifier)
 project_name        -- 'LeadFlow AI'
 goal                -- '$20K MRR within 60 days'
 goal_value_usd      -- 20000
@@ -39,7 +39,7 @@ status_color        -- 🟢 | 🟡 | 🔴
 Status of all system pieces (deployment, integrations, databases, compliance).
 
 ```sql
-project_id      -- 'bo2026'
+project_id      -- 'leadflow'
 component_name  -- 'Vercel Deployment', 'FUB Integration', etc.
 category        -- DEPLOYMENT | INTEGRATION | DATABASE | COMPLIANCE | TESTING
 status          -- LIVE | READY | TESTING | DOWN | PENDING
@@ -59,7 +59,7 @@ verified_date   -- When last verified
 Agent activity tracking (not the orchestrator tasks, but the agent *teams*).
 
 ```sql
-project_id      -- 'bo2026'
+project_id      -- 'leadflow'
 agent_name      -- 'Dev', 'Marketing', 'QC', etc.
 agent_type      -- dev | marketing | qc | analytics | product
 status          -- ACTIVE | READY | WAITING | COMPLETE | BLOCKED
@@ -79,7 +79,7 @@ blocker         -- What's holding them up
 Features/tasks that have been finished (separate from task queue).
 
 ```sql
-project_id      -- 'bo2026'
+project_id      -- 'leadflow'
 work_name       -- 'Cal.com Integration', 'Outbound SMS', etc.
 use_case        -- 'UC-6', 'UC-7', or NULL
 description     -- What was built
@@ -100,7 +100,7 @@ status          -- COMPLETE | IN_PROGRESS | BLOCKED
 Blockers, decisions, and outstanding items that need action.
 
 ```sql
-project_id      -- 'bo2026'
+project_id      -- 'leadflow'
 title           -- 'Marketing Recruitment Timing'
 type            -- BLOCKER | DECISION | APPROVAL | FOLLOW_UP | RISK
 status          -- OPEN | IN_PROGRESS | RESOLVED | WAITING
@@ -123,7 +123,7 @@ due_date        -- When it needs to be done
 Budget and spend tracking.
 
 ```sql
-project_id              -- 'bo2026'
+project_id              -- 'leadflow'
 budget_period           -- TOTAL | DAILY | WEEKLY | MONTHLY
 estimated_cost_usd      -- $95.80
 actual_cost_usd         -- What we've actually spent
@@ -162,7 +162,7 @@ Copy the SQL from `supabase-schema-migration.sql` into Supabase SQL editor:
 
 ### Step 2: Initial Data (Already Included)
 
-The SQL file includes INSERT statements for bo2026:
+The SQL file includes INSERT statements for leadflow:
 - Project metadata
 - 9 system components (Vercel, FUB, Twilio, etc.)
 - 5 agents (Dev, Marketing, QC, Analytics, Deployment)
@@ -241,7 +241,7 @@ project_metadata (1)
     └── dashboard_snapshots (many)
 ```
 
-All tied together by `project_id = 'bo2026'`.
+All tied together by `project_id = 'leadflow'`.
 
 ---
 
@@ -251,7 +251,7 @@ Once tables exist, I'll create:
 
 1. **`query-project.js`** — Fetch all project data for dashboard
    ```javascript
-   const project = await queryProject('bo2026')
+   const project = await queryProject('leadflow')
    // Returns: { metadata, components, agents, work, items, costs, queue }
    ```
 

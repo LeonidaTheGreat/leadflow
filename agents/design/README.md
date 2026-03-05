@@ -2,7 +2,7 @@
 
 ## Business Opportunities 2026 - Design Agent Workspace
 
-**Agent ID**: bo2026-design  
+**Agent ID**: leadflow-design  
 **Created**: February 11, 2026  
 **Status**: Phase 1 Complete
 

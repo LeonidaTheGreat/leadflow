@@ -1,5 +1,5 @@
 {
-  "id": "bo2026-leadflow-ai",
+  "id": "leadflow-ai",
   "name": "LeadFlow AI",
   "created": "2026-02-10",
   "status": "active",
@@ -47,14 +47,14 @@
     ],
     "proposed_improvements": [
       {
-        "id": "bo2026-tmpl-001",
+        "id": "leadflow-tmpl-001",
         "title": "Dev Self-Test Checklist",
         "date": "2026-02-23",
         "status": "proposed",
         "path": "proposals/template-improvement-2026-02-23-001.md"
       },
       {
-        "id": "bo2026-tmpl-002",
+        "id": "leadflow-tmpl-002",
         "title": "Autonomous Feedback Loop System",
         "date": "2026-02-23",
         "status": "proposed",

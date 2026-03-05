@@ -19,7 +19,7 @@ const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '.env') })
 
 class ProjectQuery {
-  constructor(projectId = 'bo2026') {
+  constructor(projectId = 'leadflow') {
     const supabaseUrl = process.env.SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 

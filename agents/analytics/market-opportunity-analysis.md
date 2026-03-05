@@ -1,6 +1,6 @@
 # Analytics Agent - Market Opportunity Analysis
 
-**Agent:** bo2026-analytics  
+**Agent:** leadflow-analytics  
 **Date:** February 10, 2026  
 **Mission:** Identify LLM-driven product markets capable of achieving $20,000 MRR within 60 days
 
