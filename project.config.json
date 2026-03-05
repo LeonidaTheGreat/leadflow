@@ -152,6 +152,38 @@
     }
   ],
 
+  "journeys": [
+    {
+      "id": "new-agent-signup",
+      "name": "New Agent Signup",
+      "persona": "Real estate agent, first visit, not tech-savvy",
+      "entry_point": "https://leadflow-ai-five.vercel.app",
+      "expected_outcome": "Agent has an active account with integrations configured",
+      "products_involved": ["landing-page", "customer-dashboard", "billing-flow"],
+      "steps": [
+        { "action": "Find and click signup CTA", "from": "/", "to": "/signup" },
+        { "action": "Complete signup form with email, name, password", "from": "/signup", "to": "/login or /dashboard" },
+        { "action": "Log in with new credentials", "from": "/login", "to": "/dashboard" },
+        { "action": "Navigate to settings/integrations", "from": "/dashboard", "to": "/integrations" },
+        { "action": "Connect FUB integration", "from": "/integrations", "expected": "FUB connected status shown" },
+        { "action": "Select billing plan", "from": "/settings", "expected": "Stripe checkout loads" }
+      ]
+    },
+    {
+      "id": "lead-response",
+      "name": "Lead Response Flow",
+      "persona": "Inbound lead submitting info via FUB web form",
+      "entry_point": "https://fub-inbound-webhook.vercel.app/webhook/fub",
+      "expected_outcome": "Lead receives AI SMS response and appears in agent dashboard",
+      "products_involved": ["fub-webhook", "customer-dashboard"],
+      "steps": [
+        { "action": "Submit lead via FUB webhook payload", "from": "/webhook/fub", "expected": "200 OK response" },
+        { "action": "Verify lead appears in dashboard", "from": "/dashboard", "expected": "New lead visible in lead list" },
+        { "action": "Check SMS was sent to lead", "from": "/dashboard/leads/{id}", "expected": "AI response message shown" }
+      ]
+    }
+  ],
+
   "agents": {
     "id_map": {
       "product": "product-manager"
@@ -223,5 +255,10 @@
     "finding_auto_task_severities": ["critical", "high"],
     "review_model": "sonnet",
     "decision_implementation_model": "sonnet"
+  },
+
+  "journey_reviews": {
+    "periodic_interval_days": 14,
+    "review_model": "sonnet"
   }
 }

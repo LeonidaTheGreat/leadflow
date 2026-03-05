@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 19 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/5/2026, 2:09:08 AM
+**Last Updated:** 3/5/2026, 11:21:56 AM
 
 ---
 
@@ -33,19 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 3 | Blocked: 0 | Done: 143
+**Queue Health:** Ready: 0 | In Progress: 4 | Blocked: 0 | Done: 149
 
 ### ▶️ Ready to Spawn (0 tasks)
 
 *No ready tasks*
 
-### ⚡ In Progress (3 tasks)
+### ⚡ In Progress (4 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Login page (smoke) | dev | qwen3.5 |
-| QC: UC-BILLING-FIX-001 - Fix Billing Integration - Agent Not Found Error | qc | kimi |
-| Dev: UC-AUTH-FIX-001 - Implement Authentication Flow - Signup/Login | dev | kimi |
+| PM: Spec fix — Onboarding completion fails - 500 error on /api/agents/onboard | product | sonnet |
+| PM: Analyze bug feedback | product | qwen3.5 |
+| PM: Journey Review — New Agent Signup | product | sonnet |
+| PM: Journey Review — Lead Response Flow | product | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -103,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $102.78
-**Cost per task:** Avg $0.59
+**Estimated project cost:** $105.40
+**Cost per task:** Avg $0.58
 
 ---
 
@@ -118,7 +119,7 @@ All technical work complete. System ready for pilot launch.
 ## 🎯 Next Actions
 
 1. 🔴 No ready tasks
-2. ⚡ **3 agents active**
+2. ⚡ **4 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

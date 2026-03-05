@@ -146,8 +146,11 @@ The following .md files are **auto-generated** from Supabase by `scripts/generat
 - `E2E_MAPPINGS.md` — from `e2e_test_specs` + `use_cases` tables
 - `PRD_INDEX.md` — from `prds` table
 - `DASHBOARD.md` — from `generate-dashboard-complete.js`
+- `JOURNEYS.md` — from `project.config.json` journeys + `product_reviews` table (journey type)
 
 Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifying a PRD doc, update the `prds` table (`file_path`, `status`, `version`).
+
+Journey definitions live in `project.config.json` → `journeys[]`. The PM agent is responsible for reviewing and maintaining these — adding new journeys as the product evolves, updating steps when flows change, and triggering manual reviews via `!journey-review`.
 
 ## Active Blockers (as of Feb 2026)
 - Pilot agent recruitment pending Stojan approval
