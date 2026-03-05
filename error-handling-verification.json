@@ -1,0 +1,312 @@
+{
+  "timestamp": "2026-02-26T11:58:50.105Z",
+  "summary": {
+    "total": 60,
+    "passed": 60,
+    "failed": 0,
+    "successRate": 100
+  },
+  "tests": [
+    {
+      "name": "errors.ts exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "LeadFlowError base class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ValidationError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "AuthenticationError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "AuthorizationError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "NotFoundError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ConflictError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "RateLimitError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "isLeadFlowError type guard",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "normalizeError function",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "logger.ts exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Logger class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "logger singleton",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Log levels (debug/info/warn/error/fatal)",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "useLogger hook",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "withLogging helper",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Sensitive data redaction",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "api-client.ts exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "createApiClient function",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "handleApiResponse function",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "formatApiError function",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "apiClient singleton",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Retry logic",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Timeout handling",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ErrorBoundary.tsx exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ErrorBoundary class component",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "componentDidCatch lifecycle",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Default error view",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "SectionErrorBoundary",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "withErrorBoundary HOC",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "lib/errors.js exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "LeadFlowError class",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "errorHandler middleware",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "asyncHandler wrapper",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "validateRequest middleware",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "lib/logger.js exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "logger object",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "requestLogger middleware",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "JSON log formatting",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ERROR_HANDLING.md exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Error Classes section",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Logging section",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Error Boundaries section",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "API Error Handling section",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Best Practices section",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Usage Examples section",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "main.tsx exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ErrorBoundary imported",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "logger imported",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "ErrorBoundary wrapping App",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Global error handlers",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Unhandled rejection handler",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "error-handling.test.tsx exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Error Classes tests",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "Logger tests",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "API Error Formatting tests",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "withLogging tests",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "dist directory exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "index.html exists",
+      "status": "PASSED",
+      "details": ""
+    },
+    {
+      "name": "assets directory exists",
+      "status": "PASSED",
+      "details": ""
+    }
+  ],
+  "allPassed": true
+}

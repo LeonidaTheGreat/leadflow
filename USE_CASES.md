@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-05T05:53:23.849Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-05T07:09:08.858Z | Source: `use_cases` + `prds` tables
 
 **Progress: 25/29 complete**
 
@@ -9,9 +9,9 @@
 |----|------|-------|--------|----------|-----|----------|
 | feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | complete | 0 | - | PM > Dev > QC |
-| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | ready | 0 | - | PM > Dev > QC |
-| feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | ready | 0 | - | PM > Design > Dev > QC |
+| feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
+| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | ready | 0 | - | PM > Dev > QC |
 | fix-deployed-pages-not-registered-in-system- | deployed pages not registered in system_components with URLs | - | stuck | 1 | - | Dev > QC |
 | fix-status | status | - | complete | 1 | - | Dev > QC |
 | UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
@@ -28,11 +28,11 @@
 | UC-11 | Subscription Lifecycle | Phase 3 | complete | 2 | defined | PM > Dev > QC |
 | UC-6 | Cal.com Booking | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | gtm-landing-page | Landing Page | - | complete | 2 | - | PM > Marketing > Design > Dev > QC |
-| UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
+| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
 | UC-DEPLOY-LANDING-001 | Deploy Landing Page to Vercel | Phase 3 | complete | 2 | - | Dev > QC |
 | feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | Phase 3 | complete | 2 | - | PM > Dev > QC |
 | UC-4 | FUB Agent Assignment | Phase 1 | complete | 2 | defined | PM > Dev > QC |
-| gtm-content | Content Marketing Campaign | GTM | complete | 2 | - | PM > Marketing > QC |
+| UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | UC-12 | MRR Reporting | Phase 3 | complete | 3 | defined | PM > Analytics |
 | feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | Phase 3 | complete | 3 | - | PM > Dev > QC |
@@ -77,23 +77,25 @@
   - Auth state available via context/hook for UI components
 - **Workflow:** PM > Dev > QC
 
-### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
+### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
 
 - **PRD:** Billing & Subscriptions
 - **Status:** ready
 - **Priority:** 0
-- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
+- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
 - **Acceptance Criteria:**
-  - Root cause of Agent not found error identified and documented
-  - Billing records created for all 3 pilot agents in Stripe
-  - Agent-billing association lookup fixed in API
-  - Settings > Billing & Subscription loads without errors
-  - Current subscription plan displays correctly
-  - Payment methods list populates
-  - Invoice history visible with download links
-  - Graceful error handling for edge cases implemented
-  - E2E test for billing portal passes
-- **Workflow:** PM > Dev > QC
+  - Signup button visible on landing page
+  - Login button visible on landing page
+  - Email/password registration form works
+  - Login form works with valid credentials
+  - Password reset flow implemented
+  - Protected routes redirect to login when unauthenticated
+  - Authenticated users see dashboard on login
+  - User session persists across page refreshes
+  - Logout functionality works
+  - Welcome email sent after signup
+  - Auth state reflected in UI (show user name/email)
+- **Workflow:** PM > Design > Dev > QC
 
 ### feat-add-session-management-with-server-side- — add session management with server-side tokens
 
@@ -114,25 +116,23 @@
   - Secure cookie flags set (Secure, SameSite)
 - **Workflow:** PM > Dev > QC
 
-### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
+### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
 
 - **PRD:** Billing & Subscriptions
 - **Status:** ready
 - **Priority:** 0
-- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
+- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
 - **Acceptance Criteria:**
-  - Signup button visible on landing page
-  - Login button visible on landing page
-  - Email/password registration form works
-  - Login form works with valid credentials
-  - Password reset flow implemented
-  - Protected routes redirect to login when unauthenticated
-  - Authenticated users see dashboard on login
-  - User session persists across page refreshes
-  - Logout functionality works
-  - Welcome email sent after signup
-  - Auth state reflected in UI (show user name/email)
-- **Workflow:** PM > Design > Dev > QC
+  - Root cause of Agent not found error identified and documented
+  - Billing records created for all 3 pilot agents in Stripe
+  - Agent-billing association lookup fixed in API
+  - Settings > Billing & Subscription loads without errors
+  - Current subscription plan displays correctly
+  - Payment methods list populates
+  - Invoice history visible with download links
+  - Graceful error handling for edge cases implemented
+  - E2E test for billing portal passes
+- **Workflow:** PM > Dev > QC
 
 ### UC-9 — Customer Sign-Up Flow
 
