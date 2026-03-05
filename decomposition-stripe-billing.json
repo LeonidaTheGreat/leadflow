@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-02-25T17:30:00.000Z",
+  "type": "task_decomposition",
+  "original_task": {
+    "id": "943086cf-7f5b-43f5-8502-4daa4be8fee4",
+    "title": "Stripe Billing Integration",
+    "status": "decomposed",
+    "reason": "max_retries_exceeded - npm scripts missing, typecheck failures"
+  },
+  "subtasks": [
+    {
+      "id": "stripe-001-setup",
+      "title": "Stripe Billing - Project Setup & npm Scripts",
+      "description": "Set up proper npm scripts (build, lint, test, typecheck) and project structure for Stripe integration. Fix missing package.json scripts that caused previous failures.",
+      "agent_id": "dev",
+      "model": "kimi",
+      "estimated_hours": 1,
+      "estimated_cost_usd": 0.30,
+      "priority": 2,
+      "acceptance_criteria": [
+        "npm run build executes without errors",
+        "npm run lint executes without errors", 
+        "npm run test executes without errors",
+        "npx tsc --noEmit passes (typecheck)",
+        "All scripts defined in package.json"
+      ],
+      "blocking": true,
+      "sequence": 1
+    },
+    {
+      "id": "stripe-002-core",
+      "title": "Stripe Billing - Core Integration",
+      "description": "Implement Stripe billing logic: customer creation, subscription management, webhook handling. Depends on project setup completion.",
+      "agent_id": "dev",
+      "model": "sonnet",
+      "estimated_hours": 2,
+      "estimated_cost_usd": 4.00,
+      "priority": 2,
+      "acceptance_criteria": [
+        "Stripe customer created on agent signup",
+        "Subscription created with correct plan",
+        "Webhook endpoint handles stripe events",
+        "Payment method attached to customer",
+        "Error handling for failed payments"
+      ],
+      "dependencies": ["stripe-001-setup"],
+      "sequence": 2
+    },
+    {
+      "id": "stripe-003-tests",
+      "title": "Stripe Billing - Tests & Validation",
+      "description": "Add comprehensive tests for Stripe integration: unit tests for billing logic, integration tests for webhooks, validation of error scenarios.",
+      "agent_id": "qc",
+      "model": "haiku",
+      "estimated_hours": 1,
+      "estimated_cost_usd": 0.50,
+      "priority": 2,
+      "acceptance_criteria": [
+        "Unit tests for billing functions (>80% coverage)",
+        "Integration tests for webhook handling",
+        "Test for failed payment scenarios",
+        "Test for subscription cancellation",
+        "All tests pass in CI"
+      ],
+      "dependencies": ["stripe-002-core"],
+      "sequence": 3
+    }
+  ],
+  "total_estimated_hours": 4,
+  "total_estimated_cost": 4.80,
+  "rationale": "Original task failed due to missing foundation (npm scripts). Decomposing allows proper setup before complex integration work.",
+  "decomposed_by": "orchestrator",
+  "decomposition_date": "2026-02-25T17:30:00.000Z"
+}

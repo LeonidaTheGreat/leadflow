@@ -62,6 +62,20 @@
       "name": "Supabase read access",
       "severity": "critical",
       "check_type": "supabase_read"
+    },
+    {
+      "id": "signup-page",
+      "name": "Signup page",
+      "url": "https://leadflow-ai-five.vercel.app/signup",
+      "severity": "critical",
+      "check_type": "http_200"
+    },
+    {
+      "id": "login-page",
+      "name": "Login page",
+      "url": "https://leadflow-ai-five.vercel.app/login",
+      "severity": "critical",
+      "check_type": "http_200"
     }
   ],
 
