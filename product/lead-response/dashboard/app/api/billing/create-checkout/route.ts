@@ -65,6 +65,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate agent exists in database
+    const { data: agent, error: agentError } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('id', agentId)
+      .single()
+
+    if (agentError || !agent) {
+      return NextResponse.json(
+        { error: 'Agent not found' },
+        { status: 404 }
+      )
+    }
+
     // Create or get Stripe customer
     let customerId: string
     const existingCustomer = await stripe!.customers.list({
