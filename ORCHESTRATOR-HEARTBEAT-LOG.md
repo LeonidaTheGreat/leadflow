@@ -1,31 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-05T16:21:57.109Z
+Last updated: 2026-03-05T16:37:53.114Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-03T10:14:23.544Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-03T10:19:24.909Z",
     "status": {
@@ -2433,9 +2410,39 @@ Last updated: 2026-03-05T16:21:57.109Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-05T16:37:53.044Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 155,
+      "total": 200
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":4,\"blocked\":0,\"done\":155,\"total\":200}",
+      "Reset zombie: PM: Spec fix — Onboarding completion fails - 500 error on /api/agents/onboard (retry 1/3) [unknown]",
+      "Reset zombie: PM: Analyze bug feedback (retry 1/3) [unknown]",
+      "Reset zombie: PM: Journey Review — New Agent Signup (retry 1/3) [unknown]",
+      "Reset zombie: PM: Journey Review — Lead Response Flow (retry 1/3) [unknown]",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Replenished: Dev task for fix-onboarding-500-error",
+      "Journey review triggered: New Agent Signup",
+      "Journey review triggered: Lead Response Flow",
+      "Processed product review: 0 decisions, 1 tasks",
+      "Processed product review: 0 decisions, 3 tasks",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":0,"blocked":0,"done":155,"total":196}
+- Last status: {"ready":0,"inProgress":4,"blocked":0,"done":155,"total":200}

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     // Find user by email
     const { data: user, error: userError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, email, password_hash, first_name, last_name, email_verified')
       .eq('email', email.toLowerCase())
       .single()
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     // Update last login timestamp
     await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
