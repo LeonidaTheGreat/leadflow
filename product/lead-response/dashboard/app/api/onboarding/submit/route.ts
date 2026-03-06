@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Double-check email availability (in case it was taken since last check)
     const { data: existingAgent } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id')
       .eq('email', data.email.toLowerCase().trim())
       .single();
@@ -74,28 +74,18 @@ export async function POST(request: NextRequest) {
 
     // Create agent account
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .insert({
         email: data.email.toLowerCase().trim(),
         password_hash: hashedPassword,
         first_name: data.firstName.trim(),
         last_name: data.lastName.trim(),
-        phone: data.phoneNumber.replace(/\D/g, ''),
+        phone_number: data.phoneNumber.replace(/\D/g, ''),
         state: data.state,
         timezone: data.timezone || 'America/New_York',
         status: 'active',
-        is_active: true,
-        market: 'us-national', // Default market
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        onboarding_completed_at: new Date().toISOString(),
-        onboarding_metadata: {
-          completion_time_ms: tracking.completionTimeMs,
-          referrer: tracking.referrer,
-          utm_source: tracking.utmSource,
-          utm_medium: tracking.utmMedium,
-          utm_campaign: tracking.utmCampaign,
-        },
       })
       .select()
       .single();
