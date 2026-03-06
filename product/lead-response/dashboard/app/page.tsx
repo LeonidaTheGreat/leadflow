@@ -319,24 +319,122 @@ export default function LandingPage() {
         </div>
       </section>
       <section id="pricing" className="py-20 px-4 sm:px-6 bg-white">
-        <div className="max-w-lg mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 text-center mb-10">Join Our Pilot Program</h2>
-          <div className="bg-gray-50 border-2 border-teal-600 rounded-lg p-8 sm:p-12 text-center">
-            <div className="text-sm font-semibold text-teal-600 uppercase tracking-wider mb-4">Pilot Agent Special</div>
-            <div className="text-6xl sm:text-7xl font-bold text-slate-800 mb-2">FREE</div>
-            <div className="text-gray-600 mb-8 font-medium">For 30 Days, Then: $49/month per agent</div>
-            <div className="bg-white p-6 rounded-md mb-6 text-left">
-              <h4 className="text-sm font-bold text-slate-800 mb-3 text-center">Pilot Benefits</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                {['First access to new features', 'Direct input on product roadmap', '20% lifetime discount (lock in $39/mo)', 'Priority support'].map((item, i) => <li key={i} className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>{item}</li>)}
-              </ul>
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 text-center mb-4">Simple, Transparent Pricing</h2>
+          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12">Choose the plan that fits your business. All plans include a 30-day free trial.</p>
+
+          {/* Pilot CTA Banner */}
+          <div className="bg-gradient-to-r from-teal-600 to-emerald-500 rounded-lg p-6 mb-12 text-center text-white">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="text-left">
+                <div className="font-bold text-lg">🎯 Limited Pilot Program</div>
+                <div className="text-sm opacity-90">Join now for 30 days free + 20% lifetime discount</div>
+              </div>
+              <button onClick={() => setIsModalOpen(true)} className="px-6 py-3 bg-white text-teal-600 font-semibold rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap">
+                Join Pilot Program
+              </button>
             </div>
-            <ul className="text-left mb-8 space-y-3 max-w-xs mx-auto">
-              {['Unlimited AI responses', 'Unlimited SMS', 'Follow Up Boss integration', 'Cal.com booking', 'Dashboard & analytics', 'TCPA compliance', 'Email support'].map((item, i) => <li key={i} className="flex gap-3 text-sm text-slate-800 border-b border-gray-200 pb-2"><span className="text-teal-600 font-bold text-lg">✓</span>{item}</li>)}
-            </ul>
-            <button onClick={() => setIsModalOpen(true)} className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md mb-4">Join the Pilot Program</button>
-            <p className="text-xs text-gray-500 italic">No credit card. Cancel anytime. No fees.</p>
           </div>
+
+          {/* Pricing Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Starter Tier */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-800">Starter</h3>
+                <p className="text-sm text-gray-500">For solo agents testing the waters</p>
+              </div>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-slate-800">$49</span>
+                <span className="text-gray-500">/mo</span>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm text-gray-600">
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>100 SMS/month</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Basic AI responses</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Follow Up Boss integration</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Dashboard & analytics</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>TCPA compliance</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Email support</li>
+              </ul>
+              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
+                Get Started
+              </button>
+            </div>
+
+            {/* Pro Tier - Most Popular */}
+            <div className="bg-white border-2 border-teal-600 rounded-lg p-6 relative shadow-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full">Most Popular</span>
+              </div>
+              <div className="mb-4 pt-2">
+                <h3 className="text-lg font-bold text-slate-800">Pro</h3>
+                <p className="text-sm text-gray-500">For serious solo agents</p>
+              </div>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-slate-800">$149</span>
+                <span className="text-gray-500">/mo</span>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm text-gray-600">
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Unlimited SMS</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Full AI conversations</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Cal.com booking integration</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Advanced analytics</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Priority support</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Custom AI tone</li>
+              </ul>
+              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">
+                Get Started
+              </button>
+            </div>
+
+            {/* Team Tier */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-800">Team</h3>
+                <p className="text-sm text-gray-500">For small teams (up to 5 agents)</p>
+              </div>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-slate-800">$399</span>
+                <span className="text-gray-500">/mo</span>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm text-gray-600">
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Everything in Pro</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>5 agent seats included</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Team dashboard</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Lead routing & assignment</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Performance reporting</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Dedicated account manager</li>
+              </ul>
+              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
+                Get Started
+              </button>
+            </div>
+
+            {/* Brokerage Tier */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-800">Brokerage</h3>
+                <p className="text-sm text-gray-500">For brokerages & large teams</p>
+              </div>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-slate-800">$999+</span>
+                <span className="text-gray-500">/mo</span>
+              </div>
+              <ul className="space-y-3 mb-6 text-sm text-gray-600">
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Everything in Team</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>20+ agent seats</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>White-label option</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Admin dashboard</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Compliance reporting</li>
+                <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Custom integrations</li>
+              </ul>
+              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
+                Contact Sales
+              </button>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-gray-500 mt-8">All plans include 30-day free trial. No credit card required to start.</p>
         </div>
       </section>
       <section className="py-20 px-4 sm:px-6 bg-gray-50">
