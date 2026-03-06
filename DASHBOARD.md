@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-05
+title: BO2026 Dashboard - Updated 2026-03-06
 author: LeadFlow Orchestrator
-date: 2026-03-05
+date: 2026-03-06
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 19 of 60  
+**Current Day:** Day 20 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/5/2026, 11:37:52 AM
+**Last Updated:** 3/6/2026, 4:59:38 AM
 
 ---
 
@@ -33,25 +33,32 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 9 | Blocked: 0 | Done: 149
+**Queue Health:** Ready: 5 | In Progress: 10 | Blocked: 0 | Done: 185
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (5 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| QC (rescue): fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | kimi | $0.12 | 🔴 P0 |
+| QC: fix-onboarding-500-error - Verify schema collision fix on feature branch | kimi | $0.12 | 🔴 P0 |
+| Dev (rescue): fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs | qwen3.5 | $0.00 | 🔴 P0 |
+| Dev: implement-twilio-sms-integration - Implement Real Twilio SMS Integration - Replace Mock | kimi | $0.11 | 🔴 P0 |
+| QC (rescue): fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | kimi | $0.12 | 🔴 P0 |
 
-### ⚡ In Progress (9 tasks)
+### ⚡ In Progress (10 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| PM: Spec fix — Onboarding completion fails - 500 error on /api/agents/onboard | product | sonnet |
-| Dev: fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | dev | kimi |
-| PM: Spec fix — Onboarding STILL broken - 500 error on /api/agents/onboard | product | sonnet |
-| PM: Spec fix — Webhook does NOT persist leads to database | product | sonnet |
-| PM: Spec fix — SMS sending is MOCK, not real Twilio | product | sonnet |
-| PM: Analyze bug feedback | product | qwen3.5 |
-| PM: Journey Review — New Agent Signup | product | sonnet |
-| PM: Journey Review — Lead Response Flow | product | sonnet |
-| PM: Spec fix — AI response uses hardcoded templates, not Claude | product | sonnet |
+| Test Follow-up Cron Endpoint | qc | kimi |
+| QC: Verify SUPABASE_SERVICE_ROLE_KEY deployment fix | qc | qwen3.5 |
+| PM: Revenue alert — critical (mrr) | product | kimi |
+| PM: Revenue alert — critical (mrr) | product | kimi |
+| PM: Distribution — Create Landing Page | product | sonnet |
+| Dev (rescue): fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs | dev | kimi |
+| QC: fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | qc | kimi |
+| QC (rescue): fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | qc | kimi |
+| QC: fix-deployed-pages-not-registered-in-system- - Auto-Sync Deployed Vercel Pages to System Components | qc | kimi |
+| Stripe - Test Flows | qc | qwen3.5 |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -109,8 +116,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $107.91
-**Cost per task:** Avg $0.58
+**Estimated project cost:** $122.70
+**Cost per task:** Avg $0.54
 
 ---
 
@@ -123,8 +130,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. ⚡ **9 agents active**
+1. ✅ **5 tasks ready to spawn**
+2. ⚡ **10 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

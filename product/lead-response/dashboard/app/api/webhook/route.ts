@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
     
     if (!agent) {
       const { data: agents } = await supabaseAdmin
-        .from('agents')
+        .from('real_estate_agents')
         .select('*')
-        .eq('is_active', true)
+        .eq('status', 'active')
         .limit(1)
       agent = agents?.[0] || null
     }

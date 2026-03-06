@@ -424,7 +424,7 @@ async function handleLeadAssigned(fubLead: any) {
 
   // Update agent assignment
   const { data: agent } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('fub_id', fubLead.agentId)
     .single()
@@ -521,9 +521,9 @@ async function handleLeadAssigned(fubLead: any) {
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
-    .eq('is_active', true)
+    .eq('status', 'active')
     .limit(1)
 
   return agents?.[0] || null

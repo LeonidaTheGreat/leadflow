@@ -1,31 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-05T16:37:53.114Z
+Last updated: 2026-03-06T09:59:38.778Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-03T10:19:24.909Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-03T10:24:24.971Z",
     "status": {
@@ -2440,9 +2417,33 @@ Last updated: 2026-03-05T16:37:53.114Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:59:38.703Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 9,
+      "blocked": 0,
+      "done": 192,
+      "total": 247
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":9,\"blocked\":0,\"done\":192,\"total\":247}",
+      "Reset zombie: Dev (rescue): fix-deployed-pages-not-registered-in-system- - deployed pages not registered in system_components with URLs (retry 1/3) [unknown]",
+      "Reset zombie: QC: fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision (retry 1/3) [unknown]",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":4,"blocked":0,"done":155,"total":200}
+- Last status: {"ready":5,"inProgress":9,"blocked":0,"done":192,"total":247}
