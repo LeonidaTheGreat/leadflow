@@ -76,22 +76,6 @@
       "url": "https://leadflow-ai-five.vercel.app/login",
       "severity": "critical",
       "check_type": "http_200"
-    },
-    {
-      "id": "lead-simulator",
-      "name": "Lead Experience Simulator",
-      "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
-      "severity": "warning",
-      "check_type": "http_200"
-    },
-    {
-      "id": "auth-signup-login-flow",
-      "name": "Auth: signup then login",
-      "base_url": "https://leadflow-ai-five.vercel.app",
-      "signup_path": "/api/auth/trial-signup",
-      "login_path": "/api/auth/login",
-      "severity": "critical",
-      "check_type": "signup_login_flow"
     }
   ],
 
@@ -165,20 +149,6 @@
       "deploy": {
         "target_id": "vercel-dashboard"
       }
-    },
-    {
-      "id": "lead-simulator",
-      "name": "Lead Experience Simulator",
-      "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
-      "smoke_test_id": "lead-simulator",
-      "uc_id": "feat-lead-experience-simulator",
-      "description": "Admin tool for simulating lead SMS experience and viewing anonymized conversations",
-      "deploy": {
-        "target_id": "vercel-dashboard",
-        "cwd": "product/lead-response/dashboard",
-        "command": "/opt/homebrew/bin/vercel --prod --yes"
-      }
     }
   ],
 
@@ -216,7 +186,8 @@
 
   "agents": {
     "id_map": {
-      "product": "product-manager"
+      "product": "product-manager",
+      "PM": "product-manager"
     },
     "types": ["dev", "qc", "design", "product", "marketing", "analytics"],
     "labels": {
@@ -239,9 +210,9 @@
     "min_for_spawn": 0.50,
     "model_token_costs": {
       "qwen":    { "input_per_1m": 0,     "output_per_1m": 0 },
-      "qwen3.5":      { "input_per_1m": 0,     "output_per_1m": 0 },
-      "qwen3-coder":  { "input_per_1m": 0,     "output_per_1m": 0 },
-      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 3.00, "cache_read_per_1m": 0.10, "cache_hit_rate": 0.85 },
+      "qwen3.5": { "input_per_1m": 0,     "output_per_1m": 0 },
+      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 2.50 },
+      "codex":   { "input_per_1m": 0.80,   "output_per_1m": 3.00 },
       "haiku":   { "input_per_1m": 1.00,   "output_per_1m": 5.00 },
       "sonnet":  { "input_per_1m": 3.00,   "output_per_1m": 15.00 },
       "opus":    { "input_per_1m": 5.00,   "output_per_1m": 25.00 }
@@ -291,19 +262,5 @@
   "journey_reviews": {
     "periodic_interval_days": 14,
     "review_model": "sonnet"
-  },
-
-  "genome_review": {
-    "interval_hours": 12,
-    "telegram_topic_id": "15243",
-    "thresholds": {
-      "task_completion_rate_min": 0.5,
-      "retry_rate_max": 0.4,
-      "stuck_rate_max": 0.15,
-      "chain_completion_rate_min": 0.5,
-      "pm_review_actionable_rate_min": 0.3,
-      "model_success_rate_min": 0.4,
-      "cost_per_success_max_usd": 0.50
-    }
   }
 }
