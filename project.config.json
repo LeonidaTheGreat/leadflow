@@ -186,7 +186,8 @@
 
   "agents": {
     "id_map": {
-      "product": "product-manager"
+      "product": "product-manager",
+      "PM": "product-manager"
     },
     "types": ["dev", "qc", "design", "product", "marketing", "analytics"],
     "labels": {

@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Double-check email availability (in case it was taken since last check)
     const { data: existingAgent } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id')
       .eq('email', data.email.toLowerCase().trim())
       .single();
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     // Create agent account
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .insert({
         email: data.email.toLowerCase().trim(),
         password_hash: hashedPassword,

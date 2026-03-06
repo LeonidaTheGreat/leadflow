@@ -1,54 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-06T10:29:45.795Z
+Last updated: 2026-03-06T19:57:03.139Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-03T10:49:23.485Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:54:24.676Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-03T10:59:23.094Z",
     "status": {
@@ -2440,9 +2394,57 @@ Last updated: 2026-03-06T10:29:45.795Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T19:52:09.800Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 200,
+      "total": 251
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":5,\"blocked\":0,\"done\":200,\"total\":251}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Replenished: Dev task for fix-deployed-pages-not-registered-in-system-",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T19:57:03.080Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 7,
+      "blocked": 0,
+      "done": 201,
+      "total": 253
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":7,\"blocked\":0,\"done\":201,\"total\":253}",
+      "Reset zombie: QC (rescue): fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision (retry 1/3) [unknown]",
+      "Completed (via stdout): Dev: fix-deployed-pages-not-registered-in-system- - Auto-Sync Deployed Vercel Pages to System Components",
+      "Chained: dev->qc for fix-deployed-pages-not-registered-in-system-",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":6,"inProgress":5,"blocked":0,"done":197,"total":248}
+- Last status: {"ready":0,"inProgress":7,"blocked":0,"done":201,"total":253}

@@ -1,21 +1,21 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-06T10:29:45.485Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-06T19:57:02.846Z | Source: `use_cases` + `prds` tables
 
 **Progress: 32/38 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
 | UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | complete | 0 | - | PM > Design > Dev > QC |
-| UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | not_started | 0 | defined | PM > Marketing > Design > Dev > QC |
+| UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | in_progress | 0 | defined | PM > Marketing > Design > Dev > QC |
 | UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | complete | 0 | - | PM > Dev > QC |
-| implement-twilio-sms-integration | Implement Real Twilio SMS Integration - Replace Mock | Phase 1 | stuck | 0 | - | Dev > QC |
-| UC-REVENUE-RECOVERY-001 | Revenue Recovery — Close MRR Gap | Phase 3 | not_started | 0 | defined | PM > Dev > Marketing > QC |
-| fix-onboarding-500-error | Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | Phase 3 | stuck | 0 | - | Dev > QC |
+| implement-twilio-sms-integration | Implement Real Twilio SMS Integration - Replace Mock | Phase 1 | in_progress | 0 | - | Dev > QC |
+| UC-REVENUE-RECOVERY-001 | Revenue Recovery — Close MRR Gap | Phase 3 | in_progress | 0 | defined | PM > Dev > Marketing > QC |
+| fix-onboarding-500-error | Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | Phase 3 | in_progress | 0 | - | Dev > QC |
 | fix-webhook-lead-persistence | Fix Webhook Lead Persistence - Store Leads in Supabase | Phase 1 | complete | 1 | - | Dev > QC |
 | UC-10 | Billing Portal | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
 | UC-11 | Subscription Lifecycle | Phase 3 | complete | 1 | defined | PM > Dev > QC |
@@ -70,26 +70,27 @@
 
 ### UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
 
-- **PRD:** LeadFlow AI Marketing Landing Page
-- **Status:** not_started
+- **PRD:** Marketing Landing Page — High-Converting Signup Flow
+- **Status:** in_progress
 - **Priority:** 0
 - **Description:** Transform the root route (/) from a developer-focused API docs page into a high-converting marketing landing page. Drive trial signups with clear value proposition, social proof, pricing transparency, and frictionless CTAs. Critical for distribution — currently blocking all prospect traffic.
 - **Acceptance Criteria:**
-  - Hero section with compelling headline and primary CTA to /onboarding
-  - Stats bar with <30s, 78%, 35%, 24/7 metrics
-  - Problem section agitating pain points (cold leads, busy agents, wasted money)
-  - How It Works section explaining 4-step process
-  - Features grid showing 4 key capabilities
-  - Pricing section with 3 tiers (//) and Most Popular badge on Pro
-  - Final CTA section with trust signals (no credit card, cancel anytime)
-  - Fixed navigation with smooth scroll to sections
-  - Footer with copyright and legal links
-  - NO API documentation or technical jargon visible
-  - Responsive on all breakpoints (320px - 1440px+)
-  - Analytics events firing for CTA clicks and scroll depth
-  - Lighthouse Performance score ≥ 90
+  - Hero section with compelling headline, subheadline, and dual CTAs
+  - Stats bar with 4 key metrics (<30s, 78%, 35%, 24/7)
+  - Problem section with 3 pain point cards
+  - Solution section with 4 feature cards
+  - Social proof section with testimonials and trust badges
+  - How It Works section with 3-step process
+  - Pricing section with 4 tiers (Starter/Pro/Team/Brokerage)
+  - FAQ section with 7 accordion items
+  - Final CTA section with signup prompt
+  - Fixed navigation with smooth scroll links
+  - Footer with compliance links
+  - Page load time <2 seconds
+  - Responsive design (mobile-first)
   - WCAG 2.1 AA accessibility compliance
-  - SEO meta tags and Open Graph configured
+  - SEO meta tags and structured data
+  - Analytics tracking for CTAs and scroll depth
 - **Workflow:** PM > Marketing > Design > Dev > QC
 
 ### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
@@ -170,7 +171,7 @@
 ### UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
 
 - **PRD:** Revenue Recovery Plan — Critical MRR Gap Closure
-- **Status:** not_started
+- **Status:** in_progress
 - **Priority:** 0
 - **Description:** Analyze conversion funnel, reprioritize use cases by revenue impact, and execute 3 critical actions to get first paying agents within 44 days.
 - **Acceptance Criteria:**
@@ -181,14 +182,14 @@
   - Landing page deployed and converting (UC-LANDING-MARKETING-001)
   - Real Twilio SMS activated (implement-twilio-sms-integration)
   - Weekly KPI tracking established
-  - Go/No-Go decision points defined (Day 20, 25, 35)
+  - Go/No-Go decision points defined (Day 22, 25, 35)
   - Risk mitigation plan documented
 - **Workflow:** PM > Dev > Marketing > QC
 
 ### fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
 
 - **PRD:** Revenue Recovery Plan — Critical MRR Gap Closure
-- **Status:** stuck
+- **Status:** in_progress
 - **Priority:** 0
 - **Description:** Fix the critical 500 error on /api/agents/onboard that prevents new user account creation. The onboarding wizard completes successfully on the frontend, but the backend endpoint fails due to a schema collision between the orchestrator agents table and the product agents table in the same Supabase database.
 - **Acceptance Criteria:**
@@ -344,7 +345,7 @@
 ### implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
 
 - **PRD:** Revenue Recovery Plan — Critical MRR Gap Closure
-- **Status:** stuck
+- **Status:** in_progress
 - **Priority:** 0
 - **Description:** Replace the mock SMS implementation with real Twilio integration. The current sendSmsViatwilio() function only logs to console and returns fake data. Implement actual Twilio API calls to send SMS messages to leads. Include proper error handling, delivery status tracking, and message logging to the database.
 - **Acceptance Criteria:**

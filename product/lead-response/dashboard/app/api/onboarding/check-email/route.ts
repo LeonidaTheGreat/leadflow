@@ -28,9 +28,9 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Check if email exists in agents table
+    // Check if email exists in real_estate_agents table
     const { data: existingAgent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, email, status')
       .eq('email', normalizedEmail)
       .maybeSingle();
