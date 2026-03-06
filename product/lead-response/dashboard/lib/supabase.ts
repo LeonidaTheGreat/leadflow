@@ -187,15 +187,39 @@ export async function getMessagesByLead(
 export async function updateMessageStatus(
   twilioSid: string,
   status: string,
-  deliveredAt?: string
+  deliveredAt?: string,
+  price?: string,
+  priceUnit?: string,
+  numSegments?: string,
+  errorCode?: string,
+  errorMessage?: string
 ): Promise<{ data: Message | null; error: any }> {
-  const updates: Partial<Message> = { 
+  const updates: any = { 
     status: status as Message['status'],
     twilio_status: status,
   }
   
   if (deliveredAt) {
     updates.delivered_at = deliveredAt
+  }
+  
+  // Cost tracking fields
+  if (price !== undefined) {
+    updates.twilio_price = price ? parseFloat(price) : null
+  }
+  if (priceUnit) {
+    updates.twilio_price_unit = priceUnit
+  }
+  if (numSegments !== undefined) {
+    updates.twilio_num_segments = numSegments ? parseInt(numSegments, 10) : 1
+  }
+  
+  // Error tracking
+  if (errorCode) {
+    updates.twilio_error_code = errorCode
+  }
+  if (errorMessage) {
+    updates.twilio_error_message = errorMessage
   }
 
   const { data, error } = await supabaseAdmin

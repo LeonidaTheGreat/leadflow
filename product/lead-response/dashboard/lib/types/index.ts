@@ -132,10 +132,15 @@ export interface Message {
   twilio_status: string | null;
   twilio_error_code: string | null;
   twilio_error_message: string | null;
+  twilio_price: number | null;
+  twilio_price_unit: string | null;
+  twilio_num_segments: number | null;
   status: MessageStatus;
   sent_at: string | null;
   delivered_at: string | null;
   failed_at: string | null;
+  retry_count: number | null;
+  retry_attempts: any[] | null;
   metadata: Record<string, any>;
   created_at: string;
 }

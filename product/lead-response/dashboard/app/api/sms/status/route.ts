@@ -46,21 +46,26 @@ export async function POST(request: NextRequest) {
 // ============================================
 
 async function handleStatusUpdate(body: Record<string, string>) {
-  const { MessageSid, MessageStatus, ErrorCode, ErrorMessage } = body
+  const { MessageSid, MessageStatus, ErrorCode, ErrorMessage, Price, PriceUnit, NumSegments } = body
 
-  // Update message status in database
+  // Update message status in database with cost tracking
   const deliveredAt = MessageStatus === 'delivered' ? new Date().toISOString() : undefined
   
   const { error } = await updateMessageStatus(
     MessageSid,
     MessageStatus,
-    deliveredAt
+    deliveredAt,
+    Price,
+    PriceUnit,
+    NumSegments,
+    ErrorCode,
+    ErrorMessage
   )
 
   if (error) {
     console.error('❌ Error updating message status:', error)
   } else {
-    console.log('✅ Message status updated:', MessageSid, MessageStatus)
+    console.log('✅ Message status updated:', MessageSid, MessageStatus, 'Price:', Price, PriceUnit)
   }
 
   // Log delivery failures
@@ -72,6 +77,20 @@ async function handleStatusUpdate(body: Record<string, string>) {
         status: MessageStatus,
         error_code: ErrorCode,
         error_message: ErrorMessage,
+      },
+      source: 'twilio_status_callback',
+    })
+  }
+
+  // Log successful delivery with cost
+  if (MessageStatus === 'delivered' && Price) {
+    await logEvent({
+      event_type: 'sms_delivered',
+      event_data: {
+        twilio_sid: MessageSid,
+        price: Price,
+        price_unit: PriceUnit,
+        segments: NumSegments,
       },
       source: 'twilio_status_callback',
     })

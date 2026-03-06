@@ -5,7 +5,8 @@
 
 require('dotenv').config();
 const express = require('express');
-const { router } = require('./integration/fub-webhook-listener');
+const { router: fubRouter } = require('./integration/fub-webhook-listener');
+const { router: twilioRouter } = require('./integration/twilio-webhook-handler');
 
 const app = express();
 app.use(express.json());
@@ -29,7 +30,10 @@ app.get('/health', (req, res) => {
 });
 
 // FUB webhook routes
-app.use('/', router);
+app.use('/', fubRouter);
+
+// Twilio webhook routes
+app.use('/', twilioRouter);
 
 // Local development
 if (process.env.NODE_ENV !== 'production') {

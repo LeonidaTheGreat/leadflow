@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 8. Save successful message to database
+    // 8. Save successful message to database with cost tracking
     await createMessage({
       lead_id: lead.id,
       direction: 'outbound',
@@ -149,6 +149,9 @@ export async function POST(request: NextRequest) {
       twilio_status: result.status,
       status: 'sent',
       sent_at: new Date().toISOString(),
+      twilio_price: result.price ? parseFloat(result.price) : null,
+      twilio_price_unit: result.priceUnit || 'USD',
+      twilio_num_segments: result.numSegments ? parseInt(result.numSegments, 10) : 1,
     })
 
     return NextResponse.json({

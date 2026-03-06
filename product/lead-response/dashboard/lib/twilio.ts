@@ -47,6 +47,9 @@ export interface SendSmsResult {
   error?: string
   errorCode?: string
   mock?: boolean
+  price?: string
+  priceUnit?: string
+  numSegments?: string
 }
 
 /**
@@ -113,6 +116,8 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
         sid: message.sid,
         to,
         status: message.status,
+        price: message.price,
+        segments: message.numSegments,
         attempt: attempt + 1,
       })
 
@@ -120,6 +125,9 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
         success: true,
         messageSid: message.sid,
         status: message.status,
+        price: message.price,
+        priceUnit: message.priceUnit,
+        numSegments: message.numSegments,
       }
     } catch (error: any) {
       const errorCode = error.code || error.status;
@@ -235,6 +243,9 @@ export interface TwilioStatusCallback {
   ErrorMessage?: string
   From: string
   To: string
+  Price?: string
+  PriceUnit?: string
+  NumSegments?: string
 }
 
 /**
@@ -245,14 +256,19 @@ export function handleStatusCallback(body: TwilioStatusCallback): {
   status: string
   errorCode?: string
   errorMessage?: string
+  price?: string
+  priceUnit?: string
+  numSegments?: string
 } {
-  const { MessageSid, MessageStatus, ErrorCode, ErrorMessage, From, To } = body
+  const { MessageSid, MessageStatus, ErrorCode, ErrorMessage, From, To, Price, PriceUnit, NumSegments } = body
 
   console.log('📊 Twilio status:', {
     sid: MessageSid,
     status: MessageStatus,
     from: From,
     to: To,
+    price: Price,
+    segments: NumSegments,
   })
 
   return {
@@ -260,6 +276,9 @@ export function handleStatusCallback(body: TwilioStatusCallback): {
     status: MessageStatus,
     errorCode: ErrorCode,
     errorMessage: ErrorMessage,
+    price: Price,
+    priceUnit: PriceUnit,
+    numSegments: NumSegments,
   }
 }
 
