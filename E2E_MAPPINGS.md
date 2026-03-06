@@ -1,29 +1,45 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-05T16:21:56.875Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-06T21:09:35.630Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 32 specs | 5 pass | 0 fail | 27 not run**
+**Coverage: 78 specs | 8 pass | 0 fail | 70 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
 | feat-add-auth-middleware-to-protect-dashboard | Auth Middleware - Protect Dashboard Routes | tests/e2e/auth-middleware.test.ts | - | not_run |
 | feat-add-login-page-with-email-and-password | Login Page with Email and Password | tests/e2e/login-page.test.ts | - | not_run |
-| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
-| feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Protected routes with auth | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
 | feat-add-session-management-with-server-side- | Session Management with Server-Side Tokens | tests/e2e/session-management.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Failed sync retry | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Dashboard reflects sync | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Removed page marked deprecated | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | URL change updated | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | New deployment detected | - | - | not_run |
+| fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | 2026-03-07 | pass |
+| fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
+| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
+| fix-onboarding-500-error | E2E-ONBOARD-005: Billing Portal Access | test/billing-portal.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-001: Successful Signup Flow | test/onboarding-signup-flow.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-002: Login with Migrated Table | test/onboarding-login.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-003: Health Check | test/health-endpoint.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-004: End-to-End User Journey | test/e2e-user-journey.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-006: Stripe Webhook Processing | test/stripe-webhook.test.ts | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-002: Invalid Phone Number Error Handling | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-001: Real SMS Delivery via Twilio | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-003: Message Truncation | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-004: Status Update via Webhook Callback | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-005: Market-Based From Number Selection | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-006: SMS Analytics & Cost Tracking | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-007: Concurrent SMS Sends | test/twilio-sms-integration.test.js | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
 | UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
@@ -39,6 +55,36 @@
 | UC-AUTH-FIX-001 | UC-AUTH-FIX-001: Authentication Flow | tests/e2e/auth-flow.test.ts | - | not_run |
 | UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
 | UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | SEO Meta Tags | tests/e2e/landing-seo-meta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load & SEO | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing CTA with Plan Selection | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Smooth Scroll Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | FAQ Accordion | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Responsive Design | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Events | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Scroll | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Tier Selection | tests/e2e/landing-pricing-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Accessibility | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | FAQ Accordion | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Toggle | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | CTA Click Flow | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load Performance | tests/e2e/landing-page-load.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Tracking | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Landing Page Load | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Responsiveness | tests/e2e/landing-mobile-responsive.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Smooth Scroll | tests/e2e/landing-nav-scroll.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Keyboard Navigation Accessibility | tests/e2e/landing-keyboard-nav.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Responsive | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | tests/e2e/landing-hero-cta.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | SMS Value Delivery | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-001: End-to-End Revenue Funnel | tests/e2e/revenue-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REVENUE-004: End-to-End Revenue Funnel | tests/e2e/revenue-recovery-full-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-003: SMS Value Delivery | tests/e2e/sms-value-delivery.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
 
 ## feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
 
@@ -174,56 +220,6 @@
 
 ## feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
 
-### Public routes pass
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All return 200"
-]
-```
-
-### Failed route reported
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Failure shown with details"
-]
-```
-
-### All routes discovered
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All expected routes found"
-]
-```
-
-### Deployment blocked
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Deployment prevented"
-]
-```
-
-### Execution under 30s
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Completes in < 30 seconds"
-]
-```
-
 ### Route Discovery Smoke Test
 
 - **File:** `tests/e2e/route-discovery-smoke.test.ts`
@@ -269,6 +265,26 @@
 ]
 ```
 
+### All routes discovered
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All expected routes found"
+]
+```
+
+### Failed route reported
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Failure shown with details"
+]
+```
+
 ### Protected routes with auth
 
 - **Result:** not_run
@@ -277,6 +293,36 @@
 [
   "Returns 200 with auth",
   "Returns 401 without auth"
+]
+```
+
+### Execution under 30s
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Completes in < 30 seconds"
+]
+```
+
+### Deployment blocked
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Deployment prevented"
+]
+```
+
+### Public routes pass
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All return 200"
 ]
 ```
 
@@ -346,26 +392,6 @@
 
 ## feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
 
-### Failed sync retry
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Sync succeeds on retry"
-]
-```
-
-### Dashboard reflects sync
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All components match system_components"
-]
-```
-
 ### Auto-Sync Deployed Pages to System Components
 
 - **File:** `tests/e2e/auto-sync-deployed-pages.test.ts`
@@ -402,6 +428,36 @@
 ]
 ```
 
+### Manual sync trigger
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Components updated without waiting for heartbeat"
+]
+```
+
+### Failed sync retry
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Sync succeeds on retry"
+]
+```
+
+### Dashboard reflects sync
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All components match system_components"
+]
+```
+
 ### Removed page marked deprecated
 
 - **Result:** not_run
@@ -422,16 +478,6 @@
 ]
 ```
 
-### Manual sync trigger
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Components updated without waiting for heartbeat"
-]
-```
-
 ### New deployment detected
 
 - **Result:** not_run
@@ -442,6 +488,220 @@
   "URL is correct",
   "Status is live"
 ]
+```
+
+
+## fix-deployed-pages-not-registered-in-system- — Auto-Sync Deployed Vercel Pages to System Components
+
+### E2E-3: URL Accuracy Verification
+
+- **File:** `tests/e2e/url-accuracy.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "url": "https://leadflow-ai-five.vercel.app",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://leadflow-ai-five.vercel.app/dashboard",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://fub-inbound-webhook.vercel.app/health",
+    "type": "http",
+    "expect": 200
+  }
+]
+```
+
+### E2E-2: Manual Sync API
+
+- **File:** `tests/e2e/manual-sync-api.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /api/admin/sync-deployed-pages"
+  },
+  {
+    "path": "success",
+    "type": "response",
+    "expect": "true"
+  },
+  {
+    "type": "database",
+    "query": "status='live' AND status_emoji='🟢'",
+    "table": "system_components",
+    "expect": "count >= 4"
+  }
+]
+```
+
+### E2E-1: Auto-Sync on Heartbeat
+
+- **File:** `tests/e2e/deployed-pages-sync.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "type": "database",
+    "query": "component_name='Vercel /health endpoint' AND metadata->>'url' IS NOT NULL",
+    "table": "system_components",
+    "expect": "exists"
+  },
+  {
+    "type": "database",
+    "query": "component_name='Vercel root endpoint' AND metadata->>'url' IS NOT NULL",
+    "table": "system_components",
+    "expect": "exists"
+  },
+  {
+    "type": "database",
+    "query": "component_name='Vercel dashboard health' AND metadata->>'url' IS NOT NULL",
+    "table": "system_components",
+    "expect": "exists"
+  },
+  {
+    "type": "database",
+    "query": "component_name='Signup page' AND metadata->>'url' IS NOT NULL",
+    "table": "system_components",
+    "expect": "exists"
+  }
+]
+```
+
+
+## fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
+
+### E2E-ONBOARD-005: Billing Portal Access
+
+- **File:** `test/billing-portal.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Billing portal loads; Subscription details displayed; Queries real_estate_agents successfully"
+```
+
+### E2E-ONBOARD-001: Successful Signup Flow
+
+- **File:** `test/onboarding-signup-flow.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"No 500 errors; Agent created in real_estate_agents table; Response includes agent data (no password_hash)"
+```
+
+### E2E-ONBOARD-002: Login with Migrated Table
+
+- **File:** `test/onboarding-login.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Login succeeds; Returns agent data from real_estate_agents table; Session created"
+```
+
+### E2E-ONBOARD-003: Health Check
+
+- **File:** `test/health-endpoint.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Status 200; Database connectivity confirmed; Queries real_estate_agents table successfully"
+```
+
+### E2E-ONBOARD-004: End-to-End User Journey
+
+- **File:** `test/e2e-user-journey.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Complete flow works without errors; Dashboard displays user data from real_estate_agents"
+```
+
+### E2E-ONBOARD-006: Stripe Webhook Processing
+
+- **File:** `test/stripe-webhook.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Webhook processes successfully; real_estate_agents table updated; No 500 errors"
+```
+
+
+## implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
+
+### E2E-TWILIO-002: Invalid Phone Number Error Handling
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
+```
+
+### E2E-TWILIO-001: Real SMS Delivery via Twilio
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"SMS delivered to phone; SID stored in DB; Status tracking active; No errors; Response <2s"
+```
+
+### E2E-TWILIO-003: Message Truncation
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Message truncated to 160 chars; Warning in console; SMS sent; Body stored correctly"
+```
+
+### E2E-TWILIO-004: Status Update via Webhook Callback
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Status updated to delivered; Timestamp set; Events logged; DB state consistent"
+```
+
+### E2E-TWILIO-005: Market-Based From Number Selection
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Correct from-number per market; CA override works; Warning logged if missing; No errors"
+```
+
+### E2E-TWILIO-006: SMS Analytics & Cost Tracking
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Analytics counts correct; Delivery rate calculated; Cost tracked; Events logged with durations"
+```
+
+### E2E-TWILIO-007: Concurrent SMS Sends
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"All SMS sent; Unique SIDs; All logged; Response time <2s each; No rate limit errors"
 ```
 
 
@@ -1189,6 +1449,486 @@
     "expect": true,
     "selector": "dashboard-content"
   }
+]
+```
+
+
+## UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
+
+### SEO Meta Tags
+
+- **File:** `tests/e2e/landing-seo-meta.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "name": "title",
+    "type": "meta",
+    "expect": "contains=LeadFlow AI"
+  },
+  {
+    "name": "description",
+    "type": "meta",
+    "expect": "not-empty"
+  },
+  {
+    "type": "meta",
+    "expect": "exists",
+    "property": "og:title"
+  },
+  {
+    "type": "meta",
+    "expect": "exists",
+    "property": "og:description"
+  }
+]
+```
+
+### Page Load & SEO
+
+- **Result:** not_run
+
+### Hero CTA Navigation
+
+- **Result:** not_run
+
+### Pricing CTA with Plan Selection
+
+- **Result:** not_run
+
+### Smooth Scroll Navigation
+
+- **Result:** not_run
+
+### FAQ Accordion
+
+- **Result:** not_run
+
+### Responsive Design
+
+- **Result:** not_run
+
+### Mobile Navigation
+
+- **Result:** not_run
+
+### Analytics Events
+
+- **Result:** not_run
+
+### Navigation Scroll
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"smooth_scroll\",\"url_hash_updated\"]"
+```
+
+### Pricing Tier Selection
+
+- **File:** `tests/e2e/landing-pricing-cta.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "scroll",
+    "selector": "[data-testid=pricing-section]"
+  },
+  {
+    "type": "click",
+    "selector": "[data-testid=pricing-pro-cta]"
+  },
+  {
+    "type": "navigation",
+    "expect": "url=/onboarding"
+  },
+  {
+    "type": "analytics",
+    "event": "pricing_cta_click",
+    "expect": "fired",
+    "params": {
+      "plan": "pro"
+    }
+  }
+]
+```
+
+### Accessibility
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"alt_text_present\",\"heading_hierarchy\",\"aria_labels\",\"contrast_aa\"]"
+```
+
+### FAQ Accordion
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"accordion_expands\",\"only_one_open\",\"smooth_animation\"]"
+```
+
+### Pricing Toggle
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"prices_update\",\"badge_visible\",\"calculation_correct\"]"
+```
+
+### CTA Click Flow
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"redirects_to_signup\",\"utm_preserved\",\"analytics_fired\"]"
+```
+
+### Page Load Performance
+
+- **File:** `tests/e2e/landing-page-load.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "performance",
+    "expect": "<1500",
+    "metric": "FCP"
+  },
+  {
+    "type": "performance",
+    "expect": "score>=90",
+    "metric": "Lighthouse"
+  },
+  {
+    "type": "console",
+    "expect": "no_errors"
+  },
+  {
+    "type": "element",
+    "expect": "visible",
+    "selector": "[data-testid=hero-section]"
+  }
+]
+```
+
+### Analytics Tracking
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"pageview_fired\",\"scroll_depth_tracked\",\"cta_events_fired\"]"
+```
+
+### Landing Page Load
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"hero_visible\",\"ctas_clickable\",\"lighthouse_score_above_90\"]"
+```
+
+### Mobile Responsiveness
+
+- **File:** `tests/e2e/landing-mobile-responsive.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "layout",
+    "expect": "single-column"
+  },
+  {
+    "type": "scroll",
+    "expect": "no-horizontal-scroll"
+  },
+  {
+    "type": "element",
+    "expect": "tap-target>=44px",
+    "selector": "[data-testid=hero-cta-primary]"
+  },
+  {
+    "type": "element",
+    "expect": "visible",
+    "selector": "[data-testid=pricing-section]"
+  }
+]
+```
+
+### Navigation Smooth Scroll
+
+- **File:** `tests/e2e/landing-nav-scroll.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "click",
+    "selector": "[data-testid=nav-pricing]"
+  },
+  {
+    "type": "scroll",
+    "expect": "pricing-section-centered"
+  },
+  {
+    "type": "click",
+    "selector": "[data-testid=nav-features]"
+  },
+  {
+    "type": "scroll",
+    "expect": "features-section-centered"
+  }
+]
+```
+
+### Keyboard Navigation Accessibility
+
+- **File:** `tests/e2e/landing-keyboard-nav.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "keyboard",
+    "action": "tab",
+    "expect": "focus-on-nav-links"
+  },
+  {
+    "type": "keyboard",
+    "action": "tab",
+    "expect": "focus-on-hero-cta"
+  },
+  {
+    "type": "css",
+    "expect": "visible-outline",
+    "selector": ":focus"
+  },
+  {
+    "type": "keyboard",
+    "action": "enter",
+    "expect": "cta-activated"
+  }
+]
+```
+
+### Mobile Responsive
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"no_horizontal_scroll\",\"tap_targets_44px\",\"faq_works_touch\"]"
+```
+
+### Hero CTA Navigation
+
+- **File:** `tests/e2e/landing-hero-cta.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "click",
+    "selector": "[data-testid=hero-cta-primary]"
+  },
+  {
+    "type": "scroll",
+    "expect": "signup-section-in-viewport"
+  },
+  {
+    "type": "analytics",
+    "event": "hero_cta_click",
+    "expect": "fired"
+  }
+]
+```
+
+
+## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
+
+### SMS Value Delivery
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
+```
+
+### E2E-REV-001: End-to-End Revenue Funnel
+
+- **File:** `tests/e2e/revenue-funnel.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Landing page loads with <3s LCP",
+  "Signup form submits without error",
+  "Onboarding completes successfully",
+  "Dashboard accessible post-onboarding",
+  "Payment processing succeeds",
+  "MRR increases correctly"
+]
+```
+
+### Pilot Agent Onboarding
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
+```
+
+### E2E-REVENUE-004: End-to-End Revenue Funnel
+
+- **File:** `tests/e2e/revenue-recovery-full-funnel.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "hero-cta-button"
+  },
+  {
+    "type": "ui",
+    "value": "/onboarding",
+    "action": "verify",
+    "expect": "url"
+  },
+  {
+    "type": "ui",
+    "value": "Revenue Test",
+    "action": "fill",
+    "selector": "input-name"
+  },
+  {
+    "type": "ui",
+    "value": "revenue@test.com",
+    "action": "fill",
+    "selector": "input-email"
+  },
+  {
+    "type": "ui",
+    "value": "555-999-8888",
+    "action": "fill",
+    "selector": "input-phone"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "next-button"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "next-button"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "submit-button"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "plan-selection"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "select-pro-plan"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "continue-to-payment"
+  },
+  {
+    "cvc": "123",
+    "type": "stripe",
+    "action": "fill_card",
+    "expiry": "12/30",
+    "number": "4242424242424242"
+  },
+  {
+    "type": "stripe",
+    "action": "submit"
+  },
+  {
+    "type": "ui",
+    "value": "/dashboard",
+    "action": "verify",
+    "expect": "url"
+  },
+  {
+    "type": "stripe",
+    "expect": "subscription_active"
+  },
+  {
+    "type": "db",
+    "table": "subscriptions",
+    "where": {
+      "status": "active"
+    },
+    "expect": "record_exists"
+  }
+]
+```
+
+### End-to-End Revenue Funnel
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
+```
+
+### E2E-REV-003: SMS Value Delivery
+
+- **File:** `tests/e2e/sms-value-delivery.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "FUB webhook received",
+  "SMS sent within 30s",
+  "Message delivered to lead phone",
+  "Conversation logged in dashboard",
+  "Delivery status tracked"
+]
+```
+
+### E2E-REV-002: Pilot Agent Onboarding
+
+- **File:** `tests/e2e/pilot-onboarding.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Onboarding wizard renders",
+  "Account created in Supabase",
+  "FUB integration connects",
+  "Twilio integration connects",
+  "Test lead received within 5 min"
 ]
 ```
 
