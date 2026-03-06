@@ -53,6 +53,14 @@ class SystemComponentsSync {
   }
 
   /**
+   * Get the project ID for system_components
+   * The project_id is a string reference (e.g., 'leadflow'), not a UUID
+   */
+  getProjectId() {
+    return this.config.project_id || 'leadflow'
+  }
+
+  /**
    * Sync all deployed products from project.config.json to system_components
    */
   async syncDeployedPages() {
@@ -120,7 +128,7 @@ class SystemComponentsSync {
       .from('system_components')
       .upsert({
         id: component.id,
-        project_id: 'leadflow', // Use string id matching config
+        project_id: this.getProjectId(),
         component_name: component.component_name,
         category: component.category,
         status: component.status,
