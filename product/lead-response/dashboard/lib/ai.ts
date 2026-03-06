@@ -1,4 +1,5 @@
 import { anthropic } from '@ai-sdk/anthropic'
+import { createOpenAI } from '@ai-sdk/openai'
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
 import type { 
@@ -39,11 +40,37 @@ export function withTimeout<T>(
 // AI QUALIFICATION ENGINE
 // ============================================
 
-const MODEL = 'claude-3-haiku-20240307'
+// Configurable AI model - defaults to Qwen 3.5 local
+const AI_PROVIDER = process.env.AI_PROVIDER || 'qwen-local'
+const AI_MODEL = process.env.AI_MODEL || 'qwen3.5-14b'
 const AI_TIMEOUT_MS = 5000; // 5 second timeout for AI operations
+
+// Qwen local client configuration
+const qwenLocal = createOpenAI({
+  baseURL: process.env.QWEN_LOCAL_URL || 'http://localhost:11434/v1',
+  apiKey: 'ollama', // Ollama doesn't require auth but SDK needs a value
+})
+
+// Get the appropriate model client based on configuration
+function getModelClient() {
+  switch (AI_PROVIDER) {
+    case 'anthropic':
+      return anthropic(AI_MODEL || 'claude-3-haiku-20240307')
+    case 'qwen-local':
+    default:
+      return qwenLocal(AI_MODEL || 'qwen3.5-14b')
+  }
+}
 
 // Runtime check for mock mode (not build-time)
 function isMockMode(): boolean {
+  // Check for Qwen local availability
+  if (AI_PROVIDER === 'qwen-local') {
+    // Qwen local is always available if the server is running
+    return false
+  }
+  
+  // Check for Anthropic
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) return true
   if (key === 'sk-ant-placeholder') return true
@@ -105,7 +132,7 @@ export async function qualifyLead(input: QualificationInput): Promise<AiQualific
 
   try {
     const result = await generateObject({
-      model: anthropic(MODEL),
+      model: getModelClient(),
       schema: qualificationSchema,
       prompt,
       temperature: 0.2, // Lower temperature for consistent extraction
@@ -271,7 +298,7 @@ export async function generateAiSmsResponse(
 
   try {
     const result = await generateObject({
-      model: anthropic(MODEL),
+      model: getModelClient(),
       schema: z.object({
         message: z.string().max(320).describe('SMS message, max 320 chars (2 SMS segments)'),
         confidence: z.number().min(0).max(1),
