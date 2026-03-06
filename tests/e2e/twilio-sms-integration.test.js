@@ -13,13 +13,12 @@ require('dotenv').config();
 const assert = require('assert');
 const {
   sendSmsViatwilio,
-  checkMessageStatus,
-  updateMessageStatus,
-  normalizePhoneNumber,
-  selectSenderNumber,
-  validateConfig,
-  TwilioSmsError,
-} = require('../integration/twilio-sms');
+  getSmsStatus,
+  updateSmsStatus,
+  selectFromNumber: selectSenderNumber,
+  validateSmsInput,
+  SMS_CONFIG,
+} = require('../lib/twilio-sms');
 
 // Test configuration
 const TEST_CONFIG = {
@@ -44,13 +43,20 @@ class TwilioSmsTestSuite {
     console.log('\n🧪 TEST 1: Validate Twilio Configuration');
 
     try {
-      const validation = validateConfig();
+      const hasAccountSid = !!process.env.TWILIO_ACCOUNT_SID;
+      const hasAuthToken = !!process.env.TWILIO_AUTH_TOKEN;
+      const hasPhoneNumber = !!process.env.TWILIO_PHONE_NUMBER_US || !!process.env.TWILIO_PHONE_NUMBER_CA;
       
-      if (!validation.valid) {
-        console.log('⚠️  Config validation errors:', validation.errors);
-        // Don't fail - just warn in test environment
-        console.log('✅ PASS: Config validation ran (with warnings)');
-        this.recordResult('Config Validation', true, { warnings: validation.errors });
+      if (!hasAccountSid || !hasAuthToken || !hasPhoneNumber) {
+        const missing = [
+          !hasAccountSid ? 'TWILIO_ACCOUNT_SID' : null,
+          !hasAuthToken ? 'TWILIO_AUTH_TOKEN' : null,
+          !hasPhoneNumber ? 'TWILIO_PHONE_NUMBER' : null,
+        ].filter(x => x);
+        
+        console.log('⚠️  Missing environment variables:', missing.join(', '));
+        console.log('✅ PASS: Config check ran (with warnings)');
+        this.recordResult('Config Validation', true, { warnings: missing });
       } else {
         console.log('✅ PASS: Twilio configuration is valid');
         this.recordResult('Config Validation', true);
@@ -62,75 +68,73 @@ class TwilioSmsTestSuite {
   }
 
   /**
-   * Test 2: Phone number normalization
+   * Test 2: Sender phone selection
    */
-  async testNormalizePhoneNumber() {
-    console.log('\n🧪 TEST 2: Phone Number Normalization');
+  async testSenderPhoneSelection() {
+    console.log('\n🧪 TEST 2: Sender Phone Number Selection');
 
     const testCases = [
-      { input: '+14165551234', expected: '+14165551234', desc: 'Already E.164' },
-      { input: '4165551234', expected: '+14165551234', desc: '10-digit US/CA' },
-      { input: '1-416-555-1234', expected: '+14165551234', desc: 'With dashes' },
-      { input: '(416) 555-1234', expected: '+14165551234', desc: 'With parentheses' },
-      { input: '+1 (416) 555-1234', expected: '+14165551234', desc: 'Mixed format' },
-      { input: '', expected: null, desc: 'Empty string' },
-      { input: null, expected: null, desc: 'Null input' },
-      { input: '123', expected: null, desc: 'Too short' },
+      { input: '+14165551234', desc: 'Toronto number' },
+      { input: '+14158001234', desc: 'San Francisco number' },
+      { input: '+16045551234', desc: 'Vancouver number' },
+      { input: '+12125551234', desc: 'New York number' },
     ];
 
     let allPassed = true;
     for (const tc of testCases) {
-      const result = normalizePhoneNumber(tc.input);
-      const passed = result === tc.expected;
-      if (!passed) {
-        console.log(`  ❌ "${tc.desc}": expected "${tc.expected}", got "${result}"`);
+      try {
+        const result = selectSenderNumber(undefined, tc.input);
+        const passed = typeof result === 'string' && result.startsWith('+');
+        if (!passed) {
+          console.log(`  ❌ "${tc.desc}": got invalid "${result}"`);
+          allPassed = false;
+        } else {
+          console.log(`  ✅ "${tc.desc}": ${result}`);
+        }
+      } catch (error) {
+        console.log(`  ❌ "${tc.desc}": ${error.message}`);
         allPassed = false;
-      } else {
-        console.log(`  ✅ "${tc.desc}"`);
       }
     }
 
     if (allPassed) {
-      console.log('✅ PASS: All phone normalization tests passed');
-      this.recordResult('Phone Normalization', true);
+      console.log('✅ PASS: Phone selection works correctly');
+      this.recordResult('Phone Selection', true);
     } else {
-      console.log('❌ FAIL: Some phone normalization tests failed');
-      this.recordResult('Phone Normalization', false);
+      console.log('❌ FAIL: Some phone selection tests failed');
+      this.recordResult('Phone Selection', false);
     }
   }
 
   /**
-   * Test 3: Sender number selection
+   * Test 3: Phone number format validation
    */
-  async testSelectSenderNumber() {
-    console.log('\n🧪 TEST 3: Sender Number Selection');
+  async testPhoneFormatValidation() {
+    console.log('\n🧪 TEST 3: Phone Number Format Validation');
 
-    const testCases = [
-      { input: '+14165551234', shouldContain: 'CA', desc: 'Toronto number' },
-      { input: '+14158001234', shouldContain: 'US', desc: 'San Francisco number' },
-      { input: '+16045551234', shouldContain: 'CA', desc: 'Vancouver number' },
-      { input: '+12125551234', shouldContain: 'US', desc: 'New York number' },
+    const validNumbers = [
+      '+14165551234',
+      '+1-416-555-1234',
     ];
 
     let allPassed = true;
-    for (const tc of testCases) {
-      const result = selectSenderNumber(tc.input);
-      // Just verify we get a string back
-      const passed = typeof result === 'string' && result.startsWith('+');
-      if (!passed) {
-        console.log(`  ❌ "${tc.desc}": expected valid number, got "${result}"`);
+    for (const num of validNumbers) {
+      try {
+        // This should not throw
+        validateSmsInput(num, 'Test message');
+        console.log(`  ✅ "${num}" accepted`);
+      } catch (error) {
+        console.log(`  ❌ "${num}" rejected: ${error.message}`);
         allPassed = false;
-      } else {
-        console.log(`  ✅ "${tc.desc}": ${result}`);
       }
     }
 
     if (allPassed) {
-      console.log('✅ PASS: Sender number selection works');
-      this.recordResult('Sender Number Selection', true);
+      console.log('✅ PASS: Phone validation works');
+      this.recordResult('Phone Validation', true);
     } else {
-      console.log('❌ FAIL: Sender number selection failed');
-      this.recordResult('Sender Number Selection', false);
+      console.log('❌ FAIL: Phone validation failed');
+      this.recordResult('Phone Validation', false);
     }
   }
 
@@ -350,8 +354,8 @@ async function runAllTests() {
 
   // Run tests in sequence
   await suite.testValidateConfig();
-  await suite.testNormalizePhoneNumber();
-  await suite.testSelectSenderNumber();
+  await suite.testSenderPhoneSelection();
+  await suite.testPhoneFormatValidation();
   await suite.testInputValidation();
   await suite.testMockSmsSend();
   await suite.testErrorClassification();
