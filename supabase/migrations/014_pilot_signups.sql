@@ -1,4 +1,4 @@
--- Migration 012: Create pilot_signups table
+-- Migration 014: Create pilot_signups table
 -- The /api/pilot-signup route inserts into pilot_signups, but this table was missing.
 -- Fixes PGRST205 error — primary conversion mechanism on the landing page was broken.
 
