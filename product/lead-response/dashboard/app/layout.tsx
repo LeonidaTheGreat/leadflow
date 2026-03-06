@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 // GA4 Measurement ID — set NEXT_PUBLIC_GA4_MEASUREMENT_ID in Vercel env vars.
 // In local dev the script loads in no-op mode (ID is undefined → script skipped).
-const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+const GA4_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
 
 export default function RootLayout({
   children,
@@ -37,11 +37,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* ── GA4: async loader (FR-1) ─────────────────────────────────────── */}
-        {GA_ID && (
+        {/* ── GA4: async loader ─────────────────────────────────────── */}
+        {GA4_MEASUREMENT_ID && (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`}
               strategy="afterInteractive"
             />
             <Script id="ga4-init" strategy="afterInteractive">
@@ -50,7 +50,8 @@ export default function RootLayout({
                 function gtag(){dataLayer.push(arguments);}
                 window.gtag = gtag;
                 gtag('js', new Date());
-                gtag('config', '${GA_ID}', {
+                gtag('config', '${GA4_MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
                   anonymize_ip: true,
                   send_page_view: true
                 });
