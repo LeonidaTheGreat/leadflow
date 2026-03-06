@@ -1,20 +1,20 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-06T10:24:40.430Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-06T10:29:45.485Z | Source: `use_cases` + `prds` tables
 
 **Progress: 32/38 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
-| UC-REVENUE-RECOVERY-001 | Revenue Recovery — Close MRR Gap | Phase 3 | not_started | 0 | - | PM > Dev > Marketing > QC |
-| UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | not_started | 0 | defined | PM > Marketing > Design > Dev > QC |
 | UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | complete | 0 | - | PM > Design > Dev > QC |
+| UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | not_started | 0 | defined | PM > Marketing > Design > Dev > QC |
+| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | implement-twilio-sms-integration | Implement Real Twilio SMS Integration - Replace Mock | Phase 1 | stuck | 0 | - | Dev > QC |
-| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | complete | 0 | - | PM > Dev > QC |
+| UC-REVENUE-RECOVERY-001 | Revenue Recovery — Close MRR Gap | Phase 3 | not_started | 0 | defined | PM > Dev > Marketing > QC |
 | fix-onboarding-500-error | Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | Phase 3 | stuck | 0 | - | Dev > QC |
 | fix-webhook-lead-persistence | Fix Webhook Lead Persistence - Store Leads in Supabase | Phase 1 | complete | 1 | - | Dev > QC |
 | UC-10 | Billing Portal | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
@@ -48,13 +48,25 @@
 
 ## Phase: Phase 3
 
-### UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
+### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
 
-- **PRD:** Revenue Recovery Plan — Critical MRR Gap Closure
-- **Status:** not_started
+- **PRD:** Billing & Subscriptions
+- **Status:** complete
 - **Priority:** 0
-- **Description:** Analyze conversion funnel, reprioritize use cases by revenue impact, and execute 3 critical actions to get first paying agents within 44 days.
-- **Workflow:** PM > Dev > Marketing > QC
+- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
+- **Acceptance Criteria:**
+  - Signup button visible on landing page
+  - Login button visible on landing page
+  - Email/password registration form works
+  - Login form works with valid credentials
+  - Password reset flow implemented
+  - Protected routes redirect to login when unauthenticated
+  - Authenticated users see dashboard on login
+  - User session persists across page refreshes
+  - Logout functionality works
+  - Welcome email sent after signup
+  - Auth state reflected in UI (show user name/email)
+- **Workflow:** PM > Design > Dev > QC
 
 ### UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
 
@@ -80,25 +92,23 @@
   - SEO meta tags and Open Graph configured
 - **Workflow:** PM > Marketing > Design > Dev > QC
 
-### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
+### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
 
 - **PRD:** Billing & Subscriptions
 - **Status:** complete
 - **Priority:** 0
-- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
+- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
 - **Acceptance Criteria:**
-  - Signup button visible on landing page
-  - Login button visible on landing page
-  - Email/password registration form works
-  - Login form works with valid credentials
-  - Password reset flow implemented
-  - Protected routes redirect to login when unauthenticated
-  - Authenticated users see dashboard on login
-  - User session persists across page refreshes
-  - Logout functionality works
-  - Welcome email sent after signup
-  - Auth state reflected in UI (show user name/email)
-- **Workflow:** PM > Design > Dev > QC
+  - Root cause of Agent not found error identified and documented
+  - Billing records created for all 3 pilot agents in Stripe
+  - Agent-billing association lookup fixed in API
+  - Settings > Billing & Subscription loads without errors
+  - Current subscription plan displays correctly
+  - Payment methods list populates
+  - Invoice history visible with download links
+  - Graceful error handling for edge cases implemented
+  - E2E test for billing portal passes
+- **Workflow:** PM > Dev > QC
 
 ### feat-add-session-management-with-server-side- — add session management with server-side tokens
 
@@ -157,23 +167,23 @@
   - Auth state available via context/hook for UI components
 - **Workflow:** PM > Dev > QC
 
-### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
+### UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
 
-- **PRD:** Billing & Subscriptions
-- **Status:** complete
+- **PRD:** Revenue Recovery Plan — Critical MRR Gap Closure
+- **Status:** not_started
 - **Priority:** 0
-- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
+- **Description:** Analyze conversion funnel, reprioritize use cases by revenue impact, and execute 3 critical actions to get first paying agents within 44 days.
 - **Acceptance Criteria:**
-  - Root cause of Agent not found error identified and documented
-  - Billing records created for all 3 pilot agents in Stripe
-  - Agent-billing association lookup fixed in API
-  - Settings > Billing & Subscription loads without errors
-  - Current subscription plan displays correctly
-  - Payment methods list populates
-  - Invoice history visible with download links
-  - Graceful error handling for edge cases implemented
-  - E2E test for billing portal passes
-- **Workflow:** PM > Dev > QC
+  - Conversion funnel analyzed and bottlenecks documented
+  - Use cases reprioritized by revenue impact (P0/P1/P2/P3)
+  - 3 critical actions identified to close MRR gap
+  - Onboarding fix unblocks signup flow (fix-onboarding-500-error)
+  - Landing page deployed and converting (UC-LANDING-MARKETING-001)
+  - Real Twilio SMS activated (implement-twilio-sms-integration)
+  - Weekly KPI tracking established
+  - Go/No-Go decision points defined (Day 20, 25, 35)
+  - Risk mitigation plan documented
+- **Workflow:** PM > Dev > Marketing > QC
 
 ### fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
 

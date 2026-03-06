@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import crypto from 'crypto'
-
-// Simple password hashing using crypto (for demo)
-// In production, use a proper library like bcrypt or argon2
-function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString('hex')
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
-    .toString('hex')
-  return `${salt}:${hash}`
-}
+import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = hashPassword(password)
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create agent account
     const { data: agent, error: agentError } = await supabase

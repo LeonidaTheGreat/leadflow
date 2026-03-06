@@ -1,32 +1,32 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-06T10:24:40.575Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-06T10:29:45.566Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 47 specs | 5 pass | 0 fail | 42 not run**
+**Coverage: 50 specs | 5 pass | 0 fail | 45 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
 | feat-add-auth-middleware-to-protect-dashboard | Auth Middleware - Protect Dashboard Routes | tests/e2e/auth-middleware.test.ts | - | not_run |
 | feat-add-login-page-with-email-and-password | Login Page with Email and Password | tests/e2e/login-page.test.ts | - | not_run |
-| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
-| feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Protected routes with auth | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
 | feat-add-session-management-with-server-side- | Session Management with Server-Side Tokens | tests/e2e/session-management.test.ts | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Dashboard reflects sync | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Removed page marked deprecated | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | URL change updated | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | New deployment detected | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | URL change updated | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Removed page marked deprecated | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Failed sync retry | - | - | not_run |
-| fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | - | not_run |
-| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | - | not_run |
 | fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | - | not_run |
+| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | - | not_run |
+| fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | - | not_run |
 | fix-onboarding-500-error | Signup Flow Recovery Test | tests/e2e/signup-recovery.test.ts | - | not_run |
 | implement-twilio-sms-integration | Real SMS Delivery Test | tests/e2e/sms-delivery.test.ts | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
@@ -45,15 +45,18 @@
 | UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
 | UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | E2E-LP-004: Mobile Responsive | tests/e2e/landing-marketing-mobile.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | E2E-LP-003: Pricing CTA Navigation | tests/e2e/landing-marketing-pricing-cta.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Landing Page Conversion Test | tests/e2e/landing-conversion.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | E2E-LP-002: Hero CTA Navigation | tests/e2e/landing-marketing-hero-cta.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | E2E-LP-001: Page Load and Visual Check | tests/e2e/landing-marketing-page-load.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | E2E-LP-005: Navigation Smooth Scroll | tests/e2e/landing-marketing-navigation.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | E2E-LP-006: Analytics Events | tests/e2e/landing-marketing-analytics.test.ts | - | not_run |
-| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
+| UC-LANDING-MARKETING-001 | E2E-LP-001: Page Load and Visual Check | tests/e2e/landing-marketing-page-load.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | E2E-LP-002: Hero CTA Navigation | tests/e2e/landing-marketing-hero-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Landing Page Conversion Test | tests/e2e/landing-conversion.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | E2E-LP-003: Pricing CTA Navigation | tests/e2e/landing-marketing-pricing-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | E2E-LP-005: Navigation Smooth Scroll | tests/e2e/landing-marketing-navigation.test.ts | - | not_run |
 | UC-REVENUE-RECOVERY-001 | SMS Value Delivery | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
 | UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-003: SMS Value Delivery | tests/e2e/sms-value-delivery.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-001: End-to-End Revenue Funnel | tests/e2e/revenue-funnel.test.ts | - | not_run |
 
 ## feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
 
@@ -189,36 +192,6 @@
 
 ## feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
 
-### Public routes pass
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All return 200"
-]
-```
-
-### All routes discovered
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All expected routes found"
-]
-```
-
-### Execution under 30s
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Completes in < 30 seconds"
-]
-```
-
 ### Protected routes with auth
 
 - **Result:** not_run
@@ -237,6 +210,26 @@
 ```json
 [
   "Failure shown with details"
+]
+```
+
+### All routes discovered
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All expected routes found"
+]
+```
+
+### Deployment blocked
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Deployment prevented"
 ]
 ```
 
@@ -285,13 +278,23 @@
 ]
 ```
 
-### Deployment blocked
+### Execution under 30s
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Deployment prevented"
+  "Completes in < 30 seconds"
+]
+```
+
+### Public routes pass
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All return 200"
 ]
 ```
 
@@ -361,6 +364,48 @@
 
 ## feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
 
+### Dashboard reflects sync
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All components match system_components"
+]
+```
+
+### New deployment detected
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "New entry exists",
+  "URL is correct",
+  "Status is live"
+]
+```
+
+### URL change updated
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "URL updated to new value"
+]
+```
+
+### Removed page marked deprecated
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Status changed to deprecated"
+]
+```
+
 ### Auto-Sync Deployed Pages to System Components
 
 - **File:** `tests/e2e/auto-sync-deployed-pages.test.ts`
@@ -397,26 +442,6 @@
 ]
 ```
 
-### Dashboard reflects sync
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All components match system_components"
-]
-```
-
-### Removed page marked deprecated
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Status changed to deprecated"
-]
-```
-
 ### Manual sync trigger
 
 - **Result:** not_run
@@ -424,28 +449,6 @@
 ```json
 [
   "Components updated without waiting for heartbeat"
-]
-```
-
-### URL change updated
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "URL updated to new value"
-]
-```
-
-### New deployment detected
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "New entry exists",
-  "URL is correct",
-  "Status is live"
 ]
 ```
 
@@ -462,27 +465,28 @@
 
 ## fix-deployed-pages-not-registered-in-system- — Auto-Sync Deployed Vercel Pages to System Components
 
-### E2E-3: URL Accuracy Verification
+### E2E-2: Manual Sync API
 
-- **File:** `tests/e2e/url-accuracy.test.ts`
+- **File:** `tests/e2e/manual-sync-api.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
   {
-    "url": "https://leadflow-ai-five.vercel.app",
-    "type": "http",
-    "expect": 200
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /api/admin/sync-deployed-pages"
   },
   {
-    "url": "https://leadflow-ai-five.vercel.app/dashboard",
-    "type": "http",
-    "expect": 200
+    "path": "success",
+    "type": "response",
+    "expect": "true"
   },
   {
-    "url": "https://fub-inbound-webhook.vercel.app/health",
-    "type": "http",
-    "expect": 200
+    "type": "database",
+    "query": "status='live' AND status_emoji='🟢'",
+    "table": "system_components",
+    "expect": "count >= 4"
   }
 ]
 ```
@@ -521,28 +525,27 @@
 ]
 ```
 
-### E2E-2: Manual Sync API
+### E2E-3: URL Accuracy Verification
 
-- **File:** `tests/e2e/manual-sync-api.test.ts`
+- **File:** `tests/e2e/url-accuracy.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
   {
-    "type": "api",
-    "expect": 200,
-    "endpoint": "POST /api/admin/sync-deployed-pages"
+    "url": "https://leadflow-ai-five.vercel.app",
+    "type": "http",
+    "expect": 200
   },
   {
-    "path": "success",
-    "type": "response",
-    "expect": "true"
+    "url": "https://leadflow-ai-five.vercel.app/dashboard",
+    "type": "http",
+    "expect": 200
   },
   {
-    "type": "database",
-    "query": "status='live' AND status_emoji='🟢'",
-    "table": "system_components",
-    "expect": "count >= 4"
+    "url": "https://fub-inbound-webhook.vercel.app/health",
+    "type": "http",
+    "expect": 200
   }
 ]
 ```
@@ -1435,86 +1438,9 @@
 ]
 ```
 
-### E2E-LP-003: Pricing CTA Navigation
+### E2E-LP-006: Analytics Events
 
-- **File:** `tests/e2e/landing-marketing-pricing-cta.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  {
-    "url": "/#pricing",
-    "type": "ui",
-    "action": "navigate"
-  },
-  {
-    "type": "ui",
-    "action": "verify",
-    "expect": "visible",
-    "selector": "pricing-pro-cta"
-  },
-  {
-    "type": "ui",
-    "action": "click",
-    "selector": "pricing-pro-cta"
-  },
-  {
-    "type": "redirect",
-    "expect": "/onboarding"
-  },
-  {
-    "type": "analytics",
-    "event": "pricing_cta_click",
-    "expect": "fired",
-    "params": {
-      "tier": "pro"
-    }
-  }
-]
-```
-
-### Landing Page Conversion Test
-
-- **File:** `tests/e2e/landing-conversion.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  {
-    "type": "ui",
-    "action": "navigate",
-    "expect": "page loads <2s",
-    "target": "/"
-  },
-  {
-    "type": "ui",
-    "action": "verify",
-    "expect": "text contains Never Lose a Lead",
-    "target": "hero headline"
-  },
-  {
-    "type": "ui",
-    "action": "scroll",
-    "expect": "visible",
-    "target": "pricing section"
-  },
-  {
-    "type": "ui",
-    "action": "click",
-    "expect": "navigates to /onboarding",
-    "target": "Get Started - Pro tier"
-  },
-  {
-    "type": "analytics",
-    "event": "cta_click",
-    "expect": "event tracked"
-  }
-]
-```
-
-### E2E-LP-002: Hero CTA Navigation
-
-- **File:** `tests/e2e/landing-marketing-hero-cta.test.ts`
+- **File:** `tests/e2e/landing-marketing-analytics.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
@@ -1525,10 +1451,9 @@
     "action": "navigate"
   },
   {
-    "type": "ui",
-    "action": "verify",
-    "expect": "visible",
-    "selector": "hero-cta-button"
+    "type": "analytics",
+    "event": "page_view",
+    "expect": "fired"
   },
   {
     "type": "ui",
@@ -1536,12 +1461,18 @@
     "selector": "hero-cta-button"
   },
   {
-    "type": "redirect",
-    "expect": "/onboarding"
+    "type": "analytics",
+    "event": "landing_cta_click",
+    "expect": "fired"
+  },
+  {
+    "url": "/#pricing",
+    "type": "ui",
+    "action": "navigate"
   },
   {
     "type": "analytics",
-    "event": "landing_cta_click",
+    "event": "scroll_to_pricing",
     "expect": "fired"
   }
 ]
@@ -1615,6 +1546,118 @@
 ]
 ```
 
+### E2E-LP-002: Hero CTA Navigation
+
+- **File:** `tests/e2e/landing-marketing-hero-cta.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "hero-cta-button"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "hero-cta-button"
+  },
+  {
+    "type": "redirect",
+    "expect": "/onboarding"
+  },
+  {
+    "type": "analytics",
+    "event": "landing_cta_click",
+    "expect": "fired"
+  }
+]
+```
+
+### Landing Page Conversion Test
+
+- **File:** `tests/e2e/landing-conversion.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "ui",
+    "action": "navigate",
+    "expect": "page loads <2s",
+    "target": "/"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "text contains Never Lose a Lead",
+    "target": "hero headline"
+  },
+  {
+    "type": "ui",
+    "action": "scroll",
+    "expect": "visible",
+    "target": "pricing section"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "expect": "navigates to /onboarding",
+    "target": "Get Started - Pro tier"
+  },
+  {
+    "type": "analytics",
+    "event": "cta_click",
+    "expect": "event tracked"
+  }
+]
+```
+
+### E2E-LP-003: Pricing CTA Navigation
+
+- **File:** `tests/e2e/landing-marketing-pricing-cta.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/#pricing",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "pricing-pro-cta"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "pricing-pro-cta"
+  },
+  {
+    "type": "redirect",
+    "expect": "/onboarding"
+  },
+  {
+    "type": "analytics",
+    "event": "pricing_cta_click",
+    "expect": "fired",
+    "params": {
+      "tier": "pro"
+    }
+  }
+]
+```
+
 ### E2E-LP-005: Navigation Smooth Scroll
 
 - **File:** `tests/e2e/landing-marketing-navigation.test.ts`
@@ -1656,9 +1699,244 @@
 ]
 ```
 
-### E2E-LP-006: Analytics Events
 
-- **File:** `tests/e2e/landing-marketing-analytics.test.ts`
+## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
+
+### SMS Value Delivery
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
+```
+
+### Pilot Agent Onboarding
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
+```
+
+### End-to-End Revenue Funnel
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
+```
+
+### E2E-REV-003: SMS Value Delivery
+
+- **File:** `tests/e2e/sms-value-delivery.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "api",
+    "value": 200,
+    "action": "verify",
+    "expect": "status",
+    "endpoint": "/api/health"
+  },
+  {
+    "type": "db",
+    "table": "integrations",
+    "where": "fub_connected IS TRUE",
+    "action": "verify",
+    "expect": "exists"
+  },
+  {
+    "type": "db",
+    "table": "integrations",
+    "where": "twilio_connected IS TRUE",
+    "action": "verify",
+    "expect": "exists"
+  },
+  {
+    "type": "api",
+    "action": "post",
+    "payload": {
+      "lead": {
+        "id": "fub-123",
+        "name": "John Buyer",
+        "phone": "+15559876543",
+        "source": "Zillow"
+      },
+      "event": "lead.created"
+    },
+    "endpoint": "/api/webhooks/fub"
+  },
+  {
+    "type": "timer",
+    "action": "start"
+  },
+  {
+    "type": "db",
+    "table": "leads",
+    "where": {
+      "fub_id": "fub-123"
+    },
+    "action": "verify",
+    "expect": "exists"
+  },
+  {
+    "type": "db",
+    "table": "messages",
+    "where": {
+      "direction": "outbound",
+      "lead_fub_id": "fub-123"
+    },
+    "action": "verify",
+    "expect": "exists"
+  },
+  {
+    "type": "timer",
+    "value": 30000,
+    "action": "stop",
+    "expect": "less_than"
+  },
+  {
+    "path": "messages[0].status",
+    "type": "api",
+    "value": "sent",
+    "action": "verify",
+    "expect": "response",
+    "endpoint": "/api/twilio/status"
+  },
+  {
+    "url": "/dashboard/leads",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "lead-fub-123"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "message-status-delivered"
+  }
+]
+```
+
+### E2E-REV-002: Pilot Agent Onboarding
+
+- **File:** `tests/e2e/pilot-onboarding.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "url": "/onboarding",
+    "type": "ui",
+    "action": "navigate"
+  },
+  {
+    "type": "ui",
+    "value": "Test Agent",
+    "action": "fill",
+    "selector": "profile-name"
+  },
+  {
+    "type": "ui",
+    "value": "Test Realty",
+    "action": "fill",
+    "selector": "brokerage-name"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "step1-next"
+  },
+  {
+    "type": "ui",
+    "value": "US",
+    "action": "select",
+    "selector": "country"
+  },
+  {
+    "type": "ui",
+    "value": "America/New_York",
+    "action": "select",
+    "selector": "timezone"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "step2-next"
+  },
+  {
+    "type": "ui",
+    "value": "test-fub-key",
+    "action": "fill",
+    "selector": "fub-api-key"
+  },
+  {
+    "type": "ui",
+    "value": "+1234567890",
+    "action": "fill",
+    "selector": "twilio-phone"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "step3-next"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "complete-onboarding"
+  },
+  {
+    "type": "api",
+    "value": 200,
+    "action": "verify",
+    "expect": "status",
+    "endpoint": "/api/agents/onboard"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "dashboard-welcome"
+  },
+  {
+    "type": "api",
+    "action": "post",
+    "payload": {
+      "lead": {
+        "name": "Test Lead",
+        "phone": "+15551234567"
+      },
+      "event": "lead.created"
+    },
+    "endpoint": "/api/webhooks/fub"
+  },
+  {
+    "type": "wait",
+    "duration": 30000
+  },
+  {
+    "type": "db",
+    "table": "messages",
+    "where": {
+      "direction": "outbound"
+    },
+    "action": "verify",
+    "expect": "exists"
+  }
+]
+```
+
+### E2E-REV-001: End-to-End Revenue Funnel
+
+- **File:** `tests/e2e/revenue-funnel.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
@@ -1669,57 +1947,66 @@
     "action": "navigate"
   },
   {
-    "type": "analytics",
-    "event": "page_view",
-    "expect": "fired"
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "hero-cta"
   },
   {
     "type": "ui",
     "action": "click",
-    "selector": "hero-cta-button"
+    "selector": "hero-cta"
   },
   {
-    "type": "analytics",
-    "event": "landing_cta_click",
-    "expect": "fired"
+    "type": "url",
+    "value": "/onboarding",
+    "expect": "contains"
   },
   {
-    "url": "/#pricing",
     "type": "ui",
-    "action": "navigate"
+    "value": "test@example.com",
+    "action": "fill",
+    "selector": "email-input"
   },
   {
-    "type": "analytics",
-    "event": "scroll_to_pricing",
-    "expect": "fired"
+    "type": "ui",
+    "value": "TestPass123!",
+    "action": "fill",
+    "selector": "password-input"
+  },
+  {
+    "type": "ui",
+    "action": "click",
+    "selector": "signup-submit"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "onboarding-wizard"
+  },
+  {
+    "type": "api",
+    "value": 200,
+    "action": "verify",
+    "expect": "status",
+    "endpoint": "/api/agents/onboard"
+  },
+  {
+    "type": "ui",
+    "action": "verify",
+    "expect": "visible",
+    "selector": "dashboard-welcome"
+  },
+  {
+    "type": "db",
+    "table": "agents",
+    "where": {
+      "email": "test@example.com"
+    },
+    "action": "verify",
+    "expect": "exists"
   }
 ]
-```
-
-
-## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
-
-### Pilot Agent Onboarding
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
-```
-
-### SMS Value Delivery
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
-```
-
-### End-to-End Revenue Funnel
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
 ```
 
