@@ -2,6 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import {
+  trackJoinPilotClick,
+  trackSeeHowItWorksClick,
+  trackFormOpen,
+  trackFormSubmission,
+  trackScrollDepth,
+  captureUTMParams,
+  persistUTMParams,
+  retrieveUTMParams,
+  type UTMParams,
+} from '@/lib/analytics/ga4'
 
 interface FormData {
   name: string
@@ -52,7 +63,7 @@ function FAQItem({ question, answer, isOpen, onClick }: { question: string; answ
   )
 }
 
-function PilotModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function PilotModal({ isOpen, onClose, utmParams }: { isOpen: boolean; onClose: () => void; utmParams: UTMParams }) {
   const [formData, setFormData] = useState<FormData>({ name: '', email: '', phone: '', brokerage_name: '', team_name: '', monthly_leads: '', current_crm: '' })
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -92,10 +103,11 @@ function PilotModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       const response = await fetch('/api/pilot-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, source: 'landing_page' })
+        body: JSON.stringify({ ...formData, source: 'landing_page', ...utmParams })
       })
       const result = await response.json()
       if (response.ok && result.success) {
+        trackFormSubmission(utmParams as Record<string, string>)
         setIsSuccess(true)
       } else {
         alert(result.error || 'Something went wrong. Please try again.')
@@ -204,12 +216,53 @@ export default function LandingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [openFAQ, setOpenFAQ] = useState<number | null>(null)
   const [scrolled, setScrolled] = useState(false)
+  const [utmParams, setUtmParams] = useState<UTMParams>({})
+  // Track which scroll-depth milestones have already been fired
+  const firedScrollDepths = useRef<Set<number>>(new Set())
+
+  // Capture & persist UTM params on mount
+  useEffect(() => {
+    const captured = captureUTMParams()
+    const hasParams = Object.keys(captured).length > 0
+    if (hasParams) {
+      persistUTMParams(captured)
+      setUtmParams(captured)
+    } else {
+      // Fall back to persisted params from a prior visit in the same session
+      setUtmParams(retrieveUTMParams())
+    }
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Scroll-depth tracking (25 / 50 / 75 / 90)
+  useEffect(() => {
+    const MILESTONES = [25, 50, 75, 90]
+    const handleScrollDepth = () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      if (docHeight <= 0) return
+      const pct = Math.round((window.scrollY / docHeight) * 100)
+      MILESTONES.forEach((milestone) => {
+        if (pct >= milestone && !firedScrollDepths.current.has(milestone)) {
+          firedScrollDepths.current.add(milestone)
+          trackScrollDepth(milestone)
+        }
+      })
+    }
+    window.addEventListener('scroll', handleScrollDepth, { passive: true })
+    return () => window.removeEventListener('scroll', handleScrollDepth)
+  }, [])
+
+  /** Open the pilot modal and fire the join_pilot GA4 event */
+  const openModal = (location: string) => {
+    trackJoinPilotClick(location)
+    trackFormOpen()
+    setIsModalOpen(true)
+  }
 
   const faqs = [
     { question: 'Will this sound like a robot?', answer: 'No. LeadFlow AI is trained specifically on real estate conversations. It uses natural language and adapts based on lead responses. Most leads don\'t realize they\'re talking to AI.' },
@@ -244,7 +297,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2 font-bold text-xl text-slate-800"><span>🚀</span> LeadFlow AI</div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="hidden sm:block px-4 py-2 text-slate-600 hover:text-slate-900 font-medium">Sign In</Link>
-            <button onClick={() => setIsModalOpen(true)} className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md text-sm">Join Pilot</button>
+            <button onClick={() => openModal('nav')} className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md text-sm">Join Pilot</button>
           </div>
         </div>
       </nav>
@@ -254,8 +307,8 @@ export default function LandingPage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">Never Lose Another Lead to Slow Response</h1>
           <p className="text-lg sm:text-xl mb-10 opacity-95">LeadFlow AI responds in under 30 seconds—while you&apos;re showing houses or asleep. Qualifies prospects via SMS and books appointments automatically, 24/7.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <button onClick={() => setIsModalOpen(true)} className="px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md">Join the Pilot Program (Free for 30 Days)</button>
-            <button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-white text-slate-800 border-2 border-white hover:bg-transparent hover:text-white font-semibold rounded-md">See How It Works</button>
+            <button onClick={() => openModal('hero')} className="px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md">Join the Pilot Program (Free for 30 Days)</button>
+            <button onClick={() => { trackSeeHowItWorksClick(); document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' }) }} className="px-8 py-4 bg-white text-slate-800 border-2 border-white hover:bg-transparent hover:text-white font-semibold rounded-md">See How It Works</button>
           </div>
           <div className="text-sm opacity-85 flex flex-wrap justify-center gap-x-6"><span>✓ No setup fees</span><span>✓ Works with Follow Up Boss</span><span>✓ Cancel anytime</span></div>
         </div>
@@ -330,7 +383,7 @@ export default function LandingPage() {
                 <div className="font-bold text-lg">🎯 Limited Pilot Program</div>
                 <div className="text-sm opacity-90">Join now for 30 days free + 20% lifetime discount</div>
               </div>
-              <button onClick={() => setIsModalOpen(true)} className="px-6 py-3 bg-white text-teal-600 font-semibold rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap">
+              <button onClick={() => openModal("pricing_pilot_banner")} className="px-6 py-3 bg-white text-teal-600 font-semibold rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap">
                 Join Pilot Program
               </button>
             </div>
@@ -356,7 +409,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>TCPA compliance</li>
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Email support</li>
               </ul>
-              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
+              <button onClick={() => openModal("pricing_card")} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
                 Get Started
               </button>
             </div>
@@ -382,7 +435,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Priority support</li>
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Custom AI tone</li>
               </ul>
-              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">
+              <button onClick={() => openModal("pricing_card_pro")} className="w-full py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition-colors">
                 Get Started
               </button>
             </div>
@@ -405,7 +458,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Performance reporting</li>
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Dedicated account manager</li>
               </ul>
-              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
+              <button onClick={() => openModal("pricing_card")} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
                 Get Started
               </button>
             </div>
@@ -428,7 +481,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Compliance reporting</li>
                 <li className="flex gap-2"><span className="text-teal-600 font-bold">✓</span>Custom integrations</li>
               </ul>
-              <button onClick={() => setIsModalOpen(true)} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
+              <button onClick={() => openModal("pricing_card")} className="w-full py-3 border-2 border-teal-600 text-teal-600 font-semibold rounded-md hover:bg-teal-50 transition-colors">
                 Contact Sales
               </button>
             </div>
@@ -449,7 +502,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">Stop Losing Leads. Start Converting More.</h2>
           <p className="text-lg mb-10 opacity-95">Join agents already using LeadFlow AI to respond faster and book more appointments.</p>
-          <button onClick={() => setIsModalOpen(true)} className="px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md">Join the Pilot Program - Free for 30 Days</button>
+          <button onClick={() => openModal("bottom_cta")} className="px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md">Join the Pilot Program - Free for 30 Days</button>
           <p className="mt-6 text-sm opacity-85">No credit card required. Cancel anytime.</p>
         </div>
       </section>
@@ -465,7 +518,7 @@ export default function LandingPage() {
           <p>© 2026 LeadFlow AI. All rights reserved.</p>
         </div>
       </footer>
-      <PilotModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <PilotModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} utmParams={utmParams} />
     </div>
   )
 }
