@@ -1,353 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-05T16:37:53.114Z
+Last updated: 2026-03-06T09:55:07.523Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-03T10:19:24.909Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:24:24.971Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:29:23.421Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:34:24.055Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:39:23.191Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:44:24.301Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:49:23.485Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:54:24.676Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T10:59:23.094Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T11:04:23.816Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T11:09:23.172Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T11:14:24.139Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T11:19:23.419Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T11:24:23.856Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T11:29:24.182Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 91,
-      "total": 101
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":91,\"total\":101}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-03T11:34:24.389Z",
     "status": {
@@ -2440,9 +2095,353 @@ Last updated: 2026-03-05T16:37:53.114Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T08:59:04.772Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 179,
+      "total": 244
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":179,\"total\":244}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:03:43.456Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 179,
+      "total": 244
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":179,\"total\":244}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:09:36.422Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 179,
+      "total": 244
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":179,\"total\":244}",
+      "Reset zombie: PM: Diagnose failed step in fix-deployed-pages-not-registered-in-system- (retry 1/3) [unknown]",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:13:33.409Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 179,
+      "total": 244
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":179,\"total\":244}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:15:28.097Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 179,
+      "total": 244
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":179,\"total\":244}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:23:16.545Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 180,
+      "total": 244
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":180,\"total\":244}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:25:04.997Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 182,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":182,\"total\":246}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:26:25.414Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 182,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":182,\"total\":246}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:29:40.528Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 182,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":182,\"total\":246}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:35:07.725Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 182,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":182,\"total\":246}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:39:50.105Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 182,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":182,\"total\":246}",
+      "Reset 21 exhausted task(s) for fresh retries",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:45:01.826Z",
+    "status": {
+      "ready": 13,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 189,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":13,\"inProgress\":4,\"blocked\":0,\"done\":189,\"total\":246}",
+      "Spawned qc for Test Follow-up Cron Endpoint",
+      "Spawned qc for Stripe Integration E2E Test",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Merged PR #9",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:46:01.870Z",
+    "status": {
+      "ready": 11,
+      "inProgress": 7,
+      "blocked": 0,
+      "done": 188,
+      "total": 246
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":11,\"inProgress\":7,\"blocked\":0,\"done\":188,\"total\":246}",
+      "Completed (via stdout): Test Follow-up Cron Endpoint",
+      "Spawned qc for QC: Verify SUPABASE_SERVICE_ROLE_KEY deployment fix",
+      "Spawned product for PM: Revenue alert — critical (mrr)",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:49:42.665Z",
+    "status": {
+      "ready": 9,
+      "inProgress": 8,
+      "blocked": 0,
+      "done": 190,
+      "total": 247
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":9,\"inProgress\":8,\"blocked\":0,\"done\":190,\"total\":247}",
+      "Spawned product for PM: Revenue alert — critical (mrr)",
+      "Spawned qc for Stripe - Test Flows",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T09:55:07.421Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 9,
+      "blocked": 0,
+      "done": 192,
+      "total": 247
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":9,\"blocked\":0,\"done\":192,\"total\":247}",
+      "UC stuck: fix-test-gateway-path (rescue failed for dev)",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "🛑 UC STUCK: fix-test-gateway-path\nName: test gateway path\nFailed agent: dev\nRoot cause: Verification failed after 3 retries: no commits on branch\n\nAutomated retries exhausted. Human action needed.\nUse: !unstuck fix-test-gateway-path to retry with new instructions"
+    ]
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":4,"blocked":0,"done":155,"total":200}
+- Last status: {"ready":5,"inProgress":9,"blocked":0,"done":192,"total":247}
