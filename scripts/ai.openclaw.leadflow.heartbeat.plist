@@ -7,12 +7,12 @@
     
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/bash</string>
-        <string>/Users/clawdbot/projects/leadflow/scripts/heartbeat.sh</string>
+        <string>/opt/homebrew/bin/node</string>
+        <string>heartbeat-wrapper.js</string>
     </array>
-    
+
     <key>WorkingDirectory</key>
-    <string>/Users/clawdbot/projects/leadflow</string>
+    <string>/Users/clawdbot/.openclaw/genome/core</string>
     
     <key>StartInterval</key>
     <integer>1800</integer>
