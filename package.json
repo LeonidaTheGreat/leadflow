@@ -16,7 +16,8 @@
     "express": "^4.18.2",
     "node-schedule": "^2.1.1",
     "pg": "^8.19.0",
-    "twilio": "^4.19.0"
+    "twilio": "^4.19.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
