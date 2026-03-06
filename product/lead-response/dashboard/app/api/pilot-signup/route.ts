@@ -19,7 +19,11 @@ interface PilotSignupRequest {
   monthly_leads?: string;
   current_crm?: string;
   source?: string;
+  utm_source?: string;
+  utm_medium?: string;
   utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
 }
 
 function validateBody(body: Record<string, unknown>): { valid: boolean; error?: string } {
@@ -147,7 +151,11 @@ export async function POST(request: NextRequest) {
       monthly_leads: body.monthly_leads as string | undefined,
       current_crm: body.current_crm as string | undefined,
       source: (body.source as string) || 'landing_page',
+      utm_source: body.utm_source as string | undefined,
+      utm_medium: body.utm_medium as string | undefined,
       utm_campaign: body.utm_campaign as string | undefined,
+      utm_content: body.utm_content as string | undefined,
+      utm_term: body.utm_term as string | undefined,
     };
 
     // Insert into database
