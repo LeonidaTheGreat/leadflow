@@ -1,14 +1,21 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
+<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.655Z | Source: `e2e_test_specs` + `use_cases` tables
 
 **Coverage: 337 specs | 13 pass | 0 fail | 324 not run**
+=======
+> Generated: 2026-03-06T21:09:35.630Z | Source: `e2e_test_specs` + `use_cases` tables
+
+**Coverage: 78 specs | 8 pass | 0 fail | 70 not run**
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
 | feat-add-auth-middleware-to-protect-dashboard | Auth Middleware - Protect Dashboard Routes | tests/e2e/auth-middleware.test.ts | - | not_run |
 | feat-add-login-page-with-email-and-password | Login Page with Email and Password | tests/e2e/login-page.test.ts | - | not_run |
+<<<<<<< HEAD
 | feat-add-login-page-with-email-and-password | E2E-LOGIN-001: Existing agent login → dashboard | test/e2e/login-flow.test.ts | - | not_run |
 | feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
@@ -287,6 +294,39 @@
 | pm-action-items-dashboard | Stojan Responds to Action Item via Telegram | - | - | not_run |
 | pm-action-items-dashboard | Action Items Sorted by Priority | - | - | not_run |
 | UC-1 | E2E-SMS-001: FUB webhook → SMS sent → delivery tracked | test/e2e/sms-delivery.test.ts | - | not_run |
+=======
+| feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Protected routes with auth | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
+| feat-add-session-management-with-server-side- | Session Management with Server-Side Tokens | tests/e2e/session-management.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Failed sync retry | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Dashboard reflects sync | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Removed page marked deprecated | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | URL change updated | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | New deployment detected | - | - | not_run |
+| fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | 2026-03-07 | pass |
+| fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
+| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
+| fix-onboarding-500-error | E2E-ONBOARD-005: Billing Portal Access | test/billing-portal.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-001: Successful Signup Flow | test/onboarding-signup-flow.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-002: Login with Migrated Table | test/onboarding-login.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-003: Health Check | test/health-endpoint.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-004: End-to-End User Journey | test/e2e-user-journey.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-006: Stripe Webhook Processing | test/stripe-webhook.test.ts | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-002: Invalid Phone Number Error Handling | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-001: Real SMS Delivery via Twilio | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-003: Message Truncation | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-004: Status Update via Webhook Callback | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-005: Market-Based From Number Selection | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-006: SMS Analytics & Cost Tracking | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-007: Concurrent SMS Sends | test/twilio-sms-integration.test.js | - | not_run |
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
 | UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
@@ -302,6 +342,7 @@
 | UC-AUTH-FIX-001 | UC-AUTH-FIX-001: Authentication Flow | tests/e2e/auth-flow.test.ts | - | not_run |
 | UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
 | UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
+<<<<<<< HEAD
 | UC-LANDING-ANALYTICS-GA4-001 | GA4 script loads on landing page without blocking render | e2e/analytics/ga4-script-load.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | Pricing CTA clicks fire cta_click with cta_location=pricing | e2e/analytics/pricing-cta-click.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | [Human] Stojan validates CTA data in GA4 Events report | e2e/analytics/human-validation-ga4.spec.ts | - | not_run |
@@ -344,6 +385,38 @@
 | UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
 | UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
 | UC-REVENUE-RECOVERY-001 | E2E-REV-001: End-to-End Revenue Funnel | tests/e2e/revenue-funnel.test.ts | - | not_run |
+=======
+| UC-LANDING-MARKETING-001 | SEO Meta Tags | tests/e2e/landing-seo-meta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load & SEO | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing CTA with Plan Selection | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Smooth Scroll Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | FAQ Accordion | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Responsive Design | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Events | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Scroll | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Tier Selection | tests/e2e/landing-pricing-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Accessibility | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | FAQ Accordion | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Toggle | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | CTA Click Flow | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load Performance | tests/e2e/landing-page-load.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Tracking | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Landing Page Load | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Responsiveness | tests/e2e/landing-mobile-responsive.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Smooth Scroll | tests/e2e/landing-nav-scroll.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Keyboard Navigation Accessibility | tests/e2e/landing-keyboard-nav.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Responsive | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | tests/e2e/landing-hero-cta.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | SMS Value Delivery | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-001: End-to-End Revenue Funnel | tests/e2e/revenue-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REVENUE-004: End-to-End Revenue Funnel | tests/e2e/revenue-recovery-full-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-003: SMS Value Delivery | tests/e2e/sms-value-delivery.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 ## feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
 
@@ -478,6 +551,7 @@
 
 ### E2E-LOGIN-001: Existing agent login → dashboard
 
+<<<<<<< HEAD
 - **File:** `test/e2e/login-flow.test.ts`
 - **Result:** not_run
 - **Assertions:**
@@ -498,6 +572,10 @@
 ]
 ```
 
+=======
+## feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### Route Discovery Smoke Test
 
 - **File:** `tests/e2e/route-discovery-smoke.test.ts`
@@ -553,12 +631,17 @@
 ]
 ```
 
+<<<<<<< HEAD
 ### Deployment blocked
+=======
+### Failed route reported
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "Deployment prevented"
 ]
 ```
@@ -570,6 +653,9 @@
 ```json
 [
   "Completes in < 30 seconds"
+=======
+  "Failure shown with details"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ]
 ```
 
@@ -584,6 +670,29 @@
 ]
 ```
 
+<<<<<<< HEAD
+=======
+### Execution under 30s
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Completes in < 30 seconds"
+]
+```
+
+### Deployment blocked
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Deployment prevented"
+]
+```
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### Public routes pass
 
 - **Result:** not_run
@@ -782,6 +891,7 @@
 
 ## feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
 
+<<<<<<< HEAD
 ### Failed sync retry
 
 - **Result:** not_run
@@ -834,6 +944,8 @@
 ]
 ```
 
+=======
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### Auto-Sync Deployed Pages to System Components
 
 - **File:** `tests/e2e/auto-sync-deployed-pages.test.ts`
@@ -880,16 +992,22 @@
 ]
 ```
 
+<<<<<<< HEAD
 
 ## feat-demo-without-signup — Live AI Demo — Experience the Product Without Signing Up
 
 ### E2E-DEMO-001: Public Demo Access Without Auth
 
 - **File:** `tests/e2e/demo-without-signup.access.spec.ts`
+=======
+### Failed sync retry
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "Unauthenticated GET to demo entry returns 200",
   "Lead simulator inputs and Send Lead CTA are visible",
   "No login/signup gate is required before interaction"
@@ -899,10 +1017,19 @@
 ### E2E-DEMO-004: Demo Analytics Event Logging
 
 - **File:** `tests/e2e/demo-without-signup.analytics.spec.ts`
+=======
+  "Sync succeeds on retry"
+]
+```
+
+### Dashboard reflects sync
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "demo_started event emitted on initial interaction",
   "demo_response_generated event includes response-time metadata",
   "demo_completed event emitted on successful flow completion",
@@ -914,10 +1041,19 @@
 ### E2E-DEMO-003: Response-Time Visualization and Completion CTA
 
 - **File:** `tests/e2e/demo-without-signup.timing-cta.spec.ts`
+=======
+  "All components match system_components"
+]
+```
+
+### Removed page marked deprecated
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "Animated processing/typing state appears after Send Lead",
   "Completed state displays response time text (e.g., Responded in X seconds)",
   "Primary completion CTA routes to trial signup path"
@@ -927,10 +1063,19 @@
 ### E2E-DEMO-002: Claude-Powered Personalized SMS Generation
 
 - **File:** `tests/e2e/demo-without-signup.ai-response.spec.ts`
+=======
+  "Status changed to deprecated"
+]
+```
+
+### URL change updated
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "Submitting valid lead payload triggers AI response generation flow",
   "Response text includes personalization based on lead name/property context",
   "Failure path (simulated Claude error) returns graceful fallback UI with retry"
@@ -1262,6 +1407,13 @@
 ## feat-lead-experience-simulator — Lead Experience Simulator & Conversation Viewer
 
 ### Phone numbers masked in conversation viewer
+=======
+  "URL updated to new value"
+]
+```
+
+### New deployment detected
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **Result:** not_run
 - **Assertions:**
@@ -1333,6 +1485,7 @@
 ```
 
 
+<<<<<<< HEAD
 ## feat-lead-magnet-email-capture — Lead Magnet / Email Capture on Landing Page
 
 ### Successful email capture stores record and shows success state
@@ -2423,32 +2576,8 @@
 
 ## fix-deployed-pages-not-registered-in-system- — Auto-Sync Deployed Vercel Pages to System Components
 
-### E2E-2: Manual Sync API
-
-- **File:** `tests/e2e/manual-sync-api.test.ts`
-- **Result:** pass
-- **Last run:** 2026-03-07T01:01:17.443Z
-- **Assertions:**
-```json
-[
-  {
-    "type": "api",
-    "expect": 200,
-    "endpoint": "POST /api/admin/sync-deployed-pages"
-  },
-  {
-    "path": "success",
-    "type": "response",
-    "expect": "true"
-  },
-  {
-    "type": "database",
-    "query": "status='live' AND status_emoji='🟢'",
-    "table": "system_components",
-    "expect": "count >= 4"
-  }
-]
-```
+=======
+## fix-deployed-pages-not-registered-in-system- — Auto-Sync Deployed Vercel Pages to System Components
 
 ### E2E-3: URL Accuracy Verification
 
@@ -2476,6 +2605,63 @@
 ]
 ```
 
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
+### E2E-2: Manual Sync API
+
+- **File:** `tests/e2e/manual-sync-api.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /api/admin/sync-deployed-pages"
+  },
+  {
+    "path": "success",
+    "type": "response",
+    "expect": "true"
+  },
+  {
+    "type": "database",
+    "query": "status='live' AND status_emoji='🟢'",
+    "table": "system_components",
+    "expect": "count >= 4"
+  }
+]
+```
+
+<<<<<<< HEAD
+### E2E-3: URL Accuracy Verification
+
+- **File:** `tests/e2e/url-accuracy.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "url": "https://leadflow-ai-five.vercel.app",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://leadflow-ai-five.vercel.app/dashboard",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://fub-inbound-webhook.vercel.app/health",
+    "type": "http",
+    "expect": 200
+  }
+]
+```
+
+=======
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### E2E-1: Auto-Sync on Heartbeat
 
 - **File:** `tests/e2e/deployed-pages-sync.test.ts`
@@ -2512,6 +2698,7 @@
 ```
 
 
+<<<<<<< HEAD
 ## fix-landing-pricing-section-missing-tier-detail — Landing Page Pricing Section — Missing Tier Detail (Prices & Features)
 
 ### Pricing cards show tier prices inline
@@ -2763,6 +2950,10 @@
 "Webhook processes successfully; real_estate_agents table updated; No 500 errors"
 ```
 
+=======
+## fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### E2E-ONBOARD-005: Billing Portal Access
 
 - **File:** `test/billing-portal.test.ts`
@@ -2781,6 +2972,7 @@
 "No 500 errors; Agent created in real_estate_agents table; Response includes agent data (no password_hash)"
 ```
 
+<<<<<<< HEAD
 ### E2E-ONBOARD-003: Health Check
 
 - **File:** `test/health-endpoint.test.ts`
@@ -2790,6 +2982,8 @@
 "Status 200; Database connectivity confirmed; Queries real_estate_agents table successfully"
 ```
 
+=======
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### E2E-ONBOARD-002: Login with Migrated Table
 
 - **File:** `test/onboarding-login.test.ts`
@@ -2799,6 +2993,7 @@
 "Login succeeds; Returns agent data from real_estate_agents table; Session created"
 ```
 
+<<<<<<< HEAD
 
 ## fix-production-build-fails-typescript-error-in-trial-s — Production build fails: TypeScript error in trial-signup route
 
@@ -3185,17 +3380,49 @@
   "response.body.redirectTo === /setup",
   "No reference to /dashboard/onboarding in response"
 ]
+=======
+### E2E-ONBOARD-003: Health Check
+
+- **File:** `test/health-endpoint.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Status 200; Database connectivity confirmed; Queries real_estate_agents table successfully"
+```
+
+### E2E-ONBOARD-004: End-to-End User Journey
+
+- **File:** `test/e2e-user-journey.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Complete flow works without errors; Dashboard displays user data from real_estate_agents"
+```
+
+### E2E-ONBOARD-006: Stripe Webhook Processing
+
+- **File:** `test/stripe-webhook.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Webhook processes successfully; real_estate_agents table updated; No 500 errors"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 
 ## implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
 
+<<<<<<< HEAD
 ### E2E-TWILIO-004: Status Update via Webhook Callback
+=======
+### E2E-TWILIO-002: Invalid Phone Number Error Handling
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **File:** `test/twilio-sms-integration.test.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
+<<<<<<< HEAD
 "Status updated to delivered; Timestamp set; Events logged; DB state consistent"
 ```
 
@@ -3215,6 +3442,9 @@
 - **Assertions:**
 ```json
 "All SMS sent; Unique SIDs; All logged; Response time <2s each; No rate limit errors"
+=======
+"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 ### E2E-TWILIO-001: Real SMS Delivery via Twilio
@@ -3226,22 +3456,37 @@
 "SMS delivered to phone; SID stored in DB; Status tracking active; No errors; Response <2s"
 ```
 
+<<<<<<< HEAD
 ### E2E-TWILIO-002: Invalid Phone Number Error Handling
+=======
+### E2E-TWILIO-003: Message Truncation
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **File:** `test/twilio-sms-integration.test.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
+<<<<<<< HEAD
 "Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
 ```
 
 ### E2E-TWILIO-006: SMS Analytics & Cost Tracking
+=======
+"Message truncated to 160 chars; Warning in console; SMS sent; Body stored correctly"
+```
+
+### E2E-TWILIO-004: Status Update via Webhook Callback
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **File:** `test/twilio-sms-integration.test.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
+<<<<<<< HEAD
 "Analytics counts correct; Delivery rate calculated; Cost tracked; Events logged with durations"
+=======
+"Status updated to delivered; Timestamp set; Events logged; DB state consistent"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 ### E2E-TWILIO-005: Market-Based From Number Selection
@@ -3253,6 +3498,7 @@
 "Correct from-number per market; CA override works; Warning logged if missing; No errors"
 ```
 
+<<<<<<< HEAD
 
 ## improve-add-start-free-trial-cta-frictionless — Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment
 
@@ -3488,6 +3734,24 @@
 - **Assertions:**
 ```json
 "Items sorted by priority ascending; critical items emphasized; sort stable across reloads"
+=======
+### E2E-TWILIO-006: SMS Analytics & Cost Tracking
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Analytics counts correct; Delivery rate calculated; Cost tracked; Events logged with durations"
+```
+
+### E2E-TWILIO-007: Concurrent SMS Sends
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"All SMS sent; Unique SIDs; All logged; Response time <2s each; No rate limit errors"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 
@@ -4248,6 +4512,7 @@
 ```
 
 
+<<<<<<< HEAD
 ## UC-LANDING-ANALYTICS-GA4-001 — Landing Page Analytics — GA4 CTA & Conversion Tracking
 
 ### GA4 script loads on landing page without blocking render
@@ -4461,6 +4726,10 @@
 "[\"no_horizontal_scroll\",\"tap_targets_44px\",\"faq_works_touch\"]"
 ```
 
+=======
+## UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### SEO Meta Tags
 
 - **File:** `tests/e2e/landing-seo-meta.test.ts`
@@ -4491,6 +4760,7 @@
 ]
 ```
 
+<<<<<<< HEAD
 ### Keyboard Navigation Accessibility
 
 - **File:** `tests/e2e/landing-keyboard-nav.test.ts`
@@ -4573,6 +4843,47 @@
     "selector": "[data-testid=pricing-section]"
   }
 ]
+=======
+### Page Load & SEO
+
+- **Result:** not_run
+
+### Hero CTA Navigation
+
+- **Result:** not_run
+
+### Pricing CTA with Plan Selection
+
+- **Result:** not_run
+
+### Smooth Scroll Navigation
+
+- **Result:** not_run
+
+### FAQ Accordion
+
+- **Result:** not_run
+
+### Responsive Design
+
+- **Result:** not_run
+
+### Mobile Navigation
+
+- **Result:** not_run
+
+### Analytics Events
+
+- **Result:** not_run
+
+### Navigation Scroll
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"smooth_scroll\",\"url_hash_updated\"]"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 ### Pricing Tier Selection
@@ -4605,6 +4916,18 @@
 ]
 ```
 
+<<<<<<< HEAD
+=======
+### Accessibility
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"alt_text_present\",\"heading_hierarchy\",\"aria_labels\",\"contrast_aa\"]"
+```
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### FAQ Accordion
 
 - **File:** `e2e/landing-page.spec.ts`
@@ -4614,6 +4937,7 @@
 "[\"accordion_expands\",\"only_one_open\",\"smooth_animation\"]"
 ```
 
+<<<<<<< HEAD
 ### CTA Click Flow
 
 - **File:** `e2e/landing-page.spec.ts`
@@ -4623,6 +4947,8 @@
 "[\"redirects_to_signup\",\"utm_preserved\",\"analytics_fired\"]"
 ```
 
+=======
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### Pricing Toggle
 
 - **File:** `e2e/landing-page.spec.ts`
@@ -4632,6 +4958,7 @@
 "[\"prices_update\",\"badge_visible\",\"calculation_correct\"]"
 ```
 
+<<<<<<< HEAD
 ### Hero CTA Navigation
 
 - **File:** `tests/e2e/landing-hero-cta.test.ts`
@@ -4653,6 +4980,15 @@
     "expect": "fired"
   }
 ]
+=======
+### CTA Click Flow
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"redirects_to_signup\",\"utm_preserved\",\"analytics_fired\"]"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 ### Page Load Performance
@@ -4702,12 +5038,101 @@
 "[\"hero_visible\",\"ctas_clickable\",\"lighthouse_score_above_90\"]"
 ```
 
+<<<<<<< HEAD
 ### Accessibility
+=======
+### Mobile Responsiveness
+
+- **File:** `tests/e2e/landing-mobile-responsive.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "layout",
+    "expect": "single-column"
+  },
+  {
+    "type": "scroll",
+    "expect": "no-horizontal-scroll"
+  },
+  {
+    "type": "element",
+    "expect": "tap-target>=44px",
+    "selector": "[data-testid=hero-cta-primary]"
+  },
+  {
+    "type": "element",
+    "expect": "visible",
+    "selector": "[data-testid=pricing-section]"
+  }
+]
+```
+
+### Navigation Smooth Scroll
+
+- **File:** `tests/e2e/landing-nav-scroll.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "click",
+    "selector": "[data-testid=nav-pricing]"
+  },
+  {
+    "type": "scroll",
+    "expect": "pricing-section-centered"
+  },
+  {
+    "type": "click",
+    "selector": "[data-testid=nav-features]"
+  },
+  {
+    "type": "scroll",
+    "expect": "features-section-centered"
+  }
+]
+```
+
+### Keyboard Navigation Accessibility
+
+- **File:** `tests/e2e/landing-keyboard-nav.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "keyboard",
+    "action": "tab",
+    "expect": "focus-on-nav-links"
+  },
+  {
+    "type": "keyboard",
+    "action": "tab",
+    "expect": "focus-on-hero-cta"
+  },
+  {
+    "type": "css",
+    "expect": "visible-outline",
+    "selector": ":focus"
+  },
+  {
+    "type": "keyboard",
+    "action": "enter",
+    "expect": "cta-activated"
+  }
+]
+```
+
+### Mobile Responsive
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **File:** `e2e/landing-page.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
+<<<<<<< HEAD
 "[\"alt_text_present\",\"heading_hierarchy\",\"aria_labels\",\"contrast_aa\"]"
 ```
 
@@ -4721,10 +5146,19 @@
 ### E2E-REV-002: Pilot Agent Onboarding
 
 - **File:** `tests/e2e/pilot-onboarding.test.ts`
+=======
+"[\"no_horizontal_scroll\",\"tap_targets_44px\",\"faq_works_touch\"]"
+```
+
+### Hero CTA Navigation
+
+- **File:** `tests/e2e/landing-hero-cta.test.ts`
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "Onboarding wizard renders",
   "Account created in Supabase",
   "FUB integration connects",
@@ -4733,6 +5167,59 @@
 ]
 ```
 
+=======
+  {
+    "type": "click",
+    "selector": "[data-testid=hero-cta-primary]"
+  },
+  {
+    "type": "scroll",
+    "expect": "signup-section-in-viewport"
+  },
+  {
+    "type": "analytics",
+    "event": "hero_cta_click",
+    "expect": "fired"
+  }
+]
+```
+
+
+## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
+
+### SMS Value Delivery
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
+```
+
+### E2E-REV-001: End-to-End Revenue Funnel
+
+- **File:** `tests/e2e/revenue-funnel.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Landing page loads with <3s LCP",
+  "Signup form submits without error",
+  "Onboarding completes successfully",
+  "Dashboard accessible post-onboarding",
+  "Payment processing succeeds",
+  "MRR increases correctly"
+]
+```
+
+### Pilot Agent Onboarding
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
+```
+
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ### E2E-REVENUE-004: End-to-End Revenue Funnel
 
 - **File:** `tests/e2e/revenue-recovery-full-funnel.test.ts`
@@ -4837,12 +5324,20 @@
 ]
 ```
 
+<<<<<<< HEAD
 ### SMS Value Delivery
+=======
+### End-to-End Revenue Funnel
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 - **Result:** not_run
 - **Assertions:**
 ```json
+<<<<<<< HEAD
 "[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
+=======
+"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ```
 
 ### E2E-REV-003: SMS Value Delivery
@@ -4860,6 +5355,7 @@
 ]
 ```
 
+<<<<<<< HEAD
 ### Pilot Agent Onboarding
 
 - **Result:** not_run
@@ -4879,16 +5375,29 @@
 ### E2E-REV-001: End-to-End Revenue Funnel
 
 - **File:** `tests/e2e/revenue-funnel.test.ts`
+=======
+### E2E-REV-002: Pilot Agent Onboarding
+
+- **File:** `tests/e2e/pilot-onboarding.test.ts`
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
+<<<<<<< HEAD
   "Landing page loads with <3s LCP",
   "Signup form submits without error",
   "Onboarding completes successfully",
   "Dashboard accessible post-onboarding",
   "Payment processing succeeds",
   "MRR increases correctly"
+=======
+  "Onboarding wizard renders",
+  "Account created in Supabase",
+  "FUB integration connects",
+  "Twilio integration connects",
+  "Test lead received within 5 min"
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 ]
 ```
 

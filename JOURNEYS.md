@@ -1,7 +1,11 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
+<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.790Z | Source: `project.config.json` journeys + `product_reviews` table
+=======
+> Generated: 2026-03-06T21:09:35.804Z | Source: `project.config.json` journeys + `product_reviews` table
+>>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 Review interval: every 14 days
 
