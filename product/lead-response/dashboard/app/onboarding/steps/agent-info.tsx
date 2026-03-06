@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Phone, MapPin, AlertCircle } from 'lucide-react'
+import { User, Phone, MapPin, AlertCircle, Globe } from 'lucide-react'
 import OnboardingButton from '../components/button'
 
 const US_STATES = [
@@ -12,6 +12,17 @@ const US_STATES = [
   'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
   'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
   'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+]
+
+const CANADIAN_PROVINCES = [
+  'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
+  'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island',
+  'Quebec', 'Saskatchewan', 'Yukon'
+]
+
+const COUNTRIES = [
+  { code: 'us', name: 'United States', flag: '🇺🇸' },
+  { code: 'ca', name: 'Canada', flag: '🇨🇦' }
 ]
 
 export default function OnboardingAgentInfo({
@@ -28,6 +39,7 @@ export default function OnboardingAgentInfo({
   const [firstName, setFirstName] = useState(agentData.firstName || '')
   const [lastName, setLastName] = useState(agentData.lastName || '')
   const [phoneNumber, setPhoneNumber] = useState(agentData.phoneNumber || '')
+  const [country, setCountry] = useState(agentData.country || 'us')
   const [state, setState] = useState(agentData.state || '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -63,7 +75,9 @@ export default function OnboardingAgentInfo({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       phoneNumber: phoneNumber.replace(/\D/g, ''),
+      country,
       state,
+      market: country === 'ca' ? 'ca-ontario' : 'us-national',
     })
 
     onNext()
@@ -151,10 +165,42 @@ export default function OnboardingAgentInfo({
             )}
           </div>
 
-          {/* State */}
+          {/* Country */}
           <div>
             <label className="block text-sm font-medium text-slate-200 mb-2">
-              Operating State
+              Country
+            </label>
+            <div className="relative">
+              <Globe className="absolute left-3 top-3 text-slate-500 w-5 h-5 pointer-events-none" />
+              <select
+                value={country}
+                onChange={(e) => {
+                  setCountry(e.target.value)
+                  setState('') // Reset state when country changes
+                }}
+                className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition appearance-none ${
+                  errors.country ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.flag} {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {errors.country && (
+              <div className="flex items-center gap-2 mt-1 text-sm text-red-400">
+                <AlertCircle className="w-4 h-4" />
+                {errors.country}
+              </div>
+            )}
+          </div>
+
+          {/* State/Province */}
+          <div>
+            <label className="block text-sm font-medium text-slate-200 mb-2">
+              {country === 'ca' ? 'Operating Province' : 'Operating State'}
             </label>
             <div className="relative">
               <MapPin className="absolute left-3 top-3 text-slate-500 w-5 h-5 pointer-events-none" />
@@ -165,12 +211,20 @@ export default function OnboardingAgentInfo({
                   errors.state ? 'border-red-500/50' : 'border-slate-600/50'
                 }`}
               >
-                <option value="">Select your state...</option>
-                {US_STATES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
+                <option value="">
+                  {country === 'ca' ? 'Select your province...' : 'Select your state...'}
+                </option>
+                {country === 'ca'
+                  ? CANADIAN_PROVINCES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))
+                  : US_STATES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
               </select>
             </div>
             {errors.state && (
