@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
         last_name: lastName,
         phone_number: phoneNumber,
         state,
+        email_verified: true, // Auto-verify for now (no email verification flow yet)
         status: 'onboarding',
         plan_tier: 'pilot',
         pilot_started_at: now.toISOString(),

@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
         first_name: data.firstName.trim(),
         last_name: data.lastName.trim(),
         phone: data.phoneNumber.replace(/\D/g, ''),
+        phone_number: data.phoneNumber.replace(/\D/g, ''),
         state: data.state,
         timezone: data.timezone || 'America/New_York',
         status: 'active',
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest) {
         plan_tier: 'pilot',
         pilot_started_at: now.toISOString(),
         pilot_expires_at: pilotExpiresAt.toISOString(),
+        email_verified: true, // Auto-verify for now (no email verification flow yet)
         market: 'us-national', // Default market
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
