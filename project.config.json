@@ -52,10 +52,10 @@
     {
       "id": "vercel-dashboard",
       "name": "Vercel dashboard health",
-      "url": "https://leadflow-ai-five.vercel.app/api/health",
+      "url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app/api/health",
       "severity": "critical",
       "check_type": "json_status_ok",
-      "fallback_url": "https://leadflow-ai-five.vercel.app/dashboard"
+      "fallback_url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app/dashboard"
     },
     {
       "id": "supabase-read",
@@ -66,14 +66,14 @@
     {
       "id": "signup-page",
       "name": "Signup page",
-      "url": "https://leadflow-ai-five.vercel.app/signup",
+      "url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app/signup",
       "severity": "critical",
       "check_type": "http_200"
     },
     {
       "id": "login-page",
       "name": "Login page",
-      "url": "https://leadflow-ai-five.vercel.app/login",
+      "url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app/login",
       "severity": "critical",
       "check_type": "http_200"
     }
@@ -84,8 +84,8 @@
       "id": "customer-dashboard",
       "name": "Customer Dashboard",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app",
-      "test_url": "https://leadflow-ai-five.vercel.app/api/health",
+      "url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app",
+      "test_url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app/api/health",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "UC-9",
       "description": "Next.js customer-facing dashboard",
@@ -118,7 +118,7 @@
       "id": "landing-page",
       "name": "Landing Page",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app",
+      "url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app",
       "local_path": "product/lead-response/dashboard/",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "gtm-landing-page",
@@ -142,7 +142,7 @@
       "id": "billing-flow",
       "name": "Billing Flow",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app/settings",
+      "url": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app/settings",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "UC-10",
       "description": "Stripe billing integration (part of customer dashboard)",
@@ -157,7 +157,7 @@
       "id": "new-agent-signup",
       "name": "New Agent Signup",
       "persona": "Real estate agent, first visit, not tech-savvy",
-      "entry_point": "https://leadflow-ai-five.vercel.app",
+      "entry_point": "https://leadflow-lmi1cxeed-stojans-projects-7db98187.vercel.app",
       "expected_outcome": "Agent has an active account with integrations configured",
       "products_involved": ["landing-page", "customer-dashboard", "billing-flow"],
       "steps": [
