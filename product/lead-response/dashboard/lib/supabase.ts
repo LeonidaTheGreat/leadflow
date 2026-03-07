@@ -214,7 +214,7 @@ export async function updateMessageStatus(
 
 export async function getAgentById(id: string): Promise<{ data: Agent | null; error: any }> {
   const { data, error } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('id', id)
     .single()
@@ -224,7 +224,7 @@ export async function getAgentById(id: string): Promise<{ data: Agent | null; er
 
 export async function getAgentByEmail(email: string): Promise<{ data: Agent | null; error: any }> {
   const { data, error } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('email', email)
     .single()
@@ -234,7 +234,7 @@ export async function getAgentByEmail(email: string): Promise<{ data: Agent | nu
 
 export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> {
   const { data, error } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
 

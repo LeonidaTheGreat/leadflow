@@ -67,7 +67,7 @@ async function getDatabaseStats() {
     // Get counts
     const [{ count: leadCount }, { count: agentCount }, { count: messageCount }] = await Promise.all([
       supabase.from('leads').select('*', { count: 'exact', head: true }),
-      supabase.from('agents').select('*', { count: 'exact', head: true }),
+      supabase.from('real_estate_agents').select('*', { count: 'exact', head: true }),
       supabase.from('messages').select('*', { count: 'exact', head: true })
     ])
 

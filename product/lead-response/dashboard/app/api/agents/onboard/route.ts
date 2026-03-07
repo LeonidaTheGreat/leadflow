@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
         last_name: lastName,
         phone_number: phoneNumber,
         state,
+        email_verified: true, // Auto-verify for now (no email verification flow yet)
         status: 'onboarding',
         timezone: 'America/New_York', // Default, can be updated later
         created_at: new Date().toISOString(),

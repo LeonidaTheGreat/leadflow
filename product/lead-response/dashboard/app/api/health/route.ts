@@ -35,7 +35,7 @@ export async function GET() {
   if (supabaseUrl && supabaseKey && supabaseUrl !== 'https://placeholder.supabase.co' && supabaseKey !== 'placeholder') {
     try {
       const client = createClient(supabaseUrl, supabaseKey)
-      const { error } = await client.from('agents').select('id').limit(1)
+      const { error } = await client.from('real_estate_agents').select('id').limit(1)
       checks['supabase_connectivity'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected',

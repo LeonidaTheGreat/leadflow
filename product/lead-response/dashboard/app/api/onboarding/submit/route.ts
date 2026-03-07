@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import * as crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingSubmission } from '@/lib/types/onboarding';
 
-// Password hashing (for demo - in production use bcrypt or argon2)
-function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
-    .toString('hex');
-  return `${salt}:${hash}`;
+// Password hashing using bcrypt (same as auth/login expects)
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 10);
 }
 
 /**
@@ -53,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     // Double-check email availability (in case it was taken since last check)
     const { data: existingAgent } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id')
       .eq('email', data.email.toLowerCase().trim())
       .single();
@@ -70,21 +66,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = hashPassword(data.password);
+    const hashedPassword = await hashPassword(data.password);
 
     // Create agent account
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .insert({
         email: data.email.toLowerCase().trim(),
         password_hash: hashedPassword,
         first_name: data.firstName.trim(),
         last_name: data.lastName.trim(),
         phone: data.phoneNumber.replace(/\D/g, ''),
+        phone_number: data.phoneNumber.replace(/\D/g, ''),
         state: data.state,
         timezone: data.timezone || 'America/New_York',
         status: 'active',
         is_active: true,
+        email_verified: true, // Auto-verify for now (no email verification flow yet)
         market: 'us-national', // Default market
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
