@@ -2,6 +2,96 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { Check, Minus, ArrowRight, Sparkles } from 'lucide-react'
+
+// Pricing data matching PMF.md
+const PRICING_TIERS = [
+  {
+    name: 'Starter',
+    tier: 'starter',
+    price: 49,
+    description: 'Solo agents testing AI',
+    features: [
+      { text: '100 SMS responses/mo', included: true },
+      { text: 'Basic AI quality', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Basic analytics dashboard', included: true },
+      { text: '1 agent included', included: true },
+      { text: 'Email support', included: true },
+      { text: 'Cal.com booking', included: false },
+      { text: 'Lead qualification scoring', included: false },
+      { text: 'Lead routing', included: false },
+      { text: 'White-label', included: false },
+    ],
+    cta: 'Get Started',
+    ctaLink: '/signup?plan=starter',
+    highlighted: false,
+  },
+  {
+    name: 'Pro',
+    tier: 'pro',
+    price: 149,
+    description: 'Core plan for working agents',
+    features: [
+      { text: 'Unlimited SMS responses', included: true },
+      { text: 'Full AI (Claude)', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Cal.com booking', included: true },
+      { text: 'Full analytics dashboard', included: true },
+      { text: 'Lead qualification scoring', included: true },
+      { text: '1 agent included', included: true },
+      { text: 'Priority support', included: true },
+      { text: 'Lead routing', included: false },
+      { text: 'White-label', included: false },
+    ],
+    cta: 'Start Free Trial',
+    ctaLink: '/signup?plan=pro',
+    highlighted: true,
+  },
+  {
+    name: 'Team',
+    tier: 'team',
+    price: 399,
+    description: 'Small teams (up to 5 agents)',
+    features: [
+      { text: 'Unlimited SMS responses', included: true },
+      { text: 'Full AI (Claude)', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Cal.com booking', included: true },
+      { text: 'Full analytics dashboard', included: true },
+      { text: 'Lead qualification scoring', included: true },
+      { text: '5 agents included', included: true },
+      { text: 'Lead routing', included: true },
+      { text: 'Priority support', included: true },
+      { text: 'White-label', included: false },
+    ],
+    cta: 'Get Started',
+    ctaLink: '/signup?plan=team',
+    highlighted: false,
+  },
+  {
+    name: 'Brokerage',
+    tier: 'brokerage',
+    price: '999+',
+    description: 'Large brokerages & white-label',
+    features: [
+      { text: 'Unlimited SMS responses', included: true },
+      { text: 'Full AI + Custom', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Cal.com booking', included: true },
+      { text: 'Full analytics + Admin', included: true },
+      { text: 'Lead qualification scoring', included: true },
+      { text: 'Unlimited agents', included: true },
+      { text: 'Lead routing', included: true },
+      { text: 'White-label', included: true },
+      { text: 'Compliance reporting', included: true },
+      { text: 'Dedicated support', included: true },
+    ],
+    cta: 'Contact Sales',
+    ctaLink: 'mailto:hello@leadflow.ai',
+    highlighted: false,
+  },
+]
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -36,6 +126,7 @@ export default function HomePage() {
       setIsLoading(false)
     }
   }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
@@ -43,6 +134,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
           <nav className="flex items-center gap-4">
+            <Link 
+              href="/pricing" 
+              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Pricing
+            </Link>
             <Link 
               href="/onboarding" 
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
@@ -120,6 +217,106 @@ export default function HomePage() {
             icon="🔗"
           />
         </div>
+
+        {/* Pricing Section */}
+        <section className="mt-24" id="pricing">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              Simple, Transparent Pricing
+            </h3>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Choose the perfect plan for your real estate business. All plans include a 14-day free trial.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
+              <Sparkles className="w-4 h-4 text-emerald-500" />
+              <span className="text-sm text-emerald-700 dark:text-emerald-400">
+                Currently offering free pilots to qualifying agents —{' '}
+                <Link href="/pilot" className="underline hover:text-emerald-600">
+                  Join the pilot
+                </Link>
+              </span>
+            </div>
+          </div>
+
+          {/* Pricing Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {PRICING_TIERS.map((tier) => (
+              <div
+                key={tier.tier}
+                className={`relative rounded-2xl border transition-all duration-200 ${
+                  tier.highlighted
+                    ? 'border-emerald-500/50 bg-gradient-to-br from-slate-800 to-slate-900 ring-2 ring-emerald-500/20 scale-[1.02]'
+                    : 'border-slate-700/50 bg-slate-800/50 hover:border-slate-600'
+                } p-6 overflow-hidden`}
+              >
+                {/* Background gradient for highlighted */}
+                {tier.highlighted && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-blue-500/5 pointer-events-none" />
+                )}
+
+                <div className="relative z-10">
+                  {/* Popular badge */}
+                  {tier.highlighted && (
+                    <div className="absolute -top-2 -right-2 px-3 py-1 bg-emerald-500 text-white text-xs font-semibold rounded-full">
+                      Most Popular
+                    </div>
+                  )}
+
+                  <h4 className="text-xl font-bold text-white mb-1">{tier.name}</h4>
+                  <p className="text-slate-400 text-sm mb-4">{tier.description}</p>
+
+                  {/* Price */}
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold text-white">${tier.price}</span>
+                      <span className="text-slate-400">/mo</span>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <Link
+                    href={tier.ctaLink}
+                    className={`w-full py-2.5 px-4 rounded-lg font-semibold transition-all mb-6 flex items-center justify-center gap-2 ${
+                      tier.highlighted
+                        ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white'
+                        : 'bg-slate-700/50 hover:bg-slate-700 text-slate-200 border border-slate-600'
+                    }`}
+                  >
+                    {tier.cta}
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+
+                  {/* Features */}
+                  <ul className="space-y-2.5">
+                    {tier.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        {feature.included ? (
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        ) : (
+                          <Minus className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+                        )}
+                        <span className={`text-sm ${feature.included ? 'text-slate-300' : 'text-slate-500'}`}>
+                          {feature.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* View Full Comparison Link */}
+          <div className="mt-8 text-center">
+            <Link 
+              href="/pricing" 
+              className="text-emerald-500 hover:text-emerald-400 font-medium inline-flex items-center gap-2"
+            >
+              View full feature comparison
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </section>
 
         {/* API Endpoints */}
         <div className="mt-20 max-w-2xl mx-auto">

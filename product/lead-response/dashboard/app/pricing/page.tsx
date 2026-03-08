@@ -1,73 +1,117 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ArrowRight } from 'lucide-react'
+import { Check, Minus, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 type BillingInterval = 'monthly' | 'annual'
 
-const PRICING_PLANS = [
+// Pricing data matching PMF.md
+const PRICING_TIERS = [
   {
     name: 'Starter',
     tier: 'starter',
-    monthlyPrice: 497,
-    annualPrice: 4970,
-    description: 'Perfect for individual agents',
+    monthlyPrice: 49,
+    annualPrice: 490,
+    description: 'Solo agents testing AI',
     features: [
-      'Up to 50 leads/month',
-      'AI SMS & email responses',
-      'Basic qualification',
-      'Calendar integration (1 agent)',
-      'Standard email support',
-      'Basic analytics',
+      { text: '100 SMS responses/mo', included: true },
+      { text: 'Basic AI quality', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Basic analytics dashboard', included: true },
+      { text: '1 agent included', included: true },
+      { text: 'Email support', included: true },
+      { text: 'Cal.com booking', included: false },
+      { text: 'Lead qualification scoring', included: false },
+      { text: 'Lead routing', included: false },
+      { text: 'White-label', included: false },
     ],
     cta: 'Get Started',
+    ctaLink: '/signup?plan=starter',
     highlighted: false,
   },
   {
-    name: 'Professional',
-    tier: 'professional',
-    monthlyPrice: 997,
-    annualPrice: 9970,
-    description: 'Most popular for teams',
+    name: 'Pro',
+    tier: 'pro',
+    monthlyPrice: 149,
+    annualPrice: 1490,
+    description: 'Core plan for working agents',
     features: [
-      'Up to 150 leads/month',
-      'AI SMS, email & voice',
-      'Advanced qualification scoring',
-      'Calendar integration (5 agents)',
-      'Priority chat + email support',
-      'Advanced analytics & API',
-      'Team collaboration',
-      'Custom AI training',
+      { text: 'Unlimited SMS responses', included: true },
+      { text: 'Full AI (Claude)', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Cal.com booking', included: true },
+      { text: 'Full analytics dashboard', included: true },
+      { text: 'Lead qualification scoring', included: true },
+      { text: '1 agent included', included: true },
+      { text: 'Priority support', included: true },
+      { text: 'Lead routing', included: false },
+      { text: 'White-label', included: false },
     ],
     cta: 'Start Free Trial',
+    ctaLink: '/signup?plan=pro',
     highlighted: true,
   },
   {
-    name: 'Enterprise',
-    tier: 'enterprise',
-    monthlyPrice: 1997,
-    annualPrice: 19970,
-    description: 'For large brokerages',
+    name: 'Team',
+    tier: 'team',
+    monthlyPrice: 399,
+    annualPrice: 3990,
+    description: 'Small teams (up to 5 agents)',
     features: [
-      'Unlimited leads',
-      'Multi-channel AI (SMS/email/voice/chat)',
-      'Custom qualification workflows',
-      'Unlimited calendar integrations',
-      'Dedicated account manager',
-      'White-label options',
-      'SLA guarantees (99.9% uptime)',
-      'Custom integrations',
+      { text: 'Unlimited SMS responses', included: true },
+      { text: 'Full AI (Claude)', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Cal.com booking', included: true },
+      { text: 'Full analytics dashboard', included: true },
+      { text: 'Lead qualification scoring', included: true },
+      { text: '5 agents included', included: true },
+      { text: 'Lead routing', included: true },
+      { text: 'Priority support', included: true },
+      { text: 'White-label', included: false },
+    ],
+    cta: 'Get Started',
+    ctaLink: '/signup?plan=team',
+    highlighted: false,
+  },
+  {
+    name: 'Brokerage',
+    tier: 'brokerage',
+    monthlyPrice: 999,
+    annualPrice: 9990,
+    description: 'Large brokerages & white-label',
+    features: [
+      { text: 'Unlimited SMS responses', included: true },
+      { text: 'Full AI + Custom', included: true },
+      { text: 'Follow Up Boss integration', included: true },
+      { text: 'Cal.com booking', included: true },
+      { text: 'Full analytics + Admin', included: true },
+      { text: 'Lead qualification scoring', included: true },
+      { text: 'Unlimited agents', included: true },
+      { text: 'Lead routing', included: true },
+      { text: 'White-label', included: true },
+      { text: 'Compliance reporting', included: true },
+      { text: 'Dedicated support', included: true },
     ],
     cta: 'Contact Sales',
+    ctaLink: 'mailto:hello@leadflow.ai',
     highlighted: false,
   },
 ]
 
-const ADD_ONS = [
-  { name: 'Extra 100 leads/month', price: 200 },
-  { name: 'Additional phone number', price: 25 },
-  { name: 'Custom AI persona', price: 500 },
-  { name: 'Advanced reporting', price: 150 },
+// Feature comparison matrix for the table
+const FEATURE_MATRIX = [
+  { feature: 'SMS responses', starter: '100/mo', pro: 'Unlimited', team: 'Unlimited', brokerage: 'Unlimited' },
+  { feature: 'AI quality', starter: 'Basic', pro: 'Full AI (Claude)', team: 'Full AI (Claude)', brokerage: 'Full AI + Custom' },
+  { feature: 'Follow Up Boss integration', starter: true, pro: true, team: true, brokerage: true },
+  { feature: 'Cal.com booking', starter: false, pro: true, team: true, brokerage: true },
+  { feature: 'Analytics dashboard', starter: 'Basic', pro: 'Full', team: 'Full', brokerage: 'Full + Admin' },
+  { feature: 'Lead qualification scoring', starter: false, pro: true, team: true, brokerage: true },
+  { feature: 'Agents included', starter: '1', pro: '1', team: '5', brokerage: 'Unlimited' },
+  { feature: 'Lead routing', starter: false, pro: false, team: true, brokerage: true },
+  { feature: 'White-label', starter: false, pro: false, team: false, brokerage: true },
+  { feature: 'Compliance reporting', starter: false, pro: false, team: false, brokerage: true },
+  { feature: 'Support', starter: 'Email', pro: 'Priority', team: 'Priority', brokerage: 'Dedicated' },
 ]
 
 export default function PricingPage() {
@@ -77,6 +121,21 @@ export default function PricingPage() {
   const handleSelectPlan = async (tier: string) => {
     // TODO: Implement checkout flow
     console.log(`Selected plan: ${tier}`)
+  }
+
+  const getPrice = (tier: typeof PRICING_TIERS[0]) => {
+    if (tier.tier === 'brokerage') {
+      return { display: '$999+', subtext: 'Custom pricing' }
+    }
+    const price = interval === 'monthly' ? tier.monthlyPrice : Math.floor(tier.annualPrice / 12)
+    const fullPrice = interval === 'monthly' ? tier.monthlyPrice * 12 : tier.annualPrice
+    const savings = tier.monthlyPrice * 2
+    return {
+      display: `$${price}`,
+      subtext: interval === 'annual' 
+        ? `Billed $${fullPrice}/year (save $${savings})`
+        : 'Billed monthly'
+    }
   }
 
   return (
@@ -90,15 +149,20 @@ export default function PricingPage() {
         {/* Header */}
         <header className="border-b border-slate-700/50 backdrop-blur-sm bg-slate-900/50">
           <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
                 <span className="text-emerald-400 font-bold text-sm">▶</span>
               </div>
               <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/pricing" className="text-emerald-400 hover:text-emerald-300 font-medium">
+                Pricing
+              </Link>
+              <Link href="/dashboard" className="text-slate-300 hover:text-white font-medium">
+                Dashboard
+              </Link>
             </div>
-            <a href="/dashboard" className="text-emerald-400 hover:text-emerald-300 font-medium">
-              Dashboard
-            </a>
           </div>
         </header>
 
@@ -140,10 +204,9 @@ export default function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {PRICING_PLANS.map((plan) => {
-              const price = interval === 'monthly' ? plan.monthlyPrice : Math.floor(plan.annualPrice / 12)
-              const fullPrice = interval === 'monthly' ? plan.monthlyPrice * 12 : plan.annualPrice
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {PRICING_TIERS.map((plan) => {
+              const priceInfo = getPrice(plan)
 
               return (
                 <div
@@ -152,7 +215,7 @@ export default function PricingPage() {
                     plan.highlighted
                       ? 'border-emerald-500/50 bg-gradient-to-br from-slate-800 to-slate-900 ring-2 ring-emerald-500/20'
                       : 'border-slate-700/50 bg-gradient-to-br from-slate-800/50 to-slate-900/50 hover:border-slate-600'
-                  } p-8 overflow-hidden`}
+                  } p-6 overflow-hidden`}
                 >
                   {/* Background gradient */}
                   {plan.highlighted && (
@@ -173,20 +236,18 @@ export default function PricingPage() {
                     {/* Price */}
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-5xl font-bold text-white">${price}</span>
-                        <span className="text-slate-400">/month</span>
+                        <span className="text-4xl font-bold text-white">{priceInfo.display}</span>
+                        {plan.tier !== 'brokerage' && <span className="text-slate-400">/month</span>}
                       </div>
                       <p className="text-xs text-slate-400 mt-2">
-                        {interval === 'annual'
-                          ? `Billed $${fullPrice}/year (save $${(plan.monthlyPrice * 2).toFixed(0)})`
-                          : 'Billed monthly'}
+                        {priceInfo.subtext}
                       </p>
                     </div>
 
                     {/* CTA Button */}
-                    <button
+                    <Link
+                      href={plan.ctaLink}
                       onClick={() => handleSelectPlan(plan.tier)}
-                      disabled={selectedTier === plan.tier}
                       className={`w-full py-3 px-4 rounded-lg font-semibold transition-all mb-6 flex items-center justify-center gap-2 ${
                         plan.highlighted
                           ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white'
@@ -195,33 +256,65 @@ export default function PricingPage() {
                     >
                       {plan.cta}
                       <ArrowRight className="w-4 h-4" />
-                    </button>
+                    </Link>
 
                     {/* Features */}
-                    <div className="space-y-3">
-                      {plan.features.map((feature) => (
-                        <div key={feature} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                          <span className="text-slate-300 text-sm">{feature}</span>
-                        </div>
+                    <ul className="space-y-2.5">
+                      {plan.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5">
+                          {feature.included ? (
+                            <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                          ) : (
+                            <Minus className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+                          )}
+                          <span className={`text-sm ${feature.included ? 'text-slate-300' : 'text-slate-500'}`}>
+                            {feature.text}
+                          </span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 </div>
               )
             })}
           </div>
 
-          {/* Add-Ons */}
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-8 mb-16">
-            <h3 className="text-2xl font-bold text-white mb-8">Optional Add-Ons</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {ADD_ONS.map((addon) => (
-                <div key={addon.name} className="flex items-center justify-between p-4 bg-slate-700/20 rounded-lg border border-slate-600/30">
-                  <span className="text-slate-200">{addon.name}</span>
-                  <span className="font-semibold text-emerald-400">${addon.price}/mo</span>
-                </div>
-              ))}
+          {/* Feature Comparison Table */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-white mb-8 text-center">Feature Comparison</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-700/50">
+                    <th className="text-left py-4 px-4 text-slate-400 font-medium sticky left-0 bg-slate-900/95 backdrop-blur-sm z-10">Feature</th>
+                    <th className="text-center py-4 px-4 text-white font-semibold min-w-[120px]">Starter</th>
+                    <th className="text-center py-4 px-4 text-emerald-400 font-semibold min-w-[120px]">Pro</th>
+                    <th className="text-center py-4 px-4 text-white font-semibold min-w-[120px]">Team</th>
+                    <th className="text-center py-4 px-4 text-white font-semibold min-w-[120px]">Brokerage</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/50">
+                  {FEATURE_MATRIX.map((row, idx) => (
+                    <tr key={idx} className={idx % 2 === 0 ? 'bg-slate-800/20' : ''}>
+                      <td className="py-4 px-4 text-slate-300 sticky left-0 bg-slate-900/95 backdrop-blur-sm z-10 font-medium">
+                        {row.feature}
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        {renderCell(row.starter)}
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        {renderCell(row.pro)}
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        {renderCell(row.team)}
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        {renderCell(row.brokerage)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -244,8 +337,12 @@ export default function PricingPage() {
                   a: 'Yes! All plans come with a 14-day free trial. No credit card required to start.',
                 },
                 {
-                  q: 'What if I exceed my lead limit?',
-                  a: 'You can add extra lead packs anytime, or upgrade to a higher tier for unlimited leads.',
+                  q: 'What if I exceed my SMS limit on Starter?',
+                  a: 'You can upgrade to Pro for unlimited SMS, or add SMS packs. We will notify you when you are approaching your limit.',
+                },
+                {
+                  q: 'Do you offer custom enterprise plans?',
+                  a: 'Yes! For brokerages with 50+ agents or custom requirements, contact our sales team for a tailored solution.',
                 },
               ].map((faq, idx) => (
                 <div key={idx} className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
@@ -258,9 +355,9 @@ export default function PricingPage() {
 
           {/* Bottom CTA */}
           <div className="mt-16 text-center">
-            <p className="text-slate-300 mb-4">Questions? We're here to help.</p>
+            <p className="text-slate-300 mb-4">Questions? We are here to help.</p>
             <a
-              href="mailto:support@leadflow.ai"
+              href="mailto:hello@leadflow.ai"
               className="text-emerald-400 hover:text-emerald-300 font-medium"
             >
               Contact our sales team
@@ -270,4 +367,15 @@ export default function PricingPage() {
       </div>
     </div>
   )
+}
+
+function renderCell(value: boolean | string) {
+  if (typeof value === 'boolean') {
+    return value ? (
+      <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+    ) : (
+      <Minus className="w-5 h-5 text-slate-600 mx-auto" />
+    )
+  }
+  return <span className="text-slate-300 text-sm">{value}</span>
 }
