@@ -9,7 +9,7 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, phone, password } = await request.json()
+    const { email, name, phone, password, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = await request.json()
 
     // Validate required fields
     if (!email || !name || !phone || !password) {
@@ -58,7 +58,13 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0]
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Create agent record
+    // Sanitize UTM params — strip to alphanumeric + common safe chars only
+    const sanitizeUtm = (val: string | undefined | null): string | null => {
+      if (!val) return null
+      return String(val).replace(/[^a-zA-Z0-9_\-. /]/g, '').slice(0, 255)
+    }
+
+    // Create agent record (with UTM attribution data)
     const { data: agent, error: createError } = await supabase
       .from('real_estate_agents')
       .insert({
@@ -69,7 +75,13 @@ export async function POST(request: NextRequest) {
         password_hash: passwordHash,
         email_verified: false, // Will be verified after Stripe checkout
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        // FR-4: Store UTM attribution (null if not present — first-touch, no overwrite)
+        utm_source: sanitizeUtm(utm_source),
+        utm_medium: sanitizeUtm(utm_medium),
+        utm_campaign: sanitizeUtm(utm_campaign),
+        utm_content: sanitizeUtm(utm_content),
+        utm_term: sanitizeUtm(utm_term),
       })
       .select('id')
       .single()
