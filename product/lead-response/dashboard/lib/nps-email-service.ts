@@ -12,7 +12,6 @@ async function getResend() {
   if (_resend) return _resend
   if (!process.env.RESEND_API_KEY) return null
   try {
-    // @ts-expect-error — resend may not be installed; caught at runtime
     const { Resend } = await import('resend')
     _resend = new Resend(process.env.RESEND_API_KEY)
     return _resend
