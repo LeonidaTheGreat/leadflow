@@ -1,11 +1,31 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  // FR-1: Capture UTM parameters on landing page load (first-touch wins)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const utm = {
+        utm_source: params.get('utm_source'),
+        utm_medium: params.get('utm_medium'),
+        utm_campaign: params.get('utm_campaign'),
+        utm_content: params.get('utm_content'),
+        utm_term: params.get('utm_term'),
+      }
+      const hasUtm = Object.values(utm).some(Boolean)
+      if (hasUtm && !sessionStorage.getItem('lf_utm')) {
+        sessionStorage.setItem('lf_utm', JSON.stringify(utm))
+      }
+    } catch {
+      // sessionStorage unavailable — silent fail (FR non-functional requirement)
+    }
+  }, [])
 
   const testWebhook = async () => {
     setIsLoading(true)
