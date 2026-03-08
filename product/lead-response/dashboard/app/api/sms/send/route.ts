@@ -5,6 +5,7 @@ import { generateAiSmsResponse } from '@/lib/ai'
 import { getAgentById } from '@/lib/supabase'
 import { checkSmsRateLimit } from '@/lib/rate-limit'
 import { getErrorInfo, classifyTwilioError, createErrorResponse, logError } from '@/lib/error-handler'
+import { sendSatisfactionPing } from '@/lib/satisfaction'
 
 // ============================================
 // SEND SMS API - UC-7/8 Edge Cases
@@ -150,6 +151,26 @@ export async function POST(request: NextRequest) {
       status: 'sent',
       sent_at: new Date().toISOString(),
     })
+
+    // 9. Schedule satisfaction ping (non-blocking, AI messages only)
+    if (ai_generate && lead.phone) {
+      // Fire-and-forget after 10-minute cooldown (handled inside sendSatisfactionPing)
+      // We delay scheduling rather than blocking the response
+      setTimeout(async () => {
+        try {
+          await sendSatisfactionPing({
+            leadId: lead.id,
+            agentId: lead.agent_id || null,
+            conversationId: null,
+            phone: lead.phone,
+            lastAiMessageAt: new Date().toISOString(),
+            agentSatisfactionPingEnabled: (agent as any).satisfaction_ping_enabled ?? true,
+          })
+        } catch (pingErr: any) {
+          console.error('❌ Satisfaction ping scheduling error:', pingErr.message)
+        }
+      }, (10 * 60 + 5) * 1000) // 10 min 5 sec after the AI message
+    }
 
     return NextResponse.json({
       success: true,

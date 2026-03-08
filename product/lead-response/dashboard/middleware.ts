@@ -8,57 +8,54 @@ const PROTECTED_ROUTES = [
   '/settings',
   '/profile',
   '/integrations',
-  '/setup',
+  '/onboarding', // post-login wizard — must be authenticated
 ]
 
 // Routes that should redirect to dashboard if already authenticated
-// NOTE: /setup is intentionally NOT here — authenticated users who haven't
-// completed onboarding need to access it.
-const AUTH_ROUTES = [
+const AUTH_ONLY_ROUTES = [
   '/login',
-  '/onboarding',
   '/signup',
 ]
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
+
   // Get session token from cookie
   const sessionToken = request.cookies.get('leadflow_session')?.value
-  
+
   // Validate session against database
   const session = sessionToken ? await validateSession(sessionToken) : null
   const isAuthenticated = !!session
-  
+
   // Check if current path is protected
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => 
+  const isProtectedRoute = PROTECTED_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   )
-  
-  // Check if current path is an auth route
-  const isAuthRoute = AUTH_ROUTES.some(route => 
+
+  // Check if current path is an auth-only route (redirect away if logged in)
+  const isAuthOnlyRoute = AUTH_ONLY_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   )
-  
+
   // Redirect unauthenticated users from protected routes to login
   if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
   }
-  
-  // Redirect authenticated users from auth routes to dashboard
-  if (isAuthRoute && isAuthenticated) {
+
+  // Redirect authenticated users away from pure auth routes to dashboard
+  if (isAuthOnlyRoute && isAuthenticated) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
-  
+
   // Add security headers
   const response = NextResponse.next()
-  
+
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  
+
   return response
 }
 
