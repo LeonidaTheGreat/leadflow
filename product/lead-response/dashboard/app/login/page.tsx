@@ -81,8 +81,18 @@ export default function LoginPage() {
         }
       }
 
-      // Redirect to dashboard
-      router.push('/dashboard')
+      // Store user info for wizard personalization
+      if (result.user) {
+        const storage = rememberMe ? localStorage : sessionStorage
+        storage.setItem('leadflow_user', JSON.stringify(result.user))
+      }
+
+      // Redirect new agents (onboarding not complete) to the setup wizard
+      if (result.user?.onboardingCompleted === false) {
+        router.push('/setup')
+      } else {
+        router.push('/dashboard')
+      }
     } catch (err: any) {
       console.error('Login error:', err)
       setError(err.message || 'Login failed. Please try again.')

@@ -22,10 +22,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find user by email
+    // Find user by email (include onboarding state for post-login redirect)
     const { data: user, error: userError } = await supabase
       .from('real_estate_agents')
-      .select('id, email, password_hash, first_name, last_name, email_verified')
+      .select('id, email, password_hash, first_name, last_name, email_verified, onboarding_completed')
       .eq('email', email.toLowerCase())
       .single()
 
@@ -79,6 +79,8 @@ export async function POST(request: NextRequest) {
         email: user.email,
         firstName: user.first_name,
         lastName: user.last_name,
+        // onboardingCompleted drives the post-login wizard redirect
+        onboardingCompleted: user.onboarding_completed ?? false,
       }
     })
 
