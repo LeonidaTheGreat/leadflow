@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:openrouter.ai)",
+      "WebFetch(domain:platform.moonshot.ai)"
     ]
   }
 }

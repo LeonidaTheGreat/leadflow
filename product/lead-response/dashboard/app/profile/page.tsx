@@ -14,6 +14,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useAnalytics, PostHogEvents } from '@/lib/analytics'
+import { SatisfactionPingToggle } from '@/components/dashboard/SatisfactionPingToggle'
 
 interface ProfileFormData {
   firstName: string
@@ -507,6 +508,13 @@ export default function ProfileSetupPage() {
 
       {/* Required Fields Note */}
       <p className="text-sm text-slate-500 text-center">* Required fields</p>
+
+      {/* AI Preferences */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">AI Preferences</h2>
+        {/* TODO: replace 'test-agent-id' with real agentId from session once auth is wired up */}
+        <SatisfactionPingToggle agentId="test-agent-id" />
+      </div>
     </div>
   )
 }

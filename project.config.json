@@ -210,7 +210,7 @@
     "model_token_costs": {
       "qwen":    { "input_per_1m": 0,     "output_per_1m": 0 },
       "qwen3.5": { "input_per_1m": 0,     "output_per_1m": 0 },
-      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 2.50 },
+      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 3.00, "cache_read_per_1m": 0.10 },
       "haiku":   { "input_per_1m": 1.00,   "output_per_1m": 5.00 },
       "sonnet":  { "input_per_1m": 3.00,   "output_per_1m": 15.00 },
       "opus":    { "input_per_1m": 5.00,   "output_per_1m": 25.00 }
