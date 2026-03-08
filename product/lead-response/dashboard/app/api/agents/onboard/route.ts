@@ -14,6 +14,11 @@ export async function POST(request: NextRequest) {
       state,
       calcomLink,
       smsPhoneNumber,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmContent,
+      utmTerm,
     } = body
 
     // Validate required fields
@@ -54,6 +59,11 @@ export async function POST(request: NextRequest) {
         status: 'onboarding',
         timezone: 'America/New_York', // Default, can be updated later
         created_at: new Date().toISOString(),
+        utm_source: utmSource || null,
+        utm_medium: utmMedium || null,
+        utm_campaign: utmCampaign || null,
+        utm_content: utmContent || null,
+        utm_term: utmTerm || null,
       })
       .select()
       .single()
