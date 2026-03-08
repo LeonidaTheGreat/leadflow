@@ -91,8 +91,7 @@ export default function LoginPage() {
   }
 
   const handleForgotPassword = () => {
-    // TODO: Implement forgot password flow
-    alert('Forgot password feature coming soon!')
+    router.push('/forgot-password')
   }
 
   return (

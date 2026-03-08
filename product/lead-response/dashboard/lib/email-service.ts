@@ -404,3 +404,102 @@ export async function sendSubscriptionDowngradedEmail(
   const html = template.html(data)
   return sendEmail(customerEmail, template.subject, html, customerId, 'subscription_downgraded', data)
 }
+
+// ---------------------------------------------------------------------------
+// Password Reset Email (UC: fix-no-forgot-password-flow)
+// ---------------------------------------------------------------------------
+
+interface PasswordResetEmailData {
+  agentName?: string
+  resetUrl: string
+}
+
+/**
+ * Send a password reset email with a secure single-use link.
+ * Uses agentId as the customer reference for email logging (may be null if
+ * agent not yet found — we log with a placeholder to avoid leaking existence).
+ */
+export async function sendPasswordResetEmail(
+  to: string,
+  agentId: string,
+  data: PasswordResetEmailData
+): Promise<boolean> {
+  const greeting = data.agentName ? `Hi ${data.agentName}` : 'Hi there'
+
+  const subject = 'Reset your LeadFlow AI password'
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1e293b;border-radius:12px;border:1px solid #334155;overflow:hidden;max-width:600px;width:100%;">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#064e3b,#065f46);padding:32px;text-align:center;">
+              <div style="display:inline-flex;align-items:center;gap:12px;">
+                <div style="width:40px;height:40px;border-radius:8px;background:rgba(52,211,153,0.2);border:1px solid rgba(52,211,153,0.5);display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;color:#34d399;">▶</div>
+                <span style="font-size:22px;font-weight:700;color:#ffffff;margin-left:8px;">LeadFlow AI</span>
+              </div>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 32px;">
+              <h2 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#f1f5f9;">Password Reset Request</h2>
+              <p style="margin:0 0 16px;font-size:15px;color:#94a3b8;line-height:1.6;">${greeting},</p>
+              <p style="margin:0 0 24px;font-size:15px;color:#94a3b8;line-height:1.6;">
+                We received a request to reset your LeadFlow AI password. Click the button below to choose a new password.
+              </p>
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#10b981,#059669);border-radius:8px;">
+                    <a href="${data.resetUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">
+                      Reset My Password →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <!-- Security note -->
+              <div style="background:#0f172a;border-radius:8px;border:1px solid #334155;padding:16px;margin:0 0 24px;">
+                <p style="margin:0;font-size:13px;color:#64748b;line-height:1.6;">
+                  🔒 <strong style="color:#94a3b8;">This link expires in 1 hour</strong> and can only be used once.<br />
+                  If you didn't request a password reset, you can safely ignore this email — your password won't change.
+                </p>
+              </div>
+              <!-- Fallback URL -->
+              <p style="margin:0;font-size:12px;color:#475569;line-height:1.6;">
+                If the button doesn't work, copy and paste this link into your browser:<br />
+                <a href="${data.resetUrl}" style="color:#34d399;word-break:break-all;">${data.resetUrl}</a>
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="border-top:1px solid #334155;padding:24px 32px;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#475569;">
+                Questions? Email us at <a href="mailto:${SUPPORT_EMAIL}" style="color:#34d399;">${SUPPORT_EMAIL}</a>
+              </p>
+              <p style="margin:8px 0 0;font-size:11px;color:#334155;">
+                LeadFlow AI · Real Estate Lead Response Automation
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`
+
+  return sendEmail(to, subject, html, agentId, 'password_reset', { resetUrl: data.resetUrl })
+}
