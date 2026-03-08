@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 22 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/8/2026, 1:46:59 AM
+**Last Updated:** 3/8/2026, 7:43:57 PM
 
 ---
 
@@ -33,26 +33,29 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 10 | Blocked: 0 | Done: 272
+**Queue Health:** Ready: 5 | In Progress: 7 | Blocked: 0 | Done: 307
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (5 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | sonnet | $1.20 | 🟡 P1 |
+| Dev: fix-main-landing-page-has-no-cta-analytics-instrumenta - Main landing page (/) has no CTA analytics instrumentation | codex | $0.60 | 🟡 P1 |
+| Design: feat-lead-magnet-email-capture - Lead Magnet / Email Capture on Landing Page | sonnet | $0.54 | 🟡 P1 |
+| QC: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | kimi | $0.13 | 🟡 P1 |
+| Dev: feat-session-analytics-pilot - Session Analytics — Pilot Agent Usage Tracking | kimi | $0.24 | 🟡 P1 |
 
-### ⚡ In Progress (10 tasks)
+### ⚡ In Progress (7 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Dashboard build errors | dev | qwen3.5 |
-| Dev (rescue): fix-signup-plan-options-not-displayed - Signup page shows Choose Your Plan but no plan options are listed | dev | kimi |
-| PM: Product Review — UTM Parameter Capture & Marketing Attribution | product | sonnet |
-| Dev (rescue): Fix: Dashboard build errors | dev | sonnet |
+| Fix: Dashboard build errors | dev | kimi |
 | Dev: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | dev | sonnet |
 | Dev: feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | dev | sonnet |
-| PM: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | product | sonnet |
-| PM: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | product | sonnet |
-| PM: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | product | sonnet |
-| PM: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | product | sonnet |
+| Dev: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | dev | sonnet |
+| Dev: feat-lead-experience-simulator - Lead Experience Simulator & Conversation Viewer | dev | sonnet |
+| Dev: UC-LANDING-ANALYTICS-GA4-001 - Landing Page Analytics — GA4 CTA & Conversion Tracking | dev | sonnet |
+| Dev: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -110,8 +113,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $167.75
-**Cost per task:** Avg $0.52
+**Estimated project cost:** $187.28
+**Cost per task:** Avg $0.51
 
 ---
 
@@ -124,8 +127,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. ⚡ **10 agents active**
+1. ✅ **5 tasks ready to spawn**
+2. ⚡ **7 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
