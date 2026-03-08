@@ -186,7 +186,18 @@ function PaidSignupFlow() {
     setError(null)
 
     try {
-      // Step 1: Create agent record with password
+      // FR-2: Read UTM params from sessionStorage (first-touch attribution)
+      let utm: Record<string, string | null> = {}
+      try {
+        const utmRaw = sessionStorage.getItem('lf_utm')
+        if (utmRaw) {
+          utm = JSON.parse(utmRaw)
+        }
+      } catch {
+        // sessionStorage unavailable — silent fail
+      }
+
+      // Step 1: Create agent record with password (+ UTM attribution)
       const agentResponse = await fetch('/api/agents/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -194,7 +205,8 @@ function PaidSignupFlow() {
           email: formData.email,
           name: formData.name,
           phone: formData.phone,
-          password: formData.password
+          password: formData.password,
+          ...utm
         })
       })
 

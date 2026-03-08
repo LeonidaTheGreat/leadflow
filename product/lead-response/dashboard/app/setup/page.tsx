@@ -88,41 +88,71 @@ export default function SetupPage() {
       agentName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
     }
 
-    // Load persisted wizard state from API
-    fetch('/api/setup/status', {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.wizardState) {
-          const ws = data.wizardState
-          initState.fubConnected = ws.fub_connected ?? false
-          initState.fubApiKey = ws.fub_api_key ?? ''
-          initState.twilioConnected = ws.twilio_connected ?? false
-          initState.twilioPhone = ws.twilio_phone ?? ''
-          initState.smsVerified = ws.sms_verified ?? false
+    // Load persisted wizard state from API (try new endpoint first, fall back to old)
+    const loadStatus = async () => {
+      try {
+        // Try the new onboarding status endpoint first
+        const res = await fetch('/api/agents/onboarding/status', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+
+        if (res.ok) {
+          const data = await res.json()
+          initState.fubConnected = data.fubConnected ?? false
+          initState.twilioConnected = data.phoneConfigured ?? false
+          initState.twilioPhone = ''
+          initState.smsVerified = data.smsVerified ?? false
 
           // Resume from last incomplete step
-          if (!ws.fub_connected) {
+          if (!data.fubConnected) {
             initState.currentStep = 'fub'
-          } else if (!ws.twilio_connected) {
+          } else if (!data.phoneConfigured) {
             initState.currentStep = 'twilio'
-          } else if (!ws.sms_verified) {
+          } else if (!data.smsVerified) {
             initState.currentStep = 'sms-verify'
-          } else if (!ws.simulator_completed && !ws.simulator_skipped) {
+          } else if (!data.simulator_completed && !data.simulator_skipped) {
             initState.currentStep = 'simulator'
           } else {
             initState.currentStep = 'complete'
           }
+        } else {
+          // Fall back to old endpoint
+          const oldRes = await fetch('/api/setup/status', {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          })
+          const oldData = await oldRes.json()
+          
+          if (oldData.wizardState) {
+            const ws = oldData.wizardState
+            initState.fubConnected = ws.fub_connected ?? false
+            initState.fubApiKey = ws.fub_api_key ?? ''
+            initState.twilioConnected = ws.twilio_connected ?? false
+            initState.twilioPhone = ws.twilio_phone ?? ''
+            initState.smsVerified = ws.sms_verified ?? false
+
+            // Resume from last incomplete step
+            if (!ws.fub_connected) {
+              initState.currentStep = 'fub'
+            } else if (!ws.twilio_connected) {
+              initState.currentStep = 'twilio'
+            } else if (!ws.sms_verified) {
+              initState.currentStep = 'sms-verify'
+            } else if (!ws.simulator_completed && !ws.simulator_skipped) {
+              initState.currentStep = 'simulator'
+            } else {
+              initState.currentStep = 'complete'
+            }
+          }
         }
-      })
-      .catch(() => {
+      } catch {
         // Start from beginning on error
-      })
-      .finally(() => {
+      } finally {
         setState((prev) => ({ ...prev, ...initState }))
         setLoading(false)
-      })
+      }
+    }
+
+    loadStatus()
   }, [router])
 
   const goToStep = (step: SetupStep) => {
@@ -134,7 +164,8 @@ export default function SetupPage() {
   const saveWizardState = async (patch: Partial<SetupState>) => {
     const token = getToken()
     try {
-      await fetch('/api/setup/status', {
+      // Try new endpoint first
+      const res = await fetch('/api/agents/onboarding/status', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,6 +173,18 @@ export default function SetupPage() {
         },
         body: JSON.stringify(patch),
       })
+      
+      // Fall back to old endpoint if new one fails
+      if (!res.ok) {
+        await fetch('/api/setup/status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(patch),
+        })
+      }
     } catch {
       // non-fatal
     }
@@ -176,13 +219,22 @@ export default function SetupPage() {
     saveWizardState(next)
     // Mark full onboarding as done
     const token = getToken()
-    fetch('/api/setup/complete', {
+    fetch('/api/agents/onboarding/complete', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-    }).catch(() => {})
+    }).catch(() => {
+      // Fall back to old endpoint
+      fetch('/api/setup/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }).catch(() => {})
+    })
   }
 
   const handleSimulatorSkip = () => {
@@ -194,13 +246,22 @@ export default function SetupPage() {
     saveWizardState(next)
     // Mark onboarding as done even if simulator was skipped
     const token = getToken()
-    fetch('/api/setup/complete', {
+    fetch('/api/agents/onboarding/complete', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-    }).catch(() => {})
+    }).catch(() => {
+      // Fall back to old endpoint
+      fetch('/api/setup/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }).catch(() => {})
+    })
   }
 
   const handleSkip = (step: SetupStep) => {
