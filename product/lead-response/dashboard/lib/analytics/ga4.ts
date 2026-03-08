@@ -13,9 +13,16 @@
 
 // ─── Type declarations ────────────────────────────────────────────────────────
 
+// GA4 gtag type definition
+interface GtagFunction {
+  (command: 'event', name: string, params?: Record<string, unknown>): void;
+  (command: 'config', id: string, params?: Record<string, unknown>): void;
+  (command: 'js', date: Date): void;
+}
+
 declare global {
   interface Window {
-    gtag: Gtag.Gtag;
+    gtag: GtagFunction;
     dataLayer: unknown[];
   }
 }
