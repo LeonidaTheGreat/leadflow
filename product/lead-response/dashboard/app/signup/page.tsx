@@ -8,12 +8,22 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 // Pricing tiers as per UC-9 spec
-const PLANS = [
+// HARDCODED: No env var dependency to ensure plans always render
+interface Plan {
+  id: string
+  name: string
+  price: number
+  priceId: string
+  popular?: boolean
+  features: string[]
+}
+
+const PLANS: Plan[] = [
   {
     id: 'starter',
     name: 'Starter',
     price: 49,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_49',
+    priceId: 'price_starter_49',
     features: [
       'Up to 50 leads/month',
       'AI SMS responses',
@@ -26,7 +36,7 @@ const PLANS = [
     id: 'pro',
     name: 'Pro',
     price: 149,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_149',
+    priceId: 'price_pro_149',
     popular: true,
     features: [
       'Up to 200 leads/month',
@@ -41,7 +51,7 @@ const PLANS = [
     id: 'team',
     name: 'Team',
     price: 399,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY || 'price_team_399',
+    priceId: 'price_team_399',
     features: [
       'Up to 500 leads/month',
       'Multi-channel AI',
@@ -117,7 +127,18 @@ export default function SignupPage() {
     setError(null)
 
     try {
-      // Step 1: Create agent record with password
+      // FR-2: Read UTM params from sessionStorage (first-touch attribution)
+      let utm: Record<string, string | null> = {}
+      try {
+        const utmRaw = sessionStorage.getItem('lf_utm')
+        if (utmRaw) {
+          utm = JSON.parse(utmRaw)
+        }
+      } catch {
+        // sessionStorage unavailable — silent fail
+      }
+
+      // Step 1: Create agent record with password (+ UTM attribution)
       const agentResponse = await fetch('/api/agents/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -125,7 +146,8 @@ export default function SignupPage() {
           email: formData.email,
           name: formData.name,
           phone: formData.phone,
-          password: formData.password
+          password: formData.password,
+          ...utm
         })
       })
 
