@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<!--
+  DESIGN WIREFRAME — NOT PRODUCTION CODE
+  =======================================
+  This file is a static visual mockup for the Lead Experience Simulator.
+  It exists to communicate design intent to the Dev agent.
+  Do not deploy, do not integrate, do not copy-paste into the app.
+  
+  Task ID: b4878411-32af-43d5-a413-2a09d803224f
+  Design spec: docs/DESIGN-LEAD-EXPERIENCE-SIMULATOR.md
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe — Lead Experience Simulator</title>
+  <style>
+    /* ========================================
+       DESIGN TOKENS (mirrors dashboard globals)
+       ======================================== */
+    :root {
+      --bg: #f8fafc;           /* slate-50 */
+      --white: #ffffff;
+      --border: #e2e8f0;       /* slate-200 */
+      --text-primary: #0f172a; /* slate-900 */
+      --text-secondary: #475569;/* slate-600 */
+      --text-muted: #94a3b8;   /* slate-400 */
+      --text-label: #334155;   /* slate-700 */
+      --input-bg: #f8fafc;
+      --hover: #f1f5f9;        /* slate-100 */
+      
+      --primary: #0f172a;      /* slate-900 — button fill */
+      --primary-fg: #ffffff;
+      
+      --indigo: #4f46e5;       /* indigo-600 — AI bubble */
+      --indigo-light: #e0e7ff; /* indigo-100 */
+      --indigo-muted: #818cf8; /* indigo-400 */
+      
+      --bubble-lead: #f1f5f9;  /* slate-100 */
+      --bubble-lead-text: #1e293b; /* slate-800 */
+      --bubble-ai: #4f46e5;
+      --bubble-ai-text: #ffffff;
+      
+      --badge-booked-bg: #f0fdf4;
+      --badge-booked-text: #15803d;
+      --badge-booked-border: #bbf7d0;
+      
+      --badge-progress-bg: #fffbeb;
+      --badge-progress-text: #b45309;
+      --badge-progress-border: #fde68a;
+      
+      --badge-opted-bg: #fef2f2;
+      --badge-opted-text: #dc2626;
+      --badge-opted-border: #fecaca;
+      
+      --emerald: #16a34a;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ========================================
+       NAVIGATION
+       ======================================== */
+    .nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .nav-left { display: flex; align-items: center; gap: 32px; }
+    .nav-logo { font-size: 18px; font-weight: 700; color: var(--text-primary); text-decoration: none; }
+    .nav-links { display: flex; gap: 16px; }
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .nav-link:hover { background: var(--hover); color: var(--text-primary); }
+    .nav-link.active { color: var(--text-primary); font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .status-dot {
+      width: 8px; height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+    .status-text { font-size: 13px; color: var(--text-secondary); }
+
+    /* ========================================
+       PAGE CONTAINER
+       ======================================== */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ========================================
+       PAGE HEADER
+       ======================================== */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .page-title { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--hover); color: var(--text-primary); }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-fg);
+      border: 1px solid var(--primary);
+      width: 100%;
+      justify-content: center;
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* ========================================
+       TABS
+       ======================================== */
+    .tabs-list {
+      display: flex;
+      gap: 2px;
+      background: var(--hover);
+      border-radius: 10px;
+      padding: 3px;
+      width: fit-content;
+      margin-bottom: 24px;
+    }
+    .tab-trigger {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 7px;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+    }
+    .tab-trigger.active {
+      background: var(--white);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* ========================================
+       CARD
+       ======================================== */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    /* ========================================
+       SIMULATOR TAB — TWO PANEL
+       ======================================== */
+    .simulator-panel {
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+    }
+    
+    /* LEFT PANEL — Form */
+    .form-panel {
+      width: 340px;
+      min-width: 320px;
+      flex-shrink: 0;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+    .form-field { margin-bottom: 16px; }
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-label);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .field-optional {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+    .field-input {
+      width: 100%;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+    }
+    .field-input:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    }
+    .field-helper {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+    
+    /* Pill selector */
+    .pill-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pill {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 10px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      background: var(--white);
+      border: none;
+      transition: all 0.15s;
+    }
+    .pill + .pill { border-left: 1px solid var(--border); }
+    .pill.active {
+      background: var(--primary);
+      color: var(--primary-fg);
+    }
+    
+    /* Status strip */
+    .status-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .status-running { color: var(--text-muted); }
+    .status-complete { color: var(--emerald); }
+    .status-icon { width: 14px; height: 14px; }
+    
+    /* Divider between panels */
+    .panel-divider {
+      width: 1px;
+      background: var(--border);
+      margin: 0 -24px 0 0;
+      flex-shrink: 0;
+    }
+    
+    /* RIGHT PANEL — Conversation */
+    .chat-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .chat-panel-title { font-size: 13px; font-weight: 600; color: var(--text-label); }
+    .chat-turn-count { font-size: 11px; color: var(--text-muted); }
+    
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 60px 32px;
+      text-align: center;
+      min-height: 360px;
+    }
+    .empty-icon {
+      width: 40px; height: 40px;
+      color: var(--border);
+      margin-bottom: 16px;
+    }
+    .empty-title { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+    .empty-body { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    
+    /* Chat thread */
+    .chat-thread {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      max-height: 460px;
+      padding-right: 4px;
+    }
+    .message-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .message-row.ai { flex-direction: row-reverse; }
+    
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .avatar-lead { background: #e2e8f0; color: #475569; }
+    .avatar-ai { background: var(--indigo); color: white; }
+    
+    .bubble-wrap {
+      display: flex;
+      flex-direction: column;
+      max-width: 75%;
+    }
+    .message-row.ai .bubble-wrap { align-items: flex-end; }
+    
+    .bubble {
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .bubble-lead {
+      background: var(--bubble-lead);
+      color: var(--bubble-lead-text);
+      border-radius: 18px 18px 18px 4px;
+    }
+    .bubble-ai {
+      background: var(--bubble-ai);
+      color: var(--bubble-ai-text);
+      border-radius: 18px 18px 4px 18px;
+    }
+    .bubble-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      padding: 0 2px;
+    }
+    .message-row.ai .bubble-time { text-align: right; color: var(--indigo-muted); }
+    
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 12px 14px;
+      background: var(--bubble-lead);
+      border-radius: 18px 18px 18px 4px;
+      width: fit-content;
+    }
+    .typing-dot {
+      width: 6px; height: 6px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typing 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.85); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+    
+    /* Outcome strip */
+    .outcome-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-top: 1px solid #f1f5f9;
+      margin-top: 16px;
+      padding-top: 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .outcome-check { color: var(--emerald); font-size: 13px; }
+    .no-sms { font-weight: 600; color: var(--emerald); }
+
+    /* ========================================
+       CONVERSATIONS TAB
+       ======================================== */
+    .conversations-panel { padding: 24px; }
+    .conv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .conv-count { font-size: 11px; color: var(--text-muted); }
+    
+    .filter-bar { margin-bottom: 20px; }
+    
+    .conv-list { display: flex; flex-direction: column; }
+    
+    .conv-row {
+      border-top: 1px solid var(--border);
+    }
+    .conv-row:last-child { border-bottom: 1px solid var(--border); }
+    
+    .conv-row-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 8px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .conv-row-header:hover { background: var(--hover); }
+    
+    .conv-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600;
+      color: #475569;
+      flex-shrink: 0;
+    }
+    .conv-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+    }
+    .conv-date { font-size: 11px; color: var(--text-muted); }
+    .conv-msgs { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+    
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .badge::before { content: '● '; margin-right: 2px; font-size: 9px; }
+    .badge-booked {
+      background: var(--badge-booked-bg);
+      color: var(--badge-booked-text);
+      border-color: var(--badge-booked-border);
+    }
+    .badge-progress {
+      background: var(--badge-progress-bg);
+      color: var(--badge-progress-text);
+      border-color: var(--badge-progress-border);
+    }
+    .badge-opted {
+      background: var(--badge-opted-bg);
+      color: var(--badge-opted-text);
+      border-color: var(--badge-opted-border);
+    }
+    
+    /* Chevron */
+    .chevron {
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+    .chevron.open { transform: rotate(180deg); }
+    
+    /* Expanded thread */
+    .conv-expanded {
+      background: var(--bg);
+      border-radius: 0 0 10px 10px;
+      padding: 16px 16px 16px 56px;
+      display: none;
+    }
+    .conv-expanded.open { display: block; }
+    .conv-thread {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+    .conv-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 20px;
+    }
+    
+    /* ========================================
+       DEMO LINK MODAL (static preview)
+       ======================================== */
+    .modal-preview {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+    }
+    .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .modal-body { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
+    .modal-url-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .modal-url {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-family: 'Monaco', monospace;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .modal-expiry { font-size: 11px; color: var(--text-muted); }
+    
+    /* ========================================
+       DEMO MODE VIEW
+       ======================================== */
+    .demo-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .demo-logo { font-size: 16px; font-weight: 700; }
+    .demo-powered { font-size: 12px; color: var(--text-muted); font-style: italic; }
+    
+    /* ========================================
+       SECTION DIVIDER (wireframe annotation)
+       ======================================== */
+    .wireframe-section {
+      margin: 48px 0 16px;
+    }
+    .wireframe-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8b5cf6;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .wireframe-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+    
+    /* ========================================
+       ANNOTATION CALLOUTS
+       ======================================== */
+    .annotation {
+      display: inline-block;
+      background: #f3f0ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #7c3aed;
+      margin-left: 8px;
+      font-family: 'Monaco', monospace;
+    }
+  </style>
+</head>
+<body>
+
+<!-- =============================================
+     SECTION 1: AUTHENTICATED VIEW — SIMULATOR TAB
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">1. Authenticated View — Simulator Tab (Default State)</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a class="nav-logo" href="#">LeadFlow AI</a>
+      <div class="nav-links">
+        <a class="nav-link" href="#">Lead Feed</a>
+        <a class="nav-link" href="#">History</a>
+        <a class="nav-link" href="#">Analytics</a>
+        <a class="nav-link active" href="#">Simulator</a>
+        <span class="annotation">new nav link</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="status-dot"></span>
+      <span class="status-text">System Online</span>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Lead Experience Simulator</h1>
+      <p class="page-subtitle">Test how the AI responds to your leads without sending any real SMS</p>
+    </div>
+    <button class="btn btn-ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      Share Demo ↗
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-list">
+    <button class="tab-trigger active">Simulator</button>
+    <button class="tab-trigger">Real Conversations</button>
+  </div>
+
+  <!-- Simulator Tab Content -->
+  <div class="card">
+    <div class="simulator-panel">
+      
+      <!-- LEFT: Form -->
+      <div class="form-panel">
+        <div class="section-label">Configure Lead</div>
+        
+        <div class="form-field">
+          <div class="field-label">Lead Name</div>
+          <input class="field-input" type="text" placeholder="e.g. Sarah Johnson" value="Sarah Johnson">
+          <div class="field-helper">Used in the greeting — enter any name</div>
+        </div>
+        
+        <div class="form-field">
+          <div class="field-label">
+            Property Interest
+            <span class="field-optional">Optional</span>
+          </div>
+          <input class="field-input" type="text" placeholder="e.g. 3-bed home in Scottsdale under $600K" value="">
+          <div class="field-helper">Shapes the AI's first response — leave blank for generic inquiry</div>
+        </div>
+        
+        <div class="form-field">
+          <div class="field-label">
+            Lead Replies
+            <span class="field-optional">Script</span>
+          </div>
+          <div class="pill-group">
+            <button class="pill active">Standard</button>
+            <button class="pill">Skeptical</button>
+            <button class="pill">Eager</button>
+          </div>
+          <div class="field-helper">3-turn script: inquiry → clarification → booking intent</div>
+        </div>
+        
+        <button class="btn btn-primary" style="margin-top: 24px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Run Simulation
+        </button>
+        
+        <!-- Status: hidden by default, shown during/after run -->
+        <div class="status-strip status-complete">
+          <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Simulation complete
+        </div>
+      </div>
+
+      <!-- Vertical divider -->
+      <div style="width: 1px; background: var(--border); margin: -24px 0;"></div>
+
+      <!-- RIGHT: Conversation Output (populated state) -->
+      <div class="chat-panel" style="padding-left: 24px;">
+        <div class="chat-panel-header">
+          <span class="chat-panel-title">Simulated Conversation</span>
+          <span class="chat-turn-count">3 turns</span>
+        </div>
+        
+        <div class="chat-thread">
+          <!-- Turn 1 -->
+          <div class="message-row">
+            <div class="avatar avatar-lead">S</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-lead">Hi, I saw a listing in Scottsdale and wanted to know more about similar homes in the area around $500K.</div>
+              <div class="bubble-time">10:32 AM</div>
+            </div>
+          </div>
+          
+          <div class="message-row ai">
+            <div class="avatar avatar-ai">AI</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-ai">Hey Sarah! Great timing — there are some fantastic options in that range right now. I'm with the team here and would love to help you find the perfect fit. Are you looking to move in the next 30–60 days, or is this more exploratory?</div>
+              <div class="bubble-time">10:32 AM</div>
+            </div>
+          </div>
+          
+          <!-- Turn 2 -->
+          <div class="message-row">
+            <div class="avatar avatar-lead">S</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-lead">Probably in the next 60 days. We have two kids so a good school district matters a lot to us.</div>
+              <div class="bubble-time">10:34 AM</div>
+            </div>
+          </div>
+          
+          <div class="message-row ai">
+            <div class="avatar avatar-ai">AI</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-ai">Perfect — Scottsdale Unified is one of the best in the state. I'd love to set up a quick 15-min call to show you what's available right now in your budget. What does your schedule look like this week?</div>
+              <div class="bubble-time">10:34 AM</div>
+            </div>
+          </div>
+          
+          <!-- Turn 3 -->
+          <div class="message-row">
+            <div class="avatar avatar-lead">S</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-lead">Thursday afternoon works for me!</div>
+              <div class="bubble-time">10:35 AM</div>
+            </div>
+          </div>
+          
+          <div class="message-row ai">
+            <div class="avatar avatar-ai">AI</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-ai">Thursday it is! Here's a booking link to grab a time that works for you: cal.com/agent/sarah-j 🏡 Looking forward to it!</div>
+              <div class="bubble-time">10:35 AM</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Outcome strip -->
+        <div class="outcome-strip">
+          <span class="outcome-check">✓</span>
+          Simulation complete · 3 turns · <span class="no-sms">No SMS sent</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     SECTION 2: SIMULATOR — EMPTY STATE
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">2. Simulator Tab — Empty State (Before First Run)</div>
+  </div>
+</div>
+
+<div style="padding: 0 24px;">
+  <div class="card">
+    <div class="simulator-panel">
+      <div class="form-panel">
+        <div class="section-label">Configure Lead</div>
+        <div class="form-field">
+          <div class="field-label">Lead Name</div>
+          <input class="field-input" type="text" placeholder="e.g. Sarah Johnson">
+          <div class="field-helper">Used in the greeting — enter any name</div>
+        </div>
+        <div class="form-field">
+          <div class="field-label">Property Interest <span class="field-optional">Optional</span></div>
+          <input class="field-input" type="text" placeholder="e.g. 3-bed home in Scottsdale under $600K">
+        </div>
+        <div class="form-field">
+          <div class="field-label">Lead Replies <span class="field-optional">Script</span></div>
+          <div class="pill-group">
+            <button class="pill active">Standard</button>
+            <button class="pill">Skeptical</button>
+            <button class="pill">Eager</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 24px; opacity: 0.5;" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Run Simulation
+        </button>
+        <div class="field-helper" style="margin-top: 8px; text-align: center;">Enter a lead name to enable</div>
+      </div>
+      
+      <div style="width: 1px; background: var(--border); margin: -24px 0;"></div>
+      
+      <div class="chat-panel" style="padding-left: 24px;">
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <div class="empty-title">Run a simulation to see the conversation here</div>
+          <div class="empty-body">Fill in the lead name on the left<br>and click Run Simulation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     SECTION 3: LOADING STATE
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">3. Simulator Tab — Loading State (Mid-Simulation)</div>
+  </div>
+</div>
+
+<div style="padding: 0 24px;">
+  <div class="card">
+    <div class="simulator-panel">
+      <div class="form-panel">
+        <div class="section-label">Configure Lead</div>
+        <div class="form-field">
+          <div class="field-label">Lead Name</div>
+          <input class="field-input" type="text" value="Marcus Williams">
+        </div>
+        <div class="form-field">
+          <div class="field-label">Property Interest <span class="field-optional">Optional</span></div>
+          <input class="field-input" type="text" value="Condo in Downtown Phoenix">
+        </div>
+        <div class="form-field">
+          <div class="field-label">Lead Replies <span class="field-optional">Script</span></div>
+          <div class="pill-group">
+            <button class="pill">Standard</button>
+            <button class="pill active">Skeptical</button>
+            <button class="pill">Eager</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 24px;" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
+          Simulating…
+        </button>
+        <div class="status-strip status-running">
+          Generating AI responses…
+        </div>
+      </div>
+      
+      <div style="width: 1px; background: var(--border); margin: -24px 0;"></div>
+      
+      <div class="chat-panel" style="padding-left: 24px;">
+        <div class="chat-panel-header">
+          <span class="chat-panel-title">Simulated Conversation</span>
+          <span class="chat-turn-count">Turn 2 of 3…</span>
+        </div>
+        <div class="chat-thread">
+          <div class="message-row">
+            <div class="avatar avatar-lead">M</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-lead">I'm interested in a condo in Downtown Phoenix, something modern.</div>
+              <div class="bubble-time">Just now</div>
+            </div>
+          </div>
+          <div class="message-row ai">
+            <div class="avatar avatar-ai">AI</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-ai">Hey Marcus! Downtown Phoenix has some amazing modern condos right now. Are you looking to buy or just exploring your options?</div>
+              <div class="bubble-time">Just now</div>
+            </div>
+          </div>
+          <div class="message-row">
+            <div class="avatar avatar-lead">M</div>
+            <div class="bubble-wrap">
+              <div class="bubble bubble-lead">Buying. But I've heard the market is crazy. How do I know I'm getting a fair deal?</div>
+              <div class="bubble-time">Just now</div>
+            </div>
+          </div>
+          <!-- Typing indicator -->
+          <div class="message-row ai">
+            <div class="avatar avatar-ai">AI</div>
+            <div class="bubble-wrap">
+              <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     SECTION 4: REAL CONVERSATIONS TAB
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">4. Real Conversations Tab</div>
+  </div>
+</div>
+
+<div style="padding: 0 24px;">
+  <div class="card">
+    <div class="conversations-panel">
+      
+      <div class="conv-header">
+        <div>
+          <div class="section-label">Real Conversations</div>
+        </div>
+        <span class="conv-count">Last 10 conversations · anonymized</span>
+      </div>
+      
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="pill-group" style="width: fit-content;">
+          <button class="pill active" style="padding: 6px 14px;">All</button>
+          <button class="pill" style="padding: 6px 14px;">Booked</button>
+          <button class="pill" style="padding: 6px 14px;">In Progress</button>
+          <button class="pill" style="padding: 6px 14px;">Opted Out</button>
+        </div>
+      </div>
+      
+      <div class="conv-list">
+        <!-- Row 1 — EXPANDED -->
+        <div class="conv-row">
+          <div class="conv-row-header">
+            <div class="conv-avatar">S</div>
+            <div class="conv-name">Sarah J.</div>
+            <div class="conv-date">2h ago</div>
+            <span class="badge badge-booked">Booked</span>
+            <div class="conv-msgs">5 msgs</div>
+            <span class="chevron open">▼</span>
+          </div>
+          <div class="conv-expanded open">
+            <div class="conv-thread">
+              <div class="message-row">
+                <div class="avatar avatar-lead" style="width:24px;height:24px;font-size:10px;">S</div>
+                <div class="bubble-wrap">
+                  <div class="bubble bubble-lead" style="font-size:12px;">Hey I saw your listing for the property on Oak Ave</div>
+                  <div class="bubble-time">10:12 AM</div>
+                </div>
+              </div>
+              <div class="message-row ai">
+                <div class="avatar avatar-ai" style="width:24px;height:24px;font-size:10px;">AI</div>
+                <div class="bubble-wrap">
+                  <div class="bubble bubble-ai" style="font-size:12px;">Hi Sarah! Thanks for reaching out — that's a beautiful property. Are you looking to buy in that neighborhood specifically, or open to other areas?</div>
+                  <div class="bubble-time">10:12 AM</div>
+                </div>
+              </div>
+              <div class="message-row">
+                <div class="avatar avatar-lead" style="width:24px;height:24px;font-size:10px;">S</div>
+                <div class="bubble-wrap">
+                  <div class="bubble bubble-lead" style="font-size:12px;">Open to other areas too! Budget is around $450K</div>
+                  <div class="bubble-time">10:15 AM</div>
+                </div>
+              </div>
+              <div class="message-row ai">
+                <div class="avatar avatar-ai" style="width:24px;height:24px;font-size:10px;">AI</div>
+                <div class="bubble-wrap">
+                  <div class="bubble bubble-ai" style="font-size:12px;">$450K opens up some great options! I'd love to show you a few. Want to grab a quick call this week?</div>
+                  <div class="bubble-time">10:16 AM</div>
+                </div>
+              </div>
+              <div class="message-row">
+                <div class="avatar avatar-lead" style="width:24px;height:24px;font-size:10px;">S</div>
+                <div class="bubble-wrap">
+                  <div class="bubble bubble-lead" style="font-size:12px;">Yes, I booked a time on your calendar link!</div>
+                  <div class="bubble-time">10:18 AM</div>
+                </div>
+              </div>
+            </div>
+            <div class="conv-footer">
+              <span>Phone: ***-***-1234</span>
+              <span>Booked: Cal.com appt Mar 10</span>
+              <span>5 messages</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Row 2 — collapsed -->
+        <div class="conv-row">
+          <div class="conv-row-header">
+            <div class="conv-avatar">M</div>
+            <div class="conv-name">Marcus T.</div>
+            <div class="conv-date">Yesterday</div>
+            <span class="badge badge-progress">In Progress</span>
+            <div class="conv-msgs">3 msgs</div>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        
+        <!-- Row 3 — collapsed -->
+        <div class="conv-row">
+          <div class="conv-row-header">
+            <div class="conv-avatar">J</div>
+            <div class="conv-name">Jennifer R.</div>
+            <div class="conv-date">Mar 8</div>
+            <span class="badge badge-opted">Opted Out</span>
+            <div class="conv-msgs">2 msgs</div>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        
+        <!-- Row 4 — collapsed -->
+        <div class="conv-row">
+          <div class="conv-row-header">
+            <div class="conv-avatar">D</div>
+            <div class="conv-name">David K.</div>
+            <div class="conv-date">Mar 7</div>
+            <span class="badge badge-booked">Booked</span>
+            <div class="conv-msgs">7 msgs</div>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        
+        <!-- Row 5 — collapsed -->
+        <div class="conv-row">
+          <div class="conv-row-header">
+            <div class="conv-avatar">A</div>
+            <div class="conv-name">Amanda L.</div>
+            <div class="conv-date">Mar 6</div>
+            <span class="badge badge-progress">In Progress</span>
+            <div class="conv-msgs">4 msgs</div>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     SECTION 5: DEMO LINK MODAL
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">5. Demo Link Modal</div>
+  </div>
+</div>
+
+<div style="padding: 0 24px; display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+  <!-- Before generation -->
+  <div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Before generation:</div>
+    <div class="modal-preview">
+      <div class="modal-title">Generate Demo Link</div>
+      <div class="modal-body">This link lets anyone view the simulator for 24 hours — no login required. Great for pitches.</div>
+      <button class="btn btn-primary" style="max-width: 200px;">Generate Link</button>
+    </div>
+  </div>
+  
+  <!-- After generation -->
+  <div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">After generation:</div>
+    <div class="modal-preview">
+      <div class="modal-title">Generate Demo Link</div>
+      <div class="modal-body">This link lets anyone view the simulator for 24 hours — no login required. Great for pitches.</div>
+      <div class="modal-url-row">
+        <div class="modal-url">https://leadflow.ai/admin/simulator?demo=a7b9f3e1c2d4...</div>
+        <button class="btn-copy">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+      <div class="modal-expiry">Expires in 24 hours</div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     SECTION 6: DEMO MODE VIEW
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">6. Demo Mode — /admin/simulator?demo=&lt;token&gt; (Clean, no auth required)</div>
+  </div>
+</div>
+
+<!-- Demo nav -->
+<div class="demo-nav">
+  <div class="demo-logo">🏠 LeadFlow AI</div>
+  <div class="demo-powered">Powered by AI</div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Lead Experience Demo</h1>
+      <p class="page-subtitle" style="color: var(--text-muted);">Powered by LeadFlow AI</p>
+    </div>
+    <!-- No Share Demo button in demo mode -->
+  </div>
+
+  <!-- Only Simulator tab shown — no Real Conversations -->
+  <div class="card">
+    <div class="simulator-panel">
+      <div class="form-panel">
+        <div class="section-label">Configure Lead</div>
+        <div class="form-field">
+          <div class="field-label">Lead Name</div>
+          <input class="field-input" type="text" placeholder="e.g. Sarah Johnson">
+        </div>
+        <div class="form-field">
+          <div class="field-label">Property Interest <span class="field-optional">Optional</span></div>
+          <input class="field-input" type="text" placeholder="e.g. 3-bed home in Scottsdale">
+        </div>
+        <div class="form-field">
+          <div class="field-label">Lead Replies <span class="field-optional">Script</span></div>
+          <div class="pill-group">
+            <button class="pill active">Standard</button>
+            <button class="pill">Skeptical</button>
+            <button class="pill">Eager</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 24px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Run Simulation
+        </button>
+      </div>
+      
+      <div style="width: 1px; background: var(--border); margin: -24px 0;"></div>
+      
+      <div class="chat-panel" style="padding-left: 24px;">
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <div class="empty-title">Run a simulation to see the conversation here</div>
+          <div class="empty-body">Enter a lead name and click Run Simulation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================================
+     SECTION 7: EXPIRED TOKEN PAGE
+     ============================================= -->
+<div class="wireframe-section">
+  <div style="padding: 0 24px;">
+    <div class="wireframe-label">7. Expired / Invalid Demo Token</div>
+  </div>
+</div>
+
+<div style="padding: 0 24px; margin-bottom: 48px;">
+  <div class="card" style="padding: 80px 32px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+    <svg style="width:48px;height:48px;color:#cbd5e1;margin-bottom:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    <div style="font-size:18px;font-weight:600;color:#334155;margin-bottom:8px;">This demo link has expired</div>
+    <div style="font-size:13px;color:var(--text-muted);max-width:300px;line-height:1.6;">
+      Demo links are valid for 24 hours.<br>
+      Ask your LeadFlow contact for a new link.
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+</style>
+
+</body>
+</html>
