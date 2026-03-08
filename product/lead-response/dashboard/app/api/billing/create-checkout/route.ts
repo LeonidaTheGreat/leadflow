@@ -11,32 +11,32 @@ const PRICING_TIERS: Record<string, { priceId: string; name: string; amount: num
   starter_monthly: {
     priceId: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
     name: 'Starter - Monthly',
-    amount: 49700, // $497 in cents
+    amount: 4900, // $49 in cents
   },
   starter_annual: {
     priceId: process.env.STRIPE_PRICE_STARTER_ANNUAL || 'price_starter_annual',
     name: 'Starter - Annual',
-    amount: 497000,
+    amount: 49000,
   },
   professional_monthly: {
     priceId: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
     name: 'Professional - Monthly',
-    amount: 99700, // $997 in cents
+    amount: 14900, // $149 in cents
   },
   professional_annual: {
     priceId: process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL || 'price_professional_annual',
     name: 'Professional - Annual',
-    amount: 997000,
+    amount: 149000,
   },
   enterprise_monthly: {
     priceId: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly',
     name: 'Enterprise - Monthly',
-    amount: 199700, // $1997 in cents
+    amount: 39900, // $399 in cents
   },
   enterprise_annual: {
     priceId: process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL || 'price_enterprise_annual',
     name: 'Enterprise - Annual',
-    amount: 1997000,
+    amount: 399000,
   },
 }
 
