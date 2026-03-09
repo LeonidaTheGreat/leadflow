@@ -34,6 +34,7 @@ const PRICING_PLANS = [
     features: [
       '100 SMS/month',
       'Basic AI responses',
+      'Basic qualification',
       'Dashboard access',
       'FUB integration',
       'Email support',
@@ -42,8 +43,8 @@ const PRICING_PLANS = [
     highlighted: false,
   },
   {
-    name: 'Pro',
-    tier: 'pro',
+    name: 'Professional',
+    tier: 'professional',
     monthlyPrice: 149,
     annualPrice: 1490,
     description: 'Most popular for working agents',
@@ -65,6 +66,7 @@ const PRICING_PLANS = [
     annualPrice: 3990,
     description: 'For small teams (up to 5 agents)',
     features: [
+      'Everything in Pro',
       'Unlimited SMS',
       'Full AI (Claude)',
       'Lead routing',
@@ -76,8 +78,8 @@ const PRICING_PLANS = [
     highlighted: false,
   },
   {
-    name: 'Brokerage',
-    tier: 'brokerage',
+    name: 'Enterprise',
+    tier: 'enterprise',
     monthlyPrice: 999,
     annualPrice: 9990,
     description: 'White-label for large brokerages',
