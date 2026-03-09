@@ -66,6 +66,11 @@ export default function SignupPage() {
     password: ''
   })
 
+  // FR-3: Track form open on page mount
+  useEffect(() => {
+    trackFormEvent('form_open', 'pilot_signup')
+  }, [])
+
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
     setSelectedPlan(plan)
     setStep('enter-details')
