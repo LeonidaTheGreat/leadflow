@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
-import { trackCTAClick } from '@/lib/analytics/ga4'
+import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
 import { useUtmCapture } from '@/lib/utm-capture'
 import { ScrollDepthTracker } from '@/components/scroll-depth-tracker'
@@ -11,10 +11,26 @@ import { ScrollDepthTracker } from '@/components/scroll-depth-tracker'
 export default function HomePage() {
   // Capture UTM parameters on mount (first-touch wins)
   useUtmCapture()
+
+  // Scroll-depth milestone refs (FR-3 / US-2)
+  const ref25 = useRef<HTMLDivElement>(null)
+  const ref50 = useRef<HTMLDivElement>(null)
+  const ref75 = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const cleanup = attachScrollMilestoneObservers([
+      ref25.current,
+      ref50.current,
+      ref75.current,
+    ])
+    return cleanup
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
       {/* Scroll Depth Tracking */}
       <ScrollDepthTracker />
+
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -26,15 +42,21 @@ export default function HomePage() {
             >
               Pricing
             </a>
+            {/* CTA: join_pilot_nav (FR-2) */}
             <Link
               href="/pilot"
+              onClick={() => trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')}
               className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              data-cta-id="join_pilot_nav"
             >
               Pilot Program
             </Link>
+            {/* CTA: sign_in_nav (FR-2) */}
             <Link
               href="/login"
+              onClick={() => trackCTAClick('sign_in_nav', 'Sign In', 'navigation')}
               className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              data-cta-id="sign_in_nav"
             >
               Sign In
             </Link>
@@ -43,7 +65,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero — CTA Placement #1 */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <section ref={ref25} className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -60,10 +82,12 @@ export default function HomePage() {
             </Suspense>
 
             <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+              {/* CTA: see_how_it_works (FR-2) */}
               <a
                 href="#how-it-works"
                 className="text-slate-400 hover:text-white underline underline-offset-4"
                 onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')}
+                data-cta-id="see_how_it_works"
               >
                 See how it works ↓
               </a>
@@ -129,7 +153,7 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="bg-white dark:bg-slate-900 py-20">
+      <section ref={ref50} id="features" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             Everything You Need to Convert More Leads
@@ -211,7 +235,7 @@ export default function HomePage() {
       <LeadMagnetSection />
 
       {/* Pricing — CTA Placement #3 */}
-      <section id="pricing" data-testid="pricing" className="bg-white dark:bg-slate-900 py-20">
+      <section ref={ref75} id="pricing" data-testid="pricing" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             Simple, Transparent Pricing
@@ -410,6 +434,15 @@ function PricingCard({
     if (name === 'Team') return 'bg-purple-500 text-white'
     return 'bg-slate-600 text-white'
   }
+
+  // Map pricing card names to CTA IDs
+  const getPricingCTAId = () => {
+    if (name === 'Starter') return 'pricing_starter'
+    if (name === 'Pro') return 'pricing_pro'
+    if (name === 'Team') return 'pricing_team'
+    return `pricing_${name.toLowerCase()}`
+  }
+
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
       {badge && (
@@ -435,7 +468,8 @@ function PricingCard({
       </ul>
       <Link
         href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${name.toLowerCase()}`}
-        onClick={() => trackCTAClick(`pricing_${name.toLowerCase()}`, `${cta} ${name}`, 'pricing')}
+        onClick={() => trackCTAClick(getPricingCTAId(), `${cta} ${name}`, 'pricing')}
+        data-cta-id={getPricingCTAId()}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
@@ -447,6 +481,8 @@ function PricingCard({
       {!isBrokerage && (
         <Link
           href="/signup/trial"
+          onClick={() => trackCTAClick('start_trial_pricing_card', 'or start free trial', 'pricing')}
+          data-cta-id="start_trial_pricing_card"
           className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
         >
           or start free trial →
