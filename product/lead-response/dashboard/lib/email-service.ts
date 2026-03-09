@@ -11,10 +11,13 @@ async function getResend() {
   if (_resend) return _resend
   if (!process.env.RESEND_API_KEY) return null
   try {
-    const { Resend } = await import('resend')
+    // Dynamic import to handle optional dependency
+    const resendModule = await import('resend') as any
+    const { Resend } = resendModule
     _resend = new Resend(process.env.RESEND_API_KEY)
     return _resend
-  } catch {
+  } catch (err) {
+    // Module not found or other import error - resend not installed
     return null
   }
 }
