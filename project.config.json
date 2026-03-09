@@ -76,6 +76,13 @@
       "url": "https://leadflow-ai-five.vercel.app/login",
       "severity": "critical",
       "check_type": "http_200"
+    },
+    {
+      "id": "lead-simulator",
+      "name": "Lead Experience Simulator",
+      "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
+      "severity": "warning",
+      "check_type": "http_200"
     }
   ],
 
@@ -148,6 +155,20 @@
       "description": "Stripe billing integration (part of customer dashboard)",
       "deploy": {
         "target_id": "vercel-dashboard"
+      }
+    },
+    {
+      "id": "lead-simulator",
+      "name": "Lead Experience Simulator",
+      "type": "web",
+      "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
+      "smoke_test_id": "lead-simulator",
+      "uc_id": "feat-lead-experience-simulator",
+      "description": "Admin tool for simulating lead SMS experience and viewing anonymized conversations",
+      "deploy": {
+        "target_id": "vercel-dashboard",
+        "cwd": "product/lead-response/dashboard",
+        "command": "/opt/homebrew/bin/vercel --prod --yes"
       }
     }
   ],
