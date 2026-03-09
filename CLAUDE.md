@@ -21,10 +21,10 @@ integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
 
 ## Key Files
 - `server.js` — main entry point
-- `ARCHITECTURE.md` — system architecture (includes 4-loop overview)
-- `docs/4-LOOP-ARCHITECTURE.md` — full 4-loop orchestration docs (schema, loops, heartbeat order, extending)
-- `HEARTBEAT.md` — heartbeat spec (includes 4-loop execution order)
-- `SKILLS.md` — orchestrator skills (includes 4-loop skills 12-16)
+- `ARCHITECTURE.md` — system architecture (includes 6-loop overview)
+- `docs/6-LOOP-ARCHITECTURE.md` — full 6-loop orchestration docs (schema, loops, heartbeat order, extending)
+- `HEARTBEAT.md` — heartbeat spec (includes 6-loop execution order)
+- `SKILLS.md` — orchestrator skills (includes 6-loop skills 12-16)
 - `AGENTS.md` — agent configuration
 - `PMF.md` — pricing, ICP, GTM strategy
 - `USE_CASES.md` — product use cases
@@ -82,7 +82,7 @@ All heartbeat, spawning, learning, health, and dashboard generation code now liv
 
 **Realtime Dispatcher:** Long-running service at `~/.openclaw/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.leadflow.realtime-dispatcher`
 
-**Full docs:** `docs/4-LOOP-ARCHITECTURE.md`
+**Full docs:** `docs/6-LOOP-ARCHITECTURE.md`
 
 ## Dashboard
 The live execution dashboard has moved to `~/.openclaw/dashboard/` — it's a system-level orchestration tool, not a LeadFlow product artifact.

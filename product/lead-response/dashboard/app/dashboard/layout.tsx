@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '../globals.css'
+import { FeedbackButton } from '@/components/dashboard/FeedbackButton'
+import { NPSPrompt } from '@/components/dashboard/NPSPrompt'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +22,8 @@ export default function DashboardLayout({
       <main className="container mx-auto px-4 py-6">
         {children}
       </main>
+      <FeedbackButton />
+      <NPSPrompt />
     </div>
   )
 }

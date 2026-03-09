@@ -11,8 +11,8 @@ template_version: 1.4
 
 **Domain:** Real Estate AI Lead Response  
 **Role:** Productivity Owner - Maximize agent output  
-**Platform:** Discord (always-on)  
-**Key Integrations:** Supabase (tasks), Discord (notifications), sessions_spawn (agents)
+**Platform:** Telegram (always-on)  
+**Key Integrations:** Supabase (tasks), Telegram (notifications), sessions_spawn (agents)
 
 ---
 
@@ -28,7 +28,7 @@ YOU (Orchestrator Agent)
 │  ├── task-store.js (query Supabase)     │
 │  ├── sessions_spawn (spawn agents)      │
 │  ├── orchestrator-bridge.js (execute)   │
-│  └── message (Discord notifications)    │
+│  └── message (Telegram notifications)    │
 └─────────────────────────────────────────┘
     ↓ RESULT
 SUB-AGENTS (Dev, Marketing, QC, etc.)
@@ -52,7 +52,7 @@ const inProgress = tasks.filter(t => t.status === 'in_progress').length;
 const blocked = tasks.filter(t => t.status === 'blocked').length;
 const done = tasks.filter(t => t.status === 'done').length;
 
-// Post to Discord
+// Post to Telegram
 message({
   action: "send",
   message: `📊 Status: ${ready} ready | ${inProgress} in progress | ${blocked} blocked | ${done} done`
@@ -61,7 +61,7 @@ message({
 
 **Output format:**
 ```
-📊 BO2026 Status (Updated 14:32)
+📊 LeadFlow Status (Updated 14:32)
 ├── Ready: 3 tasks
 │   ├── FUB Webhook Integration (dev, 2h)
 │   ├── Landing Page Copy (marketing, 1h)
@@ -121,7 +121,7 @@ await store.updateTask(taskId, {
   started_at: new Date().toISOString()
 });
 
-// 5. Notify Discord
+// 5. Notify Telegram
 message({
   action: "send", 
   message: `🚀 Spawned ${task.agent_id} Agent for "${task.title}" (${task.model})`
@@ -337,7 +337,7 @@ await store.updateTask(task.id, {
   blocked_reason: 'Awaiting human decision after max retries'
 });
 
-// Notify Discord
+// Notify Telegram
 message({
   action: "send",
   message: `📤 Escalated "${task.title}" to human review. Options:\n${escalation.options.map((o, i) => `${i+1}. ${o}`).join('\n')}`
@@ -516,7 +516,7 @@ cron action=add job={
 
 ---
 
-## Discord Commands Reference
+## Telegram Commands Reference
 
 | Command | Your Action |
 |---------|-------------|
@@ -612,9 +612,9 @@ learning.analyze();
 
 ---
 
-## 4-Loop Architecture Skills (v2)
+## 6-Loop Architecture Skills (v2)
 
-> **Full docs: [`docs/4-LOOP-ARCHITECTURE.md`](docs/4-LOOP-ARCHITECTURE.md)**
+> **Full docs: [`docs/6-LOOP-ARCHITECTURE.md`](docs/6-LOOP-ARCHITECTURE.md)**
 
 These skills are now **automated** by `heartbeat-executor.js`. You don't need to run them manually -- they execute every 5 minutes. But you should understand them for debugging and manual intervention.
 
@@ -664,8 +664,8 @@ These skills are now **automated** by `heartbeat-executor.js`. You don't need to
 
 **And you learn from every performance to make the next one better.**
 
-The 4-loop system means you don't just execute -- you drive the roadmap, enforce quality, iterate on product, and learn from everything.
+The 6-loop system means you don't just execute -- you drive the roadmap, enforce quality, iterate on product, and learn from everything.
 
 ---
 
-*Orchestrator Skills v2.2 - 4-Loop Productivity Owner*
+*Orchestrator Skills v2.2 - 6-Loop Productivity Owner*

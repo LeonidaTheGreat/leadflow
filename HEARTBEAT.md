@@ -11,7 +11,7 @@ template_version: 1.4
 
 **Purpose:** Define proactive behavior for always-on orchestrator agent  
 **Frequency:** Every 5 minutes (300 seconds)  
-**Platform:** Discord (always-on presence)
+**Platform:** Telegram (always-on presence)
 
 ---
 
@@ -43,25 +43,38 @@ template_version: 1.4
 
 ---
 
-## 4-Loop Integration (v2)
+## 6-Loop Integration
 
-> **Full docs: [`docs/4-LOOP-ARCHITECTURE.md`](docs/4-LOOP-ARCHITECTURE.md)**
+> **Full docs: [`docs/6-LOOP-ARCHITECTURE.md`](docs/6-LOOP-ARCHITECTURE.md)**
 
-The heartbeat now runs 4 interconnected loops in `heartbeat-executor.js`:
+The heartbeat now runs 6 interconnected loops in `heartbeat-executor.js`:
 
 ```
-1.  queryState()              -- Read queue from Supabase
-2.  detectZombieTasks()       -- PID-check, handle zombies
-3.  checkCompletions()        -- Process completion reports
-4.  spawnAgents()             -- Cross-loop learning + budget check + spawn
-5.  checkBlockers()           -- Check blocked tasks
-5b. runSelfHealChecks()       -- Self-heal (Loop 4: Self-Learning)
-6.  replenishQueue()          -- UC roadmap -> tasks (Loop 1: Execution)
-6b. processProductFeedback()  -- Feedback -> PM tasks (Loop 3: Product)
-6c. checkPRReviews()          -- Merge/rework PRs (Loop 2: QC)
-7.  updateDashboard()         -- Regenerate dashboard
-8.  reportToTelegram()        -- Telegram report
-9.  logHeartbeat()            -- Write to metrics table + log file
+ 0.  checkGoalState()             -- Set urgency mode based on goal trajectory
+ 1.  queryState()                 -- Read queue from Supabase
+ 2.  detectZombieTasks()          -- PID-check, handle zombies
+ 3.  checkCompletions()           -- Process completion reports
+ 3b. rescueStuckChains()          -- Rescue failed UC workflow chains
+3b2. rescueOrphanTasks()          -- Rescue orphan failed tasks (!fix, !feature)
+ 3c. resetExhaustedTasks()        -- Reset exhausted tasks daily (fresh retries)
+ 4.  spawnAgents()                -- Cross-loop learning + budget check + spawn
+ 5.  checkBlockers()              -- Check blocked tasks
+ 5b. runSelfHealChecks()          -- Self-heal (Loop 4: Self-Learning)
+ 5c. runSmokeTests()              -- Verify live product health
+5c2. syncProductComponents()      -- Persist smoke results + product status
+ 5d. checkBuildHealth()           -- Verify dashboard builds cleanly
+ 5e. collectRevenueIntelligence() -- Collect metrics, check goals (Loop 5: Revenue)
+ 5f. checkDistributionHealth()    -- Detect traffic/conversion issues (Loop 6: Distribution)
+ 5g. sweepUCCompletions()         -- Sweep for UCs that should be marked complete
+ 6.  replenishQueue()             -- UC roadmap -> tasks (Loop 1: Execution, revenue-aware)
+ 6b. processProductFeedback()     -- Feedback -> PM tasks (Loop 3: Product)
+ 6c. checkPRReviews()             -- Merge/rework PRs (Loop 2: QC)
+ 6d. cleanupStaleBranches()       -- Remove merged/stale branches
+ 6e. checkProductReviews()        -- Trigger PM reviews + process decisions
+ 6f. archiveStaleTasks()          -- Archive old stale tasks
+ 7.  updateDashboard()            -- Regenerate dashboard
+ 8.  reportToTelegram()           -- Telegram report (topic 10788)
+ 9.  logHeartbeat()               -- Write to metrics table + log file
 ```
 
 **Key additions over v1:**
@@ -244,7 +257,7 @@ async function reportToStojan() {
   const tasks = await store.getTasks();
   const report = generateStatusReport(tasks);
   
-  // Post to Discord
+  // Post to Telegram
   message({
     action: "send",
     message: `
@@ -404,10 +417,10 @@ Update task status, create resolution task, continue heartbeat
 
 ### Check 1: Am I Still Connected?
 ```javascript
-// Verify Discord connection
+// Verify Telegram connection
 if (!discordConnected) {
-  reconnectDiscord();
-  notifyStojan("🔄 Reconnected to Discord");
+  reconnectTelegram();
+  notifyStojan("🔄 Reconnected to Telegram");
 }
 ```
 
@@ -432,7 +445,7 @@ if (dashboardLastUpdate < Date.now() - 5 * 60 * 1000) {
 
 ---
 
-## Heartbeat vs Discord Commands
+## Heartbeat vs Telegram Commands
 
 | Trigger | Action | Frequency |
 |---------|--------|-----------|
@@ -462,7 +475,7 @@ if (dashboardLastUpdate < Date.now() - 5 * 60 * 1000) {
   
 [14:15:00] Heartbeat #45 + REPORT
   Status: 2 ready | 3 in progress | 1 blocked | 24 done
-  Actions: Posted status to Discord
+  Actions: Posted status to Telegram
   📊 Report: 24/50 tasks (48%), 3 active agents, $2.20/$5 budget
   
 [14:20:00] Heartbeat #46
@@ -490,7 +503,7 @@ if (dashboardLastUpdate < Date.now() - 5 * 60 * 1000) {
 | Issue | Detection | Action |
 |-------|-----------|--------|
 | Supabase down | Query fails | Retry 3×, then alert Stojan |
-| Discord disconnected | Send fails | Reconnect, alert Stojan |
+| Telegram disconnected | Send fails | Reconnect, alert Stojan |
 | Dashboard stale | No updates >10 min | Restart subscription |
 | No tasks for 1 hour | ready=0, in_progress=0 | Create exploration tasks |
 | Budget exceeded | spent > $5 | Halt spawns, alert Stojan |

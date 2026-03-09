@@ -1,7 +1,7 @@
 ---
 title: LeadFlow Architecture Summary
 author: Stojan & Leonida
-date: 2026-02-23
+date: 2026-03-09
 ---
 
 # LeadFlow Autonomous System Architecture
@@ -9,69 +9,53 @@ date: 2026-02-23
 ## Overview
 
 A self-improving, self-testing, self-tasking agent swarm for LeadFlow AI with:
-- ✅ Discord-based orchestrator control
-- ✅ Telegram notifications for visibility  
-- ✅ Heartbeat-driven automation (15-min cycles)
-- ✅ Dynamic model selection (Qwen → Haiku → Sonnet)
-- ✅ Quality metrics tracking
-- ✅ Dashboard with Tailscale access
+- Telegram-based orchestrator control (bidirectional commands)
+- Heartbeat-driven automation (5-min cycles) + realtime dispatcher (2-min cycles)
+- 6-loop orchestration (Execution, QC, Product, Learning, Revenue Intelligence, Distribution)
+- Dynamic model selection (Kimi → Haiku → Sonnet → Opus)
+- Quality metrics tracking + self-learning
+- Dashboard with Tailscale access
 
 ---
 
 ## System Components
 
-### 1. Control Layer (Discord)
+### 1. Control Layer (Telegram)
 
-**Purpose:** Human → Orchestrator interaction
+**Purpose:** Human ↔ Orchestrator interaction
 
-**Location:** `#orchestrator` channel in "Leonida HQ" Discord server
-
-**How it works:**
-- You @mention the bot for status/commands
-- Bot responds with current project state
-- Cannot auto-respond (requires @mention by design)
+**Implementation:** `telegram-commands.js` in Genome (`~/.openclaw/genome/commands/`)
 
 **Commands:**
 ```
-@Openclaw Orchestrator status
-@Openclaw Orchestrator spawn marketing agent
-@Openclaw Orchestrator list blocked tasks
+!status          — system status, budget, active tasks
+!fix <desc>      — create a dev fix task
+!feature <desc>  — create a feature task (PM→Dev→QC workflow)
+!set-budget <$>  — set daily budget
+!spawn <agent>   — manually spawn an agent
+!pause / !resume — pause/resume orchestration
 ```
 
-**Why not persistent threads?**
-- Discord thread binding requires `applications.commands` OAuth scope
-- Current implementation works with @mentions (actually safer)
-- Future: Can add auto-response with config change
+Also accessible via CLI: `~/bin/fix` and `~/bin/feature`
 
 ---
 
-### 2. Automation Layer (Heartbeat)
+### 2. Automation Layer (Heartbeat + Realtime Dispatcher)
 
 **Purpose:** Background orchestration without human intervention
 
-**Implementation:** macOS LaunchAgent running every 15 minutes
+**Heartbeat** (`heartbeat-executor.js`): macOS LaunchAgent, runs every 5 minutes
+- Runs all 6 loops (see below)
+- Generates project docs from Supabase
+- Runs smoke tests
+- Sends Telegram summary
 
-**What it does:**
-1. **Dashboard Auto-Sync** (`update_dashboard.py`)
-   - Reads `task-tracker.json`
-   - Updates `DASHBOARD.md` and `dashboard.html`
-
-2. **Task Dispatcher** (`task-dispatcher.ts`)
-   - Scores tasks by impact (distance to revenue)
-   - Identifies newly unblocked tasks
-   - Writes spawn configs (triggers agent spawning)
-
-3. **Agent Notifications** (`agent-notifier.ts`)
-   - Checks for completed subagents
-   - Sends Telegram summary
-
-4. **TG-Discord Bridge** (`tg-discord-bridge.ts`)
-   - Forwards Discord updates to Telegram topic
-   - **CONFIGURABLE:** Reads from `.notifications.json`
-
-5. **Git Auto-Sync**
-   - Commits safe files (memory/, docs/)
-   - Pushes to origin/main
+**Realtime Dispatcher** (`realtime-dispatcher.js`): Long-running launchd service, polls every 2 minutes
+- Monitors active agent PIDs
+- Detects zombie/idle/dead agents
+- Handles task completion (verification, PR creation, chain next agent)
+- Budget reconciliation (real token costs vs estimates)
+- Completion scan with retry + model escalation
 
 ---
 
@@ -79,77 +63,42 @@ A self-improving, self-testing, self-tasking agent swarm for LeadFlow AI with:
 
 **Purpose:** Optimize cost vs quality automatically
 
-**Implementation:** `lib/model-selector.ts` + `lib/dynamic-orchestrator.ts`
-
-**How it works:**
+**Implementation:** `selectInitialModel()` in `workflow-engine.js`
 
 ```
 Task Received
     ↓
-Assess Complexity (1-10 scale)
+Assess Complexity (1-10 from UC or heuristic)
     ↓
-Select Initial Model:
-  - Qwen (free): Complexity ≤5
-  - Haiku ($4/M): Complexity ≤7  
-  - Sonnet ($15/M): Complexity ≤9
-  - Opus ($75/M): Complexity 10 (requires approval)
+Select Initial Model (MODEL_LADDER):
+  - Kimi (Moonshot): Low complexity
+  - Haiku: Medium complexity
+  - Sonnet: High complexity
+  - Opus: Critical tasks (requires high complexity score)
     ↓
 Spawn Agent
     ↓
-Monitor Result
+Monitor Result (realtime dispatcher)
     ↓
-If Failed → Escalate to next model
+If Failed → Escalate to next model (escalateModel())
     ↓
-Log Metrics for Dashboard
+Log actual cost + learning outcome
 ```
 
-**Metrics Tracked:**
-- Success rate by model
-- Average tokens per task
-- Escalation rate
-- Cost per task
-- Quality score (1-5)
-
-**Dashboard Shows:**
-- Model performance comparison
-- Recommendations ("Use Qwen more" / "Escalate earlier")
-- Cost tracking vs budget
+**Cost tracking:** Real token-based costs from session `.jsonl` files, with per-model pricing in `project.config.json`.
 
 ---
 
 ### 4. Notification Layer (Telegram)
 
-**Purpose:** Keep you informed without Discord context-switching
+**Purpose:** Real-time visibility into system operations
 
-**Implementation:** Configurable via `.notifications.json`
-
-**Current Config:**
-```json
-{
-  "projectName": "leadflow-ai",
-  "discord": {
-    "enabled": true,
-    "channelId": "orchestrator",
-    "useThreads": false
-  },
-  "telegram": {
-    "enabled": true,
-    "target": "telegram:-1003852328909:topic:10171",
-    "bidirectional": false
-  },
-  "primaryInterface": "telegram"
-}
-```
-
-**What you get in Telegram:**
-- Agent completion notifications
-- Dashboard updates
-- Orchestrator status summaries
-- Blocker alerts
-
-**Bi-directional?** Currently Discord → Telegram only
-- Telegram → Discord would require webhook setup
-- Can be enabled by setting `bidirectional: true` + webhook config
+**What you get:**
+- Agent completion notifications (with cost + duration)
+- Heartbeat summaries (tasks spawned, completed, blocked)
+- Budget alerts (approaching/exceeded daily limit)
+- Smoke test failure escalations
+- PR merge/conflict notifications
 
 ---
 
@@ -157,18 +106,44 @@ Log Metrics for Dashboard
 
 **Purpose:** Real-time project status anywhere
 
-**Access:** http://100.117.143.114:3000/dashboard.html (Tailscale)
+**Access:** `https://stojanadmins-mac-mini.tail3ca16c.ts.net/` (Tailscale)
+
+**Location:** `~/.openclaw/dashboard/dashboard.html` (system-level, not in this repo)
 
 **Sections:**
-1. **Agent Activity** - Live status of all 5 agents
-2. **Model Performance** - Success rates, costs, recommendations
-3. **This Week's Plan** - Execution roadmap
-4. **Milestones** - Progress toward $20K MRR
-5. **Model Selection Log** - Auto-escalation history
+1. **Agent Activity** — Dynamic discovery from Supabase tasks
+2. **Task Queue** — In Progress → Ready → Blocked
+3. **Cost Tracking** — Today + all-time, per-model breakdown
+4. **Orchestrator Quality** — Heartbeat metrics
+5. **Product Quality** — UC coverage, E2E test specs
+6. **QC Status** — Code reviews
 
-**Auto-refresh:** Every 60 seconds
+**Server:** `python3 -m http.server 8787` via launchd
 
-**Server:** Always-on via LaunchAgent
+---
+
+## 6-Loop Orchestration
+
+> **Full documentation: [`docs/6-LOOP-ARCHITECTURE.md`](docs/6-LOOP-ARCHITECTURE.md)**
+
+The orchestration system runs 6 interconnected loops:
+
+1. **Project Execution Loop** — UC roadmap drives task creation, workflow chaining (PM→Dev→QC), and UC completion tracking.
+2. **Quality Control Loop** — Feature branches, automated PRs, QC agent review, auto-merge/rework, GitHub Actions CI, merge conflict resolution.
+3. **Product Iteration Loop** — Feedback from E2E tests, PostHog, and pilot users is ingested, processed by PM agent, and routed back into the execution loop.
+4. **Self-Learning Loop** — Decision tracking, learning system, self-heal checks, and cross-loop model escalation.
+5. **Revenue Intelligence Loop** — Pilot agent tracking, conversion metrics, pricing optimization, churn risk detection.
+6. **Distribution Loop** — Landing page optimization, SEO, content marketing, social proof collection, referral tracking.
+
+**Key schema:** `supabase/migrations/004_project_hierarchy.sql` (PRDs, use_cases, metrics, code_reviews, product_feedback)
+
+**Key files (all in `~/.openclaw/genome/`):**
+- `core/heartbeat-executor.js` — all 6 loops
+- `core/spawn-consumer.js` — branches + spawn context
+- `core/realtime-dispatcher.js` — completion monitoring + zombie detection
+- `core/workflow-engine.js` — model selection, budget, PR creation, verification
+- `intelligence/learning-system.js` — outcome tracking
+- `health/self-heal.js` — system health checks
 
 ---
 
@@ -177,34 +152,35 @@ Log Metrics for Dashboard
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  YOU (Telegram)                                        │
-│  ├─ Ask questions → Main session (me)                 │
-│  └─ Get notifications ← Heartbeat bridge              │
+│  ├─ Commands (!fix, !feature, !status) → Orchestrator  │
+│  └─ Get notifications ← Heartbeat + Dispatcher        │
 └─────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────┐
-│  ORCHESTRATOR (Discord)                                │
-│  ├─ Spawn agents via sessions_spawn                   │
-│  ├─ Monitor via subagents list                        │
-│  └─ Report via Telegram bridge                        │
+│  ORCHESTRATOR (Telegram + Heartbeat)                   │
+│  ├─ Score & prioritize UC roadmap                      │
+│  ├─ Spawn agents via spawn-consumer                    │
+│  ├─ Monitor via realtime-dispatcher                    │
+│  └─ Report via Telegram notifications                  │
 └─────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────┐
-│  HEARTBEAT (Every 15 min)                              │
-│  ├─ Check task-tracker.json                           │
-│  ├─ Update dashboard                                   │
-│  ├─ Spawn agents for unblocked tasks                  │
-│  └─ Send notifications                                 │
+│  HEARTBEAT (Every 5 min) + DISPATCHER (Every 2 min)    │
+│  ├─ Check Supabase tasks table                         │
+│  ├─ Spawn agents for ready tasks                       │
+│  ├─ Monitor PIDs, detect zombies                       │
+│  ├─ Handle completions (verify, PR, chain)             │
+│  └─ Run smoke tests, generate docs                     │
 └─────────────────────────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────┐
-│  AGENTS (Dev/Marketing/Design/QC/Analytics)            │
-│  ├─ Work on tasks                                      │
-│  ├─ Log to NOTES/                                      │
-│  ├─ Update task-tracker.json                          │
-│  └─ Auto-announce completion                           │
+│  AGENTS (Dev/QC/Design/Product/Marketing/Analytics)    │
+│  ├─ Work on tasks (feature branches for dev/design)    │
+│  ├─ Write completion reports                           │
+│  └─ Costs tracked from session token usage             │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -214,55 +190,53 @@ Log Metrics for Dashboard
 
 ```
 leadflow/
-├── .notifications.json          # ← NEW: Configurable targets
-├── .project.json                # Project metadata
-├── task-tracker.json            # Source of truth
-├── dashboard.html               # Auto-updated visualization
-├── DASHBOARD.md                 # Auto-updated markdown
+├── project.config.json         # Project identity card (read by Genome)
+├── server.js                   # Main API entry point
+├── package.json                # Dependencies and scripts
+├── CLAUDE.md                   # Project context for agents
 │
-├── lib/
-│   ├── model-selector.ts        # Complexity → Model mapping
-│   └── dynamic-orchestrator.ts  # Auto-escalation logic
+├── routes/                     # API routes
+├── lib/                        # Shared libraries
+├── integrations/               # FUB, Cal.com, Stripe, Supabase
 │
-├── scripts/
-│   ├── heartbeat.sh             # Master automation script
-│   ├── setup-autonomous.sh      # One-time setup
-│   ├── setup-notifications.ts   # ← NEW: Interactive config
-│   ├── tg-discord-bridge.ts     # Discord → Telegram
-│   ├── task-dispatcher.ts       # Auto-spawn logic
-│   ├── agent-notifier.ts        # Completion notifications
-│   └── update_dashboard.py      # Dashboard sync
+├── product/
+│   └── lead-response/
+│       └── dashboard/          # Next.js customer dashboard (Vercel: leadflow-ai)
 │
-├── agents/
+├── supabase/
+│   └── migrations/             # Database migrations
+│
+├── agents/                     # Agent configs (SOUL.md, SKILLS.md)
 │   ├── orchestrator/
-│   │   ├── SOUL.md              # Personality & principles
-│   │   ├── SKILLS.md            # Capabilities (includes model mgmt)
-│   │   └── NOTES/               # Activity logs
 │   ├── dev/
-│   ├── marketing/
-│   ├── design/
 │   ├── qc/
+│   ├── design/
+│   ├── marketing/
 │   └── analytics/
 │
-└── proposals/                   # Template improvements
-    └── template-improvement-*.md
+├── docs/                       # API design docs
+│   └── 6-LOOP-ARCHITECTURE.md  # Full orchestration docs
+│
+├── scripts/                    # Utility scripts
+│   └── generate-project-docs.js
+│
+└── *.js (symlinks)             # Orchestration files → ~/.openclaw/genome/core/
 ```
 
 ---
 
 ## Management Commands
 
-### Dashboard Server
+### Realtime Dispatcher
 ```bash
 # Check status
-launchctl list | grep leadflow.dashboard
+launchctl list | grep realtime-dispatcher
 
 # View logs
-tail -f /tmp/openclaw/leadflow-dashboard.log
+tail -f /tmp/openclaw/leadflow-realtime-dispatcher.log
 
-# Restart
-launchctl unload ~/Library/LaunchAgents/ai.openclaw.leadflow.dashboard.plist
-launchctl load ~/Library/LaunchAgents/ai.openclaw.leadflow.dashboard.plist
+# Restart (picks up code changes)
+launchctl stop ai.openclaw.leadflow.realtime-dispatcher
 ```
 
 ### Heartbeat
@@ -272,18 +246,15 @@ launchctl list | grep leadflow.heartbeat
 
 # View logs
 tail -f /tmp/openclaw/leadflow-heartbeat.log
-
-# Manual run
-cd leadflow && bash scripts/heartbeat.sh
 ```
 
-### Notification Config
+### Dashboard
 ```bash
-# Reconfigure targets
-npx ts-node scripts/setup-notifications.ts
+# Check status
+launchctl list | grep dashboard-server
 
-# Edit manually
-vim .notifications.json
+# Access
+open https://stojanadmins-mac-mini.tail3ca16c.ts.net/
 ```
 
 ---
@@ -292,62 +263,15 @@ vim .notifications.json
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Discord Bot | ✅ Working | @mention required |
-| Orchestrator | ✅ Spawned | Running in Discord |
-| Heartbeat | ✅ Running | Every 15 min |
-| Dashboard Server | ✅ Running | Port 3000, Tailscale |
-| Model Selector | ✅ Ready | Will auto-escalate |
-| TG Bridge | ✅ Configured | Discord → Telegram |
-| Dev Agent | ✅ Completed | TASK-001 done |
-| Marketing Agent | 🟡 Ready to spawn | Unblocked by Dev |
+| Telegram Bot | Running | Bidirectional commands |
+| Heartbeat | Running | Every 5 min via launchd |
+| Realtime Dispatcher | Running | 2-min poll cycle |
+| Dashboard | Running | Port 8787, Tailscale |
+| Model Selection | Active | Kimi primary, Haiku/Sonnet escalation |
+| Smoke Tests | Active | Every heartbeat |
+| Dev Agent | Active | Spawned per-task |
+| QC Agent | Active | Auto-chained after dev |
 
 ---
 
-## 4-Loop Orchestration (v2 Architecture)
-
-> **Full documentation: [`docs/4-LOOP-ARCHITECTURE.md`](docs/4-LOOP-ARCHITECTURE.md)**
-
-As of 2026-03-01, the orchestration system runs 4 interconnected loops:
-
-1. **Project Execution Loop** -- UC roadmap drives task creation, workflow chaining (PM->Dev->QC), and UC completion tracking. Replaces manual task creation.
-2. **Quality Control Loop** -- Feature branches, automated PRs, QC agent review, auto-merge/rework, GitHub Actions CI.
-3. **Product Iteration Loop** -- Feedback from E2E tests, PostHog, and pilot users is ingested, processed by PM agent, and routed back into the execution loop.
-4. **Self-Learning Loop** -- Decision tracking, learning system, self-heal checks, and cross-loop model escalation.
-
-**Key schema:** `supabase/migrations/004_project_hierarchy.sql` (PRDs, use_cases, metrics, code_reviews, product_feedback)
-
-**Key files:** `heartbeat-executor.js` (all loops), `spawn-consumer.js` (branches + spawn context), `learning-system.js`, `self-heal.js`, `orchestrator-decision-tracker.js`
-
----
-
-## Next Steps
-
-1. **Monitor:** Heartbeat will spawn Marketing agent automatically
-2. **Access:** Dashboard at http://100.117.143.114:3000/dashboard.html
-3. **Control:** @mention bot in Discord for status
-4. **Receive:** Telegram notifications in Business Opportunities topic
-
----
-
-## For New Projects
-
-```bash
-# 1. Instantiate from template
-cd templates/project-pod-v1
-./instantiate.sh --name "new-project" --goal "$10K MRR" --deadline "30 days"
-
-# 2. Configure notifications
-cd ~/projects/new-project
-npx ts-node scripts/setup-notifications.ts
-# (Interactive: choose Discord channel, Telegram group, etc.)
-
-# 3. Setup automation
-bash scripts/setup-autonomous.sh
-
-# 4. Spawn orchestrator
-# In Discord: @YourBot spawn orchestrator
-```
-
----
-
-*Architecture v1.0 - 2026-02-23*
+*Architecture v2.0 - 2026-03-09 (updated from v1.0 2026-02-23)*
