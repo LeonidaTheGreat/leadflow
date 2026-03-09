@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
+import LeadMagnetSection from '@/components/LeadMagnetSection'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -198,6 +199,9 @@ export default function HomePage() {
             </table>
           </div>
         </div>
+
+        {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
+        <LeadMagnetSection />
 
         {/* Pricing CTA section */}
         <div className="mt-20 text-center">
