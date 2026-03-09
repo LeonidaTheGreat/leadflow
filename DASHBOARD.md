@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 23 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/9/2026, 1:05:47 AM
+**Last Updated:** 3/9/2026, 1:13:08 AM
 
 ---
 
@@ -33,13 +33,12 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 59 | In Progress: 1 | Blocked: 0 | Done: 348
+**Queue Health:** Ready: 59 | In Progress: 1 | Blocked: 0 | Done: 349
 
 ### ▶️ Ready to Spawn (59 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Escalation: Fix recurring dev failure for feat-post-login-onboarding-wizard | sonnet | $0.60 | 🔴 P0 |
 | QC: fix-touchsession-middleware-not-implemented-no-session - touchSession() middleware not implemented — no session heartbeat | codex | $1.00 | 🔴 P0 |
 | QC: fix-session-logging-not-integrated-into-login-flow - Session logging not integrated into login flow | sonnet | $0.66 | 🔴 P0 |
 | PM: Product Review — Lead Experience Simulator & Conversation Viewer | sonnet | $0.60 | 🔴 P0 |
@@ -98,12 +97,13 @@ autoRefresh: every_heartbeat
 | Resolve merge conflicts on PR #85 (dev/bde152bf-dev-integrate-claude-ai-sms-integrate-cl) | kimi | $0.12 | 🟢 P2 |
 | Resolve merge conflicts on PR #86 (dev/8061049a-dev-fix-webhook-lead-persistence-fix-web) | kimi | $0.12 | 🟢 P2 |
 | Resolve merge conflicts on PR #87 (dev/957d1e03-dev-rescue-fix-signup-page-has-no-link-b) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #90 (dev/fd11b2e0-dev-fix-test-genome-separation-test-geno) | kimi | $0.12 | 🟢 P2 |
 
 ### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Dashboard build errors | dev | kimi |
+| Escalation: Fix recurring dev failure for feat-post-login-onboarding-wizard | dev | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -161,7 +161,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $225.05
+**Estimated project cost:** $225.17
 **Cost per task:** Avg $0.47
 
 ---
