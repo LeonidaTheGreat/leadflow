@@ -12,7 +12,6 @@ export function DashboardNav() {
   const [agentInfo, setAgentInfo] = useState<AgentInfo | null>(null)
 
   useEffect(() => {
-    // Fetch current agent info for trial badge
     fetch('/api/agents/profile')
       .then(res => res.ok ? res.json() : null)
       .then(data => {
@@ -23,7 +22,7 @@ export function DashboardNav() {
           })
         }
       })
-      .catch(() => {}) // Silent fail — badge just won't show
+      .catch(() => {})
   }, [])
 
   return (
@@ -35,38 +34,15 @@ export function DashboardNav() {
               LeadFlow AI
             </a>
             <div className="hidden md:flex items-center gap-4">
-              <a
-                href="/dashboard"
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              >
-                Lead Feed
-              </a>
-              <a
-                href="/dashboard/history"
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              >
-                History
-              </a>
-              <a
-                href="/dashboard/analytics"
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              >
-                Analytics
-              </a>
-              <a
-                href="/admin/simulator"
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              >
-                Simulator
-              </a>
+              <a href="/dashboard" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Lead Feed</a>
+              <a href="/dashboard/history" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">History</a>
+              <a href="/dashboard/analytics" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Analytics</a>
+              <a href="/admin/simulator" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Simulator</a>
             </div>
           </div>
           <div className="flex items-center gap-4">
             {agentInfo && (
-              <TrialBadge
-                planTier={agentInfo.plan_tier}
-                trialEndsAt={agentInfo.trial_ends_at}
-              />
+              <TrialBadge planTier={agentInfo.plan_tier} trialEndsAt={agentInfo.trial_ends_at} />
             )}
             <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
             <span className="text-sm text-slate-600 dark:text-slate-400">System Online</span>

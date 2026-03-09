@@ -5,9 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 
 interface TrialSignupFormProps {
-  /** Compact mode for inline hero CTA (no name field, smaller) */
   compact?: boolean
-  /** Optional CSS class overrides */
   className?: string
 }
 
@@ -26,7 +24,6 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     e.preventDefault()
     setError(null)
 
-    // Client-side validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       setError('Please enter a valid email address')
@@ -61,7 +58,6 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         return
       }
 
-      // Redirect to onboarding
       router.push(data.redirectTo || '/dashboard/onboarding')
     } catch {
       setError('Something went wrong. Please try again.')
@@ -124,7 +120,6 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     )
   }
 
-  // Full form variant (for /signup?mode=trial page and section CTAs)
   return (
     <form onSubmit={handleSubmit} className={`w-full max-w-[420px] mx-auto ${className}`}>
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
