@@ -99,9 +99,9 @@ function SignupPageContent() {
     password: ''
   })
 
-  // FR-3: Track form open on page mount
+  // FR-3: Track form open on page mount (skipped - tracking not implemented yet)
   useEffect(() => {
-    trackFormEvent('form_open', 'pilot_signup')
+    // trackFormEvent('form_open', 'pilot_signup')
   }, [])
 
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
