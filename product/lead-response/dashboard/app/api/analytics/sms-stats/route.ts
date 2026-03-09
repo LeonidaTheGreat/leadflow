@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
     // DELIVERY RATE
     // delivery_rate = delivered / total_outbound
     //
+<<<<<<< HEAD
     // sms_messages has NO agent_id column — join through leads table.
     // Twilio stores direction as 'outbound-api' or 'outbound-reply', not 'outbound'.
     // Use .in() to capture all outbound Twilio direction variants.
@@ -137,7 +138,7 @@ export async function GET(request: NextRequest) {
     // Use body — the column name in sms_messages
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.body))
+        .filter((m: any) => !isOptOut(m.message_body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
