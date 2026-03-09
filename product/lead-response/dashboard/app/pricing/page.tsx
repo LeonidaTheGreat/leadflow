@@ -43,8 +43,8 @@ const PRICING_PLANS = [
     highlighted: false,
   },
   {
-    name: 'Professional',
-    tier: 'professional',
+    name: 'Pro',
+    tier: 'pro',
     monthlyPrice: 149,
     annualPrice: 1490,
     description: 'Most popular for working agents',
@@ -78,8 +78,8 @@ const PRICING_PLANS = [
     highlighted: false,
   },
   {
-    name: 'Enterprise',
-    tier: 'enterprise',
+    name: 'Brokerage',
+    tier: 'brokerage',
     monthlyPrice: 999,
     annualPrice: 9990,
     description: 'White-label for large brokerages',
