@@ -49,12 +49,16 @@ export async function GET(request: NextRequest) {
     // ============================================================
     // DELIVERY RATE
     // delivery_rate = delivered / total_outbound
+    //
+    // Fix: query sms_messages (has agent_id column, unlike messages).
+    // Twilio stores direction as 'outbound-api' or 'outbound-reply', not 'outbound'.
+    // Use .in() to capture all outbound Twilio direction variants.
     // ============================================================
 
     let outboundQuery = supabaseAdmin
-      .from('messages')
+      .from('sms_messages')
       .select('id, status, lead_id')
-      .eq('direction', 'outbound')
+      .in('direction', ['outbound-api', 'outbound-reply'])
 
     if (windowStart) {
       outboundQuery = outboundQuery.gte('created_at', windowStart.toISOString())
@@ -88,9 +92,11 @@ export async function GET(request: NextRequest) {
     // Excludes opt-out replies
     // ============================================================
 
+    // Fix: query sms_messages; Twilio stores inbound direction as 'inbound'.
+    // Use message_body column (sms_messages column name vs 'body' in messages table).
     let inboundQuery = supabaseAdmin
-      .from('messages')
-      .select('lead_id, body')
+      .from('sms_messages')
+      .select('lead_id, message_body')
       .eq('direction', 'inbound')
 
     if (windowStart) {
@@ -108,9 +114,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Unique leads who replied (excluding opt-outs)
+    // Use message_body — the column name in sms_messages (not 'body')
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.body))
+        .filter((m: any) => !isOptOut(m.message_body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
