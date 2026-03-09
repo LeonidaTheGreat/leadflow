@@ -9,6 +9,10 @@
       "schedule": "0 9 * * *"
     },
     {
+      "path": "/api/cron/inactivity-check",
+      "schedule": "*/30 * * * *"
+    },
+    {
       "path": "/api/cron/check-stuck-agents",
       "schedule": "0 8 * * *"
     },
