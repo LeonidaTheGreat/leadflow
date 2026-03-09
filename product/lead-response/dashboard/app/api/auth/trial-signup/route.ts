@@ -128,8 +128,7 @@ export async function POST(request: NextRequest) {
         dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
       }
     ).catch((err: unknown) => {
-      console.error('[trial-signup] Welcome email error:', err)
-    })
+      console.error('[trial-signup] Welcome email error:', err)    })
 
     // Generate JWT token for immediate login
     const token = jwt.sign(
