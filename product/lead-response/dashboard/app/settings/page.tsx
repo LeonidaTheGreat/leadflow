@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User, Plug, Bell, ChevronRight, CreditCard } from 'lucide-react'
 import { useAnalytics, PostHogEvents } from '@/lib/analytics'
 import { BillingCard } from '@/components/billing'
+import { SatisfactionPingToggle } from '@/components/dashboard/SatisfactionPingToggle'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -151,6 +152,20 @@ export default function SettingsPage() {
             defaultChecked={true}
             onChange={(enabled) => handleNotificationUpdate('integration_alerts', enabled)}
           />
+        </div>
+      </div>
+
+      {/* AI Preferences */}
+      <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">AI Preferences</h2>
+          <p className="text-slate-600 dark:text-slate-400 mt-1">
+            Configure how the AI interacts with your leads
+          </p>
+        </div>
+        <div className="p-6">
+          {/* TODO: replace 'test-agent-id' with real agentId from session once auth is wired up */}
+          <SatisfactionPingToggle agentId={agentId} />
         </div>
       </div>
 
