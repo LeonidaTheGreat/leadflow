@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
+import { trackFormEvent } from '@/lib/analytics/ga4'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -66,6 +67,11 @@ export default function SignupPage() {
     password: ''
   })
 
+  // FR-3: Track form open on page mount
+  useEffect(() => {
+    trackFormEvent('form_open', 'pilot_signup')
+  }, [])
+
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
     setSelectedPlan(plan)
     setStep('enter-details')
@@ -113,6 +119,9 @@ export default function SignupPage() {
     if (!validateForm()) return
     if (!selectedPlan) return
 
+    // FR-3: Track form submit attempt (no PII)
+    trackFormEvent('form_submit', 'pilot_signup', { plan: selectedPlan.id })
+
     setLoading(true)
     setError(null)
 
@@ -157,12 +166,16 @@ export default function SignupPage() {
 
       // Step 3: Redirect to Stripe Checkout
       if (url) {
+        // FR-3: Track form success before redirect
+        trackFormEvent('form_success', 'pilot_signup', { plan: selectedPlan.id })
         window.location.href = url
       } else {
         throw new Error('No checkout URL received')
       }
     } catch (err: any) {
       console.error('Signup error:', err)
+      // FR-3: Track form error (no PII in message)
+      trackFormEvent('form_error', 'pilot_signup')
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }

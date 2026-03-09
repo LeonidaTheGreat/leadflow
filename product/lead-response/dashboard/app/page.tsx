@@ -169,6 +169,9 @@ export default function HomePage() {
       <footer className="border-t border-slate-200 dark:border-slate-800 mt-20">
         <div className="container mx-auto px-4 py-8 text-center text-slate-600 dark:text-slate-400">
           <p>Built with Next.js 15, shadcn/ui, Supabase, and Claude AI</p>
+          <p className="text-xs mt-2 text-slate-400 dark:text-slate-500">
+            We use Google Analytics to improve this site. No personal data is shared.
+          </p>
         </div>
       </footer>
     </div>
