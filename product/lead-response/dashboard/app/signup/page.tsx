@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import TrialSignupForm from '@/components/trial-signup-form'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -53,7 +56,37 @@ const PLANS = [
   }
 ]
 
+function SignupPageInner() {
+  const searchParams = useSearchParams()
+  const isTrialMode = searchParams.get('mode') === 'trial'
+
+  // If trial mode, render the frictionless trial form
+  if (isTrialMode) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-lg">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Start Your Free Trial</h1>
+            <p className="text-slate-400">30 days free · No credit card required · Cancel anytime</p>
+          </div>
+          <TrialSignupForm />
+        </div>
+      </div>
+    )
+  }
+
+  return <SignupPageContent />
+}
+
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+      <SignupPageInner />
+    </Suspense>
+  )
+}
+
+function SignupPageContent() {
   const [step, setStep] = useState<'select-plan' | 'enter-details' | 'checkout'>('select-plan')
   const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null)
   const [loading, setLoading] = useState(false)
