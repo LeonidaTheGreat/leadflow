@@ -11,7 +11,7 @@ async function getResend() {
   if (_resend) return _resend
   if (!process.env.RESEND_API_KEY) return null
   try {
-    const { Resend } = await import('resend') // resend is installed; falls through to catch if missing
+    const { Resend } = await import('resend')
     _resend = new Resend(process.env.RESEND_API_KEY)
     return _resend
   } catch {
@@ -503,5 +503,3 @@ export async function sendPasswordResetEmail(
     resetUrl: data.resetUrl,
   })
 }
-
-
