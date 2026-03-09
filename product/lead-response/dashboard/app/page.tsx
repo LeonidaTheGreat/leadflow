@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import PricingSection from '@/components/PricingSection'
+import LeadMagnetSection from '@/components/LeadMagnetSection'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -162,6 +163,9 @@ export default function HomePage() {
             icon="🔗"
           />
         </div>
+
+        {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
+        <LeadMagnetSection />
 
         {/* Pricing Section — scroll milestone 75% anchor (FR-1) */}
         <div ref={ref75}>
