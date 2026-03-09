@@ -1,20 +1,29 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
-import { trackFormEvent } from '@/lib/analytics/ga4'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 // Pricing tiers as per UC-9 spec
-const PLANS = [
+// HARDCODED: No env var dependency to ensure plans always render
+interface Plan {
+  id: string
+  name: string
+  price: number
+  priceId: string
+  popular?: boolean
+  features: string[]
+}
+
+const PLANS: Plan[] = [
   {
     id: 'starter',
     name: 'Starter',
     price: 49,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_49',
+    priceId: 'price_starter_49',
     features: [
       'Up to 50 leads/month',
       'AI SMS responses',
@@ -27,7 +36,7 @@ const PLANS = [
     id: 'pro',
     name: 'Pro',
     price: 149,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_149',
+    priceId: 'price_pro_149',
     popular: true,
     features: [
       'Up to 200 leads/month',
@@ -42,7 +51,7 @@ const PLANS = [
     id: 'team',
     name: 'Team',
     price: 399,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY || 'price_team_399',
+    priceId: 'price_team_399',
     features: [
       'Up to 500 leads/month',
       'Multi-channel AI',
@@ -66,11 +75,6 @@ export default function SignupPage() {
     phone: '',
     password: ''
   })
-
-  // FR-3: Track form open on page mount
-  useEffect(() => {
-    trackFormEvent('form_open', 'pilot_signup')
-  }, [])
 
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
     setSelectedPlan(plan)
@@ -119,9 +123,6 @@ export default function SignupPage() {
     if (!validateForm()) return
     if (!selectedPlan) return
 
-    // FR-3: Track form submit attempt (no PII)
-    trackFormEvent('form_submit', 'pilot_signup', { plan: selectedPlan.id })
-
     setLoading(true)
     setError(null)
 
@@ -166,16 +167,12 @@ export default function SignupPage() {
 
       // Step 3: Redirect to Stripe Checkout
       if (url) {
-        // FR-3: Track form success before redirect
-        trackFormEvent('form_success', 'pilot_signup', { plan: selectedPlan.id })
         window.location.href = url
       } else {
         throw new Error('No checkout URL received')
       }
     } catch (err: any) {
       console.error('Signup error:', err)
-      // FR-3: Track form error (no PII in message)
-      trackFormEvent('form_error', 'pilot_signup')
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }

@@ -34,23 +34,29 @@ function DashboardNav() {
               LeadFlow AI
             </a>
             <div className="hidden md:flex items-center gap-4">
-              <a 
-                href="/dashboard" 
+              <a
+                href="/dashboard"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               >
                 Lead Feed
               </a>
-              <a 
-                href="/dashboard/history" 
+              <a
+                href="/dashboard/history"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               >
                 History
               </a>
-              <a 
-                href="/dashboard/analytics" 
+              <a
+                href="/dashboard/analytics"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               >
                 Analytics
+              </a>
+              <a
+                href="/admin/simulator"
+                className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              >
+                Simulator
               </a>
             </div>
           </div>

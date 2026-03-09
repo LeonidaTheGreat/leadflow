@@ -1,12 +1,13 @@
 /**
- * GA4 Analytics Tests
+ * GA4 Analytics — Unit Tests
  *
- * Verify that GA4 event tracking works correctly across all use cases:
- * - FR-2: CTA click tracking
- * - FR-3: Scroll depth tracking
- * - FR-4: Form funnel tracking
- *
- * Tests run in a jsdom environment where gtag can be mocked.
+ * Covers:
+ *   - trackEvent() core helper (SSR-safe, no-op when gtag absent)
+ *   - trackCTAClick() (FR-2 / US-1)
+ *   - trackScrollMilestone() (FR-3 / US-2)
+ *   - trackFormEvent() (FR-4 / US-3)
+ *   - attachScrollMilestoneObservers() cleanup
+ *   - No PII in event parameters (NFR-2 / E2E-ANA-4)
  */
 
 import {
@@ -14,224 +15,211 @@ import {
   trackCTAClick,
   trackScrollMilestone,
   trackFormEvent,
-  createScrollObserver,
   attachScrollMilestoneObservers,
-} from '../lib/analytics/ga4'
+} from '@/lib/analytics/ga4'
 
-// Mock gtag
-const mockGtag = jest.fn()
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-// Mock IntersectionObserver (not available in jsdom)
-class MockIntersectionObserver {
-  constructor(public callback: IntersectionObserverCallback, public options?: IntersectionObserverInit) {}
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-  takeRecords() {
-    return []
-  }
+function setupGtag() {
+  const calls: Array<[string, ...unknown[]]> = []
+  const mockGtag = jest.fn((...args: unknown[]) => {
+    calls.push(args as [string, ...unknown[]])
+  })
+  Object.defineProperty(window, 'gtag', {
+    value: mockGtag,
+    writable: true,
+    configurable: true,
+  })
+  return { calls, mockGtag }
 }
 
-beforeEach(() => {
-  mockGtag.mockClear()
-  delete (window as any).gtag
-  delete (window as any).dataLayer
-  
-  // Mock IntersectionObserver globally
-  ;(global as any).IntersectionObserver = MockIntersectionObserver
-})
+function removeGtag() {
+  // @ts-expect-error intentionally removing gtag
+  delete window.gtag
+}
+
+// ─── trackEvent ──────────────────────────────────────────────────────────────
 
 describe('trackEvent()', () => {
+  afterEach(() => removeGtag())
+
   it('calls window.gtag with event name and params when gtag is available', () => {
-    window.gtag = mockGtag as any
-    trackEvent('test_event', { foo: 'bar' })
-    expect(mockGtag).toHaveBeenCalledWith('event', 'test_event', { foo: 'bar' })
+    const { mockGtag } = setupGtag()
+    trackEvent('test_event', { key: 'value' })
+    expect(mockGtag).toHaveBeenCalledWith('event', 'test_event', { key: 'value' })
   })
 
   it('is a no-op when window.gtag is not defined', () => {
-    // gtag not set — should not throw
-    expect(() => trackEvent('test_event')).not.toThrow()
-    expect(mockGtag).not.toHaveBeenCalled()
+    removeGtag()
+    expect(() => trackEvent('test_event', { key: 'value' })).not.toThrow()
   })
 
   it('passes params as-is to gtag', () => {
-    window.gtag = mockGtag as any
-    const params = { a: 1, b: 'text', c: true }
-    trackEvent('complex_event', params)
-    expect(mockGtag).toHaveBeenCalledWith('event', 'complex_event', params)
+    const { mockGtag } = setupGtag()
+    const params = { foo: 'bar', num: 42 }
+    trackEvent('my_event', params)
+    expect(mockGtag).toHaveBeenCalledWith('event', 'my_event', params)
   })
 })
 
+// ─── trackCTAClick (FR-2) ────────────────────────────────────────────────────
+
 describe('trackCTAClick() — FR-2 / US-1', () => {
-  beforeEach(() => {
-    window.gtag = mockGtag as any
-  })
+  afterEach(() => removeGtag())
 
   it('fires cta_click with correct parameters', () => {
-    trackCTAClick('join_pilot_hero', 'Join Free Pilot', 'hero')
-    expect(mockGtag).toHaveBeenCalled()
-    const [cmd, eventName, params] = mockGtag.mock.calls[0]
-    expect(cmd).toBe('event')
-    expect(eventName).toBe('cta_click')
-    expect(params.cta_id).toBe('join_pilot_hero')
-    expect(params.cta_label).toBe('Join Free Pilot')
-    expect(params.section).toBe('hero')
+    const { mockGtag } = setupGtag()
+    trackCTAClick('join_pilot_hero', "Join the Pilot — It's Free", 'hero')
+    expect(mockGtag).toHaveBeenCalledWith('event', 'cta_click', {
+      cta_id: 'join_pilot_hero',
+      cta_label: "Join the Pilot — It's Free",
+      section: 'hero',
+      page_url: expect.any(String),
+    })
   })
 
   it('includes correct cta_id for nav CTA', () => {
+    const { mockGtag } = setupGtag()
     trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')
-    const [, , params] = mockGtag.mock.calls[0]
+    const callArgs = mockGtag.mock.calls[0]
+    const params = callArgs[2] as Record<string, unknown>
     expect(params.cta_id).toBe('join_pilot_nav')
+    expect(params.section).toBe('navigation')
   })
 
   it('includes correct cta_id for pricing CTAs', () => {
+    const { mockGtag } = setupGtag()
     trackCTAClick('pricing_starter', 'Get Starter', 'pricing')
-    expect(mockGtag.mock.calls[0][2].cta_id).toBe('pricing_starter')
-
-    mockGtag.mockClear()
-    trackCTAClick('pricing_pro', 'Get Pro', 'pricing')
-    expect(mockGtag.mock.calls[0][2].cta_id).toBe('pricing_pro')
-
-    mockGtag.mockClear()
-    trackCTAClick('pricing_team', 'Get Team', 'pricing')
-    expect(mockGtag.mock.calls[0][2].cta_id).toBe('pricing_team')
+    const params = mockGtag.mock.calls[0][2] as Record<string, unknown>
+    expect(params.cta_id).toBe('pricing_starter')
+    expect(params.section).toBe('pricing')
   })
 
+  // NFR-2: No PII in CTA events
   it('does not include PII (email, phone, name) in event parameters', () => {
-    trackCTAClick('join_pilot_hero', 'Join Free Pilot', 'hero')
-    const [, , params] = mockGtag.mock.calls[0]
-    expect(params).not.toHaveProperty('email')
-    expect(params).not.toHaveProperty('phone')
-    expect(params).not.toHaveProperty('name')
+    const { mockGtag } = setupGtag()
+    trackCTAClick('join_pilot_hero', "Join the Pilot", 'hero')
+    const params = mockGtag.mock.calls[0][2] as Record<string, unknown>
+    const serialized = JSON.stringify(params)
+    expect(serialized).not.toMatch(/@/)
+    expect(serialized).not.toMatch(/\+1/)
+    expect(serialized).not.toMatch(/email|phone|password/i)
   })
 })
+
+// ─── trackScrollMilestone (FR-3) ─────────────────────────────────────────────
 
 describe('trackScrollMilestone() — FR-3 / US-2', () => {
-  beforeEach(() => {
-    window.gtag = mockGtag as any
-  })
+  afterEach(() => removeGtag())
 
-  it('fires scroll_milestone with percent_scrolled=25', () => {
-    trackScrollMilestone(25)
-    const [cmd, eventName, params] = mockGtag.mock.calls[0]
-    expect(cmd).toBe('event')
-    expect(eventName).toBe('scroll_milestone')
-    expect(params.percent_scrolled).toBe(25)
-  })
+  const MILESTONES = [25, 50, 75, 90] as const
 
-  it('fires scroll_milestone with percent_scrolled=50', () => {
-    trackScrollMilestone(50)
-    expect(mockGtag.mock.calls[0][2].percent_scrolled).toBe(50)
-  })
-
-  it('fires scroll_milestone with percent_scrolled=75', () => {
-    trackScrollMilestone(75)
-    expect(mockGtag.mock.calls[0][2].percent_scrolled).toBe(75)
-  })
-
-  it('fires scroll_milestone with percent_scrolled=90', () => {
-    trackScrollMilestone(90)
-    expect(mockGtag.mock.calls[0][2].percent_scrolled).toBe(90)
+  MILESTONES.forEach((pct) => {
+    it(`fires scroll_milestone with percent_scrolled=${pct}`, () => {
+      const { mockGtag } = setupGtag()
+      trackScrollMilestone(pct)
+      expect(mockGtag).toHaveBeenCalledWith('event', 'scroll_milestone', {
+        percent_scrolled: pct,
+        page_url: expect.any(String),
+      })
+    })
   })
 })
 
+// ─── trackFormEvent (FR-4) ───────────────────────────────────────────────────
+
 describe('trackFormEvent() — FR-4 / US-3', () => {
-  beforeEach(() => {
-    window.gtag = mockGtag as any
-  })
+  afterEach(() => removeGtag())
 
-  it('fires form_open with form_id', () => {
-    trackFormEvent('form_open')
-    const [cmd, eventName, params] = mockGtag.mock.calls[0]
-    expect(cmd).toBe('event')
-    expect(eventName).toBe('form_open')
-    expect(params.form_id).toBe('pilot_signup')
-  })
+  const FORM_EVENTS = [
+    'form_view',
+    'form_start',
+    'form_submit_attempt',
+    'pilot_signup_complete',
+    'form_submit_error',
+  ] as const
 
-  it('fires form_start with form_id', () => {
-    trackFormEvent('form_start')
-    expect(mockGtag.mock.calls[0][1]).toBe('form_start')
-    expect(mockGtag.mock.calls[0][2].form_id).toBe('pilot_signup')
-  })
-
-  it('fires form_submit with form_id', () => {
-    trackFormEvent('form_submit')
-    expect(mockGtag.mock.calls[0][1]).toBe('form_submit')
-  })
-
-  it('fires form_success with form_id', () => {
-    trackFormEvent('form_success')
-    expect(mockGtag.mock.calls[0][1]).toBe('form_success')
-  })
-
-  it('fires form_error with form_id', () => {
-    trackFormEvent('form_error')
-    expect(mockGtag.mock.calls[0][1]).toBe('form_error')
+  FORM_EVENTS.forEach((eventName) => {
+    it(`fires ${eventName} with form_id`, () => {
+      const { mockGtag } = setupGtag()
+      trackFormEvent(eventName, 'pilot_signup')
+      expect(mockGtag).toHaveBeenCalledWith('event', eventName, expect.objectContaining({
+        form_id: 'pilot_signup',
+      }))
+    })
   })
 
   it('uses "pilot_signup" as default form_id', () => {
-    trackFormEvent('form_open')
-    expect(mockGtag.mock.calls[0][2].form_id).toBe('pilot_signup')
-  })
-
-  it('merges extra params into event', () => {
-    trackFormEvent('form_submit', 'pilot_signup', { field_count: 5 })
-    const params = mockGtag.mock.calls[0][2]
-    expect(params.field_count).toBe(5)
+    const { mockGtag } = setupGtag()
+    trackFormEvent('form_start')
+    const params = mockGtag.mock.calls[0][2] as Record<string, unknown>
     expect(params.form_id).toBe('pilot_signup')
   })
 
-  it('does not include email, name, or phone in event params', () => {
-    trackFormEvent('form_submit')
-    const params = mockGtag.mock.calls[0][2]
-    expect(params).not.toHaveProperty('email')
-    expect(params).not.toHaveProperty('name')
-    expect(params).not.toHaveProperty('phone')
+  it('merges extra params into event', () => {
+    const { mockGtag } = setupGtag()
+    trackFormEvent('form_submit_error', 'pilot_signup', {
+      error_type: 'network_error',
+    })
+    const params = mockGtag.mock.calls[0][2] as Record<string, unknown>
+    expect(params.error_type).toBe('network_error')
   })
 
-  it('fires in the correct funnel sequence (open → submit → success)', () => {
-    trackFormEvent('form_open')
-    trackFormEvent('form_submit')
-    trackFormEvent('form_success')
+  // NFR-2: No PII in form events
+  it('does not include email, name, or phone in event params', () => {
+    const { mockGtag } = setupGtag()
+    // extra params must not contain PII — crm and lead_volume are OK
+    trackFormEvent('pilot_signup_complete', 'pilot_signup', {
+      crm: 'follow_up_boss',
+      lead_volume: '11-50',
+    })
+    const params = mockGtag.mock.calls[0][2] as Record<string, unknown>
+    const serialized = JSON.stringify(params)
+    expect(serialized).not.toMatch(/@/)
+    expect(serialized).not.toMatch(/email|phone|name/i)
+  })
 
-    expect(mockGtag).toHaveBeenCalledTimes(3)
-    expect(mockGtag.mock.calls[0][1]).toBe('form_open')
-    expect(mockGtag.mock.calls[1][1]).toBe('form_submit')
-    expect(mockGtag.mock.calls[2][1]).toBe('form_success')
+  // Funnel ordering: US-3 states events must be trackable in sequence
+  it('fires in the correct funnel sequence (view → start → attempt → complete)', () => {
+    const { mockGtag } = setupGtag()
+    const sequence: string[] = ['form_view', 'form_start', 'form_submit_attempt', 'pilot_signup_complete']
+    sequence.forEach((ev) => trackFormEvent(ev as Parameters<typeof trackFormEvent>[0]))
+    const firedNames = mockGtag.mock.calls.map((c) => c[1])
+    expect(firedNames).toEqual(sequence)
   })
 })
 
+// ─── attachScrollMilestoneObservers ──────────────────────────────────────────
+
 describe('attachScrollMilestoneObservers()', () => {
   it('returns a cleanup function that disconnects all observers', () => {
-    // Create mock elements
-    const el25 = document.createElement('div')
-    const el50 = document.createElement('div')
-    const el75 = document.createElement('div')
+    const disconnectMock = jest.fn()
+    const observeMock = jest.fn()
+    const mockObserver = { observe: observeMock, disconnect: disconnectMock }
+    window.IntersectionObserver = jest.fn().mockImplementation(() => mockObserver) as unknown as typeof IntersectionObserver
 
-    document.body.appendChild(el25)
-    document.body.appendChild(el50)
-    document.body.appendChild(el75)
+    const el1 = document.createElement('div')
+    const el2 = document.createElement('div')
+    const el3 = document.createElement('div')
 
-    window.gtag = mockGtag as any
+    const cleanup = attachScrollMilestoneObservers([el1, el2, el3])
+    expect(observeMock).toHaveBeenCalledTimes(3)
 
-    const cleanup = attachScrollMilestoneObservers([el25, el50, el75])
-    expect(typeof cleanup).toBe('function')
-
-    // Call cleanup — should not throw
-    expect(() => cleanup()).not.toThrow()
-
-    document.body.removeChild(el25)
-    document.body.removeChild(el50)
-    document.body.removeChild(el75)
+    cleanup()
+    expect(disconnectMock).toHaveBeenCalledTimes(3)
   })
 
   it('skips null elements gracefully', () => {
-    const el50 = document.createElement('div')
-    document.body.appendChild(el50)
+    const disconnectMock = jest.fn()
+    const observeMock = jest.fn()
+    const mockObserver = { observe: observeMock, disconnect: disconnectMock }
+    window.IntersectionObserver = jest.fn().mockImplementation(() => mockObserver) as unknown as typeof IntersectionObserver
 
-    const cleanup = attachScrollMilestoneObservers([null, el50, null])
-    expect(() => cleanup()).not.toThrow()
+    const el1 = document.createElement('div')
+    // el2 is null
+    const el3 = document.createElement('div')
 
-    document.body.removeChild(el50)
+    expect(() => attachScrollMilestoneObservers([el1, null, el3])).not.toThrow()
+    expect(observeMock).toHaveBeenCalledTimes(2)
   })
 })

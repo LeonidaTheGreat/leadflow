@@ -403,3 +403,103 @@ export async function sendSubscriptionDowngradedEmail(
   const html = template.html(data)
   return sendEmail(customerEmail, template.subject, html, customerId, 'subscription_downgraded', data)
 }
+
+
+interface PasswordResetEmailData {
+  agentName?: string
+  resetUrl: string
+}
+
+/**
+ * Send a password reset email to the agent.
+ * UC: fix-no-forgot-password-flow
+ *
+ * @param agentEmail - Recipient email address
+ * @param agentId    - Agent UUID (used for email event logging)
+ * @param data       - { agentName?, resetUrl }
+ */
+export async function sendPasswordResetEmail(
+  agentEmail: string,
+  agentId: string,
+  data: PasswordResetEmailData
+): Promise<boolean> {
+  const subject = 'Reset your LeadFlow AI password'
+  const greeting = data.agentName ? `Hi ${data.agentName},` : 'Hi there,'
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0f172a; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #0f172a; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; max-width: 600px; width: 100%;">
+              <!-- Header -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #064e3b, #1e293b); padding: 32px; text-align: center; border-bottom: 1px solid #334155;">
+                  <span style="color: #10b981; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">▶ LeadFlow AI</span>
+                </td>
+              </tr>
+              <!-- Body -->
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <p style="color: #94a3b8; font-size: 16px; margin: 0 0 8px;">${greeting}</p>
+                  <p style="color: #e2e8f0; font-size: 16px; margin: 0 0 24px;">
+                    We received a request to reset your LeadFlow AI password. Click the button below to choose a new one.
+                  </p>
+                  <!-- CTA Button -->
+                  <table cellpadding="0" cellspacing="0" style="margin: 32px 0;">
+                    <tr>
+                      <td align="center">
+                        <a href="${data.resetUrl}"
+                           style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; letter-spacing: 0.2px;">
+                          Reset My Password
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                  <!-- Security Note -->
+                  <div style="background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin-top: 24px;">
+                    <p style="color: #64748b; font-size: 13px; margin: 0 0 8px;">
+                      🔒 <strong style="color: #94a3b8;">Security note:</strong> This link expires in <strong>1 hour</strong>.
+                    </p>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">
+                      If you didn't request a password reset, you can safely ignore this email — your password won't change.
+                    </p>
+                  </div>
+                  <!-- Fallback URL -->
+                  <p style="color: #64748b; font-size: 12px; margin-top: 24px;">
+                    If the button doesn't work, copy and paste this URL into your browser:<br />
+                    <a href="${data.resetUrl}" style="color: #10b981; word-break: break-all;">${data.resetUrl}</a>
+                  </p>
+                </td>
+              </tr>
+              <!-- Footer -->
+              <tr>
+                <td style="border-top: 1px solid #334155; padding: 24px 32px; text-align: center;">
+                  <p style="color: #475569; font-size: 12px; margin: 0;">
+                    Need help? Email us at
+                    <a href="mailto:${SUPPORT_EMAIL}" style="color: #64748b;">${SUPPORT_EMAIL}</a>
+                  </p>
+                  <p style="color: #334155; font-size: 11px; margin: 8px 0 0;">
+                    &copy; ${new Date().getFullYear()} ${COMPANY_NAME}. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, agentId, 'password_reset', {
+    agentName: data.agentName,
+    resetUrl: data.resetUrl,
+  })
+}

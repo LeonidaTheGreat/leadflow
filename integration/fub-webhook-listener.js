@@ -14,6 +14,7 @@ const express = require('express');
 const crypto = require('crypto');
 const { EventEmitter } = require('events');
 const axios = require('axios');
+const { sendSmsViatwilio } = require('../lib/twilio-sms');
 
 const router = express.Router();
 
@@ -121,10 +122,14 @@ fubEventBus.on('lead.created', async (leadData) => {
     // 5. Generate AI response
     const aiResponse = await generateAiSmsResponse(fullLead);
 
-    // 6. Send SMS via Twilio
+    // 6. Send SMS via Twilio (real integration)
     const smsResult = await sendSmsViatwilio(
       fullLead.phoneNumber,
-      aiResponse.message
+      aiResponse.message,
+      {
+        leadId: fullLead.id,
+        trigger: 'initial_response',
+      }
     );
 
     // 7. Update FUB with SMS log
@@ -199,7 +204,11 @@ fubEventBus.on('lead.status_changed', async (leadData) => {
     // Send SMS
     const smsResult = await sendSmsViatwilio(
       fullLead.phoneNumber,
-      aiResponse.message
+      aiResponse.message,
+      {
+        leadId: fullLead.id,
+        trigger: statusTriggers[newStatus],
+      }
     );
 
     // Log to FUB
@@ -234,10 +243,14 @@ fubEventBus.on('lead.assigned', async (leadData) => {
       agentName,
     });
 
-    // Send SMS
+    // Send SMS via Twilio (real implementation)
     const smsResult = await sendSmsViatwilio(
       fullLead.phoneNumber,
-      aiResponse.message
+      aiResponse.message,
+      {
+        leadId: fullLead.id,
+        trigger: 'agent_intro',
+      }
     );
 
     // Log to FUB
@@ -312,22 +325,8 @@ async function generateAiSmsResponse(lead, options = {}) {
   };
 }
 
-/**
- * Send SMS via Twilio
- */
-async function sendSmsViatwilio(toNumber, messageContent) {
-  // TODO: Implement Twilio SMS sending
-  // For now, return mock response
-  console.log(`📤 [MOCK] Sending SMS to ${toNumber}: "${messageContent}"`);
-
-  return {
-    sid: `SM_${Date.now()}`,
-    status: 'queued',
-    from: process.env.TWILIO_PHONE_NUMBER_US,
-    to: toNumber,
-    body: messageContent,
-  };
-}
+// Real Twilio SMS sending is now imported from lib/twilio-sms.js
+// See lib/twilio-sms.js for the complete implementation with error handling
 
 /**
  * Log SMS transaction in FUB

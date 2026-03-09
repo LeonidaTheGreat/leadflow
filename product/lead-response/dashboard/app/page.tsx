@@ -1,11 +1,28 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
+import LeadMagnetSection from '@/components/LeadMagnetSection'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Scroll-depth milestone refs (FR-3 / US-2)
+  // ref25 → 25%, ref50 → 50%, ref75 → 75%
+  const ref25 = useRef<HTMLDivElement>(null)
+  const ref50 = useRef<HTMLDivElement>(null)
+  const ref75 = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const cleanup = attachScrollMilestoneObservers([
+      ref25.current,
+      ref50.current,
+      ref75.current,
+    ])
+    return cleanup
+  }, [])
 
   const testWebhook = async () => {
     setIsLoading(true)
@@ -36,21 +53,25 @@ export default function HomePage() {
       setIsLoading(false)
     }
   }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Header */}
+      {/* Header / Nav */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
           <nav className="flex items-center gap-4">
-            <Link 
-              href="/onboarding" 
+            {/* CTA: join_pilot_nav (FR-2) */}
+            <Link
+              href="/pilot"
+              onClick={() => trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')}
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
             >
-              Get Started
+              Join Free Pilot
             </Link>
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
+              onClick={() => trackCTAClick('sign_in_nav', 'Sign In', 'navigation')}
               className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Sign In
@@ -59,9 +80,9 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero — scroll milestone 25% anchor */}
       <main className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto text-center">
+        <div ref={ref25} className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
             AI-Powered Lead Response
           </h2>
@@ -69,29 +90,44 @@ export default function HomePage() {
             Instantly qualify and respond to real estate leads using Claude AI.
             Never miss another opportunity.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link 
-              href="/onboarding"
+            {/* CTA: join_pilot_hero (FR-2) */}
+            <Link
+              href="/pilot"
+              onClick={() =>
+                trackCTAClick('join_pilot_hero', "Join the Pilot — It's Free", 'hero')
+              }
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="join_pilot_hero"
+            >
+              Join the Pilot — It&apos;s Free
+            </Link>
+            {/* CTA: get_started_hero */}
+            <Link
+              href="/onboarding"
+              onClick={() =>
+                trackCTAClick('get_started_hero', 'Get Started Free', 'hero')
+              }
+              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="get_started_hero"
             >
               Get Started Free
             </Link>
-            <Link 
-              href="/login"
-              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
-            >
-              Sign In
-            </Link>
-            <button 
-              onClick={testWebhook}
+            {/* CTA: see_how_it_works (FR-2) */}
+            <button
+              onClick={() => {
+                trackCTAClick('see_how_it_works', 'See How It Works', 'hero')
+                testWebhook()
+              }}
               disabled={isLoading}
               className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+              data-cta-id="see_how_it_works"
             >
-              {isLoading ? 'Testing...' : 'Test Webhook'}
+              {isLoading ? 'Testing...' : 'See How It Works'}
             </button>
           </div>
-          
+
           {testResult && (
             <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg text-left">
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Result:</p>
@@ -102,27 +138,27 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Features */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <FeatureCard 
+        {/* Features — scroll milestone 50% anchor */}
+        <div ref={ref50} className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FeatureCard
             title="AI Qualification"
             description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
             icon="🤖"
           />
-          <FeatureCard 
+          <FeatureCard
             title="Instant SMS"
             description="Automatically send personalized SMS responses within seconds of lead creation."
             icon="📱"
           />
-          <FeatureCard 
+          <FeatureCard
             title="CRM Integration"
             description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
             icon="🔗"
           />
         </div>
 
-        {/* API Endpoints */}
-        <div className="mt-20 max-w-2xl mx-auto">
+        {/* API Endpoints — scroll milestone 75% anchor */}
+        <div ref={ref75} className="mt-20 max-w-2xl mx-auto">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-8">API Endpoints</h3>
           <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
             <table className="w-full text-left">
@@ -163,15 +199,54 @@ export default function HomePage() {
             </table>
           </div>
         </div>
+
+        {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
+        <LeadMagnetSection />
+
+        {/* Pricing CTA section */}
+        <div className="mt-20 text-center">
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+            Simple, transparent pricing
+          </h3>
+          <p className="text-slate-600 dark:text-slate-400 mb-8">
+            Start free. Scale when you&apos;re ready.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* CTA: pricing_starter (FR-2) */}
+            <Link
+              href="/signup?plan=starter"
+              onClick={() => trackCTAClick('pricing_starter', 'Get Starter', 'pricing')}
+              className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="pricing_starter"
+            >
+              Starter — Free pilot
+            </Link>
+            {/* CTA: pricing_pro (FR-2) */}
+            <Link
+              href="/signup?plan=pro"
+              onClick={() => trackCTAClick('pricing_pro', 'Get Pro', 'pricing')}
+              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="pricing_pro"
+            >
+              Pro — Most popular
+            </Link>
+            {/* CTA: pricing_team (FR-2) */}
+            <Link
+              href="/signup?plan=team"
+              onClick={() => trackCTAClick('pricing_team', 'Get Team', 'pricing')}
+              className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="pricing_team"
+            >
+              Team — 5 agents
+            </Link>
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800 mt-20">
         <div className="container mx-auto px-4 py-8 text-center text-slate-600 dark:text-slate-400">
           <p>Built with Next.js 15, shadcn/ui, Supabase, and Claude AI</p>
-          <p className="text-xs mt-2 text-slate-400 dark:text-slate-500">
-            We use Google Analytics to improve this site. No personal data is shared.
-          </p>
         </div>
       </footer>
     </div>

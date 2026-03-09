@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSession } from '@/lib/session'
+import { createClient } from '@supabase/supabase-js'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -9,6 +10,7 @@ const PROTECTED_ROUTES = [
   '/profile',
   '/integrations',
   '/setup',
+  '/admin',
 ]
 
 // Routes that should redirect to dashboard if already authenticated
@@ -20,8 +22,39 @@ const AUTH_ROUTES = [
   '/signup',
 ]
 
+// Demo token routes - protected but allow demo token access
+const DEMO_TOKEN_ROUTES = [
+  '/admin/simulator',
+]
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+function getSupabase() {
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+}
+
+async function validateDemoToken(token: string): Promise<boolean> {
+  try {
+    const supabase = getSupabase()
+    const { data, error } = await supabase
+      .from('demo_tokens')
+      .select('expires_at')
+      .eq('token', token)
+      .single()
+    
+    if (error || !data) return false
+    
+    const now = new Date()
+    const expiresAt = new Date(data.expires_at)
+    return now <= expiresAt
+  } catch {
+    return false
+  }
+}
+
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname, searchParams } = request.nextUrl
   
   // Get session token from cookie
   const sessionToken = request.cookies.get('leadflow_session')?.value
@@ -29,6 +62,27 @@ export async function middleware(request: NextRequest) {
   // Validate session against database
   const session = sessionToken ? await validateSession(sessionToken) : null
   const isAuthenticated = !!session
+  
+  // Check if current path is a demo token route
+  const isDemoTokenRoute = DEMO_TOKEN_ROUTES.some(route => 
+    pathname === route || pathname.startsWith(`${route}/`)
+  )
+  
+  // Check for demo token on demo token routes
+  if (isDemoTokenRoute && !isAuthenticated) {
+    const demoToken = searchParams.get('demo')
+    if (demoToken) {
+      const isValidDemo = await validateDemoToken(demoToken)
+      if (isValidDemo) {
+        // Allow access with valid demo token
+        const response = NextResponse.next()
+        response.headers.set('X-Frame-Options', 'DENY')
+        response.headers.set('X-Content-Type-Options', 'nosniff')
+        response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+        return response
+      }
+    }
+  }
   
   // Check if current path is protected
   const isProtectedRoute = PROTECTED_ROUTES.some(route => 
