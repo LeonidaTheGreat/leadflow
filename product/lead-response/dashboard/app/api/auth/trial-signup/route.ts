@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       console.error('Failed to initialize NPS survey schedule:', err)
     })
 
-    // Log trial_started event (fire-and-forget, non-blocking)
+    // Log trial_started event (non-blocking)
     void Promise.resolve(supabase.from('analytics_events').insert({
       event_type: 'trial_started',
       agent_id: agent.id,
