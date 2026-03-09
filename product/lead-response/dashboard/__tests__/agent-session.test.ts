@@ -1,7 +1,9 @@
 /**
+ * @jest-environment node
+ *
  * Tests for agent session logging (FR-1: logSessionStart integration)
  * PRD: PRD-SESSION-ANALYTICS-PILOT
- * Task: fix-session-logging-not-integrated-into-login-flow
+ * Task: fix-session-logging-not-integrated-into-login-flow (ff6e0c79)
  */
 import { getClientIp, logSessionStart } from '@/lib/agent-session'
 import { NextRequest } from 'next/server'
@@ -136,7 +138,6 @@ describe('logSessionStart', () => {
 
   it('sets ip_address to null when no IP headers present', async () => {
     const req = makeRequest({ 'user-agent': 'TestAgent/1.0' })
-    // Return data with null ip
     mockInsertChain.single.mockResolvedValueOnce({
       data: {
         id: 'session-uuid-999',

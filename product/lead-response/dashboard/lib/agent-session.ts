@@ -31,7 +31,7 @@ export interface AgentSessionRecord {
 export function getClientIp(req: NextRequest): string | null {
   const xff = req.headers.get('x-forwarded-for')
   if (xff) {
-    // x-forwarded-for can be comma-separated; first value is the client
+    // x-forwarded-for can be comma-separated; first value is the originating client
     return xff.split(',')[0].trim() || null
   }
   return req.headers.get('x-real-ip') || null
@@ -49,10 +49,6 @@ export function getClientIp(req: NextRequest): string | null {
  *
  * Returns the session record (including its UUID) on success, or null if the
  * insert fails. Failures are logged but never thrown — auth must not break.
- *
- * @param agentId - UUID of the authenticated agent (from real_estate_agents.id)
- * @param req - The incoming Next.js request
- * @returns AgentSessionRecord | null
  */
 export async function logSessionStart(
   agentId: string,
@@ -100,8 +96,8 @@ export async function logSessionStart(
 }
 
 /**
- * Update last_active_at for an existing session (session heartbeat).
- * Rate-limiting is the responsibility of the caller.
+ * Update last_active_at for an existing session (session heartbeat - FR-2).
+ * Rate-limiting to at most 1 DB write per 60s per session is the caller's responsibility.
  *
  * Returns true on success, false on failure (never throws).
  */

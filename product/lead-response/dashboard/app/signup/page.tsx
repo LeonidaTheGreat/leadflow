@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
+import { trackFormEvent } from '@/lib/analytics/ga4'
 
 // Pricing tiers as per UC-9 spec
 // HARDCODED: No env var dependency to ensure plans always render
@@ -119,6 +120,11 @@ function PaidSignupFlow() {
     password: ''
   })
 
+  // FR-3: Track form open on page mount
+  useEffect(() => {
+    trackFormEvent('form_open', 'pilot_signup')
+  }, [])
+
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
     setSelectedPlan(plan)
     setStep('enter-details')
@@ -166,6 +172,9 @@ function PaidSignupFlow() {
     if (!validateForm()) return
     if (!selectedPlan) return
 
+    // FR-3: Track form submit (no PII)
+    trackFormEvent('form_submit', 'pilot_signup', { plan: selectedPlan.id })
+
     setLoading(true)
     setError(null)
 
@@ -210,12 +219,16 @@ function PaidSignupFlow() {
 
       // Step 3: Redirect to Stripe Checkout
       if (url) {
+        // FR-3: Track form success before redirecting
+        trackFormEvent('form_success', 'pilot_signup', { plan: selectedPlan.id })
         window.location.href = url
       } else {
         throw new Error('No checkout URL received')
       }
     } catch (err: any) {
       console.error('Signup error:', err)
+      // FR-3: Track form error (no PII)
+      trackFormEvent('form_error', 'pilot_signup')
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }
