@@ -9,12 +9,12 @@ const PRICING_PLANS = [
   {
     name: 'Starter',
     tier: 'starter',
-    monthlyPrice: 497,
-    annualPrice: 4970,
+    monthlyPrice: 49,
+    annualPrice: 490,
     description: 'Perfect for individual agents',
     features: [
-      'Up to 50 leads/month',
-      'AI SMS & email responses',
+      'Up to 100 SMS/month',
+      'Basic AI responses',
       'Basic qualification',
       'Calendar integration (1 agent)',
       'Standard email support',
@@ -26,31 +26,49 @@ const PRICING_PLANS = [
   {
     name: 'Professional',
     tier: 'professional',
-    monthlyPrice: 997,
-    annualPrice: 9970,
-    description: 'Most popular for teams',
+    monthlyPrice: 149,
+    annualPrice: 1490,
+    description: 'Most popular for solo agents',
     features: [
-      'Up to 150 leads/month',
-      'AI SMS, email & voice',
+      'Unlimited SMS',
+      'Full AI with Cal.com booking',
       'Advanced qualification scoring',
-      'Calendar integration (5 agents)',
+      'Calendar integration (1 agent)',
       'Priority chat + email support',
       'Advanced analytics & API',
-      'Team collaboration',
       'Custom AI training',
     ],
     cta: 'Start Free Trial',
     highlighted: true,
   },
   {
+    name: 'Team',
+    tier: 'team',
+    monthlyPrice: 399,
+    annualPrice: 3990,
+    description: 'For small teams (up to 5 agents)',
+    features: [
+      'Unlimited SMS',
+      'Full AI with Cal.com booking',
+      'Advanced qualification scoring',
+      'Calendar integration (5 agents)',
+      'Priority chat + email support',
+      'Team dashboard & lead routing',
+      'Performance analytics per agent',
+      'Custom AI training',
+    ],
+    cta: 'Start Free Trial',
+    highlighted: false,
+  },
+  {
     name: 'Enterprise',
     tier: 'enterprise',
-    monthlyPrice: 1997,
-    annualPrice: 19970,
+    monthlyPrice: 999,
+    annualPrice: 9990,
     description: 'For large brokerages',
     features: [
-      'Unlimited leads',
-      'Multi-channel AI (SMS/email/voice/chat)',
+      'Unlimited SMS',
+      'Multi-channel AI (SMS/email/voice)',
       'Custom qualification workflows',
       'Unlimited calendar integrations',
       'Dedicated account manager',
@@ -140,7 +158,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {PRICING_PLANS.map((plan) => {
               const price = interval === 'monthly' ? plan.monthlyPrice : Math.floor(plan.annualPrice / 12)
               const fullPrice = interval === 'monthly' ? plan.monthlyPrice * 12 : plan.annualPrice
