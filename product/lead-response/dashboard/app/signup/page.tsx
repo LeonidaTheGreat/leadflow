@@ -1,11 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Suspense } from 'react'
+import TrialSignupForm from '@/components/trial-signup-form'
 
 // Pricing tiers as per UC-9 spec
 // HARDCODED: No env var dependency to ensure plans always render
@@ -64,6 +67,46 @@ const PLANS: Plan[] = [
 ]
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />}>
+      <SignupPageInner />
+    </Suspense>
+  )
+}
+
+function SignupPageInner() {
+  const searchParams = useSearchParams()
+  const isTrialMode = searchParams.get('mode') === 'trial'
+
+  // If trial mode, render the frictionless trial form
+  if (isTrialMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+        <header className="border-b border-slate-700/50">
+          <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+            <a href="/" className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+                <span className="text-emerald-400 font-bold text-sm">▶</span>
+              </div>
+              <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
+            </a>
+            <a href="/login" className="text-sm text-slate-400 hover:text-white">
+              Already have an account? Sign in
+            </a>
+          </div>
+        </header>
+        <main className="flex-1 flex items-center justify-center px-4 py-16">
+          <TrialSignupForm />
+        </main>
+      </div>
+    )
+  }
+
+  // Default: existing paid signup flow
+  return <PaidSignupFlow />
+}
+
+function PaidSignupFlow() {
   const [step, setStep] = useState<'select-plan' | 'enter-details' | 'checkout'>('select-plan')
   const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null)
   const [loading, setLoading] = useState(false)
