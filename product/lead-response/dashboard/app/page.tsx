@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
+import PricingSection from '@/components/PricingSection'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -61,6 +62,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
           <nav className="flex items-center gap-4">
+            <a
+              href="#pricing"
+              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Pricing
+            </a>
             {/* CTA: join_pilot_nav (FR-2) */}
             <Link
               href="/pilot"
@@ -157,8 +164,16 @@ export default function HomePage() {
           />
         </div>
 
-        {/* API Endpoints — scroll milestone 75% anchor */}
-        <div ref={ref75} className="mt-20 max-w-2xl mx-auto">
+        {/* ── Lead Magnet / Email Capture (between Hero/Features and Pricing) ── */}
+        <LeadMagnetSection />
+
+        {/* Pricing Section — scroll milestone 75% anchor (FR-1) */}
+        <div ref={ref75}>
+          <PricingSection />
+        </div>
+
+        {/* API Endpoints (developer reference) */}
+        <div className="mt-20 max-w-2xl mx-auto">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-8">API Endpoints</h3>
           <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
             <table className="w-full text-left">
@@ -197,48 +212,6 @@ export default function HomePage() {
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
-        <LeadMagnetSection />
-
-        {/* Pricing CTA section */}
-        <div className="mt-20 text-center">
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-            Simple, transparent pricing
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Start free. Scale when you&apos;re ready.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {/* CTA: pricing_starter (FR-2) */}
-            <Link
-              href="/signup?plan=starter"
-              onClick={() => trackCTAClick('pricing_starter', 'Get Starter', 'pricing')}
-              className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="pricing_starter"
-            >
-              Starter — Free pilot
-            </Link>
-            {/* CTA: pricing_pro (FR-2) */}
-            <Link
-              href="/signup?plan=pro"
-              onClick={() => trackCTAClick('pricing_pro', 'Get Pro', 'pricing')}
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="pricing_pro"
-            >
-              Pro — Most popular
-            </Link>
-            {/* CTA: pricing_team (FR-2) */}
-            <Link
-              href="/signup?plan=team"
-              onClick={() => trackCTAClick('pricing_team', 'Get Team', 'pricing')}
-              className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="pricing_team"
-            >
-              Team — 5 agents
-            </Link>
           </div>
         </div>
       </main>
