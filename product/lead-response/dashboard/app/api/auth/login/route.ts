@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { logSessionStart } from '@/lib/session-analytics'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -71,9 +72,17 @@ export async function POST(request: NextRequest) {
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
+    // Log session analytics (fail silently — must not break login)
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip')
+      ?? null
+    const userAgentHeader = request.headers.get('user-agent') ?? null
+    const analyticsSessionId = await logSessionStart(user.id, ipAddress, userAgentHeader)
+
     return NextResponse.json({
       success: true,
       token,
+      analyticsSessionId,
       user: {
         id: user.id,
         email: user.email,
