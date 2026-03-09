@@ -122,7 +122,7 @@ function PaidSignupFlow() {
 
   // FR-3: Track form open on page mount
   useEffect(() => {
-    trackFormEvent('form_open', 'pilot_signup')
+    trackFormEvent('form_view', 'pilot_signup')
   }, [])
 
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
@@ -173,7 +173,7 @@ function PaidSignupFlow() {
     if (!selectedPlan) return
 
     // FR-3: Track form submit (no PII)
-    trackFormEvent('form_submit', 'pilot_signup', { plan: selectedPlan.id })
+    trackFormEvent('form_submit_attempt', 'pilot_signup', { plan: selectedPlan.id })
 
     setLoading(true)
     setError(null)
@@ -220,7 +220,7 @@ function PaidSignupFlow() {
       // Step 3: Redirect to Stripe Checkout
       if (url) {
         // FR-3: Track form success before redirecting
-        trackFormEvent('form_success', 'pilot_signup', { plan: selectedPlan.id })
+        trackFormEvent('pilot_signup_complete', 'pilot_signup', { plan: selectedPlan.id })
         window.location.href = url
       } else {
         throw new Error('No checkout URL received')
@@ -228,7 +228,7 @@ function PaidSignupFlow() {
     } catch (err: any) {
       console.error('Signup error:', err)
       // FR-3: Track form error (no PII)
-      trackFormEvent('form_error', 'pilot_signup')
+      trackFormEvent('form_submit_error', 'pilot_signup')
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }
