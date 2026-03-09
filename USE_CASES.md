@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-09T04:23:19.080Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-09T06:16:22.488Z | Source: `use_cases` + `prds` tables
 
-**Progress: 66/81 complete**
+**Progress: 67/81 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
@@ -72,7 +72,7 @@
 | feat-nps-agent-feedback | NPS & Feedback Survey for Agents | - | not_started | 2 | defined | PM > Marketing > Design > Dev > QC |
 | fix-onboarding-page-does-not-read-utm-params-from-sess | Onboarding page does not read UTM params from sessionStorage or URL | - | complete | 2 | - | Dev > QC |
 | feat-session-analytics-pilot | Session Analytics — Pilot Agent Usage Tracking | - | complete | 2 | defined | PM > Marketing > Design > Dev > QC |
-| feat-lead-experience-simulator | Lead Experience Simulator & Conversation Viewer | - | stuck | 2 | defined | PM > Design > Dev > QC |
+| feat-lead-experience-simulator | Lead Experience Simulator & Conversation Viewer | - | complete | 2 | defined | PM > Design > Dev > QC |
 | integrate-claude-ai-sms | Integrate Claude AI for SMS Response Generation | Phase 1 | complete | 2 | - | Dev > QC |
 | improve-UC-5-add-canada-as-an-option-for-co | Add Canada Country Option for CASL Compliance | Phase 1 | complete | 2 | - | PM > Dev > QC |
 | fix-landing-page-does-not-capture-utm-params-to-sessio | Landing page does not capture UTM params to sessionStorage | - | complete | 2 | - | Dev > QC |
@@ -1172,7 +1172,7 @@
 ### feat-lead-experience-simulator — Lead Experience Simulator & Conversation Viewer
 
 - **PRD:** Lead Experience Simulator & Conversation Viewer
-- **Status:** stuck
+- **Status:** complete
 - **Priority:** 2
 - **Description:** Admin tool for Stojan to simulate the lead SMS experience in dry-run mode (no real SMS sent) and view real anonymized conversation threads. Enables live demos during pilot agent pitches via a time-limited share link.
 - **Acceptance Criteria:**

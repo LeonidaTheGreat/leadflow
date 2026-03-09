@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-09T04:23:19.233Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-09T06:16:22.618Z | Source: `e2e_test_specs` + `use_cases` tables
 
 **Coverage: 171 specs | 13 pass | 0 fail | 158 not run**
 
