@@ -130,11 +130,22 @@ describe('/api/lead-capture', () => {
       expect(mockUpsert).toHaveBeenCalledWith(
         expect.objectContaining({
           email: 'agent@realty.com',
+          name: 'Sarah',
           first_name: 'Sarah',
           source: 'lead_magnet',
           status: 'nurture',
         }),
         expect.objectContaining({ onConflict: 'email' })
+      )
+    })
+
+    it('derives name from email prefix when firstName is absent', async () => {
+      const req = makeRequest({ email: 'jane.doe@realty.com' })
+      await POST(req)
+
+      expect(mockUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'jane.doe' }),
+        expect.anything()
       )
     })
 
