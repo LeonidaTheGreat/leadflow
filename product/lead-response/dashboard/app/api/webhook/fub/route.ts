@@ -372,7 +372,7 @@ async function handleStatusChanged(fubLead: any, resourceIds?: number[], uri?: s
 
   const { data: lead } = await supabaseAdmin
     .from('leads')
-    .select('*, agent:agents(*)')
+    .select('*, agent:real_estate_agents(*)')
     .eq('fub_id', fubLead.id)
     .single() as { data: Lead | null }
 

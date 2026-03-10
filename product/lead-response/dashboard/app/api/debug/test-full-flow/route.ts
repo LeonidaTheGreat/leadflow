@@ -6,7 +6,7 @@ import type { Lead, Agent } from '@/lib/types'
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
     .limit(1)
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     log('Finding local lead...')
     const { data: lead, error: leadError } = await supabaseAdmin
       .from('leads')
-      .select('*, agent:agents(*)')
+      .select('*, agent:real_estate_agents(*)')
       .eq('phone', phone)
       .maybeSingle() as { data: Lead | null; error: any }
     
