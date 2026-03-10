@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-08
+title: BO2026 Dashboard - Updated 2026-03-10
 author: LeadFlow Orchestrator
-date: 2026-03-08
+date: 2026-03-10
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 22 of 60  
+**Current Day:** Day 24 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/8/2026, 1:46:59 AM
+**Last Updated:** 3/10/2026, 6:30:00 PM
 
 ---
 
@@ -33,34 +33,25 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 10 | Blocked: 0 | Done: 272
+**Queue Health:** Ready: 2 | In Progress: 2 | Blocked: 0 | Done: 583
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: feat-aha-moment-lead-simulator - Aha Moment: Live Lead Simulator in Onboarding — First AI Response in <30s | kimi | $0.24 | 🔴 P0 |
+| Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
 
-### ⚡ In Progress (10 tasks)
+### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Dashboard build errors | dev | qwen3.5 |
-| Dev (rescue): fix-signup-plan-options-not-displayed - Signup page shows Choose Your Plan but no plan options are listed | dev | kimi |
-| PM: Product Review — UTM Parameter Capture & Marketing Attribution | product | sonnet |
-| Dev (rescue): Fix: Dashboard build errors | dev | sonnet |
-| Dev: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | dev | sonnet |
-| Dev: feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | dev | sonnet |
-| PM: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | product | sonnet |
-| PM: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | product | sonnet |
-| PM: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | product | sonnet |
-| PM: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | product | sonnet |
+| Dev: fix-nps-api-routes-api-nps-verify-and-api-nps-submit-r - NPS API routes /api/nps/verify and /api/nps/submit return 404 | dev | sonnet |
+| PM: Product Review — Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | product | sonnet |
 
-### ⏸️ Blocked (3 tasks)
+### ⏸️ Blocked (0 tasks)
 
-| Task | Status | Priority |
-|------|--------|----------|
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Auth Setup (2 of 4) | blocked | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Core Implementation (3 of 4) | blocked | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Testing & Validation (4 of 4) | blocked | 🟢 P2 |
+*No blocked tasks*
 
 ---
 
@@ -114,8 +105,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $167.75
-**Cost per task:** Avg $0.52
+**Estimated project cost:** $282.26
+**Cost per task:** Avg $0.42
 
 ---
 
@@ -128,8 +119,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. ⚡ **10 agents active**
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **2 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
