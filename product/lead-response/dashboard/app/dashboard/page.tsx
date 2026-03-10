@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
-import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 
@@ -31,9 +30,6 @@ export default function DashboardPage() {
       <Suspense fallback={<StatsCardsSkeleton />}>
         <StatsCards />
       </Suspense>
-
-      {/* SMS Analytics — Delivery Rate, Reply Rate, Booking Conversion */}
-      <SmsAnalyticsCards />
 
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
       {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}
