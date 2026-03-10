@@ -1,15 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitProductFeedback } from '@/lib/nps-service'
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+
+interface JWTPayload {
+  userId: string
+  email: string
+  name?: string
+}
+
+function getAgentIdFromRequest(request: NextRequest): string | null {
+  const token = request.cookies.get('auth-token')?.value
+  if (!token) return null
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as JWTPayload
+    return payload.userId || null
+  } catch {
+    return null
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { agentId, feedbackType, content } = body
+    const { feedbackType, content } = body
+
+    // Extract agentId from authenticated session (server-side, secure)
+    const agentId = getAgentIdFromRequest(request)
 
     if (!agentId) {
       return NextResponse.json(
-        { error: 'agentId is required' },
-        { status: 400 }
+        { error: 'Not authenticated' },
+        { status: 401 }
       )
     }
 
