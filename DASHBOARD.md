@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 24 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/10/2026, 1:00:28 PM
+**Last Updated:** 3/10/2026, 6:35:18 PM
 
 ---
 
@@ -33,32 +33,27 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 6 | In Progress: 1 | Blocked: 3 | Done: 514
+**Queue Health:** Ready: 4 | In Progress: 2 | Blocked: 0 | Done: 585
 
-### ▶️ Ready to Spawn (6 tasks)
+### ▶️ Ready to Spawn (4 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Apply subscriptions schema migration and fix Stripe webhook handler | haiku | $0.40 | 🔴 P0 |
-| PM: Product Review — Lead Satisfaction Feedback Collection | sonnet | $0.60 | 🔴 P0 |
-| PM: Diagnose failed step in feat-post-login-onboarding-wizard | codex | $0.60 | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required | codex | $1.00 | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Research & Planning (1 of 4) | sonnet | $1.00 | 🟢 P2 |
+| Dev: fix-admin-nps-page-does-not-exist-us-3-pm-dashboard-ab - /admin/nps page does not exist — US-3 PM dashboard absent | sonnet | $0.60 | 🔴 P0 |
+| Dev: fix-fix-not-implemented-23-api-routes-still-query-wron - Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents) | sonnet | $0.60 | 🔴 P0 |
 | Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #154 (dev/579e830f-dev-fix-nps-api-routes-api-nps-verify-an) | kimi | $0.12 | 🟢 P2 |
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: fix-remaining-agents-table-references - Fix remaining from(agents) table references — 15 routes still query wrong table | dev | haiku |
+| Dev: feat-aha-moment-lead-simulator - Aha Moment: Live Lead Simulator in Onboarding — First AI Response in <30s | dev | kimi |
+| QC: fix-nps-api-routes-api-nps-verify-and-api-nps-submit-r - NPS API routes /api/nps/verify and /api/nps/submit return 404 | qc | sonnet |
 
-### ⏸️ Blocked (3 tasks)
+### ⏸️ Blocked (0 tasks)
 
-| Task | Status | Priority |
-|------|--------|----------|
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Auth Setup (2 of 4) | blocked | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Core Implementation (3 of 4) | blocked | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Testing & Validation (4 of 4) | blocked | 🟢 P2 |
+*No blocked tasks*
 
 ---
 
@@ -112,8 +107,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $258.82
-**Cost per task:** Avg $0.44
+**Estimated project cost:** $284.24
+**Cost per task:** Avg $0.42
 
 ---
 
@@ -126,9 +121,9 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **6 tasks ready to spawn**
-2. ⚡ **1 agents active**
-3. ⏸️ **3 tasks blocked** — check dependencies
+1. ✅ **4 tasks ready to spawn**
+2. ⚡ **2 agents active**
+3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
 
