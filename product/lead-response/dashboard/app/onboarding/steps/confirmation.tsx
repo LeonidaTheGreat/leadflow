@@ -22,7 +22,7 @@ export default function OnboardingConfirm({
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">You're all set!</h2>
           <p className="text-slate-300">
-            Review your information before getting started
+            Review your information before starting your free 60-day pilot
           </p>
         </div>
 
@@ -93,6 +93,31 @@ export default function OnboardingConfirm({
             </div>
           </div>
 
+          {/* Pilot Plan Info */}
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-emerald-300 mb-3 uppercase tracking-wide">
+              Your Free Pilot
+            </h3>
+            <div className="space-y-2 text-sm text-emerald-200/80">
+              <div className="flex justify-between">
+                <span>Plan</span>
+                <span className="font-medium text-emerald-300">Free Pilot</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Duration</span>
+                <span className="font-medium text-emerald-300">60 days</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Credit card</span>
+                <span className="font-medium text-emerald-300">Not required</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Access level</span>
+                <span className="font-medium text-emerald-300">Full features</span>
+              </div>
+            </div>
+          </div>
+
           {/* What's Next */}
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
             <h3 className="text-sm font-semibold text-blue-300 mb-3">What's next?</h3>
@@ -144,12 +169,12 @@ export default function OnboardingConfirm({
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Creating account...
+                Activating your pilot...
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                Get Started!
+                Start Free Pilot
               </>
             )}
           </button>
