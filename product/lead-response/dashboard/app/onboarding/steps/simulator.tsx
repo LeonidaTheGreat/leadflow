@@ -356,7 +356,7 @@ export default function OnboardingSimulator({
               <ChatBubble key={i} {...turn} />
             ))}
             
-            {(status === 'running' || status === 'inbound_received') && state?.conversation?.length > 0 && (
+            {(status === 'running' || status === 'inbound_received') && (state?.conversation?.length ?? 0) > 0 && (
               <div className="flex items-center gap-2 text-slate-500 text-sm mt-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>AI is typing...</span>
@@ -395,7 +395,7 @@ export default function OnboardingSimulator({
                   That's how fast LeadFlow AI responds!
                 </h3>
                 <p className="text-emerald-200/80 text-sm mb-4">
-                  Your AI assistant responded in {formatResponseTime(state?.response_time_ms)}. 
+                  Your AI assistant responded in {formatResponseTime(state?.response_time_ms ?? null)}. 
                   Every new lead will get an instant, personalized response like this.
                 </p>
                 <div className="flex flex-wrap gap-3">
