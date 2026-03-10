@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     // Validate agent exists
     const { data: agent, error: agentError } = await supabaseAdmin
-      .from('real_estate_agents')
+      .from('agents')
       .select('id, satisfaction_ping_enabled')
       .eq('id', agentId)
       .maybeSingle()

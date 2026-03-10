@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-10
+title: BO2026 Dashboard - Updated 2026-03-08
 author: LeadFlow Orchestrator
-date: 2026-03-10
+date: 2026-03-08
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 24 of 60  
+**Current Day:** Day 22 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/10/2026, 1:00:28 PM
+**Last Updated:** 3/8/2026, 1:46:59 AM
 
 ---
 
@@ -33,24 +33,26 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 6 | In Progress: 1 | Blocked: 3 | Done: 514
+**Queue Health:** Ready: 0 | In Progress: 10 | Blocked: 0 | Done: 272
 
-### ▶️ Ready to Spawn (6 tasks)
+### ▶️ Ready to Spawn (0 tasks)
 
-| Task | Model | Cost | Priority |
-|------|-------|------|----------|
-| Apply subscriptions schema migration and fix Stripe webhook handler | haiku | $0.40 | 🔴 P0 |
-| PM: Product Review — Lead Satisfaction Feedback Collection | sonnet | $0.60 | 🔴 P0 |
-| PM: Diagnose failed step in feat-post-login-onboarding-wizard | codex | $0.60 | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required | codex | $1.00 | 🟢 P2 |
-| Dev: free-pilot-no-credit-card-required - Free Pilot Onboarding — No Credit Card Required - Research & Planning (1 of 4) | sonnet | $1.00 | 🟢 P2 |
-| Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
+*No ready tasks*
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (10 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: fix-remaining-agents-table-references - Fix remaining from(agents) table references — 15 routes still query wrong table | dev | haiku |
+| Fix: Dashboard build errors | dev | qwen3.5 |
+| Dev (rescue): fix-signup-plan-options-not-displayed - Signup page shows Choose Your Plan but no plan options are listed | dev | kimi |
+| PM: Product Review — UTM Parameter Capture & Marketing Attribution | product | sonnet |
+| Dev (rescue): Fix: Dashboard build errors | dev | sonnet |
+| Dev: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | dev | sonnet |
+| Dev: feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | dev | sonnet |
+| PM: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | product | sonnet |
+| PM: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | product | sonnet |
+| PM: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | product | sonnet |
+| PM: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | product | sonnet |
 
 ### ⏸️ Blocked (3 tasks)
 
@@ -112,8 +114,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $258.82
-**Cost per task:** Avg $0.44
+**Estimated project cost:** $167.75
+**Cost per task:** Avg $0.52
 
 ---
 
@@ -126,9 +128,9 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **6 tasks ready to spawn**
-2. ⚡ **1 agents active**
-3. ⏸️ **3 tasks blocked** — check dependencies
+1. 🔴 No ready tasks
+2. ⚡ **10 agents active**
+3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
 
