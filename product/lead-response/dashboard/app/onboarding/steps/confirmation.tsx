@@ -4,14 +4,12 @@ import { CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function OnboardingConfirm({
   onBack,
-  onComplete,
+  onNext,
   agentData,
-  isLoading,
 }: {
   onBack: () => void
-  onComplete: () => void
+  onNext: () => void
   agentData: any
-  isLoading: boolean
 }) {
   return (
     <div className="animate-in fade-in-up duration-500">
@@ -156,27 +154,16 @@ export default function OnboardingConfirm({
         <div className="flex gap-3">
           <button
             onClick={onBack}
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50"
+            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
           >
             ← Back
           </button>
           <button
-            onClick={onComplete}
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+            onClick={onNext}
+            className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Activating your pilot...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-5 h-5" />
-                Start Free Pilot
-              </>
-            )}
+            <CheckCircle2 className="w-5 h-5" />
+            See Your First AI Response
           </button>
         </div>
       </div>
