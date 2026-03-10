@@ -110,22 +110,24 @@ export async function POST(request: NextRequest) {
     })()
 
     // Log trial_started event (non-blocking)
-    void Promise.resolve(supabase.from('events').insert({
-      event_type: 'trial_started',
-      agent_id: agent.id,
-      event_data: {
-        source: 'trial_cta',
-        utm_source: utm_source || null,
-        utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
-        plan_tier: 'trial',
-        trial_days: 30
-      },
-      created_at: new Date().toISOString()
-    })).catch((err: unknown) => {
+    try {
+      await supabase.from('analytics_events').insert({
+        event_type: 'trial_started',
+        agent_id: agent.id,
+        properties: {
+          source: 'trial_cta',
+          utm_source: utm_source || null,
+          utm_medium: utm_medium || null,
+          utm_campaign: utm_campaign || null,
+          plan_tier: 'trial',
+          trial_days: 30
+        },
+        created_at: new Date().toISOString()
+      })
+    } catch (err) {
       // Non-blocking — don't fail signup if analytics insert fails
       console.error('Failed to log trial_started event:', err)
-    })
+    }
 
     // Send welcome email (non-blocking)
     void sendWelcomeEmail(
