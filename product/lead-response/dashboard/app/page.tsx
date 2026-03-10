@@ -110,7 +110,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/signup?mode=trial"
+              href="/signup/trial"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
             >
               Start Free Trial — No Credit Card
@@ -255,7 +255,7 @@ function PricingCard({
         Get Started
       </Link>
       <Link
-        href="/signup?mode=trial"
+        href="/signup/trial"
         className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
       >
         or start free trial →
