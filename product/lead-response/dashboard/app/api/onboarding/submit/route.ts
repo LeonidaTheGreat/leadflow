@@ -72,7 +72,11 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = hashPassword(data.password);
 
-    // Create agent account
+    // Calculate pilot expiry (60 days from now)
+    const now = new Date();
+    const pilotExpiresAt = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
+
+    // Create agent account — free pilot, no credit card required
     const { data: agent, error: agentError } = await supabase
       .from('real_estate_agents')
       .insert({
@@ -85,10 +89,13 @@ export async function POST(request: NextRequest) {
         timezone: data.timezone || 'America/New_York',
         status: 'active',
         is_active: true,
+        plan_tier: 'pilot',
+        pilot_started_at: now.toISOString(),
+        pilot_expires_at: pilotExpiresAt.toISOString(),
         market: 'us-national', // Default market
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        onboarding_completed_at: new Date().toISOString(),
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+        onboarding_completed_at: now.toISOString(),
         onboarding_metadata: {
           completion_time_ms: tracking.completionTimeMs,
           referrer: tracking.referrer,
