@@ -11,7 +11,6 @@ const PROTECTED_ROUTES = [
   '/profile',
   '/integrations',
   '/setup',
-  '/admin',
 ]
 
 // Routes that should redirect to dashboard if already authenticated
