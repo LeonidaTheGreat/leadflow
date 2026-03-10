@@ -67,7 +67,7 @@ export async function createLead(
 export async function getLeadById(id: string): Promise<{ data: Lead | null; error: any }> {
   const { data, error } = await supabaseAdmin
     .from('leads')
-    .select('*, agent:agents(*), latest_qualification:qualifications(*)')
+    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)')
     .eq('id', id)
     .single()
 
@@ -94,7 +94,7 @@ export async function getLeadsByAgent(
 ): Promise<{ data: Lead[]; count: number | null; error: any }> {
   let query = supabaseAdmin
     .from('leads')
-    .select('*, agent:agents(*), latest_qualification:qualifications(*)', { count: 'exact' })
+    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)', { count: 'exact' })
     .eq('agent_id', agentId)
     .order('created_at', { ascending: false })
 
@@ -214,7 +214,7 @@ export async function updateMessageStatus(
 
 export async function getAgentById(id: string): Promise<{ data: Agent | null; error: any }> {
   const { data, error } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('id', id)
     .single()
@@ -224,7 +224,7 @@ export async function getAgentById(id: string): Promise<{ data: Agent | null; er
 
 export async function getAgentByEmail(email: string): Promise<{ data: Agent | null; error: any }> {
   const { data, error } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('email', email)
     .single()
@@ -234,7 +234,7 @@ export async function getAgentByEmail(email: string): Promise<{ data: Agent | nu
 
 export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> {
   const { data, error } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
 

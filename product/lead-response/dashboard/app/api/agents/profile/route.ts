@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
 
     const { data: agent, error } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, email, first_name, last_name, phone_number, state, timezone, created_at')
       .eq('id', agentId)
       .single()
@@ -99,7 +99,7 @@ export async function PUT(request: NextRequest) {
 
     // Update agent record
     const { error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .update({
         first_name: firstName,
         last_name: lastName,
