@@ -1,12 +1,46 @@
 'use client'
 
 import Link from 'next/link'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
+import { trackCTAClick, trackScrollDepth } from '@/lib/ga4'
+
+function ScrollDepthTracker() {
+  const [trackedDepths, setTrackedDepths] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Calculate scroll depth as percentage
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      const scrollTop = window.scrollY
+
+      const totalScrollableHeight = documentHeight - windowHeight
+      if (totalScrollableHeight <= 0) return
+
+      const scrollDepthPercent = Math.round((scrollTop / totalScrollableHeight) * 100)
+
+      // Track at 25%, 50%, 75%, 90%
+      const milestones = [25, 50, 75, 90]
+      milestones.forEach(milestone => {
+        if (scrollDepthPercent >= milestone && !trackedDepths.has(milestone)) {
+          trackScrollDepth(milestone)
+          setTrackedDepths(prev => new Set([...prev, milestone]))
+        }
+      })
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [trackedDepths])
+
+  return null
+}
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <ScrollDepthTracker />
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -15,18 +49,21 @@ export default function HomePage() {
             <a
               href="#pricing"
               className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              onClick={() => trackCTAClick('nav', 'Pricing', '#pricing')}
             >
               Pricing
             </a>
             <Link
               href="/pilot"
               className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              onClick={() => trackCTAClick('nav', 'Pilot Program', '/pilot')}
             >
               Pilot Program
             </Link>
             <Link
               href="/login"
               className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              onClick={() => trackCTAClick('nav', 'Sign In', '/login')}
             >
               Sign In
             </Link>
@@ -52,7 +89,11 @@ export default function HomePage() {
             </Suspense>
 
             <p className="mt-6 text-sm text-slate-400">
-              <a href="#features" className="hover:text-white underline underline-offset-4">See how it works ↓</a>
+              <a 
+                href="#features" 
+                className="hover:text-white underline underline-offset-4"
+                onClick={() => trackCTAClick('hero', 'See how it works', '#features')}
+              >See how it works ↓</a>
             </p>
           </div>
         </div>
@@ -112,12 +153,14 @@ export default function HomePage() {
             <Link
               href="/signup?mode=trial"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+              onClick={() => trackCTAClick('final_cta', 'Start Free Trial', '/signup')}
             >
               Start Free Trial — No Credit Card
             </Link>
             <Link
               href="/pilot"
               className="px-8 py-4 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              onClick={() => trackCTAClick('final_cta', 'Apply for Pilot Program', '/pilot')}
             >
               Apply for Pilot Program →
             </Link>
@@ -254,12 +297,14 @@ function PricingCard({
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
             : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white'
         }`}
+        onClick={() => trackCTAClick('pricing', `Start ${name} Plan`, `/signup?plan=${name.toLowerCase()}`)}
       >
         Get Started
       </Link>
       <Link
         href="/signup?mode=trial"
         className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
+        onClick={() => trackCTAClick('pricing', 'Start free trial', '/signup')}
       >
         or start free trial →
       </Link>

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { trackFormOpen, trackFormSubmit, trackFormSuccess, trackFormError } from '@/lib/ga4'
 
 interface TrialSignupFormProps {
   /** Compact mode for inline hero CTA (no name field, smaller) */
@@ -21,6 +22,15 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [formOpened, setFormOpened] = useState(false)
+
+  // Track form_open event when full form is mounted
+  useEffect(() => {
+    if (!compact && !formOpened) {
+      trackFormOpen('pilot_signup')
+      setFormOpened(true)
+    }
+  }, [compact, formOpened])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,6 +48,9 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     }
 
     setLoading(true)
+    
+    // Track form_submit event
+    trackFormSubmit('pilot_signup')
 
     try {
       const response = await fetch('/api/auth/trial-signup', {
@@ -56,14 +69,19 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
       const data = await response.json()
 
       if (!response.ok) {
+        trackFormError('pilot_signup', data.error || 'Signup failed')
         setError(data.error || 'Something went wrong. Please try again.')
         setLoading(false)
         return
       }
 
+      // Track form_success event
+      trackFormSuccess('pilot_signup')
+      
       // Redirect to onboarding
       router.push(data.redirectTo || '/dashboard/onboarding')
-    } catch {
+    } catch (error) {
+      trackFormError('pilot_signup', error instanceof Error ? error.message : 'Unknown error')
       setError('Something went wrong. Please try again.')
       setLoading(false)
     }
