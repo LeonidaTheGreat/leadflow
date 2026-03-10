@@ -1,10 +1,12 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-10T17:00:28.856Z | Source: `prds` table
+> Generated: 2026-03-10T21:50:14.514Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
+| PRD-AHA-MOMENT-LEAD-SIMULATOR | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md) |
+| PRD-AHA-MOMENT-LEAD-SIMULATOR-001 | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md) |
 | PRD-BILLING | Billing & Subscriptions | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-BILLING.md](/Users/clawdbot/projects/leadflow/PRD-BILLING.md) |
 | PRD-CORE-SMS | Core SMS Lead Response | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-CORE-SMS.md](/Users/clawdbot/projects/leadflow/PRD-CORE-SMS.md) |
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
