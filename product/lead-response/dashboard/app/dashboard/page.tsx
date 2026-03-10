@@ -3,6 +3,7 @@ import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
+import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
@@ -11,6 +12,9 @@ export const metadata = {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
+      {/* Pilot Status Banner — shows for pilot agents */}
+      <PilotStatusBanner />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Lead Feed</h1>
         <div className="flex gap-2">
