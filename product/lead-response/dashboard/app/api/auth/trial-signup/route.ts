@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         trial_days: 30
       },
       created_at: new Date().toISOString()
-    }).then(() => {}).catch((err: Error) => {
+    }).then(() => {}, (err: Error) => {
       // Non-blocking — don't fail signup if analytics insert fails
       console.error('Failed to log trial_started event:', err)
     })

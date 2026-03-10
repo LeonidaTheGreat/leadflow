@@ -53,14 +53,13 @@ export type Section =
   | 'footer'
   | string;
 
-// ─── Form funnel stages (FR-4) ────────────────────────────────────────────────
+// ─── Form funnel stages (FR-3) ────────────────────────────────────────────────
 
 export type FormFunnelEvent =
-  | 'form_view'
-  | 'form_start'
-  | 'form_submit_attempt'
-  | 'pilot_signup_complete'
-  | 'form_submit_error';
+  | 'form_open'
+  | 'form_submit'
+  | 'form_success'
+  | 'form_error';
 
 // ─── Core helper ─────────────────────────────────────────────────────────────
 

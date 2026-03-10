@@ -52,14 +52,14 @@ export default function PilotPage() {
   const formStartedRef = useRef(false)
   const formRef = useRef<HTMLDivElement>(null)
 
-  // FR-4: Track form_view when the form section enters the viewport
+  // FR-3: Track form_open when the form section enters the viewport
   useEffect(() => {
     const el = formRef.current
     if (!el) return
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          trackFormEvent('form_view')
+          trackFormEvent('form_open', 'pilot_signup')
           observer.disconnect()
         }
       },
@@ -74,11 +74,11 @@ export default function PilotPage() {
     setError(null)
   }
 
-  // FR-4: Track form_start on first field interaction
+  // FR-3: Track form interaction on first field interaction (optional tracking)
   const handleFirstInteraction = () => {
     if (!formStartedRef.current) {
       formStartedRef.current = true
-      trackFormEvent('form_start')
+      // Form interaction tracking - not a required PRD event
     }
   }
 
@@ -86,8 +86,8 @@ export default function PilotPage() {
     e.preventDefault()
     setError(null)
 
-    // FR-4: Track submit attempt
-    trackFormEvent('form_submit_attempt')
+    // FR-3: Track form submit attempt
+    trackFormEvent('form_submit', 'pilot_signup')
 
     if (!formData.name.trim() || !formData.email.trim()) {
       setError('Name and email are required')
@@ -115,8 +115,8 @@ export default function PilotPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        // FR-4: Track submission error (no PII in params)
-        trackFormEvent('form_submit_error', 'pilot_signup', {
+        // FR-3: Track submission error (no PII in params)
+        trackFormEvent('form_error', 'pilot_signup', {
           error_type: response.status === 409 ? 'duplicate_email' : 'api_error',
           http_status: response.status,
         })
@@ -129,14 +129,14 @@ export default function PilotPage() {
         return
       }
 
-      // FR-4: Track conversion (marked as conversion in GA4 admin)
-      trackFormEvent('pilot_signup_complete', 'pilot_signup', {
+      // FR-3: Track form success (marked as conversion in GA4 admin)
+      trackFormEvent('form_success', 'pilot_signup', {
         crm: formData.current_crm || 'not_specified',
         lead_volume: formData.monthly_leads || 'not_specified',
       })
       setSubmitted(true)
     } catch {
-      trackFormEvent('form_submit_error', 'pilot_signup', { error_type: 'network_error' })
+      trackFormEvent('form_error', 'pilot_signup', { error_type: 'network_error' })
       setError('Something went wrong. Please try again.')
       setLoading(false)
     }
