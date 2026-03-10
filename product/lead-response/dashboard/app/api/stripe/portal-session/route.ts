@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Get agent from database to verify existence and get Stripe customer ID
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, email, stripe_customer_id, status')
       .eq('id', agentId)
       .single()
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
         // Update agent record with new customer ID
         const { error: updateError } = await supabase
-          .from('agents')
+          .from('real_estate_agents')
           .update({
             stripe_customer_id: customerId,
             updated_at: new Date().toISOString(),
@@ -175,7 +175,7 @@ export async function GET(request: NextRequest) {
 
     // Get agent with billing info
     const { data: agent, error } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, email, stripe_customer_id, stripe_subscription_id, plan_tier, status, mrr')
       .eq('id', agentId)
       .single()
