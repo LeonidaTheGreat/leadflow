@@ -18,6 +18,7 @@ export async function GET() {
     'NEXT_PUBLIC_SUPABASE_URL',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'SUPABASE_SERVICE_ROLE_KEY',
+    'RESEND_API_KEY',
   ]
 
   for (const key of requiredEnvVars) {
