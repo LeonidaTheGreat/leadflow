@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-08
+title: BO2026 Dashboard - Updated 2026-03-09
 author: LeadFlow Orchestrator
-date: 2026-03-08
+date: 2026-03-09
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 22 of 60  
+**Current Day:** Day 23 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/8/2026, 7:43:57 PM
+**Last Updated:** 3/9/2026, 2:16:22 AM
 
 ---
 
@@ -33,29 +33,80 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 5 | In Progress: 7 | Blocked: 0 | Done: 307
+**Queue Health:** Ready: 60 | In Progress: 3 | Blocked: 0 | Done: 409
 
-### ▶️ Ready to Spawn (5 tasks)
+### ▶️ Ready to Spawn (60 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | sonnet | $1.20 | 🟡 P1 |
-| Dev: fix-main-landing-page-has-no-cta-analytics-instrumenta - Main landing page (/) has no CTA analytics instrumentation | codex | $0.60 | 🟡 P1 |
-| Design: feat-lead-magnet-email-capture - Lead Magnet / Email Capture on Landing Page | sonnet | $0.54 | 🟡 P1 |
-| QC: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | kimi | $0.13 | 🟡 P1 |
-| Dev: feat-session-analytics-pilot - Session Analytics — Pilot Agent Usage Tracking | kimi | $0.24 | 🟡 P1 |
+| QC: fix-session-logging-not-integrated-into-login-flow - Session logging not integrated into login flow | sonnet | $0.66 | 🔴 P0 |
+| PM Triage: fix — Create subscriptions table in Supabase for Stripe webhook st | sonnet | $0.47 | 🔴 P0 |
+| PM Triage: fix — Fix api health endpoint. It queries the agents table to veri | sonnet | $0.47 | 🔴 P0 |
+| PM Triage: fix — Fix signup and login table mismatch. Signup inserts into rea | sonnet | $0.47 | 🔴 P0 |
+| Dev (rescue): UC-LANDING-ANALYTICS-GA4-001 - Landing Page Analytics — GA4 CTA & Conversion Tracking | kimi | $0.24 | 🟡 P1 |
+| Dev (rescue): feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | sonnet | $1.20 | 🟡 P1 |
+| QC: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | codex | $0.66 | 🟡 P1 |
+| QC: UC-LANDING-ANALYTICS-GA4-001 - Landing Page Analytics — GA4 CTA & Conversion Tracking | sonnet | $0.66 | 🟡 P1 |
+| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
+| QC: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | kimi | $0.13 | 🟡 P1 |
+| QC: fix-resend-api-key-not-configured-in-vercel-email-deli - RESEND_API_KEY not configured in Vercel — email delivery will not work | kimi | $0.13 | 🟡 P1 |
+| PM Triage: feature — Self-serve frictionless onboarding flow. New user visits lan | sonnet | $0.47 | 🟡 P1 |
+| PM: Diagnose failed step in feat-post-login-onboarding-wizard | sonnet | $0.60 | 🟢 P2 |
+| PM: Diagnose failed step in feat-lead-experience-simulator | sonnet | $0.60 | 🟢 P2 |
+| Resolve merge conflicts on PR #18 (dev/cd988e89-dev-feat-auto-sync-deployed-pages-to-sys) | kimi | $0.12 | 🟢 P2 |
+| Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
+| QC: feat-add-login-page-with-email-and-password - add login page with email and password | kimi | $0.13 | 🟢 P2 |
+| QC: fix-pricing-section-shows-pilot-only-pricing-instead-o - Pricing section shows pilot-only pricing instead of 4-tier plan grid | kimi | $0.13 | 🟢 P2 |
+| QC: feat-lead-magnet-email-capture - Lead Magnet / Email Capture on Landing Page | sonnet | $0.66 | 🟢 P2 |
+| QC: fix-pricing-page-shows-prices-10x-higher-than-pmf-md-s - /pricing page shows prices 10x higher than PMF.md strategy | kimi | $0.13 | 🟢 P2 |
+| QC: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | kimi | $0.13 | 🟢 P2 |
+| QC: fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages | sonnet | $0.66 | 🟢 P2 |
+| QC: fix-test-genome-separation - test genome separation | kimi | $0.13 | 🟢 P2 |
+| QC: fix-landing-page-does-not-capture-utm-params-to-sessio - Landing page does not capture UTM params to sessionStorage | kimi | $0.13 | 🟢 P2 |
+| QC: fix-ga4-script-tag-missing-from-layout-tsx-all-analyti - GA4 script tag missing from layout.tsx — all analytics events are no-ops | kimi | $0.13 | 🟢 P2 |
+| QC: feat-session-analytics-pilot - Session Analytics — Pilot Agent Usage Tracking | kimi | $0.13 | 🟢 P2 |
+| QC: UC-AUTH-FIX-001 - Implement Authentication Flow - Signup/Login | kimi | $0.13 | 🟢 P2 |
+| QC: feat-add-session-management-with-server-side- - add session management with server-side tokens | kimi | $0.13 | 🟢 P2 |
+| QC: fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection | sonnet | $0.66 | 🟢 P2 |
+| QC: fix-no-forgot-password-flow - Forgot Password / Password Reset Flow | kimi | $0.13 | 🟢 P2 |
+| QC: fix-no-analytics-tracking-implemented-ga4-utm-conversi - No analytics tracking implemented (GA4, UTM, conversion events) | kimi | $0.13 | 🟢 P2 |
+| QC: feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes | kimi | $0.13 | 🟢 P2 |
+| QC: improve-UC-2-add-retry-logic - Add Retry Logic to FUB New Lead Auto-SMS | codex | $1.00 | 🟢 P2 |
+| QC: fix-api-endpoint-not-protected-by-session-middleware - API endpoint not protected by session middleware | codex | $1.00 | 🟢 P2 |
+| Resolve merge conflicts on PR #110 (dev/6436f234-dev-feat-session-analytics-pilot-session) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #103 (dev/8a465f1f-dev-fix-landing-page-does-not-capture-ut) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #105 (dev/9598119a-dev-rescue-feat-start-free-trial-cta-sta) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #109 (dev/88403ee3-fix-dashboard-build-errors) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #111 (dev/559f08af-dev-rescue-fix-dashboard-build-errors) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #108 (dev/cc686016-dev-fix-landing-page-has-no-links-to-sig) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #97 (dev/9bc53fa0-dev-fix-no-analytics-tracking-implemente) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #98 (dev/a15e2210-dev-uc-auth-fix-001-implement-authentica) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #112 (dev/c20d1d60-dev-feat-lead-magnet-email-capture-lead-) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #99 (dev/d42ef64a-dev-feat-add-session-management-with-ser) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #96 (dev/397f80e2-dev-feat-add-login-page-with-email-and-p) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #95 (dev/6465da26-dev-improve-landing-page-pricing-4-tiers) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #102 (dev/88bf6738-dev-feat-add-auth-middleware-to-protect-) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #104 (dev/4c3fa135-dev-fix-no-forgot-password-flow-forgot-p) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #101 (dev/d30e1663-dev-rescue-fix-pricing-page-shows-prices) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #100 (dev/09268019-dev-rescue-fix-dashboard-routes-are-publ) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #107 (dev/e3d125d0-dev-fix-pricing-section-shows-pilot-only) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #106 (dev/72e3d8ca-dev-fix-ga4-script-tag-missing-from-layo) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #113 (dev/8070ef78-dev-improve-uc-2-add-retry-logic-add-ret) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #114 (dev/323e8822-dev-fix-api-endpoint-not-protected-by-se) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #115 (dev/572d8239-dev-feat-utm-capture-marketing-attributi) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #116 (dev/71e1de54-dev-fix-marketing-landing-page-not-deplo) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #119 (dev/dbb340c5-dev-uc-revenue-recovery-001-revenue-reco) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #120 (dev/75e45d83-dev-fix-pilot-signups-database-table-mis) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #123 (dev/02c22259-dev-fix-lead-magnet-feature-not-merged-t) | kimi | $0.12 | 🟢 P2 |
+| Resolve merge conflicts on PR #124 (dev/d8a49f0c-dev-fix-main-landing-page-has-no-cta-ana) | kimi | $0.12 | 🟢 P2 |
 
-### ⚡ In Progress (7 tasks)
+### ⚡ In Progress (3 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Dashboard build errors | dev | kimi |
-| Dev: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | dev | sonnet |
-| Dev: feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | dev | sonnet |
-| Dev: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | dev | sonnet |
-| Dev: feat-lead-experience-simulator - Lead Experience Simulator & Conversation Viewer | dev | sonnet |
-| Dev: UC-LANDING-ANALYTICS-GA4-001 - Landing Page Analytics — GA4 CTA & Conversion Tracking | dev | sonnet |
-| Dev: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | dev | kimi |
+| QC: fix-touchsession-middleware-not-implemented-no-session - touchSession() middleware not implemented — no session heartbeat | qc | kimi |
+| PM: Proactive Revenue Gap Analysis | product | sonnet |
+| Resolve merge conflicts on PR #118 (dev/ff6e0c79-dev-fix-session-logging-not-integrated-i) | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -113,8 +164,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $187.28
-**Cost per task:** Avg $0.51
+**Estimated project cost:** $236.64
+**Cost per task:** Avg $0.44
 
 ---
 
@@ -127,8 +178,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **5 tasks ready to spawn**
-2. ⚡ **7 agents active**
+1. ✅ **60 tasks ready to spawn**
+2. ⚡ **3 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

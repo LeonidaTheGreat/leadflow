@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-08T23:43:57.332Z | Source: `prds` table
+> Generated: 2026-03-09T04:23:19.317Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -10,6 +10,7 @@
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
+| PRD-FIX-LEAD-CAPTURE-PROD-ENV | Fix /api/lead-capture Production Environment Failure | approved | 1.0 | [docs/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md](docs/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md) |
 | PRD-FIX-ONBOARDING-500-001 | Fix Onboarding 500 Error — Complete Agents Table Migration | approved | 1.1 | [docs/PRD-FIX-ONBOARDING-500-001.md](docs/PRD-FIX-ONBOARDING-500-001.md) |
 | PRD-FIX-PRICING-CORRECTION | Fix Pricing — Correct 10x Price Error in BillingCard and Checkout | approved | - | [docs/PRD-FIX-PRICING-CORRECTION.md](docs/PRD-FIX-PRICING-CORRECTION.md) |
 | PRD-FIX-SIGNUP-PLAN-OPTIONS-001 | Fix Signup Page — Plan Options Not Displayed | approved | 1.0 | [docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md](docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md) |

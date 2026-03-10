@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { logSessionStart } from '@/lib/agent-session'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -54,26 +55,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate JWT token
-    const tokenExpiry = rememberMe ? '30d' : '24h'
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-      },
-      JWT_SECRET,
-      { expiresIn: tokenExpiry }
-    )
-
     // Update last login timestamp
     await supabase
       .from('real_estate_agents')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
+    // Log session start — inserts into agent_sessions (FR-1)
+    // Failures are handled gracefully inside logSessionStart; login continues even on error
+    const agentSession = await logSessionStart(user.id, request)
+    const sessionId = agentSession?.id ?? null
+
+    // Generate JWT token (include session_id claim when available)
+    const tokenExpiry = rememberMe ? '30d' : '24h'
+    const jwtPayload: Record<string, unknown> = {
+      userId: user.id,
+      email: user.email,
+    }
+    if (sessionId) {
+      jwtPayload.sessionId = sessionId
+    }
+    const token = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: tokenExpiry })
+
     return NextResponse.json({
       success: true,
       token,
+      sessionId,
       user: {
         id: user.id,
         email: user.email,
