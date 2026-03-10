@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSession } from '@/lib/session'
 import { createClient } from '@supabase/supabase-js'
+import jwt from 'jsonwebtoken'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -29,6 +30,7 @@ const DEMO_TOKEN_ROUTES = [
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 function getSupabase() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
@@ -53,15 +55,33 @@ async function validateDemoToken(token: string): Promise<boolean> {
   }
 }
 
+/**
+ * Validate JWT token from auth-token cookie
+ */
+function validateJWTToken(token: string): { userId: string; email: string } | null {
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as { userId: string; email: string }
+    return payload
+  } catch {
+    return null
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
   
-  // Get session token from cookie
+  // Get session token from cookie (support both legacy leadflow_session and new auth-token)
   const sessionToken = request.cookies.get('leadflow_session')?.value
+  const authToken = request.cookies.get('auth-token')?.value
   
-  // Validate session against database
+  // Validate session against database (legacy)
   const session = sessionToken ? await validateSession(sessionToken) : null
-  const isAuthenticated = !!session
+  
+  // Validate JWT token (new auth flow)
+  const jwtPayload = authToken ? validateJWTToken(authToken) : null
+  
+  // User is authenticated if either session or JWT is valid
+  const isAuthenticated = !!(session || jwtPayload)
   
   // Check if current path is a demo token route
   const isDemoTokenRoute = DEMO_TOKEN_ROUTES.some(route => 
