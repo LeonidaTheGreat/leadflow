@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-09T04:23:19.317Z | Source: `prds` table
+> Generated: 2026-03-10T17:00:28.856Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -10,15 +10,22 @@
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
+| PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH | Fix agents Table Mismatch in Auth/Onboarding API Routes | approved | - | [docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md](docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md) |
+| PRD-FIX-API-HEALTH-ENDPOINT | Fix API Health Endpoint — Query Correct Table | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT.md](docs/PRD-FIX-API-HEALTH-ENDPOINT.md) |
+| prd-fix-api-health-endpoint-wrong-table | Fix API Health Endpoint — Wrong Table Query | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md](docs/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md) |
 | PRD-FIX-LEAD-CAPTURE-PROD-ENV | Fix /api/lead-capture Production Environment Failure | approved | 1.0 | [docs/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md](docs/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md) |
 | PRD-FIX-ONBOARDING-500-001 | Fix Onboarding 500 Error — Complete Agents Table Migration | approved | 1.1 | [docs/PRD-FIX-ONBOARDING-500-001.md](docs/PRD-FIX-ONBOARDING-500-001.md) |
 | PRD-FIX-PRICING-CORRECTION | Fix Pricing — Correct 10x Price Error in BillingCard and Checkout | approved | - | [docs/PRD-FIX-PRICING-CORRECTION.md](docs/PRD-FIX-PRICING-CORRECTION.md) |
+| PRD-FIX-REMAINING-AGENTS-TABLE | Fix Remaining agents Table References — Product Routes | approved | 1.0 | [docs/PRD-FIX-REMAINING-AGENTS-TABLE.md](docs/PRD-FIX-REMAINING-AGENTS-TABLE.md) |
 | PRD-FIX-SIGNUP-PLAN-OPTIONS-001 | Fix Signup Page — Plan Options Not Displayed | approved | 1.0 | [docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md](docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md) |
+| PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
 | PRD-FORGOT-PASSWORD | Forgot Password / Password Reset Flow | draft | 1.0 | [docs/PRD-FORGOT-PASSWORD.md](docs/PRD-FORGOT-PASSWORD.md) |
+| PRD-FRICTIONLESS-ONBOARDING-001 | Self-Serve Frictionless Onboarding Flow | draft | - | [docs/PRD-FRICTIONLESS-ONBOARDING-001.md](docs/PRD-FRICTIONLESS-ONBOARDING-001.md) |
 | PRD-INTEGRATIONS | CRM & Calendar Integrations | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md](/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md) |
 | PRD-LANDING-ANALYTICS-GA4-001 | Landing Page Analytics: GA4 CTA & Conversion Tracking | approved | 1.0 | [docs/PRD-LANDING-ANALYTICS-GA4-001.md](docs/PRD-LANDING-ANALYTICS-GA4-001.md) |
 | PRD-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 1.0 | [docs/PRD-LANDING-MARKETING-001.md](docs/PRD-LANDING-MARKETING-001.md) |
 | PRD-LANDING-PAGE-ANALYTICS-001 | Landing Page Analytics — GA4/PostHog CTA, Scroll Depth & Conversion Funnel | approved | 1.0 | [docs/PRD-LANDING-PAGE-ANALYTICS-001.md](docs/PRD-LANDING-PAGE-ANALYTICS-001.md) |
+| PRD-LANDING-PAGE-CONVERSION-001 | Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof | approved | - | [docs/PRD-LANDING-PAGE-CONVERSION-001.md](docs/PRD-LANDING-PAGE-CONVERSION-001.md) |
 | PRD-LANDING-PAGE-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 2.0 | [docs/PRD-LANDING-PAGE-MARKETING-001.md](docs/PRD-LANDING-PAGE-MARKETING-001.md) |
 | PRD-LANDING-PRICING-4TIERS | Landing Page Pricing Section — All 4 Tiers with Feature Comparison | approved | 1.0 | [docs/PRD-LANDING-PRICING-4TIERS.md](docs/PRD-LANDING-PRICING-4TIERS.md) |
 | PRD-LEAD-EXPERIENCE-SIMULATOR | Lead Experience Simulator & Conversation Viewer | approved | 1.0 | [docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md](docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md) |
