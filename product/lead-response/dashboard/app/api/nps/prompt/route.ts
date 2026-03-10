@@ -1,33 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { shouldShowNPSPrompt, dismissNPSPrompt } from '@/lib/nps-service'
-import { supabaseServer } from '@/lib/supabase-server'
+import { supabaseAdmin } from '@/lib/supabase'
 
 // GET - Check if NPS prompt should be shown
 export async function GET(request: NextRequest) {
   try {
-    // Get the current user from the Authorization header (Supabase JWT)
-    const authHeader = request.headers.get('authorization')
-    
-    // If no auth header, we can't determine agent ID securely
-    if (!authHeader?.startsWith('Bearer ')) {
+    const { searchParams } = new URL(request.url)
+    const agentId = searchParams.get('agentId')
+
+    if (!agentId) {
       return NextResponse.json(
-        { shouldShow: false },
-        { status: 200 }
+        { error: 'agentId is required' },
+        { status: 400 }
       )
     }
 
-    // For authenticated requests, extract the user ID from the token
-    // In a real scenario, you'd verify the JWT
-    // For now, return false as this requires proper auth verification
-    return NextResponse.json(
-      { shouldShow: false },
-      { status: 200 }
-    )
+    const result = await shouldShowNPSPrompt(agentId)
+    return NextResponse.json(result)
   } catch (error: any) {
     console.error('Error checking NPS prompt:', error)
     return NextResponse.json(
-      { shouldShow: false },
-      { status: 200 }
+      { error: 'Internal server error' },
+      { status: 500 }
     )
   }
 }
@@ -35,17 +29,15 @@ export async function GET(request: NextRequest) {
 // POST - Dismiss NPS prompt
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization')
-    
-    if (!authHeader?.startsWith('Bearer ')) {
+    const body = await request.json()
+    const { agentId, trigger } = body
+
+    if (!agentId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'agentId is required' },
+        { status: 400 }
       )
     }
-
-    const body = await request.json()
-    const { trigger } = body
 
     if (!trigger || !['auto_14d', 'auto_90d'].includes(trigger)) {
       return NextResponse.json(
@@ -54,8 +46,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For now, we'll skip the agent ID verification
-    // In production, extract from the verified JWT
+    await dismissNPSPrompt(agentId, trigger)
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Error dismissing NPS prompt:', error)

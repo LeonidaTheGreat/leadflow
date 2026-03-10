@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log trial_started event (non-blocking)
-    supabase.from('analytics_events').insert({
+    void Promise.resolve(supabase.from('analytics_events').insert({
       event_type: 'trial_started',
       agent_id: agent.id,
       properties: {
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         trial_days: 30
       },
       created_at: new Date().toISOString()
-    }).then(() => {}, (err: Error) => {
+    })).catch((err: unknown) => {
       // Non-blocking — don't fail signup if analytics insert fails
       console.error('Failed to log trial_started event:', err)
     })
