@@ -6,11 +6,11 @@ import OnboardingWelcome from './steps/welcome'
 import OnboardingAgentInfo from './steps/agent-info'
 import OnboardingCalendar from './steps/calendar'
 import OnboardingSMS from './steps/sms-config'
-import OnboardingSimulator from './steps/simulator'
 import OnboardingConfirm from './steps/confirmation'
+import OnboardingSimulator from './steps/simulator'
 import OnboardingProgress from './components/progress'
 
-type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'confirmation' | 'simulator'
 
 /** Read UTM params: URL takes precedence over sessionStorage. */
 function readUtmParams(searchParams: ReturnType<typeof useSearchParams>) {
@@ -58,18 +58,12 @@ function OnboardingPageInner() {
     calendarUrl: '',
     calcomLink: '',
     smsPhoneNumber: '',
-    // Aha Moment fields
-    ahaCompleted: false,
-    ahaResponseTimeMs: null as number | null,
     // UTM attribution fields (populated on mount)
     utmSource: null as string | null,
     utmMedium: null as string | null,
     utmCampaign: null as string | null,
     utmContent: null as string | null,
     utmTerm: null as string | null,
-    // Aha moment fields
-    ahaCompleted: false,
-    ahaResponseTimeMs: null as number | null,
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -82,7 +76,7 @@ function OnboardingPageInner() {
     }
   }, [searchParams])
 
-  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'confirmation', 'simulator']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const goToStep = (step: OnboardingStep) => {
@@ -104,7 +98,7 @@ function OnboardingPageInner() {
   const completeOnboarding = async () => {
     setIsLoading(true)
     try {
-      // Submit agent data to backend (includes UTM attribution fields and aha moment data)
+      // Submit agent data to backend (includes UTM attribution fields)
       const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -193,17 +187,16 @@ function OnboardingPageInner() {
               />
             )}
 
-            {currentStep === 'simulator' && (
-              <OnboardingSimulator
-                onNext={nextStep}
+            {currentStep === 'confirmation' && (
+              <OnboardingConfirm
                 onBack={prevStep}
+                onNext={nextStep}
                 agentData={agentData}
-                setAgentData={setAgentData}
               />
             )}
 
-            {currentStep === 'confirmation' && (
-              <OnboardingConfirm
+            {currentStep === 'simulator' && (
+              <OnboardingSimulator
                 onBack={prevStep}
                 onComplete={completeOnboarding}
                 agentData={agentData}

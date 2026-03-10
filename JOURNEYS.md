@@ -1,13 +1,13 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
-> Generated: 2026-03-24T03:06:00.790Z | Source: `project.config.json` journeys + `product_reviews` table
+> Generated: 2026-03-10T22:20:13.120Z | Source: `project.config.json` journeys + `product_reviews` table
 
 Review interval: every 14 days
 
 | Journey | Persona | Steps | Products | Last Review | Score |
 |---------|---------|-------|----------|-------------|-------|
-| new-agent-signup | Real estate agent, first visit, not tech | 6 | landing-page, customer-dashboard, billing-flow | ISSUES (3/13/2026) | 65/100 |
+| new-agent-signup | Real estate agent, first visit, not tech | 6 | landing-page, customer-dashboard, billing-flow | pending (-) | - |
 | lead-response | Inbound lead submitting info via FUB web | 3 | fub-webhook, customer-dashboard | pending (-) | - |
 
 ---
@@ -31,16 +31,9 @@ Review interval: every 14 days
 
 ### Latest Review
 
-- **Verdict:** pass_with_issues
-- **Score:** 65/100
-- **Date:** 3/13/2026
-
-#### Findings (4)
-
-- **[MEDIUM]** Email Verification Block in Auth Flow
-- **[MEDIUM]** Billing Redirect Pattern Unusual
-- **[LOW]** Navigation Label Mismatch
-- **[LOW]** Plan Options Not Visible on Initial Signup
+- **Verdict:** pending
+- **Score:** pending
+- **Date:** in progress
 
 ---
 
