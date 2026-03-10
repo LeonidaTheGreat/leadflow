@@ -34,6 +34,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
   const userId = session.client_reference_id
   const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sub = subscription as any // Stripe v20 removed current_period_start/end from types
 
   if (!userId) return
 
@@ -53,10 +55,10 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         tier: tier,
         price_id: subscription.items.data[0]?.price.id || '',
         interval: (subscription.items.data[0]?.price.recurring?.interval || 'month') as string,
-        current_period_start: new Date(subscription.current_period_start * 1000),
-        current_period_end: new Date(subscription.current_period_end * 1000),
-        trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
-        trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+        current_period_start: new Date(sub.current_period_start * 1000),
+        current_period_end: new Date(sub.current_period_end * 1000),
+        trial_start: sub.trial_start ? new Date(sub.trial_start * 1000) : null,
+        trial_end: sub.trial_end ? new Date(sub.trial_end * 1000) : null,
         cancel_at_period_end: subscription.cancel_at_period_end || false,
         metadata: subscription.metadata || {},
       },
@@ -69,14 +71,14 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
   // Log subscription creation event
   await supabase.from('subscription_events').insert({
-    subscription_id: subscriptionData?.[0]?.id,
+    subscription_id: (subscriptionData as any)?.[0]?.id,
     user_id: userId,
     stripe_event_id: `checkout_${session.id}`,
     event_type: 'subscription_created',
     stripe_event_data: {
       tier,
       mrr,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+      trial_end: sub.trial_end ? new Date(sub.trial_end * 1000) : null,
       stripe_subscription_id: subscription.id,
     },
   })
@@ -86,8 +88,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     stripe_customer_id: customerId,
     subscription_status: 'active',
     subscription_tier: tier,
-    current_period_end: new Date(subscription.current_period_end * 1000),
-    trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+    current_period_end: new Date(sub.current_period_end * 1000),
+    trial_ends_at: sub.trial_end ? new Date(sub.trial_end * 1000) : null,
     mrr: mrr,
     updated_at: new Date().toISOString(),
   }).eq('id', userId)
@@ -124,7 +126,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     subscription_id: subscriptionRecordId,
     user_id: userId,
     stripe_invoice_id: invoice.id,
-    stripe_payment_intent_id: invoice.payment_intent as string,
+    stripe_payment_intent_id: (invoice as any).payment_intent as string,
     amount: amount,
     currency: invoice.currency,
     status: 'succeeded',
@@ -180,7 +182,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     subscription_id: subscriptionRecordId,
     user_id: userId,
     stripe_invoice_id: invoice.id,
-    stripe_payment_intent_id: invoice.payment_intent as string,
+    stripe_payment_intent_id: (invoice as any).payment_intent as string,
     amount: invoice.amount_due / 100,
     currency: invoice.currency,
     status: 'failed',
