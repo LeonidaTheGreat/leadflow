@@ -44,47 +44,58 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
   const mrr = calculateMRR(subscription)
   const tier = getTierFromSubscription(subscription)
+  const customerId = session.customer as string
 
-  // Update agent with subscription info
-  await supabase.from('real_estate_agents').update({
-    stripe_customer_id: session.customer as string,
-    stripe_subscription_id: subscription.id,
-    plan_tier: tier,
-    mrr: mrr,
-    status: 'active',
-    trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-    updated_at: new Date().toISOString(),
-  }).eq('id', userId)
+  // Upsert subscription into subscriptions table
+  const { data: subscriptionData, error: subError } = await supabase
+    .from('subscriptions')
+    .upsert(
+      {
+        user_id: userId,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscription.id,
+        status: subscription.status as string,
+        tier: tier,
+        price_id: subscription.items.data[0]?.price.id || '',
+        interval: (subscription.items.data[0]?.price.recurring?.interval || 'month') as string,
+        current_period_start: new Date(subscription.current_period_start * 1000),
+        current_period_end: new Date(subscription.current_period_end * 1000),
+        trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
+        trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+        cancel_at_period_end: subscription.cancel_at_period_end || false,
+        metadata: subscription.metadata || {},
+      },
+      { onConflict: 'stripe_subscription_id' }
+    )
 
-  // Create initial subscription record (core fix: subscriptions table was never populated)
-  const subData = subscription as any;
-  await supabase.from('subscriptions').upsert({
-    user_id: userId,
-    stripe_customer_id: session.customer as string,
-    stripe_subscription_id: subscription.id,
-    status: subscription.status,
-    tier: tier,
-    price_id: subscription.items.data[0]?.price?.id ?? null,
-    interval: subscription.items.data[0]?.price?.recurring?.interval ?? null,
-    current_period_start: new Date(subData.current_period_start * 1000).toISOString(),
-    current_period_end: new Date(subData.current_period_end * 1000).toISOString(),
-    trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-    trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-    cancel_at_period_end: subscription.cancel_at_period_end,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }, { onConflict: 'stripe_subscription_id' })
+  if (subError) {
+    console.error('Error upserting subscription:', subError)
+  }
 
   // Log subscription creation event
   await supabase.from('subscription_events').insert({
+    subscription_id: subscriptionData?.[0]?.id,
     user_id: userId,
+    stripe_event_id: `checkout_${session.id}`,
     event_type: 'subscription_created',
-    tier: tier,
-    mrr: mrr,
-    trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-    stripe_subscription_id: subscription.id,
-    created_at: new Date().toISOString(),
+    stripe_event_data: {
+      tier,
+      mrr,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+      stripe_subscription_id: subscription.id,
+    },
   })
+
+  // Update agent with subscription info
+  await supabase.from('agents').update({
+    stripe_customer_id: customerId,
+    subscription_status: 'active',
+    subscription_tier: tier,
+    current_period_end: new Date(subscription.current_period_end * 1000),
+    trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+    mrr: mrr,
+    updated_at: new Date().toISOString(),
+  }).eq('id', userId)
 
   // Log for analytics (PostHog)
   console.log(`📊 New subscription: ${userId} - ${tier} - $${mrr}/mo`)
@@ -104,33 +115,47 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const amount = invoice.amount_paid / 100
   const mrr = calculateMRR(subscription)
 
+  // Find subscription record
+  const { data: subscriptions } = await supabase
+    .from('subscriptions')
+    .select('id')
+    .eq('stripe_subscription_id', subscriptionId)
+    .single()
+
+  const subscriptionRecordId = subscriptions?.id
+
   // Record payment
   await supabase.from('payments').insert({
+    subscription_id: subscriptionRecordId,
     user_id: userId,
     stripe_invoice_id: invoice.id,
+    stripe_payment_intent_id: invoice.payment_intent as string,
     amount: amount,
     currency: invoice.currency,
+    status: 'succeeded',
     period_start: new Date(invoice.period_start * 1000),
     period_end: new Date(invoice.period_end * 1000),
-    status: 'paid',
-    created_at: new Date().toISOString(),
+    receipt_url: invoice.hosted_invoice_url || null,
+  })
+
+  // Log payment event
+  await supabase.from('subscription_events').insert({
+    subscription_id: subscriptionRecordId,
+    user_id: userId,
+    stripe_event_id: `payment_${invoice.id}`,
+    event_type: 'payment_succeeded',
+    stripe_event_data: {
+      amount,
+      mrr,
+      stripe_invoice_id: invoice.id,
+    },
   })
 
   // Update agent MRR
-  await supabase.from('real_estate_agents').update({
+  await supabase.from('agents').update({
     mrr: mrr,
     updated_at: new Date().toISOString(),
   }).eq('id', userId)
-
-  // Log event
-  await supabase.from('subscription_events').insert({
-    user_id: userId,
-    event_type: 'payment_received',
-    amount: amount,
-    mrr: mrr,
-    stripe_invoice_id: invoice.id,
-    created_at: new Date().toISOString(),
-  })
 
   console.log(`💰 Payment received: ${userId} - $${amount}`)
 }
@@ -146,20 +171,47 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!userId) return
 
-  // Mark as at risk
-  await supabase.from('real_estate_agents').update({
-    payment_status: 'past_due',
+  // Find subscription record
+  const { data: subscriptions } = await supabase
+    .from('subscriptions')
+    .select('id')
+    .eq('stripe_subscription_id', subscriptionId)
+    .single()
+
+  const subscriptionRecordId = subscriptions?.id
+
+  // Record failed payment
+  await supabase.from('payments').insert({
+    subscription_id: subscriptionRecordId,
+    user_id: userId,
+    stripe_invoice_id: invoice.id,
+    stripe_payment_intent_id: invoice.payment_intent as string,
+    amount: invoice.amount_due / 100,
+    currency: invoice.currency,
+    status: 'failed',
+    period_start: new Date(invoice.period_start * 1000),
+    period_end: new Date(invoice.period_end * 1000),
+    failure_message: (invoice as any).last_payment_error?.message || 'Payment failed',
+  })
+
+  // Log payment failed event
+  await supabase.from('subscription_events').insert({
+    subscription_id: subscriptionRecordId,
+    user_id: userId,
+    stripe_event_id: `payment_failed_${invoice.id}`,
+    event_type: 'payment_failed',
+    stripe_event_data: {
+      attempt_count: invoice.attempt_count || 1,
+      stripe_invoice_id: invoice.id,
+      error: (invoice as any).last_payment_error?.message,
+    },
+  })
+
+  // Update agent subscription status to past_due
+  await supabase.from('agents').update({
+    subscription_status: 'past_due',
     updated_at: new Date().toISOString(),
   }).eq('id', userId)
-
-  // Log event
-  await supabase.from('subscription_events').insert({
-    user_id: userId,
-    event_type: 'payment_failed',
-    attempt_count: invoice.attempt_count || 1,
-    stripe_invoice_id: invoice.id,
-    created_at: new Date().toISOString(),
-  })
 
   console.log(`⚠️  Payment failed: ${userId}`)
 }
@@ -171,23 +223,41 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
 
   const mrr = calculateMRR(subscription)
 
-  // Record churn
-  await supabase.from('real_estate_agents').update({
-    status: 'cancelled',
-    mrr: 0,
-    cancelled_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }).eq('id', userId)
+  // Find subscription record
+  const { data: subscriptions } = await supabase
+    .from('subscriptions')
+    .select('id')
+    .eq('stripe_subscription_id', subscription.id)
+    .single()
+
+  const subscriptionRecordId = subscriptions?.id
+
+  // Update subscription to canceled
+  await supabase.from('subscriptions').update({
+    status: 'canceled',
+    canceled_at: new Date(),
+    ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000) : new Date(),
+  }).eq('stripe_subscription_id', subscription.id)
 
   // Log churn event
   await supabase.from('subscription_events').insert({
+    subscription_id: subscriptionRecordId,
     user_id: userId,
+    stripe_event_id: `canceled_${subscription.id}`,
     event_type: 'subscription_cancelled',
-    mrr_lost: mrr,
-    reason: subscription.cancellation_details?.reason || 'unknown',
-    stripe_subscription_id: subscription.id,
-    created_at: new Date().toISOString(),
+    stripe_event_data: {
+      mrr_lost: mrr,
+      reason: subscription.cancellation_details?.reason || 'unknown',
+      stripe_subscription_id: subscription.id,
+    },
   })
+
+  // Record churn in agent
+  await supabase.from('agents').update({
+    subscription_status: 'canceled',
+    mrr: 0,
+    updated_at: new Date().toISOString(),
+  }).eq('id', userId)
 
   console.log(`❌ Subscription cancelled: ${userId} - Lost $${mrr}/mo`)
 }
