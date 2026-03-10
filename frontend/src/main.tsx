@@ -5,6 +5,10 @@ import { PostHogProvider } from '@/components/PostHogProvider'
 import { LandingPage } from '@/components/LandingPage'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { logger } from '@/lib/logger'
+import { injectGA4Script } from '@/lib/ga4'
+
+// Inject GA4 script as early as possible (non-blocking, async)
+injectGA4Script()
 
 // Lazy load heavy components for code splitting
 const AgentOnboardingWizard = lazy(() => import('@/components/onboarding/AgentOnboardingWizard'))

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useLandingPageABTest } from '@/hooks/useABTest'
 import { useEventTracking } from '@/hooks/useEventTracking'
 import { PostHogEvents } from '@/lib/analytics-events'
+import { trackCTAClick, trackFormEvent, initScrollDepthTracking } from '@/lib/ga4'
 import { ArrowRight, CheckCircle, Zap, Clock, Shield, HeartPulse } from 'lucide-react'
 
 interface LandingPageProps {
@@ -33,15 +34,23 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
     }
   }, [isLoading, variantKey, trackPageView, trackVariantEvent])
 
-  const handleCTAClick = () => {
+  // Initialize GA4 scroll depth tracking
+  React.useEffect(() => {
+    const cleanup = initScrollDepthTracking()
+    return cleanup
+  }, [])
+
+  const handleCTAClick = (location: 'hero' | 'nav' | 'final_cta' = 'hero') => {
     track(PostHogEvents.CTA_CLICKED, { 
-      cta_location: 'hero',
+      cta_location: location,
       cta_text: variant.ctaText 
     })
     trackVariantEvent('cta_clicked', { 
-      cta_location: 'hero',
+      cta_location: location,
       cta_text: variant.ctaText 
     })
+    // GA4 CTA click tracking (FR-2)
+    trackCTAClick({ cta_location: location, cta_text: variant.ctaText, destination: '#onboarding' })
     
     if (onGetStarted) {
       onGetStarted()
@@ -54,6 +63,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
 
     setIsSubmitting(true)
     
+    // GA4: form_submit event (FR-3)
+    trackFormEvent('form_submit')
+
     // Track lead capture with new event tracking
     trackLead({
       email,
@@ -72,21 +84,35 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       sessionStorage.setItem('leadflow_signup_email', email)
     }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Track conversion with new event tracking
-    trackConversion({
-      conversion_type: 'lead_capture',
-      conversion_value: 0,
-      variant: variantKey
-    })
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // GA4: form_success event (FR-3)
+      trackFormEvent('form_success')
 
-    setIsSubmitting(false)
-    
-    if (onGetStarted) {
-      onGetStarted()
+      // Track conversion with new event tracking
+      trackConversion({
+        conversion_type: 'lead_capture',
+        conversion_value: 0,
+        variant: variantKey
+      })
+
+      setIsSubmitting(false)
+      
+      if (onGetStarted) {
+        onGetStarted()
+      }
+    } catch {
+      // GA4: form_error event (FR-3)
+      trackFormEvent('form_error')
+      setIsSubmitting(false)
     }
+  }
+
+  const handleFormOpen = () => {
+    // GA4: form_open event when the inline form receives focus (FR-3)
+    trackFormEvent('form_open')
   }
 
   const handleFeatureClick = (featureName: string) => {
@@ -139,7 +165,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               Log in
             </button>
             <button 
-              onClick={handleCTAClick}
+              onClick={() => handleCTAClick('nav')}
               className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               Get Started
@@ -169,6 +195,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={handleFormOpen}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 required
               />
@@ -296,7 +323,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
             Join thousands of agents who've transformed their business with AI-powered follow-up.
           </p>
           <button
-            onClick={handleCTAClick}
+            onClick={() => handleCTAClick('final_cta')}
             className="inline-flex items-center justify-center rounded-md text-sm font-medium h-12 px-8 bg-background text-foreground hover:bg-background/90"
           >
             {variant.ctaText}
@@ -318,6 +345,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <p className="text-sm text-muted-foreground">
               © 2024 LeadFlow. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              We use Google Analytics to improve this site.
             </p>
             <div className="flex gap-4 text-sm text-muted-foreground">
               <button onClick={() => {
