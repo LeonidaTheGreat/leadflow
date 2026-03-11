@@ -21,6 +21,15 @@ const AUTH_ROUTES = [
   '/signup',
 ]
 
+// Routes that are always allowed even for expired trials
+const EXPIRED_TRIAL_ALLOWED_ROUTES = [
+  '/upgrade',
+  '/pricing',
+  '/settings/billing',
+  '/login',
+  '/logout',
+]
+
 // Demo token routes - protected but allow demo token access
 const DEMO_TOKEN_ROUTES = [
   '/admin/simulator',
@@ -62,6 +71,35 @@ function validateJWTToken(token: string): { userId: string; email: string } | nu
     return payload
   } catch {
     return null
+  }
+}
+
+/**
+ * Check if user's trial has expired
+ * Returns true if user is on trial and trial has expired
+ */
+async function isTrialExpired(userId: string): Promise<boolean> {
+  try {
+    const supabase = getSupabase()
+    const { data: agent, error } = await supabase
+      .from('real_estate_agents')
+      .select('plan_tier, trial_ends_at')
+      .eq('id', userId)
+      .single()
+
+    if (error || !agent) return false
+
+    // Only check expiration for trial users
+    if (agent.plan_tier !== 'trial') return false
+
+    // Check if trial has expired
+    if (!agent.trial_ends_at) return false
+
+    const now = new Date()
+    const trialEndsAt = new Date(agent.trial_ends_at)
+    return now > trialEndsAt
+  } catch {
+    return false
   }
 }
 
@@ -123,7 +161,24 @@ export async function middleware(request: NextRequest) {
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
-  
+
+  // Check for expired trial and redirect to upgrade if needed (AC-8)
+  const userId = jwtPayload?.userId || session?.userId
+  if (userId && isProtectedRoute) {
+    const isExpired = await isTrialExpired(userId)
+    if (isExpired) {
+      // Check if current route is allowed for expired trials
+      const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some(route =>
+        pathname === route || pathname.startsWith(`${route}/`)
+      )
+
+      if (!isAllowedRoute) {
+        // Redirect to upgrade page
+        return NextResponse.redirect(new URL('/upgrade', request.url))
+      }
+    }
+  }
+
   // Add security headers
   const response = NextResponse.next()
   
