@@ -93,6 +93,26 @@ export default function OnboardingConfirm({
             </div>
           </div>
 
+          {/* Aha Moment Status */}
+          <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-slate-200 mb-4 uppercase tracking-wide">
+              Aha Moment
+            </h3>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⚡</span>
+                <span className="text-slate-300">AI Response Demo</span>
+              </div>
+              <span className={`text-sm font-medium ${
+                agentData.ahaCompleted ? 'text-emerald-400' : 'text-slate-500'
+              }`}>
+                {agentData.ahaCompleted 
+                  ? `✓ Completed (${agentData.ahaResponseTimeMs ? `${(agentData.ahaResponseTimeMs / 1000).toFixed(1)}s response)` : ')'}`
+                  : '○ Skipped'}
+              </span>
+            </div>
+          </div>
+
           {/* Pilot Plan Info */}
           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-6">
             <h3 className="text-sm font-semibold text-emerald-300 mb-3 uppercase tracking-wide">
