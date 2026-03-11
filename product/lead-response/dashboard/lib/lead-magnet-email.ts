@@ -23,7 +23,8 @@ async function getResend() {
   }
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'stojan@leadflow.ai'
+// Use Resend's shared domain as fallback — leadflow.ai must be verified on Resend first.
+const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev'
 const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'https://leadflow-ai-five.vercel.app/pilot'
 const LANDING_URL = process.env.NEXT_PUBLIC_LANDING_URL || 'https://leadflow-ai-five.vercel.app'
 
