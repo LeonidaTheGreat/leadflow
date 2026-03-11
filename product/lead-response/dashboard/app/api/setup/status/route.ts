@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
   if (body.twilioConnected !== undefined) patch.twilio_connected = body.twilioConnected
   if (body.twilioPhone !== undefined) patch.twilio_phone = body.twilioPhone
   if (body.smsVerified !== undefined) patch.sms_verified = body.smsVerified
+  if (body.simulatorCompleted !== undefined) patch.simulator_completed = body.simulatorCompleted
+  if (body.simulatorResponseTimeMs !== undefined) patch.simulator_response_time_ms = body.simulatorResponseTimeMs
+  if (body.simulatorSkipped !== undefined) patch.simulator_skipped = body.simulatorSkipped
   if (body.currentStep !== undefined) patch.current_step = body.currentStep
 
   try {
