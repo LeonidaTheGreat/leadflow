@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
-import { sendWelcomeEmail } from '@/lib/email-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -63,8 +61,8 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Calculate trial end date (14 days from now per PRD-FRICTIONLESS-ONBOARDING-001)
-    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    // Calculate trial end date (30 days from now per PRD)
+    const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
 
     // Create agent record with trial tier
     const { data: agent, error: createError } = await supabase
@@ -74,7 +72,7 @@ export async function POST(request: NextRequest) {
         first_name: firstName,
         last_name: lastName,
         password_hash: passwordHash,
-        email_verified: false, // Require email verification before login
+        email_verified: true, // No email verification gate for trial (per PRD §6)
         plan_tier: 'trial',
         trial_ends_at: trialEndsAt,
         mrr: 0,
@@ -97,47 +95,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create verification token and send email (non-blocking)
-    void (async () => {
-      try {
-        const verificationToken = await createVerificationToken(agent.id)
-        if (verificationToken) {
-          await sendVerificationEmail(agent.email, agent.id, firstName, verificationToken)
-        }
-      } catch (err) {
-        console.error('Failed to send verification email:', err)
-      }
-    })()
-
     // Log trial_started event (non-blocking)
-    void Promise.resolve(supabase.from('events').insert({
+    void Promise.resolve(supabase.from('analytics_events').insert({
       event_type: 'trial_started',
       agent_id: agent.id,
-      event_data: {
+      properties: {
         source: 'trial_cta',
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
         plan_tier: 'trial',
-        trial_days: 14
+        trial_days: 30
       },
       created_at: new Date().toISOString()
     })).catch((err: unknown) => {
       // Non-blocking — don't fail signup if analytics insert fails
       console.error('Failed to log trial_started event:', err)
-    })
-
-    // Send welcome email (non-blocking)
-    void sendWelcomeEmail(
-      agent.email,
-      agent.id,
-      {
-        agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
-        planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
-      }
-    ).catch((err: unknown) => {
-      console.error('[trial-signup] Welcome email error:', err)
     })
 
     // Generate JWT token for immediate login
@@ -151,14 +124,23 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Return success - user must verify email before logging in
-    // Do NOT set auth cookie - they need to verify email first
-    return NextResponse.json({
+    // Set auth cookie and return success
+    const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
-      message: 'Trial account created successfully. Please check your email to verify your account.'
+      redirectTo: '/setup',
+      message: 'Trial account created successfully'
     })
+
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: '/'
+    })
+
+    return response
 
   } catch (error) {
     console.error('Trial signup error:', error)
