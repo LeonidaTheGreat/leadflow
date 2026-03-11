@@ -12,7 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
  * - Creates a new agent with plan_tier='trial', trial_ends_at=now()+14d
  * - Sets email_verified=true (no email gate per PRD)
  * - Logs trial_started event to events table
- * - Returns JWT + redirect URL to onboarding wizard
+ * - Returns JWT + redirect URL to setup wizard
  *
  * Body: { email, password, name?, utm_source?, utm_medium?, utm_campaign? }
  */
