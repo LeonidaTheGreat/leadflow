@@ -6,10 +6,11 @@ import OnboardingWelcome from './steps/welcome'
 import OnboardingAgentInfo from './steps/agent-info'
 import OnboardingCalendar from './steps/calendar'
 import OnboardingSMS from './steps/sms-config'
+import OnboardingSimulator from './steps/simulator'
 import OnboardingConfirm from './steps/confirmation'
 import OnboardingProgress from './components/progress'
 
-type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'confirmation'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
 /** Read UTM params: URL takes precedence over sessionStorage. */
 function readUtmParams(searchParams: ReturnType<typeof useSearchParams>) {
@@ -57,6 +58,12 @@ function OnboardingPageInner() {
     calendarUrl: '',
     calcomLink: '',
     smsPhoneNumber: '',
+    // Aha Moment simulator fields
+    ahaCompleted: false,
+    ahaResponseTimeMs: null as number | null,
+    ahaSkipped: false,
+    simulatorSessionId: '',
+    tempAgentId: '',
     // UTM attribution fields (populated on mount)
     utmSource: null as string | null,
     utmMedium: null as string | null,
@@ -75,7 +82,7 @@ function OnboardingPageInner() {
     }
   }, [searchParams])
 
-  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'confirmation']
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const goToStep = (step: OnboardingStep) => {
@@ -97,11 +104,15 @@ function OnboardingPageInner() {
   const completeOnboarding = async () => {
     setIsLoading(true)
     try {
-      // Submit agent data to backend (includes UTM attribution fields)
+      // Submit agent data to backend (includes UTM attribution and Aha Moment fields)
       const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(agentData),
+        body: JSON.stringify({
+          ...agentData,
+          aha_moment_completed: agentData.ahaCompleted,
+          aha_response_time_ms: agentData.ahaResponseTimeMs,
+        }),
       })
 
       if (!response.ok) {
@@ -179,6 +190,15 @@ function OnboardingPageInner() {
 
             {currentStep === 'sms' && (
               <OnboardingSMS
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
+              />
+            )}
+
+            {currentStep === 'simulator' && (
+              <OnboardingSimulator
                 onNext={nextStep}
                 onBack={prevStep}
                 agentData={agentData}
