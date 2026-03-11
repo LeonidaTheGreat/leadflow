@@ -4,6 +4,9 @@ import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
+import { TrialStatusBanner } from '@/components/dashboard/TrialStatusBanner'
+import { SampleDataBanner } from '@/components/dashboard/SampleDataBanner'
+import { OnboardingWizardLauncher } from '@/components/dashboard/OnboardingWizardLauncher'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
@@ -12,8 +15,17 @@ export const metadata = {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      {/* Pilot Status Banner — shows for pilot agents */}
+      {/* Trial/Pilot Status Banner — shows for trial/pilot agents */}
+      <TrialStatusBanner />
+      
+      {/* Legacy Pilot Status Banner — for backward compatibility */}
       <PilotStatusBanner />
+
+      {/* Sample Data Banner — shows for first-time users with sample leads */}
+      <SampleDataBanner />
+
+      {/* Onboarding Wizard Launcher — shows if onboarding not completed */}
+      <OnboardingWizardLauncher />
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Lead Feed</h1>
@@ -51,7 +63,7 @@ export default function DashboardPage() {
           <li>Connect FUB webhook to auto-import leads (URL in Settings)</li>
           <li>Add real Anthropic API key for AI qualification</li>
           <li>Configure Twilio for live SMS sending</li>
-          <li>Recruit 3-5 pilot agents for Week 2 testing</li>
+          <li>Complete the onboarding wizard to activate all features</li>
         </ul>
       </div>
     </div>

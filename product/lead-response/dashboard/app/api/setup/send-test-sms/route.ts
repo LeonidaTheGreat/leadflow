@@ -38,45 +38,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { fubConnected, smsConnected, simulatorCompleted } = await request.json()
+    const { phoneNumber } = await request.json()
 
-    // Update agent's onboarding status
-    const { error } = await supabase
-      .from('real_estate_agents')
-      .update({
-        onboarding_completed: true,
-        onboarding_step: 'complete'
-      })
-      .eq('id', payload.userId)
-
-    if (error) {
-      console.error('Error completing setup:', error)
+    if (!phoneNumber) {
       return NextResponse.json(
-        { error: 'Failed to complete setup' },
-        { status: 500 }
+        { error: 'Phone number is required' },
+        { status: 400 }
       )
     }
 
-    // Log onboarding_completed event
-    await supabase.from('events').insert({
-      agent_id: payload.userId,
-      event_type: 'onboarding_completed',
-      event_data: {
-        fubConnected,
-        smsConnected,
-        simulatorCompleted
-      },
-      source: 'setup_wizard',
-      created_at: new Date().toISOString()
-    }).catch(() => {}) // Non-blocking
+    // TODO: Integrate with Twilio to send test SMS
+    // For now, generate a test code and pretend to send it
+    const testCode = String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+
+    // Store test code in cache/memory for verification
+    // In production, use Redis or a temporary table
+    console.log(`Test SMS code for ${phoneNumber}: ${testCode}`)
 
     return NextResponse.json({
       success: true,
-      message: 'Setup completed successfully'
+      message: 'Test SMS sent successfully'
     })
 
   } catch (error) {
-    console.error('Setup complete error:', error)
+    console.error('Send test SMS error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

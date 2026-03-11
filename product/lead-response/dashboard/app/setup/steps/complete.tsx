@@ -1,101 +1,113 @@
 'use client'
 
-import { CheckCircle2, Circle, ArrowRight, Settings } from 'lucide-react'
-import Link from 'next/link'
+import { CheckCircle2, Rocket, ArrowRight } from 'lucide-react'
 
-interface Props {
-  fubConnected: boolean
-  twilioConnected: boolean
-  smsVerified: boolean
-  onFinish: () => void
+interface SetupCompleteProps {
+  onComplete: () => Promise<void>
+  onBack: () => void
+  setupData: {
+    fubConnected: boolean
+    smsConnected: boolean
+    simulatorCompleted: boolean
+  }
+  isLoading: boolean
 }
 
-export default function SetupComplete({ fubConnected, twilioConnected, smsVerified, onFinish }: Props) {
-  const completedCount = [fubConnected, twilioConnected, smsVerified].filter(Boolean).length
-  const allDone = completedCount === 3
-
-  const steps = [
-    {
-      label: 'Follow Up Boss',
-      description: 'CRM integration',
-      done: fubConnected,
-      icon: '🏠',
-    },
-    {
-      label: 'Twilio SMS',
-      description: 'Phone number configured',
-      done: twilioConnected,
-      icon: '📱',
-    },
-    {
-      label: 'SMS Verified',
-      description: 'Test message delivered',
-      done: smsVerified,
-      icon: '✉️',
-    },
-  ]
-
+export default function SetupComplete({ 
+  onComplete, 
+  onBack, 
+  setupData, 
+  isLoading 
+}: SetupCompleteProps) {
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-10 text-center">
-        {/* Trophy / Partial icon */}
-        <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500/50 flex items-center justify-center mx-auto mb-6">
-          <span className="text-4xl">{allDone ? '🎉' : '✅'}</span>
+    <div className="animate-in fade-in-up duration-500">
+      <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
+        <div className="mb-8">
+          <div className="w-16 h-16 rounded-xl bg-green-500/20 border border-green-500/50 flex items-center justify-center mx-auto mb-6">
+            <Rocket className="w-8 h-8 text-green-400" />
+          </div>
+          <h2 className="text-3xl font-bold text-white text-center mb-2">You're All Set! 🎉</h2>
+          <p className="text-slate-300 text-center">
+            Your AI lead response system is ready to go
+          </p>
         </div>
 
-        <h2 className="text-2xl font-bold text-white mb-2">
-          {allDone ? "You're all set!" : "You're ready to go!"}
-        </h2>
-        <p className="text-slate-400 text-sm mb-8 max-w-md mx-auto">
-          {allDone
-            ? 'Your LeadFlow AI is fully configured. New leads will be responded to in under 30 seconds.'
-            : `${completedCount} of 3 integrations connected. You can finish the remaining setup in Settings → Integrations.`}
-        </p>
-
-        {/* Step summary */}
-        <div className="grid gap-3 mb-8 text-left">
-          {steps.map((step) => (
-            <div
-              key={step.label}
-              className={`flex items-center gap-3 rounded-lg p-3 border ${
-                step.done
-                  ? 'bg-emerald-500/10 border-emerald-500/20'
-                  : 'bg-slate-700/30 border-slate-700'
-              }`}
-            >
-              <span className="text-xl shrink-0">{step.icon}</span>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-white">{step.label}</div>
-                <div className="text-xs text-slate-400">{step.description}</div>
-              </div>
-              {step.done ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-              ) : (
-                <div className="text-xs text-slate-500 shrink-0">Skipped</div>
-              )}
+        {/* Completion Summary */}
+        <div className="space-y-3 mb-8">
+          {[
+            { label: 'Sample leads loaded', completed: true },
+            { label: 'FUB connected', completed: setupData.fubConnected },
+            { label: 'SMS configured', completed: setupData.smsConnected },
+            { label: 'AI simulator tested', completed: setupData.simulatorCompleted },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30">
+              <CheckCircle2 
+                className={`w-5 h-5 shrink-0 ${
+                  item.completed ? 'text-green-400' : 'text-slate-500'
+                }`} 
+              />
+              <span className={item.completed ? 'text-white' : 'text-slate-400'}>
+                {item.label}
+              </span>
             </div>
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={onFinish}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            Go to Dashboard <ArrowRight className="w-4 h-4" />
-          </button>
-
-          {!allDone && (
-            <Link
-              href="/integrations"
-              className="w-full text-center text-sm text-slate-400 hover:text-slate-200 py-2 flex items-center justify-center gap-1 transition-colors"
-            >
-              <Settings className="w-4 h-4" />
-              Complete setup in Settings → Integrations
-            </Link>
-          )}
+        {/* What's Next */}
+        <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-6 mb-8">
+          <h3 className="text-green-300 font-semibold mb-3">What happens next:</h3>
+          <ol className="space-y-2 text-sm text-green-200/80">
+            <li className="flex items-start gap-3">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20 text-green-300 text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+              <span>Your dashboard will show real leads when they come in</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20 text-green-300 text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+              <span>AI will analyze and respond within 30 seconds</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20 text-green-300 text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+              <span>You'll see detailed analytics and lead conversations</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20 text-green-300 text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+              <span>Keep exploring settings for more customization options</span>
+            </li>
+          </ol>
         </div>
+
+        {/* CTA */}
+        <div className="flex gap-3">
+          <button
+            onClick={onBack}
+            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
+          >
+            ← Back
+          </button>
+          <button
+            onClick={onComplete}
+            disabled={isLoading}
+            className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Setting up...
+              </>
+            ) : (
+              <>
+                Go to Dashboard
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Footer Note */}
+        <p className="text-center text-slate-400 text-xs mt-6">
+          💡 Tip: Your sample leads will disappear after you get your first real lead.
+          You can view them anytime in your lead history.
+        </p>
       </div>
     </div>
   )

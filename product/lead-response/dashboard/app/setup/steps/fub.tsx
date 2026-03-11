@@ -1,206 +1,227 @@
 'use client'
 
 import { useState } from 'react'
-import { Key, Shield, CheckCircle2, AlertCircle, ExternalLink, Eye, EyeOff } from 'lucide-react'
+import { Key, AlertCircle, CheckCircle2, ExternalLink, Shield, Building2 } from 'lucide-react'
 
-interface Props {
-  agentId: string
-  onComplete: (apiKey: string) => void
-  onSkip: () => void
+interface SetupFUBProps {
+  onNext: () => void
+  setupData: {
+    fubConnected: boolean
+    fubApiKey: string
+  }
+  setSetupData: (data: any) => void
 }
 
-function getToken(): string | null {
-  if (typeof window === 'undefined') return null
-  return localStorage.getItem('leadflow_token') || sessionStorage.getItem('leadflow_token')
-}
-
-export default function SetupFUB({ agentId, onComplete, onSkip }: Props) {
-  const [apiKey, setApiKey] = useState('')
-  const [showKey, setShowKey] = useState(false)
+export default function SetupFUB({ onNext, setupData, setSetupData }: SetupFUBProps) {
+  const [apiKey, setApiKey] = useState(setupData.fubApiKey || '')
   const [isVerifying, setIsVerifying] = useState(false)
-  const [verified, setVerified] = useState(false)
+  const [verified, setVerified] = useState(setupData.fubConnected || false)
   const [error, setError] = useState('')
+  const [showKey, setShowKey] = useState(false)
 
-  const handleVerify = async () => {
+  const handleVerifyKey = async () => {
     setError('')
-    if (!apiKey.trim() || apiKey.length < 20) {
-      setError('Please enter a valid Follow Up Boss API key (at least 20 characters)')
-      return
-    }
-
     setIsVerifying(true)
+
     try {
-      const res = await fetch('/api/integrations/fub/verify', {
+      // Validate API key format (FUB API keys are typically alphanumeric)
+      if (!apiKey.trim() || apiKey.length < 20) {
+        setError('Please enter a valid Follow Up Boss API key')
+        return
+      }
+
+      const response = await fetch('/api/integrations/fub/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey }),
       })
-      const data = await res.json()
-      if (data.valid) {
-        setVerified(true)
-      } else {
+
+      const data = await response.json()
+
+      if (!data.valid) {
         setError(data.message || 'Invalid API key. Please check and try again.')
+        return
       }
-    } catch {
+
+      setVerified(true)
+      setSetupData({ ...setupData, fubConnected: true, fubApiKey: apiKey })
+      
+      // Log event
+      await fetch('/api/analytics/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: 'wizard_step_completed',
+          properties: { step_name: 'fub', success: true }
+        })
+      }).catch(() => {})
+    } catch (err) {
       setError('Failed to verify API key. Please try again.')
     } finally {
       setIsVerifying(false)
     }
   }
 
-  const handleConnect = async () => {
-    if (!verified) {
-      setError('Please verify your API key first.')
+  const handleContinue = () => {
+    if (!verified && apiKey.trim()) {
+      setError('Please verify your API key first')
       return
     }
-    setIsVerifying(true)
-    try {
-      const token = getToken()
-      const res = await fetch('/api/integrations/fub/connect', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          'x-agent-id': agentId,
-        },
-        body: JSON.stringify({ apiKey }),
-      })
-      const data = await res.json()
-      if (data.valid) {
-        onComplete(apiKey)
-      } else {
-        setError(data.message || 'Failed to connect FUB. Please try again.')
-      }
-    } catch {
-      setError('Connection failed. Please try again.')
-    } finally {
-      setIsVerifying(false)
-    }
+
+    setSetupData({
+      ...setupData,
+      fubConnected: verified,
+      fubApiKey: apiKey.trim(),
+    })
+
+    onNext()
+  }
+
+  const handleSkip = () => {
+    // Allow skipping this step
+    onNext()
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-10">
-        {/* Icon + Title */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">🏠</span>
+    <div className="animate-in fade-in-up duration-500">
+      <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
+        <div className="mb-8">
+          <div className="w-16 h-16 rounded-xl bg-orange-500/20 border border-orange-500/50 flex items-center justify-center mx-auto mb-6">
+            <Building2 className="w-8 h-8 text-orange-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Connect Follow Up Boss</h2>
-          <p className="text-slate-400 text-sm">
-            Sync your leads automatically so LeadFlow AI can respond in under 30 seconds.
+          <h2 className="text-3xl font-bold text-white text-center mb-2">Connect Follow Up Boss</h2>
+          <p className="text-slate-300 text-center">
+            Sync your leads automatically from FUB
           </p>
         </div>
 
-        {/* How to find API key */}
-        <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-4 mb-6">
-          <p className="text-sm text-slate-300 font-medium mb-2">How to find your API key:</p>
-          <ol className="text-sm text-slate-400 space-y-1 list-decimal list-inside">
-            <li>Log in to Follow Up Boss</li>
-            <li>
-              Go to{' '}
+        {/* Info Box */}
+        <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 mb-8">
+          <div className="flex gap-3">
+            <Shield className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
+            <div className="text-orange-300 text-sm space-y-2">
+              <p>
+                Your API key is encrypted and stored securely. We only use it to sync leads
+                and update contact information.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* API Key Input */}
+        <div className="space-y-6 mb-8">
+          <div>
+            <label className="block text-sm font-medium text-slate-200 mb-2">
+              Follow Up Boss API Key
+            </label>
+            <div className="relative">
+              <Key className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
+              <input
+                type={showKey ? 'text' : 'password'}
+                value={apiKey}
+                onChange={(e) => {
+                  setApiKey(e.target.value)
+                  setVerified(false)
+                }}
+                placeholder="Enter your FUB API key"
+                className="w-full pl-10 pr-12 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey(!showKey)}
+                className="absolute right-3 top-3 text-slate-400 hover:text-slate-300 text-sm"
+              >
+                {showKey ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              Don't have an API key?{' '}
               <a
-                href="https://app.followupboss.com/2/api"
+                href="https://followupboss.com/account/api/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-orange-400 hover:text-orange-300 inline-flex items-center gap-1"
+                className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1"
               >
-                Admin → API <ExternalLink className="w-3 h-3" />
+                Get one from FUB <ExternalLink className="w-3 h-3" />
               </a>
-            </li>
-            <li>Copy your API key</li>
-          </ol>
-        </div>
-
-        {/* Security notice */}
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-6 flex gap-2">
-          <Shield className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-          <p className="text-xs text-emerald-300">
-            Your API key is encrypted in transit and at rest. We only use it to import leads and update contact status.
-          </p>
-        </div>
-
-        {/* API Key input */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-slate-200 mb-2">
-            Follow Up Boss API Key
-          </label>
-          <div className="relative">
-            <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-            <input
-              type={showKey ? 'text' : 'password'}
-              value={apiKey}
-              onChange={(e) => {
-                setApiKey(e.target.value)
-                setError('')
-                setVerified(false)
-              }}
-              placeholder="Paste your FUB API key here"
-              className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 pr-10 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all font-mono text-sm"
-            />
-            <button
-              type="button"
-              onClick={() => setShowKey((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
-            >
-              {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+            </p>
           </div>
-        </div>
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-2 text-red-400 text-sm mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            {error}
-          </div>
-        )}
-
-        {/* Verified badge */}
-        {verified && (
-          <div className="flex items-center gap-2 text-emerald-400 text-sm mb-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            API key verified! Click "Connect FUB" to save.
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          {!verified ? (
+          {/* Verify Button */}
+          {apiKey.trim() && !verified && (
             <button
-              onClick={handleVerify}
-              disabled={isVerifying || !apiKey.trim()}
-              className="flex-1 bg-orange-500 hover:bg-orange-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              {isVerifying ? (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : null}
-              {isVerifying ? 'Verifying…' : 'Verify API Key'}
-            </button>
-          ) : (
-            <button
-              onClick={handleConnect}
+              onClick={handleVerifyKey}
               disabled={isVerifying}
-              className="flex-1 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-orange-500/20 border border-orange-500/50 text-orange-300 hover:bg-orange-500/30 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isVerifying ? (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : null}
-              {isVerifying ? 'Connecting…' : 'Connect FUB'}
+                <>
+                  <div className="w-4 h-4 border-2 border-orange-300/30 border-t-orange-300 rounded-full animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                <>
+                  <Shield className="w-5 h-5" />
+                  Verify API Key
+                </>
+              )}
             </button>
           )}
+
+          {/* Verified State */}
+          {verified && (
+            <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div>
+                <p className="text-emerald-400 font-medium text-sm">API key verified!</p>
+                <p className="text-emerald-300/70 text-xs mt-0.5">Leads will sync automatically</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Features */}
+        <div className="bg-slate-700/20 rounded-lg p-6 mb-8">
+          <p className="text-sm font-semibold text-slate-200 mb-4">With FUB connected, you get:</p>
+          <ul className="space-y-2">
+            {[
+              'Automatic lead syncing from FUB',
+              'Instant AI responses to new leads',
+              'Two-way contact sync',
+              'Activity logging in FUB',
+              'Lead source attribution',
+            ].map((feature) => (
+              <li key={feature} className="flex items-center gap-3 text-sm text-slate-300">
+                <span className="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-3">
           <button
-            onClick={onSkip}
-            className="sm:flex-none px-6 py-3 text-slate-400 hover:text-slate-200 font-medium transition-colors text-sm border border-slate-700 rounded-lg hover:border-slate-500"
+            onClick={handleSkip}
+            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
           >
             Skip for now
           </button>
+          <button
+            onClick={handleContinue}
+            className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            Continue →
+          </button>
         </div>
-
-        <p className="text-xs text-slate-500 text-center mt-4">
-          You can connect FUB later in{' '}
-          <span className="text-slate-400">Settings → Integrations</span>
-        </p>
       </div>
     </div>
   )
