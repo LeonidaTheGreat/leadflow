@@ -225,6 +225,11 @@ async function buildSuccessResponse(
     console.error('[trial-signup] Welcome email error:', err)
   })
 
+  // Initialize NPS survey schedule for the new agent (non-blocking)
+  void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
+    console.error('Failed to initialize NPS survey schedule:', err)
+  })
+
   // Build response — redirect straight to dashboard for frictionless SLA (FR-2/FR-3)
   const response = NextResponse.json({
     success: true,
