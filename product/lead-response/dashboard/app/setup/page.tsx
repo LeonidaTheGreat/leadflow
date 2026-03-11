@@ -6,9 +6,10 @@ import { CheckCircle2, Circle, ArrowRight } from 'lucide-react'
 import SetupFUB from './steps/fub'
 import SetupTwilio from './steps/twilio'
 import SetupSMSVerify from './steps/sms-verify'
+import SetupSimulator from './steps/simulator'
 import SetupComplete from './steps/complete'
 
-export type SetupStep = 'fub' | 'twilio' | 'sms-verify' | 'complete'
+export type SetupStep = 'fub' | 'twilio' | 'sms-verify' | 'simulator' | 'complete'
 
 export interface SetupState {
   fubConnected: boolean
@@ -19,6 +20,10 @@ export interface SetupState {
   agentPhone: string
   agentName: string
   agentId: string
+  // Aha Moment simulator fields
+  simulatorCompleted: boolean
+  simulatorResponseTimeMs: number | null
+  simulatorSkipped: boolean
   currentStep: SetupStep
 }
 
@@ -26,6 +31,7 @@ const STEPS: { id: SetupStep; label: string; description: string }[] = [
   { id: 'fub', label: 'Connect FUB', description: 'Follow Up Boss CRM integration' },
   { id: 'twilio', label: 'Configure SMS', description: 'Set up your Twilio phone number' },
   { id: 'sms-verify', label: 'Verify SMS', description: 'Send a test message' },
+  { id: 'simulator', label: 'See the Magic', description: 'Watch the AI in action' },
 ]
 
 function getStepIndex(step: SetupStep): number {
@@ -60,6 +66,9 @@ export default function SetupPage() {
     agentPhone: '',
     agentName: '',
     agentId: '',
+    simulatorCompleted: false,
+    simulatorResponseTimeMs: null,
+    simulatorSkipped: false,
     currentStep: 'fub',
   })
   const [loading, setLoading] = useState(true)
@@ -100,6 +109,8 @@ export default function SetupPage() {
             initState.currentStep = 'twilio'
           } else if (!ws.sms_verified) {
             initState.currentStep = 'sms-verify'
+          } else if (!ws.simulator_completed && !ws.simulator_skipped) {
+            initState.currentStep = 'simulator'
           } else {
             initState.currentStep = 'complete'
           }
@@ -149,10 +160,39 @@ export default function SetupPage() {
   }
 
   const handleSMSVerified = (agentPhone: string) => {
-    const next: Partial<SetupState> = { smsVerified: true, agentPhone, currentStep: 'complete' }
+    // After SMS verification, go to the aha moment simulator (not complete yet)
+    const next: Partial<SetupState> = { smsVerified: true, agentPhone, currentStep: 'simulator' }
     setState((prev) => ({ ...prev, ...next }))
     saveWizardState(next)
-    // Mark onboarding as done
+  }
+
+  const handleSimulatorComplete = (responseTimeMs: number | null) => {
+    const next: Partial<SetupState> = {
+      simulatorCompleted: true,
+      simulatorResponseTimeMs: responseTimeMs,
+      currentStep: 'complete',
+    }
+    setState((prev) => ({ ...prev, ...next }))
+    saveWizardState(next)
+    // Mark full onboarding as done
+    const token = getToken()
+    fetch('/api/setup/complete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }).catch(() => {})
+  }
+
+  const handleSimulatorSkip = () => {
+    const next: Partial<SetupState> = {
+      simulatorSkipped: true,
+      currentStep: 'complete',
+    }
+    setState((prev) => ({ ...prev, ...next }))
+    saveWizardState(next)
+    // Mark onboarding as done even if simulator was skipped
     const token = getToken()
     fetch('/api/setup/complete', {
       method: 'POST',
@@ -164,7 +204,7 @@ export default function SetupPage() {
   }
 
   const handleSkip = (step: SetupStep) => {
-    const steps: SetupStep[] = ['fub', 'twilio', 'sms-verify', 'complete']
+    const steps: SetupStep[] = ['fub', 'twilio', 'sms-verify', 'simulator', 'complete']
     const nextIdx = steps.indexOf(step) + 1
     const nextStep = steps[nextIdx] ?? 'complete'
     setState((prev) => ({ ...prev, currentStep: nextStep }))
@@ -291,6 +331,14 @@ export default function SetupPage() {
                 onComplete={handleSMSVerified}
                 onSkip={() => handleSkip('sms-verify')}
                 onBack={() => goToStep('twilio')}
+              />
+            )}
+            {state.currentStep === 'simulator' && (
+              <SetupSimulator
+                agentId={state.agentId}
+                onComplete={handleSimulatorComplete}
+                onSkip={handleSimulatorSkip}
+                onBack={() => goToStep('sms-verify')}
               />
             )}
             {state.currentStep === 'complete' && (
