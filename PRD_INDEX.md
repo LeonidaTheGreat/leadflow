@@ -1,12 +1,13 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-11T00:15:15.481Z | Source: `prds` table
+> Generated: 2026-03-11T07:10:00.521Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
 | PRD-AHA-MOMENT-LEAD-SIMULATOR | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR-001 | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md) |
+| PRD-AHA-MOMENT-SIMULATOR-UI | Aha Moment Simulator — Onboarding Step UI | approved | 1.0 | [docs/PRD-AHA-MOMENT-SIMULATOR-UI.md](docs/PRD-AHA-MOMENT-SIMULATOR-UI.md) |
 | PRD-BILLING | Billing & Subscriptions | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-BILLING.md](/Users/clawdbot/projects/leadflow/PRD-BILLING.md) |
 | PRD-CORE-SMS | Core SMS Lead Response | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-CORE-SMS.md](/Users/clawdbot/projects/leadflow/PRD-CORE-SMS.md) |
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
@@ -22,8 +23,9 @@
 | prd-fix-signup-login-table-mismatch | Fix Signup/Login Table Mismatch — Remaining agents Table References | approved | - | [docs/PRD-fix-signup-login-table-mismatch.md](docs/PRD-fix-signup-login-table-mismatch.md) |
 | PRD-FIX-SIGNUP-PLAN-OPTIONS-001 | Fix Signup Page — Plan Options Not Displayed | approved | 1.0 | [docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md](docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md) |
 | PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
+| PRD-FIX-TRIAL-SIGNUP-REDIRECT-001 | Fix Trial Signup Redirect — Broken Post-Signup Navigation | approved | - | [docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md](docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md) |
 | PRD-FORGOT-PASSWORD | Forgot Password / Password Reset Flow | draft | 1.0 | [docs/PRD-FORGOT-PASSWORD.md](docs/PRD-FORGOT-PASSWORD.md) |
-| PRD-FRICTIONLESS-ONBOARDING-001 | Self-Serve Frictionless Onboarding Flow | draft | - | [docs/PRD-FRICTIONLESS-ONBOARDING-001.md](docs/PRD-FRICTIONLESS-ONBOARDING-001.md) |
+| PRD-FRICTIONLESS-ONBOARDING-001 | Self-Serve Frictionless Onboarding Flow | approved | - | [docs/PRD-FRICTIONLESS-ONBOARDING-001.md](docs/PRD-FRICTIONLESS-ONBOARDING-001.md) |
 | PRD-INTEGRATIONS | CRM & Calendar Integrations | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md](/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md) |
 | PRD-LANDING-ANALYTICS-GA4-001 | Landing Page Analytics: GA4 CTA & Conversion Tracking | approved | 1.0 | [docs/PRD-LANDING-ANALYTICS-GA4-001.md](docs/PRD-LANDING-ANALYTICS-GA4-001.md) |
 | PRD-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 1.0 | [docs/PRD-LANDING-MARKETING-001.md](docs/PRD-LANDING-MARKETING-001.md) |
@@ -46,6 +48,7 @@
 | prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/PRD-START-FREE-TRIAL-CTA.md](docs/PRD-START-FREE-TRIAL-CTA.md) |
 | PRD-STATUS-REPORT-20260306 | LeadFlow Product Status Report — Day 20 of 60 | approved | 1.0 | [docs/PRD-STATUS-REPORT-20260306.md](docs/PRD-STATUS-REPORT-20260306.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
+| PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
 
