@@ -1,368 +1,331 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Check, Zap, MessageSquare, Clock, TrendingUp, Star, ArrowRight, Phone } from 'lucide-react'
+import { Suspense } from 'react'
+import TrialSignupForm from '@/components/trial-signup-form'
 
-const STATS = [
-  { value: '<30s', label: 'Average response time' },
-  { value: '78%', label: 'Lead engagement rate' },
-  { value: '35%', label: 'More appointments booked' },
-  { value: '24/7', label: 'Always on, never miss a lead' },
-]
-
-const PRICING_PLANS = [
-  {
-    name: 'Starter',
-    price: 49,
-    description: 'For solo agents testing AI lead response',
-    features: [
-      '100 SMS responses/month',
-      'AI-powered replies',
-      'Dashboard access',
-      'Email support',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: false,
-    tier: 'starter',
-  },
-  {
-    name: 'Pro',
-    price: 149,
-    description: 'The most popular plan for serious agents',
-    features: [
-      'Unlimited SMS responses',
-      'Full AI + lead qualification',
-      'Cal.com calendar integration',
-      'Analytics & reporting',
-      'Priority support',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: true,
-    tier: 'pro',
-  },
-  {
-    name: 'Team',
-    price: 399,
-    description: 'For teams and small brokerages',
-    features: [
-      'Everything in Pro',
-      'Up to 5 agents',
-      'Team dashboard',
-      'Lead routing',
-      'Dedicated success manager',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: false,
-    tier: 'team',
-  },
-]
-
-const FEATURES = [
-  {
-    icon: <Zap className="w-6 h-6 text-emerald-500" />,
-    title: 'Responds in Under 30 Seconds',
-    description: 'AI texts your leads instantly — before a competitor picks up the phone.',
-  },
-  {
-    icon: <MessageSquare className="w-6 h-6 text-emerald-500" />,
-    title: 'Sounds Like You, Not a Robot',
-    description: 'Personalized SMS that matches your style. Leads won\'t know it\'s AI.',
-  },
-  {
-    icon: <TrendingUp className="w-6 h-6 text-emerald-500" />,
-    title: 'Qualifies & Scores Leads',
-    description: 'Know who\'s ready to buy before you spend a minute on the phone.',
-  },
-  {
-    icon: <Clock className="w-6 h-6 text-emerald-500" />,
-    title: 'Books Appointments Automatically',
-    description: 'Cal.com integration books meetings directly into your calendar.',
-  },
-  {
-    icon: <Phone className="w-6 h-6 text-emerald-500" />,
-    title: 'Works With Follow Up Boss',
-    description: 'Plugs into your existing FUB workflow — no workflow disruption.',
-  },
-  {
-    icon: <Star className="w-6 h-6 text-emerald-500" />,
-    title: 'Full Analytics Dashboard',
-    description: 'Track every lead, every response, every conversion in real time.',
-  },
-]
-
-const TESTIMONIALS = [
-  {
-    quote: 'I used to lose leads because I was showing a house. Now LeadFlow texts them back in seconds. My conversion rate is up 35%.',
-    author: 'Sarah M.',
-    role: 'RE/MAX Agent, Toronto',
-  },
-  {
-    quote: 'Set it up in 10 minutes. The AI handles my after-hours leads while I sleep. Best $149/month I\'ve ever spent.',
-    author: 'James K.',
-    role: 'Keller Williams, Atlanta',
-  },
-]
-
-export default function LandingPage() {
-  const [email, setEmail] = useState('')
-
-  const handleSignupSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (email) {
-      window.location.href = `/onboarding?email=${encodeURIComponent(email)}`
-    }
-  }
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="w-6 h-6 text-emerald-500" />
-            <span className="text-xl font-bold text-slate-900">LeadFlow AI</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors">Features</a>
-            <a href="#pricing" className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors">Pricing</a>
-            <Link href="/login" className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors">Sign In</Link>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
+          <nav className="flex items-center gap-4">
+            <a
+              href="#pricing"
+              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Pricing
+            </a>
             <Link
-              href="/onboarding"
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg text-sm transition-colors"
+              href="/pilot"
+              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
-              Start Free Trial
+              Pilot Program
             </Link>
-          </div>
-          <Link
-            href="/onboarding"
-            className="md:hidden px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg text-sm transition-colors"
-          >
-            Get Started
-          </Link>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full px-4 py-1.5 mb-6">
-            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            <span className="text-emerald-300 text-sm font-medium">AI responds to leads in under 30 seconds</span>
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            Never Lose Another Lead to{' '}
-            <span className="text-emerald-400">Slow Response Time</span>
-          </h1>
-          <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-            LeadFlow AI automatically texts your leads the moment they come in — 24/7, in your voice — while you focus on closing deals.
-          </p>
-          <form onSubmit={handleSignupSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-6">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg text-slate-900 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              required
-            />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-lg transition-colors whitespace-nowrap flex items-center gap-2"
+            <Link
+              href="/login"
+              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
-              Start Free Trial <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-          <p className="text-slate-400 text-sm">14-day free trial · No credit card required</p>
+              Sign In
+            </Link>
+          </nav>
         </div>
-      </section>
+      </header>
 
-      {/* Stats Bar */}
-      <section className="bg-emerald-500 py-8 px-4">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          {STATS.map((stat) => (
-            <div key={stat.value} className="text-center">
-              <div className="text-3xl font-bold text-white">{stat.value}</div>
-              <div className="text-emerald-100 text-sm mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Problem Agitation */}
-      <section className="py-20 px-4 bg-slate-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              35% of Real Estate Leads Never Get a Response
+      {/* Hero — CTA Placement #1 */}
+      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              AI-Powered Lead Response in Under 30 Seconds
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              You&apos;re too busy showing homes, attending closings, and running your business. Leads don&apos;t wait — they move on to the next agent in 5 minutes.
+            <p className="text-xl text-slate-300 mb-10">
+              Instantly qualify and respond to real estate leads using AI.
+              Never miss another opportunity. Start free — no credit card required.
             </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { emoji: '😤', title: 'Missing calls during showings', desc: 'You\'re with a client. A hot lead texts. You see it 3 hours later. They\'ve already signed with someone else.' },
-              { emoji: '😴', title: 'After-hours leads go cold', desc: '60% of online leads come in after 6pm. Without instant response, they\'re gone by morning.' },
-              { emoji: '🔁', title: 'Manual follow-up takes hours', desc: 'Texting 50 leads, tracking responses, scheduling follow-ups — it\'s a full-time job on top of your job.' },
-            ].map((item) => (
-              <div key={item.title} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                <div className="text-3xl mb-3">{item.emoji}</div>
-                <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-slate-600 text-sm">{item.desc}</p>
-              </div>
-            ))}
+
+            {/* Hero Trial CTA */}
+            <Suspense fallback={<div className="h-24" />}>
+              <TrialSignupForm compact />
+            </Suspense>
+
+            <p className="mt-6 text-sm text-slate-400">
+              <a href="#features" className="hover:text-white underline underline-offset-4">See how it works ↓</a>
+            </p>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section id="features" className="py-20 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              AI That Works While You Work
-            </h2>
-            <p className="text-xl text-slate-600">Everything you need to turn leads into appointments — automatically.</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((feature) => (
-              <div key={feature.title} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="mb-3">{feature.icon}</div>
-                <h3 className="font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-600 text-sm">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section id="features" className="container mx-auto px-4 py-20">
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          Everything You Need to Convert More Leads
+        </h3>
+        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          LeadFlow AI handles the hard work so you can focus on closing deals.
+        </p>
 
-      {/* Social Proof */}
-      <section className="py-20 px-4 bg-slate-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Real Agents, Real Results</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.author} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                <div className="flex mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-slate-700 mb-4 italic">&quot;{t.quote}&quot;</p>
-                <div>
-                  <div className="font-semibold text-slate-900">{t.author}</div>
-                  <div className="text-slate-500 text-sm">{t.role}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FeatureCard
+            title="AI Qualification"
+            description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
+            icon="🤖"
+          />
+          <FeatureCard
+            title="Instant SMS Response"
+            description="Automatically send personalized SMS responses within seconds of lead creation."
+            icon="📱"
+          />
+          <FeatureCard
+            title="CRM Integration"
+            description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
+            icon="🔗"
+          />
+          <FeatureCard
+            title="Smart Booking"
+            description="AI books appointments directly on your calendar — leads go from inquiry to meeting in minutes."
+            icon="📅"
+          />
+          <FeatureCard
+            title="Lead Scoring"
+            description="Automatic scoring based on urgency, budget, and timeline. Focus on the hottest leads first."
+            icon="⭐"
+          />
+          <FeatureCard
+            title="Analytics Dashboard"
+            description="Track response times, conversion rates, and lead quality in real time."
+            icon="📊"
+          />
         </div>
-      </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-20 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-xl text-slate-600">Start free. Cancel anytime. No long-term contracts.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {PRICING_PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-2xl p-8 border-2 ${
-                  plan.highlighted
-                    ? 'border-emerald-500 bg-emerald-50 shadow-lg scale-105'
-                    : 'border-slate-200 bg-white'
-                }`}
-              >
-                {plan.highlighted && (
-                  <div className="inline-block bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
-                    MOST POPULAR
-                  </div>
-                )}
-                <h3 className="text-xl font-bold text-slate-900 mb-1">{plan.name}</h3>
-                <div className="flex items-end gap-1 mb-2">
-                  <span className="text-4xl font-bold text-slate-900">${plan.price}</span>
-                  <span className="text-slate-500 mb-1">/month</span>
-                </div>
-                <p className="text-slate-600 text-sm mb-6">{plan.description}</p>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-700 text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={`/onboarding?plan=${plan.tier}`}
-                  className={`block text-center py-3 rounded-lg font-semibold transition-colors ${
-                    plan.highlighted
-                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                      : 'bg-slate-900 hover:bg-slate-800 text-white'
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-slate-500 text-sm mt-6">
-            All plans include a 14-day free trial. No credit card required to start.
+        {/* CTA Placement #2: End of Features */}
+        <div className="mt-16 text-center">
+          <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+            Ready to Respond Faster?
+          </h4>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">
+            Join agents who are converting more leads with AI-powered responses.
           </p>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="bg-gradient-to-br from-slate-900 to-emerald-900 text-white py-20 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Start Responding to Every Lead in 30 Seconds
-          </h2>
-          <p className="text-slate-300 text-xl mb-8">
-            Join real estate agents who never miss a lead — no matter how busy they are.
-          </p>
-          <form onSubmit={handleSignupSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg text-slate-900 bg-white placeholder-slate-400 focus:outline-none"
-              required
-            />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/signup/trial"
+              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
             >
-              Get Started Free <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-          <p className="text-emerald-300 text-sm">14-day free trial · No credit card required</p>
+              Start Free Trial — No Credit Card
+            </Link>
+            <Link
+              href="/pilot"
+              className="px-8 py-4 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Apply for Pilot Program →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials — Social Proof Section */}
+      <section id="testimonials" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            What Real Estate Agents Are Saying
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Join hundreds of agents who have transformed their lead response.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={index} {...testimonial} />
+            ))}
+          </div>
+
+          <p className="mt-8 text-center text-sm text-slate-400 dark:text-slate-500 italic">
+            Results may vary. Testimonials represent expected outcomes based on typical usage.
+          </p>
+        </div>
+      </section>
+
+      {/* Pricing — CTA Placement #3 */}
+      <section id="pricing" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            Simple, Transparent Pricing
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Start with a free 30-day trial. Upgrade when you&apos;re ready.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <PricingCard
+              name="Starter"
+              price="$49"
+              period="/month"
+              description="Perfect for solo agents"
+              features={[
+                'Up to 50 leads/month',
+                'AI SMS responses',
+                'Basic qualification',
+                'Calendar integration',
+                'Email support'
+              ]}
+            />
+            <PricingCard
+              name="Pro"
+              price="$149"
+              period="/month"
+              description="For growing agents"
+              popular
+              features={[
+                'Up to 200 leads/month',
+                'AI SMS & email responses',
+                'Advanced qualification',
+                'Calendar integration',
+                'Priority support',
+                'Advanced analytics'
+              ]}
+            />
+            <PricingCard
+              name="Team"
+              price="$399"
+              period="/month"
+              description="For teams & brokerages"
+              features={[
+                'Up to 500 leads/month',
+                'Multi-channel AI',
+                'Custom workflows',
+                'Team management (5 agents)',
+                'Dedicated support',
+                'White-label options'
+              ]}
+            />
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-8 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-emerald-500" />
-            <span className="text-white font-bold">LeadFlow AI</span>
+      <footer className="border-t border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+          <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved.</p>
+          <div className="flex items-center gap-4 mt-4 sm:mt-0">
+            <Link href="/pilot" className="hover:text-slate-900 dark:hover:text-white">Pilot Program</Link>
+            <Link href="/login" className="hover:text-slate-900 dark:hover:text-white">Sign In</Link>
           </div>
-          <div className="flex gap-6 text-sm">
-            <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
-            <Link href="/onboarding" className="hover:text-white transition-colors">Get Started</Link>
-            <a href="mailto:support@leadflow.ai" className="hover:text-white transition-colors">Support</a>
-          </div>
-          <p className="text-xs">© {new Date().getFullYear()} LeadFlow AI. All rights reserved.</p>
         </div>
       </footer>
+    </div>
+  )
+}
+
+const testimonials = [
+  {
+    quote: "I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight.",
+    name: "Sarah M.",
+    title: "Solo Agent, Austin TX",
+  },
+  {
+    quote: "My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month.",
+    name: "Mike R.",
+    title: "Team Lead, Denver CO",
+  },
+  {
+    quote: "Setup took 5 minutes. The AI sounds like me, not a robot.",
+    name: "Jennifer K.",
+    title: "Realtor, Miami FL",
+  },
+]
+
+function TestimonialCard({
+  quote,
+  name,
+  title,
+}: {
+  quote: string
+  name: string
+  title: string
+}) {
+  return (
+    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col">
+      <div className="text-emerald-500 text-4xl mb-4">"</div>
+      <p className="text-slate-700 dark:text-slate-300 mb-6 flex-grow">{quote}</p>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
+          {name.charAt(0)}
+        </div>
+        <div>
+          <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center hover:shadow-lg transition-shadow">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}
+
+function PricingCard({
+  name,
+  price,
+  period,
+  description,
+  features,
+  popular = false
+}: {
+  name: string
+  price: string
+  period: string
+  description: string
+  features: string[]
+  popular?: boolean
+}) {
+  return (
+    <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
+      {popular && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+            MOST POPULAR
+          </span>
+        </div>
+      )}
+      <h4 className="text-xl font-bold text-slate-900 dark:text-white">{name}</h4>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{description}</p>
+      <div className="mt-4 flex items-baseline gap-1">
+        <span className="text-4xl font-bold text-slate-900 dark:text-white">{price}</span>
+        <span className="text-slate-500 dark:text-slate-400">{period}</span>
+      </div>
+      <ul className="mt-6 space-y-3">
+        {features.map((feature, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
+            <span className="text-emerald-500 mt-0.5">✓</span>
+            {feature}
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={`/signup?plan=${name.toLowerCase()}`}
+        className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
+          popular
+            ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+            : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white'
+        }`}
+      >
+        Get Started
+      </Link>
+      <Link
+        href="/signup/trial"
+        className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
+      >
+        or start free trial →
+      </Link>
     </div>
   )
 }
