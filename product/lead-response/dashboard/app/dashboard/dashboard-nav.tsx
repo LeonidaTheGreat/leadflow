@@ -6,6 +6,7 @@ import TrialBadge from '@/components/dashboard/trial-badge'
 interface AgentInfo {
   plan_tier: string | null
   trial_ends_at: string | null
+  pilot_expires_at: string | null
 }
 
 export function DashboardNav() {
@@ -18,7 +19,8 @@ export function DashboardNav() {
         if (data?.agent) {
           setAgentInfo({
             plan_tier: data.agent.plan_tier || null,
-            trial_ends_at: data.agent.trial_ends_at || null
+            trial_ends_at: data.agent.trial_ends_at || null,
+            pilot_expires_at: data.agent.pilot_expires_at || null
           })
         }
       })
@@ -42,7 +44,11 @@ export function DashboardNav() {
           </div>
           <div className="flex items-center gap-4">
             {agentInfo && (
-              <TrialBadge planTier={agentInfo.plan_tier} trialEndsAt={agentInfo.trial_ends_at} />
+              <TrialBadge 
+                planTier={agentInfo.plan_tier} 
+                trialEndsAt={agentInfo.trial_ends_at}
+                pilotExpiresAt={agentInfo.pilot_expires_at}
+              />
             )}
             <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
             <span className="text-sm text-slate-600 dark:text-slate-400">System Online</span>

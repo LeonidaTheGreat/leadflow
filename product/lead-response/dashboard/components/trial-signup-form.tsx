@@ -74,7 +74,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
           // ignore storage errors
         }
       }
-      router.push(data.redirectTo || '/dashboard/onboarding')
+      router.push(data.redirectTo || '/setup')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
