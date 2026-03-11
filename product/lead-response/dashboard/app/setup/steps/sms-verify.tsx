@@ -92,8 +92,7 @@ export default function SetupSMSVerify({ agentId, agentName, twilioPhone, onComp
               <p className="text-xs text-slate-500 mb-1">Preview SMS</p>
               <div className="bg-slate-600/50 rounded-lg rounded-tl-none px-4 py-3 max-w-xs">
                 <p className="text-sm text-slate-200">
-                  Hi! This is a test message from LeadFlow AI. Your SMS integration is working.
-                  Test sent by: <strong>{agentName || 'Agent'}</strong>
+                  Hi {agentName || 'there'}! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI
                 </p>
               </div>
             </div>
