@@ -281,7 +281,7 @@ async function createTestUser(email) {
 
   if (DB_AVAILABLE) {
     try {
-      const { data, error } = await supabase.from('agents').insert([
+      const { data, error } = await supabase.from('real_estate_agents').insert([
         {
           name: `Test Agent ${Date.now()}`,
           email: email,
