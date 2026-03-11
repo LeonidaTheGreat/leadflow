@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-10T23:20:56.490Z | Source: `prds` table
+> Generated: 2026-03-11T00:15:15.481Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -19,6 +19,7 @@
 | PRD-FIX-ONBOARDING-500-001 | Fix Onboarding 500 Error — Complete Agents Table Migration | approved | 1.1 | [docs/PRD-FIX-ONBOARDING-500-001.md](docs/PRD-FIX-ONBOARDING-500-001.md) |
 | PRD-FIX-PRICING-CORRECTION | Fix Pricing — Correct 10x Price Error in BillingCard and Checkout | approved | - | [docs/PRD-FIX-PRICING-CORRECTION.md](docs/PRD-FIX-PRICING-CORRECTION.md) |
 | PRD-FIX-REMAINING-AGENTS-TABLE | Fix Remaining agents Table References — Product Routes | approved | 1.0 | [docs/PRD-FIX-REMAINING-AGENTS-TABLE.md](docs/PRD-FIX-REMAINING-AGENTS-TABLE.md) |
+| prd-fix-signup-login-table-mismatch | Fix Signup/Login Table Mismatch — Remaining agents Table References | approved | - | [docs/PRD-fix-signup-login-table-mismatch.md](docs/PRD-fix-signup-login-table-mismatch.md) |
 | PRD-FIX-SIGNUP-PLAN-OPTIONS-001 | Fix Signup Page — Plan Options Not Displayed | approved | 1.0 | [docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md](docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md) |
 | PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
 | PRD-FORGOT-PASSWORD | Forgot Password / Password Reset Flow | draft | 1.0 | [docs/PRD-FORGOT-PASSWORD.md](docs/PRD-FORGOT-PASSWORD.md) |
