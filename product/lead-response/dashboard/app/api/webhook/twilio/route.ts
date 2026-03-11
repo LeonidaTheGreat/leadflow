@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Find lead by phone
     let { data: lead, error: leadError } = await supabaseAdmin
       .from('leads')
-      .select('*, agent:agents(*)')
+      .select('*, agent:real_estate_agents(*)')
       .eq('phone', phone)
       .maybeSingle()
 
