@@ -1,22 +1,22 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-10T23:20:56.409Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-11T00:15:15.397Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 195 specs | 13 pass | 0 fail | 182 not run**
+**Coverage: 199 specs | 13 pass | 0 fail | 186 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
 | feat-add-auth-middleware-to-protect-dashboard | Auth Middleware - Protect Dashboard Routes | tests/e2e/auth-middleware.test.ts | - | not_run |
 | feat-add-login-page-with-email-and-password | E2E-LOGIN-001: Existing agent login → dashboard | test/e2e/login-flow.test.ts | - | not_run |
 | feat-add-login-page-with-email-and-password | Login Page with Email and Password | tests/e2e/login-page.test.ts | - | not_run |
+| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Protected routes with auth | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Route Discovery Smoke Test | tests/e2e/route-discovery-smoke.test.ts | - | not_run |
 | feat-add-route-discovery-smoke-test | Failed route reported | - | - | not_run |
 | feat-add-route-discovery-smoke-test | Execution under 30s | - | - | not_run |
+| feat-add-route-discovery-smoke-test | Deployment blocked | - | - | not_run |
 | feat-add-route-discovery-smoke-test | All routes discovered | - | - | not_run |
-| feat-add-route-discovery-smoke-test | Public routes pass | - | - | not_run |
 | feat-add-session-management-with-server-side- | Session Management with Server-Side Tokens | tests/e2e/session-management.test.ts | - | not_run |
 | feat-aha-moment-lead-simulator | E2E-AHA-002: Failure/Timeout Path — Retry and Continue Available | e2e/onboarding-aha-moment-failure.spec.ts | - | not_run |
 | feat-aha-moment-lead-simulator | E2E-AHA-001: Happy Path — First AI Response <30s in Onboarding | e2e/onboarding-aha-moment.spec.ts | - | not_run |
@@ -26,9 +26,9 @@
 | feat-auto-sync-deployed-pages-to-system-compo | URL change updated | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Removed page marked deprecated | - | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Dashboard reflects sync | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Failed sync retry | - | - | not_run |
-| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
 | feat-auto-sync-deployed-pages-to-system-compo | Manual sync trigger | - | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | tests/e2e/auto-sync-deployed-pages.test.ts | - | not_run |
+| feat-auto-sync-deployed-pages-to-system-compo | Failed sync retry | - | - | not_run |
 | feat-frictionless-onboarding-flow | Sample leads + wizard visible on first dashboard visit | e2e/onboarding/first-visit.spec.ts | - | not_run |
 | feat-frictionless-onboarding-flow | Sub-60-second trial signup — no CC required | e2e/onboarding/trial-signup.spec.ts | - | not_run |
 | feat-frictionless-onboarding-flow | FUB API key connection in wizard step 1 | e2e/onboarding/wizard-fub.spec.ts | - | not_run |
@@ -47,109 +47,113 @@
 | feat-lead-experience-simulator | Real conversations viewer shows last 10 conversations | - | - | not_run |
 | feat-lead-experience-simulator | Conversation displays in chat bubble UI | - | - | not_run |
 | feat-lead-magnet-email-capture | Mobile responsiveness of capture form (375px) | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | Invalid email rejected with inline error | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | Lead magnet form renders on landing page | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
 | feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-007: Mobile Responsive Layout | test/lead-magnet.test.ts | - | not_run |
 | feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-006: UTM Parameters Captured and Stored | test/lead-magnet.test.ts | - | not_run |
 | feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-005: Duplicate Email Handled Gracefully | test/lead-magnet.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | Lead magnet form renders on landing page | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | Successful email capture stores record and shows success state | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-002: Successful Email Capture | test/lead-magnet.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-001: Form Renders on Landing Page | test/lead-magnet.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | UTM parameters captured on submission | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
-| feat-lead-magnet-email-capture | Duplicate email handled gracefully | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
 | feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-004: Delivery Email Sent Within 60 Seconds | test/lead-magnet.test.ts | - | not_run |
 | feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-003: Invalid Email Rejected Client-Side | test/lead-magnet.test.ts | - | not_run |
-| feat-lead-satisfaction-feedback | E2E-SATISFACTION-002: Lead reply classified and stored | test/lead-satisfaction.test.ts | - | not_run |
-| feat-lead-satisfaction-feedback | E2E-SATISFACTION-004: Agent can disable satisfaction pings via settings toggle | test/lead-satisfaction.test.ts | - | not_run |
-| feat-lead-satisfaction-feedback | E2E-SATISFACTION-005: Satisfaction ping sent only once per conversation | test/lead-satisfaction.test.ts | - | not_run |
-| feat-lead-satisfaction-feedback | E2E-SATISFACTION-001: Satisfaction ping SMS sent after AI exchange | test/lead-satisfaction.test.ts | - | not_run |
-| feat-lead-satisfaction-feedback | E2E-SAT-002: Reply Classification | tests/e2e/lead-satisfaction.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-002: Successful Email Capture | test/lead-magnet.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | E2E-LEAD-MAGNET-001: Form Renders on Landing Page | test/lead-magnet.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | Successful email capture stores record and shows success state | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | Invalid email rejected with inline error | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | Duplicate email handled gracefully | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
+| feat-lead-magnet-email-capture | UTM parameters captured on submission | tests/e2e/lead-magnet-email-capture.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SAT-001: Satisfaction Ping Sent After AI Exchange | tests/e2e/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SATISFACTION-003: Lead Satisfaction card visible in agent dashboard | test/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SAT-003: Dashboard Satisfaction Widget | tests/e2e/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SAT-004: Agent Settings Toggle | tests/e2e/lead-satisfaction.test.ts | - | not_run |
+| feat-lead-satisfaction-feedback | E2E-SATISFACTION-005: Satisfaction ping sent only once per conversation | test/lead-satisfaction.test.ts | - | not_run |
+| feat-lead-satisfaction-feedback | E2E-SATISFACTION-002: Lead reply classified and stored | test/lead-satisfaction.test.ts | - | not_run |
+| feat-lead-satisfaction-feedback | E2E-SATISFACTION-001: Satisfaction ping SMS sent after AI exchange | test/lead-satisfaction.test.ts | - | not_run |
+| feat-lead-satisfaction-feedback | E2E-SAT-002: Reply Classification | tests/e2e/lead-satisfaction.test.ts | - | not_run |
+| feat-lead-satisfaction-feedback | E2E-SATISFACTION-004: Agent can disable satisfaction pings via settings toggle | test/lead-satisfaction.test.ts | - | not_run |
 | feat-nps-agent-feedback | NPS-005: Give Feedback button always visible; submits to product_feedback | test/nps-feedback-button.test.ts | - | not_run |
-| feat-nps-agent-feedback | NPS-006: Admin NPS view at /admin/nps shows score, breakdown, and recent responses | test/nps-admin.test.ts | - | not_run |
-| feat-nps-agent-feedback | NPS-004: In-app NPS prompt appears when due and is dismissible | test/nps-in-app.test.ts | - | not_run |
 | feat-nps-agent-feedback | NPS-003: Detractor score (0-6) creates churn risk in product_feedback | test/nps-survey.test.ts | - | not_run |
+| feat-nps-agent-feedback | NPS-004: In-app NPS prompt appears when due and is dismissible | test/nps-in-app.test.ts | - | not_run |
 | feat-nps-agent-feedback | NPS-001: Survey email sent 14 days after signup | test/nps-survey.test.ts | - | not_run |
+| feat-nps-agent-feedback | NPS-006: Admin NPS view at /admin/nps shows score, breakdown, and recent responses | test/nps-admin.test.ts | - | not_run |
 | feat-nps-agent-feedback | NPS-002: Agent submits NPS score via email link without login | test/nps-survey.test.ts | - | not_run |
-| feat-post-login-onboarding-wizard | Onboarding Wizard - Partial Flow (Steps Skipped) | - | - | not_run |
-| feat-post-login-onboarding-wizard | Onboarding Wizard - Resume After Session Drop | - | - | not_run |
 | feat-post-login-onboarding-wizard | Onboarding Wizard - Existing Agent Not Triggered | - | - | not_run |
 | feat-post-login-onboarding-wizard | Onboarding Wizard - Full Flow (All Steps Completed) | - | - | not_run |
-| feat-session-analytics-pilot | Session logging failure does not break login | - | - | not_run |
+| feat-post-login-onboarding-wizard | Onboarding Wizard - Resume After Session Drop | - | - | not_run |
+| feat-post-login-onboarding-wizard | Onboarding Wizard - Partial Flow (Steps Skipped) | - | - | not_run |
 | feat-session-analytics-pilot | Inactivity alert fires after 72 hours of no login | - | - | not_run |
-| feat-session-analytics-pilot | Internal pilot-usage endpoint returns engagement data | - | - | not_run |
+| feat-session-analytics-pilot | Session logging failure does not break login | - | - | not_run |
 | feat-session-analytics-pilot | Dashboard navigation creates page view records | - | - | not_run |
 | feat-session-analytics-pilot | Pilot agent login creates a session record | - | - | not_run |
-| feat-sms-analytics-dashboard | Agent data isolation enforced | - | - | not_run |
-| feat-sms-analytics-dashboard | Booking Conversion Rate displays correctly | - | - | not_run |
-| feat-sms-analytics-dashboard | Empty state handled gracefully | - | - | not_run |
+| feat-session-analytics-pilot | Internal pilot-usage endpoint returns engagement data | - | - | not_run |
 | feat-sms-analytics-dashboard | SMS Delivery Rate displays correctly | - | - | not_run |
+| feat-sms-analytics-dashboard | Agent data isolation enforced | - | - | not_run |
+| feat-sms-analytics-dashboard | Empty state handled gracefully | - | - | not_run |
+| feat-sms-analytics-dashboard | Booking Conversion Rate displays correctly | - | - | not_run |
 | feat-sms-analytics-dashboard | Reply Rate displays correctly | - | - | not_run |
-| feat-start-free-trial-cta | Duplicate email on trial signup shows friendly error with sign-in link | - | - | not_run |
-| feat-start-free-trial-cta | Start Free Trial CTA present in hero, features, and pricing sections | - | - | not_run |
 | feat-start-free-trial-cta | Existing pilot application form still accessible at /pilot | - | - | not_run |
-| feat-start-free-trial-cta | Trial badge with days remaining visible in dashboard nav | - | - | not_run |
 | feat-start-free-trial-cta | Trial account provisioned with trial plan and redirects within 5 seconds | - | - | not_run |
-| feat-start-free-trial-cta | Trial signup requires only email and password — no credit card | - | - | not_run |
+| feat-start-free-trial-cta | Duplicate email on trial signup shows friendly error with sign-in link | - | - | not_run |
 | feat-start-free-trial-cta | Start Free Trial CTA visible above fold on desktop and mobile | - | - | not_run |
+| feat-start-free-trial-cta | Start Free Trial CTA present in hero, features, and pricing sections | - | - | not_run |
+| feat-start-free-trial-cta | Trial signup requires only email and password — no credit card | - | - | not_run |
+| feat-start-free-trial-cta | Trial badge with days remaining visible in dashboard nav | - | - | not_run |
 | feat-utm-capture-marketing-attribution | T-2: Direct Visit — Clean NULL | tests/e2e/utm-attribution.spec.ts | - | not_run |
-| feat-utm-capture-marketing-attribution | T-3: First-Touch Attribution Preserved | tests/e2e/utm-attribution.spec.ts | - | not_run |
 | feat-utm-capture-marketing-attribution | T-1: UTM Captured and Stored on Signup | tests/e2e/utm-attribution.spec.ts | - | not_run |
 | feat-utm-capture-marketing-attribution | T-4: Attribution Table in Dashboard | tests/e2e/utm-attribution.spec.ts | - | not_run |
-| fix-api-health-endpoint-wrong-table | Health endpoint returns OK with correct Supabase connectivity | - | - | not_run |
+| feat-utm-capture-marketing-attribution | T-3: First-Touch Attribution Preserved | tests/e2e/utm-attribution.spec.ts | - | not_run |
 | fix-api-health-endpoint-wrong-table | Health endpoint Supabase connectivity check uses correct table | - | - | not_run |
-| fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-valid-email | - | - | pass |
-| fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-duplicate-email | - | - | pass |
-| fix-api-lead-capture-endpoint-returns-db-error-in-prod | health-check-supabase-connectivity | - | - | pass |
+| fix-api-health-endpoint-wrong-table | Health endpoint returns OK with correct Supabase connectivity | - | - | not_run |
 | fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-invalid-email | - | - | pass |
+| fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-duplicate-email | - | - | pass |
+| fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-valid-email | - | - | pass |
 | fix-api-lead-capture-endpoint-returns-db-error-in-prod | pilot-signup-no-regression | - | - | pass |
-| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
+| fix-api-lead-capture-endpoint-returns-db-error-in-prod | health-check-supabase-connectivity | - | - | pass |
 | fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | 2026-03-07 | pass |
+| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
 | fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
-| fix-no-forgot-password-flow | FP-002: Forgot password dispatches reset email for valid account | test/forgot-password.test.ts | - | not_run |
-| fix-no-forgot-password-flow | FP-001: Forgot password link navigates to /forgot-password | test/forgot-password.test.ts | - | not_run |
-| fix-no-forgot-password-flow | FP-003: Non-existent email shows same success message (anti-enumeration) | test/forgot-password.test.ts | - | not_run |
-| fix-no-forgot-password-flow | FP-004: Full password reset flow works end-to-end | test/forgot-password.test.ts | - | not_run |
 | fix-no-forgot-password-flow | FP-005: Reset token is single-use and expires after 1 hour | test/forgot-password.test.ts | - | not_run |
+| fix-no-forgot-password-flow | FP-001: Forgot password link navigates to /forgot-password | test/forgot-password.test.ts | - | not_run |
+| fix-no-forgot-password-flow | FP-002: Forgot password dispatches reset email for valid account | test/forgot-password.test.ts | - | not_run |
+| fix-no-forgot-password-flow | FP-004: Full password reset flow works end-to-end | test/forgot-password.test.ts | - | not_run |
+| fix-no-forgot-password-flow | FP-003: Non-existent email shows same success message (anti-enumeration) | test/forgot-password.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-006: Stripe Webhook Processing | test/stripe-webhook.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-001: Successful Signup Flow | test/onboarding-signup-flow.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-002: Login with Migrated Table | test/onboarding-login.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-003: Health Check | test/health-endpoint.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-004: End-to-End User Journey | test/e2e-user-journey.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-005: Billing Portal Access | test/billing-portal.test.ts | - | not_run |
-| fix-remaining-agents-table-references | Static analysis — no customer routes query agents table | scripts/validate-system.ts | - | not_run |
-| fix-remaining-agents-table-references | Email check queries real_estate_agents | app/api/agents/check-email/route.ts | - | not_run |
 | fix-remaining-agents-table-references | Stripe portal session finds customer in real_estate_agents | app/api/stripe/portal-session/route.ts | - | not_run |
+| fix-remaining-agents-table-references | Email check queries real_estate_agents | app/api/agents/check-email/route.ts | - | not_run |
+| fix-remaining-agents-table-references | Static analysis — no customer routes query agents table | scripts/validate-system.ts | - | not_run |
+| fix-remaining-from-agents-refs-satisfaction-debug | Satisfaction ping updates real_estate_agents | - | - | not_run |
+| fix-remaining-from-agents-refs-satisfaction-debug | npm run build succeeds after fix | - | - | not_run |
+| fix-remaining-from-agents-refs-satisfaction-debug | Satisfaction stats reads from real_estate_agents | - | - | not_run |
+| fix-remaining-from-agents-refs-satisfaction-debug | Grep sweep: zero from(agents) in product routes | - | - | not_run |
 | fix-signup-plan-options-not-displayed | Signup plan grid renders on deployed site | product/lead-response/dashboard/app/signup/page.tsx | - | not_run |
 | fix-signup-plan-options-not-displayed | Signup plan selection and back navigation | product/lead-response/dashboard/app/signup/page.tsx | - | not_run |
-| fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-002: checkout.session.completed writes to subscriptions | test/stripe-subscriptions.test.js | - | not_run |
-| fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-001: Subscriptions table exists in Supabase | test/stripe-subscriptions.test.js | - | not_run |
 | fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-004: subscription.deleted sets status=canceled | test/stripe-subscriptions.test.js | - | not_run |
 | fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-003: Webhook idempotency on event replay | test/stripe-subscriptions.test.js | - | not_run |
+| fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-001: Subscriptions table exists in Supabase | test/stripe-subscriptions.test.js | - | not_run |
+| fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-002: checkout.session.completed writes to subscriptions | test/stripe-subscriptions.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-002: Invalid Phone Number Error Handling | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-007: Concurrent SMS Sends | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-006: SMS Analytics & Cost Tracking | test/twilio-sms-integration.test.js | - | not_run |
-| implement-twilio-sms-integration | E2E-TWILIO-001: Real SMS Delivery via Twilio | test/twilio-sms-integration.test.js | - | not_run |
-| implement-twilio-sms-integration | E2E-TWILIO-002: Invalid Phone Number Error Handling | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-005: Market-Based From Number Selection | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-004: Status Update via Webhook Callback | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-003: Message Truncation | test/twilio-sms-integration.test.js | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-5: Scroll depth event fires at 90% of page height | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-6: Analytics does not degrade page load time below 2s | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-1: GA4 Base Load — page_view Event Fires | manual/e2e-landing-analytics.md | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-001: Real SMS Delivery via Twilio | test/twilio-sms-integration.test.js | - | not_run |
 | improve-landing-page-analytics-ga4 | E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-1: GA4 Base Load — page_view Event Fires | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-6: Analytics does not degrade page load time below 2s | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-5: Scroll depth event fires at 90% of page height | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event | manual/e2e-landing-analytics.md | - | not_run |
 | improve-landing-page-analytics-ga4 | E2E-ANA-2: CTA Click Tracking — Hero Button fires cta_click event | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-pricing-4-tiers | Pricing section shows correct PMF.md prices | - | - | not_run |
 | improve-landing-page-pricing-4-tiers | Pro tier highlighted as Most Popular | - | - | not_run |
-| improve-landing-page-pricing-4-tiers | Pricing CTA buttons route correctly | - | - | not_run |
-| improve-landing-page-pricing-4-tiers | Pricing section mobile responsive at 375px | - | - | not_run |
-| improve-landing-page-pricing-4-tiers | /pricing page feature comparison table | - | - | not_run |
 | improve-landing-page-pricing-4-tiers | Landing page shows all 4 pricing tiers | - | - | not_run |
-| UC-1 | E2E-SMS-001: FUB webhook → SMS sent → delivery tracked | test/e2e/sms-delivery.test.ts | - | not_run |
+| improve-landing-page-pricing-4-tiers | Pricing section shows correct PMF.md prices | - | - | not_run |
+| improve-landing-page-pricing-4-tiers | /pricing page feature comparison table | - | - | not_run |
+| improve-landing-page-pricing-4-tiers | Pricing section mobile responsive at 375px | - | - | not_run |
+| improve-landing-page-pricing-4-tiers | Pricing CTA buttons route correctly | - | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
+| UC-1 | E2E-SMS-001: FUB webhook → SMS sent → delivery tracked | test/e2e/sms-delivery.test.ts | - | not_run |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
 | UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
 | UC-12 | UC-12: MRR Reporting | tests/e2e/uc-12-mrr-reporting.test.ts | - | not_run |
@@ -165,43 +169,43 @@
 | UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
 | UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | [Human] Stojan validates CTA data in GA4 Events report | e2e/analytics/human-validation-ga4.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | Scroll depth events fire at 25%, 50%, 75%, 90% | e2e/analytics/scroll-depth.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | Hero CTA click fires cta_click event with correct params | e2e/analytics/hero-cta-click.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | No JS errors when GA4 env var is missing | e2e/analytics/graceful-missing-env.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | Pilot signup form events fire in correct sequence | e2e/analytics/form-events.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | GA4 script loads on landing page without blocking render | e2e/analytics/ga4-script-load.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | UTM parameters captured in GA4 session | e2e/analytics/utm-capture.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | No JS errors when GA4 env var is missing | e2e/analytics/graceful-missing-env.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | Pricing CTA clicks fire cta_click with cta_location=pricing | e2e/analytics/pricing-cta-click.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Hero CTA Navigation | tests/e2e/landing-hero-cta.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Pricing Toggle | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Page Load Performance | tests/e2e/landing-page-load.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Page Load & SEO | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Analytics Events | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Navigation Scroll | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | Hero CTA click fires cta_click event with correct params | e2e/analytics/hero-cta-click.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | Scroll depth events fire at 25%, 50%, 75%, 90% | e2e/analytics/scroll-depth.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | GA4 script loads on landing page without blocking render | e2e/analytics/ga4-script-load.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | Pilot signup form events fire in correct sequence | e2e/analytics/form-events.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Tier Selection | tests/e2e/landing-pricing-cta.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | FAQ Accordion | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Scroll | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Events | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Navigation | - | - | not_run |
 | UC-LANDING-MARKETING-001 | Responsive Design | - | - | not_run |
 | UC-LANDING-MARKETING-001 | FAQ Accordion | - | - | not_run |
 | UC-LANDING-MARKETING-001 | Smooth Scroll Navigation | - | - | not_run |
 | UC-LANDING-MARKETING-001 | Pricing CTA with Plan Selection | - | - | not_run |
 | UC-LANDING-MARKETING-001 | Hero CTA Navigation | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Mobile Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load & SEO | - | - | not_run |
 | UC-LANDING-MARKETING-001 | Mobile Responsive | e2e/landing-page.spec.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | SEO Meta Tags | tests/e2e/landing-seo-meta.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Keyboard Navigation Accessibility | tests/e2e/landing-keyboard-nav.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Navigation Smooth Scroll | tests/e2e/landing-nav-scroll.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Mobile Responsiveness | tests/e2e/landing-mobile-responsive.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Pricing Tier Selection | tests/e2e/landing-pricing-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Toggle | e2e/landing-page.spec.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | CTA Click Flow | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | tests/e2e/landing-hero-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load Performance | tests/e2e/landing-page-load.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Analytics Tracking | e2e/landing-page.spec.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Landing Page Load | e2e/landing-page.spec.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Accessibility | e2e/landing-page.spec.ts | - | not_run |
 | UC-REVENUE-RECOVERY-001 | E2E-REVENUE-004: End-to-End Revenue Funnel | tests/e2e/revenue-recovery-full-funnel.test.ts | - | not_run |
-| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
-| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
-| UC-REVENUE-RECOVERY-001 | SMS Value Delivery | - | - | not_run |
 | UC-REVENUE-RECOVERY-001 | E2E-REV-003: SMS Value Delivery | tests/e2e/sms-value-delivery.test.ts | - | not_run |
-| UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
 | UC-REVENUE-RECOVERY-001 | E2E-REV-001: End-to-End Revenue Funnel | tests/e2e/revenue-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | SMS Value Delivery | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
 
 ## feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
 
@@ -346,6 +350,16 @@
 
 ## feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
 
+### Public routes pass
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "All return 200"
+]
+```
+
 ### Protected routes with auth
 
 - **Result:** not_run
@@ -354,16 +368,6 @@
 [
   "Returns 200 with auth",
   "Returns 401 without auth"
-]
-```
-
-### Deployment blocked
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Deployment prevented"
 ]
 ```
 
@@ -432,6 +436,16 @@
 ]
 ```
 
+### Deployment blocked
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Deployment prevented"
+]
+```
+
 ### All routes discovered
 
 - **Result:** not_run
@@ -439,16 +453,6 @@
 ```json
 [
   "All expected routes found"
-]
-```
-
-### Public routes pass
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All return 200"
 ]
 ```
 
@@ -599,13 +603,13 @@
 ]
 ```
 
-### Failed sync retry
+### Manual sync trigger
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Sync succeeds on retry"
+  "Components updated without waiting for heartbeat"
 ]
 ```
 
@@ -645,13 +649,13 @@
 ]
 ```
 
-### Manual sync trigger
+### Failed sync retry
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Components updated without waiting for heartbeat"
+  "Sync succeeds on retry"
 ]
 ```
 
@@ -851,17 +855,13 @@
 ]
 ```
 
-### Invalid email rejected with inline error
+### Lead magnet form renders on landing page
 
 - **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-[
-  "Inline error message visible",
-  "No API call made",
-  "No new record in pilot_signups"
-]
+"[\"Email capture section is visible\",\"Headline text present\",\"Email input present\",\"CTA button present\"]"
 ```
 
 ### E2E-LEAD-MAGNET-007: Mobile Responsive Layout
@@ -891,25 +891,22 @@
 "Success state shown on second submission; single row in pilot_signups; no error message displayed"
 ```
 
-### Lead magnet form renders on landing page
+### E2E-LEAD-MAGNET-004: Delivery Email Sent Within 60 Seconds
 
-- **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
+- **File:** `test/lead-magnet.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Email capture section is visible\",\"Headline text present\",\"Email input present\",\"CTA button present\"]"
+"Email received within 60 seconds; subject matches; email contains playbook content or download link"
 ```
 
-### Successful email capture stores record and shows success state
+### E2E-LEAD-MAGNET-003: Invalid Email Rejected Client-Side
 
-- **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
+- **File:** `test/lead-magnet.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-[
-  "Form replaced with success message",
-  "Record in pilot_signups with source=lead_magnet and correct email"
-]
+"Inline validation error shown; no API call made; no pilot_signups row created"
 ```
 
 ### E2E-LEAD-MAGNET-002: Successful Email Capture
@@ -930,16 +927,28 @@
 "Email capture section visible; headline present; email input present; CTA button present"
 ```
 
-### UTM parameters captured on submission
+### Successful email capture stores record and shows success state
 
 - **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "utm_source=google stored",
-  "utm_medium=cpc stored",
-  "utm_campaign=test stored"
+  "Form replaced with success message",
+  "Record in pilot_signups with source=lead_magnet and correct email"
+]
+```
+
+### Invalid email rejected with inline error
+
+- **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Inline error message visible",
+  "No API call made",
+  "No new record in pilot_signups"
 ]
 ```
 
@@ -955,71 +964,21 @@
 ]
 ```
 
-### E2E-LEAD-MAGNET-004: Delivery Email Sent Within 60 Seconds
+### UTM parameters captured on submission
 
-- **File:** `test/lead-magnet.test.ts`
+- **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Email received within 60 seconds; subject matches; email contains playbook content or download link"
-```
-
-### E2E-LEAD-MAGNET-003: Invalid Email Rejected Client-Side
-
-- **File:** `test/lead-magnet.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Inline validation error shown; no API call made; no pilot_signups row created"
+[
+  "utm_source=google stored",
+  "utm_medium=cpc stored",
+  "utm_campaign=test stored"
+]
 ```
 
 
 ## feat-lead-satisfaction-feedback — Lead Satisfaction Feedback Collection
-
-### E2E-SATISFACTION-002: Lead reply classified and stored
-
-- **File:** `test/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Replies classified correctly (positive/negative/neutral/unclassified); STOP triggers opt-out flow"
-```
-
-### E2E-SATISFACTION-004: Agent can disable satisfaction pings via settings toggle
-
-- **File:** `test/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Toggle persists in DB; no pings when disabled; pings resume when re-enabled"
-```
-
-### E2E-SATISFACTION-005: Satisfaction ping sent only once per conversation
-
-- **File:** `test/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Exactly 1 satisfaction ping SMS sent per conversation; exactly 1 DB row per conversation_id"
-```
-
-### E2E-SATISFACTION-001: Satisfaction ping SMS sent after AI exchange
-
-- **File:** `test/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Satisfaction ping SMS sent via Twilio; event row created in Supabase with rating=null"
-```
-
-### E2E-SAT-002: Reply Classification
-
-- **File:** `tests/e2e/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"YES/HELPFUL/GOOD/GREAT/THANKS -> rating=positive\",\"NO/BAD/ANNOYING/QUIT -> rating=negative\",\"NEUTRAL/OK/FINE/MEH -> rating=neutral\",\"STOP -> rating=negative AND opt-out triggered\",\"Unrecognized text -> rating=unclassified\",\"lead_satisfaction_events row updated with raw_reply and rating\"]"
-```
 
 ### E2E-SAT-001: Satisfaction Ping Sent After AI Exchange
 
@@ -1057,6 +1016,51 @@
 "[\"Toggle visible in Settings page (default: ON)\",\"Toggle state persists after page reload\",\"agents.satisfaction_ping_enabled=false when toggle is OFF\",\"No satisfaction ping SMS sent when toggle is OFF\",\"Pings resume when toggle turned back ON\"]"
 ```
 
+### E2E-SATISFACTION-005: Satisfaction ping sent only once per conversation
+
+- **File:** `test/lead-satisfaction.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Exactly 1 satisfaction ping SMS sent per conversation; exactly 1 DB row per conversation_id"
+```
+
+### E2E-SATISFACTION-002: Lead reply classified and stored
+
+- **File:** `test/lead-satisfaction.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Replies classified correctly (positive/negative/neutral/unclassified); STOP triggers opt-out flow"
+```
+
+### E2E-SATISFACTION-001: Satisfaction ping SMS sent after AI exchange
+
+- **File:** `test/lead-satisfaction.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Satisfaction ping SMS sent via Twilio; event row created in Supabase with rating=null"
+```
+
+### E2E-SAT-002: Reply Classification
+
+- **File:** `tests/e2e/lead-satisfaction.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"YES/HELPFUL/GOOD/GREAT/THANKS -> rating=positive\",\"NO/BAD/ANNOYING/QUIT -> rating=negative\",\"NEUTRAL/OK/FINE/MEH -> rating=neutral\",\"STOP -> rating=negative AND opt-out triggered\",\"Unrecognized text -> rating=unclassified\",\"lead_satisfaction_events row updated with raw_reply and rating\"]"
+```
+
+### E2E-SATISFACTION-004: Agent can disable satisfaction pings via settings toggle
+
+- **File:** `test/lead-satisfaction.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Toggle persists in DB; no pings when disabled; pings resume when re-enabled"
+```
+
 
 ## feat-nps-agent-feedback — NPS & Feedback Survey for Agents
 
@@ -1069,13 +1073,13 @@
 "Feedback stored in product_feedback; confirmation shown; no re-auth required"
 ```
 
-### NPS-006: Admin NPS view at /admin/nps shows score, breakdown, and recent responses
+### NPS-003: Detractor score (0-6) creates churn risk in product_feedback
 
-- **File:** `test/nps-admin.test.ts`
+- **File:** `test/nps-survey.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Admin sees NPS score and breakdown; non-admin receives 403 or redirect"
+"product_feedback churn_risk entry created; processed=false; agent_id correct"
 ```
 
 ### NPS-004: In-app NPS prompt appears when due and is dismissible
@@ -1087,15 +1091,6 @@
 "Prompt shown when due; dismissible with 30-day suppression; not shown when not due"
 ```
 
-### NPS-003: Detractor score (0-6) creates churn risk in product_feedback
-
-- **File:** `test/nps-survey.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"product_feedback churn_risk entry created; processed=false; agent_id correct"
-```
-
 ### NPS-001: Survey email sent 14 days after signup
 
 - **File:** `test/nps-survey.test.ts`
@@ -1103,6 +1098,15 @@
 - **Assertions:**
 ```json
 "NPS email delivered; subject contains LeadFlow feedback language; unique signed response link present"
+```
+
+### NPS-006: Admin NPS view at /admin/nps shows score, breakdown, and recent responses
+
+- **File:** `test/nps-admin.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Admin sees NPS score and breakdown; non-admin receives 403 or redirect"
 ```
 
 ### NPS-002: Agent submits NPS score via email link without login
@@ -1116,22 +1120,6 @@
 
 
 ## feat-post-login-onboarding-wizard — Post-Login Onboarding Wizard for New Agents
-
-### Onboarding Wizard - Partial Flow (Steps Skipped)
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"agents.onboarding_completed = true after reaching completion screen\",\"agents.fub_connected = false when step was skipped\",\"After completing from Settings: agents.fub_connected = true\"]"
-```
-
-### Onboarding Wizard - Resume After Session Drop
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"agents.onboarding_step = 1 after completing Step 1\",\"On re-login: wizard UI shows at Step 2, Step 1 is green\"]"
-```
 
 ### Onboarding Wizard - Existing Agent Not Triggered
 
@@ -1149,16 +1137,24 @@
 "[\"agents.onboarding_completed = true after wizard completes\",\"agents.fub_connected = true after Step 1\",\"agents.phone_configured = true after Step 2\",\"agents.sms_verified = true after Step 3\",\"Second login redirects to /dashboard not /onboarding\"]"
 ```
 
-
-## feat-session-analytics-pilot — Session Analytics — Pilot Agent Usage Tracking
-
-### Session logging failure does not break login
+### Onboarding Wizard - Resume After Session Drop
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Login succeeds despite session logging failure\",\"Dashboard renders normally\",\"Error is logged server-side only, not surfaced to user\"]"
+"[\"agents.onboarding_step = 1 after completing Step 1\",\"On re-login: wizard UI shows at Step 2, Step 1 is green\"]"
 ```
+
+### Onboarding Wizard - Partial Flow (Steps Skipped)
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"agents.onboarding_completed = true after reaching completion screen\",\"agents.fub_connected = false when step was skipped\",\"After completing from Settings: agents.fub_connected = true\"]"
+```
+
+
+## feat-session-analytics-pilot — Session Analytics — Pilot Agent Usage Tracking
 
 ### Inactivity alert fires after 72 hours of no login
 
@@ -1168,12 +1164,12 @@
 "[\"Telegram message sent on first check\",\"inactivity_alerts row inserted\",\"No duplicate alert within 24h window\"]"
 ```
 
-### Internal pilot-usage endpoint returns engagement data
+### Session logging failure does not break login
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"HTTP 200 response\",\"pilots array present and non-empty\",\"each entry has agentId, name, email, lastLogin, sessionsLast7d, topPage, inactiveHours\",\"generatedAt is ISO timestamp\"]"
+"[\"Login succeeds despite session logging failure\",\"Dashboard renders normally\",\"Error is logged server-side only, not surfaced to user\"]"
 ```
 
 ### Dashboard navigation creates page view records
@@ -1192,8 +1188,27 @@
 "[\"agent_sessions row exists after login\",\"session_start is within last 60 seconds\",\"last_active_at is populated\"]"
 ```
 
+### Internal pilot-usage endpoint returns engagement data
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"HTTP 200 response\",\"pilots array present and non-empty\",\"each entry has agentId, name, email, lastLogin, sessionsLast7d, topPage, inactiveHours\",\"generatedAt is ISO timestamp\"]"
+```
+
 
 ## feat-sms-analytics-dashboard — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion
+
+### SMS Delivery Rate displays correctly
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Delivery Rate card shows correct percentage for each time window",
+  "Value updates without page reload on time window change"
+]
+```
 
 ### Agent data isolation enforced
 
@@ -1203,17 +1218,6 @@
 [
   "Each agent sees only their own metrics",
   "Unauthenticated requests return 401"
-]
-```
-
-### Booking Conversion Rate displays correctly
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Booking Conversion shows bookings/replies percentage",
-  "Tooltip text is accurate"
 ]
 ```
 
@@ -1227,14 +1231,14 @@
 ]
 ```
 
-### SMS Delivery Rate displays correctly
+### Booking Conversion Rate displays correctly
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Delivery Rate card shows correct percentage for each time window",
-  "Value updates without page reload on time window change"
+  "Booking Conversion shows bookings/replies percentage",
+  "Tooltip text is accurate"
 ]
 ```
 
@@ -1252,36 +1256,12 @@
 
 ## feat-start-free-trial-cta — Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment
 
-### Duplicate email on trial signup shows friendly error with sign-in link
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Inline error displayed\",\"Error references existing account\",\"Link to login page in error\",\"No duplicate agents row\"]"
-```
-
-### Start Free Trial CTA present in hero, features, and pricing sections
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"CTA in hero section\",\"CTA in features section\",\"CTA in pricing section\"]"
-```
-
 ### Existing pilot application form still accessible at /pilot
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 "[\"GET /pilot returns 200\",\"Form contains name/email/phone/brokerage fields\",\"Submission records source=pilot_application\"]"
-```
-
-### Trial badge with days remaining visible in dashboard nav
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Trial badge element in navigation\",\"Badge shows days remaining\",\"Badge links to /settings/billing\"]"
 ```
 
 ### Trial account provisioned with trial plan and redirects within 5 seconds
@@ -1292,12 +1272,12 @@
 "[\"Redirect within 5000ms\",\"agents.plan_tier === trial\",\"agents.trial_ends_at ~now+30days\",\"agents.source === trial_cta\"]"
 ```
 
-### Trial signup requires only email and password — no credit card
+### Duplicate email on trial signup shows friendly error with sign-in link
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Email input present\",\"Password input present\",\"Credit card field NOT present\",\"Plan selector NOT present\",\"Form submits without error\"]"
+"[\"Inline error displayed\",\"Error references existing account\",\"Link to login page in error\",\"No duplicate agents row\"]"
 ```
 
 ### Start Free Trial CTA visible above fold on desktop and mobile
@@ -1306,6 +1286,30 @@
 - **Assertions:**
 ```json
 "[\"Start Free Trial button in viewport at 1280px\",\"Start Free Trial button in viewport at 375px\"]"
+```
+
+### Start Free Trial CTA present in hero, features, and pricing sections
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"CTA in hero section\",\"CTA in features section\",\"CTA in pricing section\"]"
+```
+
+### Trial signup requires only email and password — no credit card
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Email input present\",\"Password input present\",\"Credit card field NOT present\",\"Plan selector NOT present\",\"Form submits without error\"]"
+```
+
+### Trial badge with days remaining visible in dashboard nav
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Trial badge element in navigation\",\"Badge shows days remaining\",\"Badge links to /settings/billing\"]"
 ```
 
 
@@ -1318,15 +1322,6 @@
 - **Assertions:**
 ```json
 "[\"utm_source IS NULL\",\"utm_medium IS NULL\",\"utm_campaign IS NULL\",\"No errors thrown\"]"
-```
-
-### T-3: First-Touch Attribution Preserved
-
-- **File:** `tests/e2e/utm-attribution.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"utm_source = email\",\"utm_campaign = wave1\",\"First-touch not overwritten\"]"
 ```
 
 ### T-1: UTM Captured and Stored on Signup
@@ -1347,16 +1342,17 @@
 "[\"Attribution section renders\",\"All required columns present\",\"Direct row for NULL UTM agents\",\"Test agents visible with correct attribution\"]"
 ```
 
+### T-3: First-Touch Attribution Preserved
 
-## fix-api-health-endpoint-wrong-table — Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents)
-
-### Health endpoint returns OK with correct Supabase connectivity
-
+- **File:** `tests/e2e/utm-attribution.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"GET /api/health returns HTTP 200\",\"Response body has status = ok\",\"checks.supabase_connectivity.ok = true\",\"checks.supabase_connectivity.detail = connected\",\"Source file does not reference from(agents) for connectivity check\"]"
+"[\"utm_source = email\",\"utm_campaign = wave1\",\"First-touch not overwritten\"]"
 ```
+
+
+## fix-api-health-endpoint-wrong-table — Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents)
 
 ### Health endpoint Supabase connectivity check uses correct table
 
@@ -1366,15 +1362,23 @@
 "[\"HTTP 200 returned\",\"status field equals ok\",\"supabase_connectivity.ok is true\",\"No agents table reference in route.ts\"]"
 ```
 
+### Health endpoint returns OK with correct Supabase connectivity
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"GET /api/health returns HTTP 200\",\"Response body has status = ok\",\"checks.supabase_connectivity.ok = true\",\"checks.supabase_connectivity.detail = connected\",\"Source file does not reference from(agents) for connectivity check\"]"
+```
+
 
 ## fix-api-lead-capture-endpoint-returns-db-error-in-prod — /api/lead-capture endpoint returns DB error in production
 
-### lead-capture-prod-valid-email
+### lead-capture-prod-invalid-email
 
 - **Result:** pass
 - **Assertions:**
 ```json
-"[\"HTTP 200\",\"response.success === true\",\"pilot_signups row exists with source=lead_magnet and status=nurture\"]"
+"[\"HTTP 400\",\"response.success === false\"]"
 ```
 
 ### lead-capture-prod-duplicate-email
@@ -1385,20 +1389,12 @@
 "[\"Both POSTs return HTTP 200 success: true\",\"pilot_signups count for email === 1\"]"
 ```
 
-### health-check-supabase-connectivity
+### lead-capture-prod-valid-email
 
 - **Result:** pass
 - **Assertions:**
 ```json
-"[\"HTTP 200\",\"Supabase health indicator is ok/healthy\"]"
-```
-
-### lead-capture-prod-invalid-email
-
-- **Result:** pass
-- **Assertions:**
-```json
-"[\"HTTP 400\",\"response.success === false\"]"
+"[\"HTTP 200\",\"response.success === true\",\"pilot_signups row exists with source=lead_magnet and status=nurture\"]"
 ```
 
 ### pilot-signup-no-regression
@@ -1409,8 +1405,42 @@
 "[\"HTTP 201\",\"response.success === true\",\"row created in pilot_signups\"]"
 ```
 
+### health-check-supabase-connectivity
+
+- **Result:** pass
+- **Assertions:**
+```json
+"[\"HTTP 200\",\"Supabase health indicator is ok/healthy\"]"
+```
+
 
 ## fix-deployed-pages-not-registered-in-system- — Auto-Sync Deployed Vercel Pages to System Components
+
+### E2E-3: URL Accuracy Verification
+
+- **File:** `tests/e2e/url-accuracy.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "url": "https://leadflow-ai-five.vercel.app",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://leadflow-ai-five.vercel.app/dashboard",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://fub-inbound-webhook.vercel.app/health",
+    "type": "http",
+    "expect": 200
+  }
+]
+```
 
 ### E2E-1: Auto-Sync on Heartbeat
 
@@ -1447,32 +1477,6 @@
 ]
 ```
 
-### E2E-3: URL Accuracy Verification
-
-- **File:** `tests/e2e/url-accuracy.test.ts`
-- **Result:** pass
-- **Last run:** 2026-03-07T01:01:17.443Z
-- **Assertions:**
-```json
-[
-  {
-    "url": "https://leadflow-ai-five.vercel.app",
-    "type": "http",
-    "expect": 200
-  },
-  {
-    "url": "https://leadflow-ai-five.vercel.app/dashboard",
-    "type": "http",
-    "expect": 200
-  },
-  {
-    "url": "https://fub-inbound-webhook.vercel.app/health",
-    "type": "http",
-    "expect": 200
-  }
-]
-```
-
 ### E2E-2: Manual Sync API
 
 - **File:** `tests/e2e/manual-sync-api.test.ts`
@@ -1503,13 +1507,13 @@
 
 ## fix-no-forgot-password-flow — Forgot Password / Password Reset Flow
 
-### FP-002: Forgot password dispatches reset email for valid account
+### FP-005: Reset token is single-use and expires after 1 hour
 
 - **File:** `test/forgot-password.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Success message displayed; reset email received; link in email is valid"
+"Reused or expired token shows error; no password change possible"
 ```
 
 ### FP-001: Forgot password link navigates to /forgot-password
@@ -1521,13 +1525,13 @@
 "URL changes to /forgot-password; email input form visible; no browser alert dialog"
 ```
 
-### FP-003: Non-existent email shows same success message (anti-enumeration)
+### FP-002: Forgot password dispatches reset email for valid account
 
 - **File:** `test/forgot-password.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Identical success message for both registered and unregistered emails"
+"Success message displayed; reset email received; link in email is valid"
 ```
 
 ### FP-004: Full password reset flow works end-to-end
@@ -1539,13 +1543,13 @@
 "New password accepted on login; old password rejected"
 ```
 
-### FP-005: Reset token is single-use and expires after 1 hour
+### FP-003: Non-existent email shows same success message (anti-enumeration)
 
 - **File:** `test/forgot-password.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Reused or expired token shows error; no password change possible"
+"Identical success message for both registered and unregistered emails"
 ```
 
 
@@ -1608,15 +1612,16 @@
 
 ## fix-remaining-agents-table-references — Fix remaining from(agents) table references — 15 routes still query wrong table
 
-### Static analysis — no customer routes query agents table
+### Stripe portal session finds customer in real_estate_agents
 
-- **File:** `scripts/validate-system.ts`
+- **File:** `app/api/stripe/portal-session/route.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Zero from(agents) occurrences in auth/profile/webhook/stripe/onboarding routes",
-  "Only orchestrator-specific code (if any) references agents table with explicit comment"
+  "Authenticated request with valid JWT returns HTTP 200",
+  "Response contains { url: \"https://billing.stripe.com/...\" }",
+  "Not a 404 (agent not found) or 500 error"
 ]
 ```
 
@@ -1633,16 +1638,59 @@
 ]
 ```
 
-### Stripe portal session finds customer in real_estate_agents
+### Static analysis — no customer routes query agents table
 
-- **File:** `app/api/stripe/portal-session/route.ts`
+- **File:** `scripts/validate-system.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Authenticated request with valid JWT returns HTTP 200",
-  "Response contains { url: \"https://billing.stripe.com/...\" }",
-  "Not a 404 (agent not found) or 500 error"
+  "Zero from(agents) occurrences in auth/profile/webhook/stripe/onboarding routes",
+  "Only orchestrator-specific code (if any) references agents table with explicit comment"
+]
+```
+
+
+## fix-remaining-from-agents-refs-satisfaction-debug — Fix remaining from(agents) references in satisfaction and debug routes
+
+### Satisfaction ping updates real_estate_agents
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "200 OK",
+  "record updated"
+]
+```
+
+### npm run build succeeds after fix
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "exit 0"
+]
+```
+
+### Satisfaction stats reads from real_estate_agents
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "stats from real_estate_agents"
+]
+```
+
+### Grep sweep: zero from(agents) in product routes
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "zero matches"
 ]
 ```
 
@@ -1678,24 +1726,6 @@
 
 ## fix-stripe-subscriptions-table — Fix: Create Subscriptions Table for Stripe Webhook Storage
 
-### E2E-STRIPE-SUBS-002: checkout.session.completed writes to subscriptions
-
-- **File:** `test/stripe-subscriptions.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"New row in subscriptions with status=active; stripe_subscription_id populated"
-```
-
-### E2E-STRIPE-SUBS-001: Subscriptions table exists in Supabase
-
-- **File:** `test/stripe-subscriptions.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Table exists; query returns without error"
-```
-
 ### E2E-STRIPE-SUBS-004: subscription.deleted sets status=canceled
 
 - **File:** `test/stripe-subscriptions.test.js`
@@ -1714,8 +1744,35 @@
 "No duplicate rows; idempotent event processing via stripe_event_id uniqueness"
 ```
 
+### E2E-STRIPE-SUBS-001: Subscriptions table exists in Supabase
+
+- **File:** `test/stripe-subscriptions.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Table exists; query returns without error"
+```
+
+### E2E-STRIPE-SUBS-002: checkout.session.completed writes to subscriptions
+
+- **File:** `test/stripe-subscriptions.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"New row in subscriptions with status=active; stripe_subscription_id populated"
+```
+
 
 ## implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
+
+### E2E-TWILIO-002: Invalid Phone Number Error Handling
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
+```
 
 ### E2E-TWILIO-007: Concurrent SMS Sends
 
@@ -1733,24 +1790,6 @@
 - **Assertions:**
 ```json
 "Analytics counts correct; Delivery rate calculated; Cost tracked; Events logged with durations"
-```
-
-### E2E-TWILIO-001: Real SMS Delivery via Twilio
-
-- **File:** `test/twilio-sms-integration.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"SMS delivered to phone; SID stored in DB; Status tracking active; No errors; Response <2s"
-```
-
-### E2E-TWILIO-002: Invalid Phone Number Error Handling
-
-- **File:** `test/twilio-sms-integration.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
 ```
 
 ### E2E-TWILIO-005: Market-Based From Number Selection
@@ -1780,34 +1819,25 @@
 "Message truncated to 160 chars; Warning in console; SMS sent; Body stored correctly"
 ```
 
+### E2E-TWILIO-001: Real SMS Delivery via Twilio
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"SMS delivered to phone; SID stored in DB; Status tracking active; No errors; Response <2s"
+```
+
 
 ## improve-landing-page-analytics-ga4 — Landing Page Analytics — GA4/PostHog for CTA Clicks, Scroll Depth & Conversion Funnel
 
-### E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event
+### E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order
 
 - **File:** `manual/e2e-landing-analytics.md`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"No event payload contains name, email address, or phone number"
-```
-
-### E2E-ANA-5: Scroll depth event fires at 90% of page height
-
-- **File:** `manual/e2e-landing-analytics.md`
-- **Result:** not_run
-- **Assertions:**
-```json
-"GA4 Enhanced Measurement scroll event fires at 90% page depth"
-```
-
-### E2E-ANA-6: Analytics does not degrade page load time below 2s
-
-- **File:** `manual/e2e-landing-analytics.md`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Lighthouse Performance score >= 70; page load < 2s on simulated 4G mobile"
+"Events fire in sequence: form_view → form_start → form_submit_attempt → pilot_signup_complete; pilot_signup_complete is a GA4 conversion"
 ```
 
 ### E2E-ANA-1: GA4 Base Load — page_view Event Fires
@@ -1819,13 +1849,31 @@
 "GA4 page_view event fires on load; no console errors"
 ```
 
-### E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order
+### E2E-ANA-6: Analytics does not degrade page load time below 2s
 
 - **File:** `manual/e2e-landing-analytics.md`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Events fire in sequence: form_view → form_start → form_submit_attempt → pilot_signup_complete; pilot_signup_complete is a GA4 conversion"
+"Lighthouse Performance score >= 70; page load < 2s on simulated 4G mobile"
+```
+
+### E2E-ANA-5: Scroll depth event fires at 90% of page height
+
+- **File:** `manual/e2e-landing-analytics.md`
+- **Result:** not_run
+- **Assertions:**
+```json
+"GA4 Enhanced Measurement scroll event fires at 90% page depth"
+```
+
+### E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event
+
+- **File:** `manual/e2e-landing-analytics.md`
+- **Result:** not_run
+- **Assertions:**
+```json
+"No event payload contains name, email address, or phone number"
 ```
 
 ### E2E-ANA-2: CTA Click Tracking — Hero Button fires cta_click event
@@ -1840,44 +1888,12 @@
 
 ## improve-landing-page-pricing-4-tiers — Landing Page Pricing Section — All 4 Tiers with Feature Comparison
 
-### Pricing section shows correct PMF.md prices
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Starter price=/mo\",\"Pro price=/mo\",\"Team price=/mo\",\"Brokerage price=+\",\"No  visible\",\"No  visible\",\"No  visible\"]"
-```
-
 ### Pro tier highlighted as Most Popular
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 "[\"Pro card has Most Popular badge\",\"Pro card visually distinct from others\"]"
-```
-
-### Pricing CTA buttons route correctly
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Starter CTA href=/signup\",\"Pro CTA href=/signup\",\"Team CTA href=/signup\",\"Brokerage CTA is mailto or contact form\"]"
-```
-
-### Pricing section mobile responsive at 375px
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Cards stack vertically at 375px\",\"No horizontal scrollbar\",\"All prices readable\"]"
-```
-
-### /pricing page feature comparison table
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Table visible below tier cards\",\"4 columns: Starter Pro Team Brokerage\",\"SMS: 100/mo vs Unlimited\",\"Cal.com: Starter=dash others=check\",\"White-label: only Brokerage=check\"]"
 ```
 
 ### Landing page shows all 4 pricing tiers
@@ -1888,17 +1904,40 @@
 "[\"Pricing section heading visible\",\"Starter card present\",\"Pro card present\",\"Team card present\",\"Brokerage card present\",\"Section before footer\"]"
 ```
 
+### Pricing section shows correct PMF.md prices
 
-## UC-1 — Lead-Initiated SMS
-
-### E2E-SMS-001: FUB webhook → SMS sent → delivery tracked
-
-- **File:** `test/e2e/sms-delivery.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Lead receives SMS within 30 seconds; Status tracked in conversations table; Message visible in dashboard"
+"[\"Starter price=/mo\",\"Pro price=/mo\",\"Team price=/mo\",\"Brokerage price=+\",\"No  visible\",\"No  visible\",\"No  visible\"]"
 ```
+
+### /pricing page feature comparison table
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Table visible below tier cards\",\"4 columns: Starter Pro Team Brokerage\",\"SMS: 100/mo vs Unlimited\",\"Cal.com: Starter=dash others=check\",\"White-label: only Brokerage=check\"]"
+```
+
+### Pricing section mobile responsive at 375px
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Cards stack vertically at 375px\",\"No horizontal scrollbar\",\"All prices readable\"]"
+```
+
+### Pricing CTA buttons route correctly
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Starter CTA href=/signup\",\"Pro CTA href=/signup\",\"Team CTA href=/signup\",\"Brokerage CTA is mailto or contact form\"]"
+```
+
+
+## UC-1 — Lead-Initiated SMS
 
 ### UC-1: Lead-Initiated SMS Response
 
@@ -1935,6 +1974,15 @@
     "expect": "exists"
   }
 ]
+```
+
+### E2E-SMS-001: FUB webhook → SMS sent → delivery tracked
+
+- **File:** `test/e2e/sms-delivery.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Lead receives SMS within 30 seconds; Status tracked in conversations table; Message visible in dashboard"
 ```
 
 
@@ -2661,17 +2709,42 @@
 ]
 ```
 
-### Scroll depth events fire at 25%, 50%, 75%, 90%
+### UTM parameters captured in GA4 session
 
-- **File:** `e2e/analytics/scroll-depth.spec.ts`
+- **File:** `e2e/analytics/utm-capture.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "scroll_depth at 25% fires",
-  "scroll_depth at 50% fires",
-  "scroll_depth at 75% fires",
-  "scroll_depth at 90% fires"
+  "source=telegram captured",
+  "medium=organic captured",
+  "campaign=pilot-launch captured"
+]
+```
+
+### No JS errors when GA4 env var is missing
+
+- **File:** `e2e/analytics/graceful-missing-env.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Page loads without JS errors",
+  "CTAs function without GA4",
+  "No uncaught exceptions about gtag"
+]
+```
+
+### Pricing CTA clicks fire cta_click with cta_location=pricing
+
+- **File:** `e2e/analytics/pricing-cta-click.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "cta_click fires for each pricing CTA",
+  "cta_location=pricing",
+  "cta_text matches button label"
 ]
 ```
 
@@ -2689,16 +2762,30 @@
 ]
 ```
 
-### No JS errors when GA4 env var is missing
+### Scroll depth events fire at 25%, 50%, 75%, 90%
 
-- **File:** `e2e/analytics/graceful-missing-env.spec.ts`
+- **File:** `e2e/analytics/scroll-depth.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Page loads without JS errors",
-  "CTAs function without GA4",
-  "No uncaught exceptions about gtag"
+  "scroll_depth at 25% fires",
+  "scroll_depth at 50% fires",
+  "scroll_depth at 75% fires",
+  "scroll_depth at 90% fires"
+]
+```
+
+### GA4 script loads on landing page without blocking render
+
+- **File:** `e2e/analytics/ga4-script-load.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "gtag.js response status 200",
+  "Lighthouse LCP within 10% of baseline",
+  "No render-blocking script warnings"
 ]
 ```
 
@@ -2717,124 +2804,37 @@
 ]
 ```
 
-### GA4 script loads on landing page without blocking render
-
-- **File:** `e2e/analytics/ga4-script-load.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "gtag.js response status 200",
-  "Lighthouse LCP within 10% of baseline",
-  "No render-blocking script warnings"
-]
-```
-
-### UTM parameters captured in GA4 session
-
-- **File:** `e2e/analytics/utm-capture.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "source=telegram captured",
-  "medium=organic captured",
-  "campaign=pilot-launch captured"
-]
-```
-
-### Pricing CTA clicks fire cta_click with cta_location=pricing
-
-- **File:** `e2e/analytics/pricing-cta-click.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "cta_click fires for each pricing CTA",
-  "cta_location=pricing",
-  "cta_text matches button label"
-]
-```
-
 
 ## UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
 
-### Hero CTA Navigation
+### Pricing Tier Selection
 
-- **File:** `tests/e2e/landing-hero-cta.test.ts`
+- **File:** `tests/e2e/landing-pricing-cta.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
   {
-    "type": "click",
-    "selector": "[data-testid=hero-cta-primary]"
+    "type": "scroll",
+    "selector": "[data-testid=pricing-section]"
   },
   {
-    "type": "scroll",
-    "expect": "signup-section-in-viewport"
+    "type": "click",
+    "selector": "[data-testid=pricing-pro-cta]"
+  },
+  {
+    "type": "navigation",
+    "expect": "url=/onboarding"
   },
   {
     "type": "analytics",
-    "event": "hero_cta_click",
-    "expect": "fired"
+    "event": "pricing_cta_click",
+    "expect": "fired",
+    "params": {
+      "plan": "pro"
+    }
   }
 ]
-```
-
-### Pricing Toggle
-
-- **File:** `e2e/landing-page.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"prices_update\",\"badge_visible\",\"calculation_correct\"]"
-```
-
-### Page Load Performance
-
-- **File:** `tests/e2e/landing-page-load.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  {
-    "type": "performance",
-    "expect": "<1500",
-    "metric": "FCP"
-  },
-  {
-    "type": "performance",
-    "expect": "score>=90",
-    "metric": "Lighthouse"
-  },
-  {
-    "type": "console",
-    "expect": "no_errors"
-  },
-  {
-    "type": "element",
-    "expect": "visible",
-    "selector": "[data-testid=hero-section]"
-  }
-]
-```
-
-### Page Load & SEO
-
-- **Result:** not_run
-
-### Analytics Events
-
-- **Result:** not_run
-
-### Navigation Scroll
-
-- **File:** `e2e/landing-page.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"smooth_scroll\",\"url_hash_updated\"]"
 ```
 
 ### FAQ Accordion
@@ -2845,6 +2845,23 @@
 ```json
 "[\"accordion_expands\",\"only_one_open\",\"smooth_animation\"]"
 ```
+
+### Navigation Scroll
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"smooth_scroll\",\"url_hash_updated\"]"
+```
+
+### Analytics Events
+
+- **Result:** not_run
+
+### Mobile Navigation
+
+- **Result:** not_run
 
 ### Responsive Design
 
@@ -2866,7 +2883,7 @@
 
 - **Result:** not_run
 
-### Mobile Navigation
+### Page Load & SEO
 
 - **Result:** not_run
 
@@ -2993,34 +3010,13 @@
 ]
 ```
 
-### Pricing Tier Selection
+### Pricing Toggle
 
-- **File:** `tests/e2e/landing-pricing-cta.test.ts`
+- **File:** `e2e/landing-page.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-[
-  {
-    "type": "scroll",
-    "selector": "[data-testid=pricing-section]"
-  },
-  {
-    "type": "click",
-    "selector": "[data-testid=pricing-pro-cta]"
-  },
-  {
-    "type": "navigation",
-    "expect": "url=/onboarding"
-  },
-  {
-    "type": "analytics",
-    "event": "pricing_cta_click",
-    "expect": "fired",
-    "params": {
-      "plan": "pro"
-    }
-  }
-]
+"[\"prices_update\",\"badge_visible\",\"calculation_correct\"]"
 ```
 
 ### CTA Click Flow
@@ -3030,6 +3026,58 @@
 - **Assertions:**
 ```json
 "[\"redirects_to_signup\",\"utm_preserved\",\"analytics_fired\"]"
+```
+
+### Hero CTA Navigation
+
+- **File:** `tests/e2e/landing-hero-cta.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "click",
+    "selector": "[data-testid=hero-cta-primary]"
+  },
+  {
+    "type": "scroll",
+    "expect": "signup-section-in-viewport"
+  },
+  {
+    "type": "analytics",
+    "event": "hero_cta_click",
+    "expect": "fired"
+  }
+]
+```
+
+### Page Load Performance
+
+- **File:** `tests/e2e/landing-page-load.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "performance",
+    "expect": "<1500",
+    "metric": "FCP"
+  },
+  {
+    "type": "performance",
+    "expect": "score>=90",
+    "metric": "Lighthouse"
+  },
+  {
+    "type": "console",
+    "expect": "no_errors"
+  },
+  {
+    "type": "element",
+    "expect": "visible",
+    "selector": "[data-testid=hero-section]"
+  }
+]
 ```
 
 ### Analytics Tracking
@@ -3166,37 +3214,6 @@
 ]
 ```
 
-### E2E-REV-002: Pilot Agent Onboarding
-
-- **File:** `tests/e2e/pilot-onboarding.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Onboarding wizard renders",
-  "Account created in Supabase",
-  "FUB integration connects",
-  "Twilio integration connects",
-  "Test lead received within 5 min"
-]
-```
-
-### Pilot Agent Onboarding
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
-```
-
-### SMS Value Delivery
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
-```
-
 ### E2E-REV-003: SMS Value Delivery
 
 - **File:** `tests/e2e/sms-value-delivery.test.ts`
@@ -3212,12 +3229,12 @@
 ]
 ```
 
-### End-to-End Revenue Funnel
+### Pilot Agent Onboarding
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
+"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
 ```
 
 ### E2E-REV-001: End-to-End Revenue Funnel
@@ -3233,6 +3250,37 @@
   "Dashboard accessible post-onboarding",
   "Payment processing succeeds",
   "MRR increases correctly"
+]
+```
+
+### End-to-End Revenue Funnel
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
+```
+
+### SMS Value Delivery
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
+```
+
+### E2E-REV-002: Pilot Agent Onboarding
+
+- **File:** `tests/e2e/pilot-onboarding.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Onboarding wizard renders",
+  "Account created in Supabase",
+  "FUB integration connects",
+  "Twilio integration connects",
+  "Test lead received within 5 min"
 ]
 ```
 
