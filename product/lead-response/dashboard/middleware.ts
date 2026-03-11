@@ -14,11 +14,10 @@ const PROTECTED_ROUTES = [
 ]
 
 // Routes that should redirect to dashboard if already authenticated
-// NOTE: /setup is intentionally NOT here — authenticated users who haven't
-// completed onboarding need to access it.
+// NOTE: /onboarding and /setup are intentionally NOT here — authenticated users who haven't
+// completed onboarding need to access these routes.
 const AUTH_ROUTES = [
   '/login',
-  '/onboarding',
   '/signup',
 ]
 
