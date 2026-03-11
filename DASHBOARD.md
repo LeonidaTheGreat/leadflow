@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/11/2026, 2:19:52 AM
+**Last Updated:** 3/11/2026, 2:30:03 AM
 
 ---
 
@@ -33,20 +33,22 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 747
+**Queue Health:** Ready: 3 | In Progress: 2 | Blocked: 0 | Done: 748
 
-### ▶️ Ready to Spawn (2 tasks)
+### ▶️ Ready to Spawn (3 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign - Onboarding wizard stuck - no aha moment for new signups | kimi | $0.24 | 🟡 P1 |
 | Dev: fix-api-endpoints-developer-table-embedded-in-marketin - API Endpoints developer table embedded in marketing landing page | kimi | $0.24 | 🟡 P1 |
+| Dev: fix-no-in-app-nps-prompt-on-dashboard-login - No in-app NPS prompt on dashboard login | haiku | $0.40 | 🟡 P1 |
+| Dev: fix-use-cases-implementation-status-marked-complete-de - use_cases.implementation_status marked complete despite fix not being applied | kimi | $0.12 | 🟡 P1 |
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: fix-no-cron-job-or-api-endpoint-to-trigger-automated-n - No cron job or API endpoint to trigger automated NPS surveys | dev | kimi |
+| Dev: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign - Onboarding wizard stuck - no aha moment for new signups | dev | kimi |
+| QC: fix-no-cron-job-or-api-endpoint-to-trigger-automated-n - No cron job or API endpoint to trigger automated NPS surveys | qc | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +106,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $337.88
+**Estimated project cost:** $338.53
 **Cost per task:** Avg $0.41
 
 ---
@@ -118,8 +120,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **2 tasks ready to spawn**
-2. ⚡ **1 agents active**
+1. ✅ **3 tasks ready to spawn**
+2. ⚡ **2 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
