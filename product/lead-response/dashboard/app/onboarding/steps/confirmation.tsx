@@ -90,6 +90,25 @@ export default function OnboardingConfirm({
                   {agentData.smsPhoneNumber ? '✓ Connected' : '○ Skipped'}
                 </span>
               </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚡</span>
+                  <span className="text-slate-300">Aha Moment Simulator</span>
+                </div>
+                <span className={`text-sm font-medium ${
+                  agentData.simulatorCompleted
+                    ? 'text-emerald-400'
+                    : agentData.simulatorSkipped
+                    ? 'text-slate-500'
+                    : 'text-yellow-500'
+                }`}>
+                  {agentData.simulatorCompleted
+                    ? `✓ Completed${agentData.simulatorResponseTimeMs ? ` (${(agentData.simulatorResponseTimeMs / 1000).toFixed(1)}s)` : ''}`
+                    : agentData.simulatorSkipped
+                    ? '○ Skipped'
+                    : '◷ Pending'}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -235,12 +254,12 @@ export default function OnboardingConfirm({
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Activating your pilot...
+                Saving your details...
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                Start Free Pilot
+                See Your AI in Action →
               </>
             )}
           </button>
