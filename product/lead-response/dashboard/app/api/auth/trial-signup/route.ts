@@ -157,7 +157,6 @@ export async function POST(request: NextRequest) {
         onboardingCompleted: false,
       },
     })
-    })
 
     response.cookies.set('auth-token', token, {
       httpOnly: true,
