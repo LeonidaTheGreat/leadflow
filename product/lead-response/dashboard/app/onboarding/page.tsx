@@ -6,10 +6,11 @@ import OnboardingWelcome from './steps/welcome'
 import OnboardingAgentInfo from './steps/agent-info'
 import OnboardingCalendar from './steps/calendar'
 import OnboardingSMS from './steps/sms-config'
+import OnboardingSimulator from './steps/simulator'
 import OnboardingConfirm from './steps/confirmation'
 import OnboardingProgress from './components/progress'
 
-type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'confirmation'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
 /** Read UTM params: URL takes precedence over sessionStorage. */
 function readUtmParams(searchParams: ReturnType<typeof useSearchParams>) {
@@ -63,6 +64,9 @@ function OnboardingPageInner() {
     utmCampaign: null as string | null,
     utmContent: null as string | null,
     utmTerm: null as string | null,
+    // Aha moment fields
+    ahaCompleted: false,
+    ahaResponseTimeMs: null as number | null,
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -75,7 +79,7 @@ function OnboardingPageInner() {
     }
   }, [searchParams])
 
-  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'confirmation']
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const goToStep = (step: OnboardingStep) => {
@@ -97,7 +101,7 @@ function OnboardingPageInner() {
   const completeOnboarding = async () => {
     setIsLoading(true)
     try {
-      // Submit agent data to backend (includes UTM attribution fields)
+      // Submit agent data to backend (includes UTM attribution fields and aha moment data)
       const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -179,6 +183,15 @@ function OnboardingPageInner() {
 
             {currentStep === 'sms' && (
               <OnboardingSMS
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
+              />
+            )}
+
+            {currentStep === 'simulator' && (
+              <OnboardingSimulator
                 onNext={nextStep}
                 onBack={prevStep}
                 agentData={agentData}
