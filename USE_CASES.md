@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-11T09:10:13.229Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-11T17:54:37.291Z | Source: `use_cases` + `prds` tables
 
-**Progress: 124/129 complete**
+**Progress: 127/129 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
@@ -20,10 +20,10 @@
 | feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | complete | 0 | defined | PM > Marketing > Design > Dev > QC |
 | UC-3 | FUB Status Change | Phase 1 | complete | 1 | defined | PM > Dev > QC |
-| fix-api-lead-capture-endpoint-returns-db-error-in-prod | /api/lead-capture endpoint returns DB error in production | - | complete | 1 | pass | Dev > QC |
 | fix-status | status | - | complete | 1 | - | Dev > QC |
-| fix-simulator-tsx-step-component-does-not-exist | simulator.tsx step component does not exist | - | complete | 1 | - | Dev > QC |
+| fix-api-lead-capture-endpoint-returns-db-error-in-prod | /api/lead-capture endpoint returns DB error in production | - | complete | 1 | pass | Dev > QC |
 | fix-test-genome-separation | test genome separation | - | complete | 1 | - | Dev > QC |
+| fix-simulator-tsx-step-component-does-not-exist | simulator.tsx step component does not exist | - | complete | 1 | - | Dev > QC |
 | fix-touchsession-middleware-not-implemented-no-session | touchSession() middleware not implemented — no session heartbeat | - | complete | 1 | - | Dev > QC |
 | feat-transactional-email-resend | Transactional Email Delivery via Resend — Activate the Signup Funnel | - | complete | 1 | - | Dev > QC |
 | fix-three-consecutive-vercel-builds-failing-fix-never- | Three consecutive Vercel builds failing — fix never reached production | - | complete | 1 | - | Dev > QC |
@@ -69,10 +69,10 @@
 | fix-landing-page-has-no-pricing-section | Landing page has NO pricing section | - | complete | 1 | - | Dev > QC |
 | fix-pricing-page-shows-prices-10x-higher-than-pmf-md-s | /pricing page shows prices 10x higher than PMF.md strategy | - | complete | 1 | - | Dev > QC |
 | fix-landing-page-has-no-links-to-signup-or-o | landing page has no links to signup or onboarding pages | - | complete | 1 | - | Dev > QC |
+| feat-post-login-onboarding-wizard | Post-Login Onboarding Wizard for New Agents | - | complete | 1 | defined | PM > Marketing > Design > Dev > QC |
 | fix-signup-page-has-no-link-back-to-login-an | signup page has no link back to login and no login page exists | - | complete | 1 | - | Dev > QC |
-| UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
-| feat-post-login-onboarding-wizard | Post-Login Onboarding Wizard for New Agents | - | stuck | 1 | defined | PM > Marketing > Design > Dev > QC |
 | fix-resend-api-key-not-configured-in-vercel-email-deli | RESEND_API_KEY not configured in Vercel — email delivery will not work | - | complete | 1 | - | Dev > QC |
+| UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-1 | Lead-Initiated SMS | Phase 1 | complete | 1 | pass | PM > Dev > QC |
 | UC-2 | FUB New Lead Auto-SMS | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | fix-session-logging-not-integrated-into-login-flow | Session logging not integrated into login flow | - | complete | 1 | - | Dev > QC |
@@ -112,13 +112,13 @@
 | fix-team-tier-399-mo-missing-from-pricing-page-only-3- | Team tier ($399/mo) missing from /pricing page — only 3 tiers shown | - | complete | 2 | - | Dev > QC |
 | fix-trial-period-set-to-30-days-prd-specifies-14-days | Trial period set to 30 days — PRD specifies 14 days | - | complete | 2 | - | Dev > QC |
 | fix-lead-magnet-feature-not-merged-to-main-branch | Lead magnet feature NOT merged to main branch | - | complete | 2 | - | Dev > QC |
-| fix-expired-trial-handling-not-implemented-ac-8 | Expired trial handling not implemented (AC-8) | - | not_started | 2 | - | Dev > QC |
+| fix-expired-trial-handling-not-implemented-ac-8 | Expired trial handling not implemented (AC-8) | - | complete | 2 | - | Dev > QC |
 | fix-main-landing-page-has-no-cta-analytics-instrumenta | Main landing page (/) has no CTA analytics instrumentation | - | complete | 2 | - | Dev > QC |
 | fix-inactivity-alerting-cron-not-implemented | Inactivity alerting cron not implemented | - | complete | 2 | - | Dev > QC |
 | fix-onboarding-still-present-in-auth-routes-middleware | /onboarding still present in AUTH_ROUTES (middleware.ts line 21) | - | complete | 2 | - | Dev > QC |
+| fix-frontend-components-still-fall-back-to-dashboard-o | Frontend components still fall back to /dashboard/onboarding | - | complete | 2 | - | Dev > QC |
 | fix-api-endpoint-not-protected-by-session-middleware | API endpoint not protected by session middleware | - | complete | 2 | - | Dev > QC |
 | fix-duplicate-email-error-shows-plain-text-missing-sig | Duplicate email error shows plain text — missing sign-in link | - | complete | 2 | - | Dev > QC |
-| fix-frontend-components-still-fall-back-to-dashboard-o | Frontend components still fall back to /dashboard/onboarding | - | in_progress | 2 | - | Dev > QC |
 | fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign | Onboarding wizard stuck - no aha moment for new signups | - | complete | 2 | - | Design > Dev > QC |
 | fix-api-endpoints-developer-table-embedded-in-marketin | API Endpoints developer table embedded in marketing landing page | - | complete | 2 | - | Design > Dev > QC |
 | fix-no-in-app-nps-prompt-on-dashboard-login | No in-app NPS prompt on dashboard login | - | complete | 2 | - | Dev > QC |
@@ -493,6 +493,14 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
   - npm test passes with no new failures
 - **Workflow:** Dev > QC
 
+### fix-status — status
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Quick fix: status
+- **Workflow:** Dev > QC
+
 ### fix-api-lead-capture-endpoint-returns-db-error-in-prod — /api/lead-capture endpoint returns DB error in production
 
 - **PRD:** Fix /api/lead-capture Production Environment Failure
@@ -518,12 +526,12 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
   - Email confirmation sent via Resend when RESEND_API_KEY is configured
 - **Workflow:** Dev > QC
 
-### fix-status — status
+### fix-test-genome-separation — test genome separation
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Quick fix: status
+- **Description:** Quick fix: test genome separation
 - **Workflow:** Dev > QC
 
 ### fix-simulator-tsx-step-component-does-not-exist — simulator.tsx step component does not exist
@@ -543,14 +551,6 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
 - The issue described above is resolved
 - Existing functionality is not broken
 - Tests pass
-- **Workflow:** Dev > QC
-
-### fix-test-genome-separation — test genome separation
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Quick fix: test genome separation
 - **Workflow:** Dev > QC
 
 ### fix-touchsession-middleware-not-implemented-no-session — touchSession() middleware not implemented — no session heartbeat
@@ -1289,6 +1289,16 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 - **Description:** Quick fix: landing page has no links to signup or onboarding pages
 - **Workflow:** Dev > QC
 
+### feat-post-login-onboarding-wizard — Post-Login Onboarding Wizard for New Agents
+
+- **PRD:** Post-Login Onboarding Wizard for New Agents
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Guided setup wizard shown to new agents after first login. Walks through 3 steps: (1) Connect FUB integration via API key + webhook registration, (2) Configure Twilio phone number (provision new or enter existing), (3) Verify SMS by sending a test message to agent mobile. Wizard state persisted per agent; skipped steps accessible later in Settings -> Integrations.
+- **Acceptance Criteria:**
+  - ["Wizard auto-triggers on first login if onboarding_completed = false","Wizard does NOT re-trigger for agents with onboarding_completed = true","Step 1: FUB API key validation is a real live call to FUB API","Step 1: On success, webhook URL is auto-registered in FUB","Step 2: Agent can provision a new Twilio number by area code","Step 2: Agent can enter an existing Twilio number (E.164 validated)","Step 3: Test SMS is actually delivered to agent mobile number","agents table updated at each step (fub_connected, phone_configured, sms_verified)","Agent can skip any step and complete later via Settings -> Integrations","onboarding_completed = true set on completion screen","All wizard API endpoints require authenticated session","UI is mobile-responsive","E2E: full wizard flow (all 3 steps) passes","E2E: partial flow with skipped steps passes"]
+- **Workflow:** PM > Marketing > Design > Dev > QC
+
 ### fix-signup-page-has-no-link-back-to-login-an — signup page has no link back to login and no login page exists
 
 - **PRD:** -
@@ -1296,16 +1306,6 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 - **Priority:** 1
 - **Description:** Quick fix: signup page has no link back to login and no login page exists
 - **Workflow:** Dev > QC
-
-### feat-post-login-onboarding-wizard — Post-Login Onboarding Wizard for New Agents
-
-- **PRD:** Post-Login Onboarding Wizard for New Agents
-- **Status:** stuck
-- **Priority:** 1
-- **Description:** Guided setup wizard shown to new agents after first login. Walks through 3 steps: (1) Connect FUB integration via API key + webhook registration, (2) Configure Twilio phone number (provision new or enter existing), (3) Verify SMS by sending a test message to agent mobile. Wizard state persisted per agent; skipped steps accessible later in Settings -> Integrations.
-- **Acceptance Criteria:**
-  - ["Wizard auto-triggers on first login if onboarding_completed = false","Wizard does NOT re-trigger for agents with onboarding_completed = true","Step 1: FUB API key validation is a real live call to FUB API","Step 1: On success, webhook URL is auto-registered in FUB","Step 2: Agent can provision a new Twilio number by area code","Step 2: Agent can enter an existing Twilio number (E.164 validated)","Step 3: Test SMS is actually delivered to agent mobile number","agents table updated at each step (fub_connected, phone_configured, sms_verified)","Agent can skip any step and complete later via Settings -> Integrations","onboarding_completed = true set on completion screen","All wizard API endpoints require authenticated session","UI is mobile-responsive","E2E: full wizard flow (all 3 steps) passes","E2E: partial flow with skipped steps passes"]
-- **Workflow:** PM > Marketing > Design > Dev > QC
 
 ### fix-resend-api-key-not-configured-in-vercel-email-deli — RESEND_API_KEY not configured in Vercel — email delivery will not work
 
@@ -1755,7 +1755,7 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 ### fix-expired-trial-handling-not-implemented-ac-8 — Expired trial handling not implemented (AC-8)
 
 - **PRD:** -
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 2
 - **Description:** ## Expired trial handling not implemented (AC-8)
 **Type:** bug
@@ -1828,6 +1828,25 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 - Tests pass
 - **Workflow:** Dev > QC
 
+### fix-frontend-components-still-fall-back-to-dashboard-o — Frontend components still fall back to /dashboard/onboarding
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** ## Frontend components still fall back to /dashboard/onboarding
+**Type:** bug
+**Severity:** high
+**Source:** Product review 800c1a93-d8e9-4acb-b800-e5402ab3fed7
+
+**Details:** components/trial-signup-form.tsx:61 and components/pilot-signup-form.tsx:69 both contain fallback: router.push(data.redirectTo || "/dashboard/onboarding"). Even if the API routes are fixed, a missing redirectTo in the response will still route users to the 404 page.
+
+**Suggested fix:** Change fallback in both components from "/dashboard/onboarding" to "/setup"
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
 ### fix-api-endpoint-not-protected-by-session-middleware — API endpoint not protected by session middleware
 
 - **PRD:** -
@@ -1858,25 +1877,6 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 **Source:** Product review 075a0c75-ce7c-4f4f-a990-8d9f94f2c970
 
 **Details:** API returns the message correctly but TrialSignupForm renders it as plain error text. The acceptance criterion requires a sign-in link, not just the word sign in.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-frontend-components-still-fall-back-to-dashboard-o — Frontend components still fall back to /dashboard/onboarding
-
-- **PRD:** -
-- **Status:** in_progress
-- **Priority:** 2
-- **Description:** ## Frontend components still fall back to /dashboard/onboarding
-**Type:** bug
-**Severity:** high
-**Source:** Product review 800c1a93-d8e9-4acb-b800-e5402ab3fed7
-
-**Details:** components/trial-signup-form.tsx:61 and components/pilot-signup-form.tsx:69 both contain fallback: router.push(data.redirectTo || "/dashboard/onboarding"). Even if the API routes are fixed, a missing redirectTo in the response will still route users to the 404 page.
-
-**Suggested fix:** Change fallback in both components from "/dashboard/onboarding" to "/setup"
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
