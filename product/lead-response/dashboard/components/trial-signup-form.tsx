@@ -72,7 +72,6 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         return
       }
 
-<<<<<<< HEAD
       // Store auth token + user in localStorage BEFORE navigation (FR-2)
       // This ensures /setup can render without calling /api/auth/me
       if (data.token) {
