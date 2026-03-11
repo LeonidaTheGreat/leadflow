@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -110,7 +109,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   </div>
 
   <div style="text-align: center; margin: 30px 0;">
-    <a href="https://leadflow-ai-five.vercel.app/dashboard/onboarding" 
+    <a href="https://leadflow-ai-five.vercel.app/setup" 
        style="display: inline-block; background: #10b981; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
       Start Onboarding →
     </a>
@@ -206,7 +205,7 @@ export async function POST(request: NextRequest) {
         first_name: firstName,
         last_name: lastName,
         password_hash: passwordHash,
-        email_verified: false, // Require email verification before login
+        email_verified: true, // No email verification gate for pilot (per PRD)
         plan_tier: 'pilot',
         pilot_started_at: pilotStartedAt,
         pilot_expires_at: pilotExpiresAt,
@@ -248,10 +247,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Log pilot_started event (non-blocking)
-    void Promise.resolve(supabase.from('events').insert({
+    void Promise.resolve(supabase.from('analytics_events').insert({
       event_type: 'pilot_started',
       agent_id: agent.id,
-      event_data: {
+      properties: {
         source: 'pilot_signup',
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
@@ -264,18 +263,6 @@ export async function POST(request: NextRequest) {
     })).catch((err: unknown) => {
       console.error('Failed to log pilot_started event:', err)
     })
-
-    // Create verification token and send email (non-blocking)
-    void (async () => {
-      try {
-        const verificationToken = await createVerificationToken(agent.id)
-        if (verificationToken) {
-          await sendVerificationEmail(agent.email, agent.id, firstName, verificationToken)
-        }
-      } catch (err) {
-        console.error('Failed to send verification email:', err)
-      }
-    })()
 
     // Send welcome email (non-blocking)
     void sendWelcomeEmail(agent.email, `${agent.first_name} ${agent.last_name}`.trim())
@@ -294,14 +281,23 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Return success - user must verify email before logging in
-    // Do NOT set auth cookie - they need to verify email first
-    return NextResponse.json({
+    // Set auth cookie and return success
+    const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
-      message: 'Pilot account created successfully. Please check your email to verify your account.'
+      redirectTo: '/setup',
+      message: 'Pilot account created successfully'
     })
+
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: '/'
+    })
+
+    return response
 
   } catch (error) {
     console.error('Pilot signup error:', error)
