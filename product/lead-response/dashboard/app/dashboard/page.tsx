@@ -3,6 +3,7 @@ import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
+import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
