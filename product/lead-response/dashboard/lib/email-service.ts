@@ -529,7 +529,7 @@ export async function sendWelcomeEmail(
 ): Promise<boolean> {
   const subject = '🎉 Welcome to LeadFlow AI — Your Account is Ready'
   const firstName = data.agentName?.split(' ')[0] || 'there'
-  const dashboardUrl = data.dashboardUrl || 'https://leadflow-ai-five.vercel.app/dashboard/onboarding'
+  const dashboardUrl = data.dashboardUrl || 'https://leadflow-ai-five.vercel.app/setup'
   const isPilot = data.planTier === 'pilot'
   const trialDays = isPilot ? 60 : 30
 
