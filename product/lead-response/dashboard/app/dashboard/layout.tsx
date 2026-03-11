@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import '../globals.css'
 import { DashboardNav } from './dashboard-nav'
 import { PageViewTracker } from '@/components/page-view-tracker'
+import { OnboardingGuard } from '@/components/onboarding-guard'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,6 +19,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className={`${inter.className} min-h-screen bg-slate-50 dark:bg-slate-950`}>
+      <OnboardingGuard />
       <PageViewTracker />
       <DashboardNav />
       <main className="container mx-auto px-4 py-6">

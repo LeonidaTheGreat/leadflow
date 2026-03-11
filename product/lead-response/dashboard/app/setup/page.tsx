@@ -64,6 +64,21 @@ export default function SetupPage() {
   })
   const [loading, setLoading] = useState(true)
 
+  // Mark onboarding complete in DB when the completion screen is reached
+  // (covers both the "all-done" path and the "all-skipped" path)
+  useEffect(() => {
+    if (state.currentStep === 'complete') {
+      const token = getToken()
+      fetch('/api/setup/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }).catch(() => {})
+    }
+  }, [state.currentStep])
+
   // Load user info and existing wizard state on mount
   useEffect(() => {
     const user = getUser()
@@ -152,15 +167,7 @@ export default function SetupPage() {
     const next: Partial<SetupState> = { smsVerified: true, agentPhone, currentStep: 'complete' }
     setState((prev) => ({ ...prev, ...next }))
     saveWizardState(next)
-    // Mark onboarding as done
-    const token = getToken()
-    fetch('/api/setup/complete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    }).catch(() => {})
+    // setup/complete is called by the useEffect when currentStep === 'complete'
   }
 
   const handleSkip = (step: SetupStep) => {
@@ -172,6 +179,21 @@ export default function SetupPage() {
   }
 
   const handleFinish = () => {
+    // Update stored user so the OnboardingGuard won't redirect back to /setup
+    try {
+      const keys = ['leadflow_user'] as const
+      for (const key of keys) {
+        const stored = localStorage.getItem(key) || sessionStorage.getItem(key)
+        if (stored) {
+          const user = JSON.parse(stored)
+          user.onboardingCompleted = true
+          if (localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(user))
+          if (sessionStorage.getItem(key)) sessionStorage.setItem(key, JSON.stringify(user))
+        }
+      }
+    } catch {
+      // non-fatal
+    }
     router.push('/dashboard')
   }
 

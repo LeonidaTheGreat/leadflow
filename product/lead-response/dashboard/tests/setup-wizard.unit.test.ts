@@ -204,3 +204,97 @@ describe('Setup Wizard — completion summary', () => {
     expect(steps.filter(Boolean).length).toBe(3)
   })
 })
+
+// ── New tests for post-onboarding guard and SMS content ───────────────────────
+
+/** Mirror of the SMS message content from send-test route */
+function buildTestSmsBody(agentName: string | undefined): string {
+  const displayName = agentName?.trim() || 'there'
+  return `Hi ${displayName}! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI`
+}
+
+describe('Setup Wizard — SMS test message content (PRD spec)', () => {
+  test('includes agent name when provided', () => {
+    const body = buildTestSmsBody('Alice')
+    expect(body).toContain('Hi Alice!')
+  })
+
+  test('falls back to "there" when name is empty', () => {
+    const body = buildTestSmsBody('')
+    expect(body).toContain('Hi there!')
+  })
+
+  test('falls back to "there" when name is undefined', () => {
+    const body = buildTestSmsBody(undefined)
+    expect(body).toContain('Hi there!')
+  })
+
+  test('contains the PRD-specified completion text', () => {
+    const body = buildTestSmsBody('Bob')
+    expect(body).toContain('auto-respond to leads in under 30 seconds')
+    expect(body).toContain('LeadFlow AI')
+    expect(body).toContain('👋')
+  })
+
+  test('trims whitespace from agent name', () => {
+    const body = buildTestSmsBody('  Carol  ')
+    expect(body).toContain('Hi Carol!')
+  })
+})
+
+/** Mirror of the OnboardingGuard logic */
+function shouldRedirectToSetup(userJson: string | null): boolean {
+  if (!userJson) return false
+  try {
+    const user = JSON.parse(userJson)
+    return user.onboardingCompleted === false
+  } catch {
+    return false
+  }
+}
+
+describe('OnboardingGuard — redirect logic', () => {
+  test('redirects when onboardingCompleted is false', () => {
+    const stored = JSON.stringify({ id: 'u1', onboardingCompleted: false })
+    expect(shouldRedirectToSetup(stored)).toBe(true)
+  })
+
+  test('does NOT redirect when onboardingCompleted is true', () => {
+    const stored = JSON.stringify({ id: 'u1', onboardingCompleted: true })
+    expect(shouldRedirectToSetup(stored)).toBe(false)
+  })
+
+  test('does NOT redirect when onboardingCompleted is null (legacy agent)', () => {
+    const stored = JSON.stringify({ id: 'u1', onboardingCompleted: null })
+    expect(shouldRedirectToSetup(stored)).toBe(false)
+  })
+
+  test('does NOT redirect when no user stored', () => {
+    expect(shouldRedirectToSetup(null)).toBe(false)
+  })
+
+  test('does NOT redirect when onboardingCompleted is undefined', () => {
+    const stored = JSON.stringify({ id: 'u1' })
+    expect(shouldRedirectToSetup(stored)).toBe(false)
+  })
+
+  test('does NOT redirect on malformed JSON', () => {
+    expect(shouldRedirectToSetup('not-json')).toBe(false)
+  })
+})
+
+describe('Setup Wizard — agent fields sync to real_estate_agents', () => {
+  /** Mirror of the step→number mapping used in setup/status POST */
+  function stepToNumber(step: string): number {
+    const stepMap: Record<string, number> = {
+      fub: 0, twilio: 1, 'sms-verify': 2, complete: 3,
+    }
+    return stepMap[step] ?? 0
+  }
+
+  test('fub step maps to 0', () => expect(stepToNumber('fub')).toBe(0))
+  test('twilio step maps to 1', () => expect(stepToNumber('twilio')).toBe(1))
+  test('sms-verify step maps to 2', () => expect(stepToNumber('sms-verify')).toBe(2))
+  test('complete step maps to 3', () => expect(stepToNumber('complete')).toBe(3))
+  test('unknown step defaults to 0', () => expect(stepToNumber('unknown')).toBe(0))
+})

@@ -94,6 +94,29 @@ export async function POST(request: NextRequest) {
       // Non-fatal — return success so client continues
     }
 
+    // Mirror step-completion flags to real_estate_agents for easy querying
+    const agentPatch: Record<string, unknown> = { updated_at: new Date().toISOString() }
+    if (body.fubConnected !== undefined) agentPatch.fub_connected = body.fubConnected
+    if (body.twilioConnected !== undefined) agentPatch.phone_configured = body.twilioConnected
+    if (body.smsVerified !== undefined) agentPatch.sms_verified = body.smsVerified
+    if (body.currentStep !== undefined) {
+      const stepMap: Record<string, number> = {
+        fub: 0, twilio: 1, 'sms-verify': 2, complete: 3,
+      }
+      agentPatch.onboarding_step = stepMap[body.currentStep as string] ?? 0
+    }
+
+    if (Object.keys(agentPatch).length > 1) {
+      const { error: agentErr } = await supabase
+        .from('real_estate_agents')
+        .update(agentPatch)
+        .eq('id', agentId)
+
+      if (agentErr) {
+        console.error('Setup status — agent sync error (non-fatal):', agentErr)
+      }
+    }
+
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('Setup status upsert error:', err)

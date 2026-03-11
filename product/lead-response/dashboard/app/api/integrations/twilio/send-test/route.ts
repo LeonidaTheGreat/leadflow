@@ -38,10 +38,11 @@ export async function POST(request: NextRequest) {
     // Format phone number with +1 country code
     const formattedPhone = `+1${cleanPhone}`
 
-    // Send test SMS
+    // Send test SMS (PRD-specified message content)
     const twilioClient = getTwilioClient()
+    const displayName = agentName?.trim() || 'there'
     const message = await twilioClient.messages.create({
-      body: `Hi! This is a test message from LeadFlow AI. Your SMS integration is working. Test sent by: ${agentName || 'Agent'}`,
+      body: `Hi ${displayName}! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI`,
       from: fromNumber,
       to: formattedPhone,
     })
