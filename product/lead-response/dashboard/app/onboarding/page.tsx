@@ -58,12 +58,6 @@ function OnboardingPageInner() {
     calendarUrl: '',
     calcomLink: '',
     smsPhoneNumber: '',
-    // Aha Moment simulator fields
-    ahaCompleted: false,
-    ahaResponseTimeMs: null as number | null,
-    ahaSkipped: false,
-    simulatorSessionId: '',
-    tempAgentId: '',
     // UTM attribution fields (populated on mount)
     utmSource: null as string | null,
     utmMedium: null as string | null,
@@ -107,15 +101,11 @@ function OnboardingPageInner() {
   const completeOnboarding = async () => {
     setIsLoading(true)
     try {
-// Submit agent data to backend (includes UTM attribution fields and aha moment data)
+      // Submit agent data to backend (includes UTM attribution fields and aha moment data)
       const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...agentData,
-          aha_moment_completed: agentData.ahaCompleted,
-          aha_response_time_ms: agentData.ahaResponseTimeMs,
-        }),
+        body: JSON.stringify(agentData),
       })
 
       if (!response.ok) {

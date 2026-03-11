@@ -41,6 +41,7 @@ interface SimulatorProps {
   agentData: any
   setAgentData: (data: any) => void
 }
+
 export default function OnboardingSimulator({
   onNext,
   onBack,
@@ -71,6 +72,7 @@ export default function OnboardingSimulator({
   // Start the simulation
   const startSimulation = async () => {
     if (!sessionId) return
+    
     setIsLoading(true)
     setError(null)
 
@@ -80,7 +82,7 @@ export default function OnboardingSimulator({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'start',
-agentId: agentData.email || 'unknown',
+          agentId: agentData.email || 'unknown',
           sessionId: sessionId,
         }),
       })
@@ -105,7 +107,7 @@ agentId: agentData.email || 'unknown',
     }
   }
 
-// Poll for status updates
+  // Poll for status updates
   const startPolling = () => {
     // Clear any existing interval
     if (pollingInterval) {
@@ -170,14 +172,14 @@ agentId: agentData.email || 'unknown',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'skip',
-agentId: agentData.email || 'unknown',
+          agentId: agentData.email || 'unknown',
           sessionId: sessionId,
           reason: 'User chose to skip during onboarding',
         }),
       })
 
       if (!response.ok) {
-const errorData = await response.json()
+        const errorData = await response.json()
         throw new Error(errorData.error || 'Failed to skip simulation')
       }
 
@@ -191,7 +193,7 @@ const errorData = await response.json()
       onNext()
     } catch (err: any) {
       setError(err.message || 'Failed to skip simulation')
-} finally {
+    } finally {
       setIsLoading(false)
     }
   }
@@ -236,7 +238,7 @@ const errorData = await response.json()
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
         {/* Header */}
         <div className="text-center mb-8">
-<div className="w-16 h-16 rounded-xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 rounded-xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center mx-auto mb-6">
             <MessageSquare className="w-8 h-8 text-emerald-400" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">See LeadFlow in Action</h2>
@@ -419,4 +421,3 @@ const errorData = await response.json()
     </div>
   )
 }
-
