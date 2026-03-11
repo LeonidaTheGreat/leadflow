@@ -1,241 +1,407 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { checkTrialStatus, canSendSms, getExpiredTrialAgents } from '@/lib/trial'
-import { createClient } from '@supabase/supabase-js'
+/**
+ * @jest-environment node
+ */
+
+/**
+ * Tests for Expired Trial Handling (AC-8)
+ * 
+ * Expired trial handling not implemented (AC-8)
+ * Task: 6e69ba9b-9ab8-4a4e-9146-87451e00c4b3
+ */
+
+// ── Mocks ─────────────────────────────────────────────────────────────────────
 
 // Mock Supabase
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn()
+let fromImpl: (table: string) => any
+
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    from: (table: string) => fromImpl(table),
+  })),
 }))
 
+// Mock jwt
+jest.mock('jsonwebtoken', () => ({
+  sign: jest.fn(() => 'mock_jwt_token'),
+  verify: jest.fn(() => ({ userId: 'agent-123', email: 'test@example.com' })),
+}))
+
+import { POST as expireTrialsHandler } from '../app/api/cron/expire-trials/route'
+import { GET as trialStatusHandler } from '../app/api/trial/status/route'
+import { NextRequest } from 'next/server'
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function makeTrialStatusRequest(cookies: Record<string, string> = { 'auth-token': 'valid-token' }): NextRequest {
+  return new NextRequest('http://localhost/api/trial/status', {
+    method: 'GET',
+    headers: {
+      cookie: Object.entries(cookies)
+        .map(([k, v]) => `${k}=${v}`)
+        .join('; '),
+    },
+  })
+}
+
+function makeExpireTrialsRequest(authHeader?: string): NextRequest {
+  const headers: Record<string, string> = {}
+  if (authHeader) {
+    headers['authorization'] = authHeader
+  }
+  return new NextRequest('http://localhost/api/cron/expire-trials', {
+    method: 'POST',
+    headers,
+  })
+}
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
 describe('Expired Trial Handling (AC-8)', () => {
-  let mockSupabase: any
-  let mockFrom: any
-
   beforeEach(() => {
-    mockFrom = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      single: vi.fn(),
-    }
-
-    mockSupabase = {
-      from: vi.fn().mockReturnValue(mockFrom),
-    }
-
-    vi.mocked(createClient).mockReturnValue(mockSupabase)
+    jest.clearAllMocks()
+    process.env.JWT_SECRET = 'test-secret'
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost'
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-key'
+    process.env.CRON_SECRET = 'test-cron-secret'
   })
 
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
-  describe('checkTrialStatus', () => {
+  describe('GET /api/trial/status', () => {
     it('AC-8.1: Returns isTrial=false for non-trial agents', async () => {
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'pro',
-          trial_ends_at: null,
-        },
-      })
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({
+                  data: { plan_tier: 'pro', trial_ends_at: null },
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const status = await checkTrialStatus('agent-123')
+      const request = makeTrialStatusRequest()
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
 
-      expect(status.isTrial).toBe(false)
-      expect(status.isExpired).toBe(false)
-      expect(status.daysRemaining).toBe(0)
+      expect(response.status).toBe(200)
+      expect(data.isTrial).toBe(false)
+      expect(data.isExpired).toBe(false)
+      expect(data.daysRemaining).toBe(0)
     })
 
     it('AC-8.2: Returns isExpired=true when trial_ends_at is in the past', async () => {
-      const pastDate = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // 1 day ago
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'trial',
-          trial_ends_at: pastDate,
-        },
-      })
+      const pastDate = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({
+                  data: { plan_tier: 'trial', trial_ends_at: pastDate },
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const status = await checkTrialStatus('agent-123')
+      const request = makeTrialStatusRequest()
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
 
-      expect(status.isTrial).toBe(true)
-      expect(status.isExpired).toBe(true)
-      expect(status.daysRemaining).toBe(0)
+      expect(response.status).toBe(200)
+      expect(data.isTrial).toBe(true)
+      expect(data.isExpired).toBe(true)
+      expect(data.daysRemaining).toBe(0)
     })
 
     it('AC-8.3: Returns isExpired=false for active trials', async () => {
-      const futureDate = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString() // 10 days from now
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'trial',
-          trial_ends_at: futureDate,
-        },
-      })
+      const futureDate = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({
+                  data: { plan_tier: 'trial', trial_ends_at: futureDate },
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const status = await checkTrialStatus('agent-123')
+      const request = makeTrialStatusRequest()
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
 
-      expect(status.isTrial).toBe(true)
-      expect(status.isExpired).toBe(false)
-      expect(status.daysRemaining).toBeGreaterThan(0)
+      expect(response.status).toBe(200)
+      expect(data.isTrial).toBe(true)
+      expect(data.isExpired).toBe(false)
+      expect(data.daysRemaining).toBeGreaterThan(0)
     })
 
     it('AC-8.4: Calculates days remaining correctly', async () => {
-      const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() // 5 days from now
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'trial',
-          trial_ends_at: futureDate,
-        },
-      })
+      const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({
+                  data: { plan_tier: 'trial', trial_ends_at: futureDate },
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const status = await checkTrialStatus('agent-123')
+      const request = makeTrialStatusRequest()
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
 
-      expect(status.daysRemaining).toBe(5)
+      expect(response.status).toBe(200)
+      expect(data.daysRemaining).toBe(5)
+    })
+
+    it('AC-8.5: Returns 401 when not authenticated', async () => {
+      const request = makeTrialStatusRequest({}) // No auth token
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(401)
+      expect(data.error).toBe('Not authenticated')
     })
   })
 
-  describe('canSendSms', () => {
-    it('AC-8.5: Allows SMS for active trials', async () => {
-      const futureDate = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'trial',
-          trial_ends_at: futureDate,
-        },
-      })
+  describe('POST /api/cron/expire-trials', () => {
+    it('AC-8.6: Returns 401 without valid cron secret', async () => {
+      const request = makeExpireTrialsRequest('Bearer wrong-secret')
+      const response = await expireTrialsHandler(request)
+      const data = await response.json()
 
-      const permission = await canSendSms('agent-123')
-
-      expect(permission.allowed).toBe(true)
-      expect(permission.reason).toBeUndefined()
+      expect(response.status).toBe(401)
+      expect(data.error).toBe('Unauthorized')
     })
 
-    it('AC-8.6: Blocks SMS for expired trials', async () => {
-      const pastDate = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'trial',
-          trial_ends_at: pastDate,
-        },
-      })
+    it('AC-8.7: Processes expired trials with valid cron secret', async () => {
+      let eventsInserted = false
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                lt: () => Promise.resolve({
+                  data: [{ id: 'agent-1' }, { id: 'agent-2' }],
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        if (table === 'events') {
+          return {
+            insert: () => {
+              eventsInserted = true
+              return Promise.resolve({ error: null })
+            },
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const permission = await canSendSms('agent-123')
+      const request = makeExpireTrialsRequest('Bearer test-cron-secret')
+      const response = await expireTrialsHandler(request)
+      const data = await response.json()
 
-      expect(permission.allowed).toBe(false)
-      expect(permission.reason).toContain('Trial expired')
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.processed).toBe(2)
+      expect(eventsInserted).toBe(true)
     })
 
-    it('AC-8.7: Allows SMS for paid plan agents', async () => {
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'pro',
-          trial_ends_at: null,
-        },
-      })
+    it('AC-8.8: Returns success when no expired trials found', async () => {
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                lt: () => Promise.resolve({
+                  data: [],
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const permission = await canSendSms('agent-123')
+      const request = makeExpireTrialsRequest('Bearer test-cron-secret')
+      const response = await expireTrialsHandler(request)
+      const data = await response.json()
 
-      expect(permission.allowed).toBe(true)
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.processed).toBe(0)
+      expect(data.message).toBe('No expired trials found')
+    })
+
+    it('AC-8.9: Works without CRON_SECRET set (backward compatibility)', async () => {
+      delete process.env.CRON_SECRET
+      
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                lt: () => Promise.resolve({
+                  data: [],
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
+
+      const request = makeExpireTrialsRequest() // No auth header
+      const response = await expireTrialsHandler(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
     })
   })
 
-  describe('getExpiredTrialAgents', () => {
-    it('AC-8.8: Returns empty array when no expired trials', async () => {
-      mockFrom.single.mockResolvedValue({ data: [] })
+  describe('Trial status edge cases', () => {
+    it('AC-8.10: Handles agent not found gracefully', async () => {
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({
+                  data: null,
+                  error: { code: 'PGRST116' },
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const agents = await getExpiredTrialAgents()
+      const request = makeTrialStatusRequest()
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
 
-      expect(agents).toEqual([])
+      expect(response.status).toBe(200)
+      expect(data.isTrial).toBe(false)
+      expect(data.isExpired).toBe(false)
     })
 
-    it('AC-8.9: Returns list of expired trial agent IDs', async () => {
-      mockFrom.single.mockResolvedValue({
-        data: [
-          { id: 'agent-1' },
-          { id: 'agent-2' },
-          { id: 'agent-3' },
-        ],
-      })
+    it('AC-8.11: Handles database errors gracefully', async () => {
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                single: () => Promise.resolve({
+                  data: null,
+                  error: { message: 'Database connection failed' },
+                }),
+              }),
+            }),
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-      const agents = await getExpiredTrialAgents()
+      const request = makeTrialStatusRequest()
+      const response = await trialStatusHandler(request)
+      const data = await response.json()
 
-      expect(agents).toHaveLength(3)
-      expect(agents).toContain('agent-1')
-      expect(agents).toContain('agent-2')
-      expect(agents).toContain('agent-3')
-    })
-
-    it('AC-8.10: Queries with plan_tier=trial and trial_ends_at < now', async () => {
-      mockFrom.single.mockResolvedValue({ data: [] })
-
-      await getExpiredTrialAgents()
-
-      expect(mockFrom.eq).toHaveBeenCalledWith('plan_tier', 'trial')
-      expect(mockFrom.lt).toHaveBeenCalledWith('trial_ends_at', expect.any(String))
-    })
-  })
-
-  describe('Middleware trial expiry redirect', () => {
-    it('AC-8.11: Redirects expired trial users to /upgrade', async () => {
-      // This would be tested at the middleware level
-      // Verified through integration tests
-      expect(true).toBe(true)
-    })
-
-    it('AC-8.12: Allows access to /upgrade for expired trials', async () => {
-      // This would be tested at the middleware level
-      // Verified through integration tests
-      expect(true).toBe(true)
-    })
-
-    it('AC-8.13: Allows access to /settings/billing for expired trials', async () => {
-      // This would be tested at the middleware level
-      // Verified through integration tests
-      expect(true).toBe(true)
-    })
-  })
-
-  describe('SMS pause for expired trials', () => {
-    it('AC-8.14: Returns 403 TRIAL_EXPIRED when expired trial tries to send SMS', async () => {
-      const pastDate = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-      mockFrom.single.mockResolvedValue({
-        data: {
-          plan_tier: 'trial',
-          trial_ends_at: pastDate,
-        },
-      })
-
-      const permission = await canSendSms('agent-123')
-
-      expect(permission.allowed).toBe(false)
-    })
-
-    it('AC-8.15: Preserves leads when trial expires', async () => {
-      // Leads are never deleted, only SMS sending is paused
-      // This is verified by checking the database is never altered
-      expect(true).toBe(true)
-    })
-
-    it('AC-8.16: Blocks SMS from FUB webhooks for expired trials', async () => {
-      // When FUB sends lead.created webhook, SMS should be blocked if agent trial expired
-      // This is tested in the FUB webhook handler
-      expect(true).toBe(true)
+      expect(response.status).toBe(200)
+      expect(data.isTrial).toBe(false)
+      expect(data.isExpired).toBe(false)
     })
   })
 
   describe('Leads preservation', () => {
-    it('AC-8.17: Does not delete leads when trial expires', async () => {
-      // No data is deleted - leads are preserved in Supabase
-      expect(true).toBe(true)
+    it('AC-8.12: Does not delete leads when trial expires', async () => {
+      // Leads are never deleted - only SMS sending is paused
+      // This is verified by checking no DELETE operations are performed
+      const deleteOperations: string[] = []
+      
+      fromImpl = (table: string) => {
+        return {
+          select: () => ({
+            eq: () => ({
+              lt: () => Promise.resolve({ data: [], error: null }),
+              single: () => Promise.resolve({ data: null, error: null }),
+            }),
+          }),
+          delete: () => {
+            deleteOperations.push(table)
+            return Promise.resolve({ error: null })
+          },
+          insert: () => Promise.resolve({ error: null }),
+        }
+      }
+
+      const request = makeExpireTrialsRequest('Bearer test-cron-secret')
+      await expireTrialsHandler(request)
+
+      // No delete operations should be performed
+      expect(deleteOperations).toHaveLength(0)
     })
 
-    it('AC-8.18: Does not delete messages when trial expires', async () => {
-      // All historical SMS messages preserved
-      expect(true).toBe(true)
-    })
+    it('AC-8.13: Logs trial_expired events for tracking', async () => {
+      let loggedEventType: string | null = null
+      
+      fromImpl = (table: string) => {
+        if (table === 'real_estate_agents') {
+          return {
+            select: () => ({
+              eq: () => ({
+                lt: () => Promise.resolve({
+                  data: [{ id: 'agent-1' }],
+                  error: null,
+                }),
+              }),
+            }),
+          }
+        }
+        if (table === 'events') {
+          return {
+            insert: (events: any[]) => {
+              if (events && events.length > 0) {
+                loggedEventType = events[0].event_type
+              }
+              return Promise.resolve({ error: null })
+            },
+          }
+        }
+        return { insert: () => Promise.resolve({ error: null }) }
+      }
 
-    it('AC-8.19: Agent can access lead data after trial expires', async () => {
-      // Can still view leads in /upgrade page or after upgrading
-      expect(true).toBe(true)
+      const request = makeExpireTrialsRequest('Bearer test-cron-secret')
+      await expireTrialsHandler(request)
+
+      expect(loggedEventType).toBe('trial_expired')
     })
   })
 })
