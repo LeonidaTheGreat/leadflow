@@ -299,7 +299,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       agentId: agent.id,
-<<<<<<< HEAD
       redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
       message: 'Pilot account created successfully. Please check your email to verify your account.'
     })
