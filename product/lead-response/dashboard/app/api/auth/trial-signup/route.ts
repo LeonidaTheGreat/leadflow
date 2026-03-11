@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
 import { sendWelcomeEmail } from '@/lib/email-service'
+import { initializeSurveySchedule } from '@/lib/nps-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -109,6 +110,11 @@ export async function POST(request: NextRequest) {
       }
     })()
 
+    // Initialize NPS survey schedule for the new agent (non-blocking)
+    void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
+      console.error('Failed to initialize NPS survey schedule:', err)
+    })
+
     // Log trial_started event (non-blocking)
     void Promise.resolve(supabase.from('events').insert({
       event_type: 'trial_started',
@@ -153,6 +159,7 @@ export async function POST(request: NextRequest) {
 
     // Return success - user must verify email before logging in
     // Do NOT set auth cookie - they need to verify email first
+    // After email verification, they'll be redirected to /setup for onboarding
     return NextResponse.json({
       success: true,
       agentId: agent.id,

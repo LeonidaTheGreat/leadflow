@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-23
+title: BO2026 Dashboard - Updated 2026-03-11
 author: LeadFlow Orchestrator
-date: 2026-03-23
+date: 2026-03-11
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 37 of 60  
+**Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/23/2026, 1:19:31 AM
+**Last Updated:** 3/11/2026, 2:19:52 AM
 
 ---
 
@@ -24,7 +24,7 @@ autoRefresh: every_heartbeat
 | **Twilio SMS** | ✅ TESTED | SMS sent successfully via API |
 | **AI Qualification** | ✅ READY | Claude integration ready |
 | **Dashboard** | ✅ LIVE | Lead feed, stats, detail view, analytics |
-| **Database** | ✅ LIVE | Local PostgreSQL connected, 30+ test leads verified |
+| **Database** | ✅ LIVE | Supabase connected, 30+ test leads, all tables verified |
 | **Compliance** | ✅ READY | TCPA audit complete, system approved |
 | **Pilot Accounts** | ✅ READY | 3 agents created and active |
 | **SMS Testing** | ✅ VERIFIED | Test SMS confirmed working |
@@ -33,19 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 1 | In Progress: 1 | Blocked: 0 | Done: 925
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 747
 
-### ▶️ Ready to Spawn (1 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Implement: Fix cookie name mismatch in trial/start route | kimi | $0.00 | 🔴 P0 |
+| Dev: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign - Onboarding wizard stuck - no aha moment for new signups | kimi | $0.24 | 🟡 P1 |
+| Dev: fix-api-endpoints-developer-table-embedded-in-marketin - API Endpoints developer table embedded in marketing landing page | kimi | $0.24 | 🟡 P1 |
 
 ### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| PM: Product Review — Fix Signup Page — Plan Options Not Displayed | product-manager | kimi |
+| Dev: fix-no-cron-job-or-api-endpoint-to-trigger-automated-n - No cron job or API endpoint to trigger automated NPS surveys | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -103,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $479.97
-**Cost per task:** Avg $0.48
+**Estimated project cost:** $337.88
+**Cost per task:** Avg $0.41
 
 ---
 
@@ -117,7 +118,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **1 tasks ready to spawn**
+1. ✅ **2 tasks ready to spawn**
 2. ⚡ **1 agents active**
 3. ✅ No blockers
 
