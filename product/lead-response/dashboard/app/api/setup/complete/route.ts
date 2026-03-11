@@ -58,21 +58,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Log onboarding_completed event
-    try {
-      await supabase.from('events').insert({
-        agent_id: payload.userId,
-        event_type: 'onboarding_completed',
-        event_data: {
-          fubConnected,
-          smsConnected,
-          simulatorCompleted
-        },
-        source: 'setup_wizard',
-        created_at: new Date().toISOString()
-      })
-    } catch {
-      // Non-blocking event logging - silently ignore errors
-    }
+    await supabase.from('events').insert({
+      agent_id: payload.userId,
+      event_type: 'onboarding_completed',
+      event_data: {
+        fubConnected,
+        smsConnected,
+        simulatorCompleted
+      },
+      source: 'setup_wizard',
+      created_at: new Date().toISOString()
+    }).catch(() => {}) // Non-blocking
 
     return NextResponse.json({
       success: true,

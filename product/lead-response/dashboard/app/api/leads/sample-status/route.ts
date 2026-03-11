@@ -55,17 +55,13 @@ export async function GET(request: NextRequest) {
 
     // Log sample_data_rendered event if sample leads exist
     if (count && count > 0) {
-      try {
-        await supabase.from('events').insert({
-          agent_id: payload.userId,
-          event_type: 'sample_data_rendered',
-          event_data: { sampleLeadCount: count },
-          source: 'dashboard',
-          created_at: new Date().toISOString()
-        })
-      } catch {
-        // Non-blocking event logging - silently ignore errors
-      }
+      await supabase.from('events').insert({
+        agent_id: payload.userId,
+        event_type: 'sample_data_rendered',
+        event_data: { sampleLeadCount: count },
+        source: 'dashboard',
+        created_at: new Date().toISOString()
+      }).catch(() => {}) // Non-blocking
     }
 
     return NextResponse.json({
