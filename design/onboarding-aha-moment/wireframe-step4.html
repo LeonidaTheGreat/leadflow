@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadFlow Onboarding - Step 4: See It In Action (Wireframe)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Phone mockup styling */
+        .phone-mockup {
+            background: #000;
+            border-radius: 2.5rem;
+            border: 6px solid #1e293b;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #000;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 10;
+        }
+        
+        /* Chat bubble animations */
+        @keyframes message-pop {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(0.5rem);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .message-animate {
+            animation: message-pop 0.4s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .delay-0 { animation-delay: 0s; }
+        .delay-1 { animation-delay: 0.8s; }
+        .delay-2 { animation-delay: 1.6s; }
+        .delay-3 { animation-delay: 2.4s; }
+        
+        /* Typing indicator */
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+        
+        /* Success pulse */
+        @keyframes success-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        
+        .success-pulse {
+            animation: success-pulse 0.8s ease-out;
+        }
+        
+        /* Step indicator pulse */
+        @keyframes step-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.2); }
+        }
+        
+        .step-active {
+            animation: step-pulse 2s infinite;
+        }
+        
+        /* Scrollbar styling for chat */
+        .chat-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <!-- Decorative blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="border-b border-slate-700/50 backdrop-blur-sm bg-slate-900/50">
+            <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+                        <span class="text-emerald-400 font-bold text-sm">▶</span>
+                    </div>
+                    <h1 class="text-lg font-semibold text-white">LeadFlow AI</h1>
+                </div>
+                <button class="text-sm text-slate-400 hover:text-slate-200 transition-colors">
+                    Skip for now →
+                </button>
+            </div>
+        </header>
+
+        <!-- Step indicators (4 steps) -->
+        <div class="border-b border-slate-700/50 bg-slate-900/30">
+            <div class="max-w-3xl mx-auto px-4 py-6">
+                <div class="flex items-center gap-2">
+                    <!-- Step 1: FUB -->
+                    <div class="flex items-center gap-2 flex-1">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="hidden sm:block min-w-0">
+                                <div class="text-sm font-medium text-emerald-400 truncate">Connect FUB</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 h-px mx-2 bg-emerald-500"></div>
+                    </div>
+
+                    <!-- Step 2: Phone -->
+                    <div class="flex items-center gap-2 flex-1">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="hidden sm:block min-w-0">
+                                <div class="text-sm font-medium text-emerald-400 truncate">Configure SMS</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 h-px mx-2 bg-emerald-500"></div>
+                    </div>
+
+                    <!-- Step 3: Verify -->
+                    <div class="flex items-center gap-2 flex-1">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="hidden sm:block min-w-0">
+                                <div class="text-sm font-medium text-emerald-400 truncate">Verify SMS</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 h-px mx-2 bg-emerald-500"></div>
+                    </div>
+
+                    <!-- Step 4: See It In Action (ACTIVE) -->
+                    <div class="flex items-center gap-2 flex-1">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center shrink-0 step-active">
+                                <span class="text-xs font-bold">4</span>
+                            </div>
+                            <div class="hidden sm:block min-w-0">
+                                <div class="text-sm font-medium text-white truncate">See It In Action</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex items-center justify-center px-4 py-8">
+            <div class="w-full max-w-2xl">
+                <div class="animate-[fade-in-up_0.5s_ease-out]">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-6 md:p-10">
+                        
+                        <!-- Header Section -->
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto mb-4">
+                                <span class="text-3xl">🎯</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-white mb-2">See it in action</h2>
+                            <p class="text-slate-400 text-sm max-w-md mx-auto">
+                                Watch how LeadFlow responds to a new lead in under 30 seconds
+                            </p>
+                        </div>
+
+                        <!-- Simulation Card -->
+                        <div class="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 md:p-6 mb-6">
+                            
+                            <!-- Phone Mockup -->
+                            <div class="phone-mockup w-full max-w-[280px] mx-auto mb-6">
+                                <div class="phone-notch"></div>
+                                
+                                <!-- Phone Status Bar -->
+                                <div class="bg-black pt-8 pb-2 px-4 text-center">
+                                    <span class="text-white text-xs font-medium">9:41</span>
+                                </div>
+                                
+                                <!-- Contact Header -->
+                                <div class="bg-gray-900 px-4 py-3 border-b border-gray-800">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                                            SJ
+                                        </div>
+                                        <div>
+                                            <div class="text-white text-sm font-medium">Sarah Johnson</div>
+                                            <div class="text-gray-500 text-xs">Online</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Chat Area -->
+                                <div class="bg-black p-3 h-[280px] overflow-y-auto chat-scroll">
+                                    <div class="space-y-3">
+                                        
+                                        <!-- Lead Message 1 -->
+                                        <div class="message-animate delay-0 flex gap-2">
+                                            <div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex flex-col gap-1 max-w-[75%]">
+                                                <div class="bg-gray-700 text-white text-xs px-3 py-2 rounded-2xl rounded-tl-sm">
+                                                    Hi! I'm interested in buying a home in Austin. Can you help me?
+                                                </div>
+                                                <span class="text-[10px] text-gray-500 ml-1">9:41 AM</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- AI Message 1 -->
+                                        <div class="message-animate delay-1 flex gap-2 flex-row-reverse">
+                                            <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-xs shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex flex-col gap-1 max-w-[75%] items-end">
+                                                <div class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm">
+                                                    Hi Sarah! 👋 I'd love to help you find a home in Austin. Are you looking to buy in the next 1-3 months?
+                                                </div>
+                                                <span class="text-[10px] text-gray-500 mr-1">9:41 AM</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Lead Message 2 -->
+                                        <div class="message-animate delay-2 flex gap-2">
+                                            <div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex flex-col gap-1 max-w-[75%]">
+                                                <div class="bg-gray-700 text-white text-xs px-3 py-2 rounded-2xl rounded-tl-sm">
+                                                    Yes! My budget is around $600,000
+                                                </div>
+                                                <span class="text-[10px] text-gray-500 ml-1">9:42 AM</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- AI Message 2 (with typing indicator first) -->
+                                        <div class="message-animate delay-3 flex gap-2 flex-row-reverse">
+                                            <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-xs shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex flex-col gap-1 max-w-[75%] items-end">
+                                                <div class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-2xl rounded-tr-sm">
+                                                    Perfect! With a $600K budget, you have excellent options. I found 3 properties that match — want me to send details? 📋
+                                                </div>
+                                                <span class="text-[10px] text-gray-500 mr-1">9:42 AM</span>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <!-- Phone Input Area -->
+                                <div class="bg-gray-900 px-3 py-2 border-t border-gray-800">
+                                    <div class="bg-gray-800 rounded-full px-4 py-2 flex items-center justify-between">
+                                        <span class="text-gray-500 text-xs">Message</span>
+                                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Status Bar -->
+                            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 text-center success-pulse">
+                                <div class="flex items-center justify-center gap-2 mb-1">
+                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-emerald-400">AI responded in 4.2 seconds</span>
+                                </div>
+                                <div class="text-xs text-slate-400">
+                                    ✅ Lead engaged • 4 messages exchanged
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Card -->
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
+                            <div class="flex gap-3">
+                                <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm text-blue-300">
+                                        <span class="font-medium">This is a simulation.</span> No real SMS was sent. When a real lead comes in, this is exactly how LeadFlow will respond — 24/7, in under 30 seconds.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button class="sm:flex-none px-6 py-3 text-slate-400 hover:text-emerald-400 font-medium transition-colors text-sm border border-slate-700 rounded-lg hover:border-emerald-500/50 flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Run Again
+                            </button>
+                            <button class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 group">
+                                Go to Dashboard
+                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Optional: Add interactivity for the "Run Again" button
+        document.querySelector('button').addEventListener('click', function() {
+            // Reload page to replay animations
+            location.reload();
+        });
+    </script>
+</body>
+</html>
