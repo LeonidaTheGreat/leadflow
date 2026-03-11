@@ -58,6 +58,34 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* How It Works — 3 Steps */}
+      <section id="how-it-works" className="container mx-auto px-4 py-20">
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          How It Works
+        </h3>
+        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          Get started in minutes — no technical setup required.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <HowItWorksStep
+            step={1}
+            title="Connect Your CRM"
+            description="Link your Follow Up Boss account in one click. We sync your leads automatically."
+          />
+          <HowItWorksStep
+            step={2}
+            title="AI Responds Instantly"
+            description="When a new lead arrives, our AI qualifies them and sends a personalized SMS in under 30 seconds."
+          />
+          <HowItWorksStep
+            step={3}
+            title="You Close the Deal"
+            description="Qualified leads get booked on your calendar. You focus on showing homes and closing deals."
+          />
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="container mx-auto px-4 py-20">
         <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
@@ -258,6 +286,18 @@ function TestimonialCard({
           <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
         </div>
       </div>
+    </div>
+  )
+}
+
+function HowItWorksStep({ step, title, description }: { step: number; title: string; description: string }) {
+  return (
+    <div className="text-center">
+      <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold mx-auto mb-4">
+        {step}
+      </div>
+      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
     </div>
   )
 }
