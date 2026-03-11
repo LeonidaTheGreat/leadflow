@@ -65,6 +65,30 @@ function validateJWTToken(token: string): { userId: string; email: string } | nu
   }
 }
 
+/**
+ * Check if an agent has completed onboarding
+ */
+async function isOnboardingCompleted(userId: string): Promise<boolean | null> {
+  try {
+    const supabase = getSupabase()
+    const { data, error } = await supabase
+      .from('real_estate_agents')
+      .select('onboarding_completed')
+      .eq('id', userId)
+      .single()
+
+    if (error || !data) {
+      console.error('Error fetching onboarding status:', error)
+      return null
+    }
+
+    return data.onboarding_completed ?? false
+  } catch (error) {
+    console.error('Error checking onboarding status:', error)
+    return null
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
   
@@ -117,6 +141,21 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
+  }
+  
+  // Check if authenticated user is accessing dashboard without completing onboarding
+  if (isProtectedRoute && isAuthenticated && pathname === '/dashboard') {
+    // Extract userId from JWT token
+    const userId = jwtPayload?.userId
+    
+    if (userId) {
+      const onboardingCompleted = await isOnboardingCompleted(userId)
+      
+      // If onboarding is not completed, redirect to /onboarding
+      if (onboardingCompleted === false) {
+        return NextResponse.redirect(new URL('/onboarding', request.url))
+      }
+    }
   }
   
   // Redirect authenticated users from auth routes to dashboard
