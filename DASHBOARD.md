@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/11/2026, 4:05:05 AM
+**Last Updated:** 3/11/2026, 5:10:13 AM
 
 ---
 
@@ -33,20 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 1 | In Progress: 2 | Blocked: 0 | Done: 768
+**Queue Health:** Ready: 1 | In Progress: 2 | Blocked: 0 | Done: 781
 
 ### ▶️ Ready to Spawn (1 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: fix-middleware-blocks-authenticated-users-from-onboard - Middleware blocks authenticated users from /onboarding route | haiku | $0.40 | 🟡 P1 |
+| Escalation: Fix recurring build failure — unknown | sonnet | $0.60 | 🔴 P0 |
 
 ### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| QC: fix-analytics-events-table-missing-trial-funnel-tracki - analytics_events table missing — trial funnel tracking fails silently | qc | kimi |
-| Dev: fix-api-response-format-does-not-match-prd-contract - API response format does not match PRD contract | dev | kimi |
+| QC: fix-frontend-components-still-fall-back-to-dashboard-o - Frontend components still fall back to /dashboard/onboarding | qc | kimi |
+| Dev: fix-expired-trial-handling-not-implemented-ac-8 - Expired trial handling not implemented (AC-8) | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +104,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $342.19
+**Estimated project cost:** $345.05
 **Cost per task:** Avg $0.40
 
 ---
