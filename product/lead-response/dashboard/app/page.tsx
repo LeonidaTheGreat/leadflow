@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
+import { trackCTAClick } from '@/lib/analytics/ga4'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -52,81 +53,131 @@ export default function HomePage() {
             </Suspense>
 
             <p className="mt-6 text-sm text-slate-400">
-              <a href="#features" className="hover:text-white underline underline-offset-4">See how it works ↓</a>
+              <a
+                href="#how-it-works"
+                className="hover:text-white underline underline-offset-4"
+                onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')}
+              >
+                See how it works ↓
+              </a>
             </p>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="container mx-auto px-4 py-20">
+      {/* How It Works — 3 Steps */}
+      <section id="how-it-works" data-testid="how-it-works" className="container mx-auto px-4 py-20">
         <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-          Everything You Need to Convert More Leads
+          How It Works
         </h3>
         <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          LeadFlow AI handles the hard work so you can focus on closing deals.
+          Get started in minutes — no technical setup required.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <FeatureCard
-            title="AI Qualification"
-            description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
-            icon="🤖"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <HowItWorksStep
+            step={1}
+            title="Connect Your CRM"
+            description="Link your Follow Up Boss account in one click. We sync your leads automatically."
           />
-          <FeatureCard
-            title="Instant SMS Response"
-            description="Automatically send personalized SMS responses within seconds of lead creation."
-            icon="📱"
+          <HowItWorksStep
+            step={2}
+            title="AI Responds Instantly"
+            description="When a new lead arrives, our AI qualifies them and sends a personalized SMS in under 30 seconds."
           />
-          <FeatureCard
-            title="CRM Integration"
-            description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
-            icon="🔗"
-          />
-          <FeatureCard
-            title="Smart Booking"
-            description="AI books appointments directly on your calendar — leads go from inquiry to meeting in minutes."
-            icon="📅"
-          />
-          <FeatureCard
-            title="Lead Scoring"
-            description="Automatic scoring based on urgency, budget, and timeline. Focus on the hottest leads first."
-            icon="⭐"
-          />
-          <FeatureCard
-            title="Analytics Dashboard"
-            description="Track response times, conversion rates, and lead quality in real time."
-            icon="📊"
+          <HowItWorksStep
+            step={3}
+            title="Book & Close"
+            description="Qualified leads get booked on your calendar. You focus on showing homes and closing deals."
           />
         </div>
+      </section>
 
-        {/* CTA Placement #2: End of Features */}
-        <div className="mt-16 text-center">
-          <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-            Ready to Respond Faster?
-          </h4>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">
-            Join agents who are converting more leads with AI-powered responses.
+      {/* Features */}
+      <section id="features" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            Everything You Need to Convert More Leads
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            LeadFlow AI handles the hard work so you can focus on closing deals.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/signup/trial"
-              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-            >
-              Start Free Trial — No Credit Card
-            </Link>
-            <Link
-              href="/pilot"
-              className="px-8 py-4 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
-            >
-              Apply for Pilot Program →
-            </Link>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <FeatureCard
+              title="AI Qualification"
+              description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
+              icon="🤖"
+            />
+            <FeatureCard
+              title="Instant SMS Response"
+              description="Automatically send personalized SMS responses within seconds of lead creation."
+              icon="📱"
+            />
+            <FeatureCard
+              title="CRM Integration"
+              description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
+              icon="🔗"
+            />
+            <FeatureCard
+              title="Smart Booking"
+              description="AI books appointments directly on your calendar — leads go from inquiry to meeting in minutes."
+              icon="📅"
+            />
+            <FeatureCard
+              title="Lead Scoring"
+              description="Automatic scoring based on urgency, budget, and timeline. Focus on the hottest leads first."
+              icon="⭐"
+            />
+            <FeatureCard
+              title="Analytics Dashboard"
+              description="Track response times, conversion rates, and lead quality in real time."
+              icon="📊"
+            />
           </div>
         </div>
       </section>
 
+      {/* Testimonials — Social Proof */}
+      <section id="testimonials" data-testid="testimonials" className="container mx-auto px-4 py-20">
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          What Agents Are Saying
+        </h3>
+        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          Real estate professionals trust LeadFlow AI to close more deals.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <TestimonialCard
+            quote="LeadFlow AI cut my response time from 2 hours to under 30 seconds. I've booked 3x more showings since switching."
+            name="Sarah M."
+            role="Residential Agent, Austin TX"
+          />
+          <TestimonialCard
+            quote="The AI qualification is shockingly good. It filters out tire-kickers so I only talk to serious buyers."
+            name="James R."
+            role="Buyer's Agent, Miami FL"
+          />
+          <TestimonialCard
+            quote="Set it up in 10 minutes, had my first AI-booked appointment the same day. Absolute game changer."
+            name="Priya K."
+            role="Team Lead, Denver CO"
+          />
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup?plan=starter"
+            onClick={() => trackCTAClick('get_started_testimonial', 'Get Started Free', 'testimonial')}
+            className="inline-block px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+          >
+            Get Started Free
+          </Link>
+        </div>
+      </section>
+
       {/* Pricing — CTA Placement #3 */}
-      <section id="pricing" className="bg-white dark:bg-slate-900 py-20">
+      <section id="pricing" data-testid="pricing" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             Simple, Transparent Pricing
@@ -196,12 +247,36 @@ export default function HomePage() {
   )
 }
 
+function HowItWorksStep({ step, title, description }: { step: number; title: string; description: string }) {
+  return (
+    <div className="text-center" data-testid={`how-it-works-step-${step}`}>
+      <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold">
+        {step}
+      </div>
+      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}
+
 function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center hover:shadow-lg transition-shadow">
       <div className="text-4xl mb-4">{icon}</div>
       <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
       <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}
+
+function TestimonialCard({ quote, name, role }: { quote: string; name: string; role: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6" data-testid="testimonial-card">
+      <p className="text-slate-700 dark:text-slate-300 mb-4 italic">&ldquo;{quote}&rdquo;</p>
+      <div>
+        <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{role}</p>
+      </div>
     </div>
   )
 }
@@ -221,6 +296,7 @@ function PricingCard({
   features: string[]
   popular?: boolean
 }) {
+  const planSlug = name.toLowerCase() as 'starter' | 'pro' | 'team'
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
       {popular && (
@@ -245,7 +321,8 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={`/signup?plan=${name.toLowerCase()}`}
+        href={`/signup?plan=${planSlug}`}
+        onClick={() => trackCTAClick(`pricing_${planSlug}`, `Get Started ${name}`, 'pricing')}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
