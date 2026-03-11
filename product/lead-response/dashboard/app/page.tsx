@@ -425,5 +425,3 @@ function PricingCard({
     </div>
   )
 }
-
-
