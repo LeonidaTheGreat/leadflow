@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Calculate trial end date (14 days from now — standardized per action_item ec7162a6)
+    // Calculate trial end date (14 days from now per PRD-FRICTIONLESS-ONBOARDING-001)
     const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
     // Create agent record with trial tier
@@ -96,39 +96,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log trial_started event (fire-and-forget, non-blocking)
-    void (async () => {
-      try {
-        await supabase.from('analytics_events').insert({
-          event_type: 'trial_started',
-          agent_id: agent.id,
-          properties: {
-            source: 'trial_cta',
-            utm_source: utm_source || null,
-            utm_medium: utm_medium || null,
-            utm_campaign: utm_campaign || null,
-            plan_tier: 'trial',
-            trial_days: 30
-          },
-          created_at: new Date().toISOString()
-        })
-      } catch (err: unknown) {
-        // Non-blocking — don't fail signup if analytics insert fails
-        console.error('Failed to log trial_started event:', err)
-      }
-    })()
-
-    // Send welcome email (non-blocking)
-    void sendWelcomeEmail(
-      agent.email,
-      agent.id,
-      {
-        agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
-        planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
-      }
-    ).catch((err: unknown) => {
-      console.error('[trial-signup] Welcome email error:', err)
+    // Log trial_started event (non-blocking)
+    void Promise.resolve(supabase.from('analytics_events').insert({
+      event_type: 'trial_started',
+      agent_id: agent.id,
+      properties: {
+        source: 'trial_cta',
+        utm_source: utm_source || null,
+        utm_medium: utm_medium || null,
+        utm_campaign: utm_campaign || null,
+        plan_tier: 'trial',
+        trial_days: 14
+      },
+      created_at: new Date().toISOString()
+    })).catch((err: unknown) => {
+      // Non-blocking — don't fail signup if analytics insert fails
+      console.error('Failed to log trial_started event:', err)
     })
 
     // Generate JWT token for immediate login
