@@ -63,8 +63,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   try {
     // Check if Resend is configured
     const RESEND_API_KEY = process.env.RESEND_API_KEY
-    // Use Resend's shared domain as fallback — leadflow.ai must be verified on Resend first.
-    const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev'
+    const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@leadflow.ai'
 
     if (!RESEND_API_KEY) {
       console.log('[pilot-signup] RESEND_API_KEY not configured, skipping welcome email')
@@ -282,20 +281,12 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Set auth cookie and return success with token + user for localStorage storage
+    // Set auth cookie and return success
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
       redirectTo: '/setup',
-      message: 'Pilot account created successfully',
-      token,
-      user: {
-        id: agent.id,
-        email: agent.email,
-        firstName: agent.first_name,
-        lastName: agent.last_name,
-        onboardingCompleted: false,
-      },
+      message: 'Pilot account created successfully'
     })
 
     response.cookies.set('auth-token', token, {
