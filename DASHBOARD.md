@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-10
+title: BO2026 Dashboard - Updated 2026-03-11
 author: LeadFlow Orchestrator
-date: 2026-03-10
+date: 2026-03-11
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 24 of 60  
+**Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/10/2026, 7:20:56 PM
+**Last Updated:** 3/10/2026, 8:15:15 PM
 
 ---
 
@@ -33,20 +33,25 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 622
+**Queue Health:** Ready: 5 | In Progress: 3 | Blocked: 0 | Done: 634
 
-### ▶️ Ready to Spawn (2 tasks)
+### ▶️ Ready to Spawn (5 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: fix-api-lead-capture-still-returns-500-in-production - /api/lead-capture still returns 500 in production | sonnet | $0.60 | 🔴 P0 |
-| Dev: fix-three-consecutive-vercel-builds-failing-fix-never- - Three consecutive Vercel builds failing — fix never reached production | sonnet | $0.60 | 🔴 P0 |
+| PM Triage: feature — Self-serve frictionless onboarding flow. New user visits lan | codex | $0.47 | 🟡 P1 |
+| PM: Analyze ux_issue feedback | opus | $0.60 | 🟡 P1 |
+| Resolve merge conflicts on PR #139 (dev/bd4c96d2-dev-fix-merge-conflicts-with-main) | kimi | $0.24 | 🟢 P2 |
+| Resolve merge conflicts on PR #163 (dev/bb64bb3f-dev-fix-merge-conflicts-with-main) | kimi | $0.12 | 🟢 P2 |
+| Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (3 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev Fix: Merge conflicts with main | dev | kimi |
+| Replace from(agents) with from(real_estate_agents) in 5 product routes | dev | haiku |
+| QC: fix-three-consecutive-vercel-builds-failing-fix-never- - Three consecutive Vercel builds failing — fix never reached production | qc | sonnet |
+| PM: Analyze bug feedback | product | codex |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +109,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $292.53
+**Estimated project cost:** $296.03
 **Cost per task:** Avg $0.41
 
 ---
@@ -118,8 +123,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **2 tasks ready to spawn**
-2. ⚡ **1 agents active**
+1. ✅ **5 tasks ready to spawn**
+2. ⚡ **3 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

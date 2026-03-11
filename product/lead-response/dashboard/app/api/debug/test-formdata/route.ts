@@ -6,7 +6,7 @@ import type { Lead, Agent } from '@/lib/types'
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
     .limit(1)
