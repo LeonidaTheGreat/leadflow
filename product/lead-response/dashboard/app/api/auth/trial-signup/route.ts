@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { initializeSurveySchedule } from '@/lib/nps-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -94,6 +95,11 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Initialize NPS survey schedule for the new agent (non-blocking)
+    void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
+      console.error('Failed to initialize NPS survey schedule:', err)
+    })
 
     // Log trial_started event (non-blocking)
     void Promise.resolve(supabase.from('analytics_events').insert({

@@ -174,10 +174,10 @@ export async function getAgentsDueForSurvey(): Promise<
     .select(`
       agent_id,
       survey_count,
-      agents!inner(email, name)
+      real_estate_agents!inner(email, first_name, last_name)
     `)
     .lte('next_survey_at', now)
-    .eq('agents.is_active', true)
+    .eq('real_estate_agents.status', 'active')
 
   if (error || !data) {
     console.error('Error fetching agents due for survey:', error)
@@ -186,8 +186,8 @@ export async function getAgentsDueForSurvey(): Promise<
 
   return data.map((row: any) => ({
     agent_id: row.agent_id,
-    email: row.agents.email,
-    name: row.agents.name,
+    email: row.real_estate_agents.email,
+    name: `${row.real_estate_agents.first_name || ''} ${row.real_estate_agents.last_name || ''}`.trim(),
     trigger: row.survey_count === 0 ? 'auto_14d' : 'auto_90d',
   }))
 }
@@ -427,7 +427,7 @@ export async function getNPSStats(): Promise<NPSStats> {
     .from('agent_nps_responses')
     .select(`
       *,
-      agents(name, email)
+      real_estate_agents(first_name, last_name, email)
     `)
     .order('created_at', { ascending: false })
     .limit(20)
@@ -462,7 +462,7 @@ export async function getUnprocessedChurnRisks(): Promise<ProductFeedback[]> {
     .from('product_feedback')
     .select(`
       *,
-      agents(name, email)
+      real_estate_agents(first_name, last_name, email)
     `)
     .eq('feedback_type', 'churn_risk')
     .eq('is_processed', false)

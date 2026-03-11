@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/10/2026, 8:15:15 PM
+**Last Updated:** 3/11/2026, 2:19:52 AM
 
 ---
 
@@ -33,25 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 5 | In Progress: 3 | Blocked: 0 | Done: 634
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 747
 
-### ▶️ Ready to Spawn (5 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| PM Triage: feature — Self-serve frictionless onboarding flow. New user visits lan | codex | $0.47 | 🟡 P1 |
-| PM: Analyze ux_issue feedback | opus | $0.60 | 🟡 P1 |
-| Resolve merge conflicts on PR #139 (dev/bd4c96d2-dev-fix-merge-conflicts-with-main) | kimi | $0.24 | 🟢 P2 |
-| Resolve merge conflicts on PR #163 (dev/bb64bb3f-dev-fix-merge-conflicts-with-main) | kimi | $0.12 | 🟢 P2 |
-| Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
+| Dev: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign - Onboarding wizard stuck - no aha moment for new signups | kimi | $0.24 | 🟡 P1 |
+| Dev: fix-api-endpoints-developer-table-embedded-in-marketin - API Endpoints developer table embedded in marketing landing page | kimi | $0.24 | 🟡 P1 |
 
-### ⚡ In Progress (3 tasks)
+### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Replace from(agents) with from(real_estate_agents) in 5 product routes | dev | haiku |
-| QC: fix-three-consecutive-vercel-builds-failing-fix-never- - Three consecutive Vercel builds failing — fix never reached production | qc | sonnet |
-| PM: Analyze bug feedback | product | codex |
+| Dev: fix-no-cron-job-or-api-endpoint-to-trigger-automated-n - No cron job or API endpoint to trigger automated NPS surveys | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -109,7 +104,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $296.03
+**Estimated project cost:** $337.88
 **Cost per task:** Avg $0.41
 
 ---
@@ -123,8 +118,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **5 tasks ready to spawn**
-2. ⚡ **3 agents active**
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **1 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
