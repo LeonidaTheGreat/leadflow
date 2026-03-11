@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       {
         agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
         planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
+        dashboardUrl: 'https://leadflow-ai-five.vercel.app/setup',
       }
     ).catch((err: unknown) => {
       console.error('[trial-signup] Welcome email error:', err)
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/dashboard/onboarding',
+      redirectTo: '/setup',
       message: 'Trial account created successfully'
     })
 
