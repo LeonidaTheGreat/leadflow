@@ -45,28 +45,38 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
     setIsSaving(true)
     try {
       const token = getToken()
-      const body: Record<string, string> = {}
-      if (mode === 'existing' && digits) {
-        body.phoneNumber = digits
-      } else {
-        // System-provisioned number — use a sentinel to indicate that
-        body.useSystemNumber = 'true'
+      const authHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'x-agent-id': agentId,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       }
 
-      const res = await fetch('/api/integrations/twilio/connect', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          'x-agent-id': agentId,
-        },
-        body: JSON.stringify({ phoneNumber: mode === 'existing' ? digits : '0000000000', ...body }),
-      })
-      const data = await res.json()
-      if (data.valid) {
-        onComplete(mode === 'existing' ? digits : 'system')
+      if (mode === 'system') {
+        // Provision a real Twilio number via LeadFlow's account
+        const res = await fetch('/api/agents/onboarding/provision-phone', {
+          method: 'POST',
+          headers: authHeaders,
+          body: JSON.stringify({}),
+        })
+        const data = await res.json()
+        if (data.success) {
+          onComplete('system')
+        } else {
+          setError(data.error || 'Failed to provision phone number. Please try again.')
+        }
       } else {
-        setError(data.message || 'Failed to configure phone number. Please try again.')
+        // Bring-your-own Twilio number — validate and store as before
+        const res = await fetch('/api/integrations/twilio/connect', {
+          method: 'POST',
+          headers: authHeaders,
+          body: JSON.stringify({ phoneNumber: digits }),
+        })
+        const data = await res.json()
+        if (data.valid) {
+          onComplete(digits)
+        } else {
+          setError(data.message || 'Failed to configure phone number. Please try again.')
+        }
       }
     } catch {
       setError('Connection failed. Please try again.')

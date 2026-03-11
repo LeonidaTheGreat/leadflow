@@ -23,6 +23,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Reject the placeholder sentinel used in older clients — agents who want a
+    // system-provisioned number must call /api/agents/onboarding/provision-phone.
+    if (cleanPhone === '0000000000') {
+      return NextResponse.json(
+        {
+          valid: false,
+          message:
+            'Phone number provisioning is not supported via this endpoint. ' +
+            'Please use /api/agents/onboarding/provision-phone to request a LeadFlow number.',
+        },
+        { status: 400 }
+      )
+    }
+
     // If account SID and auth token provided, verify them
     if (accountSid && authToken) {
       try {
