@@ -110,7 +110,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   </div>
 
   <div style="text-align: center; margin: 30px 0;">
-    <a href="https://leadflow-ai-five.vercel.app/dashboard/onboarding" 
+    <a href="https://leadflow-ai-five.vercel.app/setup" 
        style="display: inline-block; background: #10b981; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
       Start Onboarding →
     </a>
@@ -298,7 +298,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/dashboard/onboarding',
+      redirectTo: '/setup',
       message: 'Pilot account created successfully',
       token,
       user: {
@@ -308,6 +308,7 @@ export async function POST(request: NextRequest) {
         lastName: agent.last_name,
         onboardingCompleted: false,
       },
+    })
     })
 
     response.cookies.set('auth-token', token, {
