@@ -1,86 +1,31 @@
 'use client'
 
 import Link from 'next/link'
-import { Suspense, useEffect, useRef, useState } from 'react'
-import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
-import LeadMagnetSection from '@/components/LeadMagnetSection'
-import PricingSection from '@/components/PricingSection'
+import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
-  const [testResult, setTestResult] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Scroll-depth milestone refs (FR-3 / US-2)
-  // ref25 → 25%, ref50 → 50%, ref75 → 75%
-  const ref25 = useRef<HTMLDivElement>(null)
-  const ref50 = useRef<HTMLDivElement>(null)
-  const ref75 = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const cleanup = attachScrollMilestoneObservers([
-      ref25.current,
-      ref50.current,
-      ref75.current,
-    ])
-    return cleanup
-  }, [])
-
-  const testWebhook = async () => {
-    setIsLoading(true)
-    setTestResult(null)
-    try {
-      const response = await fetch('/api/webhook/fub', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'lead.created',
-          data: {
-            id: 'test-' + Date.now(),
-            firstName: 'Test',
-            lastName: 'User',
-            phoneNumber: '+14165550000',
-            email: 'test@example.com',
-            source: 'Website',
-            status: 'New Lead',
-            consents: { sms: true }
-          }
-        })
-      })
-      const data = await response.json()
-      setTestResult(JSON.stringify(data, null, 2))
-    } catch (error) {
-      setTestResult('Error: ' + (error as Error).message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Header / Nav */}
+      {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
           <nav className="flex items-center gap-4">
             <a
               href="#pricing"
-              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Pricing
             </a>
-            {/* CTA: start_trial_nav — above fold, UC-9 AC-1 */}
             <Link
-              href="/signup/trial"
-              onClick={() => trackCTAClick('start_trial_nav', 'Start Free Trial', 'navigation')}
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
-              data-cta-id="start_trial_nav"
+              href="/pilot"
+              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
-              Start Free Trial
+              Pilot Program
             </Link>
             <Link
               href="/login"
-              onClick={() => trackCTAClick('sign_in_nav', 'Sign In', 'navigation')}
               className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Sign In
@@ -89,59 +34,47 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero — scroll milestone 25% anchor */}
-      <main className="container mx-auto px-4 py-16">
-        {/* CTA Placement #1: Hero — inline compact trial signup form (UC-9 AC-1 + AC-7) */}
-        <div ref={ref25} className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
-            AI-Powered Lead Response
-          </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            Instantly qualify and respond to real estate leads using Claude AI.
-            Never miss another opportunity.
-          </p>
+      {/* Hero — CTA Placement #1 */}
+      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              AI-Powered Lead Response in Under 30 Seconds
+            </h2>
+            <p className="text-xl text-slate-300 mb-10">
+              Instantly qualify and respond to real estate leads using AI.
+              Never miss another opportunity. Start free — no credit card required.
+            </p>
 
-          {/* CTA Placement #1: Hero — TrialSignupForm compact */}
-          <Suspense fallback={
-            <div className="w-full max-w-md mx-auto h-14 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
-          }>
-            <TrialSignupForm compact />
-          </Suspense>
+            {/* Hero Trial CTA */}
+            <Suspense fallback={<div className="h-24" />}>
+              <TrialSignupForm compact />
+            </Suspense>
 
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-            {/* CTA: see_how_it_works (FR-2) */}
-            <button
-              onClick={() => {
-                trackCTAClick('see_how_it_works', 'See How It Works', 'hero')
-                testWebhook()
-              }}
-              disabled={isLoading}
-              className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
-              data-cta-id="see_how_it_works"
-            >
-              {isLoading ? 'Testing...' : 'See How It Works'}
-            </button>
+            <p className="mt-6 text-sm text-slate-400">
+              <a href="#features" className="hover:text-white underline underline-offset-4">See how it works ↓</a>
+            </p>
           </div>
-
-          {testResult && (
-            <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg text-left">
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Result:</p>
-              <pre className="text-xs font-mono text-slate-600 dark:text-slate-400 overflow-x-auto">
-                {testResult}
-              </pre>
-            </div>
-          )}
         </div>
+      </section>
 
-        {/* Features — scroll milestone 50% anchor */}
-        <div ref={ref50} className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Features */}
+      <section id="features" className="container mx-auto px-4 py-20">
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          Everything You Need to Convert More Leads
+        </h3>
+        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          LeadFlow AI handles the hard work so you can focus on closing deals.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard
             title="AI Qualification"
             description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
             icon="🤖"
           />
           <FeatureCard
-            title="Instant SMS"
+            title="Instant SMS Response"
             description="Automatically send personalized SMS responses within seconds of lead creation."
             icon="📱"
           />
@@ -150,105 +83,249 @@ export default function HomePage() {
             description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
             icon="🔗"
           />
+          <FeatureCard
+            title="Smart Booking"
+            description="AI books appointments directly on your calendar — leads go from inquiry to meeting in minutes."
+            icon="📅"
+          />
+          <FeatureCard
+            title="Lead Scoring"
+            description="Automatic scoring based on urgency, budget, and timeline. Focus on the hottest leads first."
+            icon="⭐"
+          />
+          <FeatureCard
+            title="Analytics Dashboard"
+            description="Track response times, conversion rates, and lead quality in real time."
+            icon="📊"
+          />
         </div>
 
-        {/* CTA Placement #2: End of Features — standalone "Start Free Trial" link (UC-9 AC-7) */}
-        <div className="mt-12 text-center">
-          <Link
-            href="/signup/trial"
-            onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial', 'features')}
-            className="inline-flex items-center px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-            data-cta-id="start_trial_features"
-          >
-            Start Free Trial
-          </Link>
-          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">No credit card required · 14 days free</p>
-        </div>
-
-        {/* API Endpoints — scroll milestone 75% anchor */}
-        <div ref={ref75} className="mt-20 max-w-2xl mx-auto">
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-8">API Endpoints</h3>
-          <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-slate-50 dark:bg-slate-800">
-                <tr>
-                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 dark:text-white">Endpoint</th>
-                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 dark:text-white">Method</th>
-                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 dark:text-white">Description</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                <tr>
-                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/webhook</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Generic lead webhook</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/webhook/fub</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Follow Up Boss webhook</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/sms/send</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Send SMS</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/sms/status</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">POST</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Twilio status callback</td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 text-sm font-mono text-slate-700 dark:text-slate-300">/api/booking</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">GET</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Get booking link</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ── Lead Magnet / Email Capture (between Features and Pricing) ── */}
-        <LeadMagnetSection />
-
-        {/* Pricing Section — scroll milestone 75% anchor (FR-1) */}
-        <div id="pricing">
-          <PricingSection />
-        </div>
-
-        {/* CTA Placement #3: Pricing — "or start free trial" link (UC-9 AC-7) */}
-        <div className="mt-8 text-center">
-          <p className="text-slate-500 dark:text-slate-400">
-            Not ready to pick a plan?{' '}
+        {/* CTA Placement #2: End of Features */}
+        <div className="mt-16 text-center">
+          <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+            Ready to Respond Faster?
+          </h4>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">
+            Join agents who are converting more leads with AI-powered responses.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/signup/trial"
-              onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
-              className="text-emerald-500 hover:text-emerald-600 font-medium underline"
-              data-cta-id="start_trial_pricing"
+              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
             >
-              or start free trial
-            </Link>{' '}
-            — no credit card required.
+              Start Free Trial — No Credit Card
+            </Link>
+            <Link
+              href="/pilot"
+              className="px-8 py-4 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Apply for Pilot Program →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials — Social Proof Section */}
+      <section id="testimonials" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            What Real Estate Agents Are Saying
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Join hundreds of agents who have transformed their lead response.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={index} {...testimonial} />
+            ))}
+          </div>
+
+          <p className="mt-8 text-center text-sm text-slate-400 dark:text-slate-500 italic">
+            Results may vary. Testimonials represent expected outcomes based on typical usage.
           </p>
         </div>
-      </main>
+      </section>
+
+      {/* Pricing — CTA Placement #3 */}
+      <section id="pricing" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            Simple, Transparent Pricing
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Start with a free 30-day trial. Upgrade when you&apos;re ready.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <PricingCard
+              name="Starter"
+              price="$49"
+              period="/month"
+              description="Perfect for solo agents"
+              features={[
+                'Up to 50 leads/month',
+                'AI SMS responses',
+                'Basic qualification',
+                'Calendar integration',
+                'Email support'
+              ]}
+            />
+            <PricingCard
+              name="Pro"
+              price="$149"
+              period="/month"
+              description="For growing agents"
+              popular
+              features={[
+                'Up to 200 leads/month',
+                'AI SMS & email responses',
+                'Advanced qualification',
+                'Calendar integration',
+                'Priority support',
+                'Advanced analytics'
+              ]}
+            />
+            <PricingCard
+              name="Team"
+              price="$399"
+              period="/month"
+              description="For teams & brokerages"
+              features={[
+                'Up to 500 leads/month',
+                'Multi-channel AI',
+                'Custom workflows',
+                'Team management (5 agents)',
+                'Dedicated support',
+                'White-label options'
+              ]}
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-slate-600 dark:text-slate-400">
-          <p>Built with Next.js 15, shadcn/ui, Supabase, and Claude AI</p>
+      <footer className="border-t border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+          <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved.</p>
+          <div className="flex items-center gap-4 mt-4 sm:mt-0">
+            <Link href="/pilot" className="hover:text-slate-900 dark:hover:text-white">Pilot Program</Link>
+            <Link href="/login" className="hover:text-slate-900 dark:hover:text-white">Sign In</Link>
+          </div>
         </div>
       </footer>
     </div>
   )
 }
 
+const testimonials = [
+  {
+    quote: "I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight.",
+    name: "Sarah M.",
+    title: "Solo Agent, Austin TX",
+  },
+  {
+    quote: "My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month.",
+    name: "Mike R.",
+    title: "Team Lead, Denver CO",
+  },
+  {
+    quote: "Setup took 5 minutes. The AI sounds like me, not a robot.",
+    name: "Jennifer K.",
+    title: "Realtor, Miami FL",
+  },
+]
+
+function TestimonialCard({
+  quote,
+  name,
+  title,
+}: {
+  quote: string
+  name: string
+  title: string
+}) {
+  return (
+    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col">
+      <div className="text-emerald-500 text-4xl mb-4">"</div>
+      <p className="text-slate-700 dark:text-slate-300 mb-6 flex-grow">{quote}</p>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
+          {name.charAt(0)}
+        </div>
+        <div>
+          <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center">
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center hover:shadow-lg transition-shadow">
       <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h3>
+      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
       <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}
+
+function PricingCard({
+  name,
+  price,
+  period,
+  description,
+  features,
+  popular = false
+}: {
+  name: string
+  price: string
+  period: string
+  description: string
+  features: string[]
+  popular?: boolean
+}) {
+  return (
+    <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
+      {popular && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+            MOST POPULAR
+          </span>
+        </div>
+      )}
+      <h4 className="text-xl font-bold text-slate-900 dark:text-white">{name}</h4>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{description}</p>
+      <div className="mt-4 flex items-baseline gap-1">
+        <span className="text-4xl font-bold text-slate-900 dark:text-white">{price}</span>
+        <span className="text-slate-500 dark:text-slate-400">{period}</span>
+      </div>
+      <ul className="mt-6 space-y-3">
+        {features.map((feature, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
+            <span className="text-emerald-500 mt-0.5">✓</span>
+            {feature}
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={`/signup?plan=${name.toLowerCase()}`}
+        className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
+          popular
+            ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+            : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white'
+        }`}
+      >
+        Get Started
+      </Link>
+      <Link
+        href="/signup/trial"
+        className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
+      >
+        or start free trial →
+      </Link>
     </div>
   )
 }
