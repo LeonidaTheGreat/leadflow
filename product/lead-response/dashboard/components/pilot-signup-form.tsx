@@ -83,7 +83,7 @@ export default function PilotSignupForm({ compact = false, className = '' }: Pil
       setSuccess(true)
       // Redirect after a brief delay to show success state
       setTimeout(() => {
-        router.push(data.redirectTo || '/dashboard/onboarding')
+        router.push(data.redirectTo || '/setup')
       }, 1500)
     } catch {
       setError('Something went wrong. Please try again.')

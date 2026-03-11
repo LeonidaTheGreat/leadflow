@@ -58,23 +58,8 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         return
       }
 
-      // Store auth token + user in localStorage BEFORE navigation
-      // This ensures /setup can render without calling /api/auth/me
-      if (data.token) {
-        try {
-          localStorage.setItem('leadflow_token', data.token)
-        } catch {
-          // ignore storage errors
-        }
-      }
-      if (data.user) {
-        try {
-          localStorage.setItem('leadflow_user', JSON.stringify(data.user))
-        } catch {
-          // ignore storage errors
-        }
-      }
-      router.push(data.redirectTo || '/setup')
+      // Email verification required before login — redirect to check-your-inbox
+      router.push(data.redirectTo || '/check-your-inbox')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
