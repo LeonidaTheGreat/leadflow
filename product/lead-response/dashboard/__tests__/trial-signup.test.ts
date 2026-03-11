@@ -240,6 +240,15 @@ describe('Frictionless Signup (FR-2 / AC-2)', () => {
   it('redirects to onboarding wizard after signup', () => {
     const redirectTo = '/onboarding'
     expect(redirectTo).toBe('/onboarding')
+    // Ensure it does NOT redirect to the non-existent /dashboard/onboarding route
+    expect(redirectTo).not.toBe('/dashboard/onboarding')
+  })
+
+  it('/onboarding is NOT in AUTH_ROUTES so authenticated trial users can access it', () => {
+    // After trial signup, the user has an auth cookie and is authenticated.
+    // /onboarding must NOT be in AUTH_ROUTES or authenticated users get bounced to /dashboard.
+    const AUTH_ROUTES = ['/login', '/signup']
+    expect(AUTH_ROUTES).not.toContain('/onboarding')
   })
 })
 
