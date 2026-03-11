@@ -16,9 +16,8 @@ const PROTECTED_ROUTES = [
 // Routes that should redirect to dashboard if already authenticated
 // NOTE: /setup is intentionally NOT here — authenticated users who haven't
 // completed onboarding need to access it.
-// NOTE: /onboarding is intentionally NOT here — authenticated trial users who
-// just signed up via /api/auth/trial-signup are redirected to /onboarding and
-// must be allowed to access it.
+// NOTE: /setup is in PROTECTED_ROUTES — authenticated users (including newly
+// signed up trial/pilot users) are redirected to /setup for onboarding flow.
 const AUTH_ROUTES = [
   '/login',
   '/signup',
