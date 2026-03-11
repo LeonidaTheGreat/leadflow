@@ -237,17 +237,22 @@ describe('Frictionless Signup (FR-2 / AC-2)', () => {
     expect(trialFields).not.toContain('credit_card')
   })
 
-  it('redirects to /dashboard/onboarding wizard after signup (PRD-SIGNUP-AUTH-TOKEN-FIX-001)', () => {
-    // Updated: now redirects to /dashboard/onboarding (not /setup)
-    // The /dashboard/onboarding page has proper auth fallback via /api/auth/me
-    const redirectTo = '/dashboard/onboarding'
-    expect(redirectTo).toBe('/dashboard/onboarding')
+  it('redirects to /setup wizard after signup (not the non-existent /dashboard/onboarding)', () => {
+    // Trial signup must redirect to /setup — the actual setup wizard page.
+    // /dashboard/onboarding does not exist and must NOT be used.
+    const redirectTo = '/setup'
+    expect(redirectTo).toBe('/setup')
+    expect(redirectTo).not.toBe('/dashboard/onboarding')
+    expect(redirectTo).not.toBe('/onboarding')
   })
 
-  it('/setup is in PROTECTED_ROUTES so authenticated users can access it', () => {
-    // /setup must remain in PROTECTED_ROUTES for backward compat
+  it('/setup is in PROTECTED_ROUTES and /onboarding is NOT in AUTH_ROUTES', () => {
+    // /setup must be in PROTECTED_ROUTES for authenticated access
     const PROTECTED_ROUTES = ['/dashboard', '/settings', '/profile', '/integrations', '/setup']
-    expect(PROTECTED_ROUTES.some(r => '/dashboard/onboarding'.startsWith(r))).toBe(true)
+    expect(PROTECTED_ROUTES).toContain('/setup')
+    // /onboarding must NOT be in AUTH_ROUTES — authenticated trial users must not be bounced
+    const AUTH_ROUTES = ['/login', '/signup']
+    expect(AUTH_ROUTES).not.toContain('/onboarding')
   })
 })
 
