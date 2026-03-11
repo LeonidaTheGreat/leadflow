@@ -7,7 +7,6 @@
  * 3. Trial signup uses correct table (events not analytics_events)
  * 4. Dashboard nav passes pilotExpiresAt to TrialBadge
  * 5. TrialBadge displays pilot status correctly
-<<<<<<< HEAD
  * 6. Signup forms redirect to /setup (not /dashboard/onboarding)
  */
 
