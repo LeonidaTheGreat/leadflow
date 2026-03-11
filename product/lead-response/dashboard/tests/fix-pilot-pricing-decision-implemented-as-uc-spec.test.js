@@ -7,7 +7,7 @@
  * 3. Trial signup uses correct table (events not analytics_events)
  * 4. Dashboard nav passes pilotExpiresAt to TrialBadge
  * 5. TrialBadge displays pilot status correctly
-* 6. Signup forms redirect to /setup (not /dashboard/onboarding)
+ * 6. Signup forms redirect to /setup (not /dashboard/onboarding)
  */
 
 const assert = require('assert')
@@ -219,7 +219,7 @@ async function testSignupFormsRedirectToSetup() {
   const pilotResponse = {
     success: true,
     agentId: 'test-agent-id',
-redirectTo: '/setup',
+    redirectTo: '/setup',
     message: 'Pilot account created successfully'
   }
   
@@ -229,7 +229,7 @@ redirectTo: '/setup',
   const trialResponse = {
     success: true,
     agentId: 'test-agent-id',
-redirectTo: '/setup'
+    redirectTo: '/setup'
   }
   
   assert.strictEqual(trialResponse.redirectTo, '/setup', 'Trial signup should redirect to /setup')
