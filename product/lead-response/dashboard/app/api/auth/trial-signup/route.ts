@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { sendWelcomeEmail } from '@/lib/email-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -111,6 +112,19 @@ export async function POST(request: NextRequest) {
     })).catch((err: unknown) => {
       // Non-blocking — don't fail signup if analytics insert fails
       console.error('Failed to log trial_started event:', err)
+    })
+
+    // Send welcome email (non-blocking)
+    void sendWelcomeEmail(
+      agent.email,
+      agent.id,
+      {
+        agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
+        planTier: 'trial',
+        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
+      }
+    ).catch((err: unknown) => {
+      console.error('[trial-signup] Welcome email error:', err)
     })
 
     // Generate JWT token for immediate login
