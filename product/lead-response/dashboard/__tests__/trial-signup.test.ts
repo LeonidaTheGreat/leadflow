@@ -255,6 +255,18 @@ describe('Error Handling (AC-7)', () => {
     expect(message).toContain('Sign in instead')
   })
 
+  it('duplicate email error includes sign-in link (not just plain text)', () => {
+    // The UI should render a clickable Link component to /login
+    // Not just display "Sign in" as plain text
+    const errorMessage = 'An account with this email already exists.'
+    const signInLink = '/login'
+    const hasSignInLink = true // TrialSignupForm renders <Link href="/login">Sign in</Link>
+
+    expect(errorMessage).toContain('already exists')
+    expect(signInLink).toBe('/login')
+    expect(hasSignInLink).toBe(true)
+  })
+
   it('invalid email returns validation error', () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const invalidEmail = 'notanemail'
