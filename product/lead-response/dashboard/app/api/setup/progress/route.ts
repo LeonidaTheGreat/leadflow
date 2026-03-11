@@ -38,45 +38,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { fubConnected, smsConnected, simulatorCompleted } = await request.json()
+    const { step } = await request.json()
 
-    // Update agent's onboarding status
+    if (!step) {
+      return NextResponse.json(
+        { error: 'Step is required' },
+        { status: 400 }
+      )
+    }
+
+    // Update agent's onboarding step
     const { error } = await supabase
       .from('real_estate_agents')
-      .update({
-        onboarding_completed: true,
-        onboarding_step: 'complete'
-      })
+      .update({ onboarding_step: step })
       .eq('id', payload.userId)
 
     if (error) {
-      console.error('Error completing setup:', error)
+      console.error('Error updating onboarding step:', error)
       return NextResponse.json(
-        { error: 'Failed to complete setup' },
+        { error: 'Failed to save progress' },
         { status: 500 }
       )
     }
 
-    // Log onboarding_completed event
-    await supabase.from('events').insert({
-      agent_id: payload.userId,
-      event_type: 'onboarding_completed',
-      event_data: {
-        fubConnected,
-        smsConnected,
-        simulatorCompleted
-      },
-      source: 'setup_wizard',
-      created_at: new Date().toISOString()
-    }).catch(() => {}) // Non-blocking
-
-    return NextResponse.json({
-      success: true,
-      message: 'Setup completed successfully'
-    })
+    return NextResponse.json({ success: true })
 
   } catch (error) {
-    console.error('Setup complete error:', error)
+    console.error('Setup progress error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

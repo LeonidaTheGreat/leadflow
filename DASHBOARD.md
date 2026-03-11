@@ -22,8 +22,12 @@ autoRefresh: every_heartbeat
 =======
 **Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
+<<<<<<< HEAD
 **Last Updated:** 3/10/2026, 8:15:15 PM
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+**Last Updated:** 3/10/2026, 8:55:30 PM
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 
 ---
 
@@ -45,6 +49,7 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 **Queue Health:** Ready: 8 | In Progress: 4 | Blocked: 0 | Done: 913
 
@@ -71,25 +76,30 @@ autoRefresh: every_heartbeat
 | Dev (rescue): fix-no-evidence-of-wizard-auto-trigger-implementation - No evidence of wizard auto-trigger implementation | dev | haiku |
 =======
 **Queue Health:** Ready: 5 | In Progress: 3 | Blocked: 0 | Done: 634
+=======
+**Queue Health:** Ready: 3 | In Progress: 1 | Blocked: 0 | Done: 656
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 
-### ▶️ Ready to Spawn (5 tasks)
+### ▶️ Ready to Spawn (3 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| PM Triage: feature — Self-serve frictionless onboarding flow. New user visits lan | codex | $0.47 | 🟡 P1 |
-| PM: Analyze ux_issue feedback | opus | $0.60 | 🟡 P1 |
-| Resolve merge conflicts on PR #139 (dev/bd4c96d2-dev-fix-merge-conflicts-with-main) | kimi | $0.24 | 🟢 P2 |
-| Resolve merge conflicts on PR #163 (dev/bb64bb3f-dev-fix-merge-conflicts-with-main) | kimi | $0.12 | 🟢 P2 |
+| Dev: fix-stripe-webhook-updates-orchestration-agents-table- - Stripe webhook updates orchestration agents table instead of real estate agent records | sonnet | $0.60 | 🔴 P0 |
+| Dev: feat-landing-page-conversion-cleanup - Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof | codex | $1.00 | 🔴 P0 |
 | Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
 
-### ⚡ In Progress (3 tasks)
+### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
+<<<<<<< HEAD
 | Replace from(agents) with from(real_estate_agents) in 5 product routes | dev | haiku |
 | QC: fix-three-consecutive-vercel-builds-failing-fix-never- - Three consecutive Vercel builds failing — fix never reached production | qc | sonnet |
 | PM: Analyze bug feedback | product | codex |
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+| Dev: feat-frictionless-onboarding-flow - Self-Serve Frictionless Onboarding Flow | dev | kimi |
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -148,10 +158,14 @@ All technical work complete. System ready for pilot launch.
 ## 💰 Cost Summary
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 **Estimated project cost:** $483.74
 **Cost per task:** Avg $0.48
 =======
 **Estimated project cost:** $296.03
+=======
+**Estimated project cost:** $302.91
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 **Cost per task:** Avg $0.41
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
 
@@ -167,12 +181,17 @@ All technical work complete. System ready for pilot launch.
 ## 🎯 Next Actions
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 1. ✅ **8 tasks ready to spawn**
 2. ⚡ **4 agents active**
 =======
 1. ✅ **5 tasks ready to spawn**
 2. ⚡ **3 agents active**
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+1. ✅ **3 tasks ready to spawn**
+2. ⚡ **1 agents active**
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

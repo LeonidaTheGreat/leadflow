@@ -2,10 +2,14 @@
 # User Journeys
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.790Z | Source: `project.config.json` journeys + `product_reviews` table
 =======
 > Generated: 2026-03-11T00:15:15.568Z | Source: `project.config.json` journeys + `product_reviews` table
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+> Generated: 2026-03-11T00:55:30.873Z | Source: `project.config.json` journeys + `product_reviews` table
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 
 Review interval: every 14 days
 

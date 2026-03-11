@@ -1,13 +1,18 @@
 # Orchestrator Heartbeat Log
 <<<<<<< HEAD
+<<<<<<< HEAD
 Last updated: 2026-03-24T03:06:00.852Z
 =======
 Last updated: 2026-03-11T00:15:15.653Z
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+Last updated: 2026-03-11T00:55:30.969Z
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 ## Recent Heartbeats
 ```json
 [
   {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     "timestamp": "2026-03-03T12:29:23.935Z",
@@ -148,6 +153,8 @@ Last updated: 2026-03-11T00:15:15.653Z
     "errors": []
   },
   {
+=======
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
     "timestamp": "2026-03-03T12:59:25.118Z",
     "status": {
       "ready": 0,
@@ -2532,6 +2539,7 @@ Last updated: 2026-03-11T00:15:15.653Z
     "completed": 0,
     "errors": []
 <<<<<<< HEAD
+<<<<<<< HEAD
   },
   {
     "timestamp": "2026-03-11T06:35:09.578Z",
@@ -4140,10 +4148,58 @@ Last updated: 2026-03-11T00:15:15.653Z
       "Feedback→PM: ux_issue from telemetry_alert",
       "Feedback→PM: ux_issue from telemetry_alert",
       "Feedback→PM: ux_issue from telemetry_alert",
+=======
+  },
+  {
+    "timestamp": "2026-03-11T00:26:02.775Z",
+    "status": {
+      "ready": 4,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 641,
+      "total": 738
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":4,\"inProgress\":4,\"blocked\":0,\"done\":641,\"total\":738}",
+      "Completed (via stdout): Replace from(agents) with from(real_estate_agents) in 5 product routes",
+      "Chained: dev->qc for fix-remaining-from-agents-refs-satisfaction-debug",
+      "Completed (via stdout): PM: Analyze bug feedback",
+      "Completed (via stdout): PM Triage: feature — Self-serve frictionless onboarding flow. New user visits lan",
+      "Spawned product for Product Spec: Self-Serve Frictionless Onboarding Flow",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #165",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 1,
+    "completed": 3,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-11T00:41:21.050Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 656,
+      "total": 749
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":2,\"blocked\":0,\"done\":656,\"total\":749}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #169",
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
       "Processed product review: 0 decisions, 0 UCs",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
+<<<<<<< HEAD
     "spawned": 2,
     "completed": 2,
     "errors": []
@@ -4174,10 +4230,14 @@ Last updated: 2026-03-11T00:15:15.653Z
       "Report prepared for topic 10788"
     ],
     "spawned": 2,
+=======
+    "spawned": 0,
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
     "completed": 0,
     "errors": []
   },
   {
+<<<<<<< HEAD
     "timestamp": "2026-03-24T02:56:14.303Z",
     "status": {
       "ready": 13,
@@ -4204,10 +4264,35 @@ Last updated: 2026-03-11T00:15:15.653Z
       "Report prepared for topic 10788"
     ],
     "spawned": 2,
+=======
+    "timestamp": "2026-03-11T00:45:12.242Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 657,
+      "total": 750
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":2,\"blocked\":0,\"done\":657,\"total\":750}",
+      "Completed (via stdout): QC: feat-transactional-email-resend - Transactional Email Delivery via Resend — Activate the Signup Funnel",
+      "UC complete: feat-transactional-email-resend",
+      "Spawned dev for Dev: fix-signup-onboarding-email-check-queries-wrong-table- - Signup/onboarding email check queries wrong table — always returns available regardless of registrations",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #170",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 1,
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
     "completed": 1,
     "errors": []
   },
   {
+<<<<<<< HEAD
     "timestamp": "2026-03-24T03:01:12.725Z",
     "status": {
       "ready": 12,
@@ -4257,10 +4342,33 @@ Last updated: 2026-03-11T00:15:15.653Z
       "Report prepared for topic 10788"
     ],
     "spawned": 2,
+=======
+    "timestamp": "2026-03-11T00:50:08.545Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 660,
+      "total": 752
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":2,\"blocked\":0,\"done\":660,\"total\":752}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Replenished: Dev task for fix-stripe-webhook-updates-orchestration-agents-table-",
+      "Replenished: PM task for feat-landing-page-conversion-cleanup",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
     "completed": 0,
     "errors": []
   },
   {
+<<<<<<< HEAD
     "timestamp": "2026-03-24T03:06:00.792Z",
     "status": {
       "ready": 5,
@@ -4290,13 +4398,62 @@ Last updated: 2026-03-11T00:15:15.653Z
     "errors": []
 =======
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+    "timestamp": "2026-03-11T00:52:04.219Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 661,
+      "total": 754
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":2,\"blocked\":0,\"done\":661,\"total\":754}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #171",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-11T00:55:30.875Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 662,
+      "total": 755
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":662,\"total\":755}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
 <<<<<<< HEAD
+<<<<<<< HEAD
 - Last status: {"ready":5,"inProgress":10,"blocked":0,"done":895,"total":1000}
 =======
 - Last status: {"ready":7,"inProgress":1,"blocked":0,"done":640,"total":737}
 >>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
+=======
+- Last status: {"ready":3,"inProgress":1,"blocked":0,"done":662,"total":755}
+>>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)

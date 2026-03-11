@@ -15,7 +15,7 @@ interface JWTPayload {
   name?: string
 }
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Get auth token from cookie
     const token = request.cookies.get('auth-token')?.value
@@ -38,45 +38,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { fubConnected, smsConnected, simulatorCompleted } = await request.json()
-
-    // Update agent's onboarding status
-    const { error } = await supabase
-      .from('real_estate_agents')
-      .update({
-        onboarding_completed: true,
-        onboarding_step: 'complete'
-      })
-      .eq('id', payload.userId)
+    // Count sample leads for this agent
+    const { data: sampleLeads, error, count } = await supabase
+      .from('leads')
+      .select('id', { count: 'exact' })
+      .eq('agent_id', payload.userId)
+      .eq('is_sample', true)
 
     if (error) {
-      console.error('Error completing setup:', error)
+      console.error('Error fetching sample leads:', error)
       return NextResponse.json(
-        { error: 'Failed to complete setup' },
+        { error: 'Failed to fetch sample leads' },
         { status: 500 }
       )
     }
 
-    // Log onboarding_completed event
-    await supabase.from('events').insert({
-      agent_id: payload.userId,
-      event_type: 'onboarding_completed',
-      event_data: {
-        fubConnected,
-        smsConnected,
-        simulatorCompleted
-      },
-      source: 'setup_wizard',
-      created_at: new Date().toISOString()
-    }).catch(() => {}) // Non-blocking
+    // Log sample_data_rendered event if sample leads exist
+    if (count && count > 0) {
+      await supabase.from('events').insert({
+        agent_id: payload.userId,
+        event_type: 'sample_data_rendered',
+        event_data: { sampleLeadCount: count },
+        source: 'dashboard',
+        created_at: new Date().toISOString()
+      }).catch(() => {}) // Non-blocking
+    }
 
     return NextResponse.json({
-      success: true,
-      message: 'Setup completed successfully'
+      hasSampleLeads: count ? count > 0 : false,
+      sampleLeadCount: count || 0,
+      agentId: payload.userId
     })
 
   } catch (error) {
-    console.error('Setup complete error:', error)
+    console.error('Sample status error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }
