@@ -1,7 +1,11 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
+<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.790Z | Source: `project.config.json` journeys + `product_reviews` table
+=======
+> Generated: 2026-03-11T00:15:15.568Z | Source: `project.config.json` journeys + `product_reviews` table
+>>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
 
 Review interval: every 14 days
 

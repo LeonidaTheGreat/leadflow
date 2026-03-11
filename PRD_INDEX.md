@@ -1,7 +1,11 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
+<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.726Z | Source: `prds` table
+=======
+> Generated: 2026-03-11T00:15:15.481Z | Source: `prds` table
+>>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
