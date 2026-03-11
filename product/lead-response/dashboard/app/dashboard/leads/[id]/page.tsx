@@ -13,7 +13,7 @@ interface LeadDetailPageProps {
 async function getLead(id: string) {
   const { data: lead } = await supabase
     .from('leads')
-    .select('*, agent:agents(*)')
+    .select('*, agent:real_estate_agents(*)')
     .eq('id', id)
     .single()
 

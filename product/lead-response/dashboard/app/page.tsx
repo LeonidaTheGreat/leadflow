@@ -125,6 +125,39 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* How It Works — 3 Step Process */}
+      <section id="how-it-works" className="bg-slate-100 dark:bg-slate-800 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            How It Works
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Get up and running in minutes — no technical setup required.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <StepCard
+              step={1}
+              title="Connect Your CRM"
+              description="Link your Follow Up Boss account with a single API key. We handle the integration automatically."
+              icon="🔗"
+            />
+            <StepCard
+              step={2}
+              title="AI Responds Instantly"
+              description="When a lead comes in, our AI analyzes it and sends a personalized SMS response within 30 seconds."
+              icon="⚡"
+            />
+            <StepCard
+              step={3}
+              title="You Close the Deal"
+              description="Hot leads are qualified and ready for you. Book appointments, follow up, and convert more clients."
+              icon="🤝"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials — Social Proof Section */}
       <section id="testimonials" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
@@ -326,6 +359,29 @@ function PricingCard({
       >
         or start free trial →
       </Link>
+    </div>
+  )
+}
+
+function StepCard({
+  step,
+  title,
+  description,
+  icon,
+}: {
+  step: number
+  title: string
+  description: string
+  icon: string
+}) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 text-center hover:shadow-lg transition-shadow">
+      <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold mx-auto mb-4">
+        {step}
+      </div>
+      <div className="text-4xl mb-4">{icon}</div>
+      <h4 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">{title}</h4>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
     </div>
   )
 }
