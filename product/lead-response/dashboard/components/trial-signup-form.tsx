@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 
 interface TrialSignupFormProps {
@@ -19,10 +20,12 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDuplicateEmailError, setIsDuplicateEmailError] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setIsDuplicateEmailError(false)
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
@@ -53,7 +56,12 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || 'Something went wrong. Please try again.')
+        const errorMessage = data.error || 'Something went wrong. Please try again.'
+        // Check if this is a duplicate email error (409 status or specific message)
+        if (response.status === 409 || errorMessage.toLowerCase().includes('already exists')) {
+          setIsDuplicateEmailError(true)
+        }
+        setError(errorMessage)
         setLoading(false)
         return
       }
@@ -114,7 +122,20 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Start Free Trial <ArrowRight className="w-4 h-4" /></>}
           </button>
         </div>
-        {error && <p id="trial-error-compact" className="mt-2 text-sm text-red-400" role="alert">{error}</p>}
+        {error && (
+          <p id="trial-error-compact" className="mt-2 text-sm text-red-400" role="alert">
+            {isDuplicateEmailError ? (
+              <>
+                An account with this email already exists.{" "}
+                <Link href="/login" className="underline hover:text-red-300">
+                  Sign in
+                </Link>
+              </>
+            ) : (
+              error
+            )}
+          </p>
+        )}
         <p className="mt-3 text-sm text-white/60 text-center">Free for 30 days · No credit card · Cancel anytime</p>
       </form>
     )
@@ -192,7 +213,18 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
 
         {error && (
           <div id="trial-error" className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg" role="alert">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {isDuplicateEmailError ? (
+                <>
+                  An account with this email already exists.{" "}
+                  <Link href="/login" className="font-medium underline hover:text-red-500 dark:hover:text-red-300">
+                    Sign in
+                  </Link>
+                </>
+              ) : (
+                error
+              )}
+            </p>
           </div>
         )}
 
