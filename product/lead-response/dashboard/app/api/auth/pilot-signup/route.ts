@@ -247,10 +247,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Log pilot_started event (non-blocking)
-    void Promise.resolve(supabase.from('analytics_events').insert({
+    void Promise.resolve(supabase.from('events').insert({
       event_type: 'pilot_started',
       agent_id: agent.id,
-      properties: {
+      event_data: {
         source: 'pilot_signup',
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
@@ -285,7 +285,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/dashboard/onboarding',
+      redirectTo: '/setup',
       message: 'Pilot account created successfully'
     })
 

@@ -96,10 +96,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Log trial_started event (non-blocking)
-    void Promise.resolve(supabase.from('analytics_events').insert({
+    void Promise.resolve(supabase.from('events').insert({
       event_type: 'trial_started',
       agent_id: agent.id,
-      properties: {
+      event_data: {
         source: 'trial_cta',
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
