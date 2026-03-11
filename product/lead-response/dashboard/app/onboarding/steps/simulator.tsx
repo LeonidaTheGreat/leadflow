@@ -1,30 +1,29 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { 
-  Play, 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle, 
-  SkipForward,
-  Bot,
-  User,
-  Zap,
-  Clock
-} from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Play, SkipForward, RefreshCw, CheckCircle2, Clock, MessageSquare, AlertCircle } from 'lucide-react'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types matching the ACTUAL API response format (not PRD)
+// API returns: { success, state: { id, session_id, agent_id, status, conversation[], response_time_ms, ... } }
 
-interface ConversationTurn {
+type ConversationTurn = {
   role: 'lead' | 'ai'
   message: string
   timestamp: string
 }
 
-type SimulationStatus = 'idle' | 'running' | 'inbound_received' | 'ai_responded' | 'success' | 'skipped' | 'timeout' | 'failed'
+type SimulationStatus = 
+  | 'idle' 
+  | 'running' 
+  | 'inbound_received' 
+  | 'ai_responded' 
+  | 'success' 
+  | 'skipped' 
+  | 'timeout' 
+  | 'failed'
 
-interface SimulationState {
-  id: string | null
+type SimulationState = {
+  id: string
   session_id: string
   agent_id: string
   status: SimulationStatus
@@ -36,109 +35,42 @@ interface SimulationState {
   lead_name: string
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatTime(ts: string) {
-  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+interface SimulatorProps {
+  onNext: () => void
+  onBack: () => void
+  agentData: any
+  setAgentData: (data: any) => void
 }
-
-function formatResponseTime(ms: number | null): string {
-  if (!ms) return '--'
-  if (ms < 1000) return `${ms}ms`
-  return `${(ms / 1000).toFixed(1)}s`
-}
-
-function generateSessionId(): string {
-  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-}
-
-// ─── Chat Bubble Component ───────────────────────────────────────────────────
-
-function ChatBubble({ role, message, timestamp }: ConversationTurn) {
-  const isAI = role === 'ai'
-  return (
-    <div className={`flex gap-3 mb-4 ${isAI ? 'flex-row-reverse' : 'flex-row'}`}>
-      <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
-        isAI ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
-      }`}>
-        {isAI ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
-      </div>
-      <div className={`max-w-[75%] ${isAI ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
-        <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-          isAI
-            ? 'bg-emerald-600 text-white rounded-tr-sm'
-            : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-tl-sm'
-        }`}>
-          {message}
-        </div>
-        <span className="text-xs text-slate-500">{formatTime(timestamp)}</span>
-      </div>
-    </div>
-  )
-}
-
-// ─── Main Component ──────────────────────────────────────────────────────────
-
 export default function OnboardingSimulator({
   onNext,
   onBack,
   agentData,
   setAgentData,
-}: {
-  onNext: () => void
-  onBack: () => void
-  agentData: any
-  setAgentData: (data: any) => void
-}) {
-  const [sessionId] = useState(() => generateSessionId())
-  const [simulation, setSimulation] = useState<SimulationState | null>(null)
+}: SimulatorProps) {
+  const [sessionId, setSessionId] = useState<string>('')
+  const [simulationState, setSimulationState] = useState<SimulationState | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isSkipping, setIsSkipping] = useState(false)
-  const chatEndRef = useRef<HTMLDivElement>(null)
-  const pollingRef = useRef<NodeJS.Timeout | null>(null)
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
 
-  // Auto-scroll to bottom when conversation updates
+  // Generate a session ID on mount
   useEffect(() => {
-    if (simulation?.conversation.length) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [simulation?.conversation])
+    const newSessionId = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    setSessionId(newSessionId)
+  }, [])
 
-  // Poll for status updates when simulation is running
+  // Cleanup polling on unmount
   useEffect(() => {
-    if (!simulation || simulation.status === 'idle' || simulation.status === 'success' || simulation.status === 'skipped' || simulation.status === 'timeout' || simulation.status === 'failed') {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current)
-        pollingRef.current = null
-      }
-      return
-    }
-
-    // Poll every 1 second while running
-    pollingRef.current = setInterval(() => {
-      checkSimulationStatus()
-    }, 1000)
-
     return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current)
+      if (pollingInterval) {
+        clearInterval(pollingInterval)
       }
     }
-  }, [simulation?.status])
+  }, [pollingInterval])
 
-  // Update agentData when simulation completes
-  useEffect(() => {
-    if (simulation?.status === 'success' && simulation.response_time_ms) {
-      setAgentData({
-        ...agentData,
-        ahaCompleted: true,
-        ahaResponseTimeMs: simulation.response_time_ms,
-      })
-    }
-  }, [simulation?.status, simulation?.response_time_ms])
-
+  // Start the simulation
   const startSimulation = async () => {
+    if (!sessionId) return
     setIsLoading(true)
     setError(null)
 
@@ -148,18 +80,24 @@ export default function OnboardingSimulator({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'start',
-          agentId: agentData.email || 'temp-agent',
-          sessionId,
+agentId: agentData.email || 'unknown',
+          sessionId: sessionId,
         }),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to start simulation')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to start simulation')
       }
 
-      setSimulation(data.state)
+      const data = await response.json()
+      
+      // API returns { success, state: {...} }
+      // Use state.conversation (not turns), state.response_time_ms (not responseTimeMs)
+      if (data.state) {
+        setSimulationState(data.state)
+        startPolling()
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to start simulation')
     } finally {
@@ -167,32 +105,64 @@ export default function OnboardingSimulator({
     }
   }
 
-  const checkSimulationStatus = async () => {
-    try {
-      const response = await fetch('/api/onboarding/simulator', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'status',
-          agentId: agentData.email || 'temp-agent',
-          sessionId,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok && data.state) {
-        setSimulation(data.state)
-      }
-    } catch (err) {
-      // Silent fail - will retry on next poll
-      console.error('Status check failed:', err)
+// Poll for status updates
+  const startPolling = () => {
+    // Clear any existing interval
+    if (pollingInterval) {
+      clearInterval(pollingInterval)
     }
+
+    // Poll every 1 second
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch('/api/onboarding/simulator', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'status',
+            agentId: agentData.email || 'unknown',
+            sessionId: sessionId,
+          }),
+        })
+
+        if (!response.ok) return
+
+        const data = await response.json()
+        
+        // API returns { state: {...} }
+        if (data.state) {
+          setSimulationState(data.state)
+
+          // Stop polling if terminal state reached
+          // API uses 'success' (not 'complete') as the completion status
+          if (['success', 'skipped', 'timeout', 'failed'].includes(data.state.status)) {
+            clearInterval(interval)
+            setPollingInterval(null)
+
+            // Update agentData with aha moment completion
+            if (data.state.status === 'success') {
+              setAgentData({
+                ...agentData,
+                ahaCompleted: true,
+                ahaResponseTimeMs: data.state.response_time_ms,
+              })
+            }
+          }
+        }
+      } catch (err) {
+        // Silently fail polling - don't show error to user
+        console.error('Polling error:', err)
+      }
+    }, 1000)
+
+    setPollingInterval(interval)
   }
 
+  // Skip the simulation
   const skipSimulation = async () => {
-    setIsSkipping(true)
-    setError(null)
+    if (!sessionId) return
+
+    setIsLoading(true)
 
     try {
       const response = await fetch('/api/onboarding/simulator', {
@@ -200,231 +170,253 @@ export default function OnboardingSimulator({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'skip',
-          agentId: agentData.email || 'temp-agent',
-          sessionId,
+agentId: agentData.email || 'unknown',
+          sessionId: sessionId,
           reason: 'User chose to skip during onboarding',
         }),
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to skip simulation')
+const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to skip simulation')
       }
 
+      // Update agentData to mark aha as skipped
       setAgentData({
         ...agentData,
         ahaCompleted: false,
-        ahaSkipped: true,
+        ahaResponseTimeMs: null,
       })
 
       onNext()
     } catch (err: any) {
       setError(err.message || 'Failed to skip simulation')
-      setIsSkipping(false)
+} finally {
+      setIsLoading(false)
     }
   }
 
-  const handleContinue = () => {
-    onNext()
+  // Format response time for display
+  const formatResponseTime = (ms: number | null): string => {
+    if (!ms) return '--'
+    if (ms < 1000) return `${ms}ms`
+    return `${(ms / 1000).toFixed(1)}s`
   }
 
-  const isSuccess = simulation?.status === 'success'
-  const isRunning = simulation?.status === 'running' || simulation?.status === 'inbound_received' || simulation?.status === 'ai_responded'
-  const hasFailed = simulation?.status === 'timeout' || simulation?.status === 'failed'
+  // Get status display info
+  const getStatusInfo = (status: SimulationStatus) => {
+    switch (status) {
+      case 'idle':
+        return { label: 'Ready to start', color: 'text-slate-400', bg: 'bg-slate-500/10' }
+      case 'running':
+        return { label: 'Starting simulation...', color: 'text-blue-400', bg: 'bg-blue-500/10' }
+      case 'inbound_received':
+        return { label: 'Lead message received', color: 'text-yellow-400', bg: 'bg-yellow-500/10' }
+      case 'ai_responded':
+        return { label: 'AI responding...', color: 'text-purple-400', bg: 'bg-purple-500/10' }
+      case 'success':
+        return { label: 'Simulation complete!', color: 'text-emerald-400', bg: 'bg-emerald-500/10' }
+      case 'skipped':
+        return { label: 'Skipped', color: 'text-slate-400', bg: 'bg-slate-500/10' }
+      case 'timeout':
+        return { label: 'Timed out', color: 'text-orange-400', bg: 'bg-orange-500/10' }
+      case 'failed':
+        return { label: 'Failed', color: 'text-red-400', bg: 'bg-red-500/10' }
+      default:
+        return { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-500/10' }
+    }
+  }
+
+  const statusInfo = simulationState ? getStatusInfo(simulationState.status) : getStatusInfo('idle')
+  const isComplete = simulationState?.status === 'success'
+  const isError = simulationState?.status === 'timeout' || simulationState?.status === 'failed'
 
   return (
     <div className="animate-in fade-in-up duration-500">
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center mx-auto mb-6">
-            <Zap className="w-8 h-8 text-blue-400" />
+<div className="w-16 h-16 rounded-xl bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center mx-auto mb-6">
+            <MessageSquare className="w-8 h-8 text-emerald-400" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">See the Magic</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">See LeadFlow in Action</h2>
           <p className="text-slate-300">
-            Watch how LeadFlow AI responds to a lead in under 30 seconds
+            Watch how our AI responds to a lead in under 30 seconds
           </p>
         </div>
 
-        {/* Info Box */}
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-8 flex gap-3">
-          <Bot className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-          <div className="text-blue-300 text-sm">
-            <p className="font-medium mb-1">Live Simulation</p>
-            <p>We&apos;ll simulate a real lead conversation. Watch as our AI responds instantly with personalized messages.</p>
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 mb-6">
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-red-400 text-sm">{error}</p>
+        {/* Status Badge */}
+        {simulationState && (
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${statusInfo.bg} border border-${statusInfo.color.split('-')[1]}-500/30 mb-6`}>
+            {simulationState.status === 'running' || simulationState.status === 'inbound_received' || simulationState.status === 'ai_responded' ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : isComplete ? (
+              <CheckCircle2 className="w-4 h-4" />
+            ) : isError ? (
+              <AlertCircle className="w-4 h-4" />
+            ) : null}
+            <span className={`text-sm font-medium ${statusInfo.color}`}>{statusInfo.label}</span>
           </div>
         )}
 
-        {/* Chat Area */}
-        <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl mb-8 overflow-hidden">
-          {/* Chat Header */}
-          <div className="px-4 py-3 border-b border-slate-700/50 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-slate-400" />
-              <span className="text-sm font-medium text-slate-300">
-                {simulation?.lead_name || 'Lead Conversation'}
+        {/* Response Time Badge (when complete) */}
+        {isComplete && simulationState?.response_time_ms && (
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+              <Clock className="w-4 h-4 text-emerald-400" />
+              <span className="text-sm font-medium text-emerald-400">
+                Response time: {formatResponseTime(simulationState.response_time_ms)}
               </span>
             </div>
-            {simulation?.response_time_ms && (
-              <div className="flex items-center gap-1.5 text-xs">
-                <Clock className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-medium">
-                  Response time: {formatResponseTime(simulation.response_time_ms)}
-                </span>
-              </div>
-            )}
           </div>
+        )}
 
-          {/* Chat Messages */}
-          <div className="p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
-            {!simulation && (
-              <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                <div className="h-12 w-12 rounded-full bg-slate-700/50 flex items-center justify-center mb-3">
-                  <Bot className="h-6 w-6 text-slate-500" />
-                </div>
-                <p className="text-sm text-slate-400">Click "Start Simulation" to see the AI in action</p>
-              </div>
-            )}
-
-            {isRunning && !simulation?.conversation.length && (
-              <div className="flex flex-col items-center justify-center h-full py-12">
-                <Loader2 className="h-8 w-8 text-blue-500 animate-spin mb-3" />
-                <p className="text-sm text-slate-400">Starting simulation...</p>
-              </div>
-            )}
-
-            {simulation?.conversation.map((turn, i) => (
-              <ChatBubble key={i} {...turn} />
-            ))}
-
-            {isRunning && simulation?.conversation.length > 0 && (
-              <div className="flex items-center gap-2 text-xs text-slate-500 mt-4">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                AI is typing...
-              </div>
-            )}
-
-            {isSuccess && (
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg mt-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium">Simulation Complete!</span>
-                </div>
-                <p className="text-emerald-300/80 text-sm">
-                  The AI responded in {formatResponseTime(simulation?.response_time_ms || null)} — 
-                  that&apos;s under our 30-second target!
-                </p>
-              </div>
-            )}
-
-            {hasFailed && (
-              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg mt-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertCircle className="w-5 h-5 text-red-400" />
-                  <span className="text-red-400 font-medium">Simulation Failed</span>
-                </div>
-                <p className="text-red-300/80 text-sm">
-                  Something went wrong. You can skip this step or try again.
-                </p>
-              </div>
-            )}
-
-            <div ref={chatEndRef} />
+        {/* Error Message */}
+        {error && (
+          <div className="flex items-center gap-2 p-4 mb-6 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            {error}
           </div>
+        )}
+
+        {/* Conversation Display */}
+        <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-6 mb-8 min-h-[300px]">
+          {!simulationState || simulationState.conversation.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center py-12">
+              <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center mb-4">
+                <Play className="w-8 h-8 text-slate-500" />
+              </div>
+              <p className="text-slate-400 mb-2">Ready to see the magic?</p>
+              <p className="text-sm text-slate-500">
+                Click "Start Simulation" to watch a live lead conversation
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {simulationState.conversation.map((turn, index) => (
+                <div
+                  key={index}
+                  className={`flex ${turn.role === 'lead' ? 'justify-start' : 'justify-end'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                      turn.role === 'lead'
+                        ? 'bg-slate-700 text-slate-200 rounded-bl-none'
+                        : 'bg-emerald-600 text-white rounded-br-none'
+                    }`}
+                  >
+                    <p className="text-sm">{turn.message}</p>
+                    <p className={`text-xs mt-1 ${turn.role === 'lead' ? 'text-slate-400' : 'text-emerald-200'}`}>
+                      {new Date(turn.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Typing indicator */}
+              {(simulationState.status === 'running' || simulationState.status === 'inbound_received' || simulationState.status === 'ai_responded') && (
+                <div className="flex justify-end">
+                  <div className="bg-emerald-600/50 rounded-2xl rounded-br-none px-4 py-3">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-emerald-200 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-emerald-200 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-emerald-200 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-4">
-          {!simulation || hasFailed ? (
+        <div className="flex flex-col sm:flex-row gap-3">
+          {!simulationState || simulationState.status === 'idle' ? (
+            <>
+              <button
+                onClick={startSimulation}
+                disabled={isLoading || !sessionId}
+                className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5" />
+                    Start Simulation
+                  </>
+                )}
+              </button>
+              <button
+                onClick={skipSimulation}
+                disabled={isLoading}
+                className="flex-1 sm:flex-initial px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <SkipForward className="w-5 h-5" />
+                Skip
+              </button>
+            </>
+          ) : isComplete ? (
             <button
-              onClick={startSimulation}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all duration-200"
+              onClick={onNext}
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Starting...
-                </>
-              ) : (
-                <>
-                  <Play className="h-5 w-5" />
-                  {hasFailed ? 'Try Again' : 'Start Simulation'}
-                </>
-              )}
+              <CheckCircle2 className="w-5 h-5" />
+              Continue to Dashboard
             </button>
-          ) : isSuccess ? (
-            <button
-              onClick={handleContinue}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200"
-            >
-              <CheckCircle2 className="h-5 w-5" />
-              Continue to Confirmation →
-            </button>
+          ) : isError ? (
+            <>
+              <button
+                onClick={startSimulation}
+                disabled={isLoading}
+                className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-5 h-5" />
+                Try Again
+              </button>
+              <button
+                onClick={skipSimulation}
+                disabled={isLoading}
+                className="flex-1 sm:flex-initial px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <SkipForward className="w-5 h-5" />
+                Skip
+              </button>
+            </>
           ) : (
-            <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Simulation in progress...
-            </div>
-          )}
-
-          {/* Skip Button */}
-          {(!isSuccess) && (
-            <button
-              onClick={skipSimulation}
-              disabled={isSkipping || isRunning}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-600/50 text-slate-400 hover:text-slate-300 hover:bg-slate-700/30 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50"
-            >
-              {isSkipping ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Skipping...
-                </>
-              ) : (
-                <>
-                  <SkipForward className="h-4 w-4" />
-                  Skip for now
-                </>
-              )}
-            </button>
+            <>
+              <button
+                disabled
+                className="flex-1 py-3 px-4 bg-slate-700/50 text-slate-400 font-semibold rounded-lg cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <div className="w-4 h-4 border-2 border-slate-500/30 border-t-slate-400 rounded-full animate-spin" />
+                Simulation in progress...
+              </button>
+              <button
+                onClick={skipSimulation}
+                disabled={isLoading}
+                className="flex-1 sm:flex-initial px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <SkipForward className="w-5 h-5" />
+                Skip
+              </button>
+            </>
           )}
         </div>
 
-        {/* Stats */}
-        {isSuccess && (
-          <div className="mt-8 grid grid-cols-3 gap-4">
-            <div className="bg-slate-700/30 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-emerald-400">
-                {formatResponseTime(simulation?.response_time_ms || null)}
-              </div>
-              <div className="text-xs text-slate-400 mt-1">Response Time</div>
-            </div>
-            <div className="bg-slate-700/30 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-blue-400">
-                {simulation?.conversation.filter(t => t.role === 'ai').length || 0}
-              </div>
-              <div className="text-xs text-slate-400 mt-1">AI Messages</div>
-            </div>
-            <div className="bg-slate-700/30 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400">
-                3
-              </div>
-              <div className="text-xs text-slate-400 mt-1">Turns</div>
-            </div>
-          </div>
-        )}
+        {/* Info Box */}
+        <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+          <p className="text-sm text-blue-200/80">
+            <strong className="text-blue-300">What you&apos;re seeing:</strong> This is a simulated conversation 
+            between a potential home buyer and the LeadFlow AI. In a real scenario, this entire exchange 
+            happens automatically via SMS in under 30 seconds.
+          </p>
+        </div>
       </div>
     </div>
   )
 }
 
-// Need to import MessageSquare
-import { MessageSquare } from 'lucide-react'

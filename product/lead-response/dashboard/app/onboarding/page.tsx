@@ -70,6 +70,9 @@ function OnboardingPageInner() {
     utmCampaign: null as string | null,
     utmContent: null as string | null,
     utmTerm: null as string | null,
+    // Aha moment fields
+    ahaCompleted: false,
+    ahaResponseTimeMs: null as number | null,
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -104,7 +107,7 @@ function OnboardingPageInner() {
   const completeOnboarding = async () => {
     setIsLoading(true)
     try {
-      // Submit agent data to backend (includes UTM attribution and Aha Moment fields)
+// Submit agent data to backend (includes UTM attribution fields and aha moment data)
       const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
