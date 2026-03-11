@@ -166,7 +166,7 @@ async function createTablesAndData() {
   for (const agent of agents) {
     try {
       const { error } = await supabase
-        .from('agents')
+        .from('real_estate_agents')
         .upsert({
           project_id: 'bo2026',
           ...agent

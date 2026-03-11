@@ -151,7 +151,7 @@ async function executeMigration() {
 
     for (const agent of agents) {
       const { error } = await supabase
-        .from('agents')
+        .from('real_estate_agents')
         .insert({
           project_id: 'bo2026',
           ...agent

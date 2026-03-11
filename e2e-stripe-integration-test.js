@@ -63,7 +63,7 @@ async function createTestUser(email) {
   console.log(`  📝 Creating test user: ${email}`);
   
   const { data: agent, error } = await supabase
-    .from('agents')
+    .from('real_estate_agents')
     .insert([
       {
         name: `Test Agent ${Date.now()}`,
@@ -98,7 +98,7 @@ async function createStripeCustomer(email, agentId) {
   
   // Update agent with Stripe customer ID
   const { error } = await supabase
-    .from('agents')
+    .from('real_estate_agents')
     .update({ stripe_customer_id: customer.id })
     .eq('id', agentId);
 
@@ -200,7 +200,7 @@ async function verifySubscriptionInDatabase(agentId) {
   console.log(`  📋 Verifying subscription in database`);
   
   const { data: agent, error } = await supabase
-    .from('agents')
+    .from('real_estate_agents')
     .select('id, stripe_customer_id, stripe_subscription_id, status, plan_tier, mrr, trial_ends_at')
     .eq('id', agentId)
     .single();
@@ -225,7 +225,7 @@ async function createPortalSession(agentId, customerId) {
   
   // Retrieve the agent first to get stripe_customer_id
   const { data: agent, error: fetchError } = await supabase
-    .from('agents')
+    .from('real_estate_agents')
     .select('id, email, stripe_customer_id')
     .eq('id', agentId)
     .single();
@@ -292,7 +292,7 @@ async function verifySubscriptionCancellation(agentId) {
   console.log(`  📋 Verifying cancellation in database`);
   
   const { data: agent, error } = await supabase
-    .from('agents')
+    .from('real_estate_agents')
     .select('id, status, plan_tier, mrr, cancelled_at')
     .eq('id', agentId)
     .single();
@@ -317,7 +317,7 @@ async function cleanupTestData(agentId, customerId) {
   try {
     // Delete agent from database
     const { error: deleteError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .delete()
       .eq('id', agentId);
 
