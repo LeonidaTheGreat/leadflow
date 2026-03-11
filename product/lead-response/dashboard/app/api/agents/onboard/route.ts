@@ -44,6 +44,8 @@ export async function POST(request: NextRequest) {
       utmCampaign,
       utmContent,
       utmTerm,
+      ahaCompleted,
+      ahaResponseTimeMs,
     } = body
 
     // Validate required fields — NO credit card or billing info needed
@@ -97,6 +99,8 @@ export async function POST(request: NextRequest) {
         utm_campaign: utmCampaign || null,
         utm_content: utmContent || null,
         utm_term: utmTerm || null,
+        aha_moment_completed: ahaCompleted === true,
+        aha_response_time_ms: ahaResponseTimeMs || null,
       })
       .select()
       .single()
