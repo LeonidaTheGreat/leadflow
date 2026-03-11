@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/inactivity-alerts",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
