@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/11/2026, 4:10:05 AM
+**Last Updated:** 3/11/2026, 4:55:05 AM
 
 ---
 
@@ -33,23 +33,18 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 4 | In Progress: 2 | Blocked: 0 | Done: 768
+**Queue Health:** Ready: 0 | In Progress: 2 | Blocked: 0 | Done: 779
 
-### ▶️ Ready to Spawn (4 tasks)
+### ▶️ Ready to Spawn (0 tasks)
 
-| Task | Model | Cost | Priority |
-|------|-------|------|----------|
-| Escalation: Fix recurring build failure — unknown | sonnet | $0.60 | 🔴 P0 |
-| Dev: fix-middleware-blocks-authenticated-users-from-onboard - Middleware blocks authenticated users from /onboarding route | haiku | $0.40 | 🟡 P1 |
-| Dev: fix-api-start-action-requires-sessionid-before-session - API start action requires sessionId before sessionId exists — chicken-and-egg | kimi | $0.12 | 🟡 P1 |
-| Dev: fix-onboarding-still-present-in-auth-routes-middleware - /onboarding still present in AUTH_ROUTES (middleware.ts line 21) | kimi | $0.12 | 🟡 P1 |
+*No ready tasks*
 
 ### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| QC: fix-analytics-events-table-missing-trial-funnel-tracki - analytics_events table missing — trial funnel tracking fails silently | qc | kimi |
-| Dev: fix-api-response-format-does-not-match-prd-contract - API response format does not match PRD contract | dev | kimi |
+| Dev: fix-frontend-components-still-fall-back-to-dashboard-o - Frontend components still fall back to /dashboard/onboarding | dev | haiku |
+| QC: fix-ahacompleted-not-included-in-onboarding-submit-pay - ahaCompleted not included in onboarding submit payload — FR-8 not implemented | qc | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -107,7 +102,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $343.03
+**Estimated project cost:** $344.20
 **Cost per task:** Avg $0.40
 
 ---
@@ -121,7 +116,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **4 tasks ready to spawn**
+1. 🔴 No ready tasks
 2. ⚡ **2 agents active**
 3. ✅ No blockers
 
