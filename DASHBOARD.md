@@ -11,7 +11,11 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 38 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
+<<<<<<< HEAD
 **Last Updated:** 3/23/2026, 11:06:00 PM
+=======
+**Last Updated:** 3/11/2026, 3:39:59 AM
+>>>>>>> 53ceec05 (feat: add How It Works section with 3-step process)
 
 ---
 
@@ -33,6 +37,7 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
+<<<<<<< HEAD
 **Queue Health:** Ready: 8 | In Progress: 4 | Blocked: 0 | Done: 913
 
 ### ▶️ Ready to Spawn (8 tasks)
@@ -56,6 +61,23 @@ autoRefresh: every_heartbeat
 | PM: Product Review — UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | product | sonnet |
 | Smoke: Auth: signup then login failing | qc | kimi |
 | Dev (rescue): fix-no-evidence-of-wizard-auto-trigger-implementation - No evidence of wizard auto-trigger implementation | dev | haiku |
+=======
+**Queue Health:** Ready: 2 | In Progress: 2 | Blocked: 0 | Done: 762
+
+### ▶️ Ready to Spawn (2 tasks)
+
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: fix-analytics-events-table-missing-trial-funnel-tracki - analytics_events table missing — trial funnel tracking fails silently | haiku | $0.40 | 🟡 P1 |
+| Dev: fix-trial-period-set-to-30-days-prd-specifies-14-days - Trial period set to 30 days — PRD specifies 14 days | haiku | $0.40 | 🟡 P1 |
+
+### ⚡ In Progress (2 tasks)
+
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev: fix-how-it-works-section-not-implemented - How It Works section not implemented | dev | kimi |
+| QC: fix-prd-objective-not-fully-implemented-product-api-ro - PRD objective not fully implemented: product API routes still query agents table | qc | kimi |
+>>>>>>> 53ceec05 (feat: add How It Works section with 3-step process)
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -113,8 +135,13 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
+<<<<<<< HEAD
 **Estimated project cost:** $483.74
 **Cost per task:** Avg $0.48
+=======
+**Estimated project cost:** $341.28
+**Cost per task:** Avg $0.40
+>>>>>>> 53ceec05 (feat: add How It Works section with 3-step process)
 
 ---
 
@@ -127,8 +154,13 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
+<<<<<<< HEAD
 1. ✅ **8 tasks ready to spawn**
 2. ⚡ **4 agents active**
+=======
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **2 agents active**
+>>>>>>> 53ceec05 (feat: add How It Works section with 3-step process)
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
