@@ -31,9 +31,9 @@ describe('Trial Signup API - /api/auth/trial-signup', () => {
     expect(optionalFields.length).toBeGreaterThan(0)
   })
 
-  test('AC-3: Trial account sets plan_tier=trial and trial_ends_at=30 days', () => {
+  test('AC-3: Trial account sets plan_tier=trial and trial_ends_at=14 days', () => {
     const now = Date.now()
-    const trialEndsAt = new Date(now + 30 * 24 * 60 * 60 * 1000)
+    const trialEndsAt = new Date(now + 14 * 24 * 60 * 60 * 1000)
     const expectedFields = {
       plan_tier: 'trial',
       trial_ends_at: trialEndsAt.toISOString(),
@@ -48,9 +48,9 @@ describe('Trial Signup API - /api/auth/trial-signup', () => {
     expect(expectedFields.source).toBe('trial_cta')
     expect(expectedFields.email_verified).toBe(true)
     
-    // Verify trial_ends_at is approximately 30 days from now
+    // Verify trial_ends_at is approximately 14 days from now (per PRD-FRICTIONLESS-ONBOARDING-001)
     const daysDiff = (trialEndsAt.getTime() - now) / (1000 * 60 * 60 * 24)
-    expect(daysDiff).toBeCloseTo(30, 0)
+    expect(daysDiff).toBeCloseTo(14, 0)
   })
 
   test('AC-6: Source attribution is trial_cta', () => {
