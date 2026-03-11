@@ -73,16 +73,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { action, agentId, sessionId, reason } = body
 
-    if (!action || !agentId || !sessionId) {
+    // Validate required fields - sessionId is not required for 'start' action
+    if (!action || !agentId) {
       return NextResponse.json(
-        { error: 'Missing required fields: action, agentId, sessionId' },
+        { error: 'Missing required fields: action, agentId' },
+        { status: 400 }
+      )
+    }
+
+    // sessionId is required for status and skip actions
+    if (action !== 'start' && !sessionId) {
+      return NextResponse.json(
+        { error: 'Missing required field: sessionId' },
         { status: 400 }
       )
     }
 
     switch (action) {
       case 'start':
-        return await startSimulation(agentId, sessionId)
+        return await startSimulation(agentId, sessionId || randomUUID())
       case 'status':
         return await getSimulationStatus(agentId, sessionId)
       case 'skip':
