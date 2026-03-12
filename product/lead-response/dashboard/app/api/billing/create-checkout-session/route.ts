@@ -1,11 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import Stripe from 'stripe'
+import jwt from 'jsonwebtoken'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-11-20',
-})
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20' as any })
+  : null
+
+/**
+ * Validate JWT token from auth-token cookie
+ */
+function validateJWTToken(token: string): { id: string; email: string } | null {
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as { id: string; email: string }
+    return payload
+  } catch {
+    return null
+  }
+}
 
 /**
  * Map plan ID to Stripe price ID from environment variables
@@ -21,7 +35,14 @@ function getPriceIdForPlan(planId: string): string | null {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 503 }
+      )
+    }
+
+    if (!stripe) {
       return NextResponse.json(
         { error: 'Stripe not configured' },
         { status: 503 }
@@ -46,25 +67,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get authenticated user
-    const supabase = createServerComponentClient({ cookies })
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
+    // Get JWT token from cookie for authentication
+    const authToken = request.cookies.get('auth-token')?.value
+    
+    if (!authToken) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    
+    // Validate JWT token
+    const jwtPayload = validateJWTToken(authToken)
+    if (!jwtPayload) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    // Get agent email from database
+    // Get agent email from database to ensure they exist and get current email
     const { data: agent, error: agentError } = await supabase
       .from('real_estate_agents')
       .select('id, email')
-      .eq('id', user.id)
+      .eq('id', jwtPayload.id)
       .single()
 
     if (agentError || !agent) {
@@ -75,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe Checkout session
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripe!.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [
