@@ -4,7 +4,7 @@ import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
-import { AhaMomentBanner } from '@/components/dashboard/AhaMomentBanner'
+import { UpgradeBanner } from '@/components/dashboard/UpgradeBanner'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
@@ -13,8 +13,8 @@ export const metadata = {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      {/* Aha Moment Banner — shows for agents who skipped simulator during onboarding */}
-      <AhaMomentBanner agentId="test-agent-id" />
+      {/* Upgrade Banner — shows for trial/pilot agents */}
+      <UpgradeBanner />
 
       {/* Pilot Status Banner — shows for pilot agents */}
       <PilotStatusBanner />
