@@ -69,39 +69,31 @@
 ## 2. Step 1: Lead Input Form (Active State)
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                                                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                                                                      │   │
-│  │  ●──────────○──────────○                                             │   │
-│  │  Input    Processing  Delivered                                      │   │
-│  │                                                                      │   │
-│  │  Simulate a Lead                                                     │   │
-│  │                                                                      │   │
-│  │  Lead Name *                                                         │   │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │   │
-│  │  │ Sarah Johnson                                                │   │   │
-│  │  └──────────────────────────────────────────────────────────────┘   │   │
-│  │                                                                      │   │
-│  │  Property Interest *                                                 │   │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │   │
-│  │  │ Single Family Home                                         ▼ │   │   │
-│  │  └──────────────────────────────────────────────────────────────┘   │   │
-│  │                                                                      │   │
-│  │  Lead Source (Optional)                                              │   │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │   │
-│  │  │ Zillow                                                     ▼ │   │   │
-│  │  └──────────────────────────────────────────────────────────────┘   │   │
-│  │                                                                      │   │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │   │
-│  │  │          ⚡ Send Lead →                                     │   │   │
-│  │  └──────────────────────────────────────────────────────────────┘   │   │
-│  │                                                                      │   │
-│  │  * Required fields                                                   │   │
-│  │                                                                      │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└──────────────────────────────────────────────────────────────────────────────┘
+  ○──────────○──────────○
+  Input    Processing  Delivered
+
+  Simulate a Lead
+
+  Lead Name *
+  ┌──────────────────────────────────────────┐
+  │ Sarah Johnson                            │
+  └──────────────────────────────────────────┘
+
+  Property Interest *
+  ┌──────────────────────────────────────────┐
+  │ Single Family Home                     ▼ │
+  └──────────────────────────────────────────┘
+
+  Lead Source (Optional)
+  ┌──────────────────────────────────────────┐
+  │ Zillow                                 ▼ │
+  └──────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────┐
+  │         ⚡ Send Lead →                  │
+  └──────────────────────────────────────────┘
+
+  * Required fields
 ```
 
 ---
@@ -109,50 +101,26 @@
 ## 3. Step 2: AI Processing Visualization
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                                                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                                                                      │   │
-│  │  ●──────────●──────────○                                             │   │
-│  │  Input    Processing  Delivered                                      │   │
-│  │                                                                      │   │
-│  │  Timeline Progress:                                                  │   │
-│  │                                                                      │   │
-│  │  ⚡ Lead Received ─────────●───────────────○                         │   │
-│  │     ✓                  AI Processing     Delivering                  │   │
-│  │                                                                      │   │
-│  │  ┌────────────────────────────────────────────────────────────────┐ │   │
-│  │  │  🤖 AI is analyzing...                                        │ │   │
-│  │  │                                                                │ │   │
-│  │  │  Extracting intent, budget, timeline...   ● ● ●               │ │   │
-│  │  │                                                                │ │   │
-│  │  └────────────────────────────────────────────────────────────────┘ │   │
-│  │                                                                      │   │
-│  │                                                                      │   │
-│  │                          ┌──────────┐                                │   │
-│  │                          │  04.2s   │                                │   │
-│  │                          └──────────┘                                │   │
-│  │                        Response time                                 │   │
-│  │                                                                      │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└──────────────────────────────────────────────────────────────────────────────┘
-```
+  ●──────────●──────────○
+  Input    Processing  Delivered
 
-### Timeline Animation Sequence
+  Timeline Progress:
 
-```
-State 1 (Lead Received):
-⚡ ──────────────────────────────────
-✓
+  ⚡ Lead Received ─────────●───────────────○
+     ✓                  AI Processing     Delivering
 
-State 2 (AI Processing - 40% progress):
-⚡ Lead Received ─────────●──────────○
-✓                    ↑ (pulsing)
+  ┌────────────────────────────────────────┐
+  │  🤖 AI is analyzing...                 │
+  │                                        │
+  │  Extracting intent, budget, timeline...│
+  │  ● ● ●                                 │
+  └────────────────────────────────────────┘
 
-State 3 (Complete):
-⚡ Lead Received ─────────✓──────────●
-✓                                   ↑ (pulsing)
+
+                  ┌──────────┐
+                  │  04.2s   │
+                  └──────────┘
+                Response time
 ```
 
 ---
@@ -160,78 +128,44 @@ State 3 (Complete):
 ## 4. Step 3: SMS Response Delivered (Success State)
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                                                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                                                                      │   │
-│  │  ●──────────●──────────●                                             │   │
-│  │  Input    Processing  Delivered                                      │   │
-│  │                                                                      │   │
-│  │              ✓ Response Delivered in 4.2 seconds                     │   │
-│  │                Here's what your lead would receive:                  │   │
-│  │                                                                      │   │
-│  │                       ┌─────────────────────┐                        │   │
-│  │                       │  9:41             🔋│                        │   │
-│  │                       ├─────────────────────┤                        │   │
-│  │                       │                     │                        │   │
-│  │                       │  ┌───────────────┐  │                        │   │
-│  │                       │  │ Hey Sarah! 👋 │  │                        │   │
-│  │                       │  │ Thanks for    │  │                        │   │
-│  │                       │  │ your interest │  │                        │   │
-│  │                       │  │ in the single │  │                        │   │
-│  │                       │  │ family home.  │  │                        │   │
-│  │                       │  │ I'd love to   │  │                        │   │
-│  │                       │  │ schedule a    │  │                        │   │
-│  │                       │  │ showing.      │  │                        │   │
-│  │                       │  │               │  │                        │   │
-│  │                       │  │ Are you free  │  │                        │   │
-│  │                       │  │ this weekend? │  │                        │   │
-│  │                       │  └───────────────┘  │                        │   │
-│  │                       │                     │                        │   │
-│  │                       └─────────────────────┘                        │   │
-│  │                                                                      │   │
-│  │                    ┌───────────────────────┐                         │   │
-│  │                    │ ⚡ 4.2s response time │                         │   │
-│  │                    └───────────────────────┘                         │   │
-│  │                                                                      │   │
-│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐                        │   │
-│  │  │ 🏠 Single  │ │ 💰 Budget  │ │ 📅 This    │                        │   │
-│  │  │ Family     │ │ Ready      │ │ Weekend    │                        │   │
-│  │  └────────────┘ └────────────┘ └────────────┘                        │   │
-│  │                                                                      │   │
-│  │  ┌────────────────────────┐  ┌────────────────────────┐              │   │
-│  │  │ ← Try Another Lead     │  │ Start Free Trial →     │              │   │
-│  │  └────────────────────────┘  └────────────────────────┘              │   │
-│  │                                                                      │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└──────────────────────────────────────────────────────────────────────────────┘
-```
+  ●──────────●──────────●
+  Input    Processing  Delivered
 
-### Phone Frame Styling
+         ✓ Response Delivered in 4.2 seconds
+            Here's what your lead would receive:
 
-```
-Width: 320px (desktop), 260px (mobile)
-Height: ~620px (proportional)
-Border-radius: 40px
-Border: 8px solid #1a1a1a
-Background: #000
-Shadow: drop-shadow(0 25px 50px rgba(0,0,0,0.6))
+                ┌─────────────────────┐
+                │  9:41             🔋│
+                ├─────────────────────┤
+                │                     │
+                │  ┌───────────────┐  │
+                │  │ Hey Sarah! 👋 │  │
+                │  │ Thanks for    │  │
+                │  │ your interest │  │
+                │  │ in the single │  │
+                │  │ family home.  │  │
+                │  │ I'd love to   │  │
+                │  │ schedule a    │  │
+                │  │ showing.      │  │
+                │  │               │  │
+                │  │ Are you free  │  │
+                │  │ this weekend? │  │
+                │  └───────────────┘  │
+                │                     │
+                └─────────────────────┘
 
-Content Padding: 16px (inside frame)
+               ┌───────────────────────┐
+               │ ⚡ 4.2s response time │
+               └───────────────────────┘
 
-Status Bar (12px height):
-├─ Time (9:41) left-aligned
-├─ Centered spacer
-└─ Battery indicator right-aligned
+  ┌────────────┐ ┌────────────┐ ┌────────────┐
+  │ 🏠 Single  │ │ 💰 Budget  │ │ 📅 This    │
+  │ Family     │ │ Ready      │ │ Weekend    │
+  └────────────┘ └────────────┘ └────────────┘
 
-Message Bubble:
-├─ Background: #f0f0f0
-├─ Text color: #000
-├─ Border-radius: 18px (top-right sharp)
-├─ Padding: 12px 16px
-├─ Max-width: 80% of screen
-└─ Animation: character-by-character typing (30ms per char)
+  ┌────────────────────────┐  ┌────────────────────────┐
+  │ ← Try Another Lead     │  │ Start Free Trial →     │
+  └────────────────────────┘  └────────────────────────┘
 ```
 
 ---
@@ -239,31 +173,19 @@ Message Bubble:
 ## 5. Error State: Claude API Timeout
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                                                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                                                                      │   │
-│  │  ●──────────●──────────✕ (ERROR)                                     │   │
-│  │  Input    Processing  Failed                                         │   │
-│  │                                                                      │   │
-│  │  ┌────────────────────────────────────────────────────────────────┐ │   │
-│  │  │  ⚠️  Unable to generate response                              │ │   │
-│  │  │                                                                │ │   │
-│  │  │  Our AI service is temporarily unavailable.                   │ │   │
-│  │  │  Please try again in a moment.                                │ │   │
-│  │  │                                                                │ │   │
-│  │  │  ┌─────────────────────┐  ┌──────────────────────────────┐    │ │   │
-│  │  │  │ Try Again           │  │ Start Free Trial Anyway →    │    │ │   │
-│  │  │  └─────────────────────┘  └──────────────────────────────┘    │ │   │
-│  │  │                                                                │ │   │
-│  │  └────────────────────────────────────────────────────────────────┘ │   │
-│  │                                                                      │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└──────────────────────────────────────────────────────────────────────────────┘
+  ●──────────●──────────✕ (ERROR)
+  Input    Processing  Failed
 
-Border color: red-500/20 instead of slate-700
-Background tint: red-500/5
+  ⚠️  Unable to generate response
+
+  Our AI service is temporarily unavailable.
+  Please try again in a moment.
+
+  ┌─────────────────────┐  ┌──────────────────────────┐
+  │ Try Again           │  │ Start Free Trial Anyway →│
+  └─────────────────────┘  └──────────────────────────┘
+
+  (Border color: red-500/20, background tint: red-500/5)
 ```
 
 ---
@@ -284,7 +206,6 @@ Background tint: red-500/5
 │  No signup required.              │
 │                                   │
 ├───────────────────────────────────┤
-│                                   │
 │  ┌─────────────────────────────┐  │
 │  │ ●──────●──────●             │  │
 │  │ 1      2     3              │  │
@@ -313,72 +234,40 @@ Background tint: red-500/5
 │  └─────────────────────────────┘  │
 │                                   │
 ├───────────────────────────────────┤
+│  Ready to Automate Your Lead      │
+│  Responses?                       │
 │                                   │
-│ Ready to Automate Your Lead       │
-│ Responses?                        │
+│  Join hundreds of agents who      │
+│  never miss a lead.               │
 │                                   │
-│ Join hundreds of agents who       │
-│ never miss a lead.                │
+│  ┌───────────────────────────────┐│
+│  │ Start Free Trial — No Credit  ││
+│  │ Card Required          →      ││
+│  └───────────────────────────────┘│
 │                                   │
-│ ┌───────────────────────────────┐ │
-│ │ Start Free Trial — No Credit  │ │
-│ │ Card Required          →      │ │
-│ └───────────────────────────────┘ │
-│                                   │
-│ ✓ 30-day free trial               │
-│ ✓ No credit card                  │
-│ ✓ Cancel anytime                  │
+│  ✓ 30-day free trial              │
+│  ✓ No credit card                 │
+│  ✓ Cancel anytime                 │
 │                                   │
 └───────────────────────────────────┘
 ```
 
 ---
 
-## 7. Interaction Flow Diagram
+## 7. Timeline Animation Sequence
 
 ```
-┌─────────────────┐
-│  Page Load      │
-│  (hero visible) │
-└────────┬────────┘
-         │
-         ├─ Form appears
-         │
-┌────────▼─────────────────┐
-│ STEP 1: Input Form       │
-│ User enters lead data    │
-│ Clicks "Send Lead"       │
-└────────┬─────────────────┘
-         │
-         ├─ Form fades out
-         │ Processing view fades in
-         │
-┌────────▼──────────────────────┐
-│ STEP 2: AI Processing          │
-│ • Timeline animates            │
-│ • Live timer counts up         │
-│ • "AI is analyzing..."         │
-│ (Waits for Claude response)    │
-└────────┬───────────────────────┘
-         │
-         ├─ Response received
-         │ Processing fades
-         │ Success state fades in
-         │
-┌────────▼──────────────────────┐
-│ STEP 3: Success Delivered      │
-│ • ✓ Response Delivered badge   │
-│ • Phone mockup appears         │
-│ • Message types out            │
-│ • Personalization tags show    │
-│ • Conversion CTA visible       │
-└────────┬───────────────────────┘
-         │
-         ├─ User chooses:
-         │  ├─ "Try Another Lead" → Back to STEP 1
-         │  └─ "Start Trial" → Navigate to /signup/trial
-         │
-└─────────────────────────────────┘
+State 1 (Lead Received):
+⚡ ──────────────────────────────────
+✓
+
+State 2 (AI Processing - 40% progress):
+⚡ Lead Received ─────────●──────────○
+✓                    ↑ (pulsing)
+
+State 3 (Complete):
+⚡ Lead Received ─────────✓──────────●
+✓                                   ↑ (pulsing)
 ```
 
 ---

@@ -85,58 +85,9 @@ This document provides visual design specifications for a public, no-authenticat
 
 ---
 
-## 4. Layout Architecture
+## 4. Component Specifications
 
-```
-┌─────────────────────────────────────────────────────┐
-│ Header (minimal - logo + sign in link)              │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│ HERO SECTION                                        │
-│ ─────────────────────────────────────────────────   │
-│ "See AI Respond in Under 30 Seconds"                │
-│ "No signup required"                                │
-│                                                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│ DEMO SIMULATOR (Main Interactive Container)        │
-│ ─────────────────────────────────────────────────   │
-│ Step Indicator (3 dots)                             │
-│                                                     │
-│ ┌─────────────────────────────────────────────┐    │
-│ │ STEP 1: Lead Input Form                     │    │
-│ │ [Name] [Property Type] [Source]             │    │
-│ │ [Send Lead →]                               │    │
-│ └─────────────────────────────────────────────┘    │
-│                                                     │
-│ ┌─────────────────────────────────────────────┐    │
-│ │ STEP 2: AI Processing                       │    │
-│ │ Timeline + Live Timer                       │    │
-│ │ "Extracting intent..." ● ● ●                │    │
-│ └─────────────────────────────────────────────┘    │
-│                                                     │
-│ ┌─────────────────────────────────────────────┐    │
-│ │ STEP 3: SMS Response Delivered              │    │
-│ │ Phone mockup + Success badge                │    │
-│ │ [Try Another] [Start Trial →]               │    │
-│ └─────────────────────────────────────────────┘    │
-│                                                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│ CONVERSION CTA SECTION                              │
-│ ─────────────────────────────────────────────────   │
-│ "Ready to Automate Your Lead Responses?"            │
-│ [Start Free Trial — No Credit Card Required]        │
-│ ✓ 30-day trial ✓ No card ✓ Cancel anytime          │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
-
----
-
-## 5. Component Specifications
-
-### 5.1 Header
+### 4.1 Header
 
 - Height: 64px
 - Background: transparent (overlays gradient)
@@ -144,7 +95,7 @@ This document provides visual design specifications for a public, no-authenticat
 - Logo: "LeadFlow AI", white, 24px bold
 - Right link: "Sign In →", text-only, slate-400/hover white
 
-### 5.2 Hero Section
+### 4.2 Hero Section
 
 **Background:** Linear gradient from slate-900 to slate-800 (top → bottom)
 **Padding:** 64px 24px (mobile) / 96px 24px (desktop)
@@ -164,7 +115,7 @@ No signup required."
 ```
 - Font: 18px mobile, 20px desktop, weight 400, slate-400
 
-### 5.3 Demo Simulator Container
+### 4.3 Demo Simulator Container
 
 **Card Styling:**
 - Background: slate-800
@@ -184,7 +135,7 @@ No signup required."
 - Connector line: 2px, slate-700 (active: emerald-500)
 - Labels: 12px uppercase, slate-500
 
-### 5.4 Step 1: Lead Input Form
+### 4.4 Step 1: Lead Input Form
 
 **Title:** "Simulate a Lead" (18px, 600 weight, white)
 
@@ -227,7 +178,7 @@ No signup required."
 - Inline error message below field, red-400, 14px
 - Message: "Please enter a lead name" / "Please select a property type"
 
-### 5.5 Step 2: AI Processing Visualization
+### 4.5 Step 2: AI Processing Visualization
 
 **Timeline Progress Bar:**
 ```
@@ -263,7 +214,7 @@ No signup required."
 - Form fades out: opacity 1 → 0, 200ms ease
 - Processing view fades in: opacity 0 → 1, 300ms ease (starts at 100ms)
 
-### 5.6 Step 3: SMS Response Delivered
+### 4.6 Step 3: SMS Response Delivered
 
 **Success Header:**
 ```
@@ -373,7 +324,7 @@ Below badge, show detected attributes:
 
 - Layout: stack on mobile, side-by-side on desktop, gap 12px
 
-### 5.7 Conversion CTA Section
+### 4.7 Conversion CTA Section
 
 **Background:** Gradient from slate-900 to slate-800
 **Padding:** 64px 24px
@@ -411,7 +362,7 @@ Start Free Trial — No Credit Card Required →
 
 ---
 
-## 6. Animations & Interactions
+## 5. Animations & Interactions
 
 ### Page Load Sequence
 
@@ -480,7 +431,7 @@ Start Free Trial — No Credit Card Required →
 
 ---
 
-## 7. Responsive Behavior
+## 6. Responsive Behavior
 
 ### Breakpoints
 
@@ -509,7 +460,7 @@ Start Free Trial — No Credit Card Required →
 
 ---
 
-## 8. Analytics Event Markers
+## 7. Analytics Event Markers
 
 Add `data-analytics` attributes to elements for tracking (implementation hook for dev):
 
@@ -545,7 +496,7 @@ Add `data-analytics` attributes to elements for tracking (implementation hook fo
 
 ---
 
-## 9. Accessibility Requirements
+## 8. Accessibility Requirements
 
 ### Keyboard Navigation
 - Tab order follows visual order
@@ -572,7 +523,7 @@ Add `data-analytics` attributes to elements for tracking (implementation hook fo
 
 ---
 
-## 10. Asset Requirements
+## 9. Asset Requirements
 
 ### Icons (Use Lucide React)
 
@@ -598,87 +549,7 @@ Add `data-analytics` attributes to elements for tracking (implementation hook fo
 
 ---
 
-## 11. Implementation Notes
-
-### Suggested Component Structure
-
-```
-app/demo/
-  ├── page.tsx                    # Main page
-  ├── components/
-  │   ├── DemoContainer.tsx       # State manager
-  │   ├── LeadInputForm.tsx       # Step 1
-  │   ├── ProcessingView.tsx      # Step 2
-  │   ├── SuccessView.tsx         # Step 3
-  │   ├── PhoneMockup.tsx         # SMS display
-  │   ├── Timeline.tsx            # Progress
-  │   ├── ResponseTimer.tsx       # Timer
-  │   └── ConversionCTA.tsx       # CTA section
-  ├── hooks/
-  │   ├── useDemoAnalytics.ts     # Tracking
-  │   └── useResponseTimer.ts     # Timer logic
-  └── types/
-      └── demo.ts                  # Types
-```
-
-### State Management
-
-```typescript
-interface DemoState {
-  step: 'input' | 'processing' | 'success' | 'error';
-  leadData: {
-    name: string;
-    propertyType: string;
-    source?: string;
-  };
-  response: {
-    message: string;
-    responseTimeMs: number;
-    personalization: {
-      propertyType: string;
-      budgetReady: boolean;
-      timeline: string;
-    };
-  } | null;
-  error: string | null;
-}
-```
-
-### API Endpoint
-
-```
-POST /api/demo/generate-response
-
-Request:
-{
-  leadName: string;
-  propertyType: string;
-  source?: string;
-}
-
-Response:
-{
-  message: string;
-  responseTimeMs: number;
-  personalization: {
-    detectedPropertyType: string;
-    budgetIndication: 'ready' | 'planning' | 'unknown';
-    timelineIndication: string;
-  };
-}
-```
-
-### Key Implementation Details
-
-1. **Timer accuracy:** Use `performance.now()` for millisecond precision
-2. **Animation performance:** Use transform + opacity only
-3. **Mobile testing:** Test on real devices, not just emulator
-4. **Error boundaries:** Wrap Claude call in try/catch
-5. **Rate limiting:** Debounce submit button (2s minimum between attempts)
-
----
-
-## 12. Success Criteria Verification
+## 10. Success Criteria Verification
 
 | PRD Requirement | Design Implementation | Status |
 |---|---|---|
