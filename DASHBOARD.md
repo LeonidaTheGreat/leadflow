@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-11
+title: BO2026 Dashboard - Updated 2026-03-12
 author: LeadFlow Orchestrator
-date: 2026-03-11
+date: 2026-03-12
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 25 of 60  
+**Current Day:** Day 26 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/11/2026, 4:05:05 AM
+**Last Updated:** 3/12/2026, 2:15:11 AM
 
 ---
 
@@ -33,20 +33,23 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 1 | In Progress: 2 | Blocked: 0 | Done: 768
+**Queue Health:** Ready: 3 | In Progress: 3 | Blocked: 0 | Done: 800
 
-### ▶️ Ready to Spawn (1 tasks)
+### ▶️ Ready to Spawn (3 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: fix-middleware-blocks-authenticated-users-from-onboard - Middleware blocks authenticated users from /onboarding route | haiku | $0.40 | 🟡 P1 |
+| Dev: feat-pilot-conversion-email-sequence - Pilot-to-Paid Conversion Email Sequence | kimi | $0.24 | 🔴 P0 |
+| Dev: fix-aha-moment-lead-simulator-not-implemented-not-star - Aha moment lead simulator not implemented (not_started at day 22) | sonnet | $0.60 | 🔴 P0 |
+| Design: fix-brokerage-tier-missing-from-pricing-page - Brokerage tier missing from pricing page | kimi | $0.12 | 🟡 P1 |
 
-### ⚡ In Progress (2 tasks)
+### ⚡ In Progress (3 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| QC: fix-analytics-events-table-missing-trial-funnel-tracki - analytics_events table missing — trial funnel tracking fails silently | qc | kimi |
-| Dev: fix-api-response-format-does-not-match-prd-contract - API response format does not match PRD contract | dev | kimi |
+| Design: feat-demo-without-signup - Live AI Demo — Experience the Product Without Signing Up | design | kimi |
+| QC: fix-no-self-serve-upgrade-path-from-pilot-to-paid - No self-serve upgrade path from pilot to paid | qc | sonnet |
+| Dev: feat-self-serve-stripe-checkout - Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +107,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $342.19
+**Estimated project cost:** $356.23
 **Cost per task:** Avg $0.40
 
 ---
@@ -118,8 +121,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **1 tasks ready to spawn**
-2. ⚡ **2 agents active**
+1. ✅ **3 tasks ready to spawn**
+2. ⚡ **3 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
