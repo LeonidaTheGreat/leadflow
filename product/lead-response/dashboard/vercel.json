@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/follow-up",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/pilot-conversion",
+      "schedule": "0 9 * * *"
     }
   ]
 }
