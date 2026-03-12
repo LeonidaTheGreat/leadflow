@@ -26,7 +26,9 @@ import {
   Bot,
   User,
   Zap,
-  Clock
+  Clock,
+  MessageSquare,
+  RefreshCw
 } from 'lucide-react'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -64,26 +66,21 @@ function formatResponseTime(ms: number | null): string {
   return `${(ms / 1000).toFixed(1)}s`
 }
 
-function generateSessionId(): string {
-  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-}
-
 /**
  * Map actual API status values to display info.
  * API returns 8 statuses: idle | running | inbound_received | ai_responded | success | skipped | timeout | failed
- * (PRD incorrectly specified only 3 with different names — always use API values here)
  */
-function getStatusInfo(status: SimulationStatus): { label: string; color: string } {
+function getStatusInfo(status: SimulationStatus): { label: string; color: string; bg: string } {
   switch (status) {
-    case 'idle':              return { label: 'Not started',       color: 'text-slate-500' }
-    case 'running':           return { label: 'Simulating...',     color: 'text-blue-500' }
-    case 'inbound_received':  return { label: 'Lead arrived',      color: 'text-yellow-500' }
-    case 'ai_responded':      return { label: 'AI responding',     color: 'text-emerald-400' }
-    case 'success':           return { label: 'Complete ✓',        color: 'text-emerald-600' }
-    case 'skipped':           return { label: 'Skipped',           color: 'text-slate-400' }
-    case 'timeout':           return { label: 'Timed out',         color: 'text-orange-500' }
-    case 'failed':            return { label: 'Failed',            color: 'text-red-500' }
-    default:                  return { label: status,              color: 'text-slate-500' }
+    case 'idle':              return { label: 'Not started',       color: 'text-slate-500', bg: 'bg-slate-500/10' }
+    case 'running':           return { label: 'Simulating...',     color: 'text-blue-500', bg: 'bg-blue-500/10' }
+    case 'inbound_received':  return { label: 'Lead arrived',      color: 'text-yellow-500', bg: 'bg-yellow-500/10' }
+    case 'ai_responded':      return { label: 'AI responding',     color: 'text-emerald-400', bg: 'bg-emerald-500/10' }
+    case 'success':           return { label: 'Complete ✓',        color: 'text-emerald-600', bg: 'bg-emerald-500/10' }
+    case 'skipped':           return { label: 'Skipped',           color: 'text-slate-400', bg: 'bg-slate-500/10' }
+    case 'timeout':           return { label: 'Timed out',         color: 'text-orange-500', bg: 'bg-orange-500/10' }
+    case 'failed':            return { label: 'Failed',            color: 'text-red-500', bg: 'bg-red-500/10' }
+    default:                  return { label: status,              color: 'text-slate-500', bg: 'bg-slate-500/10' }
   }
 }
 
@@ -125,13 +122,20 @@ export default function OnboardingSimulator({
   agentData: any
   setAgentData: (data: any) => void
 }) {
-  const [sessionId] = useState(() => generateSessionId())
+  const [sessionId, setSessionId] = useState<string>('')
   const [simulation, setSimulation] = useState<SimulationState | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSkipping, setIsSkipping] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
+
+  const statusInfo = simulation ? getStatusInfo(simulation.status) : getStatusInfo('idle')
+  const isSuccess = simulation?.status === 'success'
+  const isRunning = simulation?.status === 'running' || simulation?.status === 'inbound_received' || simulation?.status === 'ai_responded'
+  const hasFailed = simulation?.status === 'timeout' || simulation?.status === 'failed'
+  const isComplete = isSuccess
+  const isError = hasFailed
 
   // Auto-scroll to bottom when conversation updates
   useEffect(() => {
@@ -142,7 +146,7 @@ export default function OnboardingSimulator({
 
   // Poll for status updates when simulation is running
   useEffect(() => {
-    if (!simulation || simulation.status === 'idle' || simulation.status === 'success' || simulation.status === 'skipped' || simulation.status === 'timeout' || simulation.status === 'failed') {
+    if (!simulation || simulation.status === 'idle' || isSuccess || simulation.status === 'skipped' || hasFailed) {
       if (pollingRef.current) {
         clearInterval(pollingRef.current)
         pollingRef.current = null
@@ -160,7 +164,7 @@ export default function OnboardingSimulator({
         clearInterval(pollingRef.current)
       }
     }
-  }, [simulation?.status])
+  }, [simulation?.status, sessionId])
 
   // Update agentData when simulation completes
   useEffect(() => {
@@ -173,6 +177,7 @@ export default function OnboardingSimulator({
     }
   }, [simulation?.status, simulation?.response_time_ms])
 
+  // AC: Start Simulation accepts only agentId — server generates sessionId
   const startSimulation = async () => {
     setIsLoading(true)
     setError(null)
@@ -184,7 +189,7 @@ export default function OnboardingSimulator({
         body: JSON.stringify({
           action: 'start',
           agentId: agentData.email || 'temp-agent',
-          sessionId,
+          // No sessionId here — server generates and returns it
         }),
       })
 
@@ -194,7 +199,12 @@ export default function OnboardingSimulator({
         throw new Error(data.error || 'Failed to start simulation')
       }
 
-      setSimulation(data.state)
+      // API returns { success, state: { session_id, ... } }
+      // AC: sessionId from start response is used for subsequent status polls
+      if (data.state) {
+        setSimulation(data.state)
+        setSessionId(data.state.session_id)
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to start simulation')
     } finally {
@@ -203,6 +213,8 @@ export default function OnboardingSimulator({
   }
 
   const checkSimulationStatus = async () => {
+    if (!sessionId) return
+    
     try {
       const response = await fetch('/api/onboarding/simulator', {
         method: 'POST',
@@ -230,6 +242,17 @@ export default function OnboardingSimulator({
     setError(null)
 
     try {
+      // If simulation hasn't started yet (no sessionId), just advance
+      if (!sessionId) {
+        setAgentData({
+          ...agentData,
+          ahaCompleted: false,
+          ahaResponseTimeMs: null,
+        })
+        onNext()
+        return
+      }
+
       const response = await fetch('/api/onboarding/simulator', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -263,10 +286,6 @@ export default function OnboardingSimulator({
     onNext()
   }
 
-  const isSuccess = simulation?.status === 'success'
-  const isRunning = simulation?.status === 'running' || simulation?.status === 'inbound_received' || simulation?.status === 'ai_responded'
-  const hasFailed = simulation?.status === 'timeout' || simulation?.status === 'failed'
-
   return (
     <div className="animate-in fade-in-up duration-500">
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
@@ -281,20 +300,37 @@ export default function OnboardingSimulator({
           </p>
         </div>
 
-        {/* Info Box */}
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-8 flex gap-3">
-          <Bot className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-          <div className="text-blue-300 text-sm">
-            <p className="font-medium mb-1">Live Simulation</p>
-            <p>We&apos;ll simulate a real lead conversation. Watch as our AI responds instantly with personalized messages.</p>
+        {/* Status Badge */}
+        {simulation && (
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${statusInfo.bg} border border-slate-600/30 mb-6`}>
+            {isRunning ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : isComplete ? (
+              <CheckCircle2 className="w-4 h-4" />
+            ) : isError ? (
+              <AlertCircle className="w-4 h-4" />
+            ) : null}
+            <span className={`text-sm font-medium ${statusInfo.color}`}>{statusInfo.label}</span>
           </div>
-        </div>
+        )}
 
-        {/* Error */}
+        {/* Response Time Badge (when complete) */}
+        {isComplete && simulation?.response_time_ms && (
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+              <Clock className="w-4 h-4 text-emerald-400" />
+              <span className="text-sm font-medium text-emerald-400">
+                Response time: {formatResponseTime(simulation.response_time_ms)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 mb-6">
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-red-400 text-sm">{error}</p>
+          <div className="flex items-center gap-2 p-4 mb-6 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            {error}
           </div>
         )}
 
@@ -325,7 +361,7 @@ export default function OnboardingSimulator({
                 <div className="h-12 w-12 rounded-full bg-slate-700/50 flex items-center justify-center mb-3">
                   <Bot className="h-6 w-6 text-slate-500" />
                 </div>
-                <p className="text-sm text-slate-400">Click "Start Simulation" to see the AI in action</p>
+                <p className="text-sm text-slate-400">Click &quot;Start Simulation&quot; to see the AI in action</p>
               </div>
             )}
 
@@ -460,6 +496,3 @@ export default function OnboardingSimulator({
     </div>
   )
 }
-
-// Need to import MessageSquare
-import { MessageSquare } from 'lucide-react'

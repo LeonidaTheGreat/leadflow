@@ -41,7 +41,6 @@ export default function HomePage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               AI-Powered Lead Response in Under 30 Seconds
             </h2>
-<<<<<<< HEAD
             <p className="text-xl text-slate-300 mb-10">
               Instantly qualify and respond to real estate leads using AI.
               Never miss another opportunity. Start free — no credit card required.
@@ -59,6 +58,19 @@ export default function HomePage() {
                 Try Live AI Demo →
               </Link>
             </div>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            {[
+              { emoji: '😤', title: 'Missing calls during showings', desc: 'You\'re with a client. A hot lead texts. You see it 3 hours later. They\'ve already signed with someone else.' },
+              { emoji: '😴', title: 'After-hours leads go cold', desc: '60% of online leads come in after 6pm. Without instant response, they\'re gone by morning.' },
+              { emoji: '🔁', title: 'Manual follow-up takes hours', desc: 'Texting 50 leads, tracking responses, scheduling follow-ups — it\'s a full-time job on top of your job.' },
+            ].map((item) => (
+              <div key={item.title} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div className="text-3xl mb-3">{item.emoji}</div>
+                <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-sm">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -269,7 +281,7 @@ function TestimonialCard({
 }) {
   return (
     <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col">
-      <div className="text-emerald-500 text-4xl mb-4">"</div>
+      <div className="text-emerald-500 text-4xl mb-4">&ldquo;</div>
       <p className="text-slate-700 dark:text-slate-300 mb-6 flex-grow">{quote}</p>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
