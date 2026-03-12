@@ -161,7 +161,7 @@ export default function HomePage() {
             Start with a free 30-day trial. Upgrade when you&apos;re ready.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             <PricingCard
               name="Starter"
               price="$49"
@@ -194,7 +194,7 @@ export default function HomePage() {
               name="Team"
               price="$399"
               period="/month"
-              description="For teams & brokerages"
+              description="For small teams (2-5 agents)"
               features={[
                 'Up to 500 leads/month',
                 'Multi-channel AI',
@@ -203,6 +203,23 @@ export default function HomePage() {
                 'Dedicated support',
                 'White-label options'
               ]}
+            />
+            <PricingCard
+              name="Brokerage"
+              price="$999+"
+              period="/month"
+              description="For large brokerages (20+ agents)"
+              features={[
+                'Unlimited leads',
+                'Multi-channel AI (SMS/email/voice)',
+                'Unlimited agents',
+                'White-label options',
+                'Admin dashboard & compliance',
+                'Dedicated account manager',
+                'SLA guarantees (99.9% uptime)',
+                'Custom integrations'
+              ]}
+              cta="Contact Sales"
             />
           </div>
         </div>
@@ -282,7 +299,8 @@ function PricingCard({
   period,
   description,
   features,
-  popular = false
+  popular = false,
+  cta = 'Get Started'
 }: {
   name: string
   price: string
@@ -290,7 +308,10 @@ function PricingCard({
   description: string
   features: string[]
   popular?: boolean
+  cta?: string
 }) {
+  const isBrokerage = name === 'Brokerage'
+
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
       {popular && (
@@ -315,21 +336,23 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={`/signup?plan=${name.toLowerCase()}`}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${name.toLowerCase()}`}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
             : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white'
         }`}
       >
-        Get Started
+        {cta}
       </Link>
-      <Link
-        href="/signup/trial"
-        className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
-      >
-        or start free trial →
-      </Link>
+      {!isBrokerage && (
+        <Link
+          href="/signup/trial"
+          className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
+        >
+          or start free trial →
+        </Link>
+      )}
     </div>
   )
 }
