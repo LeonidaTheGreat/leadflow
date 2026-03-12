@@ -1,7 +1,11 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
+<<<<<<< HEAD
 > Generated: 2026-03-24T18:17:14.975Z | Source: `e2e_test_specs` + `use_cases` tables
+=======
+> Generated: 2026-03-12T07:00:02.925Z | Source: `e2e_test_specs` + `use_cases` tables
+>>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
 
 **Coverage: 360 specs | 13 pass | 0 fail | 347 not run**
 

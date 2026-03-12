@@ -11,7 +11,11 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 38 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
+<<<<<<< HEAD
 **Last Updated:** 3/24/2026, 2:17:14 PM
+=======
+**Last Updated:** 3/12/2026, 3:00:02 AM
+>>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
 
 ---
 
@@ -33,12 +37,17 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
+<<<<<<< HEAD
 **Queue Health:** Ready: 4 | In Progress: 0 | Blocked: 0 | Done: 920
+=======
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 810
+>>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
 
 ### ▶️ Ready to Spawn (4 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
+<<<<<<< HEAD
 | PM: Product Review — UTM Parameter Capture & Marketing Attribution | sonnet | $0.60 | 🔴 P0 |
 | PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
 | PM: Analyze ux_issue feedback | sonnet | $0.60 | 🟡 P1 |
@@ -47,6 +56,16 @@ autoRefresh: every_heartbeat
 ### ⚡ In Progress (0 tasks)
 
 *No active tasks*
+=======
+| Fix: Dashboard build errors | haiku | $0.40 | 🔴 P0 |
+| Dev: fix-brokerage-tier-missing-from-pricing-page - Brokerage tier missing from pricing page | kimi | $0.24 | 🟡 P1 |
+
+### ⚡ In Progress (1 tasks)
+
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev: feat-pilot-conversion-email-sequence - Pilot-to-Paid Conversion Email Sequence | dev | kimi |
+>>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,8 +123,13 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
+<<<<<<< HEAD
 **Estimated project cost:** $484.24
 **Cost per task:** Avg $0.48
+=======
+**Estimated project cost:** $358.63
+**Cost per task:** Avg $0.40
+>>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
 
 ---
 
@@ -118,8 +142,13 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
+<<<<<<< HEAD
 1. ✅ **4 tasks ready to spawn**
 2. 🔴 No active agents
+=======
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **1 agents active**
+>>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
