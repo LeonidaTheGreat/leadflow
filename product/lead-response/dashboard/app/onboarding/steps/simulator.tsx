@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Play, SkipForward, RefreshCw, CheckCircle2, Clock, MessageSquare, AlertCircle } from 'lucide-react'
 
-// Types matching the ACTUAL API response format (not PRD)
+// Types matching the ACTUAL API response format
 // API returns: { success, state: { id, session_id, agent_id, status, conversation[], response_time_ms, ... } }
 
 type ConversationTurn = {
@@ -48,17 +48,12 @@ export default function OnboardingSimulator({
   agentData,
   setAgentData,
 }: SimulatorProps) {
+  // sessionId is received from the API start response (AC: Start Simulation calls API with only agentId)
   const [sessionId, setSessionId] = useState<string>('')
   const [simulationState, setSimulationState] = useState<SimulationState | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
-
-  // Generate a session ID on mount
-  useEffect(() => {
-    const newSessionId = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    setSessionId(newSessionId)
-  }, [])
 
   // Cleanup polling on unmount
   useEffect(() => {
@@ -70,9 +65,9 @@ export default function OnboardingSimulator({
   }, [pollingInterval])
 
   // Start the simulation
+  // AC: Calls API with only agentId (no sessionId in request body)
+  // sessionId is returned by the API and stored for subsequent polls
   const startSimulation = async () => {
-    if (!sessionId) return
-    
     setIsLoading(true)
     setError(null)
 
@@ -83,7 +78,7 @@ export default function OnboardingSimulator({
         body: JSON.stringify({
           action: 'start',
           agentId: agentData.email || 'unknown',
-          sessionId: sessionId,
+          // No sessionId here — server generates and returns it
         }),
       })
 
@@ -94,11 +89,12 @@ export default function OnboardingSimulator({
 
       const data = await response.json()
       
-      // API returns { success, state: {...} }
-      // Use state.conversation (not turns), state.response_time_ms (not responseTimeMs)
+      // API returns { success, state: { session_id, ... } }
+      // AC: sessionId from start response is used for subsequent status polls
       if (data.state) {
         setSimulationState(data.state)
-        startPolling()
+        setSessionId(data.state.session_id)
+        startPolling(data.state.session_id)
       }
     } catch (err: any) {
       setError(err.message || 'Failed to start simulation')
@@ -108,13 +104,14 @@ export default function OnboardingSimulator({
   }
 
   // Poll for status updates
-  const startPolling = () => {
+  // activeSessionId is passed directly (from API start response) since state update is async
+  const startPolling = (activeSessionId: string) => {
     // Clear any existing interval
     if (pollingInterval) {
       clearInterval(pollingInterval)
     }
 
-    // Poll every 1 second
+    // Poll every 1 second using the sessionId returned from the start response
     const interval = setInterval(async () => {
       try {
         const response = await fetch('/api/onboarding/simulator', {
@@ -123,7 +120,7 @@ export default function OnboardingSimulator({
           body: JSON.stringify({
             action: 'status',
             agentId: agentData.email || 'unknown',
-            sessionId: sessionId,
+            sessionId: activeSessionId,
           }),
         })
 
@@ -141,7 +138,7 @@ export default function OnboardingSimulator({
             clearInterval(interval)
             setPollingInterval(null)
 
-            // Update agentData with aha moment completion
+            // AC: ahaCompleted and ahaResponseTimeMs written to agentData on success
             if (data.state.status === 'success') {
               setAgentData({
                 ...agentData,
@@ -162,11 +159,20 @@ export default function OnboardingSimulator({
 
   // Skip the simulation
   const skipSimulation = async () => {
-    if (!sessionId) return
-
     setIsLoading(true)
 
     try {
+      // If simulation hasn't started yet (no sessionId), just advance
+      if (!sessionId) {
+        setAgentData({
+          ...agentData,
+          ahaCompleted: false,
+          ahaResponseTimeMs: null,
+        })
+        onNext()
+        return
+      }
+
       const response = await fetch('/api/onboarding/simulator', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -199,6 +205,7 @@ export default function OnboardingSimulator({
   }
 
   // Format response time for display
+  // AC: Success state shows response time formatted from state.response_time_ms
   const formatResponseTime = (ms: number | null): string => {
     if (!ms) return '--'
     if (ms < 1000) return `${ms}ms`
@@ -282,6 +289,7 @@ export default function OnboardingSimulator({
         )}
 
         {/* Conversation Display */}
+        {/* AC: Conversation renders: lead messages left (grey), AI messages right (emerald) */}
         <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-6 mb-8 min-h-[300px]">
           {!simulationState || simulationState.conversation.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center py-12">
@@ -290,7 +298,7 @@ export default function OnboardingSimulator({
               </div>
               <p className="text-slate-400 mb-2">Ready to see the magic?</p>
               <p className="text-sm text-slate-500">
-                Click "Start Simulation" to watch a live lead conversation
+                Click &quot;Start Simulation&quot; to watch a live lead conversation
               </p>
             </div>
           ) : (
@@ -303,8 +311,8 @@ export default function OnboardingSimulator({
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                       turn.role === 'lead'
-                        ? 'bg-slate-700 text-slate-200 rounded-bl-none'
-                        : 'bg-emerald-600 text-white rounded-br-none'
+                        ? 'bg-slate-700 text-slate-200 rounded-bl-none'  // lead: grey, left
+                        : 'bg-emerald-600 text-white rounded-br-none'    // AI: emerald, right
                     }`}
                   >
                     <p className="text-sm">{turn.message}</p>
@@ -337,7 +345,7 @@ export default function OnboardingSimulator({
             <>
               <button
                 onClick={startSimulation}
-                disabled={isLoading || !sessionId}
+                disabled={isLoading}
                 className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLoading ? (

@@ -196,29 +196,9 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               35% of Real Estate Leads Never Get a Response
             </h2>
-<<<<<<< HEAD
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
               You&apos;re too busy showing homes, attending closings, and running your business. Leads don&apos;t wait — they move on to the next agent in 5 minutes.
             </p>
-=======
-            <p className="text-xl text-slate-300 mb-10">
-              Instantly qualify and respond to real estate leads using AI.
-              Never miss another opportunity. Start free — no credit card required.
-            </p>
-
-            {/* Hero Trial CTA */}
-            <Suspense fallback={<div className="h-24" />}>
-              <TrialSignupForm compact />
-            </Suspense>
-
-            <div className="mt-6 flex items-center justify-center gap-4 text-sm">
-              <a href="#features" className="text-slate-400 hover:text-white underline underline-offset-4">See how it works ↓</a>
-              <span className="text-slate-600">|</span>
-              <Link href="/demo" className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-4">
-                Try Live AI Demo →
-              </Link>
-            </div>
->>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
