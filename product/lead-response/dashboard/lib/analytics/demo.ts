@@ -35,12 +35,12 @@ export function generateDemoSessionId(): string {
   // Use Web Crypto API getRandomValues (available in modern Node.js 15+ and all browsers)
   const randomBytes = new Uint8Array(6)
   globalThis.crypto.getRandomValues(randomBytes)
-  
+
   // Convert bytes to hex string
   const randomPart = Array.from(randomBytes)
     .map(b => b.toString(16).padStart(2, '0'))
     .join('')
-  
+
   return `demo_${Date.now()}_${randomPart}`
 }
 

@@ -59,15 +59,19 @@ export default function HomePage() {
               <TrialSignupForm compact />
             </Suspense>
 
-            <p className="mt-6 text-sm text-slate-400">
+            <div className="mt-6 flex items-center justify-center gap-4 text-sm">
               <a
                 href="#how-it-works"
-                className="hover:text-white underline underline-offset-4"
+                className="text-slate-400 hover:text-white underline underline-offset-4"
                 onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')}
               >
                 See how it works ↓
               </a>
-            </p>
+              <span className="text-slate-600">|</span>
+              <Link href="/demo" className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-4">
+                Try Live AI Demo →
+              </Link>
+            </div>
           </div>
         </div>
       </section>

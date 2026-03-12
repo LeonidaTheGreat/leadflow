@@ -15,7 +15,6 @@ const path = require('path')
 
 // Paths relative to dashboard directory
 const DASHBOARD_DIR = path.join(__dirname, '..')
-const CHECKOUT_ROUTE = path.join(DASHBOARD_DIR, 'app/api/billing/create-checkout-session/route.ts')
 const WEBHOOK_ROUTE = path.join(DASHBOARD_DIR, 'app/api/webhooks/stripe/route.ts')
 const BILLING_PAGE = path.join(DASHBOARD_DIR, 'app/settings/billing/page.tsx')
 const DASHBOARD_PAGE = path.join(DASHBOARD_DIR, 'app/dashboard/page.tsx')
