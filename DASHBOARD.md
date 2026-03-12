@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 25 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/11/2026, 1:54:37 PM
+**Last Updated:** 3/11/2026, 4:05:05 AM
 
 ---
 
@@ -33,18 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 2 | Blocked: 0 | Done: 785
+**Queue Health:** Ready: 1 | In Progress: 2 | Blocked: 0 | Done: 768
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (1 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: fix-middleware-blocks-authenticated-users-from-onboard - Middleware blocks authenticated users from /onboarding route | haiku | $0.40 | 🟡 P1 |
 
 ### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| QC: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | qc | kimi |
-| PM: Product Review — Post-Login Onboarding Wizard for New Agents | product | sonnet |
+| QC: fix-analytics-events-table-missing-trial-funnel-tracki - analytics_events table missing — trial funnel tracking fails silently | qc | kimi |
+| Dev: fix-api-response-format-does-not-match-prd-contract - API response format does not match PRD contract | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -102,7 +104,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $347.11
+**Estimated project cost:** $342.19
 **Cost per task:** Avg $0.40
 
 ---
@@ -116,7 +118,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
+1. ✅ **1 tasks ready to spawn**
 2. ⚡ **2 agents active**
 3. ✅ No blockers
 
