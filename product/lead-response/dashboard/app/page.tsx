@@ -51,9 +51,13 @@ export default function HomePage() {
               <TrialSignupForm compact />
             </Suspense>
 
-            <p className="mt-6 text-sm text-slate-400">
-              <a href="#features" className="hover:text-white underline underline-offset-4">See how it works ↓</a>
-            </p>
+            <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+              <a href="#features" className="text-slate-400 hover:text-white underline underline-offset-4">See how it works ↓</a>
+              <span className="text-slate-600">|</span>
+              <Link href="/demo" className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-4">
+                Try Live AI Demo →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
