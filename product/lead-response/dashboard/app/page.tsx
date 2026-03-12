@@ -41,6 +41,7 @@ export default function HomePage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               AI-Powered Lead Response in Under 30 Seconds
             </h2>
+<<<<<<< HEAD
             <p className="text-xl text-slate-300 mb-10">
               Instantly qualify and respond to real estate leads using AI.
               Never miss another opportunity. Start free — no credit card required.

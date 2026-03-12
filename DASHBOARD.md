@@ -1,7 +1,13 @@
 ---
+<<<<<<< HEAD
 title: BO2026 Dashboard - Updated 2026-03-23
 author: LeadFlow Orchestrator
 date: 2026-03-23
+=======
+title: BO2026 Dashboard - Updated 2026-03-12
+author: LeadFlow Orchestrator
+date: 2026-03-12
+>>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +15,15 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
+<<<<<<< HEAD
 **Current Day:** Day 37 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
 **Last Updated:** 3/23/2026, 1:19:31 AM
+=======
+**Current Day:** Day 26 of 60  
+**Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
+**Last Updated:** 3/12/2026, 2:27:05 AM
+>>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 
 ---
 
@@ -33,12 +45,17 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
+<<<<<<< HEAD
 **Queue Health:** Ready: 1 | In Progress: 1 | Blocked: 0 | Done: 925
+=======
+**Queue Health:** Ready: 2 | In Progress: 3 | Blocked: 0 | Done: 803
+>>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 
-### ▶️ Ready to Spawn (1 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
+<<<<<<< HEAD
 | Implement: Fix cookie name mismatch in trial/start route | kimi | $0.00 | 🔴 P0 |
 
 ### ⚡ In Progress (1 tasks)
@@ -46,6 +63,18 @@ autoRefresh: every_heartbeat
 | Task | Agent | Model |
 |------|-------|-------|
 | PM: Product Review — Fix Signup Page — Plan Options Not Displayed | product-manager | kimi |
+=======
+| Dev: feat-pilot-conversion-email-sequence - Pilot-to-Paid Conversion Email Sequence | kimi | $0.24 | 🔴 P0 |
+| Dev: fix-aha-moment-lead-simulator-not-implemented-not-star - Aha moment lead simulator not implemented (not_started at day 22) | sonnet | $0.60 | 🔴 P0 |
+
+### ⚡ In Progress (3 tasks)
+
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev: feat-demo-without-signup - Live AI Demo — Experience the Product Without Signing Up | dev | kimi |
+| Design: fix-brokerage-tier-missing-from-pricing-page - Brokerage tier missing from pricing page | design | kimi |
+| QC: feat-self-serve-stripe-checkout - Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | qc | kimi |
+>>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -103,8 +132,13 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
+<<<<<<< HEAD
 **Estimated project cost:** $479.97
 **Cost per task:** Avg $0.48
+=======
+**Estimated project cost:** $356.60
+**Cost per task:** Avg $0.40
+>>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 
 ---
 
@@ -117,8 +151,13 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
+<<<<<<< HEAD
 1. ✅ **1 tasks ready to spawn**
 2. ⚡ **1 agents active**
+=======
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **3 agents active**
+>>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
