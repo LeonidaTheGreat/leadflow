@@ -1,0 +1,75 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           LANDING PAGE PRICING SECTION                        │
+│                                                                             │
+│   Simple, Transparent Pricing                                               │
+│   Start with a free 30-day trial. Upgrade when you're ready.                │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│   │   STARTER    │  │     PRO      │  │     TEAM     │  │  BROKERAGE   │   │
+│   │              │  │  ╔════════╗  │  │              │  │              │   │
+│   │  $49         │  │  ║ MOST   ║  │  │  $399        │  │  $999+       │   │
+│   │  /month      │  │  ║POPULAR ║  │  │  /month      │  │  /month      │   │
+│   │              │  │  ╚════════╝  │  │              │  │              │   │
+│   ├──────────────┤  ├──────────────┤  ├──────────────┤  ├──────────────┤   │
+│   │ ✓ Up to 50   │  │ ✓ Up to 200  │  │ ✓ Up to 500  │  │ ✓ Unlimited  │   │
+│   │   leads/mo   │  │   leads/mo   │  │   leads/mo   │  │   leads      │   │
+│   │ ✓ AI SMS     │  │ ✓ AI SMS &   │  │ ✓ Multi-     │  │ ✓ Multi-chan │   │
+│   │   responses  │  │   email      │  │   channel AI │  │   nel AI     │   │
+│   │ ✓ Basic      │  │ ✓ Advanced   │  │ ✓ Custom     │  │ ✓ Unlimited  │   │
+│   │   qual       │  │   qual       │  │   workflows  │  │   agents     │   │
+│   │ ✓ Calendar   │  │ ✓ Calendar   │  │ ✓ Team mgmt  │  │ ✓ White-label│   │
+│   │   integration│  │   integration│  │   (5 agents) │  │   options    │   │
+│   │ ✓ Email      │  │ ✓ Priority   │  │ ✓ Dedicated  │  │ ✓ Admin dash │   │
+│   │   support    │  │   support    │  │   support    │  │   & compliance│  │
+│   │              │  │ ✓ Advanced   │  │ ✓ White-label│  │ ✓ Dedicated  │   │
+│   │              │  │   analytics  │  │   options    │  │   account mgr│   │
+│   │              │  │              │  │              │  │ ✓ SLA 99.9%  │   │
+│   │              │  │              │  │              │  │ ✓ Custom     │   │
+│   │              │  │              │  │              │  │   integrations│  │
+│   ├──────────────┤  ├──────────────┤  ├──────────────┤  ├──────────────┤   │
+│   │ [Get Started]│  │[Start Trial] │  │ [Get Started]│  │[Contact Sales│   │
+│   │              │  │              │  │              │  │              │   │
+│   │ or start free│  │ or start free│  │ or start free│  │              │   │
+│   │ trial →      │  │ trial →      │  │ trial →      │  │              │   │
+│   └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘   │
+│                                                                             │
+│   Grid: 4 columns on desktop (lg:grid-cols-4)                               │
+│         2 columns on tablet  (md:grid-cols-2)                               │
+│         1 column on mobile   (grid-cols-1)                                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+DESKTOP LAYOUT (4 columns):
+┌─────────┬─────────┬─────────┬─────────┐
+│ STARTER │   PRO   │  TEAM   │BROKERAGE│
+│  $49    │  $149   │  $399   │ $999+   │
+│         │ ★ POPULAR       │         │
+└─────────┴─────────┴─────────┴─────────┘
+
+TABLET LAYOUT (2 columns):
+┌─────────┬─────────┐
+│ STARTER │   PRO   │
+│  $49    │  $149   │
+│         │ ★ POPULAR      │
+├─────────┼─────────┤
+│  TEAM   │BROKERAGE│
+│  $399   │ $999+   │
+└─────────┴─────────┘
+
+MOBILE LAYOUT (1 column, stacked):
+┌─────────┐
+│ STARTER │
+│  $49    │
+├─────────┤
+│   PRO   │
+│  $149   │
+│ ★ POPULAR      │
+├─────────┤
+│  TEAM   │
+│  $399   │
+├─────────┤
+│BROKERAGE│
+│ $999+   │
+└─────────┘
