@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import * as crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingSubmission } from '@/lib/types/onboarding';
 
-// Password hashing (for demo - in production use bcrypt or argon2)
-function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
-    .toString('hex');
-  return `${salt}:${hash}`;
+// Password hashing using bcrypt (consistent with login route)
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 10);
 }
 
 /**
@@ -70,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = hashPassword(data.password);
+    const hashedPassword = await hashPassword(data.password);
 
     // Calculate pilot expiry (60 days from now)
     const now = new Date();
