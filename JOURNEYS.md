@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
-> Generated: 2026-03-13T06:30:03.627Z | Source: `project.config.json` journeys + `product_reviews` table
+> Generated: 2026-03-13T14:27:06.802Z | Source: `project.config.json` journeys + `product_reviews` table
 
 Review interval: every 14 days
 

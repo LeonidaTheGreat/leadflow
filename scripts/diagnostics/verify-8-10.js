@@ -42,7 +42,7 @@ check('test-log.jsonl exists', fs.existsSync('test-log.jsonl'))
 check('recovery-log.jsonl exists', fs.existsSync('recovery-log.jsonl'))
 
 console.log('\n💰 Budget System:')
-check('budget-tracker.json exists', fs.existsSync('budget-tracker.json'))
+check('config/budget-tracker.json exists', fs.existsSync('config/budget-tracker.json'))
 
 console.log('\n⏰ Cron Jobs:')
 try {
