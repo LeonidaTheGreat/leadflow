@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
         first_name: firstName,
         last_name: lastName,
         password_hash: passwordHash,
-        email_verified: true, // No email verification gate for trial (per PRD §6)
+        email_verified: false, // Require email verification before login
         plan_tier: 'trial',
         trial_ends_at: trialEndsAt,
         mrr: 0,
@@ -94,6 +95,18 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Create verification token and send email (non-blocking)
+    void (async () => {
+      try {
+        const verificationToken = await createVerificationToken(agent.id)
+        if (verificationToken) {
+          await sendVerificationEmail(agent.email, agent.id, firstName, verificationToken)
+        }
+      } catch (err) {
+        console.error('Failed to send verification email:', err)
+      }
+    })()
 
     // Log trial_started event (non-blocking)
     void Promise.resolve(supabase.from('events').insert({
@@ -124,23 +137,14 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Set auth cookie and return success
-    const response = NextResponse.json({
+    // Return success - user must verify email before logging in
+    // Do NOT set auth cookie - they need to verify email first
+    return NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/setup',
-      message: 'Trial account created successfully'
+      redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
+      message: 'Trial account created successfully. Please check your email to verify your account.'
     })
-
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: '/'
-    })
-
-    return response
 
   } catch (error) {
     console.error('Trial signup error:', error)
