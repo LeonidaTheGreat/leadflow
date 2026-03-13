@@ -85,7 +85,7 @@ async function dryRun() {
   if (readyTasks.length === 0) {
     console.log('   No ready tasks to spawn')
   } else {
-    const budgetPath = path.join(__dirname, '..', 'budget-tracker.json')
+    const budgetPath = path.join(__dirname, '..', 'config', 'budget-tracker.json')
     let budget = { spent: 0 }
     if (fs.existsSync(budgetPath)) {
       const bt = JSON.parse(fs.readFileSync(budgetPath, 'utf-8'))
