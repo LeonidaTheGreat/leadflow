@@ -16,8 +16,20 @@ integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
 - `frontend/` — dashboard UI
 - `integrations/` — FUB, Cal.com, Stripe, Supabase
 - `agents/` — agent configs
-- `docs/` — API design docs (including leadflow-api-design.md)
-- `scripts/` — utility scripts
+- `docs/` — Documentation organized by type:
+  - `docs/prd/` — Product Requirements Documents (PRD-*.md)
+  - `docs/design/` — Design specifications (DESIGN-*.md)
+  - `docs/guides/` — How-to guides and tutorials
+  - `docs/reports/` — Analysis reports and summaries
+- `scripts/` — Utility scripts:
+  - `scripts/shell/` — Shell/bash scripts (.sh)
+  - `scripts/utilities/` — JavaScript helper scripts
+- `tests/` — Test suites:
+  - Root level — Feature and fix tests
+  - `tests/integrated/` — Integration and E2E tests
+- `config/` — Configuration files
+
+See `PROJECT_STRUCTURE.md` for full organization details.
 
 ## Key Files
 - `server.js` — main entry point
