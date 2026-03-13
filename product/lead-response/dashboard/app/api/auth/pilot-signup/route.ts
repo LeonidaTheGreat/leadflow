@@ -110,7 +110,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   </div>
 
   <div style="text-align: center; margin: 30px 0;">
-    <a href="https://leadflow-ai-five.vercel.app/setup" 
+    <a href="https://leadflow-ai-five.vercel.app/dashboard/onboarding" 
        style="display: inline-block; background: #10b981; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
       Start Onboarding →
     </a>
@@ -294,13 +294,20 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Return success - user must verify email before logging in
-    // Do NOT set auth cookie - they need to verify email first
-    return NextResponse.json({
+    // Set auth cookie and return success with token + user for localStorage storage
+    const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
-      message: 'Pilot account created successfully. Please check your email to verify your account.'
+      redirectTo: '/dashboard/onboarding',
+      message: 'Pilot account created successfully',
+      token,
+      user: {
+        id: agent.id,
+        email: agent.email,
+        firstName: agent.first_name,
+        lastName: agent.last_name,
+        onboardingCompleted: false,
+      },
     })
 
   } catch (error) {
