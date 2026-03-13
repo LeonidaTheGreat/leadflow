@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 27 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/13/2026, 12:07:27 PM
+**Last Updated:** 3/13/2026, 2:24:08 PM
 
 ---
 
@@ -33,21 +33,19 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 3 | In Progress: 1 | Blocked: 0 | Done: 881
+**Queue Health:** Ready: 1 | In Progress: 1 | Blocked: 0 | Done: 900
 
-### ▶️ Ready to Spawn (3 tasks)
+### ▶️ Ready to Spawn (1 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev (re-merge): fix-db-migration-incomplete-email-verification-tokens- - DB migration incomplete: email_verification_tok | kimi | $0.24 | 🔴 P0 |
-| Dev (re-merge): fix-touchsession-middleware-not-implemented-no-session - touchSession() middleware not implemented — no  | codex | $1.00 | 🔴 P0 |
-| Dev (re-merge): fix-prd-md-files-remain-at-docs-root-instead-of-docs-p - PRD-*.md files remain at docs/ root instead of  | codex | $1.00 | 🔴 P0 |
+| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
 
 ### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Genome fix: success_rate — model_performance | dev | sonnet |
+| PM: feat-post-signup-dashboard-onboarding-redirect - Post-Signup Redirect to /dashboard/onboarding Wizard | product | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -105,7 +103,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $390.00
+**Estimated project cost:** $399.85
 **Cost per task:** Avg $0.41
 
 ---
@@ -119,7 +117,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **3 tasks ready to spawn**
+1. ✅ **1 tasks ready to spawn**
 2. ⚡ **1 agents active**
 3. ✅ No blockers
 
