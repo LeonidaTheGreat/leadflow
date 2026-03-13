@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 27 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/13/2026, 1:09:59 AM
+**Last Updated:** 3/13/2026, 2:30:03 AM
 
 ---
 
@@ -33,17 +33,18 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 1 | Blocked: 0 | Done: 823
+**Queue Health:** Ready: 0 | In Progress: 2 | Blocked: 0 | Done: 846
 
 ### ▶️ Ready to Spawn (0 tasks)
 
 *No ready tasks*
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Design: feat-email-verification-before-login - Email Verification — Confirm Inbox Before Login | design | kimi |
+| Smoke: Auth: signup then login failing | qc | kimi |
+| Dev: Code review fix — plaintext_token (2 issues) | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -101,7 +102,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $362.96
+**Estimated project cost:** $373.20
 **Cost per task:** Avg $0.40
 
 ---
@@ -116,7 +117,7 @@ All technical work complete. System ready for pilot launch.
 ## 🎯 Next Actions
 
 1. 🔴 No ready tasks
-2. ⚡ **1 agents active**
+2. ⚡ **2 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
