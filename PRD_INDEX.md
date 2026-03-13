@@ -1,10 +1,12 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-11T07:00:18.570Z | Source: `prds` table
+> Generated: 2026-03-13T16:27:47.002Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
+| genome-auto-generated-docs-convention | Auto-Generated Docs Directory Convention | approved | - | [docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md](docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md) |
+| genome-project-structure-convention | Project Structure Convention System | draft | 1 | [docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md](docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR-001 | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md) |
 | PRD-AHA-MOMENT-SIMULATOR-UI | Aha Moment Simulator — Onboarding Step UI | approved | 1.0 | [docs/PRD-AHA-MOMENT-SIMULATOR-UI.md](docs/PRD-AHA-MOMENT-SIMULATOR-UI.md) |
@@ -13,6 +15,9 @@
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
+| prd-email-verification-before-login | Email Verification — Confirm Inbox Before Login | approved | - | [docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md](docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md) |
+| prd-email-verification-db-migration-fix | Email Verification DB Migration Fix | approved | - | [docs/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md](docs/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md) |
+| PRD-FEAT-DEMO-WITHOUT-SIGNUP-001 | Live AI Demo — Experience the Product Without Signing Up | approved | 1.0 | [docs/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md](docs/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md) |
 | PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH | Fix agents Table Mismatch in Auth/Onboarding API Routes | approved | - | [docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md](docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md) |
 | PRD-FIX-API-HEALTH-ENDPOINT | Fix API Health Endpoint — Query Correct Table | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT.md](docs/PRD-FIX-API-HEALTH-ENDPOINT.md) |
 | prd-fix-api-health-endpoint-wrong-table | Fix API Health Endpoint — Wrong Table Query | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md](docs/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md) |
@@ -40,8 +45,13 @@
 | PRD-ONBOARDING-500-FIX | Fix Onboarding 500 Error — Deployment | approved | 1.0 | [docs/PRD-ONBOARDING-500-FIX.md](docs/PRD-ONBOARDING-500-FIX.md) |
 | PRD-ONBOARDING-WIZARD-001 | Post-Login Onboarding Wizard for New Agents | approved | 1.0 | [docs/PRD-ONBOARDING-WIZARD.md](docs/PRD-ONBOARDING-WIZARD.md) |
 | PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
+| prd-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | draft | 1.0 | [docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md](docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md) |
+| PRD-PM-ACTION-ITEMS-DASHBOARD | PM Structured Action Items for Dashboard | draft | 1.0 | [docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md](docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md) |
 | PRD-PRODUCT-STATUS-001 | LeadFlow Product Status Report — Day 19 of 60 | approved | 1.0 | [docs/PRD-PRODUCT-STATUS-REPORT-001.md](docs/PRD-PRODUCT-STATUS-REPORT-001.md) |
+| PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM | Project Structure Convention System | draft | 1.0 | [docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md](docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md) |
+| prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |
 | PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/PRD-REVENUE-RECOVERY-001.md](docs/PRD-REVENUE-RECOVERY-001.md) |
+| prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/PRD-SESSION-ANALYTICS-PILOT.md](docs/PRD-SESSION-ANALYTICS-PILOT.md) |
 | PRD-SMOKE-ROUTE-DISCOVERY-001 | Route Discovery Smoke Test | draft | 1.0 | [docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md](docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md) |
 | PRD-SMS-ANALYTICS-DASHBOARD | SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | approved | 1.0 | [docs/PRD-SMS-ANALYTICS-DASHBOARD.md](docs/PRD-SMS-ANALYTICS-DASHBOARD.md) |
