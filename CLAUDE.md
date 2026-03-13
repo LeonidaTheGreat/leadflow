@@ -13,11 +13,28 @@ integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
 
 ## Key Directories
 - `routes/` — API routes
-- `frontend/` — dashboard UI
 - `integrations/` — FUB, Cal.com, Stripe, Supabase
+- `lib/` — shared business logic and utilities
 - `agents/` — agent configs
-- `docs/` — API design docs (including leadflow-api-design.md)
+- `product/` — product-specific code
+- `sql/` — SQL migration files and schema
+- `config/` — JSON config files (budget-tracker.json, strategy-config.json, swarm-config.json)
 - `scripts/` — utility scripts
+  - `scripts/migrations/` — DB migration runners and table setup
+  - `scripts/diagnostics/` — check, verify, query scripts
+  - `scripts/simulation/` — lead flow simulation
+  - `scripts/one-off/` — one-time fix and cleanup scripts
+- `tests/` — all tests
+  - `tests/e2e/` — end-to-end tests
+  - `tests/integration/` — integration tests
+  - `tests/unit/` — unit tests
+- `docs/` — all documentation
+  - `docs/prd/` — PRD-*.md product requirements
+  - `docs/design/` — DESIGN-*.md design specs
+  - `docs/guides/` — integration guides (Stripe, Cal.com, Resend, etc.)
+  - `docs/reports/` — completion reports and analyses
+- `completion-reports/` — auto-generated agent task completion reports
+- `PROJECT_STRUCTURE.md` — canonical repo structure reference
 
 ## Key Files
 - `server.js` — main entry point
