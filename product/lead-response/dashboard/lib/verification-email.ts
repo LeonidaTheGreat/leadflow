@@ -271,9 +271,10 @@ export async function sendVerificationEmail(
 </html>
   `
 
+  // Do NOT log plaintext token URL. Only log safe metadata.
   return sendEmail(agentEmail, subject, html, agentId, 'email_verification', {
     firstName,
-    verificationUrl
+    tokenSent: true
   })
 }
 

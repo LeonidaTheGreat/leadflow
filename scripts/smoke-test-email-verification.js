@@ -48,12 +48,14 @@ async function runSmokeTest() {
   if (!agent) {
     console.log('   ❌ FAIL: Could not find test agent');
   } else {
-    const plainToken = 'test-token-' + Date.now();
+    let plainToken = 'test-token-' + Date.now();
     const testToken = {
       agent_id: agent.id,
       token: hashToken(plainToken),
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
+    // Clear plaintext token after hashing to prevent exposure
+    plainToken = null;
 
     const { data: insertData, error: insertError } = await supabase
       .from('email_verification_tokens')
@@ -97,8 +99,10 @@ async function runSmokeTest() {
   // Test 4: Token has unique constraint
   testsTotal++;
   console.log('\nTest 4: Token uniqueness constraint');
-  const plainDuplicateToken = 'duplicate-test-token';
+  let plainDuplicateToken = 'duplicate-test-token';
   const hashedDuplicateToken = hashToken(plainDuplicateToken);
+  // Clear plaintext token after hashing to prevent exposure
+  plainDuplicateToken = null;
   const { data: agent2 } = await supabase
     .from('real_estate_agents')
     .select('id')
