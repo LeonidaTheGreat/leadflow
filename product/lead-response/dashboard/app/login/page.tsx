@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,9 @@ export default function LoginPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [errorType, setErrorType] = useState<string | null>(null)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   
@@ -28,7 +31,11 @@ export default function LoginPage() {
       [e.target.name]: e.target.value
     }))
     // Clear error when user types
-    if (error) setError(null)
+    if (error) {
+      setError(null)
+      setErrorType(null)
+      setResendSuccess(false)
+    }
   }
 
   const validateForm = () => {
@@ -47,6 +54,32 @@ export default function LoginPage() {
     return true
   }
 
+  const handleResendVerification = async () => {
+    if (!formData.email || resendLoading) return
+
+    setResendLoading(true)
+    setResendSuccess(false)
+
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email })
+      })
+
+      if (response.ok) {
+        setResendSuccess(true)
+      } else {
+        const result = await response.json()
+        setError(result.message || 'Failed to resend verification email. Please try again.')
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setResendLoading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -54,6 +87,8 @@ export default function LoginPage() {
 
     setLoading(true)
     setError(null)
+    setErrorType(null)
+    setResendSuccess(false)
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -69,6 +104,11 @@ export default function LoginPage() {
       const result = await response.json()
 
       if (!response.ok) {
+        // Handle EMAIL_NOT_VERIFIED error specially
+        if (result.error === 'EMAIL_NOT_VERIFIED') {
+          setErrorType('EMAIL_NOT_VERIFIED')
+          throw new Error(result.message || 'Please verify your email before logging in.')
+        }
         throw new Error(result.error || 'Invalid email or password')
       }
 
@@ -209,8 +249,38 @@ export default function LoginPage() {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-                  {error}
+                <div className={`${errorType === 'EMAIL_NOT_VERIFIED' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-red-500/10 border-red-500/50 text-red-400'} border px-4 py-3 rounded-lg text-sm`}>
+                  <div className="flex items-start gap-2">
+                    {errorType === 'EMAIL_NOT_VERIFIED' && <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
+                    <div className="flex-1">
+                      <p>{error}</p>
+                      {errorType === 'EMAIL_NOT_VERIFIED' && (
+                        <div className="mt-2">
+                          {resendSuccess ? (
+                            <p className="text-emerald-400 font-medium">✓ Verification email sent. Check your inbox.</p>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleResendVerification}
+                              disabled={resendLoading}
+                              className="text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1 hover:underline transition-colors"
+                            >
+                              {resendLoading ? (
+                                <>
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  Sending...
+                                </>
+                              ) : (
+                                <>
+                                  Resend verification email <ArrowRight className="w-3 h-3" />
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 

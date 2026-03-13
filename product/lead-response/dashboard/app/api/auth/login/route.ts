@@ -40,7 +40,11 @@ export async function POST(request: NextRequest) {
     // Check if email is verified
     if (!user.email_verified) {
       return NextResponse.json(
-        { error: 'Please verify your email before signing in' },
+        { 
+          error: 'EMAIL_NOT_VERIFIED', 
+          message: 'Please confirm your email address.',
+          resendUrl: '/api/auth/resend-verification'
+        },
         { status: 403 }
       )
     }
