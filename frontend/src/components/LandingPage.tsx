@@ -107,7 +107,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       {/* Scarcity Banner */}
       {pilotSpotsRemaining > 0 && pilotSpotsRemaining <= 5 && (
         <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-4 text-center text-sm font-medium">
-          ⚡ Limited Pilot Program: Only {pilotSpotsRemaining} spots remaining • Free 30-day trial
+          ⚡ Limited Pilot Program: Only {pilotSpotsRemaining} spots remaining • Free 14-day trial
         </div>
       )}
       
