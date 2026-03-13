@@ -136,19 +136,21 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     )
   }
 
+  // Non-compact: full-width vertical layout matching login page orientation
   return (
     <form onSubmit={handleSubmit} className={`w-full max-w-[420px] mx-auto ${className}`}>
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-2">
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-8 shadow-lg backdrop-blur-sm">
+        <h3 className="text-2xl font-bold text-white text-center mb-2">
           Start Your Free Trial
         </h3>
-        <p className="text-slate-500 dark:text-slate-400 text-center text-sm mb-6">
+        <p className="text-slate-400 text-center text-sm mb-6">
           No credit card required · 30 days free
         </p>
 
         <div className="space-y-4">
-          <div>
-            <label htmlFor="trial-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          {/* Email — full-width vertical, label above input (matches login layout) */}
+          <div className="space-y-2">
+            <label htmlFor="trial-email" className="block text-sm font-medium text-slate-200">
               Email address
             </label>
             <input
@@ -159,39 +161,43 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
               placeholder="you@example.com"
               required
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               aria-describedby={error ? 'trial-error' : undefined}
             />
           </div>
 
-          <div className="relative">
-            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          {/* Password — label OUTSIDE relative wrapper (matches login structure) */}
+          <div className="space-y-2">
+            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-200">
               Password
             </label>
-            <input
-              id="trial-password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(null) }}
-              placeholder="Min 8 characters"
-              required
-              minLength={8}
-              disabled={loading}
-              className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-              tabIndex={-1}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+            <div className="relative">
+              <input
+                id="trial-password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(null) }}
+                placeholder="Min 8 characters"
+                required
+                minLength={8}
+                disabled={loading}
+                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                tabIndex={-1}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="trial-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          {/* Name — full-width vertical */}
+          <div className="space-y-2">
+            <label htmlFor="trial-name" className="block text-sm font-medium text-slate-200">
               Your name <span className="text-slate-400">(optional)</span>
             </label>
             <input
@@ -201,21 +207,21 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>
 
         {error && (
-          <div id="trial-error" className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg" role="alert">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <div id="trial-error" className="mt-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg" role="alert">
+            <p className="text-sm text-red-400">{error}</p>
           </div>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-6 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
         >
           {loading ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Creating account...</>
@@ -228,9 +234,9 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
           Free for 30 days · No credit card · Cancel anytime
         </p>
 
-        <p className="mt-4 text-sm text-center text-slate-500 dark:text-slate-400">
+        <p className="mt-4 text-sm text-center text-slate-500">
           Already have an account?{' '}
-          <a href="/login" className="text-emerald-500 hover:text-emerald-600 font-medium">Sign in</a>
+          <a href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">Sign in</a>
         </p>
       </div>
     </form>

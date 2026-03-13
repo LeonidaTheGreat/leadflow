@@ -374,9 +374,11 @@ function PaidSignupFlow() {
 
               <Card className="border-slate-700 bg-slate-800/50">
                 <CardContent className="p-8">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                      <Label htmlFor="email" className="text-white mb-2 block">Email Address *</Label>
+                  {/* space-y-4 matches login page field spacing */}
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Email — full-width vertical stack matching login layout */}
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-slate-200">Email Address *</Label>
                       <Input
                         id="email"
                         name="email"
@@ -384,14 +386,15 @@ function PaidSignupFlow() {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="you@example.com"
-                        className="bg-slate-900 border-slate-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="name" className="text-white mb-2 block">Full Name *</Label>
+                    {/* Full Name — full-width vertical stack */}
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-slate-200">Full Name *</Label>
                       <Input
                         id="name"
                         name="name"
@@ -399,14 +402,15 @@ function PaidSignupFlow() {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="John Smith"
-                        className="bg-slate-900 border-slate-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="phone" className="text-white mb-2 block">Phone Number *</Label>
+                    {/* Phone — full-width vertical stack */}
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-slate-200">Phone Number *</Label>
                       <Input
                         id="phone"
                         name="phone"
@@ -414,14 +418,15 @@ function PaidSignupFlow() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+1 (555) 123-4567"
-                        className="bg-slate-900 border-slate-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="password" className="text-white mb-2 block">Password *</Label>
+                    {/* Password — full-width vertical stack matching login layout */}
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-slate-200">Password *</Label>
                       <Input
                         id="password"
                         name="password"
@@ -429,7 +434,7 @@ function PaidSignupFlow() {
                         value={formData.password}
                         onChange={handleInputChange}
                         placeholder="Create a strong password (min 8 characters)"
-                        className="bg-slate-900 border-slate-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                         minLength={8}
