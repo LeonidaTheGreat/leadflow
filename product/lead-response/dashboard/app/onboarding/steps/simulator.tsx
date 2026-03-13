@@ -54,9 +54,11 @@ export default function OnboardingSimulator({
   const [error, setError] = useState<string | null>(null)
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
 
-  // Generate a session ID on mount
+  // Generate a session ID on mount using crypto.getRandomValues()
   useEffect(() => {
-    const newSessionId = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const randomBytes = crypto.getRandomValues(new Uint8Array(6))
+    const randomHex = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('')
+    const newSessionId = `sim_${Date.now()}_${randomHex}`
     setSessionId(newSessionId)
   }, [])
 

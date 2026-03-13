@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { randomUUID } from 'crypto'
+import { randomBytes, randomUUID as cryptoRandomUUID } from 'crypto'
 
 /**
  * POST /api/onboarding/simulator
@@ -113,13 +113,18 @@ export async function POST(request: NextRequest) {
 
 async function startSimulation(agentId: string, sessionId: string) {
   const now = Date.now()
-  const simulationId = randomUUID()
+  // Generate a secure random simulation ID using crypto.randomBytes()
+  const simulationId = randomBytes(16).toString('hex')
   
   // Generate a realistic lead
   const leadNames = ['Sarah Johnson', 'Michael Chen', 'Emily Rodriguez', 'David Thompson', 'Lisa Park']
-  const leadName = leadNames[Math.floor(Math.random() * leadNames.length)]
+  // Securely select a random lead name using crypto.getRandomValues()
+  const leadNameIndex = crypto.getRandomValues(new Uint32Array(1))[0] % leadNames.length
+  const leadName = leadNames[leadNameIndex]
   const propertyInterests = ['a 3-bedroom home', 'a downtown condo', 'a family house', 'investment property', 'a new construction']
-  const propertyInterest = propertyInterests[Math.floor(Math.random() * propertyInterests.length)]
+  // Securely select a random property interest using crypto.getRandomValues()
+  const propertyInterestIndex = crypto.getRandomValues(new Uint32Array(1))[0] % propertyInterests.length
+  const propertyInterest = propertyInterests[propertyInterestIndex]
 
   // Initialize simulation in memory
   simulationProgress.set(sessionId, {
@@ -180,8 +185,9 @@ async function simulateConversation(sessionId: string, leadName: string, propert
   
   // Simulate 3 turns with realistic timing
   for (let turn = 0; turn < 3; turn++) {
-    // Simulate network/processing delay (1-2 seconds per turn)
-    await delay(1000 + Math.random() * 1000)
+    // Simulate network/processing delay (1-2 seconds per turn) using crypto.getRandomValues()
+    const randomDelay = crypto.getRandomValues(new Uint32Array(1))[0] % 1000
+    await delay(1000 + randomDelay)
     
     const now = Date.now()
     const leadTimestamp = new Date(now).toISOString()
@@ -216,8 +222,9 @@ async function simulateConversation(sessionId: string, leadName: string, propert
       }
     }
 
-    // Simulate AI "thinking" time (500ms - 1.5s)
-    await delay(500 + Math.random() * 1000)
+    // Simulate AI "thinking" time (500ms - 1.5s) using crypto.getRandomValues()
+    const randomThinkDelay = crypto.getRandomValues(new Uint32Array(1))[0] % 1000
+    await delay(500 + randomThinkDelay)
     
     const aiNow = Date.now()
     const aiTimestamp = new Date(aiNow).toISOString()

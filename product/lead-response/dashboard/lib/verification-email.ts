@@ -5,7 +5,7 @@
  */
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { randomUUID } from 'crypto'
+import { randomBytes } from 'crypto'
 
 // Lazy-load Resend to avoid build error when package isn't installed
 let _resend: any = null
@@ -135,7 +135,8 @@ async function sendEmail(
  */
 export async function createVerificationToken(agentId: string): Promise<string | null> {
   try {
-    const token = randomUUID()
+    // Generate a secure random token using crypto.randomBytes()
+    const token = randomBytes(32).toString('hex')
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
 
     const { error } = await supabase

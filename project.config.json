@@ -304,5 +304,11 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.50
     }
+  },
+
+  "code_review": {
+    "interval_hours": 48,
+    "scan_extensions": ["js", "ts", "tsx", "jsx"],
+    "skip_patterns": [".test.", ".spec.", "__test__", "node_modules", ".next"]
   }
 }
