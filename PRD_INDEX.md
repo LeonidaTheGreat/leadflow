@@ -1,13 +1,12 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-23T05:19:32.188Z | Source: `prds` table
+> Generated: 2026-03-13T16:27:47.002Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
 | genome-auto-generated-docs-convention | Auto-Generated Docs Directory Convention | approved | - | [docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md](docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md) |
 | genome-project-structure-convention | Project Structure Convention System | draft | 1 | [docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md](docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md) |
-| prd-admin-pilot-invite-flow | Admin Pilot Invite Flow — Direct Recruitment by Stojan | approved | 1.0 | [docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md](docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR-001 | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md) |
 | PRD-AHA-MOMENT-SIMULATOR-UI | Aha Moment Simulator — Onboarding Step UI | approved | 1.0 | [docs/PRD-AHA-MOMENT-SIMULATOR-UI.md](docs/PRD-AHA-MOMENT-SIMULATOR-UI.md) |
@@ -54,7 +53,7 @@
 | PRD-ONBOARDING-WIZARD-001 | Post-Login Onboarding Wizard for New Agents | approved | 1.0 | [docs/PRD-ONBOARDING-WIZARD.md](docs/PRD-ONBOARDING-WIZARD.md) |
 | PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
 | prd-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | draft | 1.0 | [docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md](docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md) |
-| PRD-PM-ACTION-ITEMS-DASHBOARD | PM Structured Action Items for Dashboard | approved | 1.0 | [docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md](docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md) |
+| PRD-PM-ACTION-ITEMS-DASHBOARD | PM Structured Action Items for Dashboard | draft | 1.0 | [docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md](docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md) |
 | PRD-PRODUCT-STATUS-001 | LeadFlow Product Status Report — Day 19 of 60 | approved | 1.0 | [docs/PRD-PRODUCT-STATUS-REPORT-001.md](docs/PRD-PRODUCT-STATUS-REPORT-001.md) |
 | PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM | Project Structure Convention System | draft | 1.0 | [docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md](docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md) |
 | prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |
