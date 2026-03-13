@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 27 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/13/2026, 12:27:46 PM
+**Last Updated:** 3/13/2026, 12:07:27 PM
 
 ---
 
@@ -33,15 +33,21 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 0 | Blocked: 0 | Done: 890
+**Queue Health:** Ready: 3 | In Progress: 1 | Blocked: 0 | Done: 881
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (3 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev (re-merge): fix-db-migration-incomplete-email-verification-tokens- - DB migration incomplete: email_verification_tok | kimi | $0.24 | 🔴 P0 |
+| Dev (re-merge): fix-touchsession-middleware-not-implemented-no-session - touchSession() middleware not implemented — no  | codex | $1.00 | 🔴 P0 |
+| Dev (re-merge): fix-prd-md-files-remain-at-docs-root-instead-of-docs-p - PRD-*.md files remain at docs/ root instead of  | codex | $1.00 | 🔴 P0 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (1 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| Genome fix: success_rate — model_performance | dev | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -99,7 +105,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $393.90
+**Estimated project cost:** $390.00
 **Cost per task:** Avg $0.41
 
 ---
@@ -113,8 +119,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. 🔴 No active agents
+1. ✅ **3 tasks ready to spawn**
+2. ⚡ **1 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
