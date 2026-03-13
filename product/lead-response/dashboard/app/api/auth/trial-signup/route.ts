@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       {
         agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
         planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/setup',
+        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
       }
     ).catch((err: unknown) => {
       console.error('[trial-signup] Welcome email error:', err)
