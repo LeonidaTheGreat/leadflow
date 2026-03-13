@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-13T06:30:03.550Z | Source: `prds` table
+> Generated: 2026-03-13T14:54:20.302Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -45,6 +45,8 @@
 | PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
 | prd-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | draft | 1.0 | [docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md](docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md) |
 | PRD-PRODUCT-STATUS-001 | LeadFlow Product Status Report — Day 19 of 60 | approved | 1.0 | [docs/PRD-PRODUCT-STATUS-REPORT-001.md](docs/PRD-PRODUCT-STATUS-REPORT-001.md) |
+| PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM | Project Structure Convention System | draft | 1.0 | [docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md](docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md) |
+| prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |
 | PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/PRD-REVENUE-RECOVERY-001.md](docs/PRD-REVENUE-RECOVERY-001.md) |
 | prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/PRD-SESSION-ANALYTICS-PILOT.md](docs/PRD-SESSION-ANALYTICS-PILOT.md) |

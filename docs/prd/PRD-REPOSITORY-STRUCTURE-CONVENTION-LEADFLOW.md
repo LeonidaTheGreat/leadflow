@@ -1,11 +1,13 @@
 # PRD — Repository Structure Convention for LeadFlow
 
-- **PRD ID:** prd-repo-structure-convention-leadflow
+- **PRD ID:** prd-repository-structure-convention
 - **Project:** leadflow
 - **Type:** Feature
 - **Priority:** Medium
-- **Status:** Draft
+- **Status:** Approved
+- **Version:** 1.1
 - **Owner:** Product
+- **Use Cases:** feat-repository-structure-convention, feat-leadflow-repository-restructuring
 
 ## 1) Problem
 LeadFlow repo has high root-level sprawl (utility scripts, one-offs, docs, configs, duplicate test directories). This slows onboarding, increases deployment risk, and makes automation brittle.
