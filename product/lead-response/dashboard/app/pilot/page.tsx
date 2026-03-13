@@ -173,7 +173,7 @@ export default function PilotPage() {
             <p className="text-slate-400 text-sm mb-8">
               Want to start using LeadFlow AI right now?{' '}
               <Link href="/signup?mode=trial" className="text-emerald-400 hover:underline font-medium">
-                Start your free 30-day trial — no credit card needed
+                Start your free 14-day trial — no credit card needed
               </Link>
             </p>
             <Link

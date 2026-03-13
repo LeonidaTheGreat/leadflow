@@ -154,7 +154,7 @@ export default function HomePage() {
             Simple, Transparent Pricing
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Start with a free 30-day trial. Upgrade when you&apos;re ready.
+            Start with a free 14-day trial. Upgrade when you&apos;re ready.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
