@@ -19,7 +19,7 @@
 import { useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
-const SETUP_ROUTES = ['/setup', '/login', '/onboarding', '/dashboard/onboarding', '/forgot-password', '/reset-password', '/signup']
+const SETUP_ROUTES = ['/setup', '/login', '/onboarding', '/forgot-password', '/reset-password', '/signup', '/dashboard/onboarding']
 
 function getFromStorage(key: string): string | null {
   try {
