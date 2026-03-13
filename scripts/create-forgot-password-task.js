@@ -6,7 +6,7 @@ const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_R
 const description = `## Task: Implement Forgot Password Flow
 
 **Use Case:** fix-no-forgot-password-flow
-**PRD:** docs/PRD-FORGOT-PASSWORD.md
+**PRD:** docs/prd/PRD-FORGOT-PASSWORD.md
 **Priority:** high
 
 ## Problem

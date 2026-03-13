@@ -447,7 +447,7 @@ leadflow/
 
 ## References
 
-- **PRD:** `/docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md`
+- **PRD:** `/docs/prd/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md`
 - **Service:** `lib/pilot-conversion-service.js` (inline documentation)
 - **Tests:** `test/pilot-conversion-email-sequence.test.js`
 - **API:** `routes/pilot-conversion.js`
