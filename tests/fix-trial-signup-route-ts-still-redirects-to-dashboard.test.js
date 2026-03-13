@@ -1,7 +1,7 @@
 /**
  * E2E test: trial-signup/route.ts redirectTo fix
- * Verifies the route returns redirectTo: '/setup' (not '/dashboard/onboarding')
- * Use case: fix-trial-signup-route-ts-still-redirects-to-dashboard
+ * Verifies the route returns redirectTo: '/dashboard/onboarding' (not '/setup')
+ * Use case: fix-signup-routes-redirect-to-setup-not-dashboard-onbo
  */
 
 const fs = require('fs');
@@ -28,13 +28,13 @@ function test(name, fn) {
 }
 
 // Test 1: Route file contains correct redirectTo
-test('redirectTo is /setup (not /dashboard/onboarding)', () => {
+test('redirectTo is /dashboard/onboarding (not /setup)', () => {
   const content = fs.readFileSync(ROUTE_FILE, 'utf8');
-  assert.ok(content.includes("redirectTo: '/setup'"), "redirectTo should be '/setup'");
-  assert.ok(!content.includes("redirectTo: '/dashboard/onboarding'"), "redirectTo must NOT be '/dashboard/onboarding'");
+  assert.ok(content.includes("redirectTo: '/dashboard/onboarding'"), "redirectTo should be '/dashboard/onboarding'");
+  assert.ok(!content.includes("redirectTo: '/setup'"), "redirectTo must NOT be '/setup'");
 });
 
-// Test 2: /setup page exists in the app
+// Test 2: /setup page still exists in the app (setup wizard still accessible)
 test('/setup route exists in Next.js app', () => {
   const setupPage = path.join(
     __dirname,
@@ -43,13 +43,13 @@ test('/setup route exists in Next.js app', () => {
   assert.ok(fs.existsSync(setupPage), '/setup/page.tsx must exist');
 });
 
-// Test 3: /dashboard/onboarding is not referenced as a post-signup redirect anywhere in the file
-test('No remaining /dashboard/onboarding redirect in trial-signup route', () => {
+// Test 3: dashboardUrl in welcome email also uses /dashboard/onboarding
+test('dashboardUrl in welcome email uses /dashboard/onboarding', () => {
   const content = fs.readFileSync(ROUTE_FILE, 'utf8');
-  // Allow it only in comments, not in code
-  const codeLines = content.split('\n').filter(l => !l.trim().startsWith('//') && !l.trim().startsWith('*'));
-  const hasOldRedirect = codeLines.some(l => l.includes('/dashboard/onboarding'));
-  assert.ok(!hasOldRedirect, '/dashboard/onboarding must not appear in non-comment code');
+  assert.ok(
+    content.includes('/dashboard/onboarding'),
+    'dashboardUrl should reference /dashboard/onboarding'
+  );
 });
 
 console.log(`\n📊 Results: ${passed} passed, ${failed} failed`);

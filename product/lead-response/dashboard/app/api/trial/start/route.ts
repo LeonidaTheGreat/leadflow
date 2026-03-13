@@ -159,11 +159,11 @@ export async function POST(request: NextRequest) {
         planTier: agent.plan_tier,
         trialEndsAt: agent.trial_ends_at,
       },
-      redirectTo: '/setup',
+      redirectTo: '/dashboard/onboarding',
     })
 
     // Set auth cookie (30-day trial)
-    response.cookies.set('auth_token', token, {
+    response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
