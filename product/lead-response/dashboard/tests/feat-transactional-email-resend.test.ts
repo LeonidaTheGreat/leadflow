@@ -157,7 +157,7 @@ describe('Email Service — sendWelcomeEmail', () => {
     const result = await sendWelcomeEmail('agent@example.com', 'uuid-agent-001', {
       agentName: 'Sarah Jones',
       planTier: 'trial',
-      dashboardUrl: 'https://leadflow-ai-five.vercel.app/setup',
+      dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
     })
     // Result is true when Resend returns success or when queued
     expect(typeof result).toBe('boolean')
