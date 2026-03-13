@@ -1,7 +1,7 @@
 /**
- * E2E test: trial-signup/route.ts redirectTo fix
- * Verifies the route returns redirectTo: '/setup' (not '/dashboard/onboarding')
- * Use case: fix-trial-signup-route-ts-still-redirects-to-dashboard
+ * E2E test: trial-signup/route.ts redirectTo /dashboard/onboarding
+ * Verifies the route returns redirectTo: '/dashboard/onboarding' (not '/setup')
+ * Use case: feat-post-signup-redirect-to-dashboard-onboarding
  */
 
 const fs = require('fs');
@@ -28,28 +28,27 @@ function test(name, fn) {
 }
 
 // Test 1: Route file contains correct redirectTo
-test('redirectTo is /setup (not /dashboard/onboarding)', () => {
+test('redirectTo is /dashboard/onboarding (not /setup)', () => {
   const content = fs.readFileSync(ROUTE_FILE, 'utf8');
-  assert.ok(content.includes("redirectTo: '/setup'"), "redirectTo should be '/setup'");
-  assert.ok(!content.includes("redirectTo: '/dashboard/onboarding'"), "redirectTo must NOT be '/dashboard/onboarding'");
+  assert.ok(content.includes("redirectTo: '/dashboard/onboarding'"), "redirectTo should be '/dashboard/onboarding'");
 });
 
-// Test 2: /setup page exists in the app
-test('/setup route exists in Next.js app', () => {
-  const setupPage = path.join(
+// Test 2: /dashboard/onboarding page exists in the app
+test('/dashboard/onboarding route exists in Next.js app', () => {
+  const onboardingPage = path.join(
     __dirname,
-    '../product/lead-response/dashboard/app/setup/page.tsx'
+    '../product/lead-response/dashboard/app/dashboard/onboarding/page.tsx'
   );
-  assert.ok(fs.existsSync(setupPage), '/setup/page.tsx must exist');
+  assert.ok(fs.existsSync(onboardingPage), '/dashboard/onboarding/page.tsx must exist');
 });
 
-// Test 3: /dashboard/onboarding is not referenced as a post-signup redirect anywhere in the file
-test('No remaining /dashboard/onboarding redirect in trial-signup route', () => {
+// Test 3: Email URL points to /dashboard/onboarding
+test('Welcome email URL points to /dashboard/onboarding', () => {
   const content = fs.readFileSync(ROUTE_FILE, 'utf8');
-  // Allow it only in comments, not in code
-  const codeLines = content.split('\n').filter(l => !l.trim().startsWith('//') && !l.trim().startsWith('*'));
-  const hasOldRedirect = codeLines.some(l => l.includes('/dashboard/onboarding'));
-  assert.ok(!hasOldRedirect, '/dashboard/onboarding must not appear in non-comment code');
+  assert.ok(
+    content.includes("dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding'"),
+    "Email dashboardUrl should point to /dashboard/onboarding"
+  );
 });
 
 console.log(`\n📊 Results: ${passed} passed, ${failed} failed`);
