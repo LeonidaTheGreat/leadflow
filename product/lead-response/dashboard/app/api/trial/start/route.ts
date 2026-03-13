@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Set auth cookie (30-day trial)
-    response.cookies.set('auth_token', token, {
+    response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
