@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-12T07:00:03.015Z | Source: `prds` table
+> Generated: 2026-03-13T05:10:00.359Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -13,6 +13,7 @@
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
+| prd-email-verification-before-login | Email Verification — Confirm Inbox Before Login | approved | - | [docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md](docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md) |
 | PRD-FEAT-DEMO-WITHOUT-SIGNUP-001 | Live AI Demo — Experience the Product Without Signing Up | approved | 1.0 | [docs/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md](docs/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md) |
 | PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH | Fix agents Table Mismatch in Auth/Onboarding API Routes | approved | - | [docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md](docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md) |
 | PRD-FIX-API-HEALTH-ENDPOINT | Fix API Health Endpoint — Query Correct Table | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT.md](docs/PRD-FIX-API-HEALTH-ENDPOINT.md) |
