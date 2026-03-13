@@ -1,134 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-13T18:24:09.409Z
+Last updated: 2026-03-13T18:59:13.692Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-03T15:53:25.201Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 102,
-      "total": 112
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":102,\"total\":112}",
-      "Marked 0ede5296-1502-444c-bfb8-768a69612077 as done",
-      "Marked 18e091e1-6a7e-4429-8aec-cf389a774dfd as done",
-      "Marked 5c84b52a-d257-4398-8d28-fffbef4842e9 as done",
-      "Marked 0ede5296-1502-444c-bfb8-768a69612077 as done",
-      "Marked 18e091e1-6a7e-4429-8aec-cf389a774dfd as done",
-      "Marked 5c84b52a-d257-4398-8d28-fffbef4842e9 as done",
-      "Marked 18e091e1-6a7e-4429-8aec-cf389a774dfd as done",
-      "Marked 0ede5296-1502-444c-bfb8-768a69612077 as done",
-      "Marked 5c84b52a-d257-4398-8d28-fffbef4842e9 as done",
-      "Smoke tests: 5/5 passed",
-      "Deployment gap detected: Landing Page → PM task created",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 9,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T16:02:19.728Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 102,
-      "total": 113
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":102,\"total\":113}",
-      "Marked dd8b5557-5d3c-446a-b0b9-d0a5b865ac8f as done",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 1,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T16:07:09.969Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 103,
-      "total": 113
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":103,\"total\":113}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T16:24:20.718Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 103,
-      "total": 113
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":103,\"total\":113}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-03T16:25:51.999Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 103,
-      "total": 113
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":103,\"total\":113}",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-03T16:26:51.111Z",
     "status": {
@@ -2469,6 +2343,126 @@ Last updated: 2026-03-13T18:24:09.409Z
       "Feedback→PM: bug from pm_review",
       "Closed conflicted PR #293",
       "Action items: +1 -0",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-13T18:44:09.764Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 907,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":907,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Replenished: QC task for feat-post-signup-dashboard-onboarding-redirect",
+      "Closed conflicted PR #294",
+      "Action items: +1 -0",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-13T18:49:07.643Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 907,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":907,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Product review triggered: Fix Auth Token Gap — Signup → Onboarding Redirect",
+      "Action items: +0 -1",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-13T18:54:06.766Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 907,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":907,\"total\":1000}",
+      "Spawned product for PM: Analyze bug feedback",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Processed product review: 0 decisions, 1 UCs, 2 new action items",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 1,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-13T18:59:12.197Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 908,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":908,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-13T18:59:13.582Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 908,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":908,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Build health: escalated to Escalation (1 prior failures)",
+      "UC completed (sweep): feat-post-signup-dashboard-onboarding-redirect",
+      "Replenished: Dev task for fix-cookie-name-mismatch-trial-start-sets-auth-token-u",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],

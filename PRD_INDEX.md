@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-13T18:24:09.215Z | Source: `prds` table
+> Generated: 2026-03-13T18:59:13.495Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -41,6 +41,7 @@
 | PRD-LEAD-EXPERIENCE-SIMULATOR | Lead Experience Simulator & Conversation Viewer | approved | 1.0 | [docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md](docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md) |
 | PRD-LEAD-MAGNET-EMAIL-CAPTURE | Lead Magnet / Email Capture on Landing Page | approved | 1.0 | [docs/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md](docs/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md) |
 | PRD-LEAD-SATISFACTION-FEEDBACK | Lead Satisfaction Feedback Collection | approved | 1.0 | [docs/PRD-LEAD-SATISFACTION-FEEDBACK.md](docs/PRD-LEAD-SATISFACTION-FEEDBACK.md) |
+| PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001 | Fix: Login Page Redirect for Un-Onboarded Users | approved | - | [docs/PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001.md](docs/PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001.md) |
 | PRD-NPS-AGENT-FEEDBACK | NPS / Feedback Survey Mechanism for Real Estate Agents | approved | 1.0 | [docs/PRD-NPS-AGENT-FEEDBACK.md](docs/PRD-NPS-AGENT-FEEDBACK.md) |
 | PRD-ONBOARDING-500-FIX | Fix Onboarding 500 Error — Deployment | approved | 1.0 | [docs/PRD-ONBOARDING-500-FIX.md](docs/PRD-ONBOARDING-500-FIX.md) |
 | PRD-ONBOARDING-REDIRECT-001 | Post-Signup Redirect to /dashboard/onboarding | approved | - | - |

@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 27 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/13/2026, 2:24:08 PM
+**Last Updated:** 3/13/2026, 2:59:13 PM
 
 ---
 
@@ -33,19 +33,19 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 1 | In Progress: 1 | Blocked: 0 | Done: 900
+**Queue Health:** Ready: 1 | In Progress: 1 | Blocked: 0 | Done: 905
 
 ### ▶️ Ready to Spawn (1 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
+| Dev: fix-cookie-name-mismatch-trial-start-sets-auth-token-u - Cookie name mismatch: trial/start sets auth_token (underscore) but /api/auth/me reads auth-token (hyphen) | sonnet | $0.60 | 🟡 P1 |
 
 ### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| PM: feat-post-signup-dashboard-onboarding-redirect - Post-Signup Redirect to /dashboard/onboarding Wizard | product | sonnet |
+| Escalation: Fix recurring build failure — unknown | dev | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -103,7 +103,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $399.85
+**Estimated project cost:** $403.51
 **Cost per task:** Avg $0.41
 
 ---
