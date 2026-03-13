@@ -136,4 +136,4 @@ For Stripe-related questions:
 
 For LeadFlow billing questions:
 - See: `STRIPE_SUBSCRIPTIONS_COMPLETE.md`
-- See: `docs/STRIPE_SUBSCRIPTIONS_GUIDE.md`
+- See: `docs/guides/STRIPE_SUBSCRIPTIONS_GUIDE.md`

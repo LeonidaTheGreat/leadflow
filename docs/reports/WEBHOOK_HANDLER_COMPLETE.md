@@ -73,7 +73,7 @@
 ### New Files
 1. `routes/webhooks-calcom.js` - API route implementation
 2. `test/calcom-webhook-handler.test.js` - Comprehensive test suite
-3. `docs/CALCOM_WEBHOOK_HANDLER.md` - Documentation
+3. `docs/guides/CALCOM_WEBHOOK_HANDLER.md` - Documentation
 
 ### Modified Files
 1. `server.js` - Added `/api/webhooks/calcom` route

@@ -48,7 +48,7 @@ agents: {
 | API Route | `app/api/stripe/portal-session/route.ts` | ✅ Code complete |
 | Portal Routes | `routes/portal.js` | ✅ Code complete |
 | Tests | `integration/test-stripe-portal.js` | ✅ 13/13 passing |
-| Documentation | `docs/STRIPE_CUSTOMER_PORTAL.md` | ✅ Complete |
+| Documentation | `docs/guides/STRIPE_CUSTOMER_PORTAL.md` | ✅ Complete |
 
 ### 2.2 What's Missing
 | Component | Status | Impact |
@@ -353,7 +353,7 @@ curl -X POST "https://leadflow-ai-five.vercel.app/api/stripe/portal-session" \
 | `USE_CASES.md` | Add UC-X: Customer Billing Management | ❌ Needs update |
 | `E2E_MAPPINGS.md` | Add billing test specs | ❌ Needs update |
 | `PMF.md` | Verify pricing tiers match implementation | ⚠️ Review needed |
-| `docs/STRIPE_CUSTOMER_PORTAL.md` | Update with correct schema | ⚠️ Needs update |
+| `docs/guides/STRIPE_CUSTOMER_PORTAL.md` | Update with correct schema | ⚠️ Needs update |
 | `LEARNINGS.md` | Document "spec-schema mismatch" pattern | ✅ Will add |
 
 ---

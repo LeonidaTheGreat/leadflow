@@ -91,7 +91,7 @@ Complete implementation of Stripe Subscriptions lifecycle management for LeadFlo
   - Request/response validation
   - Complete workflow testing
 
-### 8. Documentation (`docs/STRIPE_SUBSCRIPTIONS_GUIDE.md`)
+### 8. Documentation (`docs/guides/STRIPE_SUBSCRIPTIONS_GUIDE.md`)
 - ✅ Architecture overview
 - ✅ Quick start guide
 - ✅ Complete API reference
@@ -120,7 +120,7 @@ lib/billing-enhanced.js              (13,614 bytes)
 routes/billing-enhanced.js           (10,408 bytes)
 test/stripe-subscriptions.test.js    (20,915 bytes)
 test/billing-api-integration.test.js (13,222 bytes)
-docs/STRIPE_SUBSCRIPTIONS_GUIDE.md   (13,917 bytes)
+docs/guides/STRIPE_SUBSCRIPTIONS_GUIDE.md   (13,917 bytes)
 stripe-subscriptions/index.js        (1,218 bytes)
 ```
 
