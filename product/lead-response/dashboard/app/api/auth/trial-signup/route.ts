@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/setup',
+      redirectTo: '/dashboard/onboarding',
       message: 'Trial account created successfully'
     })
 
