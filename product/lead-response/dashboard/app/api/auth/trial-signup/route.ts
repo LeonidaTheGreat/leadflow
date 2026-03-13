@@ -142,12 +142,20 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Set auth cookie and return success
+    // Set auth cookie and return success with token + user for localStorage storage
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/setup',
-      message: 'Trial account created successfully'
+      redirectTo: '/dashboard/onboarding',
+      message: 'Trial account created successfully',
+      token,
+      user: {
+        id: agent.id,
+        email: agent.email,
+        firstName: agent.first_name,
+        lastName: agent.last_name,
+        onboardingCompleted: false,
+      },
     })
 
     response.cookies.set('auth-token', token, {
