@@ -1,10 +1,18 @@
 const { createClient } = require('@supabase/supabase-js');
+const { createHash } = require('crypto');
 require('dotenv').config();
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+/**
+ * Hash a verification token using SHA-256
+ */
+function hashToken(token) {
+  return createHash('sha256').update(token).digest('hex');
+}
 
 async function runSmokeTest() {
   console.log('=== Email Verification Smoke Test ===\n');
@@ -40,9 +48,10 @@ async function runSmokeTest() {
   if (!agent) {
     console.log('   ❌ FAIL: Could not find test agent');
   } else {
+    const plainToken = 'test-token-' + Date.now();
     const testToken = {
       agent_id: agent.id,
-      token: 'test-token-' + Date.now(),
+      token: hashToken(plainToken),
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
 
@@ -88,7 +97,8 @@ async function runSmokeTest() {
   // Test 4: Token has unique constraint
   testsTotal++;
   console.log('\nTest 4: Token uniqueness constraint');
-  const duplicateToken = 'duplicate-test-token';
+  const plainDuplicateToken = 'duplicate-test-token';
+  const hashedDuplicateToken = hashToken(plainDuplicateToken);
   const { data: agent2 } = await supabase
     .from('real_estate_agents')
     .select('id')
@@ -101,7 +111,7 @@ async function runSmokeTest() {
       .from('email_verification_tokens')
       .insert({
         agent_id: agent2.id,
-        token: duplicateToken,
+        token: hashedDuplicateToken,
         expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       })
       .select()
@@ -112,7 +122,7 @@ async function runSmokeTest() {
       .from('email_verification_tokens')
       .insert({
         agent_id: agent2.id,
-        token: duplicateToken,
+        token: hashedDuplicateToken,
         expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       });
 
