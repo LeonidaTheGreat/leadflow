@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-13T16:17:14.530Z | Source: `prds` table
+> Generated: 2026-03-14T21:30:33.476Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -41,17 +41,21 @@
 | PRD-LEAD-EXPERIENCE-SIMULATOR | Lead Experience Simulator & Conversation Viewer | approved | 1.0 | [docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md](docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md) |
 | PRD-LEAD-MAGNET-EMAIL-CAPTURE | Lead Magnet / Email Capture on Landing Page | approved | 1.0 | [docs/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md](docs/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md) |
 | PRD-LEAD-SATISFACTION-FEEDBACK | Lead Satisfaction Feedback Collection | approved | 1.0 | [docs/PRD-LEAD-SATISFACTION-FEEDBACK.md](docs/PRD-LEAD-SATISFACTION-FEEDBACK.md) |
+| PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001 | Fix: Login Page Redirect for Un-Onboarded Users | approved | - | [docs/PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001.md](docs/PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001.md) |
 | PRD-NPS-AGENT-FEEDBACK | NPS / Feedback Survey Mechanism for Real Estate Agents | approved | 1.0 | [docs/PRD-NPS-AGENT-FEEDBACK.md](docs/PRD-NPS-AGENT-FEEDBACK.md) |
 | PRD-ONBOARDING-500-FIX | Fix Onboarding 500 Error — Deployment | approved | 1.0 | [docs/PRD-ONBOARDING-500-FIX.md](docs/PRD-ONBOARDING-500-FIX.md) |
+| PRD-ONBOARDING-REDIRECT-001 | Post-Signup Redirect to /dashboard/onboarding | approved | - | - |
 | PRD-ONBOARDING-WIZARD-001 | Post-Login Onboarding Wizard for New Agents | approved | 1.0 | [docs/PRD-ONBOARDING-WIZARD.md](docs/PRD-ONBOARDING-WIZARD.md) |
 | PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
 | prd-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | draft | 1.0 | [docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md](docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md) |
+| PRD-PM-ACTION-ITEMS-DASHBOARD | PM Structured Action Items for Dashboard | approved | 1.0 | [docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md](docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md) |
 | PRD-PRODUCT-STATUS-001 | LeadFlow Product Status Report — Day 19 of 60 | approved | 1.0 | [docs/PRD-PRODUCT-STATUS-REPORT-001.md](docs/PRD-PRODUCT-STATUS-REPORT-001.md) |
 | PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM | Project Structure Convention System | draft | 1.0 | [docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md](docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md) |
 | prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |
 | PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/PRD-REVENUE-RECOVERY-001.md](docs/PRD-REVENUE-RECOVERY-001.md) |
 | prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/PRD-SESSION-ANALYTICS-PILOT.md](docs/PRD-SESSION-ANALYTICS-PILOT.md) |
+| PRD-SIGNUP-AUTH-TOKEN-FIX-001 | Fix Auth Token Gap — Signup → Onboarding Redirect | approved | - | [docs/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md](docs/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md) |
 | PRD-SMOKE-ROUTE-DISCOVERY-001 | Route Discovery Smoke Test | draft | 1.0 | [docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md](docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md) |
 | PRD-SMS-ANALYTICS-DASHBOARD | SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | approved | 1.0 | [docs/PRD-SMS-ANALYTICS-DASHBOARD.md](docs/PRD-SMS-ANALYTICS-DASHBOARD.md) |
 | prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/PRD-START-FREE-TRIAL-CTA.md](docs/PRD-START-FREE-TRIAL-CTA.md) |

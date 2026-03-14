@@ -66,7 +66,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         return
       }
 
-      router.push(data.redirectTo || '/setup')
+      router.push(data.redirectTo || '/dashboard/onboarding')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
@@ -136,7 +136,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
             )}
           </p>
         )}
-        <p className="mt-3 text-sm text-white/60 text-center">Free for 30 days · No credit card · Cancel anytime</p>
+        <p className="mt-3 text-sm text-white/60 text-center">Free for 14 days · No credit card · Cancel anytime</p>
       </form>
     )
   }
@@ -148,7 +148,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
           Start Your Free Trial
         </h3>
         <p className="text-slate-500 dark:text-slate-400 text-center text-sm mb-6">
-          No credit card required · 30 days free
+          No credit card required · 14 days free
         </p>
 
         <div className="space-y-4">
@@ -241,7 +241,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         </button>
 
         <p className="mt-4 text-xs text-slate-400 text-center">
-          Free for 30 days · No credit card · Cancel anytime
+          Free for 14 days · No credit card · Cancel anytime
         </p>
 
         <p className="mt-4 text-sm text-center text-slate-500 dark:text-slate-400">

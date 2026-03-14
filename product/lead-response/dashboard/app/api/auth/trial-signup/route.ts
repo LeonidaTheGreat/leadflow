@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Calculate trial end date (30 days from now per PRD)
-    const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    // Calculate trial end date (14 days from now — standardized per action_item ec7162a6)
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
     // Create agent record with trial tier
     const { data: agent, error: createError } = await supabase
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       {
         agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
         planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/setup',
+        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
       }
     ).catch((err: unknown) => {
       console.error('[trial-signup] Welcome email error:', err)
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/setup',
+      redirectTo: '/dashboard/onboarding',
       message: 'Trial account created successfully'
     })
 
