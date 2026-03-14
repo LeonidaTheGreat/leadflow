@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
  * POST /api/trial/start
  *
  * Frictionless trial account provisioning.
- * - Creates a new agent with plan_tier='trial', trial_ends_at=now()+30d
+ * - Creates a new agent with plan_tier='trial', trial_ends_at=now()+14d
  * - Sets email_verified=true (no email gate per PRD)
  * - Logs trial_started event to events table
  * - Returns JWT + redirect URL to onboarding wizard
@@ -80,9 +80,9 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Trial ends 30 days from now
+    // Trial ends 14 days from now (standardized per action_item ec7162a6)
     const trialEndsAt = new Date()
-    trialEndsAt.setDate(trialEndsAt.getDate() + 30)
+    trialEndsAt.setDate(trialEndsAt.getDate() + 14)
 
     // Create agent record
     const { data: agent, error: createError } = await supabaseServer

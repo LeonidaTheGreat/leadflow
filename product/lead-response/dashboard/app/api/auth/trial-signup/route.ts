@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Calculate trial end date (30 days from now per PRD)
-    const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    // Calculate trial end date (14 days from now — standardized per action_item ec7162a6)
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
     // Create agent record with trial tier
     const { data: agent, error: createError } = await supabase

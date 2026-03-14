@@ -132,7 +132,7 @@ export default function HomePage() {
             What Real Estate Agents Are Saying
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Join hundreds of agents who have transformed their lead response.
+            Join real estate agents who are transforming their lead response with AI.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
