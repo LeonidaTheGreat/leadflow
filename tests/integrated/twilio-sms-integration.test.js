@@ -19,7 +19,7 @@ const {
   selectSenderNumber,
   validateConfig,
   TwilioSmsError,
-} = require('../integration/twilio-sms');
+} = require('../../lib/twilio-sms');
 
 // Test configuration
 const TEST_CONFIG = {

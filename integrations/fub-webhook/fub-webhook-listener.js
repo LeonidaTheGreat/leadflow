@@ -14,7 +14,7 @@ const express = require('express');
 const crypto = require('crypto');
 const { EventEmitter } = require('events');
 const axios = require('axios');
-const { sendSmsViatwilio } = require('../lib/twilio-sms');
+const { sendSmsViatwilio } = require('../../lib/twilio-sms');
 
 const router = express.Router();
 
