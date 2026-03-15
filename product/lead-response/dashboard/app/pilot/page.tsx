@@ -86,6 +86,9 @@ export default function PilotPage() {
     e.preventDefault()
     setError(null)
 
+    // FR-2: Track CTA click for pilot program submission
+    trackCTAClick('join_pilot_hero', 'Apply for Pilot Program', 'hero')
+
     // FR-4: Track submit attempt
     trackFormEvent('form_submit_attempt')
 

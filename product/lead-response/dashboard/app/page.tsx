@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
+import { trackCTAClick } from '@/lib/analytics/ga4'
 
 export default function HomePage() {
   return (
@@ -20,12 +21,14 @@ export default function HomePage() {
             </a>
             <Link
               href="/pilot"
+              onClick={() => trackCTAClick('join_pilot_nav', 'Pilot Program', 'navigation')}
               className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Pilot Program
             </Link>
             <Link
               href="/login"
+              onClick={() => trackCTAClick('sign_in_nav', 'Sign In', 'navigation')}
               className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Sign In
@@ -52,7 +55,7 @@ export default function HomePage() {
             </Suspense>
 
             <p className="mt-6 text-sm text-slate-400">
-              <a href="#features" className="hover:text-white underline underline-offset-4">See how it works ↓</a>
+              <a href="#features" onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')} className="hover:text-white underline underline-offset-4">See how it works ↓</a>
             </p>
           </div>
         </div>
@@ -312,6 +315,7 @@ function PricingCard({
       </ul>
       <Link
         href={`/signup?plan=${name.toLowerCase()}`}
+        onClick={() => trackCTAClick(`pricing_${name.toLowerCase()}`, `${name} Get Started`, 'pricing')}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
@@ -322,6 +326,7 @@ function PricingCard({
       </Link>
       <Link
         href="/signup/trial"
+        onClick={() => trackCTAClick(`pricing_${name.toLowerCase()}_trial`, `${name} Start Free Trial`, 'pricing')}
         className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
       >
         or start free trial →

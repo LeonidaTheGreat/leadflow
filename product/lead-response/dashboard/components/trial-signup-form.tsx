@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { trackCTAClick, trackFormEvent } from '@/lib/analytics/ga4'
 
 interface TrialSignupFormProps {
   compact?: boolean
@@ -26,6 +27,11 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     e.preventDefault()
     setError(null)
     setIsDuplicateEmailError(false)
+
+    // Track CTA click based on which section/mode initiated the form
+    const section = searchParams.get('source') === 'pricing' ? 'pricing' : 'hero'
+    const ctaId = compact ? 'start_trial_form' : 'get_started_hero'
+    trackCTAClick(ctaId, 'Start Free Trial', section)
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
