@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const onboardingTelemetry = require('../../../../../lib/onboarding-telemetry')
+const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
 export async function GET(request: NextRequest) {
   try {

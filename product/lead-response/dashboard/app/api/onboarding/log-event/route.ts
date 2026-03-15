@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const onboardingTelemetry = require('../../../../../lib/onboarding-telemetry')
+const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
 export async function POST(request: NextRequest) {
   try {

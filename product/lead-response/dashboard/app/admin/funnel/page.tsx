@@ -89,7 +89,7 @@ export default function FunnelAdminPage() {
       {status && status.stuck_count > 0 && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold text-red-700">
-            ⚠️ {status.stuck_count} Agent(s) Stuck >24h
+            ⚠️ {status.stuck_count} Agent(s) Stuck &gt;24h
           </h2>
 
           <div className="mt-4 space-y-2">
