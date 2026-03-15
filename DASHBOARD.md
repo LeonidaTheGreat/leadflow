@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-14
+title: BO2026 Dashboard - Updated 2026-03-15
 author: LeadFlow Orchestrator
-date: 2026-03-14
+date: 2026-03-15
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 28 of 60  
+**Current Day:** Day 29 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/14/2026, 5:30:33 PM
+**Last Updated:** 3/15/2026, 2:55:22 AM
 
 ---
 
@@ -33,20 +33,19 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 920
+**Queue Health:** Ready: 0 | In Progress: 3 | Blocked: 0 | Done: 920
 
-### ▶️ Ready to Spawn (2 tasks)
+### ▶️ Ready to Spawn (0 tasks)
 
-| Task | Model | Cost | Priority |
-|------|-------|------|----------|
-| Dev: fix-pilot-recruitment-blocked-2-action-items-waiting-s - Pilot recruitment blocked — 2 action items WAITING since Feb 25 with no response | kimi | $0.12 | 🔴 P0 |
-| Dev: fix-madzunkov-hotmail-com-has-plan-tier-null-account-m - madzunkov@hotmail.com has plan_tier=null — account may be broken | kimi | $0.12 | 🟡 P1 |
+*No ready tasks*
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (3 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: fix-mrr-is-0-no-paying-customers-despite-all-technical - MRR is $0 — no paying customers despite all technical blockers being resolved | dev | sonnet |
+| Fix: Dashboard build errors | dev | haiku |
+| QC: feat-onboarding-completion-telemetry - Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off | qc | kimi |
+| PM: Analyze bug feedback | product | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +103,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $412.17
+**Estimated project cost:** $412.10
 **Cost per task:** Avg $0.41
 
 ---
@@ -118,8 +117,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **2 tasks ready to spawn**
-2. ⚡ **1 agents active**
+1. 🔴 No ready tasks
+2. ⚡ **3 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
