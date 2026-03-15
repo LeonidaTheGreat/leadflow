@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        result.status.stuck_agents = statusResult.agents.filter((a) => a.is_stuck)
+        result.status.stuck_agents = statusResult.agents.filter((a: any) => a.is_stuck)
       } else {
         result.status = { error: statusResult.error }
       }
