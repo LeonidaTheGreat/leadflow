@@ -115,11 +115,22 @@ COMMENT ON VIEW funnel_real_agents IS
 
 -- ==================== CREATE VIEW: funnel_step_counts ====================
 CREATE OR REPLACE VIEW funnel_step_counts AS
+WITH agent_latest_steps AS (
+  SELECT 
+    agent_id,
+    onboarding_step,
+    last_onboarding_step_update
+  FROM funnel_real_agents
+  CROSS JOIN LATERAL (
+    SELECT onboarding_step, last_onboarding_step_update 
+    FROM real_estate_agents ra WHERE ra.id = funnel_real_agents.id
+  ) AS ra
+)
 SELECT 
   onboarding_step,
   COUNT(*) as count,
   AVG(EXTRACT(EPOCH FROM (NOW() - last_onboarding_step_update))) as avg_time_at_step_seconds
-FROM funnel_real_agents
+FROM agent_latest_steps
 GROUP BY onboarding_step;
 
 COMMENT ON VIEW funnel_step_counts IS

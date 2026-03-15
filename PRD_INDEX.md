@@ -1,12 +1,13 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-14T21:30:33.476Z | Source: `prds` table
+> Generated: 2026-03-15T06:50:29.868Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
 | genome-auto-generated-docs-convention | Auto-Generated Docs Directory Convention | approved | - | [docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md](docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md) |
 | genome-project-structure-convention | Project Structure Convention System | draft | 1 | [docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md](docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md) |
+| prd-admin-pilot-invite-flow | Admin Pilot Invite Flow — Direct Recruitment by Stojan | approved | 1.0 | [docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md](docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md) |
 | PRD-AHA-MOMENT-LEAD-SIMULATOR-001 | Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) | draft | 1.0 | [docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md](docs/PRD-AHA-MOMENT-LEAD-SIMULATOR-001.md) |
 | PRD-AHA-MOMENT-SIMULATOR-UI | Aha Moment Simulator — Onboarding Step UI | approved | 1.0 | [docs/PRD-AHA-MOMENT-SIMULATOR-UI.md](docs/PRD-AHA-MOMENT-SIMULATOR-UI.md) |
@@ -44,6 +45,7 @@
 | PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001 | Fix: Login Page Redirect for Un-Onboarded Users | approved | - | [docs/PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001.md](docs/PRD-LOGIN-ONBOARDING-REDIRECT-FIX-001.md) |
 | PRD-NPS-AGENT-FEEDBACK | NPS / Feedback Survey Mechanism for Real Estate Agents | approved | 1.0 | [docs/PRD-NPS-AGENT-FEEDBACK.md](docs/PRD-NPS-AGENT-FEEDBACK.md) |
 | PRD-ONBOARDING-500-FIX | Fix Onboarding 500 Error — Deployment | approved | 1.0 | [docs/PRD-ONBOARDING-500-FIX.md](docs/PRD-ONBOARDING-500-FIX.md) |
+| PRD-ONBOARDING-COMPLETION-TELEMETRY | Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off | approved | 1.0 | [docs/prd/PRD-ONBOARDING-COMPLETION-TELEMETRY.md](docs/prd/PRD-ONBOARDING-COMPLETION-TELEMETRY.md) |
 | PRD-ONBOARDING-REDIRECT-001 | Post-Signup Redirect to /dashboard/onboarding | approved | - | - |
 | PRD-ONBOARDING-WIZARD-001 | Post-Login Onboarding Wizard for New Agents | approved | 1.0 | [docs/PRD-ONBOARDING-WIZARD.md](docs/PRD-ONBOARDING-WIZARD.md) |
 | PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
