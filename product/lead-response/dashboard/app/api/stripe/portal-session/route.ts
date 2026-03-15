@@ -14,16 +14,17 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.ver
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check Stripe configuration
-    if (!stripe) {
+    // Parse request body first (before Stripe check — input errors return 400 regardless)
+    let body: { agentId?: string; returnUrl?: string }
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Stripe not configured', code: 'STRIPE_NOT_CONFIGURED' },
-        { status: 503 }
+        { error: 'Invalid JSON body', code: 'INVALID_BODY' },
+        { status: 400 }
       )
     }
 
-    // Parse request body
-    const body = await request.json()
     const { agentId, returnUrl } = body
 
     // Validate required fields
@@ -31,6 +32,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing required field: agentId', code: 'MISSING_AGENT_ID' },
         { status: 400 }
+      )
+    }
+
+    // Validate UUID format to prevent injection
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(agentId)) {
+      return NextResponse.json(
+        { error: 'Invalid agentId format. Must be a UUID.', code: 'INVALID_AGENT_ID' },
+        { status: 400 }
+      )
+    }
+
+    // IDOR protection: caller must match the agentId they are requesting a portal for
+    const callerAgentId = request.headers.get('x-agent-id')
+    if (callerAgentId && callerAgentId !== agentId) {
+      return NextResponse.json(
+        { error: 'Unauthorized: agentId does not match authenticated user', code: 'UNAUTHORIZED' },
+        { status: 403 }
+      )
+    }
+
+    // Check Stripe configuration (after input validation)
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe not configured', code: 'STRIPE_NOT_CONFIGURED' },
+        { status: 503 }
       )
     }
 
