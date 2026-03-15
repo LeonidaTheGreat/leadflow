@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 29 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/15/2026, 2:55:22 AM
+**Last Updated:** 3/15/2026, 3:45:28 AM
 
 ---
 
@@ -33,19 +33,21 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 3 | Blocked: 0 | Done: 920
+**Queue Health:** Ready: 1 | In Progress: 3 | Blocked: 0 | Done: 920
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (1 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: fix-scroll-depth-tracking-not-wired-attachscrollmilest - Scroll depth tracking not wired — attachScrollMilestoneObservers never called on landing page | kimi | $0.12 | 🟡 P1 |
 
 ### ⚡ In Progress (3 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Dashboard build errors | dev | haiku |
-| QC: feat-onboarding-completion-telemetry - Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off | qc | kimi |
-| PM: Analyze bug feedback | product | sonnet |
+| PM: Product Review — FR-5: Stuck-Agent Alerts Must Insert Into product_feedback | product | sonnet |
+| Dev: fix-use-cases-implementation-status-marked-complete-bu - use_cases.implementation_status marked complete but feature is non-functional | dev | kimi |
+| QC: fix-landing-page-page-tsx-has-zero-cta-click-analytics - Landing page (page.tsx) has zero CTA click analytics — trackCTAClick never called | qc | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -103,8 +105,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $412.10
-**Cost per task:** Avg $0.41
+**Estimated project cost:** $415.68
+**Cost per task:** Avg $0.42
 
 ---
 
@@ -117,7 +119,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
+1. ✅ **1 tasks ready to spawn**
 2. ⚡ **3 agents active**
 3. ✅ No blockers
 
