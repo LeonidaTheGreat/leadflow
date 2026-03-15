@@ -12,14 +12,23 @@ import TrialSignupForm from '@/components/trial-signup-form'
 import { trackFormEvent } from '@/lib/analytics/ga4'
 
 // Pricing tiers as per UC-9 spec
-// HARDCODED: No env var dependency to ensure plans always render
+// HARDCODED: No env var dependency to ensure plans always render.
+// NOTE: priceId is NOT stored here — price IDs are server-side secrets loaded
+// from env vars. The client sends a `tier` string; the server resolves it to
+// a real Stripe price ID via STRIPE_PRICE_<TIER>_MONTHLY env vars.
 interface Plan {
   id: string
   name: string
   price: number
-  priceId: string
   popular?: boolean
   features: string[]
+}
+
+// Maps plan.id → checkout API `tier` value (matches PRICE_ID_ENV_MAP in create-checkout/route.ts)
+const PLAN_CHECKOUT_TIER: Record<string, string> = {
+  starter: 'starter_monthly',
+  pro:     'professional_monthly',
+  team:    'enterprise_monthly',
 }
 
 const PLANS: Plan[] = [
@@ -27,7 +36,6 @@ const PLANS: Plan[] = [
     id: 'starter',
     name: 'Starter',
     price: 49,
-    priceId: 'price_starter_49',
     features: [
       'Up to 50 leads/month',
       'AI SMS responses',
@@ -40,7 +48,6 @@ const PLANS: Plan[] = [
     id: 'pro',
     name: 'Pro',
     price: 149,
-    priceId: 'price_pro_149',
     popular: true,
     features: [
       'Up to 200 leads/month',
@@ -55,7 +62,6 @@ const PLANS: Plan[] = [
     id: 'team',
     name: 'Team',
     price: 399,
-    priceId: 'price_team_399',
     features: [
       'Up to 500 leads/month',
       'Multi-channel AI',
@@ -199,14 +205,19 @@ function PaidSignupFlow() {
       const { agentId } = await agentResponse.json()
 
       // Step 2: Create Stripe checkout session
+      // Send `tier` (not priceId) — the server resolves the Stripe price ID
+      // from STRIPE_PRICE_<TIER>_MONTHLY env vars to keep secrets server-side.
+      const checkoutTier = PLAN_CHECKOUT_TIER[selectedPlan.id]
+      if (!checkoutTier) {
+        throw new Error(`Unknown plan: ${selectedPlan.id}`)
+      }
       const checkoutResponse = await fetch('/api/billing/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          tier: checkoutTier,
           agentId,
           email: formData.email,
-          plan: selectedPlan.id,
-          priceId: selectedPlan.priceId
         })
       })
 
