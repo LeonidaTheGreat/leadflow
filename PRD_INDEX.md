@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-15T06:50:29.868Z | Source: `prds` table
+> Generated: 2026-03-15T07:00:27.711Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -66,5 +66,6 @@
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
+| PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
 
 > Full PRD documents (PRD-*.md) are agent-authored. Update the `prds` table when creating or modifying them.
