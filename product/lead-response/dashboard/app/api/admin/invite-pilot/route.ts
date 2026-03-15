@@ -79,7 +79,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     if (existingInvite) {
       // Check if token is still valid
       if (new Date(existingInvite.token_expires_at) > new Date()) {
-        const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
         const inviteUrl = `${appUrl}/accept-invite?token=${existingInvite.token}`
         return NextResponse.json(
           {
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     }
 
     // 6. Send email
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
     const inviteUrl = `${appUrl}/accept-invite?token=${token}`
 
     const emailSent = await sendPilotInviteEmail(email, agentId, {
