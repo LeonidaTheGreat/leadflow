@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-15T06:50:29.868Z | Source: `prds` table
+> Generated: 2026-03-15T11:40:36.820Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -31,6 +31,7 @@
 | PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
 | PRD-FIX-TRIAL-SIGNUP-REDIRECT-001 | Fix Trial Signup Redirect — Broken Post-Signup Navigation | approved | - | [docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md](docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md) |
 | PRD-FORGOT-PASSWORD | Forgot Password / Password Reset Flow | draft | 1.0 | [docs/PRD-FORGOT-PASSWORD.md](docs/PRD-FORGOT-PASSWORD.md) |
+| PRD-FR5-STUCK-ALERT-PRODUCT-FEEDBACK | FR-5: Stuck-Agent Alerts Must Insert Into product_feedback | approved | 1.0 | [docs/prd/PRD-FR5-STUCK-ALERT-PRODUCT-FEEDBACK.md](docs/prd/PRD-FR5-STUCK-ALERT-PRODUCT-FEEDBACK.md) |
 | PRD-FRICTIONLESS-ONBOARDING-001 | Self-Serve Frictionless Onboarding Flow | approved | - | [docs/PRD-FRICTIONLESS-ONBOARDING-001.md](docs/PRD-FRICTIONLESS-ONBOARDING-001.md) |
 | PRD-INTEGRATIONS | CRM & Calendar Integrations | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md](/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md) |
 | PRD-LANDING-ANALYTICS-GA4-001 | Landing Page Analytics: GA4 CTA & Conversion Tracking | approved | 1.0 | [docs/PRD-LANDING-ANALYTICS-GA4-001.md](docs/PRD-LANDING-ANALYTICS-GA4-001.md) |
@@ -62,9 +63,11 @@
 | PRD-SMS-ANALYTICS-DASHBOARD | SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | approved | 1.0 | [docs/PRD-SMS-ANALYTICS-DASHBOARD.md](docs/PRD-SMS-ANALYTICS-DASHBOARD.md) |
 | prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/PRD-START-FREE-TRIAL-CTA.md](docs/PRD-START-FREE-TRIAL-CTA.md) |
 | PRD-STATUS-REPORT-20260306 | LeadFlow Product Status Report — Day 20 of 60 | approved | 1.0 | [docs/PRD-STATUS-REPORT-20260306.md](docs/PRD-STATUS-REPORT-20260306.md) |
+| prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
+| PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
 
 > Full PRD documents (PRD-*.md) are agent-authored. Update the `prds` table when creating or modifying them.
