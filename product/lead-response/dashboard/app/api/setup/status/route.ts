@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import jwt from 'jsonwebtoken'
 
-const onboardingTelemetry = require('../../../../../lib/onboarding-telemetry')
+const onboardingTelemetry = require('../../../../lib/onboarding-telemetry')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 

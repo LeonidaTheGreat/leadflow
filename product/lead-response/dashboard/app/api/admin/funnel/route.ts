@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const onboardingTelemetry = require('../../../../../lib/onboarding-telemetry')
+const onboardingTelemetry = require('../../../../lib/onboarding-telemetry')
 
 export async function GET(request: NextRequest) {
   try {
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        result.status.stuck_agents = statusResult.agents.filter((a) => a.is_stuck)
+        result.status.stuck_agents = statusResult.agents.filter((a: any) => a.is_stuck)
       } else {
         result.status = { error: statusResult.error }
       }
