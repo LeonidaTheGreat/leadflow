@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 
 type Status = 'loading' | 'success' | 'error' | 'expired'
 
-export default function AcceptInvitePage() {
+function AcceptInviteContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
@@ -133,5 +133,24 @@ export default function AcceptInvitePage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function AcceptInvitePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 mb-6">
+              <Loader2 className="text-emerald-400 animate-spin" size={32} />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">Loading...</h1>
+          </div>
+        </div>
+      }
+    >
+      <AcceptInviteContent />
+    </Suspense>
   )
 }
