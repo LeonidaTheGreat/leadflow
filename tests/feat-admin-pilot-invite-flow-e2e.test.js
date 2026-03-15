@@ -155,7 +155,7 @@ async function runTests() {
   const testName = 'Jane Smith'
   const testMessage = 'Great fit for your team'
   
-  let inviteUrl, inviteToken, agentId
+  let inviteUrl, inviteToken, agentId, expiresAt
 
   await test('Create pilot invite successfully', async () => {
     const { status, data } = await postInvite(testEmail, testName, testMessage)
@@ -167,6 +167,7 @@ async function runTests() {
     
     inviteUrl = data.inviteUrl
     agentId = data.agentId
+    expiresAt = data.expiresAt
     
     // Extract token from URL
     const match = inviteUrl.match(/token=([^&]+)/)
@@ -181,11 +182,11 @@ async function runTests() {
 
   await test('Invitation expires in 7 days', async () => {
     const now = new Date()
-    const expiresAt = new Date(inviteUrl.match(/expiresAt=([^&]+)/) ? JSON.parse(decodeURIComponent(inviteUrl.match(/expiresAt=([^&]+)/)[1])) : 0)
+    const expiryDate = new Date(expiresAt)
     
     // Check that expiration is approximately 7 days from now
     const expectedExpiration = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-    const diffInHours = Math.abs(expectedExpiration - expiresAt) / (1000 * 60 * 60)
+    const diffInHours = Math.abs(expectedExpiration - expiryDate) / (1000 * 60 * 60)
     assert(diffInHours < 1, `Expiration should be ~7 days, got ${diffInHours} hours difference`)
   })
 
