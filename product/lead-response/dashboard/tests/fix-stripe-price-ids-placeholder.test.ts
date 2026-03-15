@@ -25,20 +25,21 @@ function isValidPriceId(id: string | undefined): id is string {
 }
 
 const PRICE_ID_ENV_MAP: Record<string, string> = {
-  starter_monthly:      'STRIPE_PRICE_STARTER_MONTHLY',
-  starter_annual:       'STRIPE_PRICE_STARTER_ANNUAL',
-  professional_monthly: 'STRIPE_PRICE_PROFESSIONAL_MONTHLY',
-  professional_annual:  'STRIPE_PRICE_PROFESSIONAL_ANNUAL',
-  enterprise_monthly:   'STRIPE_PRICE_ENTERPRISE_MONTHLY',
-  enterprise_annual:    'STRIPE_PRICE_ENTERPRISE_ANNUAL',
+  starter_monthly: 'STRIPE_PRICE_STARTER_MONTHLY',
+  starter_annual:  'STRIPE_PRICE_STARTER_ANNUAL',
+  pro_monthly:     'STRIPE_PRICE_PRO_MONTHLY',
+  pro_annual:      'STRIPE_PRICE_PRO_ANNUAL',
+  team_monthly:    'STRIPE_PRICE_TEAM_MONTHLY',
+  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL',
 }
 
 // === Replicated from signup/page.tsx (must stay in sync) ===
 
+// Canonical tier names: starter, pro, team — matching the pricing page and PMF.md
 const PLAN_CHECKOUT_TIER: Record<string, string> = {
   starter: 'starter_monthly',
-  pro:     'professional_monthly',
-  team:    'enterprise_monthly',
+  pro:     'pro_monthly',
+  team:    'team_monthly',
 }
 
 // ================================================================
@@ -81,15 +82,14 @@ describe('PRICE_ID_ENV_MAP (create-checkout/route.ts)', () => {
     expect(PRICE_ID_ENV_MAP['starter_monthly']).not.toContain('NEXT_PUBLIC')
   })
 
-  it('should use STRIPE_PRICE_PROFESSIONAL_MONTHLY (not NEXT_PUBLIC_ variant)', () => {
-    expect(PRICE_ID_ENV_MAP['professional_monthly']).toBe('STRIPE_PRICE_PROFESSIONAL_MONTHLY')
-    expect(PRICE_ID_ENV_MAP['professional_monthly']).not.toContain('NEXT_PUBLIC')
+  it('should use STRIPE_PRICE_PRO_MONTHLY for canonical pro tier (not PROFESSIONAL)', () => {
+    expect(PRICE_ID_ENV_MAP['pro_monthly']).toBe('STRIPE_PRICE_PRO_MONTHLY')
+    expect(PRICE_ID_ENV_MAP['pro_monthly']).not.toContain('NEXT_PUBLIC')
   })
 
-  it('should use STRIPE_PRICE_ENTERPRISE_MONTHLY (not NEXT_PUBLIC_ or TEAM variant)', () => {
-    expect(PRICE_ID_ENV_MAP['enterprise_monthly']).toBe('STRIPE_PRICE_ENTERPRISE_MONTHLY')
-    expect(PRICE_ID_ENV_MAP['enterprise_monthly']).not.toContain('NEXT_PUBLIC')
-    expect(PRICE_ID_ENV_MAP['enterprise_monthly']).not.toContain('TEAM')
+  it('should use STRIPE_PRICE_TEAM_MONTHLY for canonical team tier (not ENTERPRISE)', () => {
+    expect(PRICE_ID_ENV_MAP['team_monthly']).toBe('STRIPE_PRICE_TEAM_MONTHLY')
+    expect(PRICE_ID_ENV_MAP['team_monthly']).not.toContain('NEXT_PUBLIC')
   })
 
   it('should have no NEXT_PUBLIC_ prefixed values', () => {
@@ -98,11 +98,11 @@ describe('PRICE_ID_ENV_MAP (create-checkout/route.ts)', () => {
     })
   })
 
-  it('should cover all 6 pricing tiers (3 plans × 2 intervals)', () => {
+  it('should cover all 6 pricing tiers with canonical names (3 plans × 2 intervals)', () => {
     const expectedTiers = [
       'starter_monthly', 'starter_annual',
-      'professional_monthly', 'professional_annual',
-      'enterprise_monthly', 'enterprise_annual',
+      'pro_monthly', 'pro_annual',
+      'team_monthly', 'team_annual',
     ]
     expectedTiers.forEach(tier => {
       expect(PRICE_ID_ENV_MAP).toHaveProperty(tier)
@@ -124,10 +124,10 @@ describe('Signup → Checkout tier alignment', () => {
     })
   })
 
-  it('team plan should map to enterprise_monthly (not team_monthly)', () => {
-    // The checkout API uses "enterprise", Vercel incorrectly used "team" — validates alignment
-    expect(PLAN_CHECKOUT_TIER['team']).toBe('enterprise_monthly')
-    expect(PRICE_ID_ENV_MAP['enterprise_monthly']).toBe('STRIPE_PRICE_ENTERPRISE_MONTHLY')
+  it('team plan should map to team_monthly (canonical name, not enterprise_monthly)', () => {
+    // After tier naming fix: canonical names match the pricing page (starter, pro, team)
+    expect(PLAN_CHECKOUT_TIER['team']).toBe('team_monthly')
+    expect(PRICE_ID_ENV_MAP['team_monthly']).toBe('STRIPE_PRICE_TEAM_MONTHLY')
   })
 })
 

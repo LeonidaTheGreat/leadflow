@@ -21,8 +21,8 @@ interface Plan {
 
 const PLAN_CHECKOUT_TIER: Record<string, string> = {
   starter: 'starter_monthly',
-  pro:     'professional_monthly',
-  team:    'enterprise_monthly',
+  pro:     'pro_monthly',
+  team:    'team_monthly',
 }
 
 const PLANS: Plan[] = [
@@ -145,23 +145,24 @@ describe('Signup Plans Display', () => {
       expect(PLAN_CHECKOUT_TIER['starter']).toBe('starter_monthly')
     })
 
-    it('should map pro → professional_monthly (not pro_monthly)', () => {
-      expect(PLAN_CHECKOUT_TIER['pro']).toBe('professional_monthly')
+    it('should map pro → pro_monthly (canonical name)', () => {
+      expect(PLAN_CHECKOUT_TIER['pro']).toBe('pro_monthly')
     })
 
-    it('should map team → enterprise_monthly (not team_monthly)', () => {
-      expect(PLAN_CHECKOUT_TIER['team']).toBe('enterprise_monthly')
+    it('should map team → team_monthly (canonical name)', () => {
+      expect(PLAN_CHECKOUT_TIER['team']).toBe('team_monthly')
     })
 
     it('should produce tier values matching create-checkout/route.ts PRICING_TIERS keys', () => {
       // These must match the keys in PRICING_TIERS in create-checkout/route.ts
+      // Canonical names: starter, pro, team (matching pricing page and PMF.md)
       const validCheckoutTiers = new Set([
         'starter_monthly',
         'starter_annual',
-        'professional_monthly',
-        'professional_annual',
-        'enterprise_monthly',
-        'enterprise_annual',
+        'pro_monthly',
+        'pro_annual',
+        'team_monthly',
+        'team_annual',
       ])
       Object.values(PLAN_CHECKOUT_TIER).forEach(tier => {
         expect(validCheckoutTiers.has(tier)).toBe(true)

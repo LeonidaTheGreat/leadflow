@@ -6,23 +6,24 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
-// Valid pricing tiers — price IDs MUST come from env vars (no fallback to invalid strings)
+// Valid pricing tiers — canonical names match the pricing page: starter, pro, team, brokerage
+// price IDs MUST come from env vars (no fallback to invalid strings)
 const PRICING_TIERS: Record<string, { name: string; amount: number }> = {
-  starter_monthly:      { name: 'Starter - Monthly',      amount: 4900  },  // $49/mo
-  starter_annual:       { name: 'Starter - Annual',        amount: 49000 },  // $490/yr
-  professional_monthly: { name: 'Professional - Monthly',  amount: 14900 },  // $149/mo
-  professional_annual:  { name: 'Professional - Annual',   amount: 149000 }, // $1,490/yr
-  enterprise_monthly:   { name: 'Enterprise - Monthly',    amount: 39900 },  // $399/mo
-  enterprise_annual:    { name: 'Enterprise - Annual',     amount: 399000 }, // $3,990/yr
+  starter_monthly:  { name: 'Starter - Monthly',  amount: 4900  },  // $49/mo
+  starter_annual:   { name: 'Starter - Annual',    amount: 49000 },  // $490/yr
+  pro_monthly:      { name: 'Pro - Monthly',       amount: 14900 },  // $149/mo
+  pro_annual:       { name: 'Pro - Annual',         amount: 149000 }, // $1,490/yr
+  team_monthly:     { name: 'Team - Monthly',      amount: 39900 },  // $399/mo
+  team_annual:      { name: 'Team - Annual',        amount: 399000 }, // $3,990/yr
 }
 
 const PRICE_ID_ENV_MAP: Record<string, string> = {
-  starter_monthly:      'STRIPE_PRICE_STARTER_MONTHLY',
-  starter_annual:       'STRIPE_PRICE_STARTER_ANNUAL',
-  professional_monthly: 'STRIPE_PRICE_PROFESSIONAL_MONTHLY',
-  professional_annual:  'STRIPE_PRICE_PROFESSIONAL_ANNUAL',
-  enterprise_monthly:   'STRIPE_PRICE_ENTERPRISE_MONTHLY',
-  enterprise_annual:    'STRIPE_PRICE_ENTERPRISE_ANNUAL',
+  starter_monthly: 'STRIPE_PRICE_STARTER_MONTHLY',
+  starter_annual:  'STRIPE_PRICE_STARTER_ANNUAL',
+  pro_monthly:     'STRIPE_PRICE_PRO_MONTHLY',
+  pro_annual:      'STRIPE_PRICE_PRO_ANNUAL',
+  team_monthly:    'STRIPE_PRICE_TEAM_MONTHLY',
+  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL',
 }
 
 /**

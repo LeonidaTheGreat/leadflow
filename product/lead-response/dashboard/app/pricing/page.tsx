@@ -7,20 +7,19 @@ import { Check, ArrowRight, Loader2 } from 'lucide-react'
 type BillingInterval = 'monthly' | 'annual'
 
 /**
- * Maps pricing page tier + billing interval to the API's tier key format.
- * The API (POST /api/billing/create-checkout) expects: starter_monthly,
- * professional_monthly, enterprise_monthly, etc.
- *
- * Pricing page tiers:
- *   starter    → starter
- *   pro        → professional
- *   team       → enterprise
+ * Maps pricing page tier to the API's base tier key.
+ * Canonical tier names are shared between the pricing page and checkout API:
+ *   starter    → starter_monthly / starter_annual
+ *   pro        → pro_monthly / pro_annual
+ *   team       → team_monthly / team_annual
  *   brokerage  → contact sales (no checkout flow)
+ *
+ * The billing interval is appended by handleSelectPlan: `${tier}_${interval}`
  */
 const TIER_KEY_MAP: Record<string, string | null> = {
   starter:   'starter',
-  pro:       'professional',
-  team:      'enterprise',
+  pro:       'pro',
+  team:      'team',
   brokerage: null, // contact sales — no direct checkout
 }
 
@@ -153,7 +152,7 @@ export default function PricingPage() {
       setCheckoutError('This plan requires contacting sales. Please email sales@leadflow.ai.')
       return
     }
-    const apiTier = `${baseTierKey}_${interval}` // e.g. "professional_monthly"
+    const apiTier = `${baseTierKey}_${interval}` // e.g. "pro_monthly", "team_annual"
 
     setLoadingTier(tier)
     setSelectedTier(tier)
