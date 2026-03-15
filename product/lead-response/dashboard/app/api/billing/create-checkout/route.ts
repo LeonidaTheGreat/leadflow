@@ -195,12 +195,16 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
     })
 
-    // Log subscription attempt
-    await supabase.from('subscription_attempts').insert({
-      agent_id: agentId,
-      tier,
+    // Log checkout session to checkout_sessions table
+    const tierInterval = tier.endsWith('_annual') ? 'year' : 'month'
+    const tierBase = tier.split('_')[0]
+    await supabase.from('checkout_sessions').insert({
+      user_id: agentId,
+      tier: tierBase,
+      interval: tierInterval,
       stripe_session_id: session.id,
-      status: 'session_created',
+      status: 'pending',
+      url: session.url,
       created_at: new Date().toISOString(),
     })
 
