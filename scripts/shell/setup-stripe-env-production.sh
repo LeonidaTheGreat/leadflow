@@ -51,11 +51,13 @@ echo "=============================================="
 echo ""
 echo "You need to set the following variables:"
 echo ""
-echo "1. STRIPE_SECRET_KEY          - Your Stripe test/live secret key"
-echo "2. STRIPE_WEBHOOK_SECRET      - Webhook endpoint secret"
-echo "3. STRIPE_PRICE_ID_BASIC      - Basic plan ($29) Price ID"
-echo "4. STRIPE_PRICE_ID_PRO        - Pro plan ($149) Price ID"
-echo "5. STRIPE_PRICE_ID_ENTERPRISE - Enterprise plan ($499) Price ID"
+echo "1. STRIPE_SECRET_KEY                  - Your Stripe secret key (sk_live_...)"
+echo "2. STRIPE_WEBHOOK_SECRET              - Webhook signing secret (whsec_...)"
+echo "3. STRIPE_PRICE_STARTER_MONTHLY       - Starter plan (\$49/mo) price_... ID"
+echo "4. STRIPE_PRICE_PROFESSIONAL_MONTHLY  - Professional plan (\$149/mo) price_... ID"
+echo "5. STRIPE_PRICE_ENTERPRISE_MONTHLY    - Enterprise plan (\$399/mo) price_... ID"
+echo ""
+echo "To get price IDs, run: node scripts/utilities/create-stripe-products.js"
 echo ""
 
 # Prompt for confirmation
@@ -112,9 +114,11 @@ echo "Enter Price IDs from your Stripe Dashboard:"
 echo "(Find them at: https://dashboard.stripe.com/test/products)"
 echo ""
 
-read -p "Enter STRIPE_PRICE_ID_BASIC ($29 plan): " STRIPE_PRICE_ID_BASIC
-read -p "Enter STRIPE_PRICE_ID_PRO ($149 plan): " STRIPE_PRICE_ID_PRO
-read -p "Enter STRIPE_PRICE_ID_ENTERPRISE ($499 plan): " STRIPE_PRICE_ID_ENTERPRISE
+echo "These are the variable names expected by app/api/billing/create-checkout/route.ts"
+echo ""
+read -p "Enter STRIPE_PRICE_STARTER_MONTHLY (\$49/mo plan price_... ID): " STRIPE_PRICE_STARTER_MONTHLY
+read -p "Enter STRIPE_PRICE_PROFESSIONAL_MONTHLY (\$149/mo plan price_... ID): " STRIPE_PRICE_PROFESSIONAL_MONTHLY
+read -p "Enter STRIPE_PRICE_ENTERPRISE_MONTHLY (\$399/mo plan price_... ID): " STRIPE_PRICE_ENTERPRISE_MONTHLY
 
 echo ""
 echo "----------------------------------------------"
@@ -122,17 +126,17 @@ echo "Adding variables to Vercel Production..."
 echo "----------------------------------------------"
 echo ""
 
-# Add the environment variables
+# Add the required environment variables (server-side, no NEXT_PUBLIC_ prefix)
 add_env_var "STRIPE_SECRET_KEY" "$STRIPE_SECRET_KEY" "true"
 add_env_var "STRIPE_WEBHOOK_SECRET" "$STRIPE_WEBHOOK_SECRET" "true"
-add_env_var "STRIPE_PRICE_ID_BASIC" "$STRIPE_PRICE_ID_BASIC" "false"
-add_env_var "STRIPE_PRICE_ID_PRO" "$STRIPE_PRICE_ID_PRO" "false"
-add_env_var "STRIPE_PRICE_ID_ENTERPRISE" "$STRIPE_PRICE_ID_ENTERPRISE" "false"
+add_env_var "STRIPE_PRICE_STARTER_MONTHLY" "$STRIPE_PRICE_STARTER_MONTHLY" "false"
+add_env_var "STRIPE_PRICE_PROFESSIONAL_MONTHLY" "$STRIPE_PRICE_PROFESSIONAL_MONTHLY" "false"
+add_env_var "STRIPE_PRICE_ENTERPRISE_MONTHLY" "$STRIPE_PRICE_ENTERPRISE_MONTHLY" "false"
 
-# Also add legacy aliases for compatibility
-add_env_var "STRIPE_PRICE_STARTER_MONTHLY" "$STRIPE_PRICE_ID_BASIC" "false"
-add_env_var "STRIPE_PRICE_PROFESSIONAL_MONTHLY" "$STRIPE_PRICE_ID_PRO" "false"
-add_env_var "STRIPE_PRICE_ENTERPRISE_MONTHLY" "$STRIPE_PRICE_ID_ENTERPRISE" "false"
+# Note: NEXT_PUBLIC_STRIPE_PRICE_* vars that were previously set in Vercel
+# (price_starter_49, price_pro_149, price_team_399) are PLACEHOLDER values.
+# They should be removed or left unused — the frontend no longer reads them.
+# Price IDs are resolved server-side only via STRIPE_PRICE_*_MONTHLY vars above.
 
 echo ""
 echo "=============================================="

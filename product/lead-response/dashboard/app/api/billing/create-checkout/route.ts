@@ -25,9 +25,15 @@ const PRICE_ID_ENV_MAP: Record<string, string> = {
   enterprise_annual:    'STRIPE_PRICE_ENTERPRISE_ANNUAL',
 }
 
-/** Validate a Stripe Price ID looks correct (must start with 'price_') */
+/**
+ * Validate a Stripe Price ID looks correct.
+ * Real Stripe price IDs look like: price_1QvIEf2eZvKYlo2CkuDLQABG
+ * - Prefix: price_
+ * - Followed by 14+ alphanumeric chars (NO underscores, no words like "starter")
+ * This rejects placeholder values like price_starter_49, price_pro_149, price_team_399.
+ */
 function isValidPriceId(id: string | undefined): id is string {
-  return typeof id === 'string' && id.startsWith('price_') && id.length > 10
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,}$/.test(id)
 }
 
 /** Validate a UUID v4 format */

@@ -13,21 +13,28 @@ console.log('==============================================');
 console.log('Stripe Environment Variables Verification');
 console.log('==============================================\n');
 
-// Required environment variables
+// Required environment variables (must match PRICE_ID_ENV_MAP in create-checkout/route.ts)
 const requiredVars = [
   { name: 'STRIPE_SECRET_KEY', sensitive: true },
   { name: 'STRIPE_WEBHOOK_SECRET', sensitive: true },
-  { name: 'STRIPE_PRICE_ID_BASIC', sensitive: false },
-  { name: 'STRIPE_PRICE_ID_PRO', sensitive: false },
-  { name: 'STRIPE_PRICE_ID_ENTERPRISE', sensitive: false }
+  // Server-side price IDs — these are the authoritative names
+  { name: 'STRIPE_PRICE_STARTER_MONTHLY', sensitive: false },
+  { name: 'STRIPE_PRICE_PROFESSIONAL_MONTHLY', sensitive: false },
+  { name: 'STRIPE_PRICE_ENTERPRISE_MONTHLY', sensitive: false },
 ];
 
-// Legacy aliases that should match
-const legacyMappings = [
-  { legacy: 'STRIPE_PRICE_STARTER_MONTHLY', current: 'STRIPE_PRICE_ID_BASIC' },
-  { legacy: 'STRIPE_PRICE_PROFESSIONAL_MONTHLY', current: 'STRIPE_PRICE_ID_PRO' },
-  { legacy: 'STRIPE_PRICE_ENTERPRISE_MONTHLY', current: 'STRIPE_PRICE_ID_ENTERPRISE' }
+// Deprecated / incorrect vars that should NOT be used
+const deprecatedVars = [
+  { name: 'NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY',  reason: 'Use STRIPE_PRICE_STARTER_MONTHLY (server-side)' },
+  { name: 'NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY',      reason: 'Use STRIPE_PRICE_PROFESSIONAL_MONTHLY (server-side)' },
+  { name: 'NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY',     reason: 'Use STRIPE_PRICE_ENTERPRISE_MONTHLY (server-side)' },
+  { name: 'STRIPE_PRICE_ID_BASIC',       reason: 'Use STRIPE_PRICE_STARTER_MONTHLY' },
+  { name: 'STRIPE_PRICE_ID_PRO',         reason: 'Use STRIPE_PRICE_PROFESSIONAL_MONTHLY' },
+  { name: 'STRIPE_PRICE_ID_ENTERPRISE',  reason: 'Use STRIPE_PRICE_ENTERPRISE_MONTHLY' },
 ];
+
+// Kept for backward compat (empty — no longer used)
+const legacyMappings = [];
 
 let allPassed = true;
 
@@ -77,24 +84,21 @@ for (const { name, sensitive } of requiredVars) {
   }
 }
 
-// Check legacy aliases
+// Check for deprecated / incorrectly named vars
 console.log('\n----------------------------------------------');
-console.log('Checking Legacy Aliases:');
+console.log('Checking for Deprecated Variables:');
 console.log('----------------------------------------------\n');
 
-for (const { legacy, current } of legacyMappings) {
-  const legacyValue = process.env[legacy];
-  const currentValue = process.env[current];
-  
-  if (!legacyValue) {
-    console.log(`⚠️  ${legacy}: NOT SET (optional but recommended)`);
-  } else if (currentValue && legacyValue !== currentValue) {
-    console.log(`⚠️  ${legacy}: MISMATCH with ${current}`);
-    console.log(`   ${legacy}: ${legacyValue}`);
-    console.log(`   ${current}: ${currentValue}`);
-  } else {
-    console.log(`✅ ${legacy}: ${legacyValue}`);
+let foundDeprecated = false;
+for (const { name, reason } of deprecatedVars) {
+  if (process.env[name]) {
+    console.log(`⚠️  ${name}: IS SET but deprecated — ${reason}`);
+    console.log(`   Remove it from Vercel and set the correct var instead.`);
+    foundDeprecated = true;
   }
+}
+if (!foundDeprecated) {
+  console.log('✅ No deprecated variables found.');
 }
 
 // Summary
@@ -117,14 +121,16 @@ if (allPassed) {
   console.log('==============================================\n');
   
   console.log('Next steps:');
-  console.log('1. Log into Stripe Dashboard: https://dashboard.stripe.com/test/products');
-  console.log('2. Copy the Price IDs for your plans:');
-  console.log('   - Basic ($29) plan');
-  console.log('   - Pro ($149) plan');
-  console.log('   - Enterprise ($499) plan');
-  console.log('3. Update .env.local with the actual Price IDs');
-  console.log('4. Run: ./setup-stripe-env-production.sh to add to Vercel');
-  console.log('5. Run: node verify-stripe-env.js again to verify');
+  console.log('1. Create Stripe products and prices:');
+  console.log('   STRIPE_SECRET_KEY=sk_test_... node scripts/utilities/create-stripe-products.js');
+  console.log('2. Copy the price_... IDs output by the script');
+  console.log('3. Set them in Vercel:');
+  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_STARTER_MONTHLY production');
+  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_PROFESSIONAL_MONTHLY production');
+  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_ENTERPRISE_MONTHLY production');
+  console.log('4. Also set: STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET in Vercel');
+  console.log('5. Redeploy: vercel --prod');
+  console.log('6. Run: node scripts/utilities/verify-stripe-env.js again to verify');
   console.log('');
   
   process.exit(1);
