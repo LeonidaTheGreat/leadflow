@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 29 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/15/2026, 2:50:29 AM
+**Last Updated:** 3/15/2026, 3:38:35 AM
 
 ---
 
@@ -33,20 +33,19 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 1 | In Progress: 2 | Blocked: 0 | Done: 920
+**Queue Health:** Ready: 0 | In Progress: 3 | Blocked: 0 | Done: 921
 
-### ▶️ Ready to Spawn (1 tasks)
+### ▶️ Ready to Spawn (0 tasks)
 
-| Task | Model | Cost | Priority |
-|------|-------|------|----------|
-| Fix: Dashboard build errors | haiku | $0.40 | 🔴 P0 |
+*No ready tasks*
 
-### ⚡ In Progress (2 tasks)
+### ⚡ In Progress (3 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: feat-onboarding-completion-telemetry - Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off | dev | kimi |
-| PM: Product Review — UTM Parameter Capture & Marketing Attribution | product | sonnet |
+| Dev: fix-use-cases-implementation-status-marked-complete-bu - use_cases.implementation_status marked complete but feature is non-functional | dev | kimi |
+| QC: fix-fr5-stuck-alert-product-feedback-missing - FR-5: createStuckAlerts() missing product_feedback insert | qc | sonnet |
+| Dev: fix-landing-page-page-tsx-has-zero-cta-click-analytics - Landing page (page.tsx) has zero CTA click analytics — trackCTAClick never called | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,8 +103,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $411.50
-**Cost per task:** Avg $0.41
+**Estimated project cost:** $415.19
+**Cost per task:** Avg $0.42
 
 ---
 
@@ -118,8 +117,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **1 tasks ready to spawn**
-2. ⚡ **2 agents active**
+1. 🔴 No ready tasks
+2. ⚡ **3 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

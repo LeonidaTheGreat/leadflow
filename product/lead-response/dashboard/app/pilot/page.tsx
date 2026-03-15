@@ -86,6 +86,9 @@ export default function PilotPage() {
     e.preventDefault()
     setError(null)
 
+    // FR-2: Track CTA click on pilot application submit
+    trackCTAClick('join_pilot_hero', 'Apply for Pilot Program', 'hero')
+
     // FR-4: Track submit attempt
     trackFormEvent('form_submit_attempt')
 
@@ -153,7 +156,11 @@ export default function PilotPage() {
             </div>
             <span className="text-white font-bold">LeadFlow AI</span>
           </Link>
-          <Link href="/signup?mode=trial" className="text-sm text-emerald-400 hover:underline">
+          <Link 
+            href="/signup?mode=trial" 
+            onClick={() => trackCTAClick('start_trial_form', 'Start free trial', 'navigation')}
+            className="text-sm text-emerald-400 hover:underline"
+          >
             Want instant access? Start free trial →
           </Link>
         </div>
@@ -172,7 +179,11 @@ export default function PilotPage() {
             </p>
             <p className="text-slate-400 text-sm mb-8">
               Want to start using LeadFlow AI right now?{' '}
-              <Link href="/signup?mode=trial" className="text-emerald-400 hover:underline font-medium">
+              <Link 
+                href="/signup?mode=trial" 
+                onClick={() => trackCTAClick('start_trial_form', 'Start free 14-day trial', 'hero')}
+                className="text-emerald-400 hover:underline font-medium"
+              >
                 Start your free 14-day trial — no credit card needed
               </Link>
             </p>
@@ -196,7 +207,11 @@ export default function PilotPage() {
               </p>
               <p className="mt-4 text-sm text-slate-400">
                 Solo agent?{' '}
-                <Link href="/signup?mode=trial" className="text-emerald-400 hover:underline font-medium">
+                <Link 
+                  href="/signup?mode=trial" 
+                  onClick={() => trackCTAClick('start_trial_form', 'Start free trial instantly', 'features')}
+                  className="text-emerald-400 hover:underline font-medium"
+                >
                   Skip the form — start your free trial instantly →
                 </Link>
               </p>

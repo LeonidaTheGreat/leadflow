@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
+import { trackCTAClick } from '@/lib/analytics/ga4'
 
 export default function HomePage() {
   return (
@@ -20,6 +21,7 @@ export default function HomePage() {
             </a>
             <Link
               href="/pilot"
+              onClick={() => trackCTAClick('join_pilot_nav', 'Pilot Program', 'navigation')}
               className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Pilot Program
@@ -48,7 +50,10 @@ export default function HomePage() {
 
             {/* Hero Trial CTA */}
             <Suspense fallback={<div className="h-24" />}>
-              <TrialSignupForm compact />
+              <TrialSignupForm 
+                compact 
+                onSubmitClick={() => trackCTAClick('start_trial_form', 'Start Free Trial', 'hero')}
+              />
             </Suspense>
 
             <p className="mt-6 text-sm text-slate-400">
@@ -287,6 +292,14 @@ function PricingCard({
   features: string[]
   popular?: boolean
 }) {
+  // Map tier name to CTA ID
+  const ctaIdMap: Record<string, string> = {
+    'starter': 'pricing_starter',
+    'pro': 'pricing_pro',
+    'team': 'pricing_team'
+  };
+  const ctaId = ctaIdMap[name.toLowerCase()] || `pricing_${name.toLowerCase()}`;
+
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
       {popular && (
@@ -312,6 +325,7 @@ function PricingCard({
       </ul>
       <Link
         href={`/signup?plan=${name.toLowerCase()}`}
+        onClick={() => trackCTAClick(ctaId, 'Get Started', 'pricing')}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
@@ -322,6 +336,7 @@ function PricingCard({
       </Link>
       <Link
         href="/signup/trial"
+        onClick={() => trackCTAClick('start_trial_form', 'Start Free Trial', 'pricing')}
         className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
       >
         or start free trial →

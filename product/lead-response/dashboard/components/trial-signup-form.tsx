@@ -8,9 +8,10 @@ import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 interface TrialSignupFormProps {
   compact?: boolean
   className?: string
+  onSubmitClick?: () => void
 }
 
-export default function TrialSignupForm({ compact = false, className = '' }: TrialSignupFormProps) {
+export default function TrialSignupForm({ compact = false, className = '', onSubmitClick }: TrialSignupFormProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -26,6 +27,9 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     e.preventDefault()
     setError(null)
     setIsDuplicateEmailError(false)
+    if (onSubmitClick) {
+      onSubmitClick()
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
