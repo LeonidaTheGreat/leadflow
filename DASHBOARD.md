@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 31 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/17/2026, 11:49:09 AM
+**Last Updated:** 3/17/2026, 12:03:59 PM
 
 ---
 
@@ -33,20 +33,21 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 921
+**Queue Health:** Ready: 2 | In Progress: 2 | Blocked: 0 | Done: 920
 
 ### ▶️ Ready to Spawn (2 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: fix-9-acceptance-criteria-defined-but-not-all-verified - 9 acceptance criteria defined but not all verified | sonnet | $1.20 | 🟡 P1 |
-| Dev: fix-session-analytics-tables-exist-but-lack-integratio - Session analytics tables exist but lack integration points in dashboard UI | haiku | $0.40 | 🟡 P1 |
+| Dev: fix-api-endpoint-has-no-authentication-middleware - API endpoint has no authentication middleware | sonnet | $0.60 | 🟡 P1 |
+| Dev: fix-no-active-session-logging-due-to-lack-of-end-to-en - No active session logging due to lack of end-to-end testing | sonnet | $1.20 | 🟡 P1 |
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (2 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Dev: fix-bookings-table-join-missing-for-cross-table-agent- - Bookings table join missing for cross-table agent scoping | dev | kimi |
+| Dev: fix-session-analytics-tables-exist-but-lack-integratio - Session analytics tables exist but lack integration points in dashboard UI | dev | haiku |
+| QC: fix-9-acceptance-criteria-defined-but-not-all-verified - 9 acceptance criteria defined but not all verified | qc | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +105,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $435.32
+**Estimated project cost:** $436.90
 **Cost per task:** Avg $0.44
 
 ---
@@ -119,7 +120,7 @@ All technical work complete. System ready for pilot launch.
 ## 🎯 Next Actions
 
 1. ✅ **2 tasks ready to spawn**
-2. ⚡ **1 agents active**
+2. ⚡ **2 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
