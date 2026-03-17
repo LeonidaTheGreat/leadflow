@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-17T16:40:40.069Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-03-17T18:14:15.308Z | Source: `use_cases` + `prds` tables
 
-**Progress: 182/191 complete**
+**Progress: 186/196 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
@@ -103,11 +103,11 @@
 | feat-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | fix-pilot-signup-route-ts-still-redirects-to-dashboard | pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences) | - | complete | 1 | - | Dev > QC |
 | fix-db-migration-incomplete-email-verification-tokens- | DB migration incomplete: email_verification_tokens table does not exist | - | complete | 1 | - | Dev > QC |
-| fix-e2e-test-confirms-implementation-gaps | E2E test confirms implementation gaps | - | needs_merge | 1 | - | Dev > QC |
+| fix-e2e-test-confirms-implementation-gaps | E2E test confirms implementation gaps | - | complete | 1 | - | Dev > QC |
 | fix-primary-signup-api-api-agents-onboard-does-not-cap | Primary signup API (/api/agents/onboard) does not capture or write UTM parameters | - | complete | 1 | - | Dev > QC |
 | fix-admin-nps-page-does-not-exist-us-3-pm-dashboard-ab | /admin/nps page does not exist — US-3 PM dashboard absent | - | complete | 1 | - | Dev > QC |
 | fix-pilot-signups-database-table-missing | pilot_signups database table missing | - | complete | 1 | - | Dev > QC |
-| fix-api-accepts-agent-id-as-query-parameter-instead-of | API accepts agent_id as query parameter instead of reading from session | - | in_progress | 2 | - | Dev > QC |
+| fix-api-route-queries-wrong-table-for-satisfaction-pin | API route queries wrong table for satisfaction_ping_enabled | - | not_started | 2 | - | Dev > QC |
 | feat-repository-structure-convention | Repository Structure Convention for LeadFlow | - | complete | 2 | defined | PM > Marketing > Design > Dev > QC |
 | feat-lead-satisfaction-feedback | Lead Satisfaction Feedback Collection | - | complete | 2 | defined | PM > Marketing > Design > Dev > QC |
 | UC-8 | Follow-up Sequences | Phase 2 | complete | 2 | pass | PM > Dev > QC |
@@ -191,10 +191,15 @@
 | fix-use-cases-implementation-status-marked-complete-bu | use_cases.implementation_status marked complete but feature is non-functional | - | complete | 2 | - | Dev > QC |
 | fix-session-analytics-tables-exist-but-lack-integratio | Session analytics tables exist but lack integration points in dashboard UI | - | needs_merge | 2 | - | Dev > QC |
 | fix-no-sessionstorage-write-on-landing-page-load-utm-l | No sessionStorage write on landing page load — UTM lost for multi-page journeys | - | complete | 2 | - | Dev > QC |
+| fix-sendsatisfactionping-never-called-from-sms-handlin | sendSatisfactionPing never called from SMS handling flow | - | not_started | 2 | - | Dev > QC |
+| fix-inbound-sms-handler-does-not-classify-satisfaction | Inbound SMS handler does not classify satisfaction replies | - | not_started | 2 | - | Dev > QC |
+| improve-UC-2-add-retry-logic | Add Retry Logic to FUB New Lead Auto-SMS | Phase 1 | complete | 2 | - | PM > Dev > QC |
+| fix-bookings-table-join-missing-for-cross-table-agent- | Bookings table join missing for cross-table agent scoping | - | complete | 2 | - | Dev > QC |
 | fix-9-acceptance-criteria-defined-but-not-all-verified | 9 acceptance criteria defined but not all verified | - | needs_merge | 2 | - | Dev > QC |
 | fix-api-endpoint-has-no-authentication-middleware | API endpoint has no authentication middleware | - | needs_merge | 2 | - | Dev > QC |
-| improve-UC-2-add-retry-logic | Add Retry Logic to FUB New Lead Auto-SMS | Phase 1 | complete | 2 | - | PM > Dev > QC |
-| fix-bookings-table-join-missing-for-cross-table-agent- | Bookings table join missing for cross-table agent scoping | - | needs_merge | 2 | - | Dev > QC |
+| fix-api-accepts-agent-id-as-query-parameter-instead-of | API accepts agent_id as query parameter instead of reading from session | - | complete | 2 | - | Dev > QC |
+| fix-ga4-property-and-vercel-env-var-setup-required | GA4 property and Vercel env var setup required | - | complete | 2 | - | Dev > QC |
+| fix-dashboard-leadsatisfactioncard-uses-hardcoded-test | Dashboard LeadSatisfactionCard uses hardcoded test-agent-id | - | not_started | 2 | - | Dev > QC |
 | fix-stripe-subscriptions-table | Fix: Create Subscriptions Table for Stripe Webhook Storage | - | complete | 3 | - | Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | feat-auto-sync-deployed-pages-to-system-compo | Auto-Sync Deployed Pages to System Components | Phase 3 | complete | 3 | - | PM > Dev > QC |
@@ -2240,7 +2245,7 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 ### fix-e2e-test-confirms-implementation-gaps — E2E test confirms implementation gaps
 
 - **PRD:** -
-- **Status:** needs_merge
+- **Status:** complete
 - **Priority:** 1
 - **Description:** ## E2E test confirms implementation gaps
 **Type:** test_failure
@@ -2313,19 +2318,19 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-api-accepts-agent-id-as-query-parameter-instead-of — API accepts agent_id as query parameter instead of reading from session
+### fix-api-route-queries-wrong-table-for-satisfaction-pin — API route queries wrong table for satisfaction_ping_enabled
 
 - **PRD:** -
-- **Status:** in_progress
+- **Status:** not_started
 - **Priority:** 2
-- **Description:** ## API accepts agent_id as query parameter instead of reading from session
-**Type:** high
+- **Description:** ## API route queries wrong table for satisfaction_ping_enabled
+**Type:** bug
 **Severity:** high
-**Source:** Product review 8da6920b-9240-4990-a672-e68b29b3326d
+**Source:** Product review 0cea3b78-ee34-4dfd-96ca-e3ea2ff1e293
 
-**Details:** The endpoint allows callers to specify ?agent_id=any-uuid, violating the PRD requirement: "existing session middleware (agent scoped — no agent can see another agent's data)". An attacker could view other agents' analytics.
+**Details:** app/api/agents/satisfaction-ping/route.ts queries the real_estate_agents table for satisfaction_ping_enabled, but migration 008 added that column to the agents table. The column does not exist on real_estate_agents. The agent toggle (US-4) will always 404 or 500 in production.
 
-**Suggested fix:** Extract agentId from the authenticated session (via getSession or middleware), not from query params. Remove the agent_id query param.
+**Suggested fix:** Change .from("real_estate_agents") to .from("agents") in /api/agents/satisfaction-ping/route.ts (both GET and PATCH handlers).
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -3632,6 +3637,63 @@ All three features are related to attribution and analytics. Onboarding telemetr
   - ["AC-1: User landing with UTM params has sessionStorage.leadflow_utm set on mount","AC-2: First-touch protection — sessionStorage not overwritten on subsequent page loads with different UTM","AC-3: No UTM params in URL → sessionStorage not touched","AC-4: UTM params persist from landing page to /onboarding form submission, agent record created with correct utm fields","AC-5: No SSR crash — all sessionStorage access wrapped in try/catch","AC-6: UtmCaptureTracker present in root layout and runs on every page"]
 - **Workflow:** Dev > QC
 
+### fix-sendsatisfactionping-never-called-from-sms-handlin — sendSatisfactionPing never called from SMS handling flow
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 2
+- **Description:** ## sendSatisfactionPing never called from SMS handling flow
+**Type:** gap
+**Severity:** high
+**Source:** Product review 0cea3b78-ee34-4dfd-96ca-e3ea2ff1e293
+
+**Details:** The sendSatisfactionPing function exists in lib/satisfaction.ts (dashboard) but is never imported or called from the main Express routes/ or integrations/ code that handles outbound SMS. Satisfaction pings will never fire in production.
+
+**Suggested fix:** Integrate sendSatisfactionPing into the post-AI-response logic in the main SMS outbound handler (likely lib/twilio-sms.js or the FUB webhook handler). After sending the AI reply and checking >=2 messages in conversation, call sendSatisfactionPing with the lead and agent data.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-inbound-sms-handler-does-not-classify-satisfaction — Inbound SMS handler does not classify satisfaction replies
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 2
+- **Description:** ## Inbound SMS handler does not classify satisfaction replies
+**Type:** gap
+**Severity:** high
+**Source:** Product review 0cea3b78-ee34-4dfd-96ca-e3ea2ff1e293
+
+**Details:** getPendingSatisfactionPing and recordSatisfactionReply from lib/satisfaction.ts are never wired into the Twilio inbound webhook handler. When leads reply YES/NO to the satisfaction ping, replies are not classified or stored.
+
+**Suggested fix:** In the inbound SMS handler, before passing the message to the AI, check getPendingSatisfactionPing for the lead. If a pending ping exists, call recordSatisfactionReply and skip AI response.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-bookings-table-join-missing-for-cross-table-agent- — Bookings table join missing for cross-table agent scoping
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** ## Bookings table join missing for cross-table agent scoping
+**Type:** high
+**Severity:** high
+**Source:** Product review 8da6920b-9240-4990-a672-e68b29b3326d
+
+**Details:** When fetching bookings (line 97), the query filters by agent_id directly on the bookings table. If this table exists but lacks agent_id column, or if bookings lack agent context, the join will fail silently.
+
+**Suggested fix:** Verify bookings table has agent_id, or join bookings → leads → confirm lead.agent_id
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
 ### fix-9-acceptance-criteria-defined-but-not-all-verified — 9 acceptance criteria defined but not all verified
 
 - **PRD:** -
@@ -3670,19 +3732,55 @@ All three features are related to attribution and analytics. Onboarding telemetr
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-bookings-table-join-missing-for-cross-table-agent- — Bookings table join missing for cross-table agent scoping
+### fix-api-accepts-agent-id-as-query-parameter-instead-of — API accepts agent_id as query parameter instead of reading from session
 
 - **PRD:** -
-- **Status:** needs_merge
+- **Status:** complete
 - **Priority:** 2
-- **Description:** ## Bookings table join missing for cross-table agent scoping
+- **Description:** ## API accepts agent_id as query parameter instead of reading from session
 **Type:** high
 **Severity:** high
 **Source:** Product review 8da6920b-9240-4990-a672-e68b29b3326d
 
-**Details:** When fetching bookings (line 97), the query filters by agent_id directly on the bookings table. If this table exists but lacks agent_id column, or if bookings lack agent context, the join will fail silently.
+**Details:** The endpoint allows callers to specify ?agent_id=any-uuid, violating the PRD requirement: "existing session middleware (agent scoped — no agent can see another agent's data)". An attacker could view other agents' analytics.
 
-**Suggested fix:** Verify bookings table has agent_id, or join bookings → leads → confirm lead.agent_id
+**Suggested fix:** Extract agentId from the authenticated session (via getSession or middleware), not from query params. Remove the agent_id query param.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-ga4-property-and-vercel-env-var-setup-required — GA4 property and Vercel env var setup required
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** ## GA4 property and Vercel env var setup required
+**Type:** action_item
+**Severity:** high
+**Source:** Product review c8710612-deea-4dcc-beea-34d5e2eef80b
+
+**Details:** Implementation is code-complete but non-functional until: (1) GA4 property is created in Google Analytics, (2) NEXT_PUBLIC_GA4_MEASUREMENT_ID is set in Vercel leadflow-ai project settings, (3) dashboard is redeployed with env var.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-dashboard-leadsatisfactioncard-uses-hardcoded-test — Dashboard LeadSatisfactionCard uses hardcoded test-agent-id
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 2
+- **Description:** ## Dashboard LeadSatisfactionCard uses hardcoded test-agent-id
+**Type:** bug
+**Severity:** high
+**Source:** Product review 0cea3b78-ee34-4dfd-96ca-e3ea2ff1e293
+
+**Details:** app/dashboard/page.tsx renders <LeadSatisfactionCard agentId="test-agent-id" /> with a hardcoded placeholder. The component will never show real satisfaction data for any authenticated agent.
+
+**Suggested fix:** Replace hardcoded agentId with the authenticated session agent ID. Read agent ID from session/cookie in the server component or pass it via context.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
