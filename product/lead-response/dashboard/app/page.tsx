@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
+import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -61,13 +62,14 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">LeadFlow AI</h1>
           <nav className="flex items-center gap-4">
-            {/* CTA: join_pilot_nav (FR-2) */}
+            {/* CTA: start_trial_nav — above fold, UC-9 AC-1 */}
             <Link
-              href="/pilot"
-              onClick={() => trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')}
+              href="/signup/trial"
+              onClick={() => trackCTAClick('start_trial_nav', 'Start Free Trial', 'navigation')}
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
+              data-cta-id="start_trial_nav"
             >
-              Join Free Pilot
+              Start Free Trial
             </Link>
             <Link
               href="/login"
@@ -82,6 +84,7 @@ export default function HomePage() {
 
       {/* Hero — scroll milestone 25% anchor */}
       <main className="container mx-auto px-4 py-16">
+        {/* CTA Placement #1: Hero — inline compact trial signup form (UC-9 AC-1 + AC-7) */}
         <div ref={ref25} className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">
             AI-Powered Lead Response
@@ -91,29 +94,14 @@ export default function HomePage() {
             Never miss another opportunity.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {/* CTA: join_pilot_hero (FR-2) */}
-            <Link
-              href="/pilot"
-              onClick={() =>
-                trackCTAClick('join_pilot_hero', "Join the Pilot — It's Free", 'hero')
-              }
-              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="join_pilot_hero"
-            >
-              Join the Pilot — It&apos;s Free
-            </Link>
-            {/* CTA: get_started_hero */}
-            <Link
-              href="/onboarding"
-              onClick={() =>
-                trackCTAClick('get_started_hero', 'Get Started Free', 'hero')
-              }
-              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="get_started_hero"
-            >
-              Get Started Free
-            </Link>
+          {/* CTA Placement #1: Hero — TrialSignupForm compact */}
+          <Suspense fallback={
+            <div className="w-full max-w-md mx-auto h-14 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+          }>
+            <TrialSignupForm compact />
+          </Suspense>
+
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* CTA: see_how_it_works (FR-2) */}
             <button
               onClick={() => {
@@ -121,7 +109,7 @@ export default function HomePage() {
                 testWebhook()
               }}
               disabled={isLoading}
-              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+              className="px-6 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
               data-cta-id="see_how_it_works"
             >
               {isLoading ? 'Testing...' : 'See How It Works'}
@@ -155,6 +143,19 @@ export default function HomePage() {
             description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
             icon="🔗"
           />
+        </div>
+
+        {/* CTA Placement #2: End of Features — standalone "Start Free Trial" link (UC-9 AC-7) */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup/trial"
+            onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial', 'features')}
+            className="inline-flex items-center px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+            data-cta-id="start_trial_features"
+          >
+            Start Free Trial
+          </Link>
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">No credit card required · 14 days free</p>
         </div>
 
         {/* API Endpoints — scroll milestone 75% anchor */}
@@ -203,7 +204,7 @@ export default function HomePage() {
         {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
         <LeadMagnetSection />
 
-        {/* Pricing CTA section */}
+        {/* CTA Placement #3: Pricing section — pricing buttons + "or start free trial" (UC-9 AC-7) */}
         <div className="mt-20 text-center">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
             Simple, transparent pricing
@@ -240,6 +241,19 @@ export default function HomePage() {
               Team — 5 agents
             </Link>
           </div>
+          {/* CTA Placement #3: Pricing — "or start free trial" link to /signup/trial */}
+          <p className="mt-6 text-slate-500 dark:text-slate-400">
+            Not ready to pick a plan?{' '}
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
+              className="text-emerald-500 hover:text-emerald-600 font-medium underline"
+              data-cta-id="start_trial_pricing"
+            >
+              or start free trial
+            </Link>{' '}
+            — no credit card required.
+          </p>
         </div>
       </main>
 
