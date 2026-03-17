@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 31 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/17/2026, 12:40:39 PM
+**Last Updated:** 3/17/2026, 2:24:45 PM
 
 ---
 
@@ -33,15 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 0 | Blocked: 0 | Done: 923
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 922
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev (re-merge): fix-9-acceptance-criteria-defined-but-not-all-verified - 9 acceptance criteria defined but not all verif | sonnet | $1.20 | 🔴 P0 |
+| Dev: fix-sendsatisfactionping-never-called-from-sms-handlin - sendSatisfactionPing never called from SMS handling flow | haiku | $0.40 | 🟡 P1 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (1 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev: fix-dashboard-leadsatisfactioncard-uses-hardcoded-test - Dashboard LeadSatisfactionCard uses hardcoded test-agent-id | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -99,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $440.12
-**Cost per task:** Avg $0.44
+**Estimated project cost:** $452.04
+**Cost per task:** Avg $0.45
 
 ---
 
@@ -113,8 +118,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. 🔴 No active agents
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **1 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

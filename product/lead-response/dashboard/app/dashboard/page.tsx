@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
-import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
+import { LeadSatisfactionCardWrapper } from '@/components/dashboard/LeadSatisfactionCardWrapper'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
 
 export const metadata = {
@@ -37,8 +37,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
-      {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}
-      <LeadSatisfactionCard agentId="test-agent-id" />
+      <LeadSatisfactionCardWrapper />
 
       <Suspense fallback={<LeadFeedSkeleton />}>
         <LeadFeed />
