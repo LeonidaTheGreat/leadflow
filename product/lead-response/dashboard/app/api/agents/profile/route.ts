@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { auth } from '@/lib/api-auth'
 
 // GET /api/agents/profile - Get current agent profile
 export async function GET(request: NextRequest) {
-  try {
-    // In a real implementation, get agent ID from session/JWT
-    // For now, we'll use a query parameter or header
-    const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
+  // Require an active authenticated session before returning any data
+  const { user } = await auth(request)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const agentId = user.id
+
+  try {
     const { data: agent, error } = await supabase
       .from('real_estate_agents')
       .select('id, email, first_name, last_name, phone_number, state, timezone, created_at, onboarding_completed, plan_tier, trial_ends_at')
@@ -66,6 +69,12 @@ export async function GET(request: NextRequest) {
 
 // PUT /api/agents/profile - Update agent profile
 export async function PUT(request: NextRequest) {
+  // Require an active authenticated session before updating data
+  const { user } = await auth(request)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const agentId = user.id
+
   try {
     const body = await request.json()
     const {
@@ -80,9 +89,6 @@ export async function PUT(request: NextRequest) {
       website,
       profileImage,
     } = body
-
-    // In a real implementation, get agent ID from session/JWT
-    const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
 
     // Validate required fields
     if (!firstName || !lastName || !email || !phoneNumber || !state || !timezone) {
