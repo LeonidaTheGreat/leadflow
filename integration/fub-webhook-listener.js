@@ -15,6 +15,7 @@ const crypto = require('crypto');
 const { EventEmitter } = require('events');
 const axios = require('axios');
 const { sendSmsViatwilio } = require('../lib/twilio-sms');
+const { scheduleSatisfactionPing } = require('../lib/satisfaction-service');
 
 const router = express.Router();
 
@@ -141,6 +142,19 @@ fubEventBus.on('lead.created', async (leadData) => {
       timestamp: new Date().toISOString(),
     });
 
+    // 8. Schedule satisfaction ping after cooldown (fire-and-forget)
+    const agentId = fullLead.assignedTo?.id || null;
+    const satisfactionEnabled = fullLead.satisfactionPingEnabled !== false;
+    scheduleSatisfactionPing({
+      leadId: fullLead.id,
+      agentId,
+      conversationId: fullLead.id,
+      phone: fullLead.phoneNumber,
+      lastAiMessageAt: new Date().toISOString(),
+      agentSatisfactionPingEnabled: satisfactionEnabled,
+      sendSmsFunction: sendSmsViatwilio,
+    });
+
     console.log(`✅ SMS sent to lead ${fullLead.id}`);
   } catch (error) {
     console.error('❌ Error processing lead.created:', error.message);
@@ -220,6 +234,19 @@ fubEventBus.on('lead.status_changed', async (leadData) => {
       timestamp: new Date().toISOString(),
     });
 
+    // Schedule satisfaction ping after cooldown (fire-and-forget)
+    const agentId = fullLead.assignedTo?.id || null;
+    const satisfactionEnabled = fullLead.satisfactionPingEnabled !== false;
+    scheduleSatisfactionPing({
+      leadId: fullLead.id,
+      agentId,
+      conversationId: fullLead.id,
+      phone: fullLead.phoneNumber,
+      lastAiMessageAt: new Date().toISOString(),
+      agentSatisfactionPingEnabled: satisfactionEnabled,
+      sendSmsFunction: sendSmsViatwilio,
+    });
+
     console.log(`✅ Status-triggered SMS sent to lead ${leadId}`);
   } catch (error) {
     console.error('❌ Error processing lead.status_changed:', error.message);
@@ -261,6 +288,18 @@ fubEventBus.on('lead.assigned', async (leadData) => {
       trigger: 'agent_intro',
       agentName,
       timestamp: new Date().toISOString(),
+    });
+
+    // Schedule satisfaction ping after cooldown (fire-and-forget)
+    const satisfactionEnabled = fullLead.satisfactionPingEnabled !== false;
+    scheduleSatisfactionPing({
+      leadId: fullLead.id,
+      agentId,
+      conversationId: fullLead.id,
+      phone: fullLead.phoneNumber,
+      lastAiMessageAt: new Date().toISOString(),
+      agentSatisfactionPingEnabled: satisfactionEnabled,
+      sendSmsFunction: sendSmsViatwilio,
     });
 
     console.log(`✅ Agent intro SMS sent to lead ${leadId}`);

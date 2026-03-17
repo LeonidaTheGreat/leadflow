@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 31 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/17/2026, 12:40:39 PM
+**Last Updated:** 3/17/2026, 2:49:44 PM
 
 ---
 
@@ -33,15 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 0 | Blocked: 0 | Done: 923
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 924
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: fix-inbound-sms-handler-does-not-classify-satisfaction - Inbound SMS handler does not classify satisfaction replies | sonnet | $1.20 | 🟡 P1 |
+| Dev: fix-api-route-queries-wrong-table-for-satisfaction-pin - API route queries wrong table for satisfaction_ping_enabled | sonnet | $1.20 | 🟡 P1 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (1 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev: fix-sendsatisfactionping-never-called-from-sms-handlin - sendSatisfactionPing never called from SMS handling flow | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -99,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $440.12
-**Cost per task:** Avg $0.44
+**Estimated project cost:** $459.37
+**Cost per task:** Avg $0.46
 
 ---
 
@@ -113,8 +118,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. 🔴 No active agents
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **1 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
