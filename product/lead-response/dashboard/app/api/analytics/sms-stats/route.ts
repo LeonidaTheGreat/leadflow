@@ -133,18 +133,59 @@ export async function GET(request: NextRequest) {
     // booking_conversion = unique_leads_booked / unique_leads_replied
     // ============================================================
 
-    let bookingsQuery = supabaseAdmin
-      .from('bookings')
-      .select('lead_id')
+    // NOTE: bookings.agent_id may be NULL if not set during webhook processing.
+    // We must join through leads to find all bookings for an agent's leads.
+    // Strategy:
+    // 1. If filtering by agent: first fetch lead IDs for that agent
+    // 2. Then query bookings filtered by those lead IDs
+    // 3. This ensures we catch all bookings regardless of bookings.agent_id
 
-    if (windowStart) {
-      bookingsQuery = bookingsQuery.gte('created_at', windowStart.toISOString())
-    }
+    let bookings: any = []
+    let bookingsError: any = null
+
     if (agentId) {
-      bookingsQuery = bookingsQuery.eq('agent_id', agentId)
-    }
+      // First: get all leads for this agent
+      const { data: agentLeadIds, error: leadsError } = await supabaseAdmin
+        .from('leads')
+        .select('id')
+        .eq('agent_id', agentId)
 
-    const { data: bookings, error: bookingsError } = await bookingsQuery
+      if (leadsError) {
+        console.error('[sms-stats] Error fetching agent leads:', leadsError)
+        bookingsError = leadsError
+      } else {
+        // Second: query bookings for those leads
+        const leadIds = (agentLeadIds || []).map((l: any) => l.id).filter(Boolean)
+
+        if (leadIds.length > 0) {
+          let bookingsQuery = supabaseAdmin
+            .from('bookings')
+            .select('lead_id')
+            .in('lead_id', leadIds)
+
+          if (windowStart) {
+            bookingsQuery = bookingsQuery.gte('created_at', windowStart.toISOString())
+          }
+
+          const { data: result, error: bError } = await bookingsQuery
+          bookings = result || []
+          bookingsError = bError
+        }
+      }
+    } else {
+      // No agent filter: query all bookings in window
+      let bookingsQuery = supabaseAdmin
+        .from('bookings')
+        .select('lead_id')
+
+      if (windowStart) {
+        bookingsQuery = bookingsQuery.gte('created_at', windowStart.toISOString())
+      }
+
+      const { data: result, error: bError } = await bookingsQuery
+      bookings = result || []
+      bookingsError = bError
+    }
 
     if (bookingsError) {
       console.error('[sms-stats] Error fetching bookings:', bookingsError)
