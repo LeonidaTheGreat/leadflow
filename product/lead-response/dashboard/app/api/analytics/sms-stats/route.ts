@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     let outboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('id, status, lead_id')
+      .select('id, twilio_status, lead_id')
       .in('direction', ['outbound-api', 'outbound-reply'])
       .eq('agent_id', agentId)
 
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     const totalOutbound = outboundMessages?.length || 0
     const totalDelivered = outboundMessages?.filter(
-      (m: any) => m.status === 'delivered'
+      (m: any) => m.twilio_status === 'delivered'
     ).length || 0
 
     const deliveryRate = totalOutbound > 0 ? totalDelivered / totalOutbound : null
