@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
+import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -91,6 +92,9 @@ export default function HomePage() {
             Never miss another opportunity.
           </p>
 
+          {/* CTA Placement #1: Hero section with TrialSignupForm compact */}
+          <TrialSignupForm compact className="mb-8" />
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* CTA: join_pilot_hero (FR-2) */}
             <Link
@@ -157,6 +161,18 @@ export default function HomePage() {
           />
         </div>
 
+        {/* CTA Placement #2: End of Features section */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup/trial"
+            onClick={() => trackCTAClick('features_cta', 'Start Free Trial', 'features')}
+            className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"
+            data-cta-id="features_cta"
+          >
+            Start Free Trial
+          </Link>
+        </div>
+
         {/* API Endpoints — scroll milestone 75% anchor */}
         <div ref={ref75} className="mt-20 max-w-2xl mx-auto">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-8">API Endpoints</h3>
@@ -203,7 +219,7 @@ export default function HomePage() {
         {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
         <LeadMagnetSection />
 
-        {/* Pricing CTA section */}
+        {/* CTA Placement #3: Pricing section */}
         <div className="mt-20 text-center">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
             Simple, transparent pricing
@@ -240,6 +256,18 @@ export default function HomePage() {
               Team — 5 agents
             </Link>
           </div>
+          <p className="mt-6 text-slate-600 dark:text-slate-400">
+            or{' '}
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('pricing_trial', 'or start free trial', 'pricing')}
+              className="text-emerald-500 hover:text-emerald-600 font-semibold underline"
+              data-cta-id="pricing_trial"
+            >
+              start free trial
+            </Link>
+            {' →'}
+          </p>
         </div>
       </main>
 
