@@ -32,10 +32,10 @@ function getTierFromSubscription(subscription: Stripe.Subscription): string {
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   if (!stripe) return
 
-  const agentId = session.client_reference_id
+  const userId = session.client_reference_id
   const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
 
-  if (!agentId) return
+  if (!userId) return
 
   const mrr = calculateMRR(subscription)
   const tier = getTierFromSubscription(subscription)
@@ -49,11 +49,29 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     status: 'active',
     trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
     updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+  }).eq('id', userId)
 
-  // Log subscription creation
+  // Create initial subscription record (core fix: subscriptions table was never populated)
+  await supabase.from('subscriptions').upsert({
+    user_id: userId,
+    stripe_customer_id: session.customer as string,
+    stripe_subscription_id: subscription.id,
+    status: subscription.status,
+    tier: tier,
+    price_id: subscription.items.data[0]?.price?.id ?? null,
+    interval: subscription.items.data[0]?.price?.recurring?.interval ?? null,
+    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+    trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+    cancel_at_period_end: subscription.cancel_at_period_end,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'stripe_subscription_id' })
+
+  // Log subscription creation event
   await supabase.from('subscription_events').insert({
-    user_id: agentId,
+    user_id: userId,
     event_type: 'subscription_created',
     tier: tier,
     mrr: mrr,
@@ -63,7 +81,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   })
 
   // Log for analytics (PostHog)
-  console.log(`📊 New subscription: ${agentId} - ${tier} - $${mrr}/mo`)
+  console.log(`📊 New subscription: ${userId} - ${tier} - $${mrr}/mo`)
 }
 
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
@@ -73,16 +91,16 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   if (!subscriptionId) return
   
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-  const agentId = subscription.metadata?.agent_id
+  const userId = subscription.metadata?.user_id || subscription.metadata?.agent_id
 
-  if (!agentId) return
+  if (!userId) return
 
   const amount = invoice.amount_paid / 100
   const mrr = calculateMRR(subscription)
 
   // Record payment
   await supabase.from('payments').insert({
-    user_id: agentId,
+    user_id: userId,
     stripe_invoice_id: invoice.id,
     amount: amount,
     currency: invoice.currency,
@@ -96,11 +114,11 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   await supabase.from('real_estate_agents').update({
     mrr: mrr,
     updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+  }).eq('id', userId)
 
   // Log event
   await supabase.from('subscription_events').insert({
-    user_id: agentId,
+    user_id: userId,
     event_type: 'payment_received',
     amount: amount,
     mrr: mrr,
@@ -108,7 +126,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     created_at: new Date().toISOString(),
   })
 
-  console.log(`💰 Payment received: ${agentId} - $${amount}`)
+  console.log(`💰 Payment received: ${userId} - $${amount}`)
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
@@ -118,32 +136,32 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   if (!subscriptionId) return
   
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-  const agentId = subscription.metadata?.agent_id
+  const userId = subscription.metadata?.user_id || subscription.metadata?.agent_id
 
-  if (!agentId) return
+  if (!userId) return
 
   // Mark as at risk
   await supabase.from('real_estate_agents').update({
     payment_status: 'past_due',
     updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+  }).eq('id', userId)
 
   // Log event
   await supabase.from('subscription_events').insert({
-    user_id: agentId,
+    user_id: userId,
     event_type: 'payment_failed',
     attempt_count: invoice.attempt_count || 1,
     stripe_invoice_id: invoice.id,
     created_at: new Date().toISOString(),
   })
 
-  console.log(`⚠️  Payment failed: ${agentId}`)
+  console.log(`⚠️  Payment failed: ${userId}`)
 }
 
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
-  const agentId = subscription.metadata?.agent_id
+  const userId = subscription.metadata?.user_id || subscription.metadata?.agent_id
 
-  if (!agentId) return
+  if (!userId) return
 
   const mrr = calculateMRR(subscription)
 
@@ -153,11 +171,11 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     mrr: 0,
     cancelled_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+  }).eq('id', userId)
 
   // Log churn event
   await supabase.from('subscription_events').insert({
-    user_id: agentId,
+    user_id: userId,
     event_type: 'subscription_cancelled',
     mrr_lost: mrr,
     reason: subscription.cancellation_details?.reason || 'unknown',
@@ -165,7 +183,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     created_at: new Date().toISOString(),
   })
 
-  console.log(`❌ Subscription cancelled: ${agentId} - Lost $${mrr}/mo`)
+  console.log(`❌ Subscription cancelled: ${userId} - Lost $${mrr}/mo`)
 }
 
 export async function POST(request: NextRequest) {
