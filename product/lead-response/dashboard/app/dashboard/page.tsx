@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
+import { SessionAnalyticsCard } from '@/components/dashboard/SessionAnalyticsCard'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
@@ -36,6 +37,14 @@ export default function DashboardPage() {
         <StatsCards />
       </Suspense>
 
+      {/* SMS Analytics Cards */}
+      <SmsAnalyticsCards />
+
+      {/* Session Analytics Card — pilot engagement metrics (shows all pilots) */}
+      <Suspense fallback={<SessionAnalyticsCardSkeleton />}>
+        <SessionAnalyticsCard />
+      </Suspense>
+
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
       {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}
       <LeadSatisfactionCard agentId="test-agent-id" />
@@ -67,6 +76,21 @@ function StatsCardsSkeleton() {
           <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
         </div>
       ))}
+    </div>
+  )
+}
+
+function SessionAnalyticsCardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48 animate-pulse" />
+      </div>
+      <div className="p-6 space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-12 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+        ))}
+      </div>
     </div>
   )
 }
