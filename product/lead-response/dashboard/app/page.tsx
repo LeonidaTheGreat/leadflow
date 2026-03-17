@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
+import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -136,6 +137,12 @@ export default function HomePage() {
               </pre>
             </div>
           )}
+
+          {/* CTA Placement #1: TrialSignupForm compact */}
+          <div className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <p className="text-slate-600 dark:text-slate-400 mb-6 text-center">Or start for free:</p>
+            <TrialSignupForm compact />
+          </div>
         </div>
 
         {/* Features — scroll milestone 50% anchor */}
@@ -155,6 +162,17 @@ export default function HomePage() {
             description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
             icon="🔗"
           />
+        </div>
+
+        {/* CTA Placement #2: End of Features section — Start Free Trial link */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup/trial"
+            onClick={() => trackCTAClick('features_cta_trial', 'Start Free Trial', 'features')}
+            className="inline-block px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+          >
+            Start Free Trial
+          </Link>
         </div>
 
         {/* API Endpoints — scroll milestone 75% anchor */}
@@ -240,6 +258,17 @@ export default function HomePage() {
               Team — 5 agents
             </Link>
           </div>
+
+          {/* CTA Placement #3: Pricing section — or start free trial */}
+          <p className="mt-8 text-slate-600 dark:text-slate-400">
+            or <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('pricing_trial', 'or start free trial', 'pricing')}
+              className="text-emerald-500 hover:text-emerald-600 font-semibold"
+            >
+              start free trial
+            </Link> →
+          </p>
         </div>
       </main>
 
