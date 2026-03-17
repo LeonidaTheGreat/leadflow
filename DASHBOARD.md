@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-15
+title: BO2026 Dashboard - Updated 2026-03-17
 author: LeadFlow Orchestrator
-date: 2026-03-15
+date: 2026-03-17
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 29 of 60  
+**Current Day:** Day 31 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/15/2026, 7:40:36 AM
+**Last Updated:** 3/17/2026, 10:25:25 AM
 
 ---
 
@@ -33,15 +33,28 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 0 | Blocked: 0 | Done: 924
+**Queue Health:** Ready: 9 | In Progress: 2 | Blocked: 0 | Done: 914
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (9 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Escalation: Fix recurring build failure — unknown | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Start Free Trial CTA — Frictionless Trial Entry | codex | $0.60 | 🔴 P0 |
+| PM: Product Review — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — NPS / Feedback Survey Mechanism for Real Estate Agents | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Landing Page Pricing Section — All 4 Tiers with Feature Comparison | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Lead Experience Simulator & Conversation Viewer | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Session Analytics for Agent Dashboard — Pilot Usage Tracking | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Fix /api/lead-capture Production Environment Failure | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Fix API Health Endpoint — Query Correct Table | sonnet | $0.60 | 🔴 P0 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (2 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| PM: Product Review — Fix Checkout — Replace subscription_attempts with checkout_sessions | product | haiku |
+| QC: fix-stripe-webhook-secret-missing-from-vercel-leadflow - STRIPE_WEBHOOK_SECRET missing from Vercel leadflow-ai project | qc | sonnet |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -99,8 +112,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $419.03
-**Cost per task:** Avg $0.42
+**Estimated project cost:** $431.07
+**Cost per task:** Avg $0.43
 
 ---
 
@@ -113,8 +126,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. 🔴 No active agents
+1. ✅ **9 tasks ready to spawn**
+2. ⚡ **2 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

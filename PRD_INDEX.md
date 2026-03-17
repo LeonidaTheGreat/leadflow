@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-15T11:40:36.820Z | Source: `prds` table
+> Generated: 2026-03-17T14:25:26.288Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -22,12 +22,14 @@
 | PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH | Fix agents Table Mismatch in Auth/Onboarding API Routes | approved | - | [docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md](docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md) |
 | PRD-FIX-API-HEALTH-ENDPOINT | Fix API Health Endpoint — Query Correct Table | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT.md](docs/PRD-FIX-API-HEALTH-ENDPOINT.md) |
 | prd-fix-api-health-endpoint-wrong-table | Fix API Health Endpoint — Wrong Table Query | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md](docs/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md) |
+| PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS | Fix Checkout — Replace subscription_attempts with checkout_sessions | approved | - | [docs/prd/PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS.md](docs/prd/PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS.md) |
 | PRD-FIX-LEAD-CAPTURE-PROD-ENV | Fix /api/lead-capture Production Environment Failure | approved | 1.0 | [docs/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md](docs/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md) |
 | PRD-FIX-ONBOARDING-500-001 | Fix Onboarding 500 Error — Complete Agents Table Migration | approved | 1.1 | [docs/PRD-FIX-ONBOARDING-500-001.md](docs/PRD-FIX-ONBOARDING-500-001.md) |
 | PRD-FIX-PRICING-CORRECTION | Fix Pricing — Correct 10x Price Error in BillingCard and Checkout | approved | - | [docs/PRD-FIX-PRICING-CORRECTION.md](docs/PRD-FIX-PRICING-CORRECTION.md) |
 | PRD-FIX-REMAINING-AGENTS-TABLE | Fix Remaining agents Table References — Product Routes | approved | 1.0 | [docs/PRD-FIX-REMAINING-AGENTS-TABLE.md](docs/PRD-FIX-REMAINING-AGENTS-TABLE.md) |
 | prd-fix-signup-login-table-mismatch | Fix Signup/Login Table Mismatch — Remaining agents Table References | approved | - | [docs/PRD-fix-signup-login-table-mismatch.md](docs/PRD-fix-signup-login-table-mismatch.md) |
 | PRD-FIX-SIGNUP-PLAN-OPTIONS-001 | Fix Signup Page — Plan Options Not Displayed | approved | 1.0 | [docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md](docs/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md) |
+| prd-fix-stripe-env-vars-vercel | Fix — STRIPE_SECRET_KEY & STRIPE_WEBHOOK_SECRET Missing from Vercel Production | approved | 1.0 | [docs/prd/PRD-FIX-STRIPE-ENV-VARS-VERCEL.md](docs/prd/PRD-FIX-STRIPE-ENV-VARS-VERCEL.md) |
 | PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
 | PRD-FIX-TRIAL-SIGNUP-REDIRECT-001 | Fix Trial Signup Redirect — Broken Post-Signup Navigation | approved | - | [docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md](docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md) |
 | PRD-FORGOT-PASSWORD | Forgot Password / Password Reset Flow | draft | 1.0 | [docs/PRD-FORGOT-PASSWORD.md](docs/PRD-FORGOT-PASSWORD.md) |
