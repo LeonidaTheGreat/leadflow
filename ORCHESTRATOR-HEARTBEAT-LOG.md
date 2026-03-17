@@ -1,118 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-17T16:04:00.361Z
+Last updated: 2026-03-17T16:40:40.379Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-04T04:56:08.707Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 6,
-      "blocked": 0,
-      "done": 119,
-      "total": 138
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":6,\"blocked\":0,\"done\":119,\"total\":138}",
-      "Reset zombie: QC: feat-add-login-page-with-email-and-password - add login page with email and password (retry 1/3)",
-      "Reset zombie: QC: feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes (retry 1/3)",
-      "Reset zombie: QC: feat-add-session-management-with-server-side- - add session management with server-side tokens (retry 1/3)",
-      "Marked cf7edc9b-1897-4f8d-850e-bf582f826d61 as done",
-      "Created PR #9 for dev/cf7edc9b-dev-fix-deployed-pages-not-registered-in",
-      "Chained: dev->qc for fix-deployed-pages-not-registered-in-system-",
-      "Marked d3ef2e08-6fa2-4cce-b788-df0563213276 as done",
-      "Created PR #10 for dev/d3ef2e08-dev-fix-dashboard-routes-are-publicly-ac",
-      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
-      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
-      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
-      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
-      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
-      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
-      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Distribution: 1 issue(s) → tasks created",
-      "Merged PR #6",
-      "Cleaned up 1 stale branch(es)",
-      "⚠️ DECISIONS NEEDED (5):\n  🔴 Emergency Revenue Sprint - Fix Auth & Billing [integration] (id: 4ad2b093)\n  🔴 Fix billing integration before pilot launch [integration] (id: b68180e3)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: e41bf508)\n  🔴 Fix billing integration before pilot launch [integration] (id: 47981563)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: c9a8e328)\nUse !decide <id> <option> to approve",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 5,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-04T05:00:20.498Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 7,
-      "blocked": 0,
-      "done": 120,
-      "total": 140
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":7,\"blocked\":0,\"done\":120,\"total\":140}",
-      "Reset zombie: QC: fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages (retry 1/3)",
-      "Marked 397f80e2-98de-4418-a8cb-c3fd37df35d1 as done",
-      "Created PR #11 for dev/397f80e2-dev-feat-add-login-page-with-email-and-p",
-      "Chained: dev->qc for feat-add-login-page-with-email-and-password",
-      "Marked 397f80e2-98de-4418-a8cb-c3fd37df35d1 as done",
-      "Chained: dev->qc for feat-add-login-page-with-email-and-password",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Build health: 1 error(s) → dev task created",
-      "Merged PR #5",
-      "Merged PR #10",
-      "⚠️ DECISIONS NEEDED (5):\n  🔴 Emergency Revenue Sprint - Fix Auth & Billing [integration] (id: 4ad2b093)\n  🔴 Fix billing integration before pilot launch [integration] (id: b68180e3)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: e41bf508)\n  🔴 Fix billing integration before pilot launch [integration] (id: 47981563)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: c9a8e328)\nUse !decide <id> <option> to approve",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 2,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-04T05:08:07.408Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 10,
-      "blocked": 0,
-      "done": 119,
-      "total": 142
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":10,\"blocked\":0,\"done\":119,\"total\":142}",
-      "Completed (via stdout): Dev: fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection",
-      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
-      "Skipped (via stdout): Dev: fix-test-genome-separation - test genome separation",
-      "Chained: dev->qc for fix-test-genome-separation",
-      "Marked 66e43172-7cd7-4bd9-baaa-cec5624507f7 as done",
-      "Created PR #12 for dev/66e43172-fix-dashboard-build-errors",
-      "Marked 66e43172-7cd7-4bd9-baaa-cec5624507f7 as done",
-      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
-      "Created PR #13 for dev/cc686016-dev-fix-landing-page-has-no-links-to-sig",
-      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
-      "Marked d3ef2e08-6fa2-4cce-b788-df0563213276 as done",
-      "Created PR #14 for dev/d3ef2e08-dev-fix-dashboard-routes-are-publicly-ac",
-      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
-      "Marked d3ef2e08-6fa2-4cce-b788-df0563213276 as done",
-      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 5/5 passed",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 7,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-05T05:27:37.722Z",
     "status": {
@@ -2403,49 +2293,24 @@ Last updated: 2026-03-17T16:04:00.361Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T15:54:20.001Z",
+    "timestamp": "2026-03-17T15:39:04.921Z",
     "status": {
-      "ready": 2,
-      "inProgress": 1,
+      "ready": 1,
+      "inProgress": 2,
       "blocked": 0,
       "done": 906,
       "total": 1000
     },
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":906,\"total\":1000}",
-      "Completed (via stdout): QC: fix-bookings-table-join-missing-for-cross-table-agent- - Bookings table join missing for cross-table agent scoping",
-      "UC complete: fix-bookings-table-join-missing-for-cross-table-agent-",
-      "Spawned dev for Dev: fix-9-acceptance-criteria-defined-but-not-all-verified - 9 acceptance criteria defined but not all verified",
+      "Queried state: {\"ready\":1,\"inProgress\":2,\"blocked\":0,\"done\":906,\"total\":1000}",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
-      "Closed conflicted PR #338",
+      "Replenished: Dev task for fix-9-acceptance-criteria-defined-but-not-all-verified",
+      "Replenished: Dev task for fix-session-analytics-tables-exist-but-lack-integratio",
+      "Closed conflicted PR #336",
       "Action items: +1 -0",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 1,
-    "completed": 1,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-17T15:58:51.845Z",
-    "status": {
-      "ready": 1,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 907,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":1,\"inProgress\":1,\"blocked\":0,\"done\":907,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: Dev task for fix-api-endpoint-has-no-authentication-middleware",
-      "Replenished: Dev task for fix-no-active-session-logging-due-to-lack-of-end-to-en",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
@@ -2454,7 +2319,29 @@ Last updated: 2026-03-17T16:04:00.361Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T16:04:00.283Z",
+    "timestamp": "2026-03-17T15:39:40.154Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 904,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":2,\"blocked\":0,\"done\":904,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-17T15:44:27.500Z",
     "status": {
       "ready": 3,
       "inProgress": 1,
@@ -2465,14 +2352,85 @@ Last updated: 2026-03-17T16:04:00.361Z
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
       "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":905,\"total\":1000}",
-      "Spawned dev for Dev: fix-session-analytics-tables-exist-but-lack-integratio - Session analytics tables exist but lack integration points in dashboard UI",
+      "Completed (via stdout): QC: fix-e2e-test-confirms-implementation-gaps - E2E test confirms implementation gaps",
+      "UC complete: fix-e2e-test-confirms-implementation-gaps",
+      "Spawned dev for Dev: fix-bookings-table-join-missing-for-cross-table-agent- - Bookings table join missing for cross-table agent scoping",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Closed conflicted PR #337",
+      "Action items: +1 -1",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 1,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-17T15:49:10.316Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 906,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":906,\"total\":1000}",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
-    "spawned": 1,
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-17T16:39:11.573Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 912,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":912,\"total\":1000}",
+      "Reset zombie: Dev: fix-api-accepts-agent-id-as-query-parameter-instead-of - API accepts agent_id as query parameter instead of reading from session (retry 1/3) [false_completion]",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-17T16:40:40.310Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 912,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":912,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
     "completed": 0,
     "errors": []
   }
@@ -2480,4 +2438,4 @@ Last updated: 2026-03-17T16:04:00.361Z
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":3,"inProgress":1,"blocked":0,"done":905,"total":1000}
+- Last status: {"ready":0,"inProgress":1,"blocked":0,"done":912,"total":1000}
