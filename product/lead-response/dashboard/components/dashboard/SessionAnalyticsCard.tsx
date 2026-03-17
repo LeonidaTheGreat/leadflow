@@ -257,7 +257,7 @@ export function SessionAnalyticsCard() {
                       </span>
                       {pilot.atRisk && (
                         <div className="mt-1 text-xs text-red-600 dark:text-red-400 font-semibold">
-                          ⚠️ At Risk (>72h)
+                          ⚠️ At Risk ({'>'}72h)
                         </div>
                       )}
                     </td>
