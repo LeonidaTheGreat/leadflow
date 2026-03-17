@@ -36,6 +36,9 @@ export default function DashboardPage() {
         <StatsCards />
       </Suspense>
 
+      {/* SMS Analytics Cards — Delivery, Reply & Booking Conversion Tracking */}
+      <SmsAnalyticsCards />
+
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
       {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}
       <LeadSatisfactionCard agentId="test-agent-id" />
