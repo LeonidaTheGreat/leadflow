@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { AnalyticsKpiDashboard } from '@/components/dashboard/AnalyticsKpiDashboard'
+import { PilotEngagementMetrics } from '@/components/dashboard/PilotEngagementMetrics'
 
 export const metadata = {
   title: 'Analytics - AI Lead Response',
@@ -8,9 +9,17 @@ export const metadata = {
 
 export default function AnalyticsPage() {
   return (
-    <Suspense fallback={<AnalyticsLoadingSkeleton />}>
-      <AnalyticsKpiDashboard />
-    </Suspense>
+    <div className="space-y-8">
+      <Suspense fallback={<AnalyticsLoadingSkeleton />}>
+        <AnalyticsKpiDashboard />
+      </Suspense>
+
+      <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+        <Suspense fallback={<PilotMetricsLoadingSkeleton />}>
+          <PilotEngagementMetrics />
+        </Suspense>
+      </div>
+    </div>
   )
 }
 
@@ -23,6 +32,19 @@ function AnalyticsLoadingSkeleton() {
           <div key={i} className="bg-slate-200 dark:bg-slate-700 rounded-lg p-6 h-24" />
         ))}
       </div>
+    </div>
+  )
+}
+
+function PilotMetricsLoadingSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-slate-200 dark:bg-slate-700 rounded-lg p-6 h-24" />
+        ))}
+      </div>
+      <div className="bg-slate-200 dark:bg-slate-700 rounded-lg p-6 h-64" />
     </div>
   )
 }
