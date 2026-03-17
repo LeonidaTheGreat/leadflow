@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { AnalyticsKpiDashboard } from '@/components/dashboard/AnalyticsKpiDashboard'
+import { PilotEngagementMetrics } from '@/components/dashboard/PilotEngagementMetrics'
 
 export const metadata = {
   title: 'Analytics - AI Lead Response',
@@ -9,7 +10,12 @@ export const metadata = {
 export default function AnalyticsPage() {
   return (
     <Suspense fallback={<AnalyticsLoadingSkeleton />}>
-      <AnalyticsKpiDashboard />
+      <div className="space-y-8">
+        <AnalyticsKpiDashboard />
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+          <PilotEngagementMetrics />
+        </div>
+      </div>
     </Suspense>
   )
 }
