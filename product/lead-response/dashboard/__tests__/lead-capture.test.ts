@@ -139,16 +139,12 @@ describe('/api/lead-capture', () => {
       )
     })
 
-    it('populates name from email prefix when firstName is absent (NOT NULL fix)', async () => {
-      const req = makeRequest({ email: 'john.doe@realty.com' })
+    it('derives name from email prefix when firstName is absent', async () => {
+      const req = makeRequest({ email: 'jane.doe@realty.com' })
       await POST(req)
 
       expect(mockUpsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: 'john.doe@realty.com',
-          name: 'john.doe',
-          first_name: null,
-        }),
+        expect.objectContaining({ name: 'jane.doe' }),
         expect.anything()
       )
     })

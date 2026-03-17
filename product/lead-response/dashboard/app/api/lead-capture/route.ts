@@ -65,16 +65,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // `name` column is NOT NULL — derive from firstName or email prefix
+    const name = firstName || email.split('@')[0]
+
     // Upsert into pilot_signups
     // On conflict (email), update utm/source but don't create duplicate
-    // Note: `name` column has NOT NULL constraint — derive from firstName or email prefix
-    const nameValue = firstName || email.split('@')[0]
     const { error: dbError } = await supabase
       .from('pilot_signups')
       .upsert(
         {
           email,
-          name: nameValue,
+          name,
           first_name: firstName,
           source: 'lead_magnet',
           status: 'nurture',
