@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     // on the joined table's column.
     let outboundQuery = supabaseAdmin
       .from('messages')
-      .select('id, status, lead_id, leads!inner(agent_id)')
+      .select('id, twilio_status, lead_id, leads!inner(agent_id)')
       .eq('direction', 'outbound')
 
     if (windowStart) {
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
 
     const totalOutbound = outboundMessages?.length || 0
     const totalDelivered = outboundMessages?.filter(
-      (m: any) => m.status === 'delivered'
+      (m: any) => m.twilio_status === 'delivered'
     ).length || 0
 
     const deliveryRate = totalOutbound > 0 ? totalDelivered / totalOutbound : null
