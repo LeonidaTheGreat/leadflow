@@ -1,63 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-17T16:40:40.379Z
+Last updated: 2026-03-17T17:29:22.189Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-05T05:27:37.722Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 4,
-      "blocked": 0,
-      "done": 136,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":4,\"blocked\":0,\"done\":136,\"total\":181}",
-      "Marked 50b1c242-88e1-4094-bdc9-0969c437b72a as done",
-      "Created PR #20 for dev/50b1c242-dev-feat-add-route-discovery-smoke-test-",
-      "Marked c712e747-58f7-46e9-8b7a-af6248ad228b as done",
-      "UC complete: feat-add-route-discovery-smoke-test",
-      "Marked a2a447fd-e533-4be1-acc4-594de00eba4a as done",
-      "UC complete: feat-auto-sync-deployed-pages-to-system-compo",
-      "Marked a3f2fd9b-4df4-4d17-b1ac-e59197cee8b2 as done",
-      "UC complete: feat-add-route-discovery-smoke-test",
-      "Product sync: 5 components updated",
-      "Merged PR #17",
-      "Merged PR #19",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 4,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T05:41:36.162Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Merged PR #20",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
   {
     "timestamp": "2026-03-05T05:46:00.164Z",
     "status": {
@@ -2433,9 +2378,59 @@ Last updated: 2026-03-17T16:40:40.379Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-17T17:24:29.634Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 913,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":913,\"total\":1000}",
+      "Completed (via stdout): Dev (re-merge): fix-session-analytics-tables-exist-but-lack-integratio - Session analytics tables exist but lack integra",
+      "Chained: dev->qc for fix-session-analytics-tables-exist-but-lack-integratio",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-17T17:29:22.102Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 914,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":914,\"total\":1000}",
+      "Merge retry: fix-api-endpoint-has-no-authentication-middleware",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "UC completed (sweep): fix-api-endpoint-has-no-authentication-middleware",
+      "Closed conflicted PR #347",
+      "Action items: +1 -1",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":1,"blocked":0,"done":912,"total":1000}
+- Last status: {"ready":0,"inProgress":0,"blocked":0,"done":914,"total":1000}
