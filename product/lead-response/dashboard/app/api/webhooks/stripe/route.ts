@@ -53,7 +53,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
   // Log subscription creation
   await supabase.from('subscription_events').insert({
-    agent_id: agentId,
+    user_id: agentId,
     event_type: 'subscription_created',
     tier: tier,
     mrr: mrr,
@@ -82,7 +82,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
 
   // Record payment
   await supabase.from('payments').insert({
-    agent_id: agentId,
+    user_id: agentId,
     stripe_invoice_id: invoice.id,
     amount: amount,
     currency: invoice.currency,
@@ -100,7 +100,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
 
   // Log event
   await supabase.from('subscription_events').insert({
-    agent_id: agentId,
+    user_id: agentId,
     event_type: 'payment_received',
     amount: amount,
     mrr: mrr,
@@ -130,7 +130,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   // Log event
   await supabase.from('subscription_events').insert({
-    agent_id: agentId,
+    user_id: agentId,
     event_type: 'payment_failed',
     attempt_count: invoice.attempt_count || 1,
     stripe_invoice_id: invoice.id,
@@ -157,7 +157,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
 
   // Log churn event
   await supabase.from('subscription_events').insert({
-    agent_id: agentId,
+    user_id: agentId,
     event_type: 'subscription_cancelled',
     mrr_lost: mrr,
     reason: subscription.cancellation_details?.reason || 'unknown',
