@@ -54,7 +54,7 @@ export default function HomePage() {
               Never miss another opportunity. Start free — no credit card required.
             </p>
 
-            {/* Hero Trial CTA */}
+            {/* Hero Trial CTA — CTA Placement #1 */}
             <Suspense fallback={<div className="h-24" />}>
               <TrialSignupForm compact />
             </Suspense>
@@ -72,8 +72,6 @@ export default function HomePage() {
                 Try Live AI Demo →
               </Link>
             </div>
-          </div>
-        </div>
       </section>
 
       {/* Stats Bar — PRD FR-2 Specification */}
@@ -169,6 +167,18 @@ export default function HomePage() {
               description="Track response times, conversion rates, and lead quality in real time."
               icon="📊"
             />
+          </div>
+
+          {/* CTA: Start Free Trial link at end of features section (CTA Placement #2) */}
+          <div className="mt-12 text-center">
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial', 'features')}
+              className="inline-block px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="start_trial_features"
+            >
+              Start Free Trial
+            </Link>
           </div>
         </div>
       </section>
