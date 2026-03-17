@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     // Log portal session creation for analytics
     await supabase.from('subscription_events').insert({
-      agent_id: agentId,
+      user_id: agentId,
       event_type: 'portal_session_created',
       stripe_customer_id: customerId,
       metadata: {
