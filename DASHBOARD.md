@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 31 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/17/2026, 10:25:25 AM
+**Last Updated:** 3/17/2026, 11:49:09 AM
 
 ---
 
@@ -33,28 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 9 | In Progress: 2 | Blocked: 0 | Done: 914
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 921
 
-### ▶️ Ready to Spawn (9 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Escalation: Fix recurring build failure — unknown | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — Start Free Trial CTA — Frictionless Trial Entry | codex | $0.60 | 🔴 P0 |
-| PM: Product Review — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — NPS / Feedback Survey Mechanism for Real Estate Agents | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — Landing Page Pricing Section — All 4 Tiers with Feature Comparison | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — Lead Experience Simulator & Conversation Viewer | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — Session Analytics for Agent Dashboard — Pilot Usage Tracking | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — Fix /api/lead-capture Production Environment Failure | sonnet | $0.60 | 🔴 P0 |
-| PM: Product Review — Fix API Health Endpoint — Query Correct Table | sonnet | $0.60 | 🔴 P0 |
+| Dev: fix-9-acceptance-criteria-defined-but-not-all-verified - 9 acceptance criteria defined but not all verified | sonnet | $1.20 | 🟡 P1 |
+| Dev: fix-session-analytics-tables-exist-but-lack-integratio - Session analytics tables exist but lack integration points in dashboard UI | haiku | $0.40 | 🟡 P1 |
 
-### ⚡ In Progress (2 tasks)
+### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| PM: Product Review — Fix Checkout — Replace subscription_attempts with checkout_sessions | product | haiku |
-| QC: fix-stripe-webhook-secret-missing-from-vercel-leadflow - STRIPE_WEBHOOK_SECRET missing from Vercel leadflow-ai project | qc | sonnet |
+| Dev: fix-bookings-table-join-missing-for-cross-table-agent- - Bookings table join missing for cross-table agent scoping | dev | kimi |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -112,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $431.07
-**Cost per task:** Avg $0.43
+**Estimated project cost:** $435.32
+**Cost per task:** Avg $0.44
 
 ---
 
@@ -126,8 +118,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **9 tasks ready to spawn**
-2. ⚡ **2 agents active**
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **1 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
