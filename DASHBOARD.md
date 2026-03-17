@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-17
+title: BO2026 Dashboard - Updated 2026-03-15
 author: LeadFlow Orchestrator
-date: 2026-03-17
+date: 2026-03-15
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 31 of 60  
+**Current Day:** Day 29 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/17/2026, 12:40:39 PM
+**Last Updated:** 3/15/2026, 8:37:04 AM
 
 ---
 
@@ -33,15 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 0 | Blocked: 0 | Done: 923
+**Queue Health:** Ready: 2 | In Progress: 1 | Blocked: 0 | Done: 921
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (2 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Dev: fix-tier-naming-inconsistency-between-pricing-page-and - Tier naming inconsistency between pricing page and checkout API | sonnet | $0.60 | 🟡 P1 |
+| Dev: fix-subscription-attempts-table-does-not-exist-in-supa - subscription_attempts table does not exist in Supabase | sonnet | $0.60 | 🟡 P1 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (1 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev: fix-stripe-webhook-secret-not-set-in-vercel-production - STRIPE_WEBHOOK_SECRET not set in Vercel production | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -99,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $440.12
-**Cost per task:** Avg $0.44
+**Estimated project cost:** $422.87
+**Cost per task:** Avg $0.42
 
 ---
 
@@ -113,8 +118,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. 🔴 No active agents
+1. ✅ **2 tasks ready to spawn**
+2. ⚡ **1 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?

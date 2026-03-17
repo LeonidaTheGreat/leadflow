@@ -1,8 +1,825 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-17T16:40:40.379Z
+Last updated: 2026-03-15T12:37:04.718Z
 ## Recent Heartbeats
 ```json
 [
+  {
+    "timestamp": "2026-03-03T14:47:14.006Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":3,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Marked 282ea3d2-bf24-41c6-9fe9-05c6740cebd2 as done",
+      "Marked b9300f94-cadc-4c64-bead-714ea532e71f as done",
+      "Marked 282ea3d2-bf24-41c6-9fe9-05c6740cebd2 as done",
+      "Marked b9300f94-cadc-4c64-bead-714ea532e71f as done",
+      "Budget check: insufficient funds",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 4,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T14:52:02.485Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":3,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Budget check: insufficient funds",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T14:57:01.652Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":3,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Budget check: insufficient funds",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:02:14.083Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":3,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Budget check: insufficient funds",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:03:56.902Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":3,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Budget check: insufficient funds",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:05:54.963Z",
+    "status": {
+      "ready": 2,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":2,\"inProgress\":3,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Spawned product for PM: Fix critical issue — Billing integration completely broken - Agent not found error",
+      "Spawned product for PM: Fix high issue — No authentication/signup flow on customer dashboard",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:07:02.507Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 97,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":5,\"blocked\":0,\"done\":97,\"total\":112}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:17:18.726Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 99,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":99,\"total\":112}",
+      "Marked 9e135b5d-070f-4492-8259-35fcffc9da4c as done",
+      "Marked b668988e-d666-4177-9ac3-3ca3f0ce3f9b as done",
+      "Marked 9e135b5d-070f-4492-8259-35fcffc9da4c as done",
+      "Marked b668988e-d666-4177-9ac3-3ca3f0ce3f9b as done",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 4,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:27:08.137Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 99,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":99,\"total\":112}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:32:18.086Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 99,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":99,\"total\":112}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:37:06.500Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 99,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":99,\"total\":112}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:42:06.168Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 99,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":99,\"total\":112}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:47:18.862Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 99,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":3,\"blocked\":0,\"done\":99,\"total\":112}",
+      "Reset zombie: PM: Fix critical issue — Billing section completely non-functional - Agent not found error (retry 1/3)",
+      "Reset zombie: PM: Fix high issue — No visible authentication/signup flow on customer dashboard (retry 1/3)",
+      "Reset zombie: PM: Fix high issue — Missing billing records for pilot agents (retry 1/3)",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T15:53:25.201Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 102,
+      "total": 112
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":102,\"total\":112}",
+      "Marked 0ede5296-1502-444c-bfb8-768a69612077 as done",
+      "Marked 18e091e1-6a7e-4429-8aec-cf389a774dfd as done",
+      "Marked 5c84b52a-d257-4398-8d28-fffbef4842e9 as done",
+      "Marked 0ede5296-1502-444c-bfb8-768a69612077 as done",
+      "Marked 18e091e1-6a7e-4429-8aec-cf389a774dfd as done",
+      "Marked 5c84b52a-d257-4398-8d28-fffbef4842e9 as done",
+      "Marked 18e091e1-6a7e-4429-8aec-cf389a774dfd as done",
+      "Marked 0ede5296-1502-444c-bfb8-768a69612077 as done",
+      "Marked 5c84b52a-d257-4398-8d28-fffbef4842e9 as done",
+      "Smoke tests: 5/5 passed",
+      "Deployment gap detected: Landing Page → PM task created",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 9,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:02:19.728Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 102,
+      "total": 113
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":102,\"total\":113}",
+      "Marked dd8b5557-5d3c-446a-b0b9-d0a5b865ac8f as done",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:07:09.969Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 103,
+      "total": 113
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":103,\"total\":113}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:24:20.718Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 103,
+      "total": 113
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":103,\"total\":113}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:25:51.999Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 103,
+      "total": 113
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":103,\"total\":113}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:26:51.111Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 103,
+      "total": 114
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":103,\"total\":114}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:27:09.786Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 103,
+      "total": 114
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":103,\"total\":114}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:29:04.716Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 104,
+      "total": 114
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":104,\"total\":114}",
+      "Marked c643b9fe-4301-4836-9af7-2973947e59f5 as done",
+      "Marked c643b9fe-4301-4836-9af7-2973947e59f5 as done",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 2,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:31:11.943Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 104,
+      "total": 114
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":104,\"total\":114}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Replenished: Dev task for UC-DEPLOY-LANDING-001",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:31:30.944Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 104,
+      "total": 115
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":104,\"total\":115}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:37:12.367Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 104,
+      "total": 115
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":104,\"total\":115}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Replenished: Dev task for UC-DEPLOY-LANDING-001",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:38:15.530Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 104,
+      "total": 116
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":104,\"total\":116}",
+      "Reset zombie: Dev: UC-DEPLOY-LANDING-001 - Deploy Landing Page to Vercel (retry 1/3)",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:38:34.274Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 104,
+      "total": 116
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":104,\"total\":116}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Merged PR #2",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T16:47:26.048Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 104,
+      "total": 116
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":104,\"total\":116}",
+      "Smoke tests: 5/5 passed",
+      "Deployment retry: Landing Page — direct dev task created (previous attempt failed)",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T17:02:31.018Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 104,
+      "total": 117
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":104,\"total\":117}",
+      "Marked 643d9d16-3f9e-4088-9e25-dd38ccd09508 as done",
+      "Created PR #3 for dev/643d9d16-dev-update-config-landing-page",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-03T17:12:21.128Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 105,
+      "total": 117
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":105,\"total\":117}",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Merged PR #3",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T04:56:08.707Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 6,
+      "blocked": 0,
+      "done": 119,
+      "total": 138
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":6,\"blocked\":0,\"done\":119,\"total\":138}",
+      "Reset zombie: QC: feat-add-login-page-with-email-and-password - add login page with email and password (retry 1/3)",
+      "Reset zombie: QC: feat-add-auth-middleware-to-protect-dashboard - add auth middleware to protect dashboard and settings routes (retry 1/3)",
+      "Reset zombie: QC: feat-add-session-management-with-server-side- - add session management with server-side tokens (retry 1/3)",
+      "Marked cf7edc9b-1897-4f8d-850e-bf582f826d61 as done",
+      "Created PR #9 for dev/cf7edc9b-dev-fix-deployed-pages-not-registered-in",
+      "Chained: dev->qc for fix-deployed-pages-not-registered-in-system-",
+      "Marked d3ef2e08-6fa2-4cce-b788-df0563213276 as done",
+      "Created PR #10 for dev/d3ef2e08-dev-fix-dashboard-routes-are-publicly-ac",
+      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
+      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
+      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
+      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
+      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
+      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
+      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "Distribution: 1 issue(s) → tasks created",
+      "Merged PR #6",
+      "Cleaned up 1 stale branch(es)",
+      "⚠️ DECISIONS NEEDED (5):\n  🔴 Emergency Revenue Sprint - Fix Auth & Billing [integration] (id: 4ad2b093)\n  🔴 Fix billing integration before pilot launch [integration] (id: b68180e3)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: e41bf508)\n  🔴 Fix billing integration before pilot launch [integration] (id: 47981563)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: c9a8e328)\nUse !decide <id> <option> to approve",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 5,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T05:00:20.498Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 7,
+      "blocked": 0,
+      "done": 120,
+      "total": 140
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":7,\"blocked\":0,\"done\":120,\"total\":140}",
+      "Reset zombie: QC: fix-landing-page-has-no-links-to-signup-or-o - landing page has no links to signup or onboarding pages (retry 1/3)",
+      "Marked 397f80e2-98de-4418-a8cb-c3fd37df35d1 as done",
+      "Created PR #11 for dev/397f80e2-dev-feat-add-login-page-with-email-and-p",
+      "Chained: dev->qc for feat-add-login-page-with-email-and-password",
+      "Marked 397f80e2-98de-4418-a8cb-c3fd37df35d1 as done",
+      "Chained: dev->qc for feat-add-login-page-with-email-and-password",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Build health: 1 error(s) → dev task created",
+      "Merged PR #5",
+      "Merged PR #10",
+      "⚠️ DECISIONS NEEDED (5):\n  🔴 Emergency Revenue Sprint - Fix Auth & Billing [integration] (id: 4ad2b093)\n  🔴 Fix billing integration before pilot launch [integration] (id: b68180e3)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: e41bf508)\n  🔴 Fix billing integration before pilot launch [integration] (id: 47981563)\n  🔴 Implement authentication flow for customer dashboard [ux] (id: c9a8e328)\nUse !decide <id> <option> to approve",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 2,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-04T05:08:07.408Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 10,
+      "blocked": 0,
+      "done": 119,
+      "total": 142
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":10,\"blocked\":0,\"done\":119,\"total\":142}",
+      "Completed (via stdout): Dev: fix-dashboard-routes-are-publicly-accessible - dashboard routes are publicly accessible with no auth protection",
+      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
+      "Skipped (via stdout): Dev: fix-test-genome-separation - test genome separation",
+      "Chained: dev->qc for fix-test-genome-separation",
+      "Marked 66e43172-7cd7-4bd9-baaa-cec5624507f7 as done",
+      "Created PR #12 for dev/66e43172-fix-dashboard-build-errors",
+      "Marked 66e43172-7cd7-4bd9-baaa-cec5624507f7 as done",
+      "Marked cc686016-bd32-49a2-93f6-d70ef43d4166 as done",
+      "Created PR #13 for dev/cc686016-dev-fix-landing-page-has-no-links-to-sig",
+      "Chained: dev->qc for fix-landing-page-has-no-links-to-signup-or-o",
+      "Marked d3ef2e08-6fa2-4cce-b788-df0563213276 as done",
+      "Created PR #14 for dev/d3ef2e08-dev-fix-dashboard-routes-are-publicly-ac",
+      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
+      "Marked d3ef2e08-6fa2-4cce-b788-df0563213276 as done",
+      "Chained: dev->qc for fix-dashboard-routes-are-publicly-accessible",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 5/5 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 7,
+    "errors": []
+  },
   {
     "timestamp": "2026-03-05T05:27:37.722Z",
     "status": {
@@ -1439,21 +2256,96 @@ Last updated: 2026-03-17T16:40:40.379Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-15T09:05:31.070Z",
+    "timestamp": "2026-03-15T11:50:29.108Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 909,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Product review triggered: Stripe Checkout Production Verification — First Real Transaction Test",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-15T11:55:37.401Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 909,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: bug from pm_review",
+      "Feedback→PM: bug from pm_review",
+      "Feedback→PM: bug from pm_review",
+      "Processed product review: 1 decisions, 6 UCs, 5 new action items",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-15T12:00:28.176Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 909,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Replenished: Dev task for fix-stripe-price-ids-are-placeholder-values-not-real-s",
+      "Replenished: Dev task for fix-pricing-page-checkout-buttons-do-nothing",
+      "Feedback→PM: bug from pm_review",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-15T12:05:57.685Z",
     "status": {
       "ready": 1,
-      "inProgress": 0,
+      "inProgress": 1,
       "blocked": 0,
-      "done": 908,
+      "done": 907,
       "total": 1000
     },
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":908,\"total\":1000}",
+      "Queried state: {\"ready\":1,\"inProgress\":1,\"blocked\":0,\"done\":907,\"total\":1000}",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
+      "Replenished: Dev task for fix-stripe-secret-key-not-set-in-vercel-production",
+      "Replenished: Dev task for fix-stripe-webhook-secret-not-set-in-vercel-production",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
@@ -1462,886 +2354,7 @@ Last updated: 2026-03-17T16:40:40.379Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-15T09:10:37.718Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Merged PR #322",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:11:23.709Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:15:52.391Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:20:26.343Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:25:53.493Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:31:05.442Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:35:24.845Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:40:23.343Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:42:07.179Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:45:41.055Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:50:28.899Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T09:55:24.661Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:00:24.340Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:05:24.883Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:10:23.766Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:12:54.916Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:15:26.100Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:20:22.577Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:25:26.175Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:30:23.044Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:35:25.836Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:40:23.452Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:43:39.665Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:45:24.714Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:50:24.590Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T10:55:25.163Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:00:23.996Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:06:45.097Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:10:24.499Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:14:27.132Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:17:03.774Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:21:10.446Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:26:31.855Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:35:25.178Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: PM task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-15T11:40:36.903Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 909,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: Dev task for feat-stripe-checkout-production-e2e",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-17T14:25:26.395Z",
-    "status": {
-      "ready": 9,
-      "inProgress": 3,
-      "blocked": 0,
-      "done": 898,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":9,\"inProgress\":3,\"blocked\":0,\"done\":898,\"total\":1000}",
-      "Spawned product for PM: Product Review — Fix Checkout — Replace subscription_attempts with checkout_sessions",
-      "Spawned product for PM: Product Review — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Processed product review: 0 decisions, 0 UCs, 3 new action items",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 2,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-17T15:39:04.921Z",
-    "status": {
-      "ready": 1,
-      "inProgress": 2,
-      "blocked": 0,
-      "done": 906,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":1,\"inProgress\":2,\"blocked\":0,\"done\":906,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Replenished: Dev task for fix-9-acceptance-criteria-defined-but-not-all-verified",
-      "Replenished: Dev task for fix-session-analytics-tables-exist-but-lack-integratio",
-      "Closed conflicted PR #336",
-      "Action items: +1 -0",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-17T15:39:40.154Z",
-    "status": {
-      "ready": 3,
-      "inProgress": 2,
-      "blocked": 0,
-      "done": 904,
-      "total": 1000
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":3,\"inProgress\":2,\"blocked\":0,\"done\":904,\"total\":1000}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-17T15:44:27.500Z",
+    "timestamp": "2026-03-15T12:11:13.130Z",
     "status": {
       "ready": 3,
       "inProgress": 1,
@@ -2352,23 +2365,42 @@ Last updated: 2026-03-17T16:40:40.379Z
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
       "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":905,\"total\":1000}",
-      "Completed (via stdout): QC: fix-e2e-test-confirms-implementation-gaps - E2E test confirms implementation gaps",
-      "UC complete: fix-e2e-test-confirms-implementation-gaps",
-      "Spawned dev for Dev: fix-bookings-table-join-missing-for-cross-table-agent- - Bookings table join missing for cross-table agent scoping",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
-      "Closed conflicted PR #337",
-      "Action items: +1 -1",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-15T12:15:34.685Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 906,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":906,\"total\":1000}",
+      "Spawned dev for Dev: fix-pricing-page-checkout-buttons-do-nothing - Pricing page checkout buttons do nothing",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #324",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
     "spawned": 1,
-    "completed": 1,
+    "completed": 0,
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T15:49:10.316Z",
+    "timestamp": "2026-03-15T12:16:46.552Z",
     "status": {
       "ready": 2,
       "inProgress": 1,
@@ -2390,18 +2422,65 @@ Last updated: 2026-03-17T16:40:40.379Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T16:39:11.573Z",
+    "timestamp": "2026-03-15T12:20:31.885Z",
     "status": {
-      "ready": 0,
+      "ready": 2,
       "inProgress": 1,
       "blocked": 0,
-      "done": 912,
+      "done": 906,
       "total": 1000
     },
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":912,\"total\":1000}",
-      "Reset zombie: Dev: fix-api-accepts-agent-id-as-query-parameter-instead-of - API accepts agent_id as query parameter instead of reading from session (retry 1/3) [false_completion]",
+      "Queried state: {\"ready\":2,\"inProgress\":1,\"blocked\":0,\"done\":906,\"total\":1000}",
+      "Spawned dev for Dev: fix-stripe-secret-key-not-set-in-vercel-production - STRIPE_SECRET_KEY not set in Vercel production",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 1,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-15T12:25:49.712Z",
+    "status": {
+      "ready": 1,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 907,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":1,\"inProgress\":1,\"blocked\":0,\"done\":907,\"total\":1000}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Replenished: Dev task for fix-tier-naming-inconsistency-between-pricing-page-and",
+      "Replenished: Dev task for fix-subscription-attempts-table-does-not-exist-in-supa",
+      "Merged PR #325",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-15T12:31:33.362Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 905,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":905,\"total\":1000}",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
@@ -2413,24 +2492,26 @@ Last updated: 2026-03-17T16:40:40.379Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T16:40:40.310Z",
+    "timestamp": "2026-03-15T12:37:04.637Z",
     "status": {
-      "ready": 0,
+      "ready": 3,
       "inProgress": 1,
       "blocked": 0,
-      "done": 912,
+      "done": 905,
       "total": 1000
     },
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":912,\"total\":1000}",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":905,\"total\":1000}",
+      "Spawned dev for Dev: fix-stripe-webhook-secret-not-set-in-vercel-production - STRIPE_WEBHOOK_SECRET not set in Vercel production",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
+      "Merged PR #326",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
-    "spawned": 0,
+    "spawned": 1,
     "completed": 0,
     "errors": []
   }
@@ -2438,4 +2519,4 @@ Last updated: 2026-03-17T16:40:40.379Z
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":1,"blocked":0,"done":912,"total":1000}
+- Last status: {"ready":3,"inProgress":1,"blocked":0,"done":905,"total":1000}
