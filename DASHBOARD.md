@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 31 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/17/2026, 12:40:39 PM
+**Last Updated:** 3/17/2026, 1:04:19 PM
 
 ---
 
@@ -33,15 +33,18 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 0 | Blocked: 0 | Done: 923
+**Queue Health:** Ready: 0 | In Progress: 2 | Blocked: 0 | Done: 921
 
 ### ▶️ Ready to Spawn (0 tasks)
 
 *No ready tasks*
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (2 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| Dev (re-merge): fix-bookings-table-join-missing-for-cross-table-agent- - Bookings table join missing for cross-table age | dev | kimi |
+| Dev: fix-ga4-property-and-vercel-env-var-setup-required - GA4 property and Vercel env var setup required | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -99,7 +102,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $440.12
+**Estimated project cost:** $443.78
 **Cost per task:** Avg $0.44
 
 ---
@@ -114,7 +117,7 @@ All technical work complete. System ready for pilot launch.
 ## 🎯 Next Actions
 
 1. 🔴 No ready tasks
-2. 🔴 No active agents
+2. ⚡ **2 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
