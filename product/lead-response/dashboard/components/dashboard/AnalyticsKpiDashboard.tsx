@@ -12,6 +12,7 @@ import {
   getLeadConversion,
   getAvgResponseTime,
 } from '@/lib/analytics-queries'
+import { PilotEngagementMetrics } from './PilotEngagementMetrics'
 
 // ============================================
 // TYPES
@@ -263,6 +264,11 @@ export function AnalyticsKpiDashboard() {
             <MetricRow label="Median Response Time" value={`${data.responseTime.medianResponseTime}m`} />
           </div>
         </div>
+      </div>
+
+      {/* Pilot Engagement Metrics */}
+      <div>
+        <PilotEngagementMetrics />
       </div>
 
       {/* Footer */}
