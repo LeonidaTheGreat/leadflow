@@ -1,1 +1,16 @@
-{}
+{
+  "crons": [
+    {
+      "path": "/api/cron/follow-up",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/inactivity-alerts",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/check-stuck-agents",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}
