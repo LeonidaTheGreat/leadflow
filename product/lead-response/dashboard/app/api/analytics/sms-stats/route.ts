@@ -51,16 +51,19 @@ export async function GET(request: NextRequest) {
     // delivery_rate = delivered / total_outbound
     // ============================================================
 
+    // NOTE: messages table has no agent_id column — must join leads to filter by agent.
+    // We use leads!inner(agent_id) so PostgREST performs an INNER JOIN, then filter
+    // on the joined table's column.
     let outboundQuery = supabaseAdmin
       .from('messages')
-      .select('id, status, lead_id')
+      .select('id, status, lead_id, leads!inner(agent_id)')
       .eq('direction', 'outbound')
 
     if (windowStart) {
       outboundQuery = outboundQuery.gte('created_at', windowStart.toISOString())
     }
     if (agentId) {
-      outboundQuery = outboundQuery.eq('agent_id', agentId)
+      outboundQuery = outboundQuery.eq('leads.agent_id', agentId)
     }
 
     const { data: outboundMessages, error: outboundError } = await outboundQuery
@@ -88,16 +91,17 @@ export async function GET(request: NextRequest) {
     // Excludes opt-out replies
     // ============================================================
 
+    // NOTE: Same join pattern — messages has no agent_id, must join through leads.
     let inboundQuery = supabaseAdmin
       .from('messages')
-      .select('lead_id, body')
+      .select('lead_id, body, leads!inner(agent_id)')
       .eq('direction', 'inbound')
 
     if (windowStart) {
       inboundQuery = inboundQuery.gte('created_at', windowStart.toISOString())
     }
     if (agentId) {
-      inboundQuery = inboundQuery.eq('agent_id', agentId)
+      inboundQuery = inboundQuery.eq('leads.agent_id', agentId)
     }
 
     const { data: inboundMessages, error: inboundError } = await inboundQuery
