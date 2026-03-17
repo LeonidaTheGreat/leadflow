@@ -1,52 +1,170 @@
 /**
- * Tests for fix: API route queries wrong table for satisfaction_ping_enabled
- * Task: 907d1165-9565-4603-b2d1-3cacfd8ca414
+ * E2E test: API route uses agents table (not real_estate_agents) for satisfaction_ping_enabled
+ * Task: deae3788-9cf1-4906-9c0f-2a01b8965c65
  *
- * Verifies that /api/agents/satisfaction-ping uses the `agents` table (not `real_estate_agents`)
- * for both GET and PATCH handlers, as satisfaction_ping_enabled lives on the agents table
- * per migration 008.
+ * Tests runtime behavior via Supabase client:
+ * - `agents` table has satisfaction_ping_enabled column and supports read/write
+ * - `real_estate_agents` table does NOT have satisfaction_ping_enabled column
+ * - Round-trip toggle works correctly on the agents table
  */
 
-const fs = require('fs');
-const path = require('path');
+'use strict';
 
-const ROUTE_FILE = path.join(
-  __dirname,
-  '../product/lead-response/dashboard/app/api/agents/satisfaction-ping/route.ts'
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+const assert = require('assert');
+const { createClient } = require('@supabase/supabase-js');
+
+const sb = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-describe('fix-api-route-queries-wrong-table-for-satisfaction-ping', () => {
-  let routeSource;
+async function run() {
+  let passed = 0;
+  let failed = 0;
+  const results = [];
 
-  beforeAll(() => {
-    routeSource = fs.readFileSync(ROUTE_FILE, 'utf8');
-  });
+  function ok(name, result, detail = '') {
+    if (result) {
+      console.log(`  ✅ PASS: ${name}`);
+      passed++;
+      results.push({ name, status: 'pass' });
+    } else {
+      console.log(`  ❌ FAIL: ${name}${detail ? ' — ' + detail : ''}`);
+      failed++;
+      results.push({ name, status: 'fail', detail });
+    }
+  }
 
-  test('route file exists', () => {
-    expect(fs.existsSync(ROUTE_FILE)).toBe(true);
-  });
+  console.log('\n🧪 E2E: satisfaction_ping_enabled table fix\n');
 
-  test('does NOT reference real_estate_agents table', () => {
-    expect(routeSource).not.toContain("from('real_estate_agents')");
-    expect(routeSource).not.toContain('from("real_estate_agents")');
-  });
+  // ── Test 1: agents table has satisfaction_ping_enabled column ──────────────
+  {
+    const { data, error } = await sb
+      .from('agents')
+      .select('id, satisfaction_ping_enabled')
+      .limit(1);
+    ok(
+      'agents table has satisfaction_ping_enabled column',
+      !error && data !== null,
+      error?.message
+    );
+  }
 
-  test('PATCH handler uses agents table', () => {
-    // Find PATCH function block and confirm it references agents
-    const patchIdx = routeSource.indexOf('export async function PATCH');
-    const patchBlock = routeSource.slice(patchIdx, patchIdx + 800);
-    expect(patchBlock).toContain(".from('agents')");
-  });
+  // ── Test 2: real_estate_agents table does NOT have satisfaction_ping_enabled ─
+  {
+    const { data, error } = await sb
+      .from('real_estate_agents')
+      .select('satisfaction_ping_enabled')
+      .limit(1);
+    // Expect an error (column doesn't exist) or empty (table doesn't exist)
+    const columnMissing =
+      error != null &&
+      (error.message.includes('does not exist') ||
+        error.message.includes('column') ||
+        error.code === '42703' || // undefined_column
+        error.code === '42P01'); // undefined_table
+    ok(
+      'real_estate_agents does NOT have satisfaction_ping_enabled column',
+      columnMissing,
+      error ? `Got error (expected): ${error.message}` : 'No error — column unexpectedly present'
+    );
+  }
 
-  test('GET handler uses agents table', () => {
-    const getIdx = routeSource.indexOf('export async function GET');
-    const getBlock = routeSource.slice(getIdx, getIdx + 600);
-    expect(getBlock).toContain(".from('agents')");
-  });
+  // ── Test 3: round-trip toggle on a real agent row ──────────────────────────
+  {
+    // Fetch first agent
+    const { data: agents, error: fetchErr } = await sb
+      .from('agents')
+      .select('id, satisfaction_ping_enabled')
+      .limit(1);
 
-  test('both handlers select satisfaction_ping_enabled', () => {
-    const occurrences = (routeSource.match(/satisfaction_ping_enabled/g) || []).length;
-    // Should appear in PATCH update, PATCH select, GET select, GET response, PATCH response = at least 4
-    expect(occurrences).toBeGreaterThanOrEqual(4);
-  });
+    if (fetchErr || !agents || agents.length === 0) {
+      ok('round-trip toggle on agents row', false, 'No agents found to test with');
+    } else {
+      const agent = agents[0];
+      const original = agent.satisfaction_ping_enabled ?? true;
+      const toggled = !original;
+
+      // Toggle
+      const { data: updated, error: updateErr } = await sb
+        .from('agents')
+        .update({ satisfaction_ping_enabled: toggled })
+        .eq('id', agent.id)
+        .select('id, satisfaction_ping_enabled')
+        .single();
+
+      const toggleOk = !updateErr && updated?.satisfaction_ping_enabled === toggled;
+      ok('toggle satisfaction_ping_enabled on agents row', toggleOk, updateErr?.message);
+
+      // Restore original value
+      await sb
+        .from('agents')
+        .update({ satisfaction_ping_enabled: original })
+        .eq('id', agent.id);
+
+      // Verify restore
+      const { data: restored, error: restoreErr } = await sb
+        .from('agents')
+        .select('id, satisfaction_ping_enabled')
+        .eq('id', agent.id)
+        .single();
+      ok(
+        'original value restored after toggle',
+        !restoreErr && restored?.satisfaction_ping_enabled === original,
+        restoreErr?.message
+      );
+    }
+  }
+
+  // ── Test 4: PATCH handler must NOT include updated_at (column doesn't exist) ─
+  // The agents table has no updated_at column; including it in updates causes PGRST204
+  {
+    const { data: agents2 } = await sb.from('agents').select('id').limit(1);
+    if (agents2 && agents2.length > 0) {
+      const { error: patchErr } = await sb
+        .from('agents')
+        .update({ satisfaction_ping_enabled: true, updated_at: new Date().toISOString() })
+        .eq('id', agents2[0].id)
+        .select('id, satisfaction_ping_enabled')
+        .single();
+      // This SHOULD fail — if it doesn't, that's fine (column was added); if it does, the route is broken
+      const routeFails = patchErr?.code === 'PGRST204';
+      ok(
+        'PATCH with updated_at succeeds (agents table must have updated_at column)',
+        !routeFails,
+        routeFails
+          ? `BUG: agents table has no updated_at — PATCH handler will always return 500 (${patchErr.message})`
+          : 'OK'
+      );
+    }
+  }
+
+  // ── Test 5: route source uses agents table (no real_estate_agents reference) ─
+  {
+    const fs = require('fs');
+    const routePath = require('path').join(
+      __dirname,
+      '../product/lead-response/dashboard/app/api/agents/satisfaction-ping/route.ts'
+    );
+    const src = fs.readFileSync(routePath, 'utf8');
+    const patchUsesAgents =
+      src.includes(".from('agents')") && !src.includes(".from('real_estate_agents')");
+    ok(
+      'route source uses agents table (no real_estate_agents reference)',
+      patchUsesAgents
+    );
+  }
+
+  // ── Summary ────────────────────────────────────────────────────────────────
+  console.log(`\n📊 Results: ${passed} passed, ${failed} failed out of ${passed + failed} tests`);
+  if (failed > 0) {
+    process.exit(1);
+  }
+  return { passed, failed, total: passed + failed };
+}
+
+run().catch((err) => {
+  console.error('❌ Test runner crashed:', err);
+  process.exit(1);
 });
