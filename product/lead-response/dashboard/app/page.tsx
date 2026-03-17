@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
+import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -128,6 +129,11 @@ export default function HomePage() {
             </button>
           </div>
 
+          {/* TrialSignupForm compact in hero, wrapped in Suspense for dynamic rendering */}
+          <Suspense fallback={<div className="mt-8 h-32 bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse" />}>
+            <TrialSignupForm compact />
+          </Suspense>
+
           {testResult && (
             <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg text-left">
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Result:</p>
@@ -155,6 +161,18 @@ export default function HomePage() {
             description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
             icon="🔗"
           />
+        </div>
+
+        {/* CTA Placement #2: End of Features section */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup/trial"
+            onClick={() => trackCTAClick('features_cta', 'Start Free Trial', 'features')}
+            className="inline-block px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+            data-cta-id="features_cta"
+          >
+            Start Free Trial
+          </Link>
         </div>
 
         {/* API Endpoints — scroll milestone 75% anchor */}
@@ -238,6 +256,17 @@ export default function HomePage() {
               data-cta-id="pricing_team"
             >
               Team — 5 agents
+            </Link>
+          </div>
+
+          {/* CTA Placement #3: Pricing section trial link */}
+          <div className="mt-6">
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('pricing_trial', 'or start free trial', 'pricing')}
+              className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-semibold transition-colors"
+            >
+              or start free trial →
             </Link>
           </div>
         </div>
