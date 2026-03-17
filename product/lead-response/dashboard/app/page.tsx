@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
+import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
   const [testResult, setTestResult] = useState<string | null>(null)
@@ -128,6 +129,9 @@ export default function HomePage() {
             </button>
           </div>
 
+          {/* CTA Placement #1: TrialSignupForm compact in hero */}
+          <TrialSignupForm compact className="mt-8" />
+
           {testResult && (
             <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg text-left">
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Result:</p>
@@ -155,6 +159,17 @@ export default function HomePage() {
             description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
             icon="🔗"
           />
+        </div>
+
+        {/* CTA Placement #2: End of Features section */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup/trial"
+            onClick={() => trackCTAClick('features_trial_cta', 'Start Free Trial', 'features')}
+            className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"
+          >
+            Start Free Trial
+          </Link>
         </div>
 
         {/* API Endpoints — scroll milestone 75% anchor */}
@@ -203,7 +218,7 @@ export default function HomePage() {
         {/* ── Lead Magnet / Email Capture (AC-1: between Hero/Features and Pricing) ── */}
         <LeadMagnetSection />
 
-        {/* Pricing CTA section */}
+        {/* CTA Placement #3: Pricing CTA section */}
         <div className="mt-20 text-center">
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
             Simple, transparent pricing
@@ -240,6 +255,17 @@ export default function HomePage() {
               Team — 5 agents
             </Link>
           </div>
+          <p className="text-slate-600 dark:text-slate-400 mt-6">
+            or{' '}
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('pricing_trial_cta', 'start free trial', 'pricing')}
+              className="text-emerald-500 hover:text-emerald-600 font-semibold"
+              title="or start free trial"
+            >
+              start free trial
+            </Link>
+          </p>
         </div>
       </main>
 
