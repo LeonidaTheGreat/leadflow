@@ -29,6 +29,11 @@ function getTierFromSubscription(subscription: Stripe.Subscription): string {
 }
 
 // Event handlers
+
+/**
+ * Handle checkout.session.completed — creates the initial subscription record.
+ * Fix: subscriptions table was never populated; upsert ensures idempotent replay.
+ */
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   if (!stripe) return
 
