@@ -52,6 +52,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   }).eq('id', userId)
 
   // Create initial subscription record (core fix: subscriptions table was never populated)
+  const subData = subscription as any;
   await supabase.from('subscriptions').upsert({
     user_id: userId,
     stripe_customer_id: session.customer as string,
@@ -60,8 +61,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     tier: tier,
     price_id: subscription.items.data[0]?.price?.id ?? null,
     interval: subscription.items.data[0]?.price?.recurring?.interval ?? null,
-    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    current_period_start: new Date(subData.current_period_start * 1000).toISOString(),
+    current_period_end: new Date(subData.current_period_end * 1000).toISOString(),
     trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
     trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
     cancel_at_period_end: subscription.cancel_at_period_end,
