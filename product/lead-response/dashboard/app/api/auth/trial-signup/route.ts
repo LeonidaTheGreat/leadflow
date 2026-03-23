@@ -156,8 +156,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/setup',
-      message: 'Trial account created successfully'
+      redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
+      message: 'Trial account created successfully. Please check your email to verify your account.'
     })
 
   } catch (error) {
