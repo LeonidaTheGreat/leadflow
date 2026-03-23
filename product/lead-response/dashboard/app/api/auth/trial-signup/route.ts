@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
-import { sendWelcomeEmail } from '@/lib/email-templates'
+import { sendWelcomeEmail } from '@/lib/email-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -151,23 +151,14 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     )
 
-    // Set auth cookie and return success with token + user for localStorage storage
-    const response = NextResponse.json({
+    // Email verification required before login — redirect to check-inbox page, don't set auth cookie
+    return NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/setup',
-      message: 'Trial account created successfully',
-      token,
-      user: {
-        id: agent.id,
-        email: agent.email,
-        firstName: agent.first_name,
-        lastName: agent.last_name,
-        onboardingCompleted: false,
-      },
+      redirectTo: '/check-your-inbox',
+      message: 'Trial account created. Please verify your email to continue.',
+      email: agent.email
     })
-
-    return response
   } catch (error) {
     console.error('Trial signup error:', error)
     return NextResponse.json(
