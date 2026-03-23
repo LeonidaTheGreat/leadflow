@@ -8,6 +8,14 @@ import PricingSection from '@/components/PricingSection'
 import TrialSignupForm from '@/components/trial-signup-form'
 
 export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />}>
+      <HomePageInner />
+    </Suspense>
+  )
+}
+
+function HomePageInner() {
   const [testResult, setTestResult] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
