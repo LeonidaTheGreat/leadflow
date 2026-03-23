@@ -1,5 +1,21 @@
 'use client'
 
+// Onboarding Simulator Step — Aha Moment Lead Simulation
+//
+// IMPORTANT: Uses ACTUAL API response format (not PRD contract)
+//
+// PRD Format (incorrect):  { success, sessionId, status, array-of-turns }
+// Actual API Format:       { success, state: { id, session_id, agent_id, status, conversation[], response_time_ms, ... } }
+//
+// Key differences:
+//   - PRD named field as turns-array; API returns state.conversation
+//   - PRD named field responseTimeMs; API returns state.response_time_ms
+//   - PRD named completion status as 'done'; API uses status 'success'
+//   - PRD has 3 statuses; API has 8: idle|running|inbound_received|ai_responded|success|skipped|timeout|failed
+//
+// This component accesses state.conversation via setSimulation(data.state)
+// then reads simulation.conversation (which IS data.state.conversation).
+
 import { useState, useEffect, useRef } from 'react'
 import { 
   Play, 
@@ -50,6 +66,25 @@ function formatResponseTime(ms: number | null): string {
 
 function generateSessionId(): string {
   return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+/**
+ * Map actual API status values to display info.
+ * API returns 8 statuses: idle | running | inbound_received | ai_responded | success | skipped | timeout | failed
+ * (PRD incorrectly specified only 3 with different names — always use API values here)
+ */
+function getStatusInfo(status: SimulationStatus): { label: string; color: string } {
+  switch (status) {
+    case 'idle':              return { label: 'Not started',       color: 'text-slate-500' }
+    case 'running':           return { label: 'Simulating...',     color: 'text-blue-500' }
+    case 'inbound_received':  return { label: 'Lead arrived',      color: 'text-yellow-500' }
+    case 'ai_responded':      return { label: 'AI responding',     color: 'text-emerald-400' }
+    case 'success':           return { label: 'Complete ✓',        color: 'text-emerald-600' }
+    case 'skipped':           return { label: 'Skipped',           color: 'text-slate-400' }
+    case 'timeout':           return { label: 'Timed out',         color: 'text-orange-500' }
+    case 'failed':            return { label: 'Failed',            color: 'text-red-500' }
+    default:                  return { label: status,              color: 'text-slate-500' }
+  }
 }
 
 // ─── Chat Bubble Component ───────────────────────────────────────────────────
