@@ -1,18 +1,113 @@
-import { Suspense } from 'react'
+'use client'
+
+import { Suspense, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { SessionAnalyticsCard } from '@/components/dashboard/SessionAnalyticsCard'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
+import { OnboardingWizardOverlay } from '@/components/onboarding-wizard-overlay'
 
-export const metadata = {
-  title: 'Lead Feed - AI Lead Response',
+function getFromStorage(key: string): string | null {
+  try {
+    return localStorage.getItem(key) || sessionStorage.getItem(key) || null
+  } catch {
+    return null
+  }
+}
+
+interface StoredUser {
+  id?: string
+  onboardingCompleted?: boolean
+  [key: string]: unknown
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
+  const [showWizard, setShowWizard] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Check onboarding status and show wizard if not completed
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      const token = getFromStorage('leadflow_token')
+
+      // No token → redirect to login (should be caught by middleware, but safety check)
+      if (!token) {
+        router.replace('/login')
+        return
+      }
+
+      // Try cached user data first (fastest path)
+      const userRaw = getFromStorage('leadflow_user')
+      if (userRaw) {
+        try {
+          const user: StoredUser = JSON.parse(userRaw)
+          if (user.onboardingCompleted === false) {
+            setShowWizard(true)
+          }
+          setIsLoading(false)
+          return
+        } catch {
+          // malformed JSON — fall through to API check
+        }
+      }
+
+      // Fallback: ask the server whether the agent still needs onboarding
+      try {
+        const response = await fetch('/api/setup/status', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const data = await response.json()
+
+        if (data.wizardState === null || data.wizardState?.completed_at === null) {
+          setShowWizard(true)
+        }
+      } catch {
+        // Network failure — don't block the user
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    checkOnboardingStatus()
+  }, [router])
+
+  const handleWizardComplete = () => {
+    setShowWizard(false)
+    // Update cached user data to reflect completion
+    const userRaw = getFromStorage('leadflow_user')
+    if (userRaw) {
+      try {
+        const user: StoredUser = JSON.parse(userRaw)
+        user.onboardingCompleted = true
+        localStorage.setItem('leadflow_user', JSON.stringify(user))
+        sessionStorage.setItem('leadflow_user', JSON.stringify(user))
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
+      {/* Onboarding Wizard Overlay - appears automatically when onboarding_completed=false */}
+      {showWizard && (
+        <OnboardingWizardOverlay
+          onComplete={handleWizardComplete}
+          onDismiss={() => setShowWizard(false)}
+        />
+      )}
       {/* Pilot Status Banner — shows for pilot agents */}
       <PilotStatusBanner />
 
