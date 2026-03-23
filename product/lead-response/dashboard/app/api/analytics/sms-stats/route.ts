@@ -149,10 +149,14 @@ export async function GET(request: NextRequest) {
     // booking_conversion = unique_leads_booked / unique_leads_replied
     // ============================================================
 
+    // NOTE: bookings.agent_id may be NULL if not set during webhook processing.
+    // We must join through leads to find all bookings for an agent's leads.
+    // Uses Supabase foreign table syntax: leads!inner(agent_id) for cross-table filter
+
     let bookingsQuery = supabaseAdmin
       .from('bookings')
-      .select('lead_id')
-      .eq('agent_id', agentId)
+      .select('lead_id, leads!inner(agent_id)')
+      .eq('leads.agent_id', agentId)
 
     if (windowStart) {
       bookingsQuery = bookingsQuery.gte('created_at', windowStart.toISOString())
