@@ -310,6 +310,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    return response
   } catch (error) {
     console.error('Pilot signup error:', error)
     return NextResponse.json(
