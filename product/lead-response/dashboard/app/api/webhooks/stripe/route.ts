@@ -89,7 +89,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   })
 
   // Update agent with subscription info
-  await supabase.from('agents').update({
+  await supabase.from('real_estate_agents').update({
     stripe_customer_id: customerId,
     stripe_subscription_id: subscription.id,
     plan_tier: tier,
@@ -155,7 +155,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   })
 
   // Update agent MRR
-  await supabase.from('agents').update({
+  await supabase.from('real_estate_agents').update({
     mrr: mrr,
     updated_at: new Date().toISOString(),
   }).eq('id', userId)
@@ -180,6 +180,12 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     .select('id')
     .eq('stripe_subscription_id', subscriptionId)
     .single()
+
+  // Mark as at risk
+  await supabase.from('real_estate_agents').update({
+    payment_status: 'past_due',
+    updated_at: new Date().toISOString(),
+  }).eq('id', userId)
 
   const subscriptionRecordId = subscriptions?.id
 
@@ -211,7 +217,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   })
 
   // Update agent subscription status to past_due
-  await supabase.from('agents').update({
+  await supabase.from('real_estate_agents').update({
     subscription_status: 'past_due',
     payment_status: 'past_due',
     updated_at: new Date().toISOString(),
@@ -257,7 +263,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   })
 
   // Record churn in agent
-  await supabase.from('agents').update({
+  await supabase.from('real_estate_agents').update({
     subscription_status: 'canceled',
     status: 'cancelled',
     mrr: 0,
