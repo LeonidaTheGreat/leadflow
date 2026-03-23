@@ -67,9 +67,6 @@ function OnboardingPageInner() {
     utmCampaign: null as string | null,
     utmContent: null as string | null,
     utmTerm: null as string | null,
-    // Aha moment fields
-    ahaCompleted: false,
-    ahaResponseTimeMs: null as number | null,
   })
   const [isLoading, setIsLoading] = useState(false)
 
