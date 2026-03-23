@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-17T16:40:40.241Z | Source: `prds` table
+> Generated: 2026-03-23T05:19:32.188Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -37,6 +37,7 @@
 | PRD-FRICTIONLESS-ONBOARDING-001 | Self-Serve Frictionless Onboarding Flow | approved | - | [docs/PRD-FRICTIONLESS-ONBOARDING-001.md](docs/PRD-FRICTIONLESS-ONBOARDING-001.md) |
 | PRD-INTEGRATIONS | CRM & Calendar Integrations | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md](/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md) |
 | PRD-LANDING-ANALYTICS-GA4-001 | Landing Page Analytics: GA4 CTA & Conversion Tracking | approved | 1.0 | [docs/PRD-LANDING-ANALYTICS-GA4-001.md](docs/PRD-LANDING-ANALYTICS-GA4-001.md) |
+| prd-landing-cta-consolidation-001 | Landing Page CTA Consolidation — Unify Duplicate Free Entry Points | draft | 1 | [docs/prd/PRD-LANDING-CTA-CONSOLIDATION-001.md](docs/prd/PRD-LANDING-CTA-CONSOLIDATION-001.md) |
 | PRD-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 1.0 | [docs/PRD-LANDING-MARKETING-001.md](docs/PRD-LANDING-MARKETING-001.md) |
 | PRD-LANDING-PAGE-ANALYTICS-001 | Landing Page Analytics — GA4/PostHog CTA, Scroll Depth & Conversion Funnel | approved | 1.0 | [docs/PRD-LANDING-PAGE-ANALYTICS-001.md](docs/PRD-LANDING-PAGE-ANALYTICS-001.md) |
 | PRD-LANDING-PAGE-CONVERSION-001 | Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof | approved | - | [docs/PRD-LANDING-PAGE-CONVERSION-001.md](docs/PRD-LANDING-PAGE-CONVERSION-001.md) |
@@ -68,6 +69,7 @@
 | prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
+| PRD-UC-TRIAGE-001 | UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | approved | 1.0 | [docs/prd/PRD-UC-TRIAGE-001.md](docs/prd/PRD-UC-TRIAGE-001.md) |
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
 | PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
