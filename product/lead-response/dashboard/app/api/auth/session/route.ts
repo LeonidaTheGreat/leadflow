@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   
   // Get user details
   const { data: user, error } = await supabase
-    .from('agents')
+    .from('real_estate_agents')
     .select('id, email, first_name, last_name')
     .eq('id', session.userId)
     .single()
