@@ -248,6 +248,24 @@ describe('AC-14 (guard): OnboardingGuard skips /dashboard/onboarding', () => {
 })
 
 // ---------------------------------------------------------------------------
+// TC-SIGNUP-AUTH-004: trial/start sets auth-token (hyphen) cookie
+// Bug fix: cookie name was 'auth_token' (underscore) — mismatch with /api/auth/me
+// ---------------------------------------------------------------------------
+describe('TC-SIGNUP-AUTH-004: trial/start cookie name matches auth-token (hyphen)', () => {
+  it('trial/start/route.ts sets cookie named auth-token (hyphen, not underscore)', () => {
+    const src = readFile('app/api/trial/start/route.ts')
+    assert.ok(
+      src.includes("cookies.set('auth-token'"),
+      "trial/start/route.ts must set cookie as 'auth-token' (hyphen) to match /api/auth/me"
+    )
+    assert.ok(
+      !src.includes("cookies.set('auth_token'"),
+      "trial/start/route.ts must NOT set cookie as 'auth_token' (underscore) — mismatch with /api/auth/me"
+    )
+  })
+})
+
+// ---------------------------------------------------------------------------
 // PilotSignupForm also stores to localStorage
 // ---------------------------------------------------------------------------
 describe('Pilot signup form stores auth to localStorage', () => {
