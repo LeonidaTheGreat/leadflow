@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // sessionId is required for status and skip, but optional for start
-    // (client can generate it, or server can generate it)
+    // Server generates sessionId for start action and returns it to client
     if ((action === 'status' || action === 'skip') && !sessionId) {
       return NextResponse.json(
         { error: `sessionId required for ${action} action` },
@@ -91,7 +91,9 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'start':
-        return await startSimulation(agentId, sessionId)
+        // Generate sessionId server-side if not provided by client
+        const newSessionId = sessionId || randomUUID()
+        return await startSimulation(agentId, newSessionId)
       case 'status':
         return await getSimulationStatus(agentId, sessionId)
       case 'skip':
