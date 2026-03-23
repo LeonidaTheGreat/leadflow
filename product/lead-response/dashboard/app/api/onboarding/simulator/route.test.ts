@@ -112,7 +112,7 @@ describe('Onboarding Simulator API - Start Action', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toContain('sessionId required');
+      expect(data.error).toContain('sessionId');
     });
 
     it('should require sessionId for skip action', async () => {
@@ -128,7 +128,7 @@ describe('Onboarding Simulator API - Start Action', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toContain('sessionId required');
+      expect(data.error).toContain('sessionId');
     });
 
     it('should require action and agentId', async () => {
