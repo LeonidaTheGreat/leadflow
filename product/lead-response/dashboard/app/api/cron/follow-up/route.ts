@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
 
     console.log(`📋 Found ${sequences.length} sequences to process`)
 
-    const results = []
+    const results: any[] = []
     let sent = 0
     let skipped = 0
     let failed = 0

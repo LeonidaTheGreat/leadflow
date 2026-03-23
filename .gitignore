@@ -31,6 +31,7 @@ build/
 .realtime-dispatcher.log
 .recovery-state.json
 .smoke-test-state.json
+.doc-gen-state.json
 .build-health-state.json
 .last-deploy.json
 .notifications.json

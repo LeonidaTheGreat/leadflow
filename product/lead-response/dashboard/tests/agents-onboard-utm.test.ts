@@ -3,10 +3,10 @@
  * Bug fix: e944403a-5856-474d-9bea-e4feada6cac4
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/db';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL || '';
+const SUPABASE_KEY = process.env.API_SECRET_KEY || '';
 
 // We test the route handler directly by importing it and simulating a request
 // rather than hitting the live endpoint (which requires the server to be running).

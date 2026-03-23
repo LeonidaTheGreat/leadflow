@@ -9,15 +9,10 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 
 // Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+const dbUrl = process.env.NEXT_PUBLIC_API_URL || ''
+const dbKey = process.env.API_SECRET_KEY || ''
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-})
+const supabase = createClient(dbUrl, dbKey)
 
 // JWT Configuration
 const JWT_SECRET = process.env.NPS_SURVEY_JWT_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-in-production'

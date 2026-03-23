@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     
     // Step 2: Check Supabase
     log('Step 2: Checking Supabase...')
-    let lead = null
+    let lead: any = null
     try {
       const { data, error } = await supabaseAdmin
         .from('leads')

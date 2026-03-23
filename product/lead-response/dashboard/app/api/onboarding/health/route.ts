@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   };
 
   // Check for required env vars
-  const requiredEnvVars = ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
+  const requiredEnvVars = ['NEXT_PUBLIC_API_URL', 'API_SECRET_KEY'];
   const missingEnvVars = requiredEnvVars.filter(
     (envVar) => !process.env[envVar]
   );

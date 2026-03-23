@@ -20,11 +20,11 @@ interface ConversationTurn {
   timestamp: string
 }
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const DB_URL = (process.env.NEXT_PUBLIC_API_URL)!
+const DB_KEY = (process.env.API_SECRET_KEY)!
 
-function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+function getDB() {
+  return createClient(DB_URL, DB_KEY)
 }
 
 // Pre-scripted lead replies that simulate a real conversation
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     }
 
     // Store in lead_simulations table
-    const supabase = getSupabase()
+    const supabase = getDB()
     const { data, error } = await supabase
       .from('lead_simulations')
       .insert({
