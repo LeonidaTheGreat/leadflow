@@ -1,175 +1,204 @@
 # LeadFlow Project Structure
 
-This document defines the organization and conventions for the LeadFlow repository.
+This document defines the canonical directory structure for the LeadFlow project. It follows the Genome convention for orchestrated projects.
 
-## Directory Structure
+## Overview
 
 ```
 leadflow/
-├── agents/                 # Agent configuration files
-├── agents.json            # Agent registry
-├── ARCHITECTURE.md        # System architecture documentation
-├── BOOTSTRAP.md           # Project bootstrap guide
-├── CLAUDE.md              # Main project context (keep at root)
-├── completion-reports/    # Task completion reports
-├── config/                # Configuration files
-│   ├── budget-tracker.json
+├── server.js                          # Vercel entry point (KEEP AT ROOT)
+├── vercel.json                        # Vercel config (KEEP AT ROOT)
+├── package.json / package-lock.json   # Node runtime (KEEP AT ROOT)
+├── .env / .env.local / .env.template  # Credentials (KEEP AT ROOT)
+├── agents.json                        # Agent config (KEEP AT ROOT)
+├── project.config.json                # Genome identity (KEEP AT ROOT)
+├── task-store.js (symlink)            # Genome symlink (KEEP AT ROOT)
+├── project-config-loader.js (symlink) # Genome symlink (KEEP AT ROOT)
+├── subagent-completion-report.js      # Genome symlink (KEEP AT ROOT)
+├── CLAUDE.md                          # Primary context (KEEP AT ROOT)
+├── README.md                          # Project overview (KEEP AT ROOT)
+├── PROJECT_STRUCTURE.md               # This file (KEEP AT ROOT)
+│
+├── config/                            # Strategy & runtime config JSON
 │   ├── strategy-config.json
-│   └── swarm-config.json
-├── docs/                  # Documentation
-│   ├── 4-LOOP-ARCHITECTURE.md
-│   ├── design/            # Design documents
-│   │   ├── DESIGN-FRICTIONLESS-ONBOARDING-001.md
-│   │   ├── DESIGN-PRICING-SECTION-4-TIERS.md
-│   │   └── ...
-│   ├── guides/            # How-to guides and tutorials
-│   ├── prd/               # Product Requirements Documents
-│   │   ├── PRD-LANDING-PAGE.md
-│   │   ├── PRD-CORE-SMS.md
-│   │   └── ...
-│   ├── reports/           # Analysis reports and summaries
-│   └── api-design/        # API design documents
-├── e2e/                   # End-to-end tests
-├── email-sequence/        # Email sequence templates
-├── frontend/              # Legacy frontend code
-├── integrations/          # Third-party integrations
-├── lib/                   # Shared libraries/utilities
-├── node_modules/          # Node.js dependencies
-├── orchestrator/          # Orchestrator-specific files
-├── package.json           # Node.js dependencies manifest
-├── package-lock.json      # Locked dependency versions
-├── PMF.md                 # Product-Market Fit documentation
-├── product/               # Product code
-│   └── lead-response/
-│       └── dashboard/     # Next.js dashboard application
-├── project.config.json    # Project configuration
-├── README.md              # Project readme
-├── reports/               # Runtime reports (deprecated, use docs/reports)
-├── routes/                # Express API routes
-├── scripts/               # Utility scripts
-│   ├── generate-project-docs.js
-│   ├── shell/             # Shell scripts
-│   │   ├── orchestrator-heartbeat-runner.sh
-│   │   ├── run-simulation-test.sh
-│   │   └── ...
-│   └── utilities/         # JavaScript utilities
-│       ├── auto-create-tables.js
-│       ├── check-tables.js
-│       └── ...
-├── server.js              # Main application entry point
-├── sql/                   # SQL migrations and schemas
-├── supabase/              # Supabase-specific files
-├── tests/                 # Test suites
-│   ├── feat-*.test.js     # Feature tests
-│   ├── fix-*.test.js      # Bug fix tests
-│   └── integrated/        # Integrated/legacy tests
-│       ├── billing-api-integration.test.js
-│       └── ...
-└── vercel.json            # Vercel deployment config
+│   ├── swarm-config.json
+│   └── budget-tracker.json
+│
+├── scripts/                           # Utility / diagnostic / migration scripts
+│   ├── db/                            # Database diagnostics & migrations
+│   ├── stripe/                        # Stripe-specific utility scripts
+│   ├── tasks/                         # Task management utility scripts
+│   └── diagnostics/                   # General diagnostic scripts
+│
+├── docs/                              # Documentation
+│   ├── prd/                           # Product Requirements Documents
+│   ├── design/                        # Design specs and briefs
+│   ├── guides/                        # How-to and reference guides
+│   └── reports/                       # Completion reports and analysis
+│
+├── tests/                             # Consolidated test directory
+│   ├── e2e/                           # End-to-end tests
+│   ├── integration/                   # Integration tests
+│   └── unit/                          # Unit tests
+│
+├── routes/                            # API routes (product code)
+├── lib/                               # Core library (product code)
+├── integrations/                      # Third-party integrations (product code)
+├── product/                           # Product UI (product code)
+├── frontend/                          # Dashboard UI (product code)
+├── agents/                            # Agent configs (product code)
+├── sql/                               # SQL migration files
+├── supabase/                          # Supabase config
+└── completion-reports/                # Auto-generated by Genome
 ```
 
-## File Organization Rules
+## Directory Descriptions
 
-### Root Level Files (Keep at Root)
+### `config/`
 
-These files must remain at the repository root:
+Strategy and runtime configuration JSON files. These are data files that control orchestration behavior, not code.
 
-- **CLAUDE.md** - Primary project context for AI agents
-- **ARCHITECTURE.md** - System architecture overview
-- **README.md** - Project introduction and setup
-- **PMF.md** - Product-Market Fit strategy
-- **server.js** - Main application entry point
-- **package.json** - Node.js dependencies
-- **project.config.json** - Project configuration
-- **agents.json** - Agent registry
-- **vercel.json** - Vercel deployment configuration
+- `strategy-config.json` — Strategy and roadmap configuration
+- `swarm-config.json` — Swarm behavior configuration
+- `budget-tracker.json` — Daily budget tracking for agent spawning
 
-### Symlinks (Do Not Move)
+### `scripts/`
 
-These are symlinks to the Genome orchestration system:
+All utility, diagnostic, and migration scripts organized by purpose:
 
-- `task-store.js` → `~/.openclaw/genome/core/task-store.js`
-- `project-config-loader.js` → `~/.openclaw/genome/core/project-config-loader.js`
-- `subagent-completion-report.js` → `~/.openclaw/genome/core/subagent-completion-report.js`
+- **`scripts/db/`** — Database diagnostics and migration scripts
+  - Table creation, schema migrations
+  - Database health checks
+  - Migration runners
 
-### Scripts Organization
+- **`scripts/stripe/`** — Stripe-specific utility scripts
+  - Subscription management
+  - Webhook verification
+  - Stripe data sync
 
-#### `scripts/` - Main Scripts Directory
+- **`scripts/tasks/`** — Task management utility scripts
+  - Task cleanup and reset
+  - Status updates
+  - Duplicate detection
 
-Contains utility scripts organized by type:
+- **`scripts/diagnostics/`** — General diagnostic scripts
+  - System health checks
+  - Verification scripts
+  - Test simulations
 
-- **Root level** - Primary orchestration and generation scripts
-- **`scripts/shell/`** - Shell/bash scripts (.sh files)
-- **`scripts/utilities/`** - JavaScript helper scripts
+### `docs/`
 
-### Documentation Organization
+All project documentation organized by type:
 
-#### `docs/` - Documentation Directory
+- **`docs/prd/`** — Product Requirements Documents
+  - All `PRD-*.md` files
+  - Feature specifications and requirements
 
-- **`docs/prd/`** - Product Requirements Documents (PRD-*.md)
-- **`docs/design/`** - Design specifications (DESIGN-*.md)
-- **`docs/guides/`** - How-to guides and tutorials
-- **`docs/reports/`** - Analysis reports and summaries
-- **`docs/api-design/`** - API design documents
+- **`docs/design/`** — Design specifications
+  - `DESIGN-*.md` files
+  - `CONTENT-BRIEF-*.md` files
+  - UI/UX specifications
 
-### Test Organization
+- **`docs/guides/`** — How-to and reference guides
+  - Architecture documentation
+  - Migration guides
+  - Marketing strategy docs
+  - Integration guides
 
-#### `tests/` - Test Directory
+- **`docs/reports/`** — Completion reports and analysis
+  - Post-implementation summaries
+  - Analysis reports
+  - Historical records
 
-- **Root level** - Feature and fix tests (feat-*.test.js, fix-*.test.js)
-- **`tests/integrated/`** - Integration and E2E tests
+### `tests/`
 
-### Config Organization
+Consolidated test directory with clear separation by test type:
 
-#### `config/` - Configuration Directory
+- **`tests/e2e/`** — End-to-end tests
+  - Full stack tests (HTTP → DB → SMS → Stripe)
+  - Feature-level tests
+  - User journey tests
 
-Contains project configuration files:
-- `budget-tracker.json`
-- `strategy-config.json`
-- `swarm-config.json`
+- **`tests/integration/`** — Integration tests
+  - Single integration boundary tests
+  - API endpoint tests
+  - Webhook handler tests
 
-## Naming Conventions
+- **`tests/unit/`** — Unit tests
+  - Pure logic function tests
+  - No external I/O
 
-### Files
+### Product Code Directories
 
-- **Scripts**: `kebab-case.js` or `kebab-case.sh`
-- **Tests**: `feat-<feature-name>.test.js` or `fix-<bug-name>.test.js`
-- **PRDs**: `PRD-<FEATURE-NAME>.md`
-- **Design Docs**: `DESIGN-<FEATURE-NAME>.md`
-- **SQL**: `descriptive-name.sql`
+These directories contain the actual product code and remain unchanged:
 
-### Directories
+- **`routes/`** — API route handlers
+- **`lib/`** — Core library functions
+- **`integrations/`** — Third-party service integrations (FUB, Cal.com, Stripe, etc.)
+- **`product/`** — Product UI components
+- **`frontend/`** — Dashboard UI
+- **`agents/`** — Agent configuration files
+- **`sql/`** — SQL migration files
+- **`supabase/`** — Supabase configuration
 
-- Use `kebab-case` for directory names
-- Use plural names for collections (e.g., `scripts`, `tests`, `docs`)
+## Files That MUST Stay at Root
 
-## Adding New Files
+The following files must never be moved — moving them breaks runtime or Vercel deploy:
 
-When adding new files to the project:
+| File | Reason |
+|------|--------|
+| `server.js` | Vercel entry point for `fub-inbound-webhook` project |
+| `vercel.json` | Vercel configuration — references server.js |
+| `package.json` | Node.js runtime dependencies |
+| `package-lock.json` | Dependency lock file |
+| `.env`, `.env.local`, `.env.template` | Credential lookup chain |
+| `agents.json` | Agent configuration — referenced by OpenClaw |
+| `project.config.json` | Genome identity card |
+| `task-store.js` | Genome symlink — must stay at root |
+| `project-config-loader.js` | Genome symlink — must stay at root |
+| `subagent-completion-report.js` | Genome symlink — must stay at root |
+| `CLAUDE.md` | Primary context file for agents |
+| `README.md` | GitHub landing page |
+| `PROJECT_STRUCTURE.md` | Convention reference (this file) |
+| `AGENTS.md`, `HEARTBEAT.md`, `SKILLS.md` | OpenClaw agent configs |
+| `ARCHITECTURE.md` | Primary architecture reference |
 
-1. **Scripts** → Place in `scripts/` (or `scripts/shell/` / `scripts/utilities/`)
-2. **Documentation** → Place in appropriate `docs/` subdirectory
-3. **Tests** → Place in `tests/` (feature tests at root, integration tests in `integrated/`)
-4. **Configuration** → Place in `config/` if it's project config
-5. **SQL** → Place in `sql/`
+## Convention Rules for New Files
+
+1. **New utility scripts** → Place in appropriate `scripts/` subdirectory
+2. **New PRDs** → Place in `docs/prd/`
+3. **New design specs** → Place in `docs/design/`
+4. **New tests** → Place in appropriate `tests/{e2e,integration,unit}/`
+5. **New config JSON** → Place in `config/`
+6. **Never add scripts to root** — root should only contain the "KEEP AT ROOT" files listed above
 
 ## Migration Notes
 
-This structure was established during the repository restructuring initiative. Files were moved from the root level to appropriate subdirectories to improve organization and maintainability.
+This structure was applied as part of the repository structure convention refactor. Key changes:
 
-### Key Moves
-
-- Root utility `.js` files → `scripts/utilities/`
-- Root `.sh` files → `scripts/shell/`
-- `docs/PRD-*.md` → `docs/prd/`
-- `test/` contents → `tests/integrated/`
-- Root config `.json` files → `config/` (where appropriate)
+- Config files moved from root to `config/`
+- Tests consolidated from `test/` and `tests/` into `tests/{e2e,integration,unit}/`
+- Documentation reorganized into `docs/{prd,design,guides,reports}/`
+- Scripts organized into `scripts/{db,stripe,tasks,diagnostics}/`
+- All path references updated to use new locations
 
 ## Verification
 
 To verify the structure is correct:
 
-1. Check that `server.js` is at root
-2. Check that symlinks resolve correctly
-3. Run `npm test` to ensure tests pass
-4. Verify Vercel deployment works
+```bash
+# Check config files are in config/
+ls config/*.json
+
+# Check no config files remain at root
+grep -l "strategy-config.json\|swarm-config.json\|budget-tracker.json" *.js *.ts 2>/dev/null || echo "No stale root references"
+
+# Check tests are organized
+ls tests/e2e/ tests/integration/ tests/unit/
+
+# Check docs are organized
+ls docs/prd/ docs/design/ docs/guides/ docs/reports/
+
+# Check scripts are organized
+ls scripts/db/ scripts/stripe/ scripts/tasks/ scripts/diagnostics/
+```

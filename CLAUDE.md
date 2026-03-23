@@ -16,25 +16,26 @@ integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
 - `frontend/` — dashboard UI
 - `integrations/` — FUB, Cal.com, Stripe, Supabase
 - `agents/` — agent configs
-- `docs/` — Documentation organized by type:
+- `config/` — strategy and runtime config JSON (strategy-config.json, swarm-config.json, budget-tracker.json)
+- `scripts/` — utility scripts organized by purpose:
+  - `scripts/db/` — database diagnostics and migrations
+  - `scripts/stripe/` — Stripe-specific utility scripts
+  - `scripts/tasks/` — task management utilities
+  - `scripts/diagnostics/` — general diagnostic scripts
+- `docs/` — documentation organized by type:
   - `docs/prd/` — Product Requirements Documents (PRD-*.md)
-  - `docs/design/` — Design specifications (DESIGN-*.md)
-  - `docs/guides/` — How-to guides and tutorials
-  - `docs/reports/` — Analysis reports and summaries
-- `scripts/` — Utility scripts:
-  - `scripts/shell/` — Shell/bash scripts (.sh)
-  - `scripts/utilities/` — JavaScript helper scripts
-- `tests/` — Test suites:
-  - Root level — Feature and fix tests
-  - `tests/integrated/` — Integration and E2E tests
-- `config/` — Configuration files
-
-See `PROJECT_STRUCTURE.md` for full organization details.
+  - `docs/design/` — Design specs and content briefs
+  - `docs/guides/` — How-to guides and reference docs
+  - `docs/reports/` — Completion reports and analysis
+- `tests/` — consolidated test directory:
+  - `tests/e2e/` — end-to-end tests
+  - `tests/integration/` — integration tests
+  - `tests/unit/` — unit tests
 
 ## Key Files
 - `server.js` — main entry point
 - `ARCHITECTURE.md` — system architecture (includes 4-loop overview)
-- `docs/4-LOOP-ARCHITECTURE.md` — full 4-loop orchestration docs (schema, loops, heartbeat order, extending)
+- `docs/guides/4-LOOP-ARCHITECTURE.md` — full 4-loop orchestration docs (schema, loops, heartbeat order, extending)
 - `HEARTBEAT.md` — heartbeat spec (includes 4-loop execution order)
 - `SKILLS.md` — orchestrator skills (includes 4-loop skills 12-16)
 - `AGENTS.md` — agent configuration
@@ -94,7 +95,7 @@ All heartbeat, spawning, learning, health, and dashboard generation code now liv
 
 **Realtime Dispatcher:** Long-running service at `~/.openclaw/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.leadflow.realtime-dispatcher`
 
-**Full docs:** `docs/4-LOOP-ARCHITECTURE.md`
+**Full docs:** `docs/guides/4-LOOP-ARCHITECTURE.md`
 
 ## Dashboard
 The live execution dashboard has moved to `~/.openclaw/dashboard/` — it's a system-level orchestration tool, not a LeadFlow product artifact.

@@ -20,7 +20,7 @@ const WATCHED_FILES = [
   '.spawn-config.json',      // New spawn request
   'test-results.json',       // Test completed
   'escalation-resolved.json', // Human resolved escalation
-  'budget-tracker.json'      // Budget updated
+  'config/budget-tracker.json'      // Budget updated
 ]
 
 // Debounce to avoid multiple triggers
@@ -143,7 +143,7 @@ function handleBudgetChange() {
   logEvent('💰 Budget updated → Checking if new spawns possible')
   
   try {
-    const budget = JSON.parse(fs.readFileSync('budget-tracker.json', 'utf-8'))
+    const budget = JSON.parse(fs.readFileSync('config/budget-tracker.json', 'utf-8'))
     const remaining = 5.00 - budget.spent
     
     logEvent(`   Spent: $${budget.spent.toFixed(2)}`)
@@ -208,7 +208,7 @@ function startWatching() {
             case 'escalation-resolved.json':
               handleEscalationResolved()
               break
-            case 'budget-tracker.json':
+            case 'config/budget-tracker.json':
               handleBudgetChange()
               break
           }

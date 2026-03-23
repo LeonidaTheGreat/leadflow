@@ -3,7 +3,7 @@ const path = require('path')
 
 // Configuration
 const DAILY_BUDGET = 5.00
-const BUDGET_FILE = path.join(process.cwd(), 'budget-tracker.json')
+const BUDGET_FILE = path.join(process.cwd(), 'config', 'budget-tracker.json')
 const SPAWN_CONFIG = path.join(process.cwd(), '.spawn-config.json')
 const SPAWN_LOG = path.join(process.cwd(), 'spawn-log.jsonl')
 

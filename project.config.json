@@ -83,6 +83,15 @@
       "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
       "severity": "warning",
       "check_type": "http_200"
+    },
+    {
+      "id": "auth-signup-login-flow",
+      "name": "Auth: signup then login",
+      "base_url": "https://leadflow-ai-five.vercel.app",
+      "signup_path": "/api/auth/trial-signup",
+      "login_path": "/api/auth/login",
+      "severity": "critical",
+      "check_type": "signup_login_flow"
     }
   ],
 
@@ -281,5 +290,19 @@
   "journey_reviews": {
     "periodic_interval_days": 14,
     "review_model": "sonnet"
+  },
+
+  "genome_review": {
+    "interval_hours": 12,
+    "telegram_topic_id": "15243",
+    "thresholds": {
+      "task_completion_rate_min": 0.5,
+      "retry_rate_max": 0.4,
+      "stuck_rate_max": 0.15,
+      "chain_completion_rate_min": 0.5,
+      "pm_review_actionable_rate_min": 0.3,
+      "model_success_rate_min": 0.4,
+      "cost_per_success_max_usd": 0.50
+    }
   }
 }
