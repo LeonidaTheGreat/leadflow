@@ -142,59 +142,6 @@ export async function POST(request: NextRequest) {
     return await buildSuccessResponse(request, agent, firstName, lastName, trialEndsAt, {
       utm_source, utm_medium, utm_campaign,
     })
-<<<<<<< Updated upstream
-=======
-
-    // Send welcome email (non-blocking)
-    void sendWelcomeEmail(
-      agent.email,
-      agent.id,
-      {
-        agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
-        planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
-      }
-    ).catch((err: unknown) => {
-      console.error('[trial-signup] Welcome email error:', err)
-    })
-
-    // Generate JWT token for immediate login
-    const token = jwt.sign(
-      {
-        userId: agent.id,
-        email: agent.email,
-        name: `${agent.first_name} ${agent.last_name}`.trim()
-      },
-      JWT_SECRET,
-      { expiresIn: '30d' }
-    )
-
-    // Set auth cookie and return success with token + user for localStorage storage
-    const response = NextResponse.json({
-      success: true,
-      agentId: agent.id,
-      redirectTo: '/setup',
-      message: 'Trial account created successfully',
-      token,
-      user: {
-        id: agent.id,
-        email: agent.email,
-        firstName: agent.first_name,
-        lastName: agent.last_name,
-        onboardingCompleted: false,
-      },
-    })
-
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: '/'
-    })
-
-    return response
->>>>>>> Stashed changes
   } catch (error) {
     console.error('Trial signup error:', error)
     return NextResponse.json(
@@ -227,47 +174,47 @@ async function buildSuccessResponse(
   })
 
   // Log trial_signup_completed event (non-blocking)
-  void supabase
-    .from('events')
-    .insert({
-      event_type: 'trial_signup_completed',
-      agent_id: agent.id,
-      event_data: {
-        source: 'trial_cta',
-        utm_source: utm.utm_source || null,
-        utm_medium: utm.utm_medium || null,
-        utm_campaign: utm.utm_campaign || null,
-        plan_tier: 'trial',
-        trial_days: 14,
-        trial_ends_at: trialEndsAt,
-      },
-      created_at: new Date().toISOString(),
-    })
-    .then(() => {})
-    .catch((err: unknown) => {
+  void (async () => {
+    try {
+      await supabase.from('events').insert({
+        event_type: 'trial_signup_completed',
+        agent_id: agent.id,
+        event_data: {
+          source: 'trial_cta',
+          utm_source: utm.utm_source || null,
+          utm_medium: utm.utm_medium || null,
+          utm_campaign: utm.utm_campaign || null,
+          plan_tier: 'trial',
+          trial_days: 14,
+          trial_ends_at: trialEndsAt,
+        },
+        created_at: new Date().toISOString(),
+      })
+    } catch (err) {
       console.error('Failed to log trial_signup_completed event:', err)
-    })
+    }
+  })()
 
   // Also log the legacy trial_started event for backwards compatibility
-  void supabase
-    .from('events')
-    .insert({
-      event_type: 'trial_started',
-      agent_id: agent.id,
-      event_data: {
-        source: 'trial_cta',
-        utm_source: utm.utm_source || null,
-        utm_medium: utm.utm_medium || null,
-        utm_campaign: utm.utm_campaign || null,
-        plan_tier: 'trial',
-        trial_days: 14,
-      },
-      created_at: new Date().toISOString(),
-    })
-    .then(() => {})
-    .catch((err: unknown) => {
+  void (async () => {
+    try {
+      await supabase.from('events').insert({
+        event_type: 'trial_started',
+        agent_id: agent.id,
+        event_data: {
+          source: 'trial_cta',
+          utm_source: utm.utm_source || null,
+          utm_medium: utm.utm_medium || null,
+          utm_campaign: utm.utm_campaign || null,
+          plan_tier: 'trial',
+          trial_days: 14,
+        },
+        created_at: new Date().toISOString(),
+      })
+    } catch (err) {
       console.error('Failed to log trial_started event:', err)
-    })
+    }
+  })()
 
   // Send welcome email (non-blocking)
   void sendWelcomeEmail(agent.email, agent.id, {
