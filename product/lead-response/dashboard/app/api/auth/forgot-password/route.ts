@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import crypto from 'crypto'
 import { sendPasswordResetEmail } from '@/lib/email-service'
 
@@ -16,9 +16,8 @@ const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
 const PLACEHOLDER_KEY = 'placeholder'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || PLACEHOLDER_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || PLACEHOLDER_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
+  process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL,
+  process.env.API_SECRET_KEY || PLACEHOLDER_KEY
 )
 
 const APP_URL =

@@ -7,12 +7,12 @@
  * CRITICAL: session logging failures must NEVER break the authentication flow.
  * All DB errors are caught and logged; the function returns null on failure.
  */
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import { NextRequest } from 'next/server'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_API_URL || '',
+  process.env.API_SECRET_KEY || ''
 )
 
 export interface AgentSessionRecord {

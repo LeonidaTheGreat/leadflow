@@ -69,7 +69,7 @@ export function AnalyticsKpiDashboard() {
       ])
 
       setData({
-        messagesPerDay: msgPerDay.data,
+        messagesPerDay: msgPerDay.data as any,
         deliveryStats: delivery,
         responseRate: response,
         sequenceCompletion: sequence,

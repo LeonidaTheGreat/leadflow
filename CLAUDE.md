@@ -14,7 +14,7 @@ integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
 ## Key Directories
 - `routes/` — API routes
 - `frontend/` — dashboard UI
-- `integrations/` — FUB, Cal.com, Stripe, Supabase
+- `integrations/` — FUB, Cal.com, Stripe
 - `agents/` — agent configs
 - `docs/` — Documentation organized by type:
   - `docs/prd/` — Product Requirements Documents (PRD-*.md)
@@ -44,8 +44,9 @@ See `PROJECT_STRUCTURE.md` for full organization details.
 
 ## Tech Stack
 - Node.js / Express
-- Supabase (database)
+- PostgreSQL (local, on Mac Mini)
 - Vercel (deployment)
+- Cloudflare Tunnel (public API access via `api.imagineapi.org`)
 - Stripe (billing)
 - Cal.com (appointment booking)
 - Follow Up Boss API (CRM)
@@ -71,12 +72,12 @@ All agents point to this directory. Active agents:
 - This repo lives at `~/projects/leadflow` (GitHub: `LeonidaTheGreat/leadflow`)
 - OpenClaw agents are actively running against this codebase
 - Always run `npm test` before suggesting any deployment
-- Stripe and Supabase are in production — be careful with any data scripts
+- Stripe is in production — be careful with any data scripts
 - Never modify `agents.json` or agent config files without explicit instruction
-- `.env` and `.env.local` contain production Supabase/Stripe/Twilio credentials — never delete or overwrite
-- System-level backup at `~/.env` (Supabase creds + Telegram bot tokens) — if credentials go missing, restore from `~/.env`
-- `~/.env` contains: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_PASSWORD`, `ORCHESTRATOR_BOT_TOKEN`, `PRODUCT_MANAGER_BOT_TOKEN`
-- `SUPABASE_DB_PASSWORD` is the Postgres password for direct DB connections (migrations, DDL). Present in both `~/.env` and `leadflow/.env`
+- `.env` and `.env.local` contain production Stripe/Twilio/API credentials — never delete or overwrite
+- System-level backup at `~/.env` — if credentials go missing, restore from `~/.env`
+- `~/.env` contains: `LOCAL_PG_URL`, `LEADFLOW_API_KEY`, `ORCHESTRATOR_BOT_TOKEN`, `PRODUCT_MANAGER_BOT_TOKEN`
+- Database is local PostgreSQL (`LOCAL_PG_URL`). Supabase has been fully removed.
 - TaskStore has a self-healing fallback chain: `process.env` → `__dirname/.env` → `__dirname/.env.local` → `~/.env`
 
 ## Orchestration (Genome — extracted to `~/.openclaw/genome/`)
@@ -99,14 +100,15 @@ All heartbeat, spawning, learning, health, and dashboard generation code now liv
 ## Dashboard
 The live execution dashboard has moved to `~/.openclaw/dashboard/` — it's a system-level orchestration tool, not a LeadFlow product artifact.
 - **Location:** `~/.openclaw/dashboard/dashboard.html`
-- **HTTP server:** `python3 -m http.server 8787 --bind 127.0.0.1` (managed by launchd via `~/.openclaw/workspace/scripts/dashboard-server.sh`)
-- **Data source:** All sections pull from Supabase (project `leadflow`), never local JSON files
-- **Supabase client variable:** Named `sb` (not `supabase`) to avoid collision with the CDN's global `var supabase`
-- **API key:** Uses the service_role key (anon key is invalid for these tables)
+- **HTTP server:** Node.js server at `~/.openclaw/dashboard/server.js` (managed by launchd via `~/.openclaw/workspace/scripts/dashboard-server.sh`)
+- **Data source:** All sections pull from local PostgreSQL via REST API on port 8787
+- **Inline PostgREST client:** `window.localDB` (replaced Supabase CDN)
 - **Tailscale access:** https://stojanadmins-mac-mini.tail3ca16c.ts.net — accessible from all tailnet devices
   - `/` → dashboard on port 8787
   - `/live` → LeadFlow dashboard on port 3000
-  - Config is persistent (survives reboots). Do NOT reconfigure or remove Tailscale serve.
+- **Public API:** `https://api.imagineapi.org` — Cloudflare Tunnel → port 8788 (API key auth required)
+  - Used by Vercel for database access
+  - launchd service: `com.cloudflare.leadflow-tunnel`
 
 ## Vercel Deployment
 
@@ -142,7 +144,7 @@ vercel --prod
 - Non-interactive flags: `--yes --scope stojans-projects-7db98187` (or use `--prod` after linking)
 
 ### Health Check
-- Dashboard health endpoint: `/api/health` (server-side, checks env vars + Supabase connectivity)
+- Dashboard health endpoint: `/api/health` (server-side, checks env vars + database connectivity)
 - Smoke tests run every heartbeat via `smoke-tests.js` — checks both Vercel projects
 - Failures auto-spawn QC → dev investigation pipeline
 
@@ -153,7 +155,7 @@ vercel --prod
 - Vercel env vars are separate from local `.env` files — changes to one do not affect the other
 
 ## Generated Files (auto-updated every heartbeat)
-The following .md files are **auto-generated** from Supabase by `scripts/generate-project-docs.js`. They regenerate every heartbeat — do NOT manually edit them:
+The following .md files are **auto-generated** from the database by `scripts/generate-project-docs.js`. They regenerate every heartbeat — do NOT manually edit them:
 - `USE_CASES.md` — from `use_cases` + `prds` tables
 - `E2E_MAPPINGS.md` — from `e2e_test_specs` + `use_cases` tables
 - `PRD_INDEX.md` — from `prds` table

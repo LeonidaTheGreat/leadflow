@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeAll } from '@jest/globals'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendSms, normalizePhone, isValidPhoneNumber } from '@/lib/twilio'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 // Test configuration
 const TEST_PHONE = '+14165551234'
@@ -15,8 +15,8 @@ const TEST_AGENT_ID = 'test-agent-id'
 
 // Initialize test Supabase client
 const supabaseTest = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_API_URL!,
+  process.env.API_SECRET_KEY!
 )
 
 describe('AI Lead Response System - E2E Tests', () => {

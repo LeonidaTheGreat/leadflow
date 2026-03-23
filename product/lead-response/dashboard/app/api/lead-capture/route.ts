@@ -85,7 +85,6 @@ export async function POST(request: NextRequest) {
         },
         {
           onConflict: 'email',
-          ignoreDuplicates: false, // update existing row with latest utm info
         }
       )
 

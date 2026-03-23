@@ -1,50 +1,37 @@
-import { createClient } from '@supabase/supabase-js'
-import type { 
-  Lead, 
-  Agent, 
-  Message, 
-  Qualification, 
-  Booking, 
+import { createClient } from '@/lib/db'
+import type {
+  Lead,
+  Agent,
+  Message,
+  Qualification,
+  Booking,
   Template,
   Event,
-  DashboardStats 
+  DashboardStats
 } from '@/lib/types'
 
 // ============================================
-// SUPABASE CLIENTS
+// DATABASE CLIENTS
 // ============================================
 // Build-safe client initialization
 // During build, env vars may not be available - use placeholders
 
-const isBuildTime = typeof window === 'undefined' && process.env.NODE_ENV === 'production' && !process.env.VERCEL_ENV
-
-const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co').trim()
-const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder').trim()
-const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder').trim()
+const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://placeholder.local').trim()
+const apiKey = (process.env.NEXT_PUBLIC_API_KEY || 'placeholder').trim()
+const apiSecretKey = (process.env.API_SECRET_KEY || 'placeholder').trim()
 
 // Client-side client (for use in components)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(apiUrl, apiKey)
 
 // Server-side admin client (for use in API routes only)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-})
+export const supabaseAdmin = createClient(apiUrl, apiSecretKey)
 
-// Lazy getters for runtime initialization
+// Lazy getters (kept for backwards compat)
 export function getSupabaseClient() {
-  if (isBuildTime) {
-    return supabase
-  }
   return supabase
 }
 
 export function getSupabaseAdmin() {
-  if (isBuildTime) {
-    return supabaseAdmin
-  }
   return supabaseAdmin
 }
 
@@ -67,7 +54,7 @@ export async function createLead(
 export async function getLeadById(id: string): Promise<{ data: Lead | null; error: any }> {
   const { data, error } = await supabaseAdmin
     .from('leads')
-    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)')
+    .select('*')
     .eq('id', id)
     .single()
 
@@ -94,7 +81,7 @@ export async function getLeadsByAgent(
 ): Promise<{ data: Lead[]; count: number | null; error: any }> {
   let query = supabaseAdmin
     .from('leads')
-    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)', { count: 'exact' })
+    .select('*', { count: 'exact' })
     .eq('agent_id', agentId)
     .order('created_at', { ascending: false })
 
@@ -111,7 +98,7 @@ export async function getLeadsByAgent(
   }
 
   const { data, error, count } = await query
-  return { data: data || [], count, error }
+  return { data: data || [], count: count ?? null, error }
 }
 
 export async function updateLead(
@@ -189,11 +176,11 @@ export async function updateMessageStatus(
   status: string,
   deliveredAt?: string
 ): Promise<{ data: Message | null; error: any }> {
-  const updates: Partial<Message> = { 
+  const updates: Partial<Message> = {
     status: status as Message['status'],
     twilio_status: status,
   }
-  
+
   if (deliveredAt) {
     updates.delivered_at = deliveredAt
   }
@@ -323,7 +310,18 @@ export async function getTemplateById(id: string): Promise<{ data: Template | nu
 }
 
 export async function incrementTemplateUsage(id: string): Promise<void> {
-  await supabaseAdmin.rpc('increment_template_usage', { template_id: id })
+  // RPC not available on local API — increment manually
+  const { data } = await supabaseAdmin
+    .from('templates')
+    .select('times_used')
+    .eq('id', id)
+    .single()
+  if (data) {
+    await supabaseAdmin
+      .from('templates')
+      .update({ times_used: (data.times_used || 0) + 1 })
+      .eq('id', id)
+  }
 }
 
 // ============================================
@@ -362,23 +360,13 @@ export async function getLeadSummary(agentId: string): Promise<{ data: any[]; er
 }
 
 // ============================================
-// REALTIME SUBSCRIPTIONS
+// REALTIME SUBSCRIPTIONS (no-op — using polling)
 // ============================================
 
-export function subscribeToLeads(callback: (payload: any) => void) {
-  return supabase
-    .channel('leads')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, callback)
-    .subscribe()
+export function subscribeToLeads(_callback: (payload: any) => void) {
+  return { unsubscribe: () => {} }
 }
 
-export function subscribeToMessages(leadId: string, callback: (payload: any) => void) {
-  return supabase
-    .channel(`messages:${leadId}`)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'messages', filter: `lead_id=eq.${leadId}` },
-      callback
-    )
-    .subscribe()
+export function subscribeToMessages(_leadId: string, _callback: (payload: any) => void) {
+  return { unsubscribe: () => {} }
 }

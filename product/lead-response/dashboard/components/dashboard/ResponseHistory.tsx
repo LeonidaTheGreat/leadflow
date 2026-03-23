@@ -9,6 +9,17 @@ interface MessageWithLead extends Message {
   lead: Lead
 }
 
+function getCurrentUserId(): string | null {
+  try {
+    const raw = localStorage.getItem('leadflow_user') || sessionStorage.getItem('leadflow_user')
+    if (!raw) return null
+    const user = JSON.parse(raw)
+    return user?.id || null
+  } catch {
+    return null
+  }
+}
+
 export function ResponseHistory() {
   const [messages, setMessages] = useState<MessageWithLead[]>([])
   const [loading, setLoading] = useState(true)
@@ -21,17 +32,13 @@ export function ResponseHistory() {
   async function fetchMessages() {
     try {
       setLoading(true)
-      
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+
+      const userId = getCurrentUserId()
+      if (!userId) return
 
       let query = supabase
         .from('messages')
-        .select(`
-          *,
-          lead:leads(*)
-        `)
-        .eq('lead.agent_id', user.id)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(100)
 

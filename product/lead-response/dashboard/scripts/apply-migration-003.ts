@@ -1,11 +1,11 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '../lib/db'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const dbUrl = (process.env.NEXT_PUBLIC_API_URL)!
+const dbKey = (process.env.API_SECRET_KEY)!
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+const supabase = createClient(dbUrl, dbKey)
 
 async function applyMigration() {
   console.log('🔧 Applying migration 003_lead_sequences.sql...')

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 /**
  * GET /api/admin/conversations
@@ -14,11 +14,11 @@ import { createClient } from '@supabase/supabase-js'
  *   ?outcome=all|booked|in-progress|opted-out (default: all)
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const DB_URL = (process.env.NEXT_PUBLIC_API_URL)!
+const DB_KEY = (process.env.API_SECRET_KEY)!
 
-function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+function getDB() {
+  return createClient(DB_URL, DB_KEY)
 }
 
 function maskPhone(phone: string | null): string {
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const outcomeFilter = searchParams.get('outcome') || 'all'
 
-    const supabase = getSupabase()
+    const supabase = getDB()
 
     // Fetch leads with their message counts (last 20 to allow filtering)
     const { data: leads, error: leadsError } = await supabase
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch messages for all these leads
-    const leadIds = leads.map((l) => l.id)
+    const leadIds = leads.map((l: any) => l.id)
     const { data: messages, error: msgError } = await supabase
       .from('sms_messages')
       .select('id, lead_id, direction, message_body, created_at, status')
@@ -69,9 +69,9 @@ export async function GET(request: Request) {
       console.error('Failed to fetch messages:', msgError)
     }
 
-    const messagesByLead: Record<string, typeof messages> = {}
+    const messagesByLead: Record<string, any[]> = {}
     if (messages) {
-      for (const msg of messages) {
+      for (const msg of messages as any[]) {
         if (!msg.lead_id) continue
         if (!messagesByLead[msg.lead_id]) messagesByLead[msg.lead_id] = []
         messagesByLead[msg.lead_id]!.push(msg)
@@ -79,12 +79,12 @@ export async function GET(request: Request) {
     }
 
     // Build conversation objects
-    let conversations = leads
-      .filter((lead) => {
+    let conversations: any[] = leads
+      .filter((lead: any) => {
         const msgs = messagesByLead[lead.id] || []
         return msgs.length > 0 // Only include leads that have messages
       })
-      .map((lead) => {
+      .map((lead: any) => {
         const msgs = messagesByLead[lead.id] || []
         const firstName = lead.name ? lead.name.split(' ')[0] : 'Lead'
         const outcome = deriveOutcome(lead.status)
@@ -97,7 +97,7 @@ export async function GET(request: Request) {
           messageCount: msgs.length,
           outcome,
           status: lead.status,
-          messages: msgs.map((m) => ({
+          messages: msgs.map((m: any) => ({
             id: m.id,
             direction: m.direction === 'inbound' ? 'inbound' : 'outbound',
             body: m.message_body,

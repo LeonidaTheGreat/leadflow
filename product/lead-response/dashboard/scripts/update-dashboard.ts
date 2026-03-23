@@ -10,7 +10,7 @@
  */
 
 import { config } from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '../lib/db'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -55,14 +55,14 @@ async function loadSystemState(): Promise<SystemState | null> {
 
 async function getDatabaseStats() {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const dbUrl = process.env.NEXT_PUBLIC_API_URL
+    const dbKey = process.env.API_SECRET_KEY
 
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !dbKey) {
       return null
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabase = createClient(dbUrl, dbKey)
 
     // Get counts
     const [{ count: leadCount }, { count: agentCount }, { count: messageCount }] = await Promise.all([

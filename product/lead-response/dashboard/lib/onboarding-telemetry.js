@@ -2,7 +2,7 @@
  * Onboarding Telemetry Library
  */
 
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('./db')
 
 const STEP_INDEX = {
   email_verified: 1,

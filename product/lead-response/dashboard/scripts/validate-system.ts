@@ -9,7 +9,7 @@
  */
 
 import { config } from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '../lib/db'
 import axios from 'axios'
 
 config()
@@ -115,10 +115,10 @@ async function validateSystem(): Promise<SystemState> {
 
   // 3. Validate Supabase
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const dbUrl = process.env.NEXT_PUBLIC_API_URL
+    const dbKey = process.env.API_SECRET_KEY
     
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !dbKey) {
       results.push({
         component: 'Supabase',
         expected: 'Configured',
@@ -127,7 +127,7 @@ async function validateSystem(): Promise<SystemState> {
         message: 'Supabase credentials not found'
       })
     } else {
-      const supabase = createClient(supabaseUrl, supabaseKey)
+      const supabase = createClient(dbUrl, dbKey)
       const { data, error } = await supabase.from('real_estate_agents').select('count')
       
       if (error) throw error

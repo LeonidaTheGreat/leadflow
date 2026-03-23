@@ -27,7 +27,7 @@ mockInsertChain.single.mockResolvedValue({
   error: null,
 })
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
       insert: mockInsert,

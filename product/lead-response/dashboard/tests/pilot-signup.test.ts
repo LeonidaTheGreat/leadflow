@@ -16,7 +16,7 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 // Mock Supabase
 let fromImpl: (table: string) => any
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: (table: string) => fromImpl(table),
   })),
@@ -74,8 +74,8 @@ describe('Pilot Signup API', () => {
     process.env.TELEGRAM_BOT_TOKEN = 'test-bot-token'
     process.env.TELEGRAM_CHAT_ID = 'test-chat-id'
     process.env.RESEND_API_KEY = 'test-resend-key'
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost'
-    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-key'
+    process.env.NEXT_PUBLIC_API_URL = 'http://localhost'
+    process.env.API_SECRET_KEY = 'test-key'
   })
 
   describe('POST /api/auth/pilot-signup', () => {

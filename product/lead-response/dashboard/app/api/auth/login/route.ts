@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { logSessionStart } from '@/lib/agent-session'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  (process.env.NEXT_PUBLIC_API_URL)!,
+  (process.env.API_SECRET_KEY)!
 )
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'

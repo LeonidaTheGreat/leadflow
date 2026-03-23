@@ -166,13 +166,60 @@ async function generatePRDIndex(sb) {
   console.log(`   ✅ PRD_INDEX.md generated (${prds.length} PRDs)`)
 }
 
+// ── Incremental check: skip regeneration if no changes since last run ────────
+
+const STATE_FILE = path.join(PROJECT_DIR, '.doc-gen-state.json')
+
+function readDocGenState() {
+  try { return JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8')) } catch { return {} }
+}
+
+function writeDocGenState(state) {
+  fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2))
+}
+
+async function getMaxUpdatedAt(sb, table) {
+  const { data } = await sb.from(table).select('updated_at').order('updated_at', { ascending: false }).limit(1)
+  return data?.[0]?.updated_at || null
+}
+
 // ── Main entry point ──────────────────────────────────────────
 
 async function generateProjectDocs() {
   const sb = getSupabase()
-  await generateUseCases(sb)
-  await generateE2EMappings(sb)
-  await generatePRDIndex(sb)
+  const state = readDocGenState()
+  const newState = {}
+
+  // Check each table's max updated_at before fetching full data
+  const ucMax = await getMaxUpdatedAt(sb, 'use_cases')
+  const e2eMax = await getMaxUpdatedAt(sb, 'e2e_test_specs')
+  const prdMax = await getMaxUpdatedAt(sb, 'prds')
+
+  if (ucMax !== state.use_cases_max) {
+    await generateUseCases(sb)
+    newState.use_cases_max = ucMax
+  } else {
+    newState.use_cases_max = state.use_cases_max
+    console.log('   ⏭️  USE_CASES.md — no changes, skipped')
+  }
+
+  if (e2eMax !== state.e2e_max) {
+    await generateE2EMappings(sb)
+    newState.e2e_max = e2eMax
+  } else {
+    newState.e2e_max = state.e2e_max
+    console.log('   ⏭️  E2E_MAPPINGS.md — no changes, skipped')
+  }
+
+  if (prdMax !== state.prds_max) {
+    await generatePRDIndex(sb)
+    newState.prds_max = prdMax
+  } else {
+    newState.prds_max = state.prds_max
+    console.log('   ⏭️  PRD_INDEX.md — no changes, skipped')
+  }
+
+  writeDocGenState(newState)
 }
 
 // CLI mode

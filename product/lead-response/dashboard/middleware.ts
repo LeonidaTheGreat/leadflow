@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSession } from '@/lib/session'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 
 // Routes that require authentication
@@ -28,18 +28,18 @@ const DEMO_TOKEN_ROUTES = [
   '/admin/simulator',
 ]
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
+const API_KEY = process.env.API_SECRET_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
-function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+function getDB() {
+  return createClient(API_URL, API_KEY)
 }
 
 async function validateDemoToken(token: string): Promise<boolean> {
   try {
-    const supabase = getSupabase()
-    const { data, error } = await supabase
+    const db = getDB()
+    const { data, error } = await db
       .from('demo_tokens')
       .select('expires_at')
       .eq('token', token)
@@ -125,7 +125,31 @@ export async function middleware(request: NextRequest) {
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
-  
+
+  // Check onboarding status for authenticated users accessing protected routes
+  // Skip onboarding check for setup routes and API routes
+  const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
+  if (isAuthenticated && isProtectedRoute && !isSetupRoute) {
+    const userId = session?.userId || jwtPayload?.userId
+    if (userId) {
+      try {
+        const db = getDB()
+        const { data: agent, error } = await db
+          .from('real_estate_agents')
+          .select('onboarding_completed')
+          .eq('id', userId)
+          .single()
+
+        if (!error && agent && agent.onboarding_completed === false) {
+          // Redirect to setup wizard if onboarding is not complete
+          return NextResponse.redirect(new URL('/setup', request.url))
+        }
+      } catch {
+        // On error, allow access (fail open to avoid blocking users)
+      }
+    }
+  }
+
   // Add security headers
   const response = NextResponse.next()
   

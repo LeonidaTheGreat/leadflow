@@ -6,12 +6,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
+const DB_KEY = process.env.API_SECRET_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export function isTrackedPage(pathname: string): boolean {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ logged: false, reason: 'no_session_id' }, { status: 200 })
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    const supabase = createClient(DB_URL, DB_KEY)
 
     const { error } = await supabase.from('agent_page_views').insert({
       agent_id: agentId,

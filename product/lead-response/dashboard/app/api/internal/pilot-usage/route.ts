@@ -4,20 +4,20 @@
  * Internal analytics endpoint for pilot agent engagement.
  * FR-4: Returns per-pilot session data for Stojan visibility.
  *
- * Auth: SUPABASE_SERVICE_ROLE_KEY bearer token required.
+ * Auth: API_SECRET_KEY bearer token required.
  */
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@/lib/db"
 
-function getSupabase() {
+function getDB() {
   return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    (process.env.NEXT_PUBLIC_API_URL)!,
+    (process.env.API_SECRET_KEY)!
   )
 }
 
 function isAuthorized(req: NextRequest): boolean {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const serviceKey = process.env.API_SECRET_KEY
   if (!serviceKey) return false
   const authHeader = req.headers.get("authorization") || ""
   const token = authHeader.startsWith("Bearer ")
@@ -29,12 +29,12 @@ function isAuthorized(req: NextRequest): boolean {
 export async function GET(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json(
-      { error: "Unauthorized. Provide a valid SUPABASE_SERVICE_ROLE_KEY bearer token." },
+      { error: "Unauthorized. Provide a valid API_SECRET_KEY bearer token." },
       { status: 401 }
     )
   }
 
-  const supabase = getSupabase()
+  const supabase = getDB()
   const now = new Date()
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
