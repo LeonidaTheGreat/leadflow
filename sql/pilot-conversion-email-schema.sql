@@ -6,7 +6,7 @@
 -- ============================================
 CREATE TABLE IF NOT EXISTS pilot_conversion_email_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    agent_id UUID NOT NULL REFERENCES real_estate_agents(id) ON DELETE CASCADE,
+    agent_id UUID NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
     milestone VARCHAR(20) NOT NULL CHECK (milestone IN ('day_30', 'day_45', 'day_55')),
     template_key VARCHAR(50) NOT NULL,
     template_version VARCHAR(10) DEFAULT '1.0',
@@ -50,7 +50,7 @@ CREATE OR REPLACE VIEW pilot_conversion_sequence_status AS
 SELECT 
     a.id as agent_id,
     a.email as agent_email,
-    a.first_name || ' ' || a.last_name as agent_name,
+    a.name as agent_name,
     a.plan_tier,
     a.pilot_started_at,
     CASE 
@@ -69,13 +69,13 @@ SELECT
     -- Overall sequence progress
     COUNT(CASE WHEN pcl.status = 'sent' THEN 1 END) as emails_sent_count,
     MAX(pcl.sent_at) as last_email_sent_at
-FROM real_estate_agents a
+FROM agents a
 LEFT JOIN pilot_conversion_email_logs d30 ON d30.agent_id = a.id AND d30.milestone = 'day_30'
 LEFT JOIN pilot_conversion_email_logs d45 ON d45.agent_id = a.id AND d45.milestone = 'day_45'
 LEFT JOIN pilot_conversion_email_logs d55 ON d55.agent_id = a.id AND d55.milestone = 'day_55'
 LEFT JOIN pilot_conversion_email_logs pcl ON pcl.agent_id = a.id
 WHERE a.plan_tier = 'pilot' OR pcl.agent_id IS NOT NULL
-GROUP BY a.id, a.email, a.first_name, a.last_name, a.plan_tier, a.pilot_started_at,
+GROUP BY a.id, a.email, a.name, a.plan_tier, a.pilot_started_at,
          d30.status, d30.sent_at, d45.status, d45.sent_at, d55.status, d55.sent_at;
 
 COMMENT ON VIEW pilot_conversion_sequence_status IS 'Current status of conversion sequence for all pilot agents';
@@ -110,10 +110,10 @@ BEGIN
     SELECT 
         a.id as agent_id,
         a.email as agent_email,
-        a.first_name || ' ' || a.last_name as agent_name,
+        a.name as agent_name,
         a.pilot_started_at,
         EXTRACT(DAY FROM NOW() - a.pilot_started_at)::INTEGER as days_since_start
-    FROM real_estate_agents a
+    FROM agents a
     WHERE a.plan_tier = 'pilot'
       AND a.pilot_started_at IS NOT NULL
       AND EXTRACT(DAY FROM NOW() - a.pilot_started_at)::INTEGER >= v_target_days

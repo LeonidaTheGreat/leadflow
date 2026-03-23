@@ -13,8 +13,8 @@
  */
 
 const assert = require('assert');
-const {
-  runConversionSequence,
+const { 
+  runConversionSequence, 
   processMilestone,
   sendConversionEmail,
   getEligibleAgents,
@@ -23,7 +23,7 @@ const {
   MILESTONES,
   isSupabaseConfigured,
   isResendConfigured
-} = require('../../lib/pilot-conversion-service');
+} = require('../lib/pilot-conversion-service');
 
 // Test configuration
 const TEST_AGENT_EMAIL = 'test-pilot-conversion@leadflow.test';
