@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { sendWelcomeEmail } from '@/lib/email-service'
+import { initializeSurveySchedule } from '@/lib/nps-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -222,6 +223,11 @@ async function buildSuccessResponse(
     dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'}/dashboard`,
   }).catch((err: unknown) => {
     console.error('[trial-signup] Welcome email error:', err)
+  })
+
+  // Initialize NPS survey schedule for the new agent (non-blocking)
+  void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
+    console.error('Failed to initialize NPS survey schedule:', err)
   })
 
   // Build response — redirect straight to dashboard for frictionless SLA (FR-2/FR-3)

@@ -91,9 +91,8 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'start':
-        // Generate sessionId server-side if not provided by client
-        const newSessionId = sessionId || randomUUID()
-        return await startSimulation(agentId, newSessionId)
+        // AC: Start Simulation accepts only agentId — server generates sessionId
+        return await startSimulation(agentId, sessionId || undefined)
       case 'status':
         return await getSimulationStatus(agentId, sessionId)
       case 'skip':
@@ -113,9 +112,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function startSimulation(agentId: string, sessionId: string) {
+async function startSimulation(agentId: string, sessionId?: string) {
   const now = Date.now()
   const simulationId = randomUUID()
+  // Generate sessionId server-side if not provided by client
+  // AC: Start Simulation is called with only agentId; server returns sessionId for subsequent polls
+  const resolvedSessionId = sessionId || `sim_${randomUUID()}`
   
   // Generate a realistic lead
   const leadNames = ['Sarah Johnson', 'Michael Chen', 'Emily Rodriguez', 'David Thompson', 'Lisa Park']
@@ -123,8 +125,8 @@ async function startSimulation(agentId: string, sessionId: string) {
   const propertyInterests = ['a 3-bedroom home', 'a downtown condo', 'a family house', 'investment property', 'a new construction']
   const propertyInterest = propertyInterests[Math.floor(Math.random() * propertyInterests.length)]
 
-  // Initialize simulation in memory
-  simulationProgress.set(sessionId, {
+  // Initialize simulation in memory using resolvedSessionId
+  simulationProgress.set(resolvedSessionId, {
     status: 'running',
     conversation: [],
     startedAt: now,
@@ -137,7 +139,7 @@ async function startSimulation(agentId: string, sessionId: string) {
     .from('onboarding_simulations')
     .insert({
       id: simulationId,
-      session_id: sessionId,
+      session_id: resolvedSessionId,
       agent_id: agentId,
       status: 'running',
       simulation_started_at: new Date(now).toISOString(),
@@ -152,16 +154,18 @@ async function startSimulation(agentId: string, sessionId: string) {
   }
 
   // Simulate the conversation asynchronously
-  simulateConversation(sessionId, leadName, propertyInterest)
+  simulateConversation(resolvedSessionId, leadName, propertyInterest)
 
   // Log analytics event
-  await logAnalyticsEvent('onboarding_simulation_started', agentId, sessionId, { simulationId })
+  await logAnalyticsEvent('onboarding_simulation_started', agentId, resolvedSessionId, { simulationId })
 
+  // Return state including the server-generated session_id
+  // AC: sessionId from start response is used for subsequent status polls
   return NextResponse.json({
     success: true,
     state: {
       id: simulationId,
-      session_id: sessionId,
+      session_id: resolvedSessionId,
       agent_id: agentId,
       status: 'running',
       simulation_started_at: new Date(now).toISOString(),
