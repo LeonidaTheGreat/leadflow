@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react'
@@ -10,16 +10,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectUrl = searchParams.get('redirect') || '/dashboard'
-  
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -30,7 +30,6 @@ export default function LoginPage() {
       ...prev,
       [e.target.name]: e.target.value
     }))
-    // Clear error when user types
     if (error) setError(null)
   }
 
@@ -39,8 +38,7 @@ export default function LoginPage() {
       setError('Please enter both email and password')
       return false
     }
-    
-    // Basic email validation
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address')
@@ -52,7 +50,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
 
     setLoading(true)
@@ -75,14 +73,11 @@ export default function LoginPage() {
         throw new Error(result.error || 'Invalid email or password')
       }
 
-      // Token is set via HTTP-only cookie by the API
-      // Store user info for wizard personalization (optional, for client-side logic)
       if (result.user) {
         const storage = rememberMe ? localStorage : sessionStorage
         storage.setItem('leadflow_user', JSON.stringify(result.user))
       }
 
-      // Redirect new agents (onboarding not complete) to the setup wizard
       if (result.user?.onboardingCompleted === false) {
         router.push('/setup')
       } else {
@@ -215,7 +210,7 @@ export default function LoginPage() {
 
             <div className="text-center">
               <p className="text-slate-400 text-sm">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/onboarding" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">
                   Start your free trial
                 </Link>
@@ -232,5 +227,20 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-500 mx-auto" />
+          <p className="mt-4 text-slate-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
