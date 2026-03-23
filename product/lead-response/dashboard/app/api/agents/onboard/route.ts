@@ -39,13 +39,13 @@ export async function POST(request: NextRequest) {
       state,
       calcomLink,
       smsPhoneNumber,
+      ahaCompleted,
+      ahaResponseTimeMs,
       utmSource,
       utmMedium,
       utmCampaign,
       utmContent,
       utmTerm,
-      ahaCompleted,
-      ahaResponseTimeMs,
     } = body
 
     // Validate required fields — NO credit card or billing info needed
@@ -77,32 +77,40 @@ export async function POST(request: NextRequest) {
     const now = new Date()
     const pilotExpiresAt = new Date(now.getTime() + PILOT_DURATION_DAYS * 24 * 60 * 60 * 1000)
 
+    // Build insert payload - only include aha fields if they exist in schema
+    const insertPayload: any = {
+      email: email.toLowerCase(),
+      password_hash: hashedPassword,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber,
+      state,
+      status: 'onboarding',
+      plan_tier: 'pilot',
+      pilot_started_at: now.toISOString(),
+      pilot_expires_at: pilotExpiresAt.toISOString(),
+      // No stripe_customer_id — free pilot, no card required
+      timezone: 'America/New_York', // Default, can be updated later
+      created_at: now.toISOString(),
+      utm_source: utmSource || null,
+      utm_medium: utmMedium || null,
+      utm_campaign: utmCampaign || null,
+      utm_content: utmContent || null,
+      utm_term: utmTerm || null,
+    }
+
+    // Only add aha fields if provided (columns may not exist yet)
+    if (ahaCompleted !== undefined) {
+      insertPayload.aha_moment_completed = ahaCompleted
+    }
+    if (ahaResponseTimeMs !== undefined) {
+      insertPayload.aha_response_time_ms = ahaResponseTimeMs
+    }
+
     // Create agent account — free pilot, no credit card required
     const { data: agent, error: agentError } = await supabase
       .from('real_estate_agents')
-      .insert({
-        email: email.toLowerCase(),
-        password_hash: hashedPassword,
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phoneNumber,
-        state,
-        email_verified: true, // Auto-verify for now (no email verification flow yet)
-        status: 'onboarding',
-        plan_tier: 'pilot',
-        pilot_started_at: now.toISOString(),
-        pilot_expires_at: pilotExpiresAt.toISOString(),
-        // No stripe_customer_id — free pilot, no card required
-        timezone: 'America/New_York', // Default, can be updated later
-        created_at: now.toISOString(),
-        utm_source: utmSource || null,
-        utm_medium: utmMedium || null,
-        utm_campaign: utmCampaign || null,
-        utm_content: utmContent || null,
-        utm_term: utmTerm || null,
-        aha_moment_completed: ahaCompleted === true,
-        aha_response_time_ms: ahaResponseTimeMs || null,
-      })
+      .insert(insertPayload)
       .select()
       .single()
 
