@@ -1,11 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-<<<<<<< HEAD
 > Generated: 2026-03-23T05:19:32.188Z | Source: `prds` table
-=======
-> Generated: 2026-03-12T06:27:06.250Z | Source: `prds` table
->>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -20,11 +16,8 @@
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
-<<<<<<< HEAD
 | prd-email-verification-before-login | Email Verification — Confirm Inbox Before Login | approved | - | [docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md](docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md) |
 | prd-email-verification-db-migration-fix | Email Verification DB Migration Fix | approved | - | [docs/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md](docs/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md) |
-=======
->>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 | PRD-FEAT-DEMO-WITHOUT-SIGNUP-001 | Live AI Demo — Experience the Product Without Signing Up | approved | 1.0 | [docs/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md](docs/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md) |
 | PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH | Fix agents Table Mismatch in Auth/Onboarding API Routes | approved | - | [docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md](docs/PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH.md) |
 | PRD-FIX-API-HEALTH-ENDPOINT | Fix API Health Endpoint — Query Correct Table | approved | - | [docs/PRD-FIX-API-HEALTH-ENDPOINT.md](docs/PRD-FIX-API-HEALTH-ENDPOINT.md) |
@@ -61,10 +54,7 @@
 | PRD-ONBOARDING-WIZARD-001 | Post-Login Onboarding Wizard for New Agents | approved | 1.0 | [docs/PRD-ONBOARDING-WIZARD.md](docs/PRD-ONBOARDING-WIZARD.md) |
 | PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
 | prd-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | draft | 1.0 | [docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md](docs/PRD-PILOT-CONVERSION-EMAIL-SEQUENCE.md) |
-<<<<<<< HEAD
 | PRD-PM-ACTION-ITEMS-DASHBOARD | PM Structured Action Items for Dashboard | approved | 1.0 | [docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md](docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md) |
-=======
->>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 | PRD-PRODUCT-STATUS-001 | LeadFlow Product Status Report — Day 19 of 60 | approved | 1.0 | [docs/PRD-PRODUCT-STATUS-REPORT-001.md](docs/PRD-PRODUCT-STATUS-REPORT-001.md) |
 | PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM | Project Structure Convention System | draft | 1.0 | [docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md](docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md) |
 | prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |

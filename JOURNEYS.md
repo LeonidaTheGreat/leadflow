@@ -1,11 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
-<<<<<<< HEAD
 > Generated: 2026-03-23T05:19:32.264Z | Source: `project.config.json` journeys + `product_reviews` table
-=======
-> Generated: 2026-03-12T06:27:06.324Z | Source: `project.config.json` journeys + `product_reviews` table
->>>>>>> b2a22679 (design: add Brokerage tier to landing page pricing section)
 
 Review interval: every 14 days
 
