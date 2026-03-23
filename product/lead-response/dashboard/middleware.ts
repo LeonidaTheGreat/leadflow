@@ -59,6 +59,9 @@ function maybeTouchSession(agentId: string, sessionId?: string): void {
   })
 }
 
+// TODO: Verify touchSession calls work on Edge Runtime
+// Temporarily disabled to debug MIDDLEWARE_INVOCATION_FAILED
+
 interface JwtPayload {
   userId?: string
   sessionId?: string
@@ -86,9 +89,10 @@ export async function middleware(request: NextRequest) {
 
   // Trigger session heartbeat for authenticated requests (FR-2)
   // Fire-and-forget — never blocks or fails the request
-  if (isAuthenticated && payload?.userId) {
-    maybeTouchSession(payload.userId, payload.sessionId)
-  }
+  // Disabled for now due to Edge Runtime compatibility issues
+  // if (isAuthenticated && payload?.userId) {
+  //   maybeTouchSession(payload.userId, payload.sessionId)
+  // }
 
   // Check if current path is protected
   const isProtectedRoute = PROTECTED_ROUTES.some(route =>
