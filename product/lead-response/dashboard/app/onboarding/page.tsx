@@ -1,18 +1,51 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState, Suspense } from 'react'
 import OnboardingWelcome from './steps/welcome'
 import OnboardingAgentInfo from './steps/agent-info'
 import OnboardingCalendar from './steps/calendar'
 import OnboardingSMS from './steps/sms-config'
+import OnboardingSimulator from './steps/simulator'
 import OnboardingConfirm from './steps/confirmation'
 import OnboardingProgress from './components/progress'
 
-type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'confirmation'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
-export default function OnboardingPage() {
+/** Read UTM params: URL takes precedence over sessionStorage. */
+function readUtmParams(searchParams: ReturnType<typeof useSearchParams>) {
+  const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const
+
+  // Try sessionStorage first (captured by landing page)
+  let stored: Record<string, string> = {}
+  try {
+    const raw = sessionStorage.getItem('leadflow_utm')
+    if (raw) stored = JSON.parse(raw)
+  } catch {
+    // sessionStorage unavailable (SSR safety) — ignore
+  }
+
+  // URL params override sessionStorage
+  const fromUrl: Record<string, string> = {}
+  UTM_KEYS.forEach((key) => {
+    const val = searchParams.get(key)
+    if (val) fromUrl[key] = val
+  })
+
+  const merged = { ...stored, ...fromUrl }
+
+  return {
+    utmSource: merged['utm_source'] || null,
+    utmMedium: merged['utm_medium'] || null,
+    utmCampaign: merged['utm_campaign'] || null,
+    utmContent: merged['utm_content'] || null,
+    utmTerm: merged['utm_term'] || null,
+  }
+}
+
+function OnboardingPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome')
   const [agentData, setAgentData] = useState({
     email: '',
@@ -25,10 +58,31 @@ export default function OnboardingPage() {
     calendarUrl: '',
     calcomLink: '',
     smsPhoneNumber: '',
+    // Aha Moment simulator fields
+    ahaCompleted: false,
+    ahaResponseTimeMs: null as number | null,
+    ahaSkipped: false,
+    simulatorSessionId: '',
+    tempAgentId: '',
+    // UTM attribution fields (populated on mount)
+    utmSource: null as string | null,
+    utmMedium: null as string | null,
+    utmCampaign: null as string | null,
+    utmContent: null as string | null,
+    utmTerm: null as string | null,
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'confirmation']
+  // Read UTM params from sessionStorage / URL on mount
+  useEffect(() => {
+    const utmParams = readUtmParams(searchParams)
+    const hasUtm = Object.values(utmParams).some(Boolean)
+    if (hasUtm) {
+      setAgentData((prev) => ({ ...prev, ...utmParams }))
+    }
+  }, [searchParams])
+
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const goToStep = (step: OnboardingStep) => {
@@ -50,11 +104,15 @@ export default function OnboardingPage() {
   const completeOnboarding = async () => {
     setIsLoading(true)
     try {
-      // Submit agent data to backend
+      // Submit agent data to backend (includes UTM attribution and Aha Moment fields)
       const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(agentData),
+        body: JSON.stringify({
+          ...agentData,
+          aha_moment_completed: agentData.ahaCompleted,
+          aha_response_time_ms: agentData.ahaResponseTimeMs,
+        }),
       })
 
       if (!response.ok) {
@@ -139,6 +197,15 @@ export default function OnboardingPage() {
               />
             )}
 
+            {currentStep === 'simulator' && (
+              <OnboardingSimulator
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
+              />
+            )}
+
             {currentStep === 'confirmation' && (
               <OnboardingConfirm
                 onBack={prevStep}
@@ -151,5 +218,13 @@ export default function OnboardingPage() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={null}>
+      <OnboardingPageInner />
+    </Suspense>
   )
 }

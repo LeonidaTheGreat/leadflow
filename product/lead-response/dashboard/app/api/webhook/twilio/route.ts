@@ -3,10 +3,19 @@ import { supabaseAdmin, createLead, createMessage } from '@/lib/supabase'
 import { generateAgentResponse, checkOptOut, extractInfo } from '@/agents/sms-agent/agent'
 import { sendSms, normalizePhone } from '@/lib/twilio'
 import { syncLeadToFub, searchLeadByPhone, createLeadInFub } from '@/lib/fub'
+import {
+  classifyReply,
+  getPendingSatisfactionPing,
+  recordSatisfactionReply,
+  sendSatisfactionPing,
+} from '@/lib/satisfaction'
 import type { Lead, Agent } from '@/lib/types'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
+
+// Satisfaction ping fires after AI response cooldown (10 min = 600000ms)
+const SATISFACTION_PING_DELAY_MS = 10 * 60 * 1000
 
 // ============================================
 // TWILIO INBOUND SMS WEBHOOK
@@ -159,7 +168,7 @@ export async function POST(request: NextRequest) {
     let agent: Agent | null = lead.agent as Agent
     if (!agent && lead.agent_id) {
       const { data: agentData } = await supabaseAdmin
-        .from('agents')
+        .from('real_estate_agents')
         .select('*')
         .eq('id', lead.agent_id)
         .single()
@@ -246,6 +255,33 @@ export async function POST(request: NextRequest) {
       return new NextResponse(twiml, {
         headers: { 'Content-Type': 'text/xml' },
       })
+    }
+
+    // ============================================
+    // SATISFACTION FEEDBACK: Check for pending ping reply
+    // ============================================
+    const pendingPing = await getPendingSatisfactionPing(lead.id)
+    if (pendingPing) {
+      console.log('📊 Pending satisfaction ping found — classifying reply:', body)
+      const rating = classifyReply(body)
+      await recordSatisfactionReply(pendingPing.id, body, rating)
+      console.log(`📊 Satisfaction reply classified as: ${rating}`)
+
+      // If negative + STOP-like — opt-out is already handled above, but log it
+      if (rating === 'negative') {
+        await supabaseAdmin.from('events').insert({
+          lead_id: lead.id,
+          event_type: 'satisfaction_negative',
+          event_data: { raw_reply: body, rating, ping_id: pendingPing.id },
+          source: 'twilio_webhook',
+        })
+      }
+
+      // Return empty TwiML — do not AI-respond to satisfaction replies
+      const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+</Response>`
+      return new NextResponse(twiml, { headers: { 'Content-Type': 'text/xml' } })
     }
 
     // Save inbound message to database
@@ -399,6 +435,32 @@ export async function POST(request: NextRequest) {
         confidence: agentResponse.confidence,
       })
 
+      // ============================================
+      // SATISFACTION FEEDBACK: Schedule ping after exchange
+      // Check conversation depth — fire ping after ≥2 messages exchanged
+      // We use a background async call (non-blocking, fire-and-forget after delay)
+      // ============================================
+      const conversationLength = conversation?.length || 0
+      if (conversationLength >= 2 && agent) {
+        const agentFull = agent as any
+        const satisfactionEnabled = agentFull.satisfaction_ping_enabled !== false
+        // Schedule ping after cooldown (fire async, don't block response)
+        setTimeout(async () => {
+          try {
+            await sendSatisfactionPing({
+              leadId: lead!.id,
+              agentId: agent!.id,
+              conversationId: lead!.id, // use lead ID as conversation ID
+              phone: lead!.phone,
+              lastAiMessageAt: new Date().toISOString(),
+              agentSatisfactionPingEnabled: satisfactionEnabled,
+            })
+          } catch (e: any) {
+            console.error('❌ Satisfaction ping error:', e.message)
+          }
+        }, SATISFACTION_PING_DELAY_MS)
+      }
+
       // Return TwiML response for Twilio (this sends the SMS)
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -464,7 +526,7 @@ function escapeXml(text: string): string {
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
     .limit(1)

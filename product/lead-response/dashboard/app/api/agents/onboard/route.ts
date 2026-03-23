@@ -1,15 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
 
-// Simple password hashing using crypto (for demo)
-// In production, use a proper library like bcrypt or argon2
-function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString('hex')
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
-    .toString('hex')
-  return `${salt}:${hash}`
+/** Pilot duration in days */
+const PILOT_DURATION_DAYS = 60
+
+/**
+ * Send Telegram notification about new pilot signup.
+ * Fire-and-forget — never blocks onboarding.
+ */
+async function notifyPilotSignup(name: string, email: string) {
+  const token = process.env.ORCHESTRATOR_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_NOTIFY_CHAT_ID
+  if (!token || !chatId) return
+
+  const text = `🚀 *New Pilot Agent Signed Up*\n\nName: ${name}\nEmail: ${email}\nPlan: Free Pilot (${PILOT_DURATION_DAYS} days)\nAction: Manual conversion needed before expiry`
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
+    })
+  } catch (err) {
+    console.error('Telegram notification failed (non-blocking):', err)
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -24,9 +39,14 @@ export async function POST(request: NextRequest) {
       state,
       calcomLink,
       smsPhoneNumber,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmContent,
+      utmTerm,
     } = body
 
-    // Validate required fields
+    // Validate required fields — NO credit card or billing info needed
     if (!email || !password || !firstName || !lastName || !phoneNumber || !state) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -36,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email already exists
     const { data: existingUser } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id')
       .eq('email', email.toLowerCase())
       .single()
@@ -49,11 +69,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = hashPassword(password)
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create agent account
+    // Calculate pilot expiry (60 days from now)
+    const now = new Date()
+    const pilotExpiresAt = new Date(now.getTime() + PILOT_DURATION_DAYS * 24 * 60 * 60 * 1000)
+
+    // Create agent account — free pilot, no credit card required
     const { data: agent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .insert({
         email: email.toLowerCase(),
         password_hash: hashedPassword,
@@ -62,8 +86,17 @@ export async function POST(request: NextRequest) {
         phone_number: phoneNumber,
         state,
         status: 'onboarding',
+        plan_tier: 'pilot',
+        pilot_started_at: now.toISOString(),
+        pilot_expires_at: pilotExpiresAt.toISOString(),
+        // No stripe_customer_id — free pilot, no card required
         timezone: 'America/New_York', // Default, can be updated later
-        created_at: new Date().toISOString(),
+        created_at: now.toISOString(),
+        utm_source: utmSource || null,
+        utm_medium: utmMedium || null,
+        utm_campaign: utmCampaign || null,
+        utm_content: utmContent || null,
+        utm_term: utmTerm || null,
       })
       .select()
       .single()
@@ -111,13 +144,22 @@ export async function POST(request: NextRequest) {
     // Send welcome email (implement email service)
     // await sendWelcomeEmail(agent.email, agent.first_name)
 
+    // Notify Stojan via Telegram about new pilot signup (fire-and-forget)
+    notifyPilotSignup(`${firstName} ${lastName}`, email.toLowerCase()).catch(() => {})
+
     // Return success with agent data (no password)
     const { password_hash, ...agentSafe } = agent
 
     return NextResponse.json(
       {
-        message: 'Onboarding completed successfully',
+        message: 'Welcome to your free pilot! You have 60 days of full access.',
         agent: agentSafe,
+        pilot: {
+          plan: 'pilot',
+          durationDays: PILOT_DURATION_DAYS,
+          startsAt: now.toISOString(),
+          expiresAt: pilotExpiresAt.toISOString(),
+        },
       },
       { status: 201 }
     )

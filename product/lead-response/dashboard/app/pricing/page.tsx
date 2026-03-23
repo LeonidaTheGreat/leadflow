@@ -1,21 +1,40 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Check, ArrowRight, Loader2 } from 'lucide-react'
 
 type BillingInterval = 'monthly' | 'annual'
+
+/**
+ * Maps pricing page tier + billing interval to the API's tier key format.
+ * The API (POST /api/billing/create-checkout) expects: starter_monthly,
+ * professional_monthly, enterprise_monthly, etc.
+ *
+ * Pricing page tiers:
+ *   starter    → starter
+ *   pro        → professional
+ *   team       → enterprise
+ *   brokerage  → contact sales (no checkout flow)
+ */
+const TIER_KEY_MAP: Record<string, string | null> = {
+  starter:   'starter',
+  pro:       'professional',
+  team:      'enterprise',
+  brokerage: null, // contact sales — no direct checkout
+}
 
 const PRICING_PLANS = [
   {
     name: 'Starter',
     tier: 'starter',
-    monthlyPrice: 497,
-    annualPrice: 4970,
+    monthlyPrice: 49,
+    annualPrice: 490,
     description: 'Perfect for individual agents',
     features: [
-      'Up to 50 leads/month',
-      'AI SMS & email responses',
-      'Basic qualification',
+      'Up to 100 SMS/month',
+      'Basic AI responses',
+      'Dashboard access',
       'Calendar integration (1 agent)',
       'Standard email support',
       'Basic analytics',
@@ -24,37 +43,52 @@ const PRICING_PLANS = [
     highlighted: false,
   },
   {
-    name: 'Professional',
-    tier: 'professional',
-    monthlyPrice: 997,
-    annualPrice: 9970,
-    description: 'Most popular for teams',
+    name: 'Pro',
+    tier: 'pro',
+    monthlyPrice: 149,
+    annualPrice: 1490,
+    description: 'Most popular for solo agents',
     features: [
-      'Up to 150 leads/month',
-      'AI SMS, email & voice',
-      'Advanced qualification scoring',
-      'Calendar integration (5 agents)',
-      'Priority chat + email support',
+      'Unlimited SMS',
+      'Full AI with SMS & email',
+      'Cal.com integration',
       'Advanced analytics & API',
-      'Team collaboration',
+      'Priority chat + email support',
       'Custom AI training',
     ],
     cta: 'Start Free Trial',
     highlighted: true,
   },
   {
-    name: 'Enterprise',
-    tier: 'enterprise',
-    monthlyPrice: 1997,
-    annualPrice: 19970,
-    description: 'For large brokerages',
+    name: 'Team',
+    tier: 'team',
+    monthlyPrice: 399,
+    annualPrice: 3990,
+    description: 'For small teams (2-5 agents)',
+    features: [
+      'Everything in Pro',
+      'Up to 5 agents',
+      'Team dashboard',
+      'Lead routing & distribution',
+      'Performance tracking',
+      'Team collaboration tools',
+    ],
+    cta: 'Start Free Trial',
+    highlighted: false,
+  },
+  {
+    name: 'Brokerage',
+    tier: 'brokerage',
+    monthlyPrice: 999,
+    annualPrice: 9990,
+    description: 'For large brokerages (20+ agents)',
     features: [
       'Unlimited leads',
       'Multi-channel AI (SMS/email/voice/chat)',
-      'Custom qualification workflows',
-      'Unlimited calendar integrations',
-      'Dedicated account manager',
+      'Unlimited agents',
       'White-label options',
+      'Admin dashboard & compliance',
+      'Dedicated account manager',
       'SLA guarantees (99.9% uptime)',
       'Custom integrations',
     ],
@@ -71,12 +105,91 @@ const ADD_ONS = [
 ]
 
 export default function PricingPage() {
+  const router = useRouter()
   const [interval, setInterval] = useState<BillingInterval>('monthly')
   const [selectedTier, setSelectedTier] = useState<string | null>(null)
+  const [loadingTier, setLoadingTier] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const handleSelectPlan = async (tier: string) => {
-    // TODO: Implement checkout flow
-    console.log(`Selected plan: ${tier}`)
+    setCheckoutError(null)
+
+    // Brokerage is a "Contact Sales" tier — redirect to email
+    if (tier === 'brokerage') {
+      window.location.href = 'mailto:sales@leadflow.ai?subject=Brokerage Plan Inquiry'
+      return
+    }
+
+    // Get the user from storage (set by login page)
+    const token =
+      localStorage.getItem('leadflow_token') ||
+      sessionStorage.getItem('leadflow_token')
+    const userRaw =
+      localStorage.getItem('leadflow_user') ||
+      sessionStorage.getItem('leadflow_user')
+
+    // Not logged in → redirect to login, then back to pricing
+    if (!token || !userRaw) {
+      router.push('/login?redirect=/pricing')
+      return
+    }
+
+    let user: { id: string; email: string }
+    try {
+      user = JSON.parse(userRaw)
+    } catch {
+      router.push('/login?redirect=/pricing')
+      return
+    }
+
+    if (!user?.id || !user?.email) {
+      router.push('/login?redirect=/pricing')
+      return
+    }
+
+    // Map pricing-page tier + billing interval → API tier key
+    const baseTierKey = TIER_KEY_MAP[tier]
+    if (!baseTierKey) {
+      setCheckoutError('This plan requires contacting sales. Please email sales@leadflow.ai.')
+      return
+    }
+    const apiTier = `${baseTierKey}_${interval}` // e.g. "professional_monthly"
+
+    setLoadingTier(tier)
+    setSelectedTier(tier)
+
+    try {
+      const response = await fetch('/api/billing/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          'x-agent-id': user.id,
+        },
+        body: JSON.stringify({
+          tier: apiTier,
+          agentId: user.id,
+          email: user.email,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to start checkout. Please try again.')
+      }
+
+      if (!data.url) {
+        throw new Error('No checkout URL returned. Please try again.')
+      }
+
+      // Redirect to Stripe hosted checkout page
+      window.location.href = data.url
+    } catch (err: any) {
+      setCheckoutError(err.message || 'Something went wrong. Please try again.')
+      setLoadingTier(null)
+      setSelectedTier(null)
+    }
   }
 
   return (
@@ -140,7 +253,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {PRICING_PLANS.map((plan) => {
               const price = interval === 'monthly' ? plan.monthlyPrice : Math.floor(plan.annualPrice / 12)
               const fullPrice = interval === 'monthly' ? plan.monthlyPrice * 12 : plan.annualPrice
@@ -186,15 +299,24 @@ export default function PricingPage() {
                     {/* CTA Button */}
                     <button
                       onClick={() => handleSelectPlan(plan.tier)}
-                      disabled={selectedTier === plan.tier}
+                      disabled={loadingTier !== null}
                       className={`w-full py-3 px-4 rounded-lg font-semibold transition-all mb-6 flex items-center justify-center gap-2 ${
                         plan.highlighted
-                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white'
-                          : 'bg-slate-700/50 hover:bg-slate-700 text-slate-200 border border-slate-600'
+                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white disabled:opacity-60'
+                          : 'bg-slate-700/50 hover:bg-slate-700 text-slate-200 border border-slate-600 disabled:opacity-60'
                       }`}
                     >
-                      {plan.cta}
-                      <ArrowRight className="w-4 h-4" />
+                      {loadingTier === plan.tier ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Processing…
+                        </>
+                      ) : (
+                        <>
+                          {plan.cta}
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
 
                     {/* Features */}
@@ -211,6 +333,13 @@ export default function PricingPage() {
               )
             })}
           </div>
+
+          {/* Checkout Error */}
+          {checkoutError && (
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-sm text-center">
+              {checkoutError}
+            </div>
+          )}
 
           {/* Add-Ons */}
           <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-8 mb-16">

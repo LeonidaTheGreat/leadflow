@@ -128,7 +128,7 @@ async function validateSystem(): Promise<SystemState> {
       })
     } else {
       const supabase = createClient(supabaseUrl, supabaseKey)
-      const { data, error } = await supabase.from('agents').select('count')
+      const { data, error } = await supabase.from('real_estate_agents').select('count')
       
       if (error) throw error
       

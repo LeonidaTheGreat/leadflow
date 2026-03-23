@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { validateSession } from '@/lib/session'
+import { jwtVerify } from 'jose'
+
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+)
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -8,6 +12,7 @@ const PROTECTED_ROUTES = [
   '/settings',
   '/profile',
   '/integrations',
+  '/setup',
 ]
 
 // Routes that should redirect to dashboard if already authenticated
@@ -17,15 +22,23 @@ const AUTH_ROUTES = [
   '/signup',
 ]
 
+async function verifyToken(token: string): Promise<boolean> {
+  try {
+    await jwtVerify(token, JWT_SECRET)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Get session token from cookie
-  const sessionToken = request.cookies.get('leadflow_session')?.value
+  // Get token from cookies or Authorization header
+  const token = request.cookies.get('leadflow_token')?.value || 
+                request.headers.get('Authorization')?.replace('Bearer ', '')
   
-  // Validate session against database
-  const session = sessionToken ? await validateSession(sessionToken) : null
-  const isAuthenticated = !!session
+  const isAuthenticated = token ? await verifyToken(token) : false
   
   // Check if current path is protected
   const isProtectedRoute = PROTECTED_ROUTES.some(route => 

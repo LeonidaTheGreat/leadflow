@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useLandingPageABTest } from '@/hooks/useABTest'
 import { useEventTracking } from '@/hooks/useEventTracking'
 import { PostHogEvents } from '@/lib/analytics-events'
-import { ArrowRight, CheckCircle, Zap, Clock, Shield, HeartPulse } from 'lucide-react'
+import { ArrowRight, CheckCircle, Zap, Clock, Shield, HeartPulse, Link2, MessageSquare, Trophy } from 'lucide-react'
 
 interface LandingPageProps {
   onGetStarted?: () => void
@@ -107,7 +107,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       {/* Scarcity Banner */}
       {pilotSpotsRemaining > 0 && pilotSpotsRemaining <= 5 && (
         <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-4 text-center text-sm font-medium">
-          ⚡ Limited Pilot Program: Only {pilotSpotsRemaining} spots remaining • Free 30-day trial
+          ⚡ Limited Pilot Program: Only {pilotSpotsRemaining} spots remaining • Free 14-day trial
         </div>
       )}
       
@@ -249,6 +249,63 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               <h3 className="font-semibold text-lg mb-2">Follow Up Boss Sync</h3>
               <p className="text-muted-foreground text-sm">
                 Seamlessly integrates with your Follow Up Boss CRM. All lead data stays synchronized automatically.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="container px-4 md:px-6 py-12 lg:py-20" data-testid="how-it-works-section">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+            <p className="text-muted-foreground">Get started in minutes, not hours</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Step 1 */}
+            <div 
+              className="relative bg-background p-6 rounded-lg border hover:shadow-lg transition-shadow"
+              onClick={() => handleFeatureClick('how_it_works_step_1')}
+            >
+              <div className="absolute -top-3 -left-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm">
+                1
+              </div>
+              <Link2 className="h-10 w-10 text-primary mb-4 mt-2" />
+              <h3 className="font-semibold text-lg mb-2">Connect Your CRM</h3>
+              <p className="text-muted-foreground text-sm">
+                Link your Follow Up Boss account in under 2 minutes. New leads automatically flow into our system—no manual data entry required.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div 
+              className="relative bg-background p-6 rounded-lg border hover:shadow-lg transition-shadow"
+              onClick={() => handleFeatureClick('how_it_works_step_2')}
+            >
+              <div className="absolute -top-3 -left-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm">
+                2
+              </div>
+              <MessageSquare className="h-10 w-10 text-primary mb-4 mt-2" />
+              <h3 className="font-semibold text-lg mb-2">AI Responds Instantly</h3>
+              <p className="text-muted-foreground text-sm">
+                When a lead comes in, our AI sends a personalized SMS in under 30 seconds—qualifying their needs and answering common questions.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div 
+              className="relative bg-background p-6 rounded-lg border hover:shadow-lg transition-shadow"
+              onClick={() => handleFeatureClick('how_it_works_step_3')}
+            >
+              <div className="absolute -top-3 -left-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm">
+                3
+              </div>
+              <Trophy className="h-10 w-10 text-primary mb-4 mt-2" />
+              <h3 className="font-semibold text-lg mb-2">You Close the Deal</h3>
+              <p className="text-muted-foreground text-sm">
+                Qualified leads book appointments directly on your calendar. Hot leads are flagged for immediate follow-up. You step in at the perfect moment.
               </p>
             </div>
           </div>

@@ -16,13 +16,61 @@ import { createMessage } from '@/lib/supabase'
  * - nurture: 7d general nurture sequence
  *
  * Runs every hour via Vercel Cron
+ * 
+ * COMPLIANCE NOTES:
+ * - All SMS messages include TCPA-required opt-out footer
+ * - Frequency capping: max 3 messages per lead per 24h period
+ * - Message length validated to fit single SMS (160 chars) after footer
+ * - Respects quiet hours: 9 PM - 9 AM (no sends outside business hours)
+ * - DNC and SMS consent required before sending
  */
+
+// TCPA Compliance: Standard opt-out footer for SMS
+const SMS_COMPLIANCE_FOOTER = '\nReply STOP to opt out.'
+
+// Frequency cap: Maximum messages per lead per 24-hour period
+const MAX_MESSAGES_PER_LEAD_PER_DAY = 3
+
+// SMS single message character limit (MMS threshold is 160 for single SMS, 306+ for MMS)
+const SMS_CHAR_LIMIT = 160
 
 // Quiet hours: 9 PM - 9 AM local time (Toronto timezone)
 function isQuietHours(): boolean {
   const now = new Date()
   const hour = now.getHours()
   return hour >= 21 || hour < 9
+}
+
+// Check if lead has reached frequency cap (max messages per 24h)
+async function hasReachedFrequencyCap(leadId: string, supabase: any): Promise<boolean> {
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  
+  const { data: recentMessages, error } = await supabase
+    .from('messages')
+    .select('id')
+    .eq('lead_id', leadId)
+    .eq('direction', 'outbound')
+    .gte('created_at', oneDayAgo)
+  
+  if (error) {
+    console.error('Error checking frequency cap:', error)
+    return false // Don't block send on error
+  }
+  
+  return (recentMessages?.length || 0) >= MAX_MESSAGES_PER_LEAD_PER_DAY
+}
+
+// Ensure message fits in single SMS after compliance footer is added
+function ensureSmsFitWithFooter(message: string): string {
+  const totalLength = message.length + SMS_COMPLIANCE_FOOTER.length
+  
+  if (totalLength > SMS_CHAR_LIMIT) {
+    // Trim message to fit footer (accounting for ellipsis)
+    const availableChars = SMS_CHAR_LIMIT - SMS_COMPLIANCE_FOOTER.length - 3 // 3 for "..."
+    return message.substring(0, availableChars) + '...' + SMS_COMPLIANCE_FOOTER
+  }
+  
+  return message + SMS_COMPLIANCE_FOOTER
 }
 
 // Calculate next send time based on sequence type
@@ -160,26 +208,40 @@ export async function GET(request: NextRequest) {
       }
 
       try {
+        // Check frequency cap: max 3 messages per lead per 24h
+        const atFrequencyCap = await hasReachedFrequencyCap(lead.id, supabase)
+        if (atFrequencyCap) {
+          console.warn(`⚠️ Lead ${lead.id} at frequency cap (3 messages in 24h) - skipping`)
+          skipped++
+          continue
+        }
+
         // Generate contextual AI message
         const aiResponse = await generateAiSmsResponse(lead, agent, {
           trigger: 'followup',
         })
 
+        // Add TCPA-compliant footer and validate message length
+        const complianceMessage = ensureSmsFitWithFooter(aiResponse.message)
+        
+        console.log(`📝 Message length: ${aiResponse.message.length} → ${complianceMessage.length} (with footer)`)
+
         if (isDryRun) {
-          console.log(`🧪 [DRY-RUN] Would send to ${lead.name}: "${aiResponse.message}"`)
+          console.log(`🧪 [DRY-RUN] Would send to ${lead.name}: "${complianceMessage}"`)
           results.push({
             sequence_id: sequence.id,
             lead_name: lead.name,
-            message: aiResponse.message,
+            message: complianceMessage,
+            message_length: complianceMessage.length,
             dry_run: true,
           })
           continue
         }
 
-        // Send SMS
+        // Send SMS with compliance footer
         const smsResult = await sendSms({
           to: lead.phone,
-          body: aiResponse.message,
+          body: complianceMessage,
           statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status`,
         })
 
@@ -189,19 +251,24 @@ export async function GET(request: NextRequest) {
           continue
         }
 
-        // Save message to database
-        await createMessage({
-          lead_id: lead.id,
-          direction: 'outbound',
-          channel: 'sms',
-          message_body: aiResponse.message,
-          ai_generated: true,
-          ai_confidence: aiResponse.confidence,
-          twilio_sid: smsResult.messageSid,
-          twilio_status: smsResult.status,
-          status: 'sent',
-          sent_at: new Date().toISOString(),
-        })
+        // Save message to database (store original message for context, note compliance footer was added)
+        try {
+          await createMessage({
+            lead_id: lead.id,
+            direction: 'outbound',
+            channel: 'sms',
+            message_body: complianceMessage,
+            ai_generated: true,
+            ai_confidence: aiResponse.confidence,
+            twilio_sid: smsResult.messageSid,
+            twilio_status: smsResult.status,
+            status: 'sent',
+            sent_at: new Date().toISOString(),
+          })
+        } catch (msgErr: any) {
+          console.error(`❌ Failed to save message record for ${lead.name}:`, msgErr.message)
+          // Continue anyway - SMS was sent, just not logged. Log to error tracking.
+        }
 
         // Update sequence
         const nextStep = sequence.step + 1

@@ -130,9 +130,9 @@ export function BillingCard({ agentId, className = '' }: BillingCardProps) {
               </p>
               {billingInfo?.planTier && (
                 <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
-                  {billingInfo.planTier === 'starter' && '$497/month'}
-                  {billingInfo.planTier === 'professional' && '$997/month'}
-                  {billingInfo.planTier === 'enterprise' && '$1,997/month'}
+                  {billingInfo.planTier === 'starter' && '$49/month'}
+                  {billingInfo.planTier === 'professional' && '$149/month'}
+                  {billingInfo.planTier === 'enterprise' && '$399/month'}
                 </p>
               )}
             </div>

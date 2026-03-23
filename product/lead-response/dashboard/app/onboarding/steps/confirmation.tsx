@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Zap, Clock } from 'lucide-react'
 
 export default function OnboardingConfirm({
   onBack,
@@ -22,7 +22,7 @@ export default function OnboardingConfirm({
           </div>
           <h2 className="text-3xl font-bold text-white mb-2">You're all set!</h2>
           <p className="text-slate-300">
-            Review your information before getting started
+            Review your information before starting your free 60-day pilot
           </p>
         </div>
 
@@ -93,6 +93,97 @@ export default function OnboardingConfirm({
             </div>
           </div>
 
+          {/* Aha Moment Status */}
+          <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-slate-200 mb-4 uppercase tracking-wide">
+              AI Response Demo
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚡</span>
+                  <span className="text-slate-300">Aha Moment Simulator</span>
+                </div>
+                {agentData.ahaCompleted ? (
+                  <span className="text-sm font-medium text-emerald-400">
+                    ✓ Completed ({agentData.ahaResponseTimeMs ? `${(agentData.ahaResponseTimeMs / 1000).toFixed(1)}s` : '< 30s'})
+                  </span>
+                ) : agentData.ahaSkipped ? (
+                  <span className="text-sm font-medium text-amber-400">
+                    ○ Skipped
+                  </span>
+                ) : (
+                  <span className="text-sm font-medium text-slate-500">
+                    ○ Not completed
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Aha Moment Status */}
+          <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-slate-200 mb-4 uppercase tracking-wide">
+              Aha Moment Experience
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400" />
+                  <span className="text-slate-300">Lead Simulator</span>
+                </div>
+                {agentData.ahaCompleted ? (
+                  <span className="text-sm font-medium text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Completed
+                    {agentData.ahaResponseTimeMs && (
+                      <span className="text-emerald-300/70 ml-1">
+                        ({(agentData.ahaResponseTimeMs / 1000).toFixed(1)}s)
+                      </span>
+                    )}
+                  </span>
+                ) : agentData.ahaSkipped ? (
+                  <span className="text-sm font-medium text-slate-500">○ Skipped</span>
+                ) : (
+                  <span className="text-sm font-medium text-slate-500">○ Not completed</span>
+                )}
+              </div>
+              {agentData.ahaCompleted && agentData.ahaResponseTimeMs && (
+                <div className="flex items-center gap-2 text-xs text-emerald-300/70">
+                  <Clock className="w-3 h-3" />
+                  <span>
+                    AI responded in under 30 seconds — experience the power of instant lead response!
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Pilot Plan Info */}
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-emerald-300 mb-3 uppercase tracking-wide">
+              Your Free Pilot
+            </h3>
+            <div className="space-y-2 text-sm text-emerald-200/80">
+              <div className="flex justify-between">
+                <span>Plan</span>
+                <span className="font-medium text-emerald-300">Free Pilot</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Duration</span>
+                <span className="font-medium text-emerald-300">60 days</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Credit card</span>
+                <span className="font-medium text-emerald-300">Not required</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Access level</span>
+                <span className="font-medium text-emerald-300">Full features</span>
+              </div>
+            </div>
+          </div>
+
           {/* What's Next */}
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
             <h3 className="text-sm font-semibold text-blue-300 mb-3">What's next?</h3>
@@ -144,12 +235,12 @@ export default function OnboardingConfirm({
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Creating account...
+                Activating your pilot...
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                Get Started!
+                Start Free Pilot
               </>
             )}
           </button>

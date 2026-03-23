@@ -1,19 +1,41 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Suspense } from 'react'
+import TrialSignupForm from '@/components/trial-signup-form'
+import { trackFormEvent } from '@/lib/analytics/ga4'
 
 // Pricing tiers as per UC-9 spec
-const PLANS = [
+// HARDCODED: No env var dependency to ensure plans always render.
+// NOTE: priceId is NOT stored here — price IDs are server-side secrets loaded
+// from env vars. The client sends a `tier` string; the server resolves it to
+// a real Stripe price ID via STRIPE_PRICE_<TIER>_MONTHLY env vars.
+interface Plan {
+  id: string
+  name: string
+  price: number
+  popular?: boolean
+  features: string[]
+}
+
+// Maps plan.id → checkout API `tier` value (matches PRICE_ID_ENV_MAP in create-checkout/route.ts)
+const PLAN_CHECKOUT_TIER: Record<string, string> = {
+  starter: 'starter_monthly',
+  pro:     'professional_monthly',
+  team:    'enterprise_monthly',
+}
+
+const PLANS: Plan[] = [
   {
     id: 'starter',
     name: 'Starter',
     price: 49,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_49',
     features: [
       'Up to 50 leads/month',
       'AI SMS responses',
@@ -26,7 +48,6 @@ const PLANS = [
     id: 'pro',
     name: 'Pro',
     price: 149,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_149',
     popular: true,
     features: [
       'Up to 200 leads/month',
@@ -41,7 +62,6 @@ const PLANS = [
     id: 'team',
     name: 'Team',
     price: 399,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY || 'price_team_399',
     features: [
       'Up to 500 leads/month',
       'Multi-channel AI',
@@ -54,6 +74,46 @@ const PLANS = [
 ]
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />}>
+      <SignupPageInner />
+    </Suspense>
+  )
+}
+
+function SignupPageInner() {
+  const searchParams = useSearchParams()
+  const isTrialMode = searchParams.get('mode') === 'trial'
+
+  // If trial mode, render the frictionless trial form
+  if (isTrialMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+        <header className="border-b border-slate-700/50">
+          <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+            <a href="/" className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
+                <span className="text-emerald-400 font-bold text-sm">▶</span>
+              </div>
+              <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
+            </a>
+            <a href="/login" className="text-sm text-slate-400 hover:text-white">
+              Already have an account? Sign in
+            </a>
+          </div>
+        </header>
+        <main className="flex-1 flex items-center justify-center px-4 py-16">
+          <TrialSignupForm />
+        </main>
+      </div>
+    )
+  }
+
+  // Default: existing paid signup flow
+  return <PaidSignupFlow />
+}
+
+function PaidSignupFlow() {
   const [step, setStep] = useState<'select-plan' | 'enter-details' | 'checkout'>('select-plan')
   const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null)
   const [loading, setLoading] = useState(false)
@@ -65,6 +125,11 @@ export default function SignupPage() {
     phone: '',
     password: ''
   })
+
+  // FR-3: Track form open on page mount
+  useEffect(() => {
+    trackFormEvent('form_view', 'pilot_signup')
+  }, [])
 
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
     setSelectedPlan(plan)
@@ -113,6 +178,9 @@ export default function SignupPage() {
     if (!validateForm()) return
     if (!selectedPlan) return
 
+    // FR-3: Track form submit (no PII)
+    trackFormEvent('form_submit_attempt', 'pilot_signup', { plan: selectedPlan.id })
+
     setLoading(true)
     setError(null)
 
@@ -137,14 +205,19 @@ export default function SignupPage() {
       const { agentId } = await agentResponse.json()
 
       // Step 2: Create Stripe checkout session
+      // Send `tier` (not priceId) — the server resolves the Stripe price ID
+      // from STRIPE_PRICE_<TIER>_MONTHLY env vars to keep secrets server-side.
+      const checkoutTier = PLAN_CHECKOUT_TIER[selectedPlan.id]
+      if (!checkoutTier) {
+        throw new Error(`Unknown plan: ${selectedPlan.id}`)
+      }
       const checkoutResponse = await fetch('/api/billing/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          tier: checkoutTier,
           agentId,
           email: formData.email,
-          plan: selectedPlan.id,
-          priceId: selectedPlan.priceId
         })
       })
 
@@ -157,12 +230,16 @@ export default function SignupPage() {
 
       // Step 3: Redirect to Stripe Checkout
       if (url) {
+        // FR-3: Track form success before redirecting
+        trackFormEvent('pilot_signup_complete', 'pilot_signup', { plan: selectedPlan.id })
         window.location.href = url
       } else {
         throw new Error('No checkout URL received')
       }
     } catch (err: any) {
       console.error('Signup error:', err)
+      // FR-3: Track form error (no PII)
+      trackFormEvent('form_submit_error', 'pilot_signup')
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }
