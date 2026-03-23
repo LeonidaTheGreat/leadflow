@@ -1,11 +1,19 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { deleteSession } from '@/lib/session'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const sessionToken = request.cookies.get('leadflow_session')?.value
+  
+  // Delete session from database if it exists
+  if (sessionToken) {
+    await deleteSession(sessionToken)
+  }
+  
   const response = NextResponse.json({ success: true })
   
-  // Clear the auth cookie
+  // Clear the session cookie
   response.cookies.set({
-    name: 'leadflow_token',
+    name: 'leadflow_session',
     value: '',
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
