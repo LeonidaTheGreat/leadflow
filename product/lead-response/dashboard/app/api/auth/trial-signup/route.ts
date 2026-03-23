@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
+import { createSession } from '@/lib/session'
 import { sendWelcomeEmail } from '@/lib/email-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,10 +60,15 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Calculate trial end date (30 days from now per PRD)
-    const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    // Calculate trial dates (14 days per PRD-FRICTIONLESS-ONBOARDING-001)
+    const now = new Date()
+    const trialStartAt = now.toISOString()
+    const trialEndsAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
-    // Create agent record with trial tier
+    // Create agent record with trial tier.
+    // email_verified = true: trial users get immediate dashboard access — frictionless onboarding
+    // requirement (FR-2/FR-3). A verification email is still sent non-blocking so they can
+    // confirm their address later.
     const { data: agent, error: createError } = await supabase
       .from('real_estate_agents')
       .insert({
@@ -74,8 +76,9 @@ export async function POST(request: NextRequest) {
         first_name: firstName,
         last_name: lastName,
         password_hash: passwordHash,
-        email_verified: false, // Require email verification before login
+        email_verified: true, // Immediate access — no verification gate for trial users
         plan_tier: 'trial',
+        trial_start_at: trialStartAt,
         trial_ends_at: trialEndsAt,
         mrr: 0,
         source: 'trial_cta',
@@ -83,81 +86,60 @@ export async function POST(request: NextRequest) {
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
         onboarding_completed: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        created_at: trialStartAt,
+        updated_at: trialStartAt,
       })
       .select('id, email, first_name, last_name')
       .single()
 
     if (createError) {
       console.error('Error creating trial agent:', createError)
+
+      // Graceful fallback: if trial_start_at column doesn't exist yet, retry without it
+      if (createError.message?.includes('trial_start_at')) {
+        const { data: agentFallback, error: fallbackError } = await supabase
+          .from('real_estate_agents')
+          .insert({
+            email: email.toLowerCase(),
+            first_name: firstName,
+            last_name: lastName,
+            password_hash: passwordHash,
+            email_verified: true,
+            plan_tier: 'trial',
+            trial_ends_at: trialEndsAt,
+            mrr: 0,
+            source: 'trial_cta',
+            utm_source: utm_source || null,
+            utm_medium: utm_medium || null,
+            utm_campaign: utm_campaign || null,
+            onboarding_completed: false,
+            created_at: trialStartAt,
+            updated_at: trialStartAt,
+          })
+          .select('id, email, first_name, last_name')
+          .single()
+
+        if (fallbackError || !agentFallback) {
+          console.error('Error creating trial agent (fallback):', fallbackError)
+          return NextResponse.json(
+            { error: 'Failed to create account. Please try again.' },
+            { status: 500 }
+          )
+        }
+
+        return await buildSuccessResponse(request, agentFallback, firstName, lastName, trialEndsAt, {
+          utm_source, utm_medium, utm_campaign,
+        })
+      }
+
       return NextResponse.json(
         { error: 'Failed to create account. Please try again.' },
         { status: 500 }
       )
     }
 
-    // Create verification token and send email (non-blocking)
-    void (async () => {
-      try {
-        const verificationToken = await createVerificationToken(agent.id)
-        if (verificationToken) {
-          await sendVerificationEmail(agent.email, agent.id, firstName, verificationToken)
-        }
-      } catch (err) {
-        console.error('Failed to send verification email:', err)
-      }
-    })()
-
-    // Log trial_started event (non-blocking)
-    void Promise.resolve(supabase.from('events').insert({
-      event_type: 'trial_started',
-      agent_id: agent.id,
-      event_data: {
-        source: 'trial_cta',
-        utm_source: utm_source || null,
-        utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
-        plan_tier: 'trial',
-        trial_days: 30
-      },
-      created_at: new Date().toISOString()
-    })).catch((err: unknown) => {
-      // Non-blocking — don't fail signup if analytics insert fails
-      console.error('Failed to log trial_started event:', err)
-    })
-
-    // Send welcome email (non-blocking)
-    void sendWelcomeEmail(
-      agent.email,
-      agent.id,
-      {
-        agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
-        planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
-      }
-    ).catch((err: unknown) => {
-      console.error('[trial-signup] Welcome email error:', err)
-    })
-
-    // Generate JWT token for immediate login
-    const token = jwt.sign(
-      {
-        userId: agent.id,
-        email: agent.email,
-        name: `${agent.first_name} ${agent.last_name}`.trim()
-      },
-      JWT_SECRET,
-      { expiresIn: '30d' }
-    )
-
-    // Email verification required before login — redirect to check-inbox page, don't set auth cookie
-    return NextResponse.json({
-      success: true,
-      agentId: agent.id,
-      redirectTo: '/check-your-inbox',
-      message: 'Trial account created. Please verify your email to continue.',
-      email: agent.email
+    return await buildSuccessResponse(request, agent, firstName, lastName, trialEndsAt, {
+      utm_source, utm_medium, utm_campaign,
     })
   } catch (error) {
     console.error('Trial signup error:', error)
@@ -166,4 +148,109 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+/** Shared response builder: creates session, sets cookie, fires events, returns dashboard redirect. */
+async function buildSuccessResponse(
+  request: NextRequest,
+  agent: { id: string; email: string; first_name: string; last_name: string },
+  firstName: string,
+  lastName: string,
+  trialEndsAt: string,
+  utm: { utm_source?: string; utm_medium?: string; utm_campaign?: string }
+) {
+  // Create a proper server-side session (same mechanism as login)
+  const ipAddress =
+    request.headers.get('x-forwarded-for') ||
+    request.headers.get('x-real-ip') ||
+    undefined
+
+  const session = await createSession({
+    userId: agent.id,
+    userAgent: request.headers.get('user-agent') || undefined,
+    ipAddress,
+    rememberMe: true, // 30-day session for trial users
+  })
+
+  // Log trial_signup_completed event (non-blocking)
+  void supabase
+    .from('events')
+    .insert({
+      event_type: 'trial_signup_completed',
+      agent_id: agent.id,
+      event_data: {
+        source: 'trial_cta',
+        utm_source: utm.utm_source || null,
+        utm_medium: utm.utm_medium || null,
+        utm_campaign: utm.utm_campaign || null,
+        plan_tier: 'trial',
+        trial_days: 14,
+        trial_ends_at: trialEndsAt,
+      },
+      created_at: new Date().toISOString(),
+    })
+    .then(() => {})
+    .catch((err: unknown) => {
+      console.error('Failed to log trial_signup_completed event:', err)
+    })
+
+  // Also log the legacy trial_started event for backwards compatibility
+  void supabase
+    .from('events')
+    .insert({
+      event_type: 'trial_started',
+      agent_id: agent.id,
+      event_data: {
+        source: 'trial_cta',
+        utm_source: utm.utm_source || null,
+        utm_medium: utm.utm_medium || null,
+        utm_campaign: utm.utm_campaign || null,
+        plan_tier: 'trial',
+        trial_days: 14,
+      },
+      created_at: new Date().toISOString(),
+    })
+    .then(() => {})
+    .catch((err: unknown) => {
+      console.error('Failed to log trial_started event:', err)
+    })
+
+  // Send welcome email (non-blocking)
+  void sendWelcomeEmail(agent.email, agent.id, {
+    agentName: `${firstName} ${lastName}`.trim() || undefined,
+    planTier: 'trial',
+    dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'}/dashboard`,
+  }).catch((err: unknown) => {
+    console.error('[trial-signup] Welcome email error:', err)
+  })
+
+  // Build response — redirect straight to dashboard for frictionless SLA (FR-2/FR-3)
+  const response = NextResponse.json({
+    success: true,
+    agentId: agent.id,
+    redirectTo: '/dashboard',
+    message: 'Trial account created. Welcome to LeadFlow!',
+    user: {
+      id: agent.id,
+      email: agent.email,
+      firstName: firstName,
+      lastName: lastName,
+      onboardingCompleted: false,
+      planTier: 'trial',
+      trialEndsAt,
+    },
+  })
+
+  // Set HTTP-only session cookie (30 days for trial)
+  response.cookies.set({
+    name: 'leadflow_session',
+    value: session.token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60,
+    path: '/',
+  })
+
+  return response
 }

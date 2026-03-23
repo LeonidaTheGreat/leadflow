@@ -36,6 +36,13 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
 
     setLoading(true)
 
+    // Track trial_signup_started event (FR-8)
+    void fetch('/api/events/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'trial_signup_started', properties: { source: 'trial_cta' } }),
+    }).catch(() => { /* non-blocking */ })
+
     try {
       const response = await fetch('/api/auth/trial-signup', {
         method: 'POST',
@@ -58,8 +65,27 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         return
       }
 
-      // Email verification required before login — redirect to check-your-inbox
-      router.push(data.redirectTo || '/check-your-inbox')
+      // Store user data in localStorage so the dashboard wizard auto-trigger works.
+      // The session cookie (set by the server) handles protected-route auth.
+      if (data.user) {
+        try {
+          localStorage.setItem('leadflow_user', JSON.stringify(data.user))
+          sessionStorage.setItem('leadflow_user', JSON.stringify(data.user))
+        } catch {
+          // storage unavailable — cookie auth will still handle it
+        }
+      }
+      // Legacy token storage — keep for components that still read leadflow_token
+      if (data.token) {
+        try {
+          localStorage.setItem('leadflow_token', data.token)
+        } catch {
+          // ignore
+        }
+      }
+
+      // Redirect to dashboard (frictionless: no email-verify gate for trial users)
+      router.push(data.redirectTo || '/dashboard')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
@@ -116,7 +142,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
           </button>
         </div>
         {error && <p id="trial-error-compact" className="mt-2 text-sm text-red-400" role="alert">{error}</p>}
-        <p className="mt-3 text-sm text-white/60 text-center">Free for 30 days · No credit card · Cancel anytime</p>
+        <p className="mt-3 text-sm text-white/60 text-center">Free for 14 days · No credit card · Cancel anytime</p>
       </form>
     )
   }
@@ -129,7 +155,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
           Start Your Free Trial
         </h3>
         <p className="text-slate-400 text-center text-sm mb-6">
-          No credit card required · 30 days free
+          No credit card required · 14 days free
         </p>
 
         <div className="space-y-4">
@@ -216,7 +242,7 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
         </button>
 
         <p className="mt-4 text-xs text-slate-400 text-center">
-          Free for 30 days · No credit card · Cancel anytime
+          Free for 14 days · No credit card · Cancel anytime
         </p>
 
         <p className="mt-4 text-sm text-center text-slate-400">
