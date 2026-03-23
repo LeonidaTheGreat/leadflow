@@ -58,6 +58,9 @@ function OnboardingPageInner() {
     calendarUrl: '',
     calcomLink: '',
     smsPhoneNumber: '',
+    // Aha Moment fields
+    ahaCompleted: false,
+    ahaResponseTimeMs: null as number | null,
     // UTM attribution fields (populated on mount)
     utmSource: null as string | null,
     utmMedium: null as string | null,

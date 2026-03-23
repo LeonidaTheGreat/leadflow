@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { sendWelcomeEmail } from '@/lib/email-service'
+import { initializeSurveySchedule } from '@/lib/nps-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
