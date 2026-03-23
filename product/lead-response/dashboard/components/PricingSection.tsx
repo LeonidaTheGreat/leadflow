@@ -168,7 +168,7 @@ export default function PricingSection() {
               </a>
             ) : (
               <Link
-                href={`/signup?plan=${plan.tier}`}
+                href="/signup/trial"
                 onClick={() =>
                   trackCTAClick(plan.ctaId, plan.cta, 'pricing')
                 }
@@ -179,7 +179,7 @@ export default function PricingSection() {
                 }`}
                 data-cta-id={plan.ctaId}
               >
-                {plan.cta}
+                Start Free Trial
               </Link>
             )}
           </div>
