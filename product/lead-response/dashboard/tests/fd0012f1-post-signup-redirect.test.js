@@ -140,10 +140,13 @@ test('AC-6d: /dashboard/onboarding page imports wizard components', () => {
   const pagePath = path.join(DASHBOARD_ROOT, 'app/dashboard/onboarding/page.tsx');
   const content = fs.readFileSync(pagePath, 'utf8');
   
-  assert.ok(content.includes('SetupFUB'), 'Should import SetupFUB component');
-  assert.ok(content.includes('SetupTwilio'), 'Should import SetupTwilio component');
-  assert.ok(content.includes('SetupSimulator'), 'Should import SetupSimulator component');
-  assert.ok(content.includes('SetupComplete'), 'Should import SetupComplete component');
+  // Updated: actual implementation uses Onboarding* step components
+  assert.ok(content.includes('OnboardingWelcome'), 'Should import OnboardingWelcome component');
+  assert.ok(content.includes('OnboardingAgentInfo'), 'Should import OnboardingAgentInfo component');
+  assert.ok(content.includes('OnboardingCalendar'), 'Should import OnboardingCalendar component');
+  assert.ok(content.includes('OnboardingSMS'), 'Should import OnboardingSMS component');
+  assert.ok(content.includes('OnboardingSimulator'), 'Should import OnboardingSimulator component');
+  assert.ok(content.includes('OnboardingConfirm'), 'Should import OnboardingConfirm component');
 });
 
 test('AC-6e: /dashboard/onboarding layout does NOT import OnboardingGuard', () => {
