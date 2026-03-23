@@ -217,7 +217,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   })
 
   // Update agent subscription status to past_due
-  await supabase.from('agents').update({
+  await supabase.from('real_estate_agents').update({
     subscription_status: 'past_due',
     payment_status: 'past_due',
     updated_at: new Date().toISOString(),
