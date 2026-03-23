@@ -74,7 +74,8 @@ const { GET } = require('@/app/api/internal/pilot-usage/route')
 
 function makeRequest(authToken?: string): NextRequest {
   const headers: Record<string, string> = {}
-  if (authToken) headers['authorization'] = `Bearer ${authToken}`  return new NextRequest('http://localhost/api/internal/pilot-usage', {
+  if (authToken) headers['authorization'] = `Bearer ${authToken}`
+  return new NextRequest('http://localhost/api/internal/pilot-usage', {
     method: 'GET',
     headers,
   })
