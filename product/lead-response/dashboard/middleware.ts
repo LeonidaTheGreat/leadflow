@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
-import { touchSession, touchSessionByAgentId } from '@/lib/agent-session'
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-change-in-production'
@@ -17,52 +16,16 @@ const PROTECTED_ROUTES = [
 ]
 
 // Routes that should redirect to dashboard if already authenticated
-// NOTE: /setup is intentionally NOT here — authenticated users who haven't
-// completed onboarding need to access it.
-// NOTE: /onboarding is intentionally NOT here — authenticated trial users who
-// just signed up via /api/auth/trial-signup are redirected to /onboarding and
-// must be allowed to access it.
 const AUTH_ROUTES = [
   '/login',
+  '/onboarding',
   '/signup',
 ]
 
-// ─── Session Heartbeat Rate Limiter ─────────────────────────────────────────
-// Limits agent_sessions.last_active_at writes to at most 1 per 60s per agent.
-// Uses an in-memory Map — acceptable for rate-limiting; occasional extra writes
-// on cold starts / multiple edge instances are harmless.
-const TOUCH_RATE_LIMIT_MS = 60_000
-const lastTouched = new Map<string, number>()
-
-/**
- * Fire-and-forget session heartbeat with 60-second rate limiting (FR-2).
- * Updates agent_sessions.last_active_at without blocking the response.
- * Fails silently — never breaks the request pipeline.
- *
- * @param agentId  - agent UUID (always available from JWT)
- * @param sessionId - agent_sessions row UUID (available when JWT includes sessionId claim)
- */
-function maybeTouchSession(agentId: string, sessionId?: string): void {
-  const now = Date.now()
-  const last = lastTouched.get(agentId) ?? 0
-  if (now - last < TOUCH_RATE_LIMIT_MS) return
-
-  lastTouched.set(agentId, now)
-
-  // Use the precise session ID when available; fall back to agent-wide update
-  const update = sessionId
-    ? touchSession(sessionId)
-    : touchSessionByAgentId(agentId)
-
-  update.catch(() => {
-    // Silently ignore errors — request pipeline must not be affected
-  })
-}
-
 interface JwtPayload {
   userId?: string
-  sessionId?: string
   email?: string
+  [key: string]: any
 }
 
 async function verifyToken(token: string): Promise<JwtPayload | null> {
@@ -83,12 +46,6 @@ export async function middleware(request: NextRequest) {
 
   const payload = token ? await verifyToken(token) : null
   const isAuthenticated = !!payload
-
-  // Trigger session heartbeat for authenticated requests (FR-2)
-  // Fire-and-forget — never blocks or fails the request
-  if (isAuthenticated && payload?.userId) {
-    maybeTouchSession(payload.userId, payload.sessionId)
-  }
 
   // Check if current path is protected
   const isProtectedRoute = PROTECTED_ROUTES.some(route =>
