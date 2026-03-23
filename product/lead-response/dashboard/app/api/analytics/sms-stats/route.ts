@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { validateSession } from '@/lib/session'
 
 // Force dynamic rendering — stats must reflect current data
 export const dynamic = 'force-dynamic'
@@ -7,6 +8,9 @@ export const dynamic = 'force-dynamic'
 // ============================================
 // SMS ANALYTICS API — Delivery, Reply & Booking Conversion
 // GET /api/analytics/sms-stats?window=30d
+//
+// Security: agent_id is read exclusively from the authenticated session.
+// Query parameter agent_id is NOT accepted — prevents cross-agent data access.
 // ============================================
 
 /**
@@ -31,10 +35,25 @@ function isOptOut(body: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
+  // ============================================================
+  // AUTH — agent_id comes from the session, never from query params
+  // ============================================================
+  const sessionToken = request.cookies.get('leadflow_session')?.value
+  if (!sessionToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const session = await validateSession(sessionToken)
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // The authenticated agent's ID — used for all data queries
+  const agentId = session.userId
+
   try {
     const { searchParams } = request.nextUrl
     const windowParam = searchParams.get('window') || '30d'
-    const agentId = searchParams.get('agent_id') || null
 
     // Validate window param
     if (!['7d', '30d', 'all'].includes(windowParam)) {
@@ -49,18 +68,19 @@ export async function GET(request: NextRequest) {
     // ============================================================
     // DELIVERY RATE
     // delivery_rate = delivered / total_outbound
+    //
+    // Uses sms_messages table which has a direct agent_id column.
+    // Direction value: 'outbound-api' (Twilio canonical value)
     // ============================================================
 
     let outboundQuery = supabaseAdmin
-      .from('messages')
+      .from('sms_messages')
       .select('id, status, lead_id')
-      .eq('direction', 'outbound')
+      .eq('direction', 'outbound-api')
+      .eq('agent_id', agentId)
 
     if (windowStart) {
       outboundQuery = outboundQuery.gte('created_at', windowStart.toISOString())
-    }
-    if (agentId) {
-      outboundQuery = outboundQuery.eq('agent_id', agentId)
     }
 
     const { data: outboundMessages, error: outboundError } = await outboundQuery
@@ -86,18 +106,18 @@ export async function GET(request: NextRequest) {
     // REPLY RATE
     // reply_rate = unique_leads_replied / unique_leads_messaged
     // Excludes opt-out replies
+    //
+    // Uses message_body column for opt-out detection.
     // ============================================================
 
     let inboundQuery = supabaseAdmin
-      .from('messages')
-      .select('lead_id, body')
+      .from('sms_messages')
+      .select('lead_id, message_body')
       .eq('direction', 'inbound')
+      .eq('agent_id', agentId)
 
     if (windowStart) {
       inboundQuery = inboundQuery.gte('created_at', windowStart.toISOString())
-    }
-    if (agentId) {
-      inboundQuery = inboundQuery.eq('agent_id', agentId)
     }
 
     const { data: inboundMessages, error: inboundError } = await inboundQuery
@@ -110,7 +130,7 @@ export async function GET(request: NextRequest) {
     // Unique leads who replied (excluding opt-outs)
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.body))
+        .filter((m: any) => !isOptOut(m.message_body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
@@ -132,12 +152,10 @@ export async function GET(request: NextRequest) {
     let bookingsQuery = supabaseAdmin
       .from('bookings')
       .select('lead_id')
+      .eq('agent_id', agentId)
 
     if (windowStart) {
       bookingsQuery = bookingsQuery.gte('created_at', windowStart.toISOString())
-    }
-    if (agentId) {
-      bookingsQuery = bookingsQuery.eq('agent_id', agentId)
     }
 
     const { data: bookings, error: bookingsError } = await bookingsQuery
@@ -147,16 +165,20 @@ export async function GET(request: NextRequest) {
       // Booking table errors are non-fatal — return null for conversion rate
     }
 
-    const bookedLeadIds = new Set(
-      (bookings || [])
-        .map((b: any) => b.lead_id)
-        .filter(Boolean)
-        .filter((id: string) => repliedAndMessaged.has(id)) // only count replied leads
-    )
+    // If bookings query failed, conversion rate is unknown (null), not zero
+    let uniqueLeadsBooked = 0
+    let bookingConversion: number | null = null
 
-    const uniqueLeadsBooked = bookedLeadIds.size
-    const bookingConversion =
-      uniqueLeadsReplied > 0 ? uniqueLeadsBooked / uniqueLeadsReplied : null
+    if (!bookingsError) {
+      const bookedLeadIds = new Set(
+        (bookings || [])
+          .map((b: any) => b.lead_id)
+          .filter(Boolean)
+          .filter((id: string) => repliedAndMessaged.has(id)) // only count replied leads
+      )
+      uniqueLeadsBooked = bookedLeadIds.size
+      bookingConversion = uniqueLeadsReplied > 0 ? uniqueLeadsBooked / uniqueLeadsReplied : null
+    }
 
     // ============================================================
     // RESPONSE

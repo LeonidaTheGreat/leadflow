@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,8 +10,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectUrl = searchParams.get('redirect') || '/dashboard'
+  
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errorType, setErrorType] = useState<string | null>(null)
@@ -112,16 +115,8 @@ export default function LoginPage() {
         throw new Error(result.error || 'Invalid email or password')
       }
 
-      // Store token
-      if (result.token) {
-        if (rememberMe) {
-          localStorage.setItem('leadflow_token', result.token)
-        } else {
-          sessionStorage.setItem('leadflow_token', result.token)
-        }
-      }
-
-      // Store user info for wizard personalization
+      // Token is set via HTTP-only cookie by the API
+      // Store user info for wizard personalization (optional, for client-side logic)
       if (result.user) {
         const storage = rememberMe ? localStorage : sessionStorage
         storage.setItem('leadflow_user', JSON.stringify(result.user))
@@ -131,7 +126,7 @@ export default function LoginPage() {
       if (result.user?.onboardingCompleted === false) {
         router.push('/setup')
       } else {
-        router.push('/dashboard')
+        router.push(redirectUrl)
       }
     } catch (err: any) {
       console.error('Login error:', err)
@@ -140,20 +135,14 @@ export default function LoginPage() {
     }
   }
 
-  const handleForgotPassword = () => {
-    router.push('/forgot-password')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
@@ -173,7 +162,6 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-slate-200">Email Address</Label>
                 <div className="relative">
@@ -193,7 +181,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-slate-200">Password</Label>
                 <div className="relative">
@@ -216,16 +203,11 @@ export default function LoginPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
                     tabIndex={-1}
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -238,16 +220,11 @@ export default function LoginPage() {
                     Remember me
                   </Label>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                >
+                <Link href="/forgot-password" className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
                   Forgot password?
-                </button>
+                </Link>
               </div>
 
-              {/* Error Message */}
               {error && (
                 <div className={`${errorType === 'EMAIL_NOT_VERIFIED' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-red-500/10 border-red-500/50 text-red-400'} border px-4 py-3 rounded-lg text-sm`}>
                   <div className="flex items-start gap-2">
@@ -284,26 +261,19 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-6"
               >
                 {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Signing in...
-                  </>
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Signing in...</>
                 ) : (
-                  <>
-                    Sign In <ArrowRight className="w-4 h-4 ml-2" />
-                  </>
+                  <>Sign In <ArrowRight className="w-4 h-4 ml-2" /></>
                 )}
               </Button>
             </form>
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-700"></div>
@@ -313,14 +283,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Sign Up Link */}
             <div className="text-center">
               <p className="text-slate-400 text-sm">
                 Don't have an account?{' '}
-                <Link
-                  href="/onboarding"
-                  className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors"
-                >
+                <Link href="/onboarding" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">
                   Start your free trial
                 </Link>
               </p>
@@ -328,18 +294,21 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        {/* Footer */}
         <p className="mt-8 text-center text-xs text-slate-500">
           By signing in, you agree to our{' '}
-          <Link href="/terms" className="text-slate-400 hover:text-slate-300">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="text-slate-400 hover:text-slate-300">
-            Privacy Policy
-          </Link>
+          <Link href="/terms" className="text-slate-400 hover:text-slate-300">Terms of Service</Link>
+          {' '}and{' '}
+          <Link href="/privacy" className="text-slate-400 hover:text-slate-300">Privacy Policy</Link>
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+      <LoginPageContent />
+    </Suspense>
   )
 }

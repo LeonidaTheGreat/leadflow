@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import jwt from 'jsonwebtoken'
 
+const onboardingTelemetry = require('@/lib/onboarding-telemetry')
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 function getAgentIdFromRequest(request: NextRequest): string | null {
@@ -82,6 +84,9 @@ export async function POST(request: NextRequest) {
   if (body.twilioConnected !== undefined) patch.twilio_connected = body.twilioConnected
   if (body.twilioPhone !== undefined) patch.twilio_phone = body.twilioPhone
   if (body.smsVerified !== undefined) patch.sms_verified = body.smsVerified
+  if (body.simulatorCompleted !== undefined) patch.simulator_completed = body.simulatorCompleted
+  if (body.simulatorResponseTimeMs !== undefined) patch.simulator_response_time_ms = body.simulatorResponseTimeMs
+  if (body.simulatorSkipped !== undefined) patch.simulator_skipped = body.simulatorSkipped
   if (body.currentStep !== undefined) patch.current_step = body.currentStep
 
   try {
@@ -92,6 +97,44 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Setup status save error:', error)
       // Non-fatal — return success so client continues
+    }
+
+    // Log telemetry events for step completions
+    if (body.fubConnected === true) {
+      await onboardingTelemetry.logOnboardingEvent(
+        supabase,
+        agentId,
+        'fub_connected',
+        'completed',
+        { source: '/api/setup/status' }
+      )
+    }
+    if (body.twilioConnected === true) {
+      await onboardingTelemetry.logOnboardingEvent(
+        supabase,
+        agentId,
+        'phone_configured',
+        'completed',
+        { source: '/api/setup/status' }
+      )
+    }
+    if (body.smsVerified === true) {
+      await onboardingTelemetry.logOnboardingEvent(
+        supabase,
+        agentId,
+        'sms_verified',
+        'completed',
+        { source: '/api/setup/status' }
+      )
+    }
+    if (body.simulatorCompleted === true) {
+      await onboardingTelemetry.logOnboardingEvent(
+        supabase,
+        agentId,
+        'aha_completed',
+        'completed',
+        { source: '/api/setup/status', simulator_time_ms: body.simulatorResponseTimeMs }
+      )
     }
 
     return NextResponse.json({ ok: true })

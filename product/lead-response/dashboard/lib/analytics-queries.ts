@@ -218,12 +218,14 @@ export async function getLeadConversion(daysBack: number = 30) {
   const totalLeads = leadsData.length
 
   // Get bookings (conversions) in period
+  // bookings table stores Cal.com booking data; lead_id links booking to a lead
   const { data: bookingsData, error: bookingsError } = await supabaseAdmin
     .from('bookings')
     .select('lead_id')
     .gte('created_at', startDate)
 
   if (bookingsError) {
+    console.error('Error fetching bookings for lead conversion metric:', bookingsError)
     return { totalLeads, convertedLeads: 0, conversionRate: 0, error: bookingsError }
   }
 

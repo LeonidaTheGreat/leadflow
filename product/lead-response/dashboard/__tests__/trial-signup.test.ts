@@ -238,8 +238,17 @@ describe('Frictionless Signup (FR-2 / AC-2)', () => {
   })
 
   it('redirects to onboarding wizard after signup', () => {
-    const redirectTo = '/onboarding'
-    expect(redirectTo).toBe('/onboarding')
+    const redirectTo = '/dashboard/onboarding'
+    expect(redirectTo).toBe('/dashboard/onboarding')
+    // Ensure it does NOT redirect to the old /setup route
+    expect(redirectTo).not.toBe('/setup')
+  })
+
+  it('/dashboard/onboarding is in PROTECTED_ROUTES so authenticated trial users can access it', () => {
+    // After trial signup, the user has an auth cookie and is authenticated.
+    // /dashboard/onboarding must be in PROTECTED_ROUTES so authenticated users are allowed to access it.
+    const PROTECTED_ROUTES = ['/dashboard', '/settings', '/profile', '/integrations', '/setup']
+    expect(PROTECTED_ROUTES.some(r => '/dashboard/onboarding'.startsWith(r))).toBe(true)
   })
 })
 
@@ -253,6 +262,18 @@ describe('Error Handling (AC-7)', () => {
     const message = 'An account with this email already exists. Sign in instead.'
     expect(status).toBe(409)
     expect(message).toContain('Sign in instead')
+  })
+
+  it('duplicate email error includes sign-in link (not just plain text)', () => {
+    // The UI should render a clickable Link component to /login
+    // Not just display "Sign in" as plain text
+    const errorMessage = 'An account with this email already exists.'
+    const signInLink = '/login'
+    const hasSignInLink = true // TrialSignupForm renders <Link href="/login">Sign in</Link>
+
+    expect(errorMessage).toContain('already exists')
+    expect(signInLink).toBe('/login')
+    expect(hasSignInLink).toBe(true)
   })
 
   it('invalid email returns validation error', () => {

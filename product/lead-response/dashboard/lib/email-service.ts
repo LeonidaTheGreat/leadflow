@@ -19,7 +19,10 @@ async function getResend() {
   }
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'billing@leadflow.ai'
+// Use Resend's shared domain as fallback — leadflow.ai domain must be verified
+// in Resend before @leadflow.ai addresses will work in production.
+// Until then, set FROM_EMAIL env var to a verified address (e.g. onboarding@resend.dev).
+const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev'
 const COMPANY_NAME = 'LeadFlow AI'
 const SUPPORT_EMAIL = 'support@leadflow.ai'
 
@@ -501,5 +504,286 @@ export async function sendPasswordResetEmail(
   return sendEmail(agentEmail, subject, html, agentId, 'password_reset', {
     agentName: data.agentName,
     resetUrl: data.resetUrl,
+  })
+}
+
+
+interface WelcomeEmailData {
+  agentName?: string
+  planTier?: 'trial' | 'pilot' | string
+  dashboardUrl?: string
+}
+
+/**
+ * Send a welcome email to a newly signed-up agent.
+ * UC: feat-transactional-email-resend
+ *
+ * @param agentEmail - Recipient email address
+ * @param agentId    - Agent UUID (used for email event logging)
+ * @param data       - { agentName?, planTier?, dashboardUrl? }
+ */
+export async function sendWelcomeEmail(
+  agentEmail: string,
+  agentId: string,
+  data: WelcomeEmailData = {}
+): Promise<boolean> {
+  const subject = '🎉 Welcome to LeadFlow AI — Your Account is Ready'
+  const firstName = data.agentName?.split(' ')[0] || 'there'
+  const dashboardUrl = data.dashboardUrl || 'https://leadflow-ai-five.vercel.app/setup'
+  const isPilot = data.planTier === 'pilot'
+  const trialDays = isPilot ? 60 : 30
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0f172a; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #0f172a; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; max-width: 600px; width: 100%;">
+              <!-- Header -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #064e3b, #1e293b); padding: 32px; text-align: center; border-bottom: 1px solid #334155;">
+                  <span style="color: #10b981; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">▶ LeadFlow AI</span>
+                  <p style="color: #6ee7b7; font-size: 14px; margin: 8px 0 0;">AI Lead Response in &lt;30 Seconds</p>
+                </td>
+              </tr>
+              <!-- Body -->
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <h2 style="color: #f1f5f9; font-size: 22px; margin: 0 0 8px;">Hi ${firstName}, welcome aboard! 🎉</h2>
+                  <p style="color: #94a3b8; font-size: 16px; margin: 0 0 24px;">
+                    Your LeadFlow AI account is ready. You have <strong style="color: #10b981;">${trialDays} days free</strong> to see exactly what happens when AI responds to your leads in under 30 seconds.
+                  </p>
+
+                  <!-- What happens next -->
+                  <div style="background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 24px; margin: 0 0 28px;">
+                    <p style="color: #10b981; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 16px;">What happens next</p>
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="32" valign="top" style="padding: 0 12px 16px 0;">
+                          <span style="display: inline-block; width: 24px; height: 24px; background: #10b981; color: white; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: 700;">1</span>
+                        </td>
+                        <td style="padding-bottom: 16px;">
+                          <p style="color: #e2e8f0; font-size: 15px; margin: 0 0 4px; font-weight: 600;">Connect your Follow Up Boss account</p>
+                          <p style="color: #64748b; font-size: 13px; margin: 0;">Takes 2 minutes — just paste your FUB API key</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="32" valign="top" style="padding: 0 12px 16px 0;">
+                          <span style="display: inline-block; width: 24px; height: 24px; background: #10b981; color: white; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: 700;">2</span>
+                        </td>
+                        <td style="padding-bottom: 16px;">
+                          <p style="color: #e2e8f0; font-size: 15px; margin: 0 0 4px; font-weight: 600;">Set up your AI response number</p>
+                          <p style="color: #64748b; font-size: 13px; margin: 0;">Choose a local number — leads see it as your number</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="32" valign="top" style="padding: 0 12px 0 0;">
+                          <span style="display: inline-block; width: 24px; height: 24px; background: #10b981; color: white; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: 700;">3</span>
+                        </td>
+                        <td>
+                          <p style="color: #e2e8f0; font-size: 15px; margin: 0 0 4px; font-weight: 600;">Watch your first AI response happen live</p>
+                          <p style="color: #64748b; font-size: 13px; margin: 0;">We'll simulate it for you in the onboarding wizard</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- CTA -->
+                  <table cellpadding="0" cellspacing="0" style="margin: 0 0 32px;">
+                    <tr>
+                      <td align="center">
+                        <a href="${dashboardUrl}"
+                           style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 700; letter-spacing: 0.2px;">
+                          Start Onboarding →
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Founder note -->
+                  <div style="border-top: 1px solid #334155; padding-top: 24px;">
+                    <p style="color: #64748b; font-size: 14px; line-height: 1.7; margin: 0 0 8px;">
+                      If you have any questions at all, just reply to this email — I read every one personally.
+                    </p>
+                    <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                      — Stojan, founder of LeadFlow AI
+                    </p>
+                  </div>
+                </td>
+              </tr>
+              <!-- Footer -->
+              <tr>
+                <td style="border-top: 1px solid #334155; padding: 24px 32px; text-align: center;">
+                  <p style="color: #475569; font-size: 12px; margin: 0;">
+                    Need help? Email us at
+                    <a href="mailto:${SUPPORT_EMAIL}" style="color: #64748b;">${SUPPORT_EMAIL}</a>
+                  </p>
+                  <p style="color: #334155; font-size: 11px; margin: 8px 0 0;">
+                    &copy; ${new Date().getFullYear()} ${COMPANY_NAME}. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, agentId, 'welcome', {
+    agentName: data.agentName,
+    planTier: data.planTier,
+  })
+}
+
+interface PilotInviteEmailData {
+  agentName: string
+  message?: string
+  inviteUrl: string
+  expiresAt: string
+}
+
+/**
+ * Send a pilot invite email (direct recruitment).
+ * UC: feat-admin-pilot-invite-flow
+ *
+ * @param agentEmail - Recipient email address
+ * @param agentId    - Agent UUID (used for email event logging)
+ * @param data       - { agentName, message?, inviteUrl, expiresAt }
+ */
+export async function sendPilotInviteEmail(
+  agentEmail: string,
+  agentId: string,
+  data: PilotInviteEmailData
+): Promise<boolean> {
+  const subject = `You're invited to pilot LeadFlow AI, ${data.agentName}`
+  
+  const expirationDate = new Date(data.expiresAt).toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0f172a; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #0f172a; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; max-width: 600px; width: 100%;">
+              <!-- Header -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #064e3b, #1e293b); padding: 32px; text-align: center; border-bottom: 1px solid #334155;">
+                  <span style="color: #10b981; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">▶ LeadFlow AI</span>
+                  <p style="color: #6ee7b7; font-size: 14px; margin: 8px 0 0;">AI Lead Response in &lt;30 Seconds</p>
+                </td>
+              </tr>
+              <!-- Body -->
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <h2 style="color: #f1f5f9; font-size: 22px; margin: 0 0 8px;">Hi ${data.agentName},</h2>
+                  <p style="color: #94a3b8; font-size: 16px; margin: 0 0 24px;">
+                    I'd like to personally invite you to try <strong>LeadFlow AI</strong> as a pilot partner.
+                  </p>
+
+                  ${data.message ? `
+                  <div style="background: #0f172a; border-left: 4px solid #10b981; border-radius: 4px; padding: 16px; margin: 0 0 28px;">
+                    <p style="color: #e2e8f0; font-size: 15px; line-height: 1.6; margin: 0; font-style: italic;">
+                      "${data.message}"
+                    </p>
+                  </div>
+                  ` : ''}
+
+                  <!-- Value proposition -->
+                  <div style="background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 24px; margin: 0 0 28px;">
+                    <p style="color: #10b981; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 16px;">Why LeadFlow</p>
+                    <ul style="margin: 0; padding-left: 20px;">
+                      <li style="color: #e2e8f0; font-size: 14px; margin-bottom: 10px; line-height: 1.5;">Responds to your leads via SMS in <strong>&lt;30 seconds</strong></li>
+                      <li style="color: #e2e8f0; font-size: 14px; margin-bottom: 10px; line-height: 1.5;">Integrates seamlessly with Follow Up Boss</li>
+                      <li style="color: #e2e8f0; font-size: 14px; margin-bottom: 10px; line-height: 1.5;">Books appointments automatically via Cal.com</li>
+                      <li style="color: #e2e8f0; font-size: 14px; line-height: 1.5;">As a pilot partner, you get <strong>free access</strong> during the pilot period</li>
+                    </ul>
+                  </div>
+
+                  <!-- Benefits -->
+                  <div style="background: linear-gradient(135deg, #0f4c3a, #0d3a2e); border: 1px solid #10b981; border-radius: 10px; padding: 24px; margin: 0 0 28px;">
+                    <p style="color: #10b981; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 16px;">As a Pilot Partner</p>
+                    <ul style="margin: 0; padding-left: 20px;">
+                      <li style="color: #6ee7b7; font-size: 14px; margin-bottom: 10px;">Free access during pilot period</li>
+                      <li style="color: #6ee7b7; font-size: 14px; margin-bottom: 10px;">Direct line to me for feedback</li>
+                      <li style="color: #6ee7b7; font-size: 14px;">Priority pricing when we launch</li>
+                    </ul>
+                  </div>
+
+                  <!-- CTA -->
+                  <table cellpadding="0" cellspacing="0" style="margin: 0 0 24px;">
+                    <tr>
+                      <td align="center">
+                        <a href="${data.inviteUrl}"
+                           style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 700; letter-spacing: 0.2px;">
+                          Accept Your Invite
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Fallback link -->
+                  <p style="color: #64748b; font-size: 12px; margin-top: 16px; text-align: center;">
+                    Or copy this link:<br />
+                    <a href="${data.inviteUrl}" style="color: #10b981; word-break: break-all; font-size: 11px;">${data.inviteUrl}</a>
+                  </p>
+
+                  <!-- Expiration -->
+                  <div style="border-top: 1px solid #334155; padding-top: 24px; margin-top: 24px;">
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0;">
+                      ⏱️ This link expires <strong>${expirationDate}</strong>.
+                    </p>
+                  </div>
+
+                  <!-- Founder note -->
+                  <p style="color: #64748b; font-size: 14px; line-height: 1.7; margin-top: 16px; margin-bottom: 0;">
+                    Can't wait to hear what you think!<br />
+                    <strong style="color: #94a3b8;">Stojan</strong><br />
+                    <span style="font-size: 12px;">Founder, LeadFlow AI</span>
+                  </p>
+                </td>
+              </tr>
+              <!-- Footer -->
+              <tr>
+                <td style="border-top: 1px solid #334155; padding: 24px 32px; text-align: center;">
+                  <p style="color: #475569; font-size: 12px; margin: 0;">
+                    Need help? Email us at
+                    <a href="mailto:${SUPPORT_EMAIL}" style="color: #64748b;">${SUPPORT_EMAIL}</a>
+                  </p>
+                  <p style="color: #334155; font-size: 11px; margin: 8px 0 0;">
+                    &copy; ${new Date().getFullYear()} ${COMPANY_NAME}. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, agentId, 'pilot_invite', {
+    agentName: data.agentName,
+    message: data.message,
+    inviteUrl: data.inviteUrl,
   })
 }

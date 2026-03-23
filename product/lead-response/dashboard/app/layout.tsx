@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { UtmCaptureTracker } from "@/components/utm-capture-tracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LeadFlow AI — AI-Powered Lead Response for Real Estate",
   description:
-    "Respond to real estate leads in under 30 seconds with AI. Integrate with Follow Up Boss, book appointments automatically, and never miss another opportunity.",
+    "AI-powered lead response for real estate. Respond to leads in under 30 seconds, integrate with Follow Up Boss, book appointments automatically, and never miss another opportunity.",
 };
 
 // GA4 Measurement ID — set NEXT_PUBLIC_GA4_MEASUREMENT_ID in Vercel env vars.
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <UtmCaptureTracker />
         {children}
       </body>
     </html>

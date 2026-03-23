@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
+import { SessionAnalyticsCard } from '@/components/dashboard/SessionAnalyticsCard'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
@@ -35,6 +36,9 @@ export default function DashboardPage() {
       <Suspense fallback={<StatsCardsSkeleton />}>
         <StatsCards />
       </Suspense>
+
+      {/* Pilot Engagement Metrics — displays session analytics for all pilots */}
+      <SessionAnalyticsCard />
 
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
       {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}

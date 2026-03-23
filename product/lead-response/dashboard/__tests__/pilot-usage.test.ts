@@ -120,6 +120,5 @@ describe('GET /api/internal/pilot-usage', () => {
       expect(json.pilots[0]).toHaveProperty('email')
       expect(json.pilots[0]).toHaveProperty('sessionsLast7d')
       expect(json.pilots[0]).toHaveProperty('inactiveHours')
-    }
-  })
+    }  })
 })

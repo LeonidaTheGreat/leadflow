@@ -1,43 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAgentById, getLeadById } from '@/lib/supabase'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
+import { validateSession } from '@/lib/session'
 
 // Force dynamic rendering - API routes should never be static
 export const dynamic = 'force-dynamic'
 
 // ============================================
 // BOOKING LINK API
+// GET /api/booking?lead_id=<uuid>
+//
+// Security: agent_id is read exclusively from the authenticated session.
+// Query parameter agent_id is NOT accepted — prevents cross-agent data access.
 // ============================================
 
 export async function GET(request: NextRequest) {
+  // ============================================================
+  // AUTH — agent_id comes from the session, never from query params
+  // ============================================================
+  const sessionToken = request.cookies.get('leadflow_session')?.value
+  if (!sessionToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const session = await validateSession(sessionToken)
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // The authenticated agent's ID — used for all data queries
+  const agentId = session.userId
+
   try {
     const { searchParams } = new URL(request.url)
     const leadId = searchParams.get('lead_id')
-    const agentId = searchParams.get('agent_id')
-
-    if (!leadId && !agentId) {
-      return NextResponse.json(
-        { error: 'Missing required parameter: lead_id or agent_id' },
-        { status: 400 }
-      )
-    }
 
     let agentUsername: string | null = null
     let lead: any = null
 
-    // Get agent
-    if (agentId) {
-      const { data: agent } = await getAgentById(agentId)
-      if (!agent?.calcom_username) {
-        return NextResponse.json(
-          { error: 'Agent does not have Cal.com configured' },
-          { status: 400 }
-        )
-      }
-      agentUsername = agent.calcom_username
+    // Get the authenticated agent's info
+    const { data: agent } = await getAgentById(agentId)
+    if (!agent?.calcom_username) {
+      return NextResponse.json(
+        { error: 'Agent does not have Cal.com configured' },
+        { status: 400 }
+      )
     }
+    agentUsername = agent.calcom_username
 
-    // Get lead and agent from lead
+    // If a lead_id is provided, validate it belongs to this agent
     if (leadId) {
       const { data: leadData } = await getLeadById(leadId)
       if (!leadData) {
@@ -46,22 +57,16 @@ export async function GET(request: NextRequest) {
           { status: 404 }
         )
       }
-      lead = leadData
 
-      // If no agentId provided, get from lead
-      if (!agentId && lead.agent_id) {
-        const { data: agent } = await getAgentById(lead.agent_id)
-        if (agent?.calcom_username) {
-          agentUsername = agent.calcom_username
-        }
+      // Security: ensure the lead belongs to the authenticated agent
+      if (leadData.agent_id && leadData.agent_id !== agentId) {
+        return NextResponse.json(
+          { error: 'Forbidden' },
+          { status: 403 }
+        )
       }
-    }
 
-    if (!agentUsername) {
-      return NextResponse.json(
-        { error: 'No agent with Cal.com configuration found' },
-        { status: 400 }
-      )
+      lead = leadData
     }
 
     // Generate booking link
@@ -92,6 +97,21 @@ export async function GET(request: NextRequest) {
 // ============================================
 
 export async function POST(request: NextRequest) {
+  // ============================================================
+  // AUTH — agent_id comes from the session, never from query params
+  // ============================================================
+  const sessionToken = request.cookies.get('leadflow_session')?.value
+  if (!sessionToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const session = await validateSession(sessionToken)
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const sessionAgentId = session.userId
+
   try {
     const body = await request.json()
     const { lead_id, start_time, end_time, notes } = body
@@ -113,14 +133,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!lead.agent_id) {
+    // Security: ensure the lead belongs to the authenticated agent
+    if (lead.agent_id && lead.agent_id !== sessionAgentId) {
       return NextResponse.json(
-        { error: 'Lead has no assigned agent' },
-        { status: 400 }
+        { error: 'Forbidden' },
+        { status: 403 }
       )
     }
 
-    const { data: agent } = await getAgentById(lead.agent_id)
+    const { data: agent } = await getAgentById(sessionAgentId)
     
     if (!agent) {
       return NextResponse.json(
