@@ -74,8 +74,7 @@ const { GET } = require('@/app/api/internal/pilot-usage/route')
 
 function makeRequest(authToken?: string): NextRequest {
   const headers: Record<string, string> = {}
-  if (authToken) headers['authorization'] = `Bearer ${authToken}`
-  return new NextRequest('http://localhost/api/internal/pilot-usage', {
+  if (authToken) headers['authorization'] = `Bearer ${authToken}`  return new NextRequest('http://localhost/api/internal/pilot-usage', {
     method: 'GET',
     headers,
   })
@@ -120,6 +119,5 @@ describe('GET /api/internal/pilot-usage', () => {
       expect(json.pilots[0]).toHaveProperty('email')
       expect(json.pilots[0]).toHaveProperty('sessionsLast7d')
       expect(json.pilots[0]).toHaveProperty('inactiveHours')
-    }
-  })
+    }  })
 })
