@@ -7,7 +7,7 @@
  * 3. Trial signup uses correct table (events not analytics_events)
  * 4. Dashboard nav passes pilotExpiresAt to TrialBadge
  * 5. TrialBadge displays pilot status correctly
- * 6. Signup forms redirect to /setup (not /dashboard/onboarding)
+ * 6. Signup forms redirect to /dashboard/onboarding (updated by PRD-SIGNUP-AUTH-TOKEN-FIX-001)
  */
 
 const assert = require('assert')
@@ -211,34 +211,35 @@ async function testTrialBadgeDisplaysPilotStatus() {
   console.log('✓ TrialBadge displays pilot status correctly')
 }
 
-// Test 5: Signup forms redirect to /setup
+// Test 5: Signup forms redirect to /dashboard/onboarding
+// Updated by feat-post-signup-dashboard-onboarding-redirect (PRD-SIGNUP-AUTH-TOKEN-FIX-001)
 async function testSignupFormsRedirectToSetup() {
-  console.log('\n[Test 5] Signup forms redirect to /setup...')
+  console.log('\n[Test 5] Signup forms redirect to /dashboard/onboarding...')
   
   // Test pilot signup response
   const pilotResponse = {
     success: true,
     agentId: 'test-agent-id',
-    redirectTo: '/setup',
+    redirectTo: '/dashboard/onboarding',
     message: 'Pilot account created successfully'
   }
   
-  assert.strictEqual(pilotResponse.redirectTo, '/setup', 'Pilot signup should redirect to /setup')
+  assert.strictEqual(pilotResponse.redirectTo, '/dashboard/onboarding', 'Pilot signup should redirect to /dashboard/onboarding')
   
   // Test trial signup response
   const trialResponse = {
     success: true,
     agentId: 'test-agent-id',
-    redirectTo: '/setup'
+    redirectTo: '/dashboard/onboarding'
   }
   
-  assert.strictEqual(trialResponse.redirectTo, '/setup', 'Trial signup should redirect to /setup')
+  assert.strictEqual(trialResponse.redirectTo, '/dashboard/onboarding', 'Trial signup should redirect to /dashboard/onboarding')
   
   // Test fallback in components
-  const redirectTo = trialResponse.redirectTo || '/setup'
-  assert.strictEqual(redirectTo, '/setup', 'Fallback should be /setup')
+  const redirectTo = trialResponse.redirectTo || '/dashboard/onboarding'
+  assert.strictEqual(redirectTo, '/dashboard/onboarding', 'Fallback should be /dashboard/onboarding')
   
-  console.log('✓ Signup forms redirect to /setup correctly')
+  console.log('✓ Signup forms redirect to /dashboard/onboarding correctly')
 }
 
 // Test 6: Dashboard nav passes pilotExpiresAt to TrialBadge

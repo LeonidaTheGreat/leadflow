@@ -1,376 +1,309 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+/**
+ * /dashboard/onboarding
+ *
+ * The post-signup onboarding wizard for new trial and pilot agents.
+ *
+ * Auth flow:
+ *   1. If localStorage.leadflow_user is present → render wizard immediately
+ *   2. If localStorage is empty → call GET /api/auth/me
+ *        - 200: store token+user to localStorage, render wizard
+ *        - 401: redirect to /login
+ *   3. Unauthenticated visitor (no cookie, no localStorage) → redirected to /login
+ *
+ * PRD: PRD-SIGNUP-AUTH-TOKEN-FIX-001 (FR-4)
+ */
+
 import { useRouter } from 'next/navigation'
-import { CheckCircle2 } from 'lucide-react'
-import SetupFUB from '../../setup/steps/fub'
-import SetupTwilio from '../../setup/steps/twilio'
-import SetupSMSVerify from '../../setup/steps/sms-verify'
-import SetupSimulator from '../../setup/steps/simulator'
-import SetupComplete from '../../setup/steps/complete'
+import { useEffect, useState, Suspense } from 'react'
+import OnboardingWelcome from '@/app/onboarding/steps/welcome'
+import OnboardingAgentInfo from '@/app/onboarding/steps/agent-info'
+import OnboardingCalendar from '@/app/onboarding/steps/calendar'
+import OnboardingSMS from '@/app/onboarding/steps/sms-config'
+import OnboardingSimulator from '@/app/onboarding/steps/simulator'
+import OnboardingConfirm from '@/app/onboarding/steps/confirmation'
+import OnboardingProgress from '@/app/onboarding/components/progress'
 
-export type OnboardingStep = 'fub' | 'twilio' | 'sms-verify' | 'simulator' | 'complete'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
-export interface OnboardingState {
-  fubConnected: boolean
-  fubApiKey: string
-  twilioConnected: boolean
-  twilioPhone: string
-  smsVerified: boolean
-  agentPhone: string
-  agentName: string
-  agentId: string
-  // Aha Moment simulator fields
-  simulatorCompleted: boolean
-  simulatorResponseTimeMs: number | null
-  simulatorSkipped: boolean
-  currentStep: OnboardingStep
-}
-
-const STEPS: { id: OnboardingStep; label: string; description: string }[] = [
-  { id: 'fub', label: 'Connect FUB', description: 'Follow Up Boss CRM integration' },
-  { id: 'twilio', label: 'Configure SMS', description: 'Set up your Twilio phone number' },
-  { id: 'sms-verify', label: 'Verify SMS', description: 'Send a test message' },
-  { id: 'simulator', label: 'See the Magic', description: 'Watch the AI in action' },
-]
-
-function getStepIndex(step: OnboardingStep): number {
-  const idx = STEPS.findIndex((s) => s.id === step)
-  return idx === -1 ? STEPS.length : idx
-}
-
-function getToken(): string | null {
-  if (typeof window === 'undefined') return null
-  return localStorage.getItem('leadflow_token') || sessionStorage.getItem('leadflow_token')
-}
-
-function getUser(): { id: string; firstName: string; lastName: string } | null {
-  if (typeof window === 'undefined') return null
+function getFromStorage(key: string): string | null {
   try {
-    const raw = localStorage.getItem('leadflow_user') || sessionStorage.getItem('leadflow_user')
-    return raw ? JSON.parse(raw) : null
+    return localStorage.getItem(key) || sessionStorage.getItem(key) || null
   } catch {
     return null
   }
 }
 
-/**
- * Dashboard Onboarding Page
- *
- * Post-signup wizard experience within the dashboard context.
- * Reuses the setup wizard components from /setup but provides
- * dashboard navigation and a polished overlay experience.
- *
- * Redirects to /dashboard upon completion.
- */
-export default function DashboardOnboardingPage() {
+function setToStorage(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // Ignore storage errors (e.g., private browsing)
+  }
+}
+
+interface StoredUser {
+  id?: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  onboardingCompleted?: boolean
+  [key: string]: unknown
+}
+
+function DashboardOnboardingInner() {
   const router = useRouter()
-  const [state, setState] = useState<OnboardingState>({
-    fubConnected: false,
-    fubApiKey: '',
-    twilioConnected: false,
-    twilioPhone: '',
-    smsVerified: false,
-    agentPhone: '',
-    agentName: '',
-    agentId: '',
-    simulatorCompleted: false,
-    simulatorResponseTimeMs: null,
-    simulatorSkipped: false,
-    currentStep: 'fub',
+  const [authChecked, setAuthChecked] = useState(false)
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome')
+  const [agentData, setAgentData] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    timezone: 'America/New_York',
+    state: '',
+    calendarUrl: '',
+    calcomLink: '',
+    smsPhoneNumber: '',
+    ahaCompleted: false,
+    ahaResponseTimeMs: null as number | null,
+    ahaSkipped: false,
+    simulatorSessionId: '',
+    tempAgentId: '',
+    utmSource: null as string | null,
+    utmMedium: null as string | null,
+    utmCampaign: null as string | null,
+    utmContent: null as string | null,
+    utmTerm: null as string | null,
   })
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Load user info and existing wizard state on mount
+  // Auth check on mount
   useEffect(() => {
-    const user = getUser()
-    if (!user) {
-      router.replace('/login')
-      return
-    }
-
-    const token = getToken()
-
-    const initState: Partial<OnboardingState> = {
-      agentId: user.id,
-      agentName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-    }
-
-    // Load persisted wizard state from API
-    fetch('/api/setup/status', {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.wizardState) {
-          const ws = data.wizardState
-          initState.fubConnected = ws.fub_connected ?? false
-          initState.fubApiKey = ws.fub_api_key ?? ''
-          initState.twilioConnected = ws.twilio_connected ?? false
-          initState.twilioPhone = ws.twilio_phone ?? ''
-          initState.smsVerified = ws.sms_verified ?? false
-
-          // Resume from last incomplete step
-          if (!ws.fub_connected) {
-            initState.currentStep = 'fub'
-          } else if (!ws.twilio_connected) {
-            initState.currentStep = 'twilio'
-          } else if (!ws.sms_verified) {
-            initState.currentStep = 'sms-verify'
-          } else if (!ws.simulator_completed && !ws.simulator_skipped) {
-            initState.currentStep = 'simulator'
-          } else {
-            initState.currentStep = 'complete'
-          }
+    async function checkAuth() {
+      // Fast path: localStorage is populated (happy path after signup)
+      const userRaw = getFromStorage('leadflow_user')
+      if (userRaw) {
+        try {
+          const user: StoredUser = JSON.parse(userRaw)
+          // Pre-populate agentData from stored user
+          setAgentData((prev) => ({
+            ...prev,
+            email: user.email || '',
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+          }))
+          setAuthChecked(true)
+          return
+        } catch {
+          // Malformed JSON — fall through to API check
         }
-      })
-      .catch(() => {
-        // Start from beginning on error
-      })
-      .finally(() => {
-        setState((prev) => ({ ...prev, ...initState }))
-        setLoading(false)
-      })
+      }
+
+      // Fallback: ask the server (cookie-based auth)
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' })
+        if (res.ok) {
+          const user = await res.json()
+          // Persist to localStorage so subsequent page loads skip this fetch
+          const token = getFromStorage('leadflow_token')
+          if (token) {
+            setToStorage('leadflow_token', token)
+          }
+          setToStorage(
+            'leadflow_user',
+            JSON.stringify({
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              onboardingCompleted: user.onboardingCompleted,
+            })
+          )
+          // Pre-populate agentData
+          setAgentData((prev) => ({
+            ...prev,
+            email: user.email || '',
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+          }))
+          setAuthChecked(true)
+        } else {
+          // 401 — unauthenticated
+          router.replace('/login')
+        }
+      } catch {
+        // Network error — redirect to login to be safe
+        router.replace('/login')
+      }
+    }
+
+    checkAuth()
   }, [router])
 
-  const goToStep = (step: OnboardingStep) => {
-    setState((prev) => ({ ...prev, currentStep: step }))
-    // Persist step
-    saveWizardState({ currentStep: step })
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
+  const currentStepIndex = steps.indexOf(currentStep)
+
+  const nextStep = () => {
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStep(steps[currentStepIndex + 1])
+    }
   }
 
-  const saveWizardState = async (patch: Partial<OnboardingState>) => {
-    const token = getToken()
+  const prevStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStep(steps[currentStepIndex - 1])
+    }
+  }
+
+  const completeOnboarding = async () => {
+    setIsLoading(true)
     try {
-      await fetch('/api/setup/status', {
+      const token = getFromStorage('leadflow_token')
+      const response = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify(patch),
+        credentials: 'include',
+        body: JSON.stringify({
+          ...agentData,
+          aha_moment_completed: agentData.ahaCompleted,
+          aha_response_time_ms: agentData.ahaResponseTimeMs,
+        }),
       })
-    } catch {
-      // non-fatal
+
+      if (!response.ok) {
+        throw new Error('Failed to complete onboarding')
+      }
+
+      // Mark onboarding complete in localStorage
+      try {
+        const userRaw = getFromStorage('leadflow_user')
+        if (userRaw) {
+          const user = JSON.parse(userRaw)
+          user.onboardingCompleted = true
+          setToStorage('leadflow_user', JSON.stringify(user))
+        }
+      } catch {
+        // ignore
+      }
+
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Onboarding error:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleFUBComplete = (apiKey: string) => {
-    const next: Partial<OnboardingState> = {
-      fubConnected: true,
-      fubApiKey: apiKey,
-      currentStep: 'twilio',
-    }
-    setState((prev) => ({ ...prev, ...next }))
-    saveWizardState(next)
-  }
-
-  const handleTwilioComplete = (phone: string) => {
-    const next: Partial<OnboardingState> = {
-      twilioConnected: true,
-      twilioPhone: phone,
-      currentStep: 'sms-verify',
-    }
-    setState((prev) => ({ ...prev, ...next }))
-    saveWizardState(next)
-  }
-
-  const handleSMSVerified = (agentPhone: string) => {
-    const next: Partial<OnboardingState> = {
-      smsVerified: true,
-      agentPhone,
-      currentStep: 'simulator',
-    }
-    setState((prev) => ({ ...prev, ...next }))
-    saveWizardState(next)
-  }
-
-  const handleSimulatorComplete = (responseTimeMs: number | null) => {
-    const next: Partial<OnboardingState> = {
-      simulatorCompleted: true,
-      simulatorResponseTimeMs: responseTimeMs,
-      currentStep: 'complete',
-    }
-    setState((prev) => ({ ...prev, ...next }))
-    saveWizardState(next)
-    // Mark full onboarding as done
-    const token = getToken()
-    fetch('/api/setup/complete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    }).catch(() => {})
-  }
-
-  const handleSimulatorSkip = () => {
-    const next: Partial<OnboardingState> = {
-      simulatorSkipped: true,
-      currentStep: 'complete',
-    }
-    setState((prev) => ({ ...prev, ...next }))
-    saveWizardState(next)
-    // Mark onboarding as done even if simulator was skipped
-    const token = getToken()
-    fetch('/api/setup/complete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    }).catch(() => {})
-  }
-
-  const handleSkip = (step: OnboardingStep) => {
-    const steps: OnboardingStep[] = ['fub', 'twilio', 'sms-verify', 'simulator', 'complete']
-    const nextIdx = steps.indexOf(step) + 1
-    const nextStep = steps[nextIdx] ?? 'complete'
-    setState((prev) => ({ ...prev, currentStep: nextStep }))
-    saveWizardState({ currentStep: nextStep })
-  }
-
-  const handleFinish = () => {
-    router.push('/dashboard')
-  }
-
-  if (loading) {
+  // Show nothing while auth is being checked to prevent flash of redirect
+  if (!authChecked) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+        <div className="text-white text-center">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-400 text-sm">Loading...</p>
+        </div>
       </div>
     )
   }
 
-  const currentStepIndex = getStepIndex(state.currentStep)
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Decorative blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <header className="border-b border-slate-700/50 backdrop-blur-sm bg-slate-900/50">
-          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
                 <span className="text-emerald-400 font-bold text-sm">▶</span>
               </div>
               <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
             </div>
-            {state.currentStep !== 'complete' && (
-              <button
-                onClick={handleFinish}
-                className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
-              >
-                Skip for now →
-              </button>
-            )}
+            <div className="text-sm text-slate-400">
+              Step {currentStepIndex + 1} of {steps.length}
+            </div>
           </div>
         </header>
 
-        {/* Step indicators */}
-        {state.currentStep !== 'complete' && (
-          <div className="border-b border-slate-700/50 bg-slate-900/30">
-            <div className="max-w-3xl mx-auto px-4 py-4">
-              <div className="flex items-center gap-2">
-                {STEPS.map((step, idx) => {
-                  const done = idx < currentStepIndex
-                  const active = idx === currentStepIndex
-                  return (
-                    <div key={step.id} className="flex items-center gap-2 flex-1">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div
-                          className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                            done
-                              ? 'bg-emerald-500 text-white'
-                              : active
-                              ? 'bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400'
-                              : 'bg-slate-700 text-slate-500'
-                          }`}
-                        >
-                          {done ? (
-                            <CheckCircle2 className="w-4 h-4" />
-                          ) : (
-                            <span className="text-xs font-bold">{idx + 1}</span>
-                          )}
-                        </div>
-                        <div className="hidden sm:block min-w-0">
-                          <div
-                            className={`text-sm font-medium truncate ${
-                              active ? 'text-white' : done ? 'text-emerald-400' : 'text-slate-500'
-                            }`}
-                          >
-                            {step.label}
-                          </div>
-                        </div>
-                      </div>
-                      {idx < STEPS.length - 1 && (
-                        <div
-                          className={`flex-1 h-px mx-2 ${
-                            idx < currentStepIndex ? 'bg-emerald-500' : 'bg-slate-700'
-                          }`}
-                        />
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Progress */}
+        <OnboardingProgress currentStep={currentStepIndex} totalSteps={steps.length} />
 
-        {/* Step content */}
+        {/* Content */}
         <main className="flex-1 flex items-center justify-center px-4 py-8">
           <div className="w-full max-w-2xl">
-            {state.currentStep === 'fub' && (
-              <SetupFUB
-                agentId={state.agentId}
-                onComplete={handleFUBComplete}
-                onSkip={() => handleSkip('fub')}
+            {currentStep === 'welcome' && (
+              <OnboardingWelcome
+                onNext={nextStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
               />
             )}
-            {state.currentStep === 'twilio' && (
-              <SetupTwilio
-                agentId={state.agentId}
-                onComplete={handleTwilioComplete}
-                onSkip={() => handleSkip('twilio')}
-                onBack={() => goToStep('fub')}
+
+            {currentStep === 'agent-info' && (
+              <OnboardingAgentInfo
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
               />
             )}
-            {state.currentStep === 'sms-verify' && (
-              <SetupSMSVerify
-                agentId={state.agentId}
-                agentName={state.agentName}
-                twilioPhone={state.twilioPhone}
-                onComplete={handleSMSVerified}
-                onSkip={() => handleSkip('sms-verify')}
-                onBack={() => goToStep('twilio')}
+
+            {currentStep === 'calendar' && (
+              <OnboardingCalendar
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
               />
             )}
-            {state.currentStep === 'simulator' && (
-              <SetupSimulator
-                agentId={state.agentId}
-                onComplete={handleSimulatorComplete}
-                onSkip={handleSimulatorSkip}
-                onBack={() => goToStep('sms-verify')}
+
+            {currentStep === 'sms' && (
+              <OnboardingSMS
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
               />
             )}
-            {state.currentStep === 'complete' && (
-              <SetupComplete
-                fubConnected={state.fubConnected}
-                twilioConnected={state.twilioConnected}
-                smsVerified={state.smsVerified}
-                onFinish={handleFinish}
+
+            {currentStep === 'simulator' && (
+              <OnboardingSimulator
+                onNext={nextStep}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
+              />
+            )}
+
+            {currentStep === 'confirmation' && (
+              <OnboardingConfirm
+                onBack={prevStep}
+                onComplete={completeOnboarding}
+                agentData={agentData}
+                isLoading={isLoading}
               />
             )}
           </div>
         </main>
       </div>
     </div>
+  )
+}
+
+export default function DashboardOnboardingPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardOnboardingInner />
+    </Suspense>
   )
 }
