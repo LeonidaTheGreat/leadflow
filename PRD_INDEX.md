@@ -1,11 +1,10 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-23T15:22:07.218Z | Source: `prds` table
+> Generated: 2026-03-23T05:19:32.188Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
-| fix-lead-magnet-form-layout | Fix Lead Magnet Form Layout Issues | draft | 1.0 | [docs/prd/PRD-FIX-LEAD-MAGNET-FORM-LAYOUT.md](docs/prd/PRD-FIX-LEAD-MAGNET-FORM-LAYOUT.md) |
 | genome-auto-generated-docs-convention | Auto-Generated Docs Directory Convention | approved | - | [docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md](docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md) |
 | genome-project-structure-convention | Project Structure Convention System | draft | 1 | [docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md](docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md) |
 | prd-admin-pilot-invite-flow | Admin Pilot Invite Flow — Direct Recruitment by Stojan | approved | 1.0 | [docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md](docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md) |
@@ -44,8 +43,6 @@
 | PRD-LANDING-PAGE-CONVERSION-001 | Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof | approved | - | [docs/PRD-LANDING-PAGE-CONVERSION-001.md](docs/PRD-LANDING-PAGE-CONVERSION-001.md) |
 | PRD-LANDING-PAGE-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 2.0 | [docs/PRD-LANDING-PAGE-MARKETING-001.md](docs/PRD-LANDING-PAGE-MARKETING-001.md) |
 | PRD-LANDING-PRICING-4TIERS | Landing Page Pricing Section — All 4 Tiers with Feature Comparison | approved | 1.0 | [docs/PRD-LANDING-PRICING-4TIERS.md](docs/PRD-LANDING-PRICING-4TIERS.md) |
-| prd-landing-pricing-4tiers-v2 | Landing Page Pricing Section — Show All 4 Tiers with Feature Comparison | approved | 2.0 | [docs/prd/PRD-LANDING-PRICING-4TIERS-v2.md](docs/prd/PRD-LANDING-PRICING-4TIERS-v2.md) |
-| PRD-LANDING-PRICING-SECTION-DETAIL-001 | Landing Page Pricing Section — Tier Detail & Inline Features | draft | - | [docs/prd/PRD-LANDING-PRICING-SECTION-DETAIL-001.md](docs/prd/PRD-LANDING-PRICING-SECTION-DETAIL-001.md) |
 | PRD-LEAD-EXPERIENCE-SIMULATOR | Lead Experience Simulator & Conversation Viewer | approved | 1.0 | [docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md](docs/PRD-LEAD-EXPERIENCE-SIMULATOR.md) |
 | PRD-LEAD-MAGNET-EMAIL-CAPTURE | Lead Magnet / Email Capture on Landing Page | approved | 1.0 | [docs/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md](docs/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md) |
 | PRD-LEAD-SATISFACTION-FEEDBACK | Lead Satisfaction Feedback Collection | approved | 1.0 | [docs/PRD-LEAD-SATISFACTION-FEEDBACK.md](docs/PRD-LEAD-SATISFACTION-FEEDBACK.md) |
@@ -67,7 +64,7 @@
 | PRD-SIGNUP-AUTH-TOKEN-FIX-001 | Fix Auth Token Gap — Signup → Onboarding Redirect | approved | - | [docs/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md](docs/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md) |
 | PRD-SMOKE-ROUTE-DISCOVERY-001 | Route Discovery Smoke Test | draft | 1.0 | [docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md](docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md) |
 | PRD-SMS-ANALYTICS-DASHBOARD | SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | approved | 1.0 | [docs/PRD-SMS-ANALYTICS-DASHBOARD.md](docs/PRD-SMS-ANALYTICS-DASHBOARD.md) |
-| prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/prd/PRD-START-FREE-TRIAL-CTA.md](docs/prd/PRD-START-FREE-TRIAL-CTA.md) |
+| prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/PRD-START-FREE-TRIAL-CTA.md](docs/PRD-START-FREE-TRIAL-CTA.md) |
 | PRD-STATUS-REPORT-20260306 | LeadFlow Product Status Report — Day 20 of 60 | approved | 1.0 | [docs/PRD-STATUS-REPORT-20260306.md](docs/PRD-STATUS-REPORT-20260306.md) |
 | prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
