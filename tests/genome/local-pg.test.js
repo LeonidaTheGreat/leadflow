@@ -20,7 +20,7 @@ jest.mock('pg', () => {
   return { Pool: mockPool }
 })
 
-const { createLocalClient } = require('../core/local-pg')
+const { createLocalClient } = require('/Users/clawdbot/.openclaw/genome/core/local-pg')
 
 // ── Helper ───────────────────────────────────────────────────────────────────
 

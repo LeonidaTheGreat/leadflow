@@ -24,7 +24,7 @@ const {
   normalizeAgentId,
   AGENT_LABELS,
   MODEL_LADDER
-} = require('../core/workflow-engine')
+} = require('/Users/clawdbot/.openclaw/genome/core/workflow-engine')
 
 // ── selectInitialModel ────────────────────────────────────────────────────────
 
@@ -340,7 +340,7 @@ describe('createTask model defaults', () => {
       })
     })
 
-    const { TaskStore } = require('../core/task-store')
+    const { TaskStore } = require('/Users/clawdbot/.openclaw/genome/core/task-store')
     const store = new TaskStore()
     store.supabase = mockSupabase
     store.projectId = 'test-project'
@@ -364,7 +364,7 @@ describe('createTask model defaults', () => {
       })
     })
 
-    const { TaskStore } = require('../core/task-store')
+    const { TaskStore } = require('/Users/clawdbot/.openclaw/genome/core/task-store')
     const store = new TaskStore()
     store.supabase = mockSupabase
     store.projectId = 'test-project'
