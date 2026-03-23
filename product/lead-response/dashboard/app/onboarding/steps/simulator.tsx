@@ -187,6 +187,7 @@ export default function OnboardingSimulator({
       setAgentData({
         ...agentData,
         ahaCompleted: false,
+        ahaSkipped: true,
         ahaResponseTimeMs: null,
       })
 
