@@ -10,7 +10,7 @@ import OnboardingSimulator from './steps/simulator'
 import OnboardingConfirm from './steps/confirmation'
 import OnboardingProgress from './components/progress'
 
-type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'confirmation' | 'simulator'
 
 /** Read UTM params: URL takes precedence over sessionStorage. */
 function readUtmParams(searchParams: ReturnType<typeof useSearchParams>) {
@@ -79,7 +79,7 @@ function OnboardingPageInner() {
     }
   }, [searchParams])
 
-  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'confirmation', 'simulator']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const goToStep = (step: OnboardingStep) => {
@@ -190,21 +190,21 @@ function OnboardingPageInner() {
               />
             )}
 
-            {currentStep === 'simulator' && (
-              <OnboardingSimulator
-                onNext={nextStep}
-                onBack={prevStep}
-                agentData={agentData}
-                setAgentData={setAgentData}
-              />
-            )}
-
             {currentStep === 'confirmation' && (
               <OnboardingConfirm
                 onBack={prevStep}
-                onComplete={completeOnboarding}
+                onComplete={nextStep}
                 agentData={agentData}
                 isLoading={isLoading}
+              />
+            )}
+
+            {currentStep === 'simulator' && (
+              <OnboardingSimulator
+                onNext={completeOnboarding}
+                onBack={prevStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
               />
             )}
           </div>
