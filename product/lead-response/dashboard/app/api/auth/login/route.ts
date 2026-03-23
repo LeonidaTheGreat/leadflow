@@ -57,10 +57,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Create server-side session
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined
     const session = await createSession({
       userId: user.id,
       userAgent: request.headers.get('user-agent') || undefined,
-      ipAddress: request.ip || undefined,
+      ipAddress,
       rememberMe,
     })
 
