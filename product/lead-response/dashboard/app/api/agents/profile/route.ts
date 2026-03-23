@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const { data: agent, error } = await supabase
       .from('real_estate_agents')
-      .select('id, email, first_name, last_name, phone_number, state, timezone, created_at, onboarding_completed, plan_tier, trial_ends_at')
+      .select('id, email, first_name, last_name, phone_number, state, timezone, plan_tier, trial_ends_at, pilot_expires_at, created_at, onboarding_completed')
       .eq('id', agentId)
       .single()
 
@@ -48,14 +48,15 @@ export async function GET(request: NextRequest) {
         phoneNumber: agent.phone_number,
         state: agent.state,
         timezone: agent.timezone,
+        plan_tier: agent.plan_tier,
+        trial_ends_at: agent.trial_ends_at,
+        pilot_expires_at: agent.pilot_expires_at,
         bio: profile?.bio || '',
         companyName: profile?.company_name || '',
         website: profile?.website || '',
         profileImage: profile?.profile_image || '',
         createdAt: agent.created_at,
         onboardingCompleted: agent.onboarding_completed ?? false,
-        plan_tier: agent.plan_tier || null,
-        trial_ends_at: agent.trial_ends_at || null,
       },
     })
   } catch (error) {

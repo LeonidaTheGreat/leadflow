@@ -143,7 +143,7 @@ describe('Free Pilot Onboarding — Core Implementation', () => {
       expect(res.status).toBe(200) // NextResponse.json default is 200
       expect(body.success).toBe(true)
       expect(body.agentId).toBeDefined()
-      expect(body.redirectTo).toBe('/dashboard/onboarding')
+      expect(body.redirectTo).toBe('/setup')
     })
 
     it('sets auth-token cookie on success', async () => {
