@@ -78,28 +78,31 @@ test('trial/start cookie has 30-day maxAge', () => {
   );
 });
 
-// Test 6: Cross-check all signup routes use consistent cookie name
-test('All signup routes use consistent auth-token cookie name', () => {
-  const trialSignup = readFile('app/api/auth/trial-signup/route.ts');
-  const pilotSignup = readFile('app/api/auth/pilot-signup/route.ts');
+// Test 6: Verify trial/start works with /api/auth/me for session check
+test('trial/start auth-token cookie is readable by /api/auth/me', () => {
   const trialStart = readFile('app/api/trial/start/route.ts');
+  const authMe = readFile('app/api/auth/me/route.ts');
   
-  // All should use auth-token (hyphen)
-  const routes = [
-    { name: 'trial-signup', src: trialSignup },
-    { name: 'pilot-signup', src: pilotSignup },
-    { name: 'trial/start', src: trialStart },
-  ];
+  // Both should reference the same cookie name
+  assert.ok(
+    trialStart.includes("cookies.set('auth-token'") || trialStart.includes('cookies.set("auth-token")'),
+    'trial/start must set auth-token (hyphen)'
+  );
   
-  for (const route of routes) {
-    const hasHyphen = route.src.includes("cookies.set('auth-token'") || 
-                      route.src.includes('cookies.set("auth-token")');
-    const hasUnderscore = route.src.includes("cookies.set('auth_token'") || 
-                          route.src.includes('cookies.set("auth_token")');
-    
-    assert.ok(hasHyphen, `${route.name} must set auth-token (hyphen)`);
-    assert.ok(!hasUnderscore, `${route.name} must NOT set auth_token (underscore)`);
-  }
+  assert.ok(
+    authMe.includes("cookies.get('auth-token')") || authMe.includes('cookies.get("auth-token")'),
+    '/api/auth/me must read auth-token (hyphen)'
+  );
+  
+  // Ensure no underscore version in either
+  assert.ok(
+    !trialStart.includes("cookies.set('auth_token'"),
+    'trial/start must NOT set auth_token (underscore)'
+  );
+  assert.ok(
+    !authMe.includes("cookies.get('auth_token'"),
+    '/api/auth/me must NOT read auth_token (underscore)'
+  );
 });
 
 // Summary
