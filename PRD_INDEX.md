@@ -1,11 +1,10 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-23T06:04:40.841Z | Source: `prds` table
+> Generated: 2026-03-23T05:19:32.188Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
-| fix-lead-magnet-form-layout | Fix Lead Magnet Form Layout Issues | draft | 1.0 | [docs/prd/PRD-FIX-LEAD-MAGNET-FORM-LAYOUT.md](docs/prd/PRD-FIX-LEAD-MAGNET-FORM-LAYOUT.md) |
 | genome-auto-generated-docs-convention | Auto-Generated Docs Directory Convention | approved | - | [docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md](docs/prd/PRD-GENOME-AUTO-GENERATED-DOCS-CONVENTION.md) |
 | genome-project-structure-convention | Project Structure Convention System | draft | 1 | [docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md](docs/prd/PRD-GENOME-PROJECT-STRUCTURE-CONVENTION.md) |
 | prd-admin-pilot-invite-flow | Admin Pilot Invite Flow — Direct Recruitment by Stojan | approved | 1.0 | [docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md](docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md) |

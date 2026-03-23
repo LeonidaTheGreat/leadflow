@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # E2E Test Mappings
 
-> Generated: 2026-03-23T06:04:40.741Z | Source: `e2e_test_specs` + `use_cases` tables
+> Generated: 2026-03-23T05:19:32.110Z | Source: `e2e_test_specs` + `use_cases` tables
 
-**Coverage: 319 specs | 13 pass | 0 fail | 306 not run**
+**Coverage: 315 specs | 13 pass | 0 fail | 302 not run**
 
 | UC | Test Name | File | Last Run | Result |
 |----|-----------|------|----------|--------|
@@ -129,145 +129,141 @@
 | feat-post-login-onboarding-wizard | Onboarding Wizard - Partial Flow (Steps Skipped) | - | - | not_run |
 | feat-post-login-onboarding-wizard | Onboarding Wizard - Resume After Session Drop | - | - | not_run |
 | feat-post-login-onboarding-wizard | Onboarding Wizard - Existing Agent Not Triggered | - | - | not_run |
-| feat-post-signup-dashboard-onboarding-redirect | Un-onboarded user login redirects to /dashboard/onboarding (not /setup) | - | - | not_run |
-| feat-post-signup-dashboard-onboarding-redirect | TC-SIGNUP-AUTH-001: Trial Signup → Onboarding Wizard Renders | product/lead-response/dashboard/tests/signup-auth-token.test.ts | - | not_run |
 | feat-post-signup-dashboard-onboarding-redirect | TC-SIGNUP-AUTH-002: Pilot Signup → Onboarding Wizard Renders | product/lead-response/dashboard/tests/signup-auth-token.test.ts | - | not_run |
+| feat-post-signup-dashboard-onboarding-redirect | TC-SIGNUP-AUTH-001: Trial Signup → Onboarding Wizard Renders | product/lead-response/dashboard/tests/signup-auth-token.test.ts | - | not_run |
 | feat-post-signup-dashboard-onboarding-redirect | TC-SIGNUP-AUTH-003: /api/auth/me Returns User from Cookie | product/lead-response/dashboard/tests/signup-auth-token.test.ts | - | not_run |
 | feat-post-signup-dashboard-onboarding-redirect | TC-SIGNUP-AUTH-004: Onboarding Page Falls Back to /api/auth/me | product/lead-response/dashboard/tests/signup-auth-token.test.ts | - | not_run |
 | feat-post-signup-dashboard-onboarding-redirect | TC-SIGNUP-AUTH-005: Unauthenticated Access Still Blocked | product/lead-response/dashboard/tests/signup-auth-token.test.ts | - | not_run |
+| feat-post-signup-dashboard-onboarding-redirect | Un-onboarded user login redirects to /dashboard/onboarding (not /setup) | - | - | not_run |
 | feat-post-signup-dashboard-onboarding-redirect | Onboarded user login still redirects to /dashboard (regression check) | - | - | not_run |
+| feat-repository-structure-convention | Config files exist in config/ directory | tests/e2e/repo-structure.test.js | - | not_run |
 | feat-repository-structure-convention | Test directories consolidated into tests/{e2e,integration,unit} | tests/e2e/repo-structure.test.js | - | not_run |
 | feat-repository-structure-convention | Runtime integrity after reorganization | tests/e2e/repo-structure.test.js | - | not_run |
 | feat-repository-structure-convention | PROJECT_STRUCTURE.md and CLAUDE.md updated | tests/e2e/repo-structure.test.js | - | not_run |
-| feat-repository-structure-convention | Config files exist in config/ directory | tests/e2e/repo-structure.test.js | - | not_run |
-| feat-self-serve-stripe-checkout | Webhook rejects invalid Stripe signature | - | - | not_run |
 | feat-self-serve-stripe-checkout | Webhook is idempotent on repeated delivery | - | - | not_run |
-| feat-self-serve-stripe-checkout | Confirmation email received after successful upgrade | - | - | not_run |
-| feat-self-serve-stripe-checkout | Upgrade CTA visible for trial/pilot agents | - | - | not_run |
 | feat-self-serve-stripe-checkout | Stripe Checkout session created server-side on upgrade click | - | - | not_run |
 | feat-self-serve-stripe-checkout | End-to-end payment updates plan_tier in DB and dashboard | - | - | not_run |
+| feat-self-serve-stripe-checkout | Confirmation email received after successful upgrade | - | - | not_run |
 | feat-self-serve-stripe-checkout | Cancel checkout shows no-charge message | - | - | not_run |
+| feat-self-serve-stripe-checkout | Webhook rejects invalid Stripe signature | - | - | not_run |
+| feat-self-serve-stripe-checkout | Upgrade CTA visible for trial/pilot agents | - | - | not_run |
+| feat-session-analytics-pilot | Session logging failure does not break login | - | - | not_run |
 | feat-session-analytics-pilot | Internal pilot-usage endpoint returns engagement data | - | - | not_run |
+| feat-session-analytics-pilot | Pilot agent login creates a session record | - | - | not_run |
 | feat-session-analytics-pilot | Dashboard navigation creates page view records | - | - | not_run |
 | feat-session-analytics-pilot | Inactivity alert fires after 72 hours of no login | - | - | not_run |
-| feat-session-analytics-pilot | Session logging failure does not break login | - | - | not_run |
-| feat-session-analytics-pilot | Pilot agent login creates a session record | - | - | not_run |
 | feat-sms-analytics-dashboard | Empty state handled gracefully | - | - | not_run |
-| feat-sms-analytics-dashboard | Agent data isolation enforced | - | - | not_run |
-| feat-sms-analytics-dashboard | SMS Delivery Rate displays correctly | - | - | not_run |
 | feat-sms-analytics-dashboard | Reply Rate displays correctly | - | - | not_run |
+| feat-sms-analytics-dashboard | Agent data isolation enforced | - | - | not_run |
 | feat-sms-analytics-dashboard | Booking Conversion Rate displays correctly | - | - | not_run |
-| feat-start-free-trial-cta | Trial badge with days remaining visible in dashboard nav | - | - | not_run |
-| feat-start-free-trial-cta | Start Free Trial CTA present in hero, features, and pricing sections | - | - | not_run |
-| feat-start-free-trial-cta | Start Free Trial CTA visible above fold on desktop and mobile | - | - | not_run |
-| feat-start-free-trial-cta | Trial signup requires only email and password — no credit card | - | - | not_run |
-| feat-start-free-trial-cta | Trial account provisioned with trial plan and redirects within 5 seconds | - | - | not_run |
-| feat-start-free-trial-cta | Duplicate email on trial signup shows friendly error with sign-in link | - | - | not_run |
+| feat-sms-analytics-dashboard | SMS Delivery Rate displays correctly | - | - | not_run |
 | feat-start-free-trial-cta | Existing pilot application form still accessible at /pilot | - | - | not_run |
-| feat-stripe-checkout-production-e2e | stripe-db-update-after-webhook | tests/integrated/stripe-production-smoke.test.js | - | not_run |
+| feat-start-free-trial-cta | Trial badge with days remaining visible in dashboard nav | - | - | not_run |
+| feat-start-free-trial-cta | Trial signup requires only email and password — no credit card | - | - | not_run |
+| feat-start-free-trial-cta | Start Free Trial CTA visible above fold on desktop and mobile | - | - | not_run |
+| feat-start-free-trial-cta | Duplicate email on trial signup shows friendly error with sign-in link | - | - | not_run |
+| feat-start-free-trial-cta | Start Free Trial CTA present in hero, features, and pricing sections | - | - | not_run |
+| feat-start-free-trial-cta | Trial account provisioned with trial plan and redirects within 5 seconds | - | - | not_run |
 | feat-stripe-checkout-production-e2e | stripe-deployment-smoke-test | tests/integrated/stripe-production-smoke.test.js | - | not_run |
 | feat-stripe-checkout-production-e2e | stripe-checkout-auth-idor-prevention | tests/integrated/stripe-production-smoke.test.js | - | not_run |
 | feat-stripe-checkout-production-e2e | stripe-billing-portal-session | tests/integrated/stripe-production-smoke.test.js | - | not_run |
+| feat-stripe-checkout-production-e2e | stripe-db-update-after-webhook | tests/integrated/stripe-production-smoke.test.js | - | not_run |
 | feat-stripe-checkout-production-e2e | stripe-webhook-checkout-completed | tests/integrated/stripe-production-smoke.test.js | - | not_run |
 | feat-stripe-checkout-production-e2e | stripe-checkout-session-e2e | tests/integrated/stripe-production-smoke.test.js | - | not_run |
 | feat-stripe-checkout-production-e2e | stripe-env-vars-vercel | tests/integrated/stripe-production-smoke.test.js | - | not_run |
-| feat-utm-capture-marketing-attribution | T-3: First-Touch Attribution Preserved | tests/e2e/utm-attribution.spec.ts | - | not_run |
+| feat-utm-capture-marketing-attribution | T-4: Attribution Table in Dashboard | tests/e2e/utm-attribution.spec.ts | - | not_run |
 | feat-utm-capture-marketing-attribution | T-2: Direct Visit — Clean NULL | tests/e2e/utm-attribution.spec.ts | - | not_run |
 | feat-utm-capture-marketing-attribution | T-1: UTM Captured and Stored on Signup | tests/e2e/utm-attribution.spec.ts | - | not_run |
-| feat-utm-capture-marketing-attribution | T-4: Attribution Table in Dashboard | tests/e2e/utm-attribution.spec.ts | - | not_run |
+| feat-utm-capture-marketing-attribution | T-3: First-Touch Attribution Preserved | tests/e2e/utm-attribution.spec.ts | - | not_run |
 | fix-api-endpoints-developer-table-embedded-in-marketin | E2E-UX-001: No Developer Content on Landing Page | tests/fix-developer-table-in-landing-page.test.js | - | not_run |
-| fix-api-health-endpoint-wrong-table | Health endpoint Supabase connectivity check uses correct table | - | - | not_run |
 | fix-api-health-endpoint-wrong-table | Health endpoint returns OK with correct Supabase connectivity | - | - | not_run |
-| fix-api-lead-capture-endpoint-returns-db-error-in-prod | pilot-signup-no-regression | - | - | pass |
+| fix-api-health-endpoint-wrong-table | Health endpoint Supabase connectivity check uses correct table | - | - | not_run |
 | fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-invalid-email | - | - | pass |
-| fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-duplicate-email | - | - | pass |
 | fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-valid-email | - | - | pass |
+| fix-api-lead-capture-endpoint-returns-db-error-in-prod | lead-capture-prod-duplicate-email | - | - | pass |
 | fix-api-lead-capture-endpoint-returns-db-error-in-prod | health-check-supabase-connectivity | - | - | pass |
+| fix-api-lead-capture-endpoint-returns-db-error-in-prod | pilot-signup-no-regression | - | - | pass |
+| fix-db-migration-incomplete-email-verification-tokens- | DB-MIGRATION-EVT-001: email_verification_tokens table exists | test/db-migration-email-verification.test.js | - | not_run |
 | fix-db-migration-incomplete-email-verification-tokens- | DB-MIGRATION-EVT-003: resend-verification creates token row | test/db-migration-email-verification.test.js | - | not_run |
 | fix-db-migration-incomplete-email-verification-tokens- | DB-MIGRATION-EVT-002: indexes exist on email_verification_tokens | test/db-migration-email-verification.test.js | - | not_run |
-| fix-db-migration-incomplete-email-verification-tokens- | DB-MIGRATION-EVT-001: email_verification_tokens table exists | test/db-migration-email-verification.test.js | - | not_run |
-| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
-| fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
 | fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | 2026-03-07 | pass |
-| fix-lead-magnet-form-layout | Mobile Viewport Form Layout | tests/fix-lead-magnet-form-layout-mobile.test.js | - | not_run |
-| fix-lead-magnet-form-layout | Tablet Viewport Form Layout | tests/fix-lead-magnet-form-layout-tablet.test.js | - | not_run |
-| fix-lead-magnet-form-layout | Form Submission Complete Flow | tests/fix-lead-magnet-form-layout-e2e.test.js | - | not_run |
-| fix-lead-magnet-form-layout | Desktop Viewport Form Layout | tests/fix-lead-magnet-form-layout-desktop.test.js | - | not_run |
+| fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
+| fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
 | fix-madzunkov-hotmail-com-is-locked-out-email-verified | DB-MIGRATION-EVT-004: madzunkov@hotmail.com email_verified = TRUE | test/db-migration-email-verification.test.js | - | not_run |
 | fix-madzunkov-hotmail-com-is-locked-out-email-verified | DB-MIGRATION-EVT-005: no pre-feature accounts locked out | test/db-migration-email-verification.test.js | - | not_run |
 | fix-no-forgot-password-flow | FP-001: Forgot password link navigates to /forgot-password | test/forgot-password.test.ts | - | not_run |
-| fix-no-forgot-password-flow | FP-002: Forgot password dispatches reset email for valid account | test/forgot-password.test.ts | - | not_run |
-| fix-no-forgot-password-flow | FP-005: Reset token is single-use and expires after 1 hour | test/forgot-password.test.ts | - | not_run |
 | fix-no-forgot-password-flow | FP-003: Non-existent email shows same success message (anti-enumeration) | test/forgot-password.test.ts | - | not_run |
+| fix-no-forgot-password-flow | FP-005: Reset token is single-use and expires after 1 hour | test/forgot-password.test.ts | - | not_run |
+| fix-no-forgot-password-flow | FP-002: Forgot password dispatches reset email for valid account | test/forgot-password.test.ts | - | not_run |
 | fix-no-forgot-password-flow | FP-004: Full password reset flow works end-to-end | test/forgot-password.test.ts | - | not_run |
 | fix-no-pilot-to-paid-conversion-email-sequence | E2E-EMAIL-002: Pilot-to-Paid Conversion Email Sequence | tests/fix-pilot-to-paid-conversion-sequence.test.js | - | not_run |
-| fix-no-sessionstorage-write-on-landing-page-load-utm-l | No UTM params in URL does not write sessionStorage | product/lead-response/dashboard/tests/utm-capture-tracker.test.ts | - | not_run |
 | fix-no-sessionstorage-write-on-landing-page-load-utm-l | Multi-page UTM attribution persists through /onboarding submission | product/lead-response/dashboard/tests/utm-capture-tracker.test.ts | - | not_run |
 | fix-no-sessionstorage-write-on-landing-page-load-utm-l | UTM first-touch captured to sessionStorage on landing | product/lead-response/dashboard/tests/utm-capture-tracker.test.ts | - | not_run |
 | fix-no-sessionstorage-write-on-landing-page-load-utm-l | UTM first-touch not overwritten by subsequent page | product/lead-response/dashboard/tests/utm-capture-tracker.test.ts | - | not_run |
-| fix-onboarding-500-error | E2E-ONBOARD-003: Health Check | test/health-endpoint.test.ts | - | not_run |
-| fix-onboarding-500-error | E2E-ONBOARD-004: End-to-End User Journey | test/e2e-user-journey.test.ts | - | not_run |
+| fix-no-sessionstorage-write-on-landing-page-load-utm-l | No UTM params in URL does not write sessionStorage | product/lead-response/dashboard/tests/utm-capture-tracker.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-002: Login with Migrated Table | test/onboarding-login.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-001: Successful Signup Flow | test/onboarding-signup-flow.test.ts | - | not_run |
-| fix-onboarding-500-error | E2E-ONBOARD-006: Stripe Webhook Processing | test/stripe-webhook.test.ts | - | not_run |
 | fix-onboarding-500-error | E2E-ONBOARD-005: Billing Portal Access | test/billing-portal.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-006: Stripe Webhook Processing | test/stripe-webhook.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-004: End-to-End User Journey | test/e2e-user-journey.test.ts | - | not_run |
+| fix-onboarding-500-error | E2E-ONBOARD-003: Health Check | test/health-endpoint.test.ts | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-BUILD-TRIAL-002: Next.js production build gate | product/lead-response/dashboard (build) | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-BUILD-TRIAL-001: Typecheck gate for trial-signup route | product/lead-response/dashboard (typecheck) | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-TRIAL-SIGNUP-003: Trial signup happy path unchanged | app/api/auth/trial-signup/route.ts | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-TRIAL-SIGNUP-004: Analytics write failure is non-blocking | app/api/auth/trial-signup/route.ts | - | not_run |
-| fix-remaining-agents-table-references | Static analysis — no customer routes query agents table | scripts/validate-system.ts | - | not_run |
-| fix-remaining-agents-table-references | Email check queries real_estate_agents | app/api/agents/check-email/route.ts | - | not_run |
 | fix-remaining-agents-table-references | Stripe portal session finds customer in real_estate_agents | app/api/stripe/portal-session/route.ts | - | not_run |
+| fix-remaining-agents-table-references | Email check queries real_estate_agents | app/api/agents/check-email/route.ts | - | not_run |
+| fix-remaining-agents-table-references | Static analysis — no customer routes query agents table | scripts/validate-system.ts | - | not_run |
+| fix-remaining-from-agents-refs-satisfaction-debug | Satisfaction ping updates real_estate_agents | - | - | not_run |
+| fix-remaining-from-agents-refs-satisfaction-debug | Satisfaction stats reads from real_estate_agents | - | - | not_run |
 | fix-remaining-from-agents-refs-satisfaction-debug | Grep sweep: zero from(agents) in product routes | - | - | not_run |
 | fix-remaining-from-agents-refs-satisfaction-debug | npm run build succeeds after fix | - | - | not_run |
-| fix-remaining-from-agents-refs-satisfaction-debug | Satisfaction stats reads from real_estate_agents | - | - | not_run |
-| fix-remaining-from-agents-refs-satisfaction-debug | Satisfaction ping updates real_estate_agents | - | - | not_run |
 | fix-resend-api-key-not-configured-in-vercel-email-deli | E2E-EMAIL-001: RESEND_API_KEY Configured in Vercel Production | tests/fix-resend-api-key-vercel-production.test.js | - | not_run |
-| fix-signup-plan-options-not-displayed | Signup plan grid renders on deployed site | product/lead-response/dashboard/app/signup/page.tsx | - | not_run |
 | fix-signup-plan-options-not-displayed | Signup plan selection and back navigation | product/lead-response/dashboard/app/signup/page.tsx | - | not_run |
-| fix-stripe-secret-key-not-set-in-vercel-production | Full Stripe checkout flow — human validation by Stojan | tests/manual/stripe-checkout-human.md | - | not_run |
+| fix-signup-plan-options-not-displayed | Signup plan grid renders on deployed site | product/lead-response/dashboard/app/signup/page.tsx | - | not_run |
 | fix-stripe-secret-key-not-set-in-vercel-production | Stripe checkout endpoint returns non-503 in production | tests/stripe-env-vars.test.js | - | not_run |
+| fix-stripe-secret-key-not-set-in-vercel-production | Full Stripe checkout flow — human validation by Stojan | tests/manual/stripe-checkout-human.md | - | not_run |
 | fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-004: subscription.deleted sets status=canceled | test/stripe-subscriptions.test.js | - | not_run |
 | fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-001: Subscriptions table exists in Supabase | test/stripe-subscriptions.test.js | - | not_run |
 | fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-002: checkout.session.completed writes to subscriptions | test/stripe-subscriptions.test.js | - | not_run |
 | fix-stripe-subscriptions-table | E2E-STRIPE-SUBS-003: Webhook idempotency on event replay | test/stripe-subscriptions.test.js | - | not_run |
 | fix-stripe-webhook-secret-not-set-in-vercel-production | Stripe webhook endpoint returns non-503 in production | tests/stripe-env-vars.test.js | - | not_run |
-| fix-subscription-attempts-table-does-not-exist-in-supa | checkout_sessions row persisted after checkout session created | - | - | not_run |
 | fix-subscription-attempts-table-does-not-exist-in-supa | Checkout API returns 200 — subscription_attempts replaced with checkout_sessions | - | - | not_run |
+| fix-subscription-attempts-table-does-not-exist-in-supa | checkout_sessions row persisted after checkout session created | - | - | not_run |
 | fix-sync-system-components-js-used-wrong-column-names- | E2E-INFRA-001: sync-system-components.js Runs Without Errors | tests/fix-sync-system-components-columns.test.js | - | not_run |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | /setup page accessible to authenticated users after signup | product/lead-response/dashboard/__tests__/setup-page-auth.test.ts | - | not_run |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | Pilot signup redirects to /setup | product/lead-response/dashboard/__tests__/pilot-signup-redirect.test.ts | - | not_run |
 | fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-003: Pilot signup API returns redirectTo /setup | test/trial-signup-redirect.test.ts | - | not_run |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-002: No /dashboard/onboarding in codebase | test/trial-signup-redirect.test.ts | - | not_run |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-001: Trial signup redirects to /setup | test/trial-signup-redirect.test.ts | - | not_run |
 | fix-trial-signup-redirects-to-nonexistent-onboarding-page | Trial signup redirects to /setup | product/lead-response/dashboard/__tests__/trial-signup-redirect.test.ts | - | not_run |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-006: Dashboard build passes after redirect fix | test/trial-signup-redirect.test.ts | - | not_run |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-005: /setup loads for authenticated user | test/trial-signup-redirect.test.ts | - | not_run |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | Pilot signup redirects to /setup | product/lead-response/dashboard/__tests__/pilot-signup-redirect.test.ts | - | not_run |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | /setup page accessible to authenticated users after signup | product/lead-response/dashboard/__tests__/setup-page-auth.test.ts | - | not_run |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-001: Trial signup redirects to /setup | test/trial-signup-redirect.test.ts | - | not_run |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-002: No /dashboard/onboarding in codebase | test/trial-signup-redirect.test.ts | - | not_run |
 | fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-004: Trial start API returns redirectTo /setup | test/trial-signup-redirect.test.ts | - | not_run |
-| implement-twilio-sms-integration | E2E-TWILIO-005: Market-Based From Number Selection | test/twilio-sms-integration.test.js | - | not_run |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-005: /setup loads for authenticated user | test/trial-signup-redirect.test.ts | - | not_run |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | E2E-REDIRECT-006: Dashboard build passes after redirect fix | test/trial-signup-redirect.test.ts | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-006: SMS Analytics & Cost Tracking | test/twilio-sms-integration.test.js | - | not_run |
-| implement-twilio-sms-integration | E2E-TWILIO-002: Invalid Phone Number Error Handling | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-001: Real SMS Delivery via Twilio | test/twilio-sms-integration.test.js | - | not_run |
-| implement-twilio-sms-integration | E2E-TWILIO-003: Message Truncation | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-007: Concurrent SMS Sends | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-003: Message Truncation | test/twilio-sms-integration.test.js | - | not_run |
 | implement-twilio-sms-integration | E2E-TWILIO-004: Status Update via Webhook Callback | test/twilio-sms-integration.test.js | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order | manual/e2e-landing-analytics.md | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-005: Market-Based From Number Selection | test/twilio-sms-integration.test.js | - | not_run |
+| implement-twilio-sms-integration | E2E-TWILIO-002: Invalid Phone Number Error Handling | test/twilio-sms-integration.test.js | - | not_run |
 | improve-landing-page-analytics-ga4 | E2E-ANA-1: GA4 Base Load — page_view Event Fires | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-2: CTA Click Tracking — Hero Button fires cta_click event | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-analytics-ga4 | E2E-ANA-5: Scroll depth event fires at 90% of page height | manual/e2e-landing-analytics.md | - | not_run |
 | improve-landing-page-analytics-ga4 | E2E-ANA-6: Analytics does not degrade page load time below 2s | manual/e2e-landing-analytics.md | - | not_run |
-| improve-landing-page-pricing-4-tiers | /pricing page feature comparison table | - | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-5: Scroll depth event fires at 90% of page height | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-analytics-ga4 | E2E-ANA-2: CTA Click Tracking — Hero Button fires cta_click event | manual/e2e-landing-analytics.md | - | not_run |
+| improve-landing-page-pricing-4-tiers | Pricing section shows correct PMF.md prices | - | - | not_run |
 | improve-landing-page-pricing-4-tiers | Landing page shows all 4 pricing tiers | - | - | not_run |
+| improve-landing-page-pricing-4-tiers | /pricing page feature comparison table | - | - | not_run |
 | improve-landing-page-pricing-4-tiers | Pricing section mobile responsive at 375px | - | - | not_run |
 | improve-landing-page-pricing-4-tiers | Pro tier highlighted as Most Popular | - | - | not_run |
 | improve-landing-page-pricing-4-tiers | Pricing CTA buttons route correctly | - | - | not_run |
-| improve-landing-page-pricing-4-tiers | Pricing section shows correct PMF.md prices | - | - | not_run |
-| pm-action-items-dashboard | Orchestrator Reads Pending Action Items | - | - | not_run |
 | pm-action-items-dashboard | PM Inserts Action Item to Dashboard | - | - | not_run |
-| pm-action-items-dashboard | Action Items Sorted by Priority | - | - | not_run |
-| pm-action-items-dashboard | Stojan Responds to Action Item via Telegram | - | - | not_run |
 | pm-action-items-dashboard | Action Item Appears on Dashboard | - | - | not_run |
+| pm-action-items-dashboard | Stojan Responds to Action Item via Telegram | - | - | not_run |
+| pm-action-items-dashboard | Action Items Sorted by Priority | - | - | not_run |
+| pm-action-items-dashboard | Orchestrator Reads Pending Action Items | - | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-1 | E2E-SMS-001: FUB webhook → SMS sent → delivery tracked | test/e2e/sms-delivery.test.ts | - | not_run |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
@@ -284,48 +280,48 @@
 | UC-AUTH-FIX-001 | UC-AUTH-FIX-001: Authentication Flow | tests/e2e/auth-flow.test.ts | - | not_run |
 | UC-BILLING-FIX-001 | UC-BILLING-FIX-001: Billing Integration Error Fix | tests/e2e/billing-integration-fix.test.ts | - | not_run |
 | UC-DEPLOY-LANDING-001 | UC-DEPLOY-LANDING-001: Landing Page Smoke Test | tests/e2e/landing-page-smoke.test.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | Pilot signup form events fire in correct sequence | e2e/analytics/form-events.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | UTM parameters captured in GA4 session | e2e/analytics/utm-capture.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | Scroll depth events fire at 25%, 50%, 75%, 90% | e2e/analytics/scroll-depth.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | No JS errors when GA4 env var is missing | e2e/analytics/graceful-missing-env.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | Pilot signup form events fire in correct sequence | e2e/analytics/form-events.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | [Human] Stojan validates CTA data in GA4 Events report | e2e/analytics/human-validation-ga4.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | GA4 script loads on landing page without blocking render | e2e/analytics/ga4-script-load.spec.ts | - | not_run |
-| UC-LANDING-ANALYTICS-GA4-001 | Pricing CTA clicks fire cta_click with cta_location=pricing | e2e/analytics/pricing-cta-click.spec.ts | - | not_run |
 | UC-LANDING-ANALYTICS-GA4-001 | Hero CTA click fires cta_click event with correct params | e2e/analytics/hero-cta-click.spec.ts | - | not_run |
-| uc-landing-cta-consolidation-001 | Primary CTA Navigation — Start Free Trial Flow | - | - | not_run |
-| uc-landing-cta-consolidation-001 | GA4 Tracking — Consolidated CTA Events | - | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | Scroll depth events fire at 25%, 50%, 75%, 90% | e2e/analytics/scroll-depth.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | Pricing CTA clicks fire cta_click with cta_location=pricing | e2e/analytics/pricing-cta-click.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | No JS errors when GA4 env var is missing | e2e/analytics/graceful-missing-env.spec.ts | - | not_run |
+| UC-LANDING-ANALYTICS-GA4-001 | GA4 script loads on landing page without blocking render | e2e/analytics/ga4-script-load.spec.ts | - | not_run |
 | uc-landing-cta-consolidation-001 | Secondary CTA Navigation — Pilot Program Flow | - | - | not_run |
+| uc-landing-cta-consolidation-001 | GA4 Tracking — Consolidated CTA Events | - | - | not_run |
+| uc-landing-cta-consolidation-001 | Primary CTA Navigation — Start Free Trial Flow | - | - | not_run |
 | uc-landing-cta-consolidation-001 | Hero CTA Consolidation — Single Primary Action | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Navigation Smooth Scroll | tests/e2e/landing-nav-scroll.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Mobile Navigation | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Responsive Design | - | - | not_run |
-| UC-LANDING-MARKETING-001 | FAQ Accordion | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Pricing Toggle | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Pricing CTA with Plan Selection | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Hero CTA Navigation | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Keyboard Navigation Accessibility | tests/e2e/landing-keyboard-nav.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Smooth Scroll Navigation | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Landing Page Load | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Analytics Tracking | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Page Load Performance | tests/e2e/landing-page-load.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Hero CTA Navigation | tests/e2e/landing-hero-cta.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | CTA Click Flow | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | FAQ Accordion | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Accessibility | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Navigation Scroll | e2e/landing-page.spec.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Analytics Events | - | - | not_run |
-| UC-LANDING-MARKETING-001 | Pricing Tier Selection | tests/e2e/landing-pricing-cta.test.ts | - | not_run |
-| UC-LANDING-MARKETING-001 | Mobile Responsiveness | tests/e2e/landing-mobile-responsive.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | SEO Meta Tags | tests/e2e/landing-seo-meta.test.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Mobile Responsive | e2e/landing-page.spec.ts | - | not_run |
 | UC-LANDING-MARKETING-001 | Page Load & SEO | - | - | not_run |
-| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
-| UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
-| UC-REVENUE-RECOVERY-001 | E2E-REV-003: SMS Value Delivery | tests/e2e/sms-value-delivery.test.ts | - | not_run |
-| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing CTA with Plan Selection | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Smooth Scroll Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | FAQ Accordion | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Responsive Design | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Navigation | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Events | - | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Scroll | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Page Load Performance | tests/e2e/landing-page-load.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Analytics Tracking | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Landing Page Load | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Hero CTA Navigation | tests/e2e/landing-hero-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | CTA Click Flow | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Tier Selection | tests/e2e/landing-pricing-cta.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Mobile Responsiveness | tests/e2e/landing-mobile-responsive.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Accessibility | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Navigation Smooth Scroll | tests/e2e/landing-nav-scroll.test.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Pricing Toggle | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | FAQ Accordion | e2e/landing-page.spec.ts | - | not_run |
+| UC-LANDING-MARKETING-001 | Keyboard Navigation Accessibility | tests/e2e/landing-keyboard-nav.test.ts | - | not_run |
 | UC-REVENUE-RECOVERY-001 | E2E-REV-001: End-to-End Revenue Funnel | tests/e2e/revenue-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | Pilot Agent Onboarding | - | - | not_run |
 | UC-REVENUE-RECOVERY-001 | SMS Value Delivery | - | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-002: Pilot Agent Onboarding | tests/e2e/pilot-onboarding.test.ts | - | not_run |
 | UC-REVENUE-RECOVERY-001 | E2E-REVENUE-004: End-to-End Revenue Funnel | tests/e2e/revenue-recovery-full-funnel.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | E2E-REV-003: SMS Value Delivery | tests/e2e/sms-value-delivery.test.ts | - | not_run |
+| UC-REVENUE-RECOVERY-001 | End-to-End Revenue Funnel | - | - | not_run |
 
 ## feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
 
@@ -1830,16 +1826,13 @@
 
 ## feat-post-signup-dashboard-onboarding-redirect — Post-Signup Redirect to /dashboard/onboarding Wizard
 
-### Un-onboarded user login redirects to /dashboard/onboarding (not /setup)
+### TC-SIGNUP-AUTH-002: Pilot Signup → Onboarding Wizard Renders
 
+- **File:** `product/lead-response/dashboard/tests/signup-auth-token.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-[
-  "router.push target is /dashboard/onboarding",
-  "Page at /dashboard/onboarding renders wizard",
-  "No redirect to /setup occurs"
-]
+"Response body contains token and user.id; wizard mounts without redirect to /login"
 ```
 
 ### TC-SIGNUP-AUTH-001: Trial Signup → Onboarding Wizard Renders
@@ -1849,15 +1842,6 @@
 - **Assertions:**
 ```json
 "Response body contains token (string) and user.id; localStorage.leadflow_token set; localStorage.leadflow_user set; /dashboard/onboarding wizard mounts without redirect"
-```
-
-### TC-SIGNUP-AUTH-002: Pilot Signup → Onboarding Wizard Renders
-
-- **File:** `product/lead-response/dashboard/tests/signup-auth-token.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Response body contains token and user.id; wizard mounts without redirect to /login"
 ```
 
 ### TC-SIGNUP-AUTH-003: /api/auth/me Returns User from Cookie
@@ -1887,6 +1871,18 @@
 "User lands on /login; no wizard content rendered"
 ```
 
+### Un-onboarded user login redirects to /dashboard/onboarding (not /setup)
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "router.push target is /dashboard/onboarding",
+  "Page at /dashboard/onboarding renders wizard",
+  "No redirect to /setup occurs"
+]
+```
+
 ### Onboarded user login still redirects to /dashboard (regression check)
 
 - **Result:** not_run
@@ -1901,6 +1897,15 @@
 
 
 ## feat-repository-structure-convention — Repository Structure Convention for LeadFlow
+
+### Config files exist in config/ directory
+
+- **File:** `tests/e2e/repo-structure.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"config/strategy-config.json exists\",\"config/swarm-config.json exists\",\"config/budget-tracker.json exists\",\"grep for strategy-config.json without config/ prefix returns empty\",\"grep for budget-tracker.json without config/ prefix returns empty\"]"
+```
 
 ### Test directories consolidated into tests/{e2e,integration,unit}
 
@@ -1929,28 +1934,8 @@
 "[\"PROJECT_STRUCTURE.md exists at repo root\",\"PROJECT_STRUCTURE.md contains keep-at-root exceptions section\",\"CLAUDE.md Key Directories section references config/, tests/e2e/, docs/prd/\"]"
 ```
 
-### Config files exist in config/ directory
-
-- **File:** `tests/e2e/repo-structure.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"config/strategy-config.json exists\",\"config/swarm-config.json exists\",\"config/budget-tracker.json exists\",\"grep for strategy-config.json without config/ prefix returns empty\",\"grep for budget-tracker.json without config/ prefix returns empty\"]"
-```
-
 
 ## feat-self-serve-stripe-checkout — Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow
-
-### Webhook rejects invalid Stripe signature
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Invalid signature returns 400",
-  "DB not updated on invalid signature"
-]
-```
 
 ### Webhook is idempotent on repeated delivery
 
@@ -1961,31 +1946,6 @@
   "Second webhook delivery does not error",
   "No duplicate records created",
   "plan_tier correct after both deliveries"
-]
-```
-
-### Confirmation email received after successful upgrade
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Email delivered to agent inbox",
-  "Subject contains plan name",
-  "Body contains price",
-  "Body contains next billing date",
-  "Body contains support email"
-]
-```
-
-### Upgrade CTA visible for trial/pilot agents
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Upgrade CTA visible for trial agents",
-  "Upgrade CTA hidden for paid agents"
 ]
 ```
 
@@ -2016,6 +1976,20 @@
 ]
 ```
 
+### Confirmation email received after successful upgrade
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Email delivered to agent inbox",
+  "Subject contains plan name",
+  "Body contains price",
+  "Body contains next billing date",
+  "Body contains support email"
+]
+```
+
 ### Cancel checkout shows no-charge message
 
 - **Result:** not_run
@@ -2028,8 +2002,38 @@
 ]
 ```
 
+### Webhook rejects invalid Stripe signature
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Invalid signature returns 400",
+  "DB not updated on invalid signature"
+]
+```
+
+### Upgrade CTA visible for trial/pilot agents
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Upgrade CTA visible for trial agents",
+  "Upgrade CTA hidden for paid agents"
+]
+```
+
 
 ## feat-session-analytics-pilot — Session Analytics — Pilot Agent Usage Tracking
+
+### Session logging failure does not break login
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Login succeeds despite session logging failure\",\"Dashboard renders normally\",\"Error is logged server-side only, not surfaced to user\"]"
+```
 
 ### Internal pilot-usage endpoint returns engagement data
 
@@ -2037,6 +2041,14 @@
 - **Assertions:**
 ```json
 "[\"HTTP 200 response\",\"pilots array present and non-empty\",\"each entry has agentId, name, email, lastLogin, sessionsLast7d, topPage, inactiveHours\",\"generatedAt is ISO timestamp\"]"
+```
+
+### Pilot agent login creates a session record
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"agent_sessions row exists after login\",\"session_start is within last 60 seconds\",\"last_active_at is populated\"]"
 ```
 
 ### Dashboard navigation creates page view records
@@ -2055,22 +2067,6 @@
 "[\"Telegram message sent on first check\",\"inactivity_alerts row inserted\",\"No duplicate alert within 24h window\"]"
 ```
 
-### Session logging failure does not break login
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Login succeeds despite session logging failure\",\"Dashboard renders normally\",\"Error is logged server-side only, not surfaced to user\"]"
-```
-
-### Pilot agent login creates a session record
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"agent_sessions row exists after login\",\"session_start is within last 60 seconds\",\"last_active_at is populated\"]"
-```
-
 
 ## feat-sms-analytics-dashboard — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion
 
@@ -2081,28 +2077,6 @@
 ```json
 [
   "All 3 cards show dash (not 0%) when no data exists"
-]
-```
-
-### Agent data isolation enforced
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Each agent sees only their own metrics",
-  "Unauthenticated requests return 401"
-]
-```
-
-### SMS Delivery Rate displays correctly
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Delivery Rate card shows correct percentage for each time window",
-  "Value updates without page reload on time window change"
 ]
 ```
 
@@ -2117,6 +2091,17 @@
 ]
 ```
 
+### Agent data isolation enforced
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Each agent sees only their own metrics",
+  "Unauthenticated requests return 401"
+]
+```
+
 ### Booking Conversion Rate displays correctly
 
 - **Result:** not_run
@@ -2128,8 +2113,27 @@
 ]
 ```
 
+### SMS Delivery Rate displays correctly
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Delivery Rate card shows correct percentage for each time window",
+  "Value updates without page reload on time window change"
+]
+```
+
 
 ## feat-start-free-trial-cta — Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment
+
+### Existing pilot application form still accessible at /pilot
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"GET /pilot returns 200\",\"Form contains name/email/phone/brokerage fields\",\"Submission records source=pilot_application\"]"
+```
 
 ### Trial badge with days remaining visible in dashboard nav
 
@@ -2137,22 +2141,6 @@
 - **Assertions:**
 ```json
 "[\"Trial badge element in navigation\",\"Badge shows days remaining\",\"Badge links to /settings/billing\"]"
-```
-
-### Start Free Trial CTA present in hero, features, and pricing sections
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"CTA in hero section\",\"CTA in features section\",\"CTA in pricing section\"]"
-```
-
-### Start Free Trial CTA visible above fold on desktop and mobile
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Start Free Trial button in viewport at 1280px\",\"Start Free Trial button in viewport at 375px\"]"
 ```
 
 ### Trial signup requires only email and password — no credit card
@@ -2163,12 +2151,12 @@
 "[\"Email input present\",\"Password input present\",\"Credit card field NOT present\",\"Plan selector NOT present\",\"Form submits without error\"]"
 ```
 
-### Trial account provisioned with trial plan and redirects within 5 seconds
+### Start Free Trial CTA visible above fold on desktop and mobile
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Redirect within 5000ms\",\"agents.plan_tier === trial\",\"agents.trial_ends_at ~now+30days\",\"agents.source === trial_cta\"]"
+"[\"Start Free Trial button in viewport at 1280px\",\"Start Free Trial button in viewport at 375px\"]"
 ```
 
 ### Duplicate email on trial signup shows friendly error with sign-in link
@@ -2179,25 +2167,24 @@
 "[\"Inline error displayed\",\"Error references existing account\",\"Link to login page in error\",\"No duplicate agents row\"]"
 ```
 
-### Existing pilot application form still accessible at /pilot
+### Start Free Trial CTA present in hero, features, and pricing sections
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"GET /pilot returns 200\",\"Form contains name/email/phone/brokerage fields\",\"Submission records source=pilot_application\"]"
+"[\"CTA in hero section\",\"CTA in features section\",\"CTA in pricing section\"]"
+```
+
+### Trial account provisioned with trial plan and redirects within 5 seconds
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Redirect within 5000ms\",\"agents.plan_tier === trial\",\"agents.trial_ends_at ~now+30days\",\"agents.source === trial_cta\"]"
 ```
 
 
 ## feat-stripe-checkout-production-e2e — Stripe Checkout Production Verification — First Real Transaction Test
-
-### stripe-db-update-after-webhook
-
-- **File:** `tests/integrated/stripe-production-smoke.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"plan_tier matches purchased plan (starter/professional/enterprise)\",\"stripe_customer_id starts with cus_\",\"stripe_subscription_id starts with sub_\",\"status = active\",\"mrr > 0\"]"
-```
 
 ### stripe-deployment-smoke-test
 
@@ -2224,6 +2211,15 @@
 - **Assertions:**
 ```json
 "[\"HTTP 200\",\"Response url starts with https://billing.stripe.com/\",\"Portal URL loads without error\"]"
+```
+
+### stripe-db-update-after-webhook
+
+- **File:** `tests/integrated/stripe-production-smoke.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"plan_tier matches purchased plan (starter/professional/enterprise)\",\"stripe_customer_id starts with cus_\",\"stripe_subscription_id starts with sub_\",\"status = active\",\"mrr > 0\"]"
 ```
 
 ### stripe-webhook-checkout-completed
@@ -2256,13 +2252,13 @@
 
 ## feat-utm-capture-marketing-attribution — UTM Parameter Capture & Marketing Attribution
 
-### T-3: First-Touch Attribution Preserved
+### T-4: Attribution Table in Dashboard
 
 - **File:** `tests/e2e/utm-attribution.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"utm_source = email\",\"utm_campaign = wave1\",\"First-touch not overwritten\"]"
+"[\"Attribution section renders\",\"All required columns present\",\"Direct row for NULL UTM agents\",\"Test agents visible with correct attribution\"]"
 ```
 
 ### T-2: Direct Visit — Clean NULL
@@ -2283,13 +2279,13 @@
 "[\"utm_source = google\",\"utm_medium = cpc\",\"utm_campaign = pilot-q1\"]"
 ```
 
-### T-4: Attribution Table in Dashboard
+### T-3: First-Touch Attribution Preserved
 
 - **File:** `tests/e2e/utm-attribution.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Attribution section renders\",\"All required columns present\",\"Direct row for NULL UTM agents\",\"Test agents visible with correct attribution\"]"
+"[\"utm_source = email\",\"utm_campaign = wave1\",\"First-touch not overwritten\"]"
 ```
 
 
@@ -2313,14 +2309,6 @@
 
 ## fix-api-health-endpoint-wrong-table — Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents)
 
-### Health endpoint Supabase connectivity check uses correct table
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"HTTP 200 returned\",\"status field equals ok\",\"supabase_connectivity.ok is true\",\"No agents table reference in route.ts\"]"
-```
-
 ### Health endpoint returns OK with correct Supabase connectivity
 
 - **Result:** not_run
@@ -2329,16 +2317,16 @@
 "[\"GET /api/health returns HTTP 200\",\"Response body has status = ok\",\"checks.supabase_connectivity.ok = true\",\"checks.supabase_connectivity.detail = connected\",\"Source file does not reference from(agents) for connectivity check\"]"
 ```
 
+### Health endpoint Supabase connectivity check uses correct table
 
-## fix-api-lead-capture-endpoint-returns-db-error-in-prod — /api/lead-capture endpoint returns DB error in production
-
-### pilot-signup-no-regression
-
-- **Result:** pass
+- **Result:** not_run
 - **Assertions:**
 ```json
-"[\"HTTP 201\",\"response.success === true\",\"row created in pilot_signups\"]"
+"[\"HTTP 200 returned\",\"status field equals ok\",\"supabase_connectivity.ok is true\",\"No agents table reference in route.ts\"]"
 ```
+
+
+## fix-api-lead-capture-endpoint-returns-db-error-in-prod — /api/lead-capture endpoint returns DB error in production
 
 ### lead-capture-prod-invalid-email
 
@@ -2346,14 +2334,6 @@
 - **Assertions:**
 ```json
 "[\"HTTP 400\",\"response.success === false\"]"
-```
-
-### lead-capture-prod-duplicate-email
-
-- **Result:** pass
-- **Assertions:**
-```json
-"[\"Both POSTs return HTTP 200 success: true\",\"pilot_signups count for email === 1\"]"
 ```
 
 ### lead-capture-prod-valid-email
@@ -2364,6 +2344,14 @@
 "[\"HTTP 200\",\"response.success === true\",\"pilot_signups row exists with source=lead_magnet and status=nurture\"]"
 ```
 
+### lead-capture-prod-duplicate-email
+
+- **Result:** pass
+- **Assertions:**
+```json
+"[\"Both POSTs return HTTP 200 success: true\",\"pilot_signups count for email === 1\"]"
+```
+
 ### health-check-supabase-connectivity
 
 - **Result:** pass
@@ -2372,8 +2360,25 @@
 "[\"HTTP 200\",\"Supabase health indicator is ok/healthy\"]"
 ```
 
+### pilot-signup-no-regression
+
+- **Result:** pass
+- **Assertions:**
+```json
+"[\"HTTP 201\",\"response.success === true\",\"row created in pilot_signups\"]"
+```
+
 
 ## fix-db-migration-incomplete-email-verification-tokens- — DB migration incomplete: email_verification_tokens table does not exist
+
+### DB-MIGRATION-EVT-001: email_verification_tokens table exists
+
+- **File:** `test/db-migration-email-verification.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"table_exists = 1; no query error"
+```
 
 ### DB-MIGRATION-EVT-003: resend-verification creates token row
 
@@ -2393,17 +2398,61 @@
 "Both indexes present; no query error"
 ```
 
-### DB-MIGRATION-EVT-001: email_verification_tokens table exists
-
-- **File:** `test/db-migration-email-verification.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"table_exists = 1; no query error"
-```
-
 
 ## fix-deployed-pages-not-registered-in-system- — Auto-Sync Deployed Vercel Pages to System Components
+
+### E2E-3: URL Accuracy Verification
+
+- **File:** `tests/e2e/url-accuracy.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "url": "https://leadflow-ai-five.vercel.app",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://leadflow-ai-five.vercel.app/dashboard",
+    "type": "http",
+    "expect": 200
+  },
+  {
+    "url": "https://fub-inbound-webhook.vercel.app/health",
+    "type": "http",
+    "expect": 200
+  }
+]
+```
+
+### E2E-2: Manual Sync API
+
+- **File:** `tests/e2e/manual-sync-api.test.ts`
+- **Result:** pass
+- **Last run:** 2026-03-07T01:01:17.443Z
+- **Assertions:**
+```json
+[
+  {
+    "type": "api",
+    "expect": 200,
+    "endpoint": "POST /api/admin/sync-deployed-pages"
+  },
+  {
+    "path": "success",
+    "type": "response",
+    "expect": "true"
+  },
+  {
+    "type": "database",
+    "query": "status='live' AND status_emoji='🟢'",
+    "table": "system_components",
+    "expect": "count >= 4"
+  }
+]
+```
 
 ### E2E-1: Auto-Sync on Heartbeat
 
@@ -2440,115 +2489,6 @@
 ]
 ```
 
-### E2E-2: Manual Sync API
-
-- **File:** `tests/e2e/manual-sync-api.test.ts`
-- **Result:** pass
-- **Last run:** 2026-03-07T01:01:17.443Z
-- **Assertions:**
-```json
-[
-  {
-    "type": "api",
-    "expect": 200,
-    "endpoint": "POST /api/admin/sync-deployed-pages"
-  },
-  {
-    "path": "success",
-    "type": "response",
-    "expect": "true"
-  },
-  {
-    "type": "database",
-    "query": "status='live' AND status_emoji='🟢'",
-    "table": "system_components",
-    "expect": "count >= 4"
-  }
-]
-```
-
-### E2E-3: URL Accuracy Verification
-
-- **File:** `tests/e2e/url-accuracy.test.ts`
-- **Result:** pass
-- **Last run:** 2026-03-07T01:01:17.443Z
-- **Assertions:**
-```json
-[
-  {
-    "url": "https://leadflow-ai-five.vercel.app",
-    "type": "http",
-    "expect": 200
-  },
-  {
-    "url": "https://leadflow-ai-five.vercel.app/dashboard",
-    "type": "http",
-    "expect": 200
-  },
-  {
-    "url": "https://fub-inbound-webhook.vercel.app/health",
-    "type": "http",
-    "expect": 200
-  }
-]
-```
-
-
-## fix-lead-magnet-form-layout — Fix Lead Magnet Form Layout Issues
-
-### Mobile Viewport Form Layout
-
-- **File:** `tests/fix-lead-magnet-form-layout-mobile.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Name input field is visible without cutoff",
-  "Buttons are within green container bounds",
-  "No horizontal scroll",
-  "Text can be entered and is fully visible"
-]
-```
-
-### Tablet Viewport Form Layout
-
-- **File:** `tests/fix-lead-magnet-form-layout-tablet.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Name input field visible and readable",
-  "Buttons within container",
-  "Form properly centered"
-]
-```
-
-### Form Submission Complete Flow
-
-- **File:** `tests/fix-lead-magnet-form-layout-e2e.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Name field accepts input without cutoff",
-  "Success message displays after submission",
-  "Record created in pilot_signups table"
-]
-```
-
-### Desktop Viewport Form Layout
-
-- **File:** `tests/fix-lead-magnet-form-layout-desktop.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Form layout optimal on wide viewport",
-  "Input field accommodates long names",
-  "Buttons properly aligned"
-]
-```
-
 
 ## fix-madzunkov-hotmail-com-is-locked-out-email-verified — madzunkov@hotmail.com is locked out — email_verified=false, no way to verify
 
@@ -2582,13 +2522,13 @@
 "URL changes to /forgot-password; email input form visible; no browser alert dialog"
 ```
 
-### FP-002: Forgot password dispatches reset email for valid account
+### FP-003: Non-existent email shows same success message (anti-enumeration)
 
 - **File:** `test/forgot-password.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Success message displayed; reset email received; link in email is valid"
+"Identical success message for both registered and unregistered emails"
 ```
 
 ### FP-005: Reset token is single-use and expires after 1 hour
@@ -2600,13 +2540,13 @@
 "Reused or expired token shows error; no password change possible"
 ```
 
-### FP-003: Non-existent email shows same success message (anti-enumeration)
+### FP-002: Forgot password dispatches reset email for valid account
 
 - **File:** `test/forgot-password.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Identical success message for both registered and unregistered emails"
+"Success message displayed; reset email received; link in email is valid"
 ```
 
 ### FP-004: Full password reset flow works end-to-end
@@ -2640,15 +2580,6 @@
 
 ## fix-no-sessionstorage-write-on-landing-page-load-utm-l — No sessionStorage write on landing page load — UTM lost for multi-page journeys
 
-### No UTM params in URL does not write sessionStorage
-
-- **File:** `product/lead-response/dashboard/tests/utm-capture-tracker.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"sessionStorage.getItem(\\\"leadflow_utm\\\") === null\"]"
-```
-
 ### Multi-page UTM attribution persists through /onboarding submission
 
 - **File:** `product/lead-response/dashboard/tests/utm-capture-tracker.test.ts`
@@ -2676,26 +2607,17 @@
 "[\"sessionStorage.leadflow_utm.utm_source remains \\\"google\\\" after loading page with utm_source=facebook\"]"
 ```
 
+### No UTM params in URL does not write sessionStorage
+
+- **File:** `product/lead-response/dashboard/tests/utm-capture-tracker.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"sessionStorage.getItem(\\\"leadflow_utm\\\") === null\"]"
+```
+
 
 ## fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
-
-### E2E-ONBOARD-003: Health Check
-
-- **File:** `test/health-endpoint.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Status 200; Database connectivity confirmed; Queries real_estate_agents table successfully"
-```
-
-### E2E-ONBOARD-004: End-to-End User Journey
-
-- **File:** `test/e2e-user-journey.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Complete flow works without errors; Dashboard displays user data from real_estate_agents"
-```
 
 ### E2E-ONBOARD-002: Login with Migrated Table
 
@@ -2715,6 +2637,15 @@
 "No 500 errors; Agent created in real_estate_agents table; Response includes agent data (no password_hash)"
 ```
 
+### E2E-ONBOARD-005: Billing Portal Access
+
+- **File:** `test/billing-portal.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Billing portal loads; Subscription details displayed; Queries real_estate_agents successfully"
+```
+
 ### E2E-ONBOARD-006: Stripe Webhook Processing
 
 - **File:** `test/stripe-webhook.test.ts`
@@ -2724,13 +2655,22 @@
 "Webhook processes successfully; real_estate_agents table updated; No 500 errors"
 ```
 
-### E2E-ONBOARD-005: Billing Portal Access
+### E2E-ONBOARD-004: End-to-End User Journey
 
-- **File:** `test/billing-portal.test.ts`
+- **File:** `test/e2e-user-journey.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Billing portal loads; Subscription details displayed; Queries real_estate_agents successfully"
+"Complete flow works without errors; Dashboard displays user data from real_estate_agents"
+```
+
+### E2E-ONBOARD-003: Health Check
+
+- **File:** `test/health-endpoint.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Status 200; Database connectivity confirmed; Queries real_estate_agents table successfully"
 ```
 
 
@@ -2775,15 +2715,16 @@
 
 ## fix-remaining-agents-table-references — Fix remaining from(agents) table references — 15 routes still query wrong table
 
-### Static analysis — no customer routes query agents table
+### Stripe portal session finds customer in real_estate_agents
 
-- **File:** `scripts/validate-system.ts`
+- **File:** `app/api/stripe/portal-session/route.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Zero from(agents) occurrences in auth/profile/webhook/stripe/onboarding routes",
-  "Only orchestrator-specific code (if any) references agents table with explicit comment"
+  "Authenticated request with valid JWT returns HTTP 200",
+  "Response contains { url: \"https://billing.stripe.com/...\" }",
+  "Not a 404 (agent not found) or 500 error"
 ]
 ```
 
@@ -2800,21 +2741,41 @@
 ]
 ```
 
-### Stripe portal session finds customer in real_estate_agents
+### Static analysis — no customer routes query agents table
 
-- **File:** `app/api/stripe/portal-session/route.ts`
+- **File:** `scripts/validate-system.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Authenticated request with valid JWT returns HTTP 200",
-  "Response contains { url: \"https://billing.stripe.com/...\" }",
-  "Not a 404 (agent not found) or 500 error"
+  "Zero from(agents) occurrences in auth/profile/webhook/stripe/onboarding routes",
+  "Only orchestrator-specific code (if any) references agents table with explicit comment"
 ]
 ```
 
 
 ## fix-remaining-from-agents-refs-satisfaction-debug — Fix remaining from(agents) references in satisfaction and debug routes
+
+### Satisfaction ping updates real_estate_agents
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "200 OK",
+  "record updated"
+]
+```
+
+### Satisfaction stats reads from real_estate_agents
+
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "stats from real_estate_agents"
+]
+```
 
 ### Grep sweep: zero from(agents) in product routes
 
@@ -2833,27 +2794,6 @@
 ```json
 [
   "exit 0"
-]
-```
-
-### Satisfaction stats reads from real_estate_agents
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "stats from real_estate_agents"
-]
-```
-
-### Satisfaction ping updates real_estate_agents
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "200 OK",
-  "record updated"
 ]
 ```
 
@@ -2877,6 +2817,18 @@
 
 ## fix-signup-plan-options-not-displayed — Signup page shows Choose Your Plan but no plan options are listed
 
+### Signup plan selection and back navigation
+
+- **File:** `product/lead-response/dashboard/app/signup/page.tsx`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Plan click advances to details form",
+  "Back button returns to plan grid"
+]
+```
+
 ### Signup plan grid renders on deployed site
 
 - **File:** `product/lead-response/dashboard/app/signup/page.tsx`
@@ -2891,20 +2843,21 @@
 ]
 ```
 
-### Signup plan selection and back navigation
 
-- **File:** `product/lead-response/dashboard/app/signup/page.tsx`
+## fix-stripe-secret-key-not-set-in-vercel-production — STRIPE_SECRET_KEY not set in Vercel production
+
+### Stripe checkout endpoint returns non-503 in production
+
+- **File:** `tests/stripe-env-vars.test.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Plan click advances to details form",
-  "Back button returns to plan grid"
+  "HTTP status is not 503",
+  "Response body does not contain Stripe not configured",
+  "Response indicates Stripe is initialized"
 ]
 ```
-
-
-## fix-stripe-secret-key-not-set-in-vercel-production — STRIPE_SECRET_KEY not set in Vercel production
 
 ### Full Stripe checkout flow — human validation by Stojan
 
@@ -2917,19 +2870,6 @@
   "Test card 4242 4242 4242 4242 is accepted",
   "Checkout completes without error",
   "Agent plan_tier in Supabase agents table reflects the purchased plan"
-]
-```
-
-### Stripe checkout endpoint returns non-503 in production
-
-- **File:** `tests/stripe-env-vars.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "HTTP status is not 503",
-  "Response body does not contain Stripe not configured",
-  "Response indicates Stripe is initialized"
 ]
 ```
 
@@ -2991,20 +2931,20 @@
 
 ## fix-subscription-attempts-table-does-not-exist-in-supa — subscription_attempts table does not exist in Supabase
 
-### checkout_sessions row persisted after checkout session created
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Row exists in checkout_sessions with user_id matching agentId\",\"tier=starter (extracted from starter_monthly)\",\"interval=month\",\"status=pending\",\"stripe_session_id matches returned sessionId\"]"
-```
-
 ### Checkout API returns 200 — subscription_attempts replaced with checkout_sessions
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 "[\"Response status is 200\",\"Response body has sessionId starting with cs_\",\"Response body has url starting with https://checkout.stripe.com/\",\"No PGRST205 error in server logs\"]"
+```
+
+### checkout_sessions row persisted after checkout session created
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Row exists in checkout_sessions with user_id matching agentId\",\"tier=starter (extracted from starter_monthly)\",\"interval=month\",\"status=pending\",\"stripe_session_id matches returned sessionId\"]"
 ```
 
 
@@ -3028,16 +2968,25 @@
 
 ## fix-trial-signup-redirects-to-nonexistent-onboarding-page — Fix trial signup redirect to non-existent /dashboard/onboarding page
 
-### /setup page accessible to authenticated users after signup
+### E2E-REDIRECT-003: Pilot signup API returns redirectTo /setup
 
-- **File:** `product/lead-response/dashboard/__tests__/setup-page-auth.test.ts`
+- **File:** `test/trial-signup-redirect.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Response JSON redirectTo equals /setup; no reference to /dashboard/onboarding"
+```
+
+### Trial signup redirects to /setup
+
+- **File:** `product/lead-response/dashboard/__tests__/trial-signup-redirect.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "GET /setup with valid auth token returns 200",
-  "/onboarding is NOT in AUTH_ROUTES in middleware.ts (grep check)",
-  "No /dashboard/onboarding anywhere in codebase redirects (grep check)"
+  "Response status 200",
+  "response.body.redirectTo === /setup",
+  "No reference to /dashboard/onboarding in response"
 ]
 ```
 
@@ -3054,22 +3003,17 @@
 ]
 ```
 
-### E2E-REDIRECT-003: Pilot signup API returns redirectTo /setup
+### /setup page accessible to authenticated users after signup
 
-- **File:** `test/trial-signup-redirect.test.ts`
+- **File:** `product/lead-response/dashboard/__tests__/setup-page-auth.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Response JSON redirectTo equals /setup; no reference to /dashboard/onboarding"
-```
-
-### E2E-REDIRECT-002: No /dashboard/onboarding in codebase
-
-- **File:** `test/trial-signup-redirect.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"grep returns zero matches for /dashboard/onboarding"
+[
+  "GET /setup with valid auth token returns 200",
+  "/onboarding is NOT in AUTH_ROUTES in middleware.ts (grep check)",
+  "No /dashboard/onboarding anywhere in codebase redirects (grep check)"
+]
 ```
 
 ### E2E-REDIRECT-001: Trial signup redirects to /setup
@@ -3081,35 +3025,13 @@
 "URL is /setup; HTTP 200; setup wizard UI visible; no 404 page"
 ```
 
-### Trial signup redirects to /setup
-
-- **File:** `product/lead-response/dashboard/__tests__/trial-signup-redirect.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Response status 200",
-  "response.body.redirectTo === /setup",
-  "No reference to /dashboard/onboarding in response"
-]
-```
-
-### E2E-REDIRECT-006: Dashboard build passes after redirect fix
+### E2E-REDIRECT-002: No /dashboard/onboarding in codebase
 
 - **File:** `test/trial-signup-redirect.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Build exits 0; no TypeScript compilation errors"
-```
-
-### E2E-REDIRECT-005: /setup loads for authenticated user
-
-- **File:** `test/trial-signup-redirect.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"HTTP 200; setup/onboarding UI rendered; no auth redirect loop"
+"grep returns zero matches for /dashboard/onboarding"
 ```
 
 ### E2E-REDIRECT-004: Trial start API returns redirectTo /setup
@@ -3121,17 +3043,26 @@
 "Response JSON redirectTo equals /setup; no reference to /onboarding"
 ```
 
+### E2E-REDIRECT-005: /setup loads for authenticated user
 
-## implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
-
-### E2E-TWILIO-005: Market-Based From Number Selection
-
-- **File:** `test/twilio-sms-integration.test.js`
+- **File:** `test/trial-signup-redirect.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Correct from-number per market; CA override works; Warning logged if missing; No errors"
+"HTTP 200; setup/onboarding UI rendered; no auth redirect loop"
 ```
+
+### E2E-REDIRECT-006: Dashboard build passes after redirect fix
+
+- **File:** `test/trial-signup-redirect.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Build exits 0; no TypeScript compilation errors"
+```
+
+
+## implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
 
 ### E2E-TWILIO-006: SMS Analytics & Cost Tracking
 
@@ -3140,15 +3071,6 @@
 - **Assertions:**
 ```json
 "Analytics counts correct; Delivery rate calculated; Cost tracked; Events logged with durations"
-```
-
-### E2E-TWILIO-002: Invalid Phone Number Error Handling
-
-- **File:** `test/twilio-sms-integration.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
 ```
 
 ### E2E-TWILIO-001: Real SMS Delivery via Twilio
@@ -3160,15 +3082,6 @@
 "SMS delivered to phone; SID stored in DB; Status tracking active; No errors; Response <2s"
 ```
 
-### E2E-TWILIO-003: Message Truncation
-
-- **File:** `test/twilio-sms-integration.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Message truncated to 160 chars; Warning in console; SMS sent; Body stored correctly"
-```
-
 ### E2E-TWILIO-007: Concurrent SMS Sends
 
 - **File:** `test/twilio-sms-integration.test.js`
@@ -3176,6 +3089,15 @@
 - **Assertions:**
 ```json
 "All SMS sent; Unique SIDs; All logged; Response time <2s each; No rate limit errors"
+```
+
+### E2E-TWILIO-003: Message Truncation
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Message truncated to 160 chars; Warning in console; SMS sent; Body stored correctly"
 ```
 
 ### E2E-TWILIO-004: Status Update via Webhook Callback
@@ -3187,17 +3109,26 @@
 "Status updated to delivered; Timestamp set; Events logged; DB state consistent"
 ```
 
+### E2E-TWILIO-005: Market-Based From Number Selection
 
-## improve-landing-page-analytics-ga4 — Landing Page Analytics — GA4/PostHog for CTA Clicks, Scroll Depth & Conversion Funnel
-
-### E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order
-
-- **File:** `manual/e2e-landing-analytics.md`
+- **File:** `test/twilio-sms-integration.test.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Events fire in sequence: form_view → form_start → form_submit_attempt → pilot_signup_complete; pilot_signup_complete is a GA4 conversion"
+"Correct from-number per market; CA override works; Warning logged if missing; No errors"
 ```
+
+### E2E-TWILIO-002: Invalid Phone Number Error Handling
+
+- **File:** `test/twilio-sms-integration.test.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
+```
+
+
+## improve-landing-page-analytics-ga4 — Landing Page Analytics — GA4/PostHog for CTA Clicks, Scroll Depth & Conversion Funnel
 
 ### E2E-ANA-1: GA4 Base Load — page_view Event Fires
 
@@ -3206,33 +3137,6 @@
 - **Assertions:**
 ```json
 "GA4 page_view event fires on load; no console errors"
-```
-
-### E2E-ANA-2: CTA Click Tracking — Hero Button fires cta_click event
-
-- **File:** `manual/e2e-landing-analytics.md`
-- **Result:** not_run
-- **Assertions:**
-```json
-"cta_click event fires with cta_id=join_pilot_hero and section=hero"
-```
-
-### E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event
-
-- **File:** `manual/e2e-landing-analytics.md`
-- **Result:** not_run
-- **Assertions:**
-```json
-"No event payload contains name, email address, or phone number"
-```
-
-### E2E-ANA-5: Scroll depth event fires at 90% of page height
-
-- **File:** `manual/e2e-landing-analytics.md`
-- **Result:** not_run
-- **Assertions:**
-```json
-"GA4 Enhanced Measurement scroll event fires at 90% page depth"
 ```
 
 ### E2E-ANA-6: Analytics does not degrade page load time below 2s
@@ -3244,15 +3148,51 @@
 "Lighthouse Performance score >= 70; page load < 2s on simulated 4G mobile"
 ```
 
+### E2E-ANA-5: Scroll depth event fires at 90% of page height
+
+- **File:** `manual/e2e-landing-analytics.md`
+- **Result:** not_run
+- **Assertions:**
+```json
+"GA4 Enhanced Measurement scroll event fires at 90% page depth"
+```
+
+### E2E-ANA-4: No PII (email/phone/name) sent in any GA4 event
+
+- **File:** `manual/e2e-landing-analytics.md`
+- **Result:** not_run
+- **Assertions:**
+```json
+"No event payload contains name, email address, or phone number"
+```
+
+### E2E-ANA-3: Form Funnel — Complete Signup Sequence fires in order
+
+- **File:** `manual/e2e-landing-analytics.md`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Events fire in sequence: form_view → form_start → form_submit_attempt → pilot_signup_complete; pilot_signup_complete is a GA4 conversion"
+```
+
+### E2E-ANA-2: CTA Click Tracking — Hero Button fires cta_click event
+
+- **File:** `manual/e2e-landing-analytics.md`
+- **Result:** not_run
+- **Assertions:**
+```json
+"cta_click event fires with cta_id=join_pilot_hero and section=hero"
+```
+
 
 ## improve-landing-page-pricing-4-tiers — Landing Page Pricing Section — All 4 Tiers with Feature Comparison
 
-### /pricing page feature comparison table
+### Pricing section shows correct PMF.md prices
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Table visible below tier cards\",\"4 columns: Starter Pro Team Brokerage\",\"SMS: 100/mo vs Unlimited\",\"Cal.com: Starter=dash others=check\",\"White-label: only Brokerage=check\"]"
+"[\"Starter price=/mo\",\"Pro price=/mo\",\"Team price=/mo\",\"Brokerage price=+\",\"No  visible\",\"No  visible\",\"No  visible\"]"
 ```
 
 ### Landing page shows all 4 pricing tiers
@@ -3261,6 +3201,14 @@
 - **Assertions:**
 ```json
 "[\"Pricing section heading visible\",\"Starter card present\",\"Pro card present\",\"Team card present\",\"Brokerage card present\",\"Section before footer\"]"
+```
+
+### /pricing page feature comparison table
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Table visible below tier cards\",\"4 columns: Starter Pro Team Brokerage\",\"SMS: 100/mo vs Unlimited\",\"Cal.com: Starter=dash others=check\",\"White-label: only Brokerage=check\"]"
 ```
 
 ### Pricing section mobile responsive at 375px
@@ -3287,24 +3235,8 @@
 "[\"Starter CTA href=/signup\",\"Pro CTA href=/signup\",\"Team CTA href=/signup\",\"Brokerage CTA is mailto or contact form\"]"
 ```
 
-### Pricing section shows correct PMF.md prices
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Starter price=/mo\",\"Pro price=/mo\",\"Team price=/mo\",\"Brokerage price=+\",\"No  visible\",\"No  visible\",\"No  visible\"]"
-```
-
 
 ## pm-action-items-dashboard — PM Structured Action Items for Dashboard
-
-### Orchestrator Reads Pending Action Items
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"WAITING items read every heartbeat; RESOLVED items skipped; no duplicate processing; orchestrator logs show item detection"
-```
 
 ### PM Inserts Action Item to Dashboard
 
@@ -3314,12 +3246,12 @@
 "Action item created in Supabase; status=WAITING; all required fields populated; metadata preserved"
 ```
 
-### Action Items Sorted by Priority
+### Action Item Appears on Dashboard
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Items sorted by priority ascending; critical items emphasized; sort stable across reloads"
+"Action item visible on dashboard; priority sort correct; all fields readable; critical items highlighted"
 ```
 
 ### Stojan Responds to Action Item via Telegram
@@ -3330,12 +3262,20 @@
 "Action item status changed to RESOLVED; response text captured; responded_at timestamp set; follow-up task created"
 ```
 
-### Action Item Appears on Dashboard
+### Action Items Sorted by Priority
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Action item visible on dashboard; priority sort correct; all fields readable; critical items highlighted"
+"Items sorted by priority ascending; critical items emphasized; sort stable across reloads"
+```
+
+### Orchestrator Reads Pending Action Items
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"WAITING items read every heartbeat; RESOLVED items skipped; no duplicate processing; orchestrator logs show item detection"
 ```
 
 
@@ -4098,6 +4038,19 @@
 
 ## UC-LANDING-ANALYTICS-GA4-001 — Landing Page Analytics — GA4 CTA & Conversion Tracking
 
+### UTM parameters captured in GA4 session
+
+- **File:** `e2e/analytics/utm-capture.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "source=telegram captured",
+  "medium=organic captured",
+  "campaign=pilot-launch captured"
+]
+```
+
 ### Pilot signup form events fire in correct sequence
 
 - **File:** `e2e/analytics/form-events.spec.ts`
@@ -4113,46 +4066,6 @@
 ]
 ```
 
-### UTM parameters captured in GA4 session
-
-- **File:** `e2e/analytics/utm-capture.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "source=telegram captured",
-  "medium=organic captured",
-  "campaign=pilot-launch captured"
-]
-```
-
-### Scroll depth events fire at 25%, 50%, 75%, 90%
-
-- **File:** `e2e/analytics/scroll-depth.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "scroll_depth at 25% fires",
-  "scroll_depth at 50% fires",
-  "scroll_depth at 75% fires",
-  "scroll_depth at 90% fires"
-]
-```
-
-### No JS errors when GA4 env var is missing
-
-- **File:** `e2e/analytics/graceful-missing-env.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Page loads without JS errors",
-  "CTAs function without GA4",
-  "No uncaught exceptions about gtag"
-]
-```
-
 ### [Human] Stojan validates CTA data in GA4 Events report
 
 - **File:** `e2e/analytics/human-validation-ga4.spec.ts`
@@ -4163,32 +4076,6 @@
   "cta_click visible in GA4 Events report",
   "cta_location dimension populated",
   "Data appears within 24h of deploy"
-]
-```
-
-### GA4 script loads on landing page without blocking render
-
-- **File:** `e2e/analytics/ga4-script-load.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "gtag.js response status 200",
-  "Lighthouse LCP within 10% of baseline",
-  "No render-blocking script warnings"
-]
-```
-
-### Pricing CTA clicks fire cta_click with cta_location=pricing
-
-- **File:** `e2e/analytics/pricing-cta-click.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "cta_click fires for each pricing CTA",
-  "cta_location=pricing",
-  "cta_text matches button label"
 ]
 ```
 
@@ -4206,18 +4093,71 @@
 ]
 ```
 
+### Scroll depth events fire at 25%, 50%, 75%, 90%
+
+- **File:** `e2e/analytics/scroll-depth.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "scroll_depth at 25% fires",
+  "scroll_depth at 50% fires",
+  "scroll_depth at 75% fires",
+  "scroll_depth at 90% fires"
+]
+```
+
+### Pricing CTA clicks fire cta_click with cta_location=pricing
+
+- **File:** `e2e/analytics/pricing-cta-click.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "cta_click fires for each pricing CTA",
+  "cta_location=pricing",
+  "cta_text matches button label"
+]
+```
+
+### No JS errors when GA4 env var is missing
+
+- **File:** `e2e/analytics/graceful-missing-env.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Page loads without JS errors",
+  "CTAs function without GA4",
+  "No uncaught exceptions about gtag"
+]
+```
+
+### GA4 script loads on landing page without blocking render
+
+- **File:** `e2e/analytics/ga4-script-load.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "gtag.js response status 200",
+  "Lighthouse LCP within 10% of baseline",
+  "No render-blocking script warnings"
+]
+```
+
 
 ## uc-landing-cta-consolidation-001 — Landing Page CTA Consolidation — Unify Duplicate Free Entry Points
 
-### Primary CTA Navigation — Start Free Trial Flow
+### Secondary CTA Navigation — Pilot Program Flow
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
   "Navigate to landing page (/)",
-  "Click Start Free Trial primary CTA",
-  "Verify URL is /signup/trial"
+  "Click Apply for Pilot Program secondary link",
+  "Verify URL is /pilot"
 ]
 ```
 
@@ -4235,15 +4175,15 @@
 ]
 ```
 
-### Secondary CTA Navigation — Pilot Program Flow
+### Primary CTA Navigation — Start Free Trial Flow
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
   "Navigate to landing page (/)",
-  "Click Apply for Pilot Program secondary link",
-  "Verify URL is /pilot"
+  "Click Start Free Trial primary CTA",
+  "Verify URL is /signup/trial"
 ]
 ```
 
@@ -4263,54 +4203,46 @@
 
 ## UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
 
-### Navigation Smooth Scroll
+### SEO Meta Tags
 
-- **File:** `tests/e2e/landing-nav-scroll.test.ts`
+- **File:** `tests/e2e/landing-seo-meta.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
   {
-    "type": "click",
-    "selector": "[data-testid=nav-pricing]"
+    "name": "title",
+    "type": "meta",
+    "expect": "contains=LeadFlow AI"
   },
   {
-    "type": "scroll",
-    "expect": "pricing-section-centered"
+    "name": "description",
+    "type": "meta",
+    "expect": "not-empty"
   },
   {
-    "type": "click",
-    "selector": "[data-testid=nav-features]"
+    "type": "meta",
+    "expect": "exists",
+    "property": "og:title"
   },
   {
-    "type": "scroll",
-    "expect": "features-section-centered"
+    "type": "meta",
+    "expect": "exists",
+    "property": "og:description"
   }
 ]
 ```
 
-### Mobile Navigation
-
-- **Result:** not_run
-
-### Responsive Design
-
-- **Result:** not_run
-
-### FAQ Accordion
-
-- **Result:** not_run
-
-### Pricing Toggle
+### Mobile Responsive
 
 - **File:** `e2e/landing-page.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"prices_update\",\"badge_visible\",\"calculation_correct\"]"
+"[\"no_horizontal_scroll\",\"tap_targets_44px\",\"faq_works_touch\"]"
 ```
 
-### Pricing CTA with Plan Selection
+### Page Load & SEO
 
 - **Result:** not_run
 
@@ -4318,56 +4250,37 @@
 
 - **Result:** not_run
 
-### Keyboard Navigation Accessibility
+### Pricing CTA with Plan Selection
 
-- **File:** `tests/e2e/landing-keyboard-nav.test.ts`
 - **Result:** not_run
-- **Assertions:**
-```json
-[
-  {
-    "type": "keyboard",
-    "action": "tab",
-    "expect": "focus-on-nav-links"
-  },
-  {
-    "type": "keyboard",
-    "action": "tab",
-    "expect": "focus-on-hero-cta"
-  },
-  {
-    "type": "css",
-    "expect": "visible-outline",
-    "selector": ":focus"
-  },
-  {
-    "type": "keyboard",
-    "action": "enter",
-    "expect": "cta-activated"
-  }
-]
-```
 
 ### Smooth Scroll Navigation
 
 - **Result:** not_run
 
-### Landing Page Load
+### FAQ Accordion
+
+- **Result:** not_run
+
+### Responsive Design
+
+- **Result:** not_run
+
+### Mobile Navigation
+
+- **Result:** not_run
+
+### Analytics Events
+
+- **Result:** not_run
+
+### Navigation Scroll
 
 - **File:** `e2e/landing-page.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"hero_visible\",\"ctas_clickable\",\"lighthouse_score_above_90\"]"
-```
-
-### Analytics Tracking
-
-- **File:** `e2e/landing-page.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"pageview_fired\",\"scroll_depth_tracked\",\"cta_events_fired\"]"
+"[\"smooth_scroll\",\"url_hash_updated\"]"
 ```
 
 ### Page Load Performance
@@ -4397,6 +4310,24 @@
     "selector": "[data-testid=hero-section]"
   }
 ]
+```
+
+### Analytics Tracking
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"pageview_fired\",\"scroll_depth_tracked\",\"cta_events_fired\"]"
+```
+
+### Landing Page Load
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"hero_visible\",\"ctas_clickable\",\"lighthouse_score_above_90\"]"
 ```
 
 ### Hero CTA Navigation
@@ -4430,37 +4361,6 @@
 ```json
 "[\"redirects_to_signup\",\"utm_preserved\",\"analytics_fired\"]"
 ```
-
-### FAQ Accordion
-
-- **File:** `e2e/landing-page.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"accordion_expands\",\"only_one_open\",\"smooth_animation\"]"
-```
-
-### Accessibility
-
-- **File:** `e2e/landing-page.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"alt_text_present\",\"heading_hierarchy\",\"aria_labels\",\"contrast_aa\"]"
-```
-
-### Navigation Scroll
-
-- **File:** `e2e/landing-page.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"smooth_scroll\",\"url_hash_updated\"]"
-```
-
-### Analytics Events
-
-- **Result:** not_run
 
 ### Pricing Tier Selection
 
@@ -4520,97 +4420,91 @@
 ]
 ```
 
-### SEO Meta Tags
-
-- **File:** `tests/e2e/landing-seo-meta.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  {
-    "name": "title",
-    "type": "meta",
-    "expect": "contains=LeadFlow AI"
-  },
-  {
-    "name": "description",
-    "type": "meta",
-    "expect": "not-empty"
-  },
-  {
-    "type": "meta",
-    "expect": "exists",
-    "property": "og:title"
-  },
-  {
-    "type": "meta",
-    "expect": "exists",
-    "property": "og:description"
-  }
-]
-```
-
-### Mobile Responsive
+### Accessibility
 
 - **File:** `e2e/landing-page.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"no_horizontal_scroll\",\"tap_targets_44px\",\"faq_works_touch\"]"
+"[\"alt_text_present\",\"heading_hierarchy\",\"aria_labels\",\"contrast_aa\"]"
 ```
 
-### Page Load & SEO
+### Navigation Smooth Scroll
 
+- **File:** `tests/e2e/landing-nav-scroll.test.ts`
 - **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "click",
+    "selector": "[data-testid=nav-pricing]"
+  },
+  {
+    "type": "scroll",
+    "expect": "pricing-section-centered"
+  },
+  {
+    "type": "click",
+    "selector": "[data-testid=nav-features]"
+  },
+  {
+    "type": "scroll",
+    "expect": "features-section-centered"
+  }
+]
+```
+
+### Pricing Toggle
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"prices_update\",\"badge_visible\",\"calculation_correct\"]"
+```
+
+### FAQ Accordion
+
+- **File:** `e2e/landing-page.spec.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"accordion_expands\",\"only_one_open\",\"smooth_animation\"]"
+```
+
+### Keyboard Navigation Accessibility
+
+- **File:** `tests/e2e/landing-keyboard-nav.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  {
+    "type": "keyboard",
+    "action": "tab",
+    "expect": "focus-on-nav-links"
+  },
+  {
+    "type": "keyboard",
+    "action": "tab",
+    "expect": "focus-on-hero-cta"
+  },
+  {
+    "type": "css",
+    "expect": "visible-outline",
+    "selector": ":focus"
+  },
+  {
+    "type": "keyboard",
+    "action": "enter",
+    "expect": "cta-activated"
+  }
+]
+```
 
 
 ## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
-
-### Pilot Agent Onboarding
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
-```
-
-### End-to-End Revenue Funnel
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
-```
-
-### E2E-REV-003: SMS Value Delivery
-
-- **File:** `tests/e2e/sms-value-delivery.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "FUB webhook received",
-  "SMS sent within 30s",
-  "Message delivered to lead phone",
-  "Conversation logged in dashboard",
-  "Delivery status tracked"
-]
-```
-
-### E2E-REV-002: Pilot Agent Onboarding
-
-- **File:** `tests/e2e/pilot-onboarding.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Onboarding wizard renders",
-  "Account created in Supabase",
-  "FUB integration connects",
-  "Twilio integration connects",
-  "Test lead received within 5 min"
-]
-```
 
 ### E2E-REV-001: End-to-End Revenue Funnel
 
@@ -4628,12 +4522,35 @@
 ]
 ```
 
+### Pilot Agent Onboarding
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
+```
+
 ### SMS Value Delivery
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 "[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
+```
+
+### E2E-REV-002: Pilot Agent Onboarding
+
+- **File:** `tests/e2e/pilot-onboarding.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "Onboarding wizard renders",
+  "Account created in Supabase",
+  "FUB integration connects",
+  "Twilio integration connects",
+  "Test lead received within 5 min"
+]
 ```
 
 ### E2E-REVENUE-004: End-to-End Revenue Funnel
@@ -4738,5 +4655,28 @@
     "expect": "record_exists"
   }
 ]
+```
+
+### E2E-REV-003: SMS Value Delivery
+
+- **File:** `tests/e2e/sms-value-delivery.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+[
+  "FUB webhook received",
+  "SMS sent within 30s",
+  "Message delivered to lead phone",
+  "Conversation logged in dashboard",
+  "Delivery status tracked"
+]
+```
+
+### End-to-End Revenue Funnel
+
+- **Result:** not_run
+- **Assertions:**
+```json
+"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
 ```
 
