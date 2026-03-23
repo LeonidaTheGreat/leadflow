@@ -174,10 +174,9 @@ async function buildSuccessResponse(
   })
 
   // Log trial_signup_completed event (non-blocking)
-  void Promise.resolve(
-    supabase
-      .from('events')
-      .insert({
+  void (async () => {
+    try {
+      await supabase.from('events').insert({
         event_type: 'trial_signup_completed',
         agent_id: agent.id,
         event_data: {
@@ -191,15 +190,15 @@ async function buildSuccessResponse(
         },
         created_at: new Date().toISOString(),
       })
-  ).catch((err: unknown) => {
-    console.error('Failed to log trial_signup_completed event:', err)
-  })
+    } catch (err) {
+      console.error('Failed to log trial_signup_completed event:', err)
+    }
+  })()
 
   // Also log the legacy trial_started event for backwards compatibility
-  void Promise.resolve(
-    supabase
-      .from('events')
-      .insert({
+  void (async () => {
+    try {
+      await supabase.from('events').insert({
         event_type: 'trial_started',
         agent_id: agent.id,
         event_data: {
@@ -212,9 +211,10 @@ async function buildSuccessResponse(
         },
         created_at: new Date().toISOString(),
       })
-  ).catch((err: unknown) => {
-    console.error('Failed to log trial_started event:', err)
-  })
+    } catch (err) {
+      console.error('Failed to log trial_started event:', err)
+    }
+  })()
 
   // Send welcome email (non-blocking)
   void sendWelcomeEmail(agent.email, agent.id, {
