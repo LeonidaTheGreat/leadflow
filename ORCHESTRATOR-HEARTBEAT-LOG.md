@@ -1,99 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-17T17:29:22.189Z
+Last updated: 2026-03-23T05:19:32.272Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-05T05:46:00.164Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Product review triggered: Core SMS Lead Response",
-      "Product review triggered: CRM & Calendar Integrations",
-      "Periodic product review triggered",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T05:53:23.998Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:07:26.122Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:16:01.969Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
   {
     "timestamp": "2026-03-05T06:25:34.238Z",
     "status": {
@@ -2380,22 +2289,80 @@ Last updated: 2026-03-17T17:29:22.189Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T17:24:29.634Z",
+    "timestamp": "2026-03-18T00:05:54.100Z",
     "status": {
-      "ready": 0,
-      "inProgress": 1,
+      "ready": 5,
+      "inProgress": 0,
       "blocked": 0,
-      "done": 913,
+      "done": 909,
       "total": 1000
     },
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":913,\"total\":1000}",
-      "Completed (via stdout): Dev (re-merge): fix-session-analytics-tables-exist-but-lack-integratio - Session analytics tables exist but lack integra",
-      "Chained: dev->qc for fix-session-analytics-tables-exist-but-lack-integratio",
+      "Queried state: {\"ready\":5,\"inProgress\":0,\"blocked\":0,\"done\":909,\"total\":1000}",
+      "Spawned dev for Dev: fix-subscriptions-table-never-populated - Subscriptions table never populated",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 1,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:04:33.193Z",
+    "status": {
+      "ready": 34,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 1149,
+      "total": 1280
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":34,\"inProgress\":2,\"blocked\":0,\"done\":1149,\"total\":1280}",
+      "Merge retry 1/3: fix-signup-page-has-no-link-back-to-login-an",
+      "Merge retry 1/3: feat-add-session-management-with-server-side-",
+      "Merge retry 1/3: fix-no-analytics-tracking-implemented-ga4-utm-conversi",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: fix-signup-page-has-no-link-back-to-login-an",
+      "Merge gate blocked: feat-add-session-management-with-server-side-",
+      "Merge gate blocked: fix-no-analytics-tracking-implemented-ga4-utm-conversi",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:09:33.134Z",
+    "status": {
+      "ready": 36,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1151,
+      "total": 1283
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":36,\"inProgress\":1,\"blocked\":0,\"done\":1151,\"total\":1283}",
+      "Completed (via stdout): PM: Product Review — Post-Login Onboarding Wizard for New Agents",
+      "Merge retry 1/3: feat-add-auth-middleware-to-protect-dashboard",
+      "Merge retry 1/3: fix-pricing-section-shows-pilot-only-pricing-instead-o",
+      "Merge retry 1/3: feat-utm-capture-marketing-attribution",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: fix-pricing-section-shows-pilot-only-pricing-instead-o",
+      "Merge gate blocked: feat-utm-capture-marketing-attribution",
+      "Merge gate blocked: feat-add-auth-middleware-to-protect-dashboard",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
@@ -2404,33 +2371,101 @@ Last updated: 2026-03-17T17:29:22.189Z
     "errors": []
   },
   {
-    "timestamp": "2026-03-17T17:29:22.102Z",
+    "timestamp": "2026-03-23T05:14:29.389Z",
     "status": {
-      "ready": 0,
+      "ready": 37,
       "inProgress": 0,
       "blocked": 0,
-      "done": 914,
-      "total": 1000
+      "done": 1152,
+      "total": 1286
     },
     "actions": [
       "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":914,\"total\":1000}",
-      "Merge retry: fix-api-endpoint-has-no-authentication-middleware",
+      "Queried state: {\"ready\":37,\"inProgress\":0,\"blocked\":0,\"done\":1152,\"total\":1286}",
+      "Re-triggered 8 stuck spawn(s)",
+      "Merge retry 1/3: feat-session-analytics-pilot",
+      "Merge retry 1/3: fix-landing-page-does-not-capture-utm-params-to-sessio",
+      "Merge retry 1/3: fix-no-self-serve-upgrade-path-from-pilot-to-paid",
       "Self-healed 1 critical issue(s)",
       "Smoke tests: 8/8 passed",
       "Product sync: 6 components updated",
-      "UC completed (sweep): fix-api-endpoint-has-no-authentication-middleware",
-      "Closed conflicted PR #347",
-      "Action items: +1 -1",
+      "Merge gate blocked: feat-session-analytics-pilot",
+      "Merge gate blocked: fix-landing-page-does-not-capture-utm-params-to-sessio",
+      "Merge gate blocked: fix-no-self-serve-upgrade-path-from-pilot-to-paid",
+      "Merged PR #412",
+      "Product review triggered: Fix Auth Token Gap — Signup → Onboarding Redirect",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "Build health: this.store.supabase.from(...).select(...).eq(...).ilike is not a function"
+    ]
+  },
+  {
+    "timestamp": "2026-03-23T05:14:33.856Z",
+    "status": {
+      "ready": 38,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 1152,
+      "total": 1289
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":38,\"inProgress\":2,\"blocked\":0,\"done\":1152,\"total\":1289}",
+      "Merge retry 1/3: fix-feature-comparison-table-absent-from-pricing-page",
+      "Merge retry 1/3: UC-REVENUE-RECOVERY-001",
+      "Merge retry 1/3: fix-team-tier-399-mo-missing-from-pricing-page-only-3-",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "UC completed (sweep): feat-post-signup-dashboard-onboarding-redirect",
+      "Merge gate blocked: fix-feature-comparison-table-absent-from-pricing-page",
+      "Merge gate blocked: UC-REVENUE-RECOVERY-001",
+      "Merge gate blocked: fix-team-tier-399-mo-missing-from-pricing-page-only-3-",
+      "Merged PR #413",
       "Dashboard updated",
       "Report prepared for topic 10788"
     ],
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:19:32.267Z",
+    "status": {
+      "ready": 42,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 1152,
+      "total": 1294
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":42,\"inProgress\":3,\"blocked\":0,\"done\":1152,\"total\":1294}",
+      "Completed (via stdout): PM: Periodic Product Review",
+      "Re-triggered 3 stuck spawn(s)",
+      "Merge retry 1/3: fix-onboarding-still-present-in-auth-routes-middleware",
+      "Merge retry 1/3: fix-frontend-components-still-fall-back-to-dashboard-o",
+      "Merge retry 1/3: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: fix-onboarding-still-present-in-auth-routes-middleware",
+      "Merge gate blocked: fix-frontend-components-still-fall-back-to-dashboard-o",
+      "UC completed (sweep): feat-add-auth-middleware-to-protect-dashboard",
+      "Merge gate blocked: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":0,"blocked":0,"done":914,"total":1000}
+- Last status: {"ready":42,"inProgress":3,"blocked":0,"done":1152,"total":1294}
