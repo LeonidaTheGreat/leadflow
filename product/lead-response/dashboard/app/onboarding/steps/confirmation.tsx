@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle2, AlertCircle, Zap, Clock } from 'lucide-react'
+import { CheckCircle2, Zap, Clock } from 'lucide-react'
 
 export default function OnboardingConfirm({
   onBack,
@@ -92,64 +92,8 @@ export default function OnboardingConfirm({
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">⚡</span>
-                  <span className="text-slate-300">Aha Moment Simulator</span>
-                </div>
-                <span className={`text-sm font-medium ${
-                  agentData.simulatorCompleted
-                    ? 'text-emerald-400'
-                    : agentData.simulatorSkipped
-                    ? 'text-slate-500'
-                    : 'text-yellow-500'
-                }`}>
-                  {agentData.simulatorCompleted
-                    ? `✓ Completed${agentData.simulatorResponseTimeMs ? ` (${(agentData.simulatorResponseTimeMs / 1000).toFixed(1)}s)` : ''}`
-                    : agentData.simulatorSkipped
-                    ? '○ Skipped'
-                    : '◷ Pending'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Aha Moment Status */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-slate-200 mb-4 uppercase tracking-wide">
-              AI Response Demo
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚡</span>
-                  <span className="text-slate-300">Aha Moment Simulator</span>
-                </div>
-                {agentData.ahaCompleted ? (
-                  <span className="text-sm font-medium text-emerald-400">
-                    ✓ Completed ({agentData.ahaResponseTimeMs ? `${(agentData.ahaResponseTimeMs / 1000).toFixed(1)}s` : '< 30s'})
-                  </span>
-                ) : agentData.ahaSkipped ? (
-                  <span className="text-sm font-medium text-amber-400">
-                    ○ Skipped
-                  </span>
-                ) : (
-                  <span className="text-sm font-medium text-slate-500">
-                    ○ Not completed
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Aha Moment Status */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-slate-200 mb-4 uppercase tracking-wide">
-              Aha Moment Experience
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="text-slate-300">Lead Simulator</span>
+                  <span className="text-slate-300">Aha Moment Simulator</span>
                 </div>
                 {agentData.ahaCompleted ? (
                   <span className="text-sm font-medium text-emerald-400 flex items-center gap-1">
@@ -205,15 +149,15 @@ export default function OnboardingConfirm({
 
           {/* What's Next */}
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-blue-300 mb-3">What's next?</h3>
+            <h3 className="text-sm font-semibold text-blue-300 mb-3">What&apos;s next?</h3>
             <ul className="space-y-2 text-sm text-blue-200/80">
               <li className="flex gap-2">
                 <span>1.</span>
-                <span>We'll create your LeadFlow AI account and dashboard</span>
+                <span>We&apos;ll create your LeadFlow AI account and dashboard</span>
               </li>
               <li className="flex gap-2">
                 <span>2.</span>
-                <span>You'll be able to connect lead sources (Zillow, Realtor.com, etc.)</span>
+                <span>You&apos;ll be able to connect lead sources (Zillow, Realtor.com, etc.)</span>
               </li>
               <li className="flex gap-2">
                 <span>3.</span>
@@ -259,7 +203,7 @@ export default function OnboardingConfirm({
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                See Your AI in Action →
+                Start My Free Pilot →
               </>
             )}
           </button>
@@ -269,8 +213,8 @@ export default function OnboardingConfirm({
       {/* Testimonial */}
       <div className="mt-8 bg-slate-800/50 border border-slate-700/30 rounded-lg p-6 text-center">
         <p className="text-slate-300 italic mb-3">
-          "I was missing 35% of my leads. LeadFlow AI changed the game for me. Now I respond
-          instantly and close more deals."
+          &ldquo;I was missing 35% of my leads. LeadFlow AI changed the game for me. Now I respond
+          instantly and close more deals.&rdquo;
         </p>
         <p className="text-sm text-slate-400">— Real Estate Agent, California</p>
       </div>
