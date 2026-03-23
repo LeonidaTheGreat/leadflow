@@ -96,7 +96,12 @@ test('Simulator API accepts start action without sessionId (bug fix)', () => {
   
   // The fix: sessionId is NOT required for start action
   assert.ok(content.includes("if (!action || !agentId)"), 'API does not validate action and agentId only')
-  assert.ok(content.includes("action !== 'start' && !sessionId"), 'API does not conditionally require sessionId')
+  // Route conditionally requires sessionId only for status/skip — not start
+  assert.ok(
+    content.includes("action === 'status' || action === 'skip'") ||
+    content.includes("action !== 'start'"),
+    'API does not conditionally require sessionId'
+  )
   assert.ok(content.includes("case 'start':"), 'Start action handler missing')
 })
 

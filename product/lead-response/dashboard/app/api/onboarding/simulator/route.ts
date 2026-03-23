@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { action, agentId, sessionId, reason } = body
 
+    // sessionId is generated server-side for 'start' — it is NOT required on start
     if (!action || !agentId) {
       return NextResponse.json(
         { error: 'Missing required fields: action, agentId' },
@@ -80,20 +81,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // sessionId is required for status and skip, but optional for start
-    // Server generates sessionId for start action and returns it to client
+    // status and skip actions require a sessionId
     if ((action === 'status' || action === 'skip') && !sessionId) {
       return NextResponse.json(
-        { error: `sessionId required for ${action} action` },
+        { error: 'Missing required field: sessionId' },
         { status: 400 }
       )
     }
 
     switch (action) {
       case 'start':
-        // Generate sessionId server-side if not provided by client
-        const newSessionId = sessionId || randomUUID()
-        return await startSimulation(agentId, newSessionId)
+        return await startSimulation(agentId, sessionId || randomUUID())
       case 'status':
         return await getSimulationStatus(agentId, sessionId)
       case 'skip':
