@@ -226,6 +226,16 @@ export function LeadFeed() {
       if (json.eligible && Array.isArray(json.leads) && json.leads.length > 0) {
         setSampleLeads(json.leads as SampleLead[])
         setShowSampleBanner(true)
+        // Track sample_data_rendered event (FR-8)
+        void fetch('/api/events/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            event: 'sample_data_rendered',
+            properties: { count: json.leads.length },
+          }),
+        }).catch(() => { /* non-blocking */ })
       }
     } catch (err) {
       // Non-critical — sample leads are optional
