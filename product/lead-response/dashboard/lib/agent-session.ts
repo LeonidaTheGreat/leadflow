@@ -118,3 +118,29 @@ export async function touchSession(sessionId: string): Promise<boolean> {
     return false
   }
 }
+
+/**
+ * Update last_active_at for all active sessions belonging to an agent (session heartbeat - FR-2).
+ *
+ * Used by middleware when only the agent_id (from JWT userId claim) is available,
+ * rather than a specific agent_sessions row id.
+ *
+ * Returns true on success, false on failure (never throws).
+ */
+export async function touchSessionByAgentId(agentId: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('agent_sessions')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('agent_id', agentId)
+
+    if (error) {
+      console.error('[agent-session] touchSessionByAgentId failed:', error.message, { agentId })
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('[agent-session] touchSessionByAgentId unexpected error:', err)
+    return false
+  }
+}
