@@ -5,7 +5,7 @@
  * Tests that the script correctly maps column names and handles upserts.
  */
 
-const { SystemComponentsSync } = require('../scripts/sync-system-components.js');
+const { SystemComponentsSync } = require('../../scripts/sync-system-components.js');
 
 // Mock Supabase client
 class MockSupabaseClient {
