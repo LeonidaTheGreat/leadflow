@@ -67,12 +67,12 @@ describe('trackEvent()', () => {
 describe('trackCTAClick() — FR-2 / US-1', () => {
   afterEach(() => removeGtag())
 
-  it('fires cta_click with correct parameters', () => {
+  it('fires cta_click with correct parameters for primary CTA', () => {
     const { mockGtag } = setupGtag()
-    trackCTAClick('join_pilot_hero', "Join the Pilot — It's Free", 'hero')
+    trackCTAClick('start_free_trial_hero', 'Start Free Trial — No Credit Card Required', 'hero')
     expect(mockGtag).toHaveBeenCalledWith('event', 'cta_click', {
-      cta_id: 'join_pilot_hero',
-      cta_label: "Join the Pilot — It's Free",
+      cta_id: 'start_free_trial_hero',
+      cta_label: 'Start Free Trial — No Credit Card Required',
       section: 'hero',
       page_url: expect.any(String),
     })
@@ -80,11 +80,20 @@ describe('trackCTAClick() — FR-2 / US-1', () => {
 
   it('includes correct cta_id for nav CTA', () => {
     const { mockGtag } = setupGtag()
-    trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')
+    trackCTAClick('start_free_trial_nav', 'Start Free Trial', 'navigation')
     const callArgs = mockGtag.mock.calls[0]
     const params = callArgs[2] as Record<string, unknown>
-    expect(params.cta_id).toBe('join_pilot_nav')
+    expect(params.cta_id).toBe('start_free_trial_nav')
     expect(params.section).toBe('navigation')
+  })
+
+  it('includes correct cta_id for secondary pilot program link', () => {
+    const { mockGtag } = setupGtag()
+    trackCTAClick('pilot_program_secondary', 'Apply for Structured Pilot Program', 'hero')
+    const callArgs = mockGtag.mock.calls[0]
+    const params = callArgs[2] as Record<string, unknown>
+    expect(params.cta_id).toBe('pilot_program_secondary')
+    expect(params.section).toBe('hero')
   })
 
   it('includes correct cta_id for pricing CTAs', () => {
@@ -98,7 +107,7 @@ describe('trackCTAClick() — FR-2 / US-1', () => {
   // NFR-2: No PII in CTA events
   it('does not include PII (email, phone, name) in event parameters', () => {
     const { mockGtag } = setupGtag()
-    trackCTAClick('join_pilot_hero', "Join the Pilot", 'hero')
+    trackCTAClick('start_free_trial_hero', 'Start Free Trial', 'hero')
     const params = mockGtag.mock.calls[0][2] as Record<string, unknown>
     const serialized = JSON.stringify(params)
     expect(serialized).not.toMatch(/@/)

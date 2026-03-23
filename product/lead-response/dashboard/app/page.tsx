@@ -68,13 +68,14 @@ export default function HomePage() {
             >
               Pricing
             </a>
-            {/* CTA: join_pilot_nav (FR-2) */}
+            {/* CTA: start_free_trial_nav (FR-2) */}
             <Link
-              href="/pilot"
-              onClick={() => trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')}
+              href="/signup/trial"
+              onClick={() => trackCTAClick('start_free_trial_nav', 'Start Free Trial', 'navigation')}
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-colors"
+              data-cta-id="start_free_trial_nav"
             >
-              Join Free Pilot
+              Start Free Trial
             </Link>
             <Link
               href="/login"
@@ -98,29 +99,33 @@ export default function HomePage() {
             Never miss another opportunity.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {/* CTA: join_pilot_hero (FR-2) */}
+          <div className="flex flex-col items-center gap-4">
+            {/* CTA: start_free_trial_hero (FR-1) - Primary CTA */}
             <Link
-              href="/pilot"
+              href="/signup/trial"
               onClick={() =>
-                trackCTAClick('join_pilot_hero', "Join the Pilot — It's Free", 'hero')
+                trackCTAClick('start_free_trial_hero', 'Start Free Trial — No Credit Card Required', 'hero')
               }
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="join_pilot_hero"
+              data-cta-id="start_free_trial_hero"
             >
-              Join the Pilot — It&apos;s Free
+              Start Free Trial — No Credit Card Required
             </Link>
-            {/* CTA: get_started_hero */}
-            <Link
-              href="/onboarding"
-              onClick={() =>
-                trackCTAClick('get_started_hero', 'Get Started Free', 'hero')
-              }
-              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors"
-              data-cta-id="get_started_hero"
-            >
-              Get Started Free
-            </Link>
+            {/* CTA: pilot_program_secondary (FR-2) - Secondary link */}
+            <p className="text-sm text-slate-500">
+              Or{' '}
+              <Link
+                href="/pilot"
+                onClick={() =>
+                  trackCTAClick('pilot_program_secondary', 'Apply for Structured Pilot Program', 'hero')
+                }
+                className="underline hover:text-slate-700 transition-colors"
+                data-cta-id="pilot_program_secondary"
+              >
+                apply for our Structured Pilot Program
+              </Link>{' '}
+              for teams/brokerages
+            </p>
             {/* CTA: see_how_it_works (FR-2) */}
             <button
               onClick={() => {
