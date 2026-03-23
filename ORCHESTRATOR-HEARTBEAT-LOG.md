@@ -1,30 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-23T05:29:32.977Z
+Last updated: 2026-03-23T06:04:40.931Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-21T03:49:23.216Z",
-    "status": {
-      "ready": 2,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1142,
-      "total": 1237
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":2,\"inProgress\":0,\"blocked\":0,\"done\":1142,\"total\":1237}",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Genome self-assessment: score NaN/100, 0 breaches",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-21T04:20:53.549Z",
     "status": {
@@ -2374,9 +2352,42 @@ Last updated: 2026-03-23T05:29:32.977Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T06:04:40.925Z",
+    "status": {
+      "ready": 62,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1162,
+      "total": 1322
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":62,\"inProgress\":1,\"blocked\":0,\"done\":1162,\"total\":1322}",
+      "Re-triggered 1 stuck spawn(s)",
+      "Merge retry 1/3: fix-marketing-landing-page-not-deployed-to-production",
+      "Merge retry 1/3: fix-trial-signup-redirects-to-non-existent-route-dashb",
+      "Merge retry 1/3: fix-sms-messages-direction-values-are-outbound-api-not",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Signup page (sonnet)",
+      "Smoke fail → QC: Login page (kimi)",
+      "Smoke fail → QC: Lead Experience Simulator (kimi)",
+      "Smoke tests: 5/8 passed",
+      "Product sync: 6 components updated",
+      "UC completed (sweep): fix-pricing-section-shows-pilot-only-pricing-instead-o",
+      "Merge gate blocked: fix-marketing-landing-page-not-deployed-to-production",
+      "Merge gate blocked: fix-sms-messages-direction-values-are-outbound-api-not",
+      "Merge gate blocked: fix-trial-signup-redirects-to-non-existent-route-dashb",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":48,"inProgress":1,"blocked":0,"done":1154,"total":1300}
+- Last status: {"ready":62,"inProgress":1,"blocked":0,"done":1162,"total":1322}

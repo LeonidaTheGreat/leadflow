@@ -14,8 +14,8 @@ import { createClient } from '@/lib/db'
  *   ?outcome=all|booked|in-progress|opted-out (default: all)
  */
 
-const DB_URL = (process.env.NEXT_PUBLIC_API_URL)!
-const DB_KEY = (process.env.API_SECRET_KEY)!
+const DB_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL)!
+const DB_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY)!
 
 function getDB() {
   return createClient(DB_URL, DB_KEY)

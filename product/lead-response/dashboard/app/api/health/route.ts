@@ -27,8 +27,8 @@ export async function GET() {
   }
 
   // 2. Database connectivity (only if env vars are present)
-  const dbUrl = process.env.NEXT_PUBLIC_API_URL
-  const dbKey = process.env.API_SECRET_KEY
+  const dbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const dbKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (dbUrl && dbKey && dbUrl !== 'https://placeholder.local' && dbKey !== 'placeholder') {
     try {
       const client = createClient(dbUrl, dbKey)

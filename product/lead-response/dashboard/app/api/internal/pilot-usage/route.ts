@@ -11,13 +11,13 @@ import { createClient } from "@/lib/db"
 
 function getDB() {
   return createClient(
-    (process.env.NEXT_PUBLIC_API_URL)!,
-    (process.env.API_SECRET_KEY)!
+    (process.env.NEXT_PUBLIC_SUPABASE_URL)!,
+    (process.env.SUPABASE_SERVICE_ROLE_KEY)!
   )
 }
 
 function isAuthorized(req: NextRequest): boolean {
-  const serviceKey = process.env.API_SECRET_KEY
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceKey) return false
   const authHeader = req.headers.get("authorization") || ""
   const token = authHeader.startsWith("Bearer ")

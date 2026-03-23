@@ -16,8 +16,8 @@ const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
 const PLACEHOLDER_KEY = 'placeholder'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL,
-  process.env.API_SECRET_KEY || PLACEHOLDER_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL || PLACEHOLDER_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || PLACEHOLDER_KEY
 )
 
 export async function POST(request: NextRequest) {

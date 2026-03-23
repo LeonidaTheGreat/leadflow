@@ -74,11 +74,7 @@ const PLANS: Plan[] = [
 ]
 
 export default function SignupPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />}>
-      <SignupPageInner />
-    </Suspense>
-  )
+  return <SignupPageInner />
 }
 
 function SignupPageInner() {

@@ -10,8 +10,8 @@ import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 
-const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
-const DB_KEY = process.env.API_SECRET_KEY || ''
+const DB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const DB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export function isTrackedPage(pathname: string): boolean {

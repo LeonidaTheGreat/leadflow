@@ -1,27 +1,36 @@
-import { createClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 
 /**
- * Build-safe server-side database client.
+ * Build-safe server-side Supabase client.
  *
- * During `next build`, env vars may not be set. This module uses
- * placeholders so the build succeeds. At runtime, API route handlers
- * should check `isDBConfigured()` before querying.
+ * During `next build`, env vars may not be set. Using '' as the URL
+ * causes createClient() to throw "supabaseUrl is required" at module
+ * evaluation time, which fails the build.
+ *
+ * This module uses placeholders so the build succeeds. At runtime,
+ * API route handlers should check `isSupabaseConfigured()` before
+ * querying — returning 503 if credentials are missing.
  */
 
-const PLACEHOLDER_URL = 'https://placeholder.local'
+const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
 const PLACEHOLDER_KEY = 'placeholder'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL
-const apiKey = process.env.API_SECRET_KEY || PLACEHOLDER_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || PLACEHOLDER_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || PLACEHOLDER_KEY
 
-export const supabaseServer = createClient(apiUrl, apiKey)
+export const supabaseServer = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+})
 
-/** Returns true if real API credentials are configured (not placeholders). */
+/** Returns true if real Supabase credentials are configured (not placeholders). */
 export function isSupabaseConfigured(): boolean {
   return (
-    apiUrl !== PLACEHOLDER_URL &&
-    apiKey !== PLACEHOLDER_KEY &&
-    apiUrl !== '' &&
-    apiKey !== ''
+    supabaseUrl !== PLACEHOLDER_URL &&
+    supabaseKey !== PLACEHOLDER_KEY &&
+    supabaseUrl !== '' &&
+    supabaseKey !== ''
   )
 }

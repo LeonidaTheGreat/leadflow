@@ -11,7 +11,7 @@ async function isAdmin(request: NextRequest): Promise<boolean> {
 
   const token = authHeader.slice(7)
   // Check against service role key for admin access
-  return token === process.env.API_SECRET_KEY
+  return token === process.env.SUPABASE_SERVICE_ROLE_KEY
 }
 
 // GET - Fetch NPS stats and churn risks

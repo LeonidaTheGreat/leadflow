@@ -10,11 +10,6 @@
 import { createClient } from '@/lib/db'
 import { NextRequest } from 'next/server'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || '',
-  process.env.API_SECRET_KEY || ''
-)
-
 export interface AgentSessionRecord {
   id: string
   agentId: string
@@ -55,6 +50,10 @@ export async function logSessionStart(
   req: NextRequest
 ): Promise<AgentSessionRecord | null> {
   try {
+    const supabase = createClient(
+      (process.env.NEXT_PUBLIC_SUPABASE_URL)!,
+      (process.env.SUPABASE_SERVICE_ROLE_KEY)!
+    )
     const now = new Date().toISOString()
     const ipAddress = getClientIp(req)
     const userAgent = req.headers.get('user-agent') || null
@@ -103,6 +102,10 @@ export async function logSessionStart(
  */
 export async function touchSession(sessionId: string): Promise<boolean> {
   try {
+    const supabase = createClient(
+      (process.env.NEXT_PUBLIC_SUPABASE_URL)!,
+      (process.env.SUPABASE_SERVICE_ROLE_KEY)!
+    )
     const { error } = await supabase
       .from('agent_sessions')
       .update({ last_active_at: new Date().toISOString() })
