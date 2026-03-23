@@ -21,6 +21,7 @@
     "ai": "^6.0.86",
     "axios": "^1.7.9",
     "bcryptjs": "^3.0.3",
+    "jose": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "crypto": "^1.0.1",
