@@ -19,7 +19,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className={`${inter.className} min-h-screen bg-slate-50 dark:bg-slate-950`}>
-      {/* Auto-redirects to /setup if onboarding is not yet complete */}
+      {/* Handles auth redirects. Onboarding wizard overlay is rendered by dashboard page. */}
       <OnboardingGuard />
       <PageViewTracker />
       <DashboardNav />
