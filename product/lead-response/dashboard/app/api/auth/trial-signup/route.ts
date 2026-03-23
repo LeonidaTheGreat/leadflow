@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Calculate trial end date (30 days from now per PRD)
-    const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    // Calculate trial end date (14 days from now per PRD-FRICTIONLESS-ONBOARDING-001)
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
     // Create agent record with trial tier
     const { data: agent, error: createError } = await supabase
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
         plan_tier: 'trial',
-        trial_days: 30
+        trial_days: 14
       },
       created_at: new Date().toISOString()
     })).catch((err: unknown) => {
@@ -142,8 +142,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: `/check-your-inbox?email=${encodeURIComponent(agent.email)}`,
-      message: 'Trial account created successfully. Please check your email to verify your account.'
+      redirectTo: '/setup',
+      message: 'Trial account created successfully'
     })
 
   } catch (error) {
