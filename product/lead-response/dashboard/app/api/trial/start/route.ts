@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
         planTier: agent.plan_tier,
         trialEndsAt: agent.trial_ends_at,
       },
-      redirectTo: '/dashboard/onboarding',
+      redirectTo: '/setup',
     })
 
     // Set auth cookie (30-day trial)
