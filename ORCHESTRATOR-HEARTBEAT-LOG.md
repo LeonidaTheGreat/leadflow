@@ -1,8 +1,30 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-24T17:27:00.506Z
+Last updated: 2026-03-24T03:06:00.852Z
 ## Recent Heartbeats
 ```json
 [
+  {
+    "timestamp": "2026-03-05T15:56:13.434Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 155,
+      "total": 196
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "Smoke tests: JSON object requested, multiple (or no) rows returned"
+    ]
+  },
   {
     "timestamp": "2026-03-05T15:56:57.414Z",
     "status": {
@@ -2539,33 +2561,9 @@ Last updated: 2026-03-24T17:27:00.506Z
     "spawned": 2,
     "completed": 1,
     "errors": []
-  },
-  {
-    "timestamp": "2026-03-24T17:27:00.500Z",
-    "status": {
-      "ready": 11,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 1647,
-      "total": 1833
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":11,\"inProgress\":1,\"blocked\":0,\"done\":1647,\"total\":1833}",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 7/9 passed",
-      "Product sync: 6 components updated",
-      "UC completed (sweep): fix-no-sessionstorage-write-on-landing-page-load-utm-l",
-      "Product review triggered: UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":11,"inProgress":1,"blocked":0,"done":1647,"total":1833}
+- Last status: {"ready":5,"inProgress":10,"blocked":0,"done":895,"total":1000}
