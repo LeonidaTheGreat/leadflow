@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, ArrowRight, Loader2 } from 'lucide-react'
+import { Check, Minus, ArrowRight, Loader2 } from 'lucide-react'
 
 type BillingInterval = 'monthly' | 'annual'
 
@@ -30,14 +30,13 @@ const PRICING_PLANS = [
     tier: 'starter',
     monthlyPrice: 49,
     annualPrice: 490,
-    description: 'Perfect for individual agents',
+    description: 'Perfect for testing the waters',
     features: [
-      'Up to 100 SMS/month',
+      '100 SMS/month',
       'Basic AI responses',
       'Dashboard access',
-      'Calendar integration (1 agent)',
-      'Standard email support',
-      'Basic analytics',
+      'FUB integration',
+      'Email support',
     ],
     cta: 'Get Started',
     highlighted: false,
@@ -47,14 +46,14 @@ const PRICING_PLANS = [
     tier: 'pro',
     monthlyPrice: 149,
     annualPrice: 1490,
-    description: 'Most popular for solo agents',
+    description: 'Most popular for working agents',
     features: [
       'Unlimited SMS',
-      'Full AI with SMS & email',
-      'Cal.com integration',
-      'Advanced analytics & API',
-      'Priority chat + email support',
-      'Custom AI training',
+      'Full AI (Claude)',
+      'Cal.com booking',
+      'Lead qualification',
+      'Priority chat + email',
+      'Full analytics',
     ],
     cta: 'Start Free Trial',
     highlighted: true,
@@ -64,16 +63,16 @@ const PRICING_PLANS = [
     tier: 'team',
     monthlyPrice: 399,
     annualPrice: 3990,
-    description: 'For small teams (2-5 agents)',
+    description: 'For small teams (up to 5 agents)',
     features: [
-      'Everything in Pro',
-      'Up to 5 agents',
-      'Team dashboard',
-      'Lead routing & distribution',
-      'Performance tracking',
-      'Team collaboration tools',
+      'Unlimited SMS',
+      'Full AI (Claude)',
+      'Lead routing',
+      'Team analytics',
+      '5 agents included',
+      'Priority support',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Get Started',
     highlighted: false,
   },
   {
@@ -81,28 +80,77 @@ const PRICING_PLANS = [
     tier: 'brokerage',
     monthlyPrice: 999,
     annualPrice: 9990,
-    description: 'For large brokerages (20+ agents)',
+    description: 'White-label for large brokerages',
     features: [
-      'Unlimited leads',
-      'Multi-channel AI (SMS/email/voice/chat)',
-      'Unlimited agents',
+      'Unlimited everything',
+      'Custom AI training',
       'White-label options',
-      'Admin dashboard & compliance',
+      'SLA (99.9% uptime)',
       'Dedicated account manager',
-      'SLA guarantees (99.9% uptime)',
-      'Custom integrations',
+      'Compliance reporting',
     ],
     cta: 'Contact Sales',
     highlighted: false,
+    contactSales: true,
   },
 ]
 
-const ADD_ONS = [
-  { name: 'Extra 100 leads/month', price: 200 },
-  { name: 'Additional phone number', price: 25 },
-  { name: 'Custom AI persona', price: 500 },
-  { name: 'Advanced reporting', price: 150 },
+// Feature comparison data
+const FEATURE_CATEGORIES = [
+  {
+    name: 'SMS & AI',
+    features: [
+      { name: 'SMS/month', starter: '100', pro: 'Unlimited', team: 'Unlimited', brokerage: 'Unlimited' },
+      { name: 'AI Model', starter: 'Basic', pro: 'Full (Claude)', team: 'Full (Claude)', brokerage: 'Full + Custom' },
+      { name: 'Response Time', starter: '< 60s', pro: '< 30s', team: '< 30s', brokerage: '< 15s' },
+      { name: 'Custom AI Training', starter: false, pro: true, team: true, brokerage: true },
+    ],
+  },
+  {
+    name: 'Agents',
+    features: [
+      { name: 'Included', starter: '1', pro: '1', team: '5', brokerage: '20+' },
+      { name: 'Additional Agents', starter: '—', pro: '—', team: '$49/mo', brokerage: 'Custom' },
+    ],
+  },
+  {
+    name: 'Integrations',
+    features: [
+      { name: 'FUB CRM', starter: true, pro: true, team: true, brokerage: true },
+      { name: 'Cal.com Booking', starter: false, pro: true, team: true, brokerage: true },
+      { name: 'Lead Routing', starter: false, pro: false, team: true, brokerage: true },
+      { name: 'API Access', starter: false, pro: true, team: true, brokerage: true },
+    ],
+  },
+  {
+    name: 'Analytics',
+    features: [
+      { name: 'Dashboard', starter: 'Basic', pro: 'Full', team: 'Full', brokerage: 'Full + Admin' },
+      { name: 'Team Reports', starter: false, pro: false, team: true, brokerage: true },
+      { name: 'Custom Reports', starter: false, pro: false, team: false, brokerage: true },
+    ],
+  },
+  {
+    name: 'Support',
+    features: [
+      { name: 'Email', starter: true, pro: true, team: true, brokerage: true },
+      { name: 'Chat', starter: false, pro: true, team: true, brokerage: true },
+      { name: 'Priority', starter: false, pro: false, team: true, brokerage: true },
+      { name: 'Dedicated AM', starter: false, pro: false, team: false, brokerage: true },
+    ],
+  },
+  {
+    name: 'Enterprise',
+    features: [
+      { name: 'White-label', starter: false, pro: false, team: false, brokerage: true },
+      { name: 'SLA (99.9%)', starter: false, pro: false, team: false, brokerage: true },
+      { name: 'Compliance Reporting', starter: false, pro: false, team: false, brokerage: true },
+      { name: 'Custom Contracts', starter: false, pro: false, team: false, brokerage: true },
+    ],
+  },
 ]
+
+
 
 export default function PricingPage() {
   const router = useRouter()
@@ -253,7 +301,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {PRICING_PLANS.map((plan) => {
               const price = interval === 'monthly' ? plan.monthlyPrice : Math.floor(plan.annualPrice / 12)
               const fullPrice = interval === 'monthly' ? plan.monthlyPrice * 12 : plan.annualPrice
@@ -286,7 +334,7 @@ export default function PricingPage() {
                     {/* Price */}
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-5xl font-bold text-white">${price}</span>
+                        <span className="text-4xl font-bold text-white">${plan.tier === 'brokerage' ? '999+' : price}</span>
                         <span className="text-slate-400">/month</span>
                       </div>
                       <p className="text-xs text-slate-400 mt-2">
@@ -341,16 +389,94 @@ export default function PricingPage() {
             </div>
           )}
 
-          {/* Add-Ons */}
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-8 mb-16">
-            <h3 className="text-2xl font-bold text-white mb-8">Optional Add-Ons</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {ADD_ONS.map((addon) => (
-                <div key={addon.name} className="flex items-center justify-between p-4 bg-slate-700/20 rounded-lg border border-slate-600/30">
-                  <span className="text-slate-200">{addon.name}</span>
-                  <span className="font-semibold text-emerald-400">${addon.price}/mo</span>
-                </div>
-              ))}
+          {/* Feature Comparison Table */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-white mb-8 text-center">Compare All Features</h3>
+            <div className="overflow-x-auto -mx-4 px-4">
+              <div className="min-w-[800px] bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-slate-800">
+                      <th className="text-left py-4 px-6 text-slate-400 font-medium sticky left-0 bg-slate-800 z-10">Feature</th>
+                      <th className="text-center py-4 px-4 text-slate-300 font-semibold">Starter</th>
+                      <th className="text-center py-4 px-4 text-emerald-400 font-semibold bg-emerald-500/5">Pro</th>
+                      <th className="text-center py-4 px-4 text-slate-300 font-semibold">Team</th>
+                      <th className="text-center py-4 px-4 text-slate-300 font-semibold">Brokerage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Price row */}
+                    <tr className="border-b border-slate-700/50 bg-slate-800/50">
+                      <td className="py-4 px-6 text-slate-300 font-medium sticky left-0 bg-slate-800/50 z-10">Monthly Price</td>
+                      <td className="text-center py-4 px-4 text-slate-300">$49</td>
+                      <td className="text-center py-4 px-4 text-emerald-400 font-semibold bg-emerald-500/5">$149</td>
+                      <td className="text-center py-4 px-4 text-slate-300">$399</td>
+                      <td className="text-center py-4 px-4 text-slate-300">$999+</td>
+                    </tr>
+                    {FEATURE_CATEGORIES.map((category, catIdx) => (
+                      <>
+                        <tr key={catIdx} className="bg-slate-800/30">
+                          <td colSpan={5} className="py-3 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            {category.name}
+                          </td>
+                        </tr>
+                        {category.features.map((feature, featIdx) => (
+                          <tr
+                            key={featIdx}
+                            className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors"
+                          >
+                            <td className="py-3 px-6 text-slate-300 text-sm sticky left-0 bg-slate-900/50 z-10">{feature.name}</td>
+                            <td className="text-center py-3 px-4">
+                              {typeof feature.starter === 'boolean' ? (
+                                feature.starter ? (
+                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                                ) : (
+                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
+                                )
+                              ) : (
+                                <span className="text-slate-300 text-sm">{feature.starter}</span>
+                              )}
+                            </td>
+                            <td className="text-center py-3 px-4 bg-emerald-500/5">
+                              {typeof feature.pro === 'boolean' ? (
+                                feature.pro ? (
+                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                                ) : (
+                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
+                                )
+                              ) : (
+                                <span className="text-slate-300 text-sm">{feature.pro}</span>
+                              )}
+                            </td>
+                            <td className="text-center py-3 px-4">
+                              {typeof feature.team === 'boolean' ? (
+                                feature.team ? (
+                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                                ) : (
+                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
+                                )
+                              ) : (
+                                <span className="text-slate-300 text-sm">{feature.team}</span>
+                              )}
+                            </td>
+                            <td className="text-center py-3 px-4">
+                              {typeof feature.brokerage === 'boolean' ? (
+                                feature.brokerage ? (
+                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                                ) : (
+                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
+                                )
+                              ) : (
+                                <span className="text-slate-300 text-sm">{feature.brokerage}</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
