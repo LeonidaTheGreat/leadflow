@@ -29,10 +29,19 @@ export interface DemoEventParams {
 }
 
 /**
- * Generate a unique session ID for demo analytics
+ * Generate a unique session ID for demo analytics using cryptographically secure randomness
  */
 export function generateDemoSessionId(): string {
-  return `demo_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+  // Use Web Crypto API getRandomValues (available in modern Node.js 15+ and all browsers)
+  const randomBytes = new Uint8Array(6)
+  globalThis.crypto.getRandomValues(randomBytes)
+  
+  // Convert bytes to hex string
+  const randomPart = Array.from(randomBytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+  
+  return `demo_${Date.now()}_${randomPart}`
 }
 
 /**
