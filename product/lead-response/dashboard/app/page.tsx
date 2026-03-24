@@ -6,12 +6,15 @@ import TrialSignupForm from '@/components/trial-signup-form'
 import { trackCTAClick } from '@/lib/analytics/ga4'
 import LeadMagnetSection from '@/components/LeadMagnetSection'
 import { useUtmCapture } from '@/lib/utm-capture'
+import { ScrollDepthTracker } from '@/components/scroll-depth-tracker'
 
 export default function HomePage() {
   // Capture UTM parameters on mount (first-touch wins)
   useUtmCapture()
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
+      {/* Scroll Depth Tracking */}
+      <ScrollDepthTracker />
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
