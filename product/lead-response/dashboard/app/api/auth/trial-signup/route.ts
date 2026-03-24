@@ -248,12 +248,11 @@ async function buildSuccessResponse(
   })
 
   // Set HTTP-only session cookie (30 days for trial)
-  response.cookies.set({
-    name: 'leadflow_session',
-    value: session.token,
+  // Cookie name must be 'auth-token' (hyphen) to match /api/auth/me and all other auth readers
+  response.cookies.set('auth-token', session.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 30 * 24 * 60 * 60,
     path: '/',
   })
