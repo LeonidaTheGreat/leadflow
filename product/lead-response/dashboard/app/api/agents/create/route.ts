@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
+// Use NEXT_PUBLIC_API_URL if set (already includes /rest/v1), otherwise construct from SUPABASE_URL
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NEXT_PUBLIC_SUPABASE_URL ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1` : undefined)
+
 const supabase = createClient(
-  (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
+  apiUrl!,
   (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)!
 )
 
