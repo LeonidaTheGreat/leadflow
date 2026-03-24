@@ -1,33 +1,48 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+// Using Jest globals (describe, it, expect, jest are global)
+
+// Mock Supabase BEFORE importing modules that use it
+// Note: lib/trial.ts creates supabase at module-load time, so we must use
+// a chainable mock from the start (mockReturnValue in beforeEach is too late)
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    from: jest.fn(),
+  }))
+}))
+
 import { checkTrialStatus, canSendSms, getExpiredTrialAgents } from '@/lib/trial'
 import { createClient } from '@supabase/supabase-js'
 
-// Mock Supabase
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn()
-}))
-
 describe('Expired Trial Handling (AC-8)', () => {
-  let mockSupabase: any
   let mockFrom: any
+  // Capture the supabase client instance created at lib/trial.ts module load time.
+  // Must be done in beforeAll BEFORE any clearAllMocks() erases mock.results.
+  let supabaseInstance: any
+
+  beforeAll(() => {
+    supabaseInstance = jest.mocked(createClient).mock.results[0]?.value
+  })
 
   beforeEach(() => {
     mockFrom = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      single: vi.fn(),
+      select: jest.fn(),
+      eq: jest.fn(),
+      lt: jest.fn(),
+      single: jest.fn(),
     }
+    // Chain: select/eq return mockFrom (chainable); lt/single resolve with data
+    mockFrom.select.mockReturnValue(mockFrom)
+    mockFrom.eq.mockReturnValue(mockFrom)
+    mockFrom.lt.mockResolvedValue({ data: null, error: null })
+    mockFrom.single.mockResolvedValue({ data: null, error: null })
 
-    mockSupabase = {
-      from: vi.fn().mockReturnValue(mockFrom),
+    // Re-apply the from mock after each clearAllMocks()
+    if (supabaseInstance) {
+      supabaseInstance.from.mockReturnValue(mockFrom)
     }
-
-    vi.mocked(createClient).mockReturnValue(mockSupabase)
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('checkTrialStatus', () => {
@@ -140,7 +155,8 @@ describe('Expired Trial Handling (AC-8)', () => {
 
   describe('getExpiredTrialAgents', () => {
     it('AC-8.8: Returns empty array when no expired trials', async () => {
-      mockFrom.single.mockResolvedValue({ data: [] })
+      // getExpiredTrialAgents uses .select().eq().lt() chain (no .single())
+      mockFrom.lt.mockResolvedValue({ data: [], error: null })
 
       const agents = await getExpiredTrialAgents()
 
@@ -148,12 +164,13 @@ describe('Expired Trial Handling (AC-8)', () => {
     })
 
     it('AC-8.9: Returns list of expired trial agent IDs', async () => {
-      mockFrom.single.mockResolvedValue({
+      mockFrom.lt.mockResolvedValue({
         data: [
           { id: 'agent-1' },
           { id: 'agent-2' },
           { id: 'agent-3' },
         ],
+        error: null,
       })
 
       const agents = await getExpiredTrialAgents()
@@ -165,7 +182,7 @@ describe('Expired Trial Handling (AC-8)', () => {
     })
 
     it('AC-8.10: Queries with plan_tier=trial and trial_ends_at < now', async () => {
-      mockFrom.single.mockResolvedValue({ data: [] })
+      mockFrom.lt.mockResolvedValue({ data: [], error: null })
 
       await getExpiredTrialAgents()
 
