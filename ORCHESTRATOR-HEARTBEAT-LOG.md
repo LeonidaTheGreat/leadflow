@@ -1,37 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-24T11:26:48.530Z
+Last updated: 2026-03-24T11:28:49.852Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-23T05:09:33.134Z",
-    "status": {
-      "ready": 36,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 1151,
-      "total": 1283
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":36,\"inProgress\":1,\"blocked\":0,\"done\":1151,\"total\":1283}",
-      "Completed (via stdout): PM: Product Review — Post-Login Onboarding Wizard for New Agents",
-      "Merge retry 1/3: feat-add-auth-middleware-to-protect-dashboard",
-      "Merge retry 1/3: fix-pricing-section-shows-pilot-only-pricing-instead-o",
-      "Merge retry 1/3: feat-utm-capture-marketing-attribution",
-      "Self-healed 1 critical issue(s)",
-      "Smoke tests: 8/8 passed",
-      "Product sync: 6 components updated",
-      "Merge gate blocked: fix-pricing-section-shows-pilot-only-pricing-instead-o",
-      "Merge gate blocked: feat-utm-capture-marketing-attribution",
-      "Merge gate blocked: feat-add-auth-middleware-to-protect-dashboard",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 1,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-23T05:14:29.389Z",
     "status": {
@@ -2540,9 +2511,32 @@ Last updated: 2026-03-24T11:26:48.530Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T11:28:49.844Z",
+    "status": {
+      "ready": 22,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1593,
+      "total": 1785
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":22,\"inProgress\":1,\"blocked\":0,\"done\":1593,\"total\":1785}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":22,"inProgress":1,"blocked":0,"done":1592,"total":1784}
+- Last status: {"ready":22,"inProgress":1,"blocked":0,"done":1593,"total":1785}
