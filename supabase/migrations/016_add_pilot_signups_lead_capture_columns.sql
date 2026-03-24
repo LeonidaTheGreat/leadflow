@@ -9,8 +9,13 @@ ALTER TABLE pilot_signups
   ADD COLUMN IF NOT EXISTS utm_source TEXT,
   ADD COLUMN IF NOT EXISTS utm_medium TEXT;
 
--- Ensure unique index on email for ON CONFLICT deduplication in lead-capture upsert
-CREATE UNIQUE INDEX IF NOT EXISTS pilot_signups_email_unique ON pilot_signups(email);
+-- Clean up duplicate unique constraints on email
+-- Drop any unique constraints that aren't the primary key
+ALTER TABLE pilot_signups DROP CONSTRAINT IF EXISTS pilot_signups_email_unique CASCADE;
+
+-- Ensure we have ONE unique constraint on email for PostgREST ON CONFLICT
+-- The constraint name 'pilot_signups_email_key' is used by the upsert deduplication
+CREATE UNIQUE INDEX IF NOT EXISTS pilot_signups_email_key ON pilot_signups(email);
 
 -- Add status index for quick filtering by nurture state
 CREATE INDEX IF NOT EXISTS idx_pilot_signups_status ON pilot_signups(status);
