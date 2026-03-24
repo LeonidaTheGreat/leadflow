@@ -36,7 +36,7 @@ describe('UTM Parameter Capture', () => {
         utm_medium: 'cpc',
         utm_campaign: 'test_campaign',
       }
-      mockSessionStorage.setItem('lf_utm', JSON.stringify(utmData))
+      mockSessionStorage.setItem('leadflow_utm', JSON.stringify(utmData))
 
       const result = getUtmParams()
       expect(result).toEqual(utmData)
@@ -48,7 +48,7 @@ describe('UTM Parameter Capture', () => {
     })
 
     it('should return null if sessionStorage data is invalid JSON', () => {
-      mockSessionStorage.setItem('lf_utm', 'invalid json{')
+      mockSessionStorage.setItem('leadflow_utm', 'invalid json{')
       const result = getUtmParams()
       expect(result).toBeNull()
     })
@@ -56,11 +56,11 @@ describe('UTM Parameter Capture', () => {
 
   describe('clearUtmParams', () => {
     it('should remove UTM data from sessionStorage', () => {
-      mockSessionStorage.setItem('lf_utm', JSON.stringify({ utm_source: 'test' }))
+      mockSessionStorage.setItem('leadflow_utm', JSON.stringify({ utm_source: 'test' }))
       
       clearUtmParams()
 
-      expect(mockSessionStorage.removeItem).toHaveBeenCalledWith('lf_utm')
+      expect(mockSessionStorage.removeItem).toHaveBeenCalledWith('leadflow_utm')
     })
   })
 
@@ -74,7 +74,7 @@ describe('UTM Parameter Capture', () => {
         utm_content: null,
         utm_term: null,
       }
-      mockSessionStorage.setItem('lf_utm', JSON.stringify(utmData))
+      mockSessionStorage.setItem('leadflow_utm', JSON.stringify(utmData))
 
       const result = getUtmParams()
       expect(result).toBeTruthy()
@@ -99,7 +99,7 @@ describe('UTM Parameter Capture', () => {
         utm_source: 'email',
         utm_campaign: 'wave1',
       }
-      mockSessionStorage.setItem('lf_utm', JSON.stringify(firstUtm))
+      mockSessionStorage.setItem('leadflow_utm', JSON.stringify(firstUtm))
 
       const result = getUtmParams()
       expect(result?.utm_source).toBe('email')
