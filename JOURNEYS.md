@@ -1,11 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
-<<<<<<< HEAD
-> Generated: 2026-03-24T18:17:15.132Z | Source: `project.config.json` journeys + `product_reviews` table
-=======
-> Generated: 2026-03-12T07:00:03.098Z | Source: `project.config.json` journeys + `product_reviews` table
->>>>>>> 61461a0c (feat: implement pilot-to-paid conversion email sequence)
+> Generated: 2026-03-24T03:06:00.790Z | Source: `project.config.json` journeys + `product_reviews` table
 
 Review interval: every 14 days
 
