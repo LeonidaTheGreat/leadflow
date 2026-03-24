@@ -34,6 +34,7 @@ const PRICING_PLANS = [
     features: [
       '100 SMS/month',
       'Basic AI responses',
+      'Basic qualification',
       'Dashboard access',
       'FUB integration',
       'Email support',
@@ -65,6 +66,7 @@ const PRICING_PLANS = [
     annualPrice: 3990,
     description: 'For small teams (up to 5 agents)',
     features: [
+      'Everything in Pro',
       'Unlimited SMS',
       'Full AI (Claude)',
       'Lead routing',
