@@ -13,13 +13,14 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const DASHBOARD_DIR = path.join(__dirname, '../product/lead-response/dashboard')
+// Paths relative to dashboard directory
+const DASHBOARD_DIR = path.join(__dirname, '..')
 const CHECKOUT_ROUTE = path.join(DASHBOARD_DIR, 'app/api/billing/create-checkout-session/route.ts')
 const WEBHOOK_ROUTE = path.join(DASHBOARD_DIR, 'app/api/webhooks/stripe/route.ts')
 const BILLING_PAGE = path.join(DASHBOARD_DIR, 'app/settings/billing/page.tsx')
 const DASHBOARD_PAGE = path.join(DASHBOARD_DIR, 'app/dashboard/page.tsx')
 const UPGRADE_BANNER = path.join(DASHBOARD_DIR, 'components/dashboard/UpgradeBanner.tsx')
-const MIGRATION = path.join(__dirname, '../supabase/migrations/014_add_stripe_checkout_fields.sql')
+const MIGRATION = path.join(__dirname, '../../../../supabase/migrations/014_add_stripe_checkout_fields.sql')
 
 let passed = 0
 let failed = 0
@@ -219,7 +220,7 @@ check('Email failure is non-blocking', () => {
 check('Webhook is idempotent (handles duplicate events)', () => {
   const content = fs.readFileSync(WEBHOOK_ROUTE, 'utf8')
   // The webhook updates by agent_id which naturally makes it idempotent
-  assert.ok(content.includes('.eq(\'id\', agentId)') || content.includes('.eq("id", agentId)'),
+  assert.ok(content.includes(".eq('id', agentId)") || content.includes('.eq("id", agentId)'),
     'should update by agent ID for idempotency')
 })
 
