@@ -10,6 +10,7 @@ export const PRICING_PLANS = [
     monthlyPrice: 49,
     annualPrice: 490,
     description: 'Perfect for individual agents',
+    badge: 'Free pilot',
     features: [
       '100 SMS responses/month',
       'Basic AI qualification',
@@ -27,6 +28,7 @@ export const PRICING_PLANS = [
     monthlyPrice: 149,
     annualPrice: 1490,
     description: 'Most popular for solo agents',
+    badge: 'Most popular',
     features: [
       'Unlimited SMS responses',
       'Full AI qualification',
@@ -43,7 +45,8 @@ export const PRICING_PLANS = [
     tier: 'team',
     monthlyPrice: 399,
     annualPrice: 3990,
-    description: 'For small teams (2–5 agents)',
+    description: 'For small teams',
+    badge: '5 agents',
     features: [
       'Up to 5 agents included',
       'Unlimited SMS responses',
@@ -61,6 +64,7 @@ export const PRICING_PLANS = [
     monthlyPrice: 999,
     annualPrice: 9990,
     description: 'For large brokerages (20+ agents)',
+    badge: 'Enterprise',
     features: [
       'Unlimited agents',
       'White-label branding',
@@ -103,10 +107,18 @@ export default function PricingSection() {
                 : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
             }`}
           >
-            {plan.highlighted && (
+            {plan.badge && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-emerald-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  Most Popular
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                  plan.highlighted
+                    ? 'bg-emerald-500 text-white'
+                    : plan.tier === 'starter'
+                    ? 'bg-blue-500 text-white'
+                    : plan.tier === 'team'
+                    ? 'bg-purple-500 text-white'
+                    : 'bg-slate-600 text-white'
+                }`}>
+                  {plan.badge}
                 </span>
               </div>
             )}
