@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
+import { getAuthenticatedAgent } from '@/lib/onboarding-auth'
 import twilio from 'twilio'
 
 /**
@@ -17,19 +18,20 @@ import twilio from 'twilio'
  *   { success: false, error: "..." }
  */
 export async function POST(request: NextRequest) {
-  try {
-    const agentId = request.headers.get('x-agent-id')
-    if (!agentId) {
-      return NextResponse.json(
-        { success: false, error: 'Missing x-agent-id header' },
-        { status: 400 }
-      )
-    }
+  if (!isSupabaseConfigured()) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
+  }
 
+  const agentId = await getAuthenticatedAgent(request)
+  if (!agentId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
     let areaCode: string | undefined
     try {
       const body = await request.json()
-      areaCode = body.areaCode
+      areaCode = body.areaCode?.toString().replace(/\D/g, '').slice(0, 3)
     } catch {
       // Body is optional — no area code specified
     }
@@ -159,6 +161,16 @@ export async function POST(request: NextRequest) {
         },
         { onConflict: 'agent_id' }
       )
+
+    // Update agent onboarding state
+    await supabase
+      .from('real_estate_agents')
+      .update({
+        phone_configured: true,
+        onboarding_step: 2,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', agentId)
 
     console.log('[provision-phone] Provisioned:', assignedNumber, 'for agent:', agentId)
 

@@ -36,7 +36,7 @@ describe('UTM Parameter Capture', () => {
         utm_medium: 'cpc',
         utm_campaign: 'test_campaign',
       }
-      mockSessionStorage.setItem('leadflow_utm', JSON.stringify(utmData))
+      mockSessionStorage.setItem('lf_utm', JSON.stringify(utmData))
 
       const result = getUtmParams()
       expect(result).toEqual(utmData)
@@ -48,7 +48,7 @@ describe('UTM Parameter Capture', () => {
     })
 
     it('should return null if sessionStorage data is invalid JSON', () => {
-      mockSessionStorage.setItem('leadflow_utm', 'invalid json{')
+      mockSessionStorage.setItem('lf_utm', 'invalid json{')
       const result = getUtmParams()
       expect(result).toBeNull()
     })
@@ -56,11 +56,54 @@ describe('UTM Parameter Capture', () => {
 
   describe('clearUtmParams', () => {
     it('should remove UTM data from sessionStorage', () => {
-      mockSessionStorage.setItem('leadflow_utm', JSON.stringify({ utm_source: 'test' }))
+      mockSessionStorage.setItem('lf_utm', JSON.stringify({ utm_source: 'test' }))
       
       clearUtmParams()
 
-      expect(mockSessionStorage.removeItem).toHaveBeenCalledWith('leadflow_utm')
+      expect(mockSessionStorage.removeItem).toHaveBeenCalledWith('lf_utm')
+    })
+  })
+
+  // T-1: Happy Path — UTM Captured and Stored
+  describe('T-1: Happy Path — UTM Captured and Stored', () => {
+    it('captures UTM params from URL and stores in sessionStorage', () => {
+      const utmData = {
+        utm_source: 'google',
+        utm_medium: 'cpc',
+        utm_campaign: 'pilot-q1',
+        utm_content: null,
+        utm_term: null,
+      }
+      mockSessionStorage.setItem('lf_utm', JSON.stringify(utmData))
+
+      const result = getUtmParams()
+      expect(result).toBeTruthy()
+      expect(result?.utm_source).toBe('google')
+      expect(result?.utm_medium).toBe('cpc')
+      expect(result?.utm_campaign).toBe('pilot-q1')
+    })
+  })
+
+  // T-2: No UTM — Clean Null
+  describe('T-2: No UTM — Direct Visit Produces No sessionStorage Entry', () => {
+    it('returns null when no UTM params in sessionStorage', () => {
+      const result = getUtmParams()
+      expect(result).toBeNull()
+    })
+  })
+
+  // T-3: First-Touch Wins
+  describe('T-3: First-Touch Wins', () => {
+    it('preserves first UTM data when multiple calls made', () => {
+      const firstUtm = {
+        utm_source: 'email',
+        utm_campaign: 'wave1',
+      }
+      mockSessionStorage.setItem('lf_utm', JSON.stringify(firstUtm))
+
+      const result = getUtmParams()
+      expect(result?.utm_source).toBe('email')
+      expect(result?.utm_campaign).toBe('wave1')
     })
   })
 })
