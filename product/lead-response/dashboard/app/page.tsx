@@ -138,41 +138,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials — Social Proof */}
-      <section id="testimonials" data-testid="testimonials" className="container mx-auto px-4 py-20">
-        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-          What Agents Are Saying
-        </h3>
-        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          Real estate professionals trust LeadFlow AI to close more deals.
-        </p>
+      {/* Testimonials — Social Proof Section */}
+      <section id="testimonials" data-testid="testimonials" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            What Real Estate Agents Are Saying
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Join hundreds of agents who have transformed their lead response.
+          </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <TestimonialCard
-            quote="LeadFlow AI cut my response time from 2 hours to under 30 seconds. I've booked 3x more showings since switching."
-            name="Sarah M."
-            role="Residential Agent, Austin TX"
-          />
-          <TestimonialCard
-            quote="The AI qualification is shockingly good. It filters out tire-kickers so I only talk to serious buyers."
-            name="James R."
-            role="Buyer's Agent, Miami FL"
-          />
-          <TestimonialCard
-            quote="Set it up in 10 minutes, had my first AI-booked appointment the same day. Absolute game changer."
-            name="Priya K."
-            role="Team Lead, Denver CO"
-          />
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={index} {...testimonial} />
+            ))}
+          </div>
 
-        <div className="mt-12 text-center">
-          <Link
-            href="/signup?plan=starter"
-            onClick={() => trackCTAClick('get_started_testimonial', 'Get Started Free', 'testimonial')}
-            className="inline-block px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-          >
-            Get Started Free
-          </Link>
+          <p className="mt-8 text-center text-sm text-slate-400 dark:text-slate-500 italic">
+            Results may vary. Testimonials represent expected outcomes based on typical usage.
+          </p>
         </div>
       </section>
 
@@ -247,6 +231,24 @@ export default function HomePage() {
   )
 }
 
+const testimonials = [
+  {
+    quote: "I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight.",
+    name: "Sarah M.",
+    title: "Solo Agent, Austin TX",
+  },
+  {
+    quote: "My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month.",
+    name: "Mike R.",
+    title: "Team Lead, Denver CO",
+  },
+  {
+    quote: "Setup took 5 minutes. The AI sounds like me, not a robot.",
+    name: "Jennifer K.",
+    title: "Realtor, Miami FL",
+  },
+]
+
 function HowItWorksStep({ step, title, description }: { step: number; title: string; description: string }) {
   return (
     <div className="text-center" data-testid={`how-it-works-step-${step}`}>
@@ -269,13 +271,27 @@ function FeatureCard({ title, description, icon }: { title: string; description:
   )
 }
 
-function TestimonialCard({ quote, name, role }: { quote: string; name: string; role: string }) {
+function TestimonialCard({
+  quote,
+  name,
+  title,
+}: {
+  quote: string
+  name: string
+  title: string
+}) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6" data-testid="testimonial-card">
-      <p className="text-slate-700 dark:text-slate-300 mb-4 italic">&ldquo;{quote}&rdquo;</p>
-      <div>
-        <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{role}</p>
+    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col" data-testid="testimonial-card">
+      <div className="text-emerald-500 text-4xl mb-4">"</div>
+      <p className="text-slate-700 dark:text-slate-300 mb-6 flex-grow">{quote}</p>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
+          {name.charAt(0)}
+        </div>
+        <div>
+          <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+        </div>
       </div>
     </div>
   )
@@ -340,3 +356,5 @@ function PricingCard({
     </div>
   )
 }
+
+
