@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 import { trackCTAClick } from '@/lib/analytics/ga4'
+import { useUtmCapture } from '@/lib/utm-capture'
 
 export default function HomePage() {
+  // Capture UTM parameters on mount (first-touch wins)
+  useUtmCapture()
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
       {/* Header */}
