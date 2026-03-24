@@ -113,6 +113,7 @@ async function test3_messageBodyColumnName() {
     .limit(1);
 
   // BUG: route selects 'body' but real column is 'message_body'
+  // This test PASSES if we detect the bug (error present)
   assert(
     buggyError !== null,
     `BUG CONFIRMED: route.ts inbound query uses "body" but column is "message_body" — ` +
