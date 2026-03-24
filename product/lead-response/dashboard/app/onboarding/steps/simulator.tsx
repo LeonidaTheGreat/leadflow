@@ -56,7 +56,12 @@ export default function OnboardingSimulator({
 
   // Generate a session ID on mount
   useEffect(() => {
-    const newSessionId = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const randomBytes = new Uint8Array(6)
+    crypto.getRandomValues(randomBytes)
+    const randomSuffix = Array.from(randomBytes)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    const newSessionId = `sim_${Date.now()}_${randomSuffix}`
     setSessionId(newSessionId)
   }, [])
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { randomUUID } from 'crypto'
+import { randomUUID, randomBytes } from 'crypto'
 
 /**
  * POST /api/onboarding/simulator
@@ -117,9 +117,11 @@ async function startSimulation(agentId: string, sessionId: string) {
   
   // Generate a realistic lead
   const leadNames = ['Sarah Johnson', 'Michael Chen', 'Emily Rodriguez', 'David Thompson', 'Lisa Park']
-  const leadName = leadNames[Math.floor(Math.random() * leadNames.length)]
+  const leadNameIndex = randomBytes(1).readUInt8(0) % leadNames.length
+  const leadName = leadNames[leadNameIndex]
   const propertyInterests = ['a 3-bedroom home', 'a downtown condo', 'a family house', 'investment property', 'a new construction']
-  const propertyInterest = propertyInterests[Math.floor(Math.random() * propertyInterests.length)]
+  const propertyInterestIndex = randomBytes(1).readUInt8(0) % propertyInterests.length
+  const propertyInterest = propertyInterests[propertyInterestIndex]
 
   // Initialize simulation in memory
   simulationProgress.set(sessionId, {
@@ -181,7 +183,8 @@ async function simulateConversation(sessionId: string, leadName: string, propert
   // Simulate 3 turns with realistic timing
   for (let turn = 0; turn < 3; turn++) {
     // Simulate network/processing delay (1-2 seconds per turn)
-    await delay(1000 + Math.random() * 1000)
+    const randomDelay1 = randomBytes(1).readUInt8(0) / 255 * 1000
+    await delay(1000 + randomDelay1)
     
     const now = Date.now()
     const leadTimestamp = new Date(now).toISOString()
@@ -217,7 +220,8 @@ async function simulateConversation(sessionId: string, leadName: string, propert
     }
 
     // Simulate AI "thinking" time (500ms - 1.5s)
-    await delay(500 + Math.random() * 1000)
+    const randomDelay2 = randomBytes(1).readUInt8(0) / 255 * 1000
+    await delay(500 + randomDelay2)
     
     const aiNow = Date.now()
     const aiTimestamp = new Date(aiNow).toISOString()
