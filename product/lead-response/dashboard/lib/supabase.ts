@@ -1,9 +1,8 @@
 /**
  * PostgREST Database Client Re-exports
  * 
- * This module maintains backward compatibility by re-exporting functions
- * from lib/db.ts. All imports from @supabase/supabase-js have been migrated
- * to use PostgREST directly via NEXT_PUBLIC_API_URL.
+ * This module maintains backward compatibility by re-exporting from lib/db.ts.
+ * All imports from @supabase/supabase-js have been migrated to use PostgREST.
  */
 
 import { postgrestAdmin, postgrestPublic } from './db'
@@ -47,8 +46,9 @@ export async function createLead(
   const { data, error } = await postgrestAdmin
     .from('leads')
     .insert(lead)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -56,9 +56,10 @@ export async function createLead(
 export async function getLeadById(id: string): Promise<{ data: Lead | null; error: any }> {
   const { data, error } = await postgrestAdmin
     .from('leads')
-    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)')
+    .select('*')
     .eq('id', id)
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -69,6 +70,7 @@ export async function getLeadByPhone(phone: string): Promise<{ data: Lead | null
     .select('*')
     .eq('phone', phone)
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -83,7 +85,7 @@ export async function getLeadsByAgent(
 ): Promise<{ data: Lead[]; count: number | null; error: any }> {
   let query = postgrestAdmin
     .from('leads')
-    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)', { count: 'exact' })
+    .select('*')
     .eq('agent_id', agentId)
     .order('created_at', { ascending: false })
 
@@ -99,8 +101,8 @@ export async function getLeadsByAgent(
     query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
   }
 
-  const { data, error, count } = await query
-  return { data: data || [], count, error }
+  const { data, error, count } = await query.execute()
+  return { data: data || [], count: count ?? null, error }
 }
 
 export async function updateLead(
@@ -111,8 +113,9 @@ export async function updateLead(
     .from('leads')
     .update(updates)
     .eq('id', id)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -127,8 +130,9 @@ export async function createQualification(
   const { data, error } = await postgrestAdmin
     .from('qualifications')
     .insert(qualification)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -141,6 +145,7 @@ export async function getQualificationsByLead(
     .select('*')
     .eq('lead_id', leadId)
     .order('created_at', { ascending: false })
+    .execute()
 
   return { data: data || [], error }
 }
@@ -155,8 +160,9 @@ export async function createMessage(
   const { data, error } = await postgrestAdmin
     .from('messages')
     .insert(message)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -169,6 +175,7 @@ export async function getMessagesByLead(
     .select('*')
     .eq('lead_id', leadId)
     .order('created_at', { ascending: true })
+    .execute()
 
   return { data: data || [], error }
 }
@@ -191,8 +198,9 @@ export async function updateMessageStatus(
     .from('messages')
     .update(updates)
     .eq('twilio_sid', twilioSid)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -207,6 +215,7 @@ export async function getAgentById(id: string): Promise<{ data: Agent | null; er
     .select('*')
     .eq('id', id)
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -217,6 +226,7 @@ export async function getAgentByEmail(email: string): Promise<{ data: Agent | nu
     .select('*')
     .eq('email', email)
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -226,6 +236,7 @@ export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> 
     .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
+    .execute()
 
   return { data: data || [], error }
 }
@@ -240,8 +251,9 @@ export async function createBooking(
   const { data, error } = await postgrestAdmin
     .from('bookings')
     .insert(booking)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -254,6 +266,7 @@ export async function getBookingsByLead(
     .select('*')
     .eq('lead_id', leadId)
     .order('start_time', { ascending: false })
+    .execute()
 
   return { data: data || [], error }
 }
@@ -266,8 +279,9 @@ export async function updateBooking(
     .from('bookings')
     .update(updates)
     .eq('id', id)
-    .select()
+    .select('*')
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -297,7 +311,7 @@ export async function getTemplates(
     query = query.eq('is_active', options.isActive)
   }
 
-  const { data, error } = await query.order('category')
+  const { data, error } = await query.order('category').execute()
   return { data: data || [], error }
 }
 
@@ -307,6 +321,7 @@ export async function getTemplateById(id: string): Promise<{ data: Template | nu
     .select('*')
     .eq('id', id)
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -322,7 +337,7 @@ export async function incrementTemplateUsage(id: string): Promise<void> {
 export async function logEvent(
   event: Partial<Event>
 ): Promise<void> {
-  await postgrestAdmin.from('events').insert(event)
+  await postgrestAdmin.from('events').insert(event).select('*').single().execute()
 }
 
 // ============================================
@@ -335,6 +350,7 @@ export async function getDashboardStats(agentId: string): Promise<{ data: Dashbo
     .select('*')
     .eq('agent_id', agentId)
     .single()
+    .execute()
 
   return { data, error }
 }
@@ -346,6 +362,7 @@ export async function getLeadSummary(agentId: string): Promise<{ data: any[]; er
     .eq('agent_id', agentId)
     .order('created_at', { ascending: false })
     .limit(50)
+    .execute()
 
   return { data: data || [], error }
 }
