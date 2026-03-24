@@ -6,7 +6,7 @@ import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { SessionAnalyticsCard } from '@/components/dashboard/SessionAnalyticsCard'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
-import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
+import { LeadSatisfactionCardWrapper } from '@/components/dashboard/LeadSatisfactionCardWrapper'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
 import { AhaMomentBanner } from '@/components/dashboard/AhaMomentBanner'
 import { OnboardingWizardOverlay } from '@/components/onboarding-wizard-overlay'
@@ -141,8 +141,7 @@ export default function DashboardPage() {
       <SessionAnalyticsCard />
 
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
-      {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}
-      <LeadSatisfactionCard agentId="test-agent-id" />
+      <LeadSatisfactionCardWrapper />
 
       <Suspense fallback={<LeadFeedSkeleton />}>
         <LeadFeed />

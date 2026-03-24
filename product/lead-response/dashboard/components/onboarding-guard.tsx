@@ -3,26 +3,23 @@
 /**
  * OnboardingGuard
  *
- * Client component that auto-redirects unauthenticated users to the login page.
+ * Client component that auto-redirects unauthenticated or un-onboarded users
+ * to the appropriate page when they land on a protected dashboard route.
  *
  * Logic:
  *   1. No token  → redirect to /login
- *   2. Token present → stay (render nothing)
- *
- * NOTE: The wizard auto-trigger for incomplete onboarding is now handled by
- * the dashboard page itself (see app/dashboard/page.tsx). When onboarding_completed=false,
- * the dashboard renders the OnboardingWizardOverlay as a modal overlay.
- * This implements AC-3 from the PRD: "Setup Wizard overlay appears automatically
- * (onboarding_completed=false)".
+ *   2. Token present + onboardingCompleted === false → redirect to /setup
+ *   3. Token present + onboarding done → stay (render nothing)
  *
  * The user object (with onboardingCompleted) is written to localStorage/
  * sessionStorage by the login API response handler in /app/login/page.tsx.
+ * If the cached value is missing we fall back to a lightweight API check.
  */
 
 import { useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
-const PUBLIC_ROUTES = ['/setup', '/login', '/onboarding', '/forgot-password', '/reset-password', '/signup', '/dashboard/onboarding']
+const SETUP_ROUTES = ['/setup', '/login', '/onboarding', '/forgot-password', '/reset-password', '/signup', '/dashboard/onboarding']
 
 function getFromStorage(key: string): string | null {
   try {
@@ -30,6 +27,12 @@ function getFromStorage(key: string): string | null {
   } catch {
     return null
   }
+}
+
+interface StoredUser {
+  id?: string
+  onboardingCompleted?: boolean
+  [key: string]: unknown
 }
 
 export function OnboardingGuard() {
@@ -42,8 +45,8 @@ export function OnboardingGuard() {
     if (checkedRef.current) return
     checkedRef.current = true
 
-    // Skip guard on public pages (login, setup, onboarding, etc.)
-    const isPublicRoute = PUBLIC_ROUTES.some((r) => pathname?.startsWith(r))
+    // Skip guard on non-dashboard pages (login, setup, onboarding, etc.)
+    const isPublicRoute = SETUP_ROUTES.some((r) => pathname?.startsWith(r))
     if (isPublicRoute) return
 
     const token = getFromStorage('leadflow_token')
@@ -54,19 +57,37 @@ export function OnboardingGuard() {
       return
     }
 
-    // Check if onboarding is completed
+    // Try cached user data first (fastest path)
     const userRaw = getFromStorage('leadflow_user')
     if (userRaw) {
       try {
-        const user = JSON.parse(userRaw)
+        const user: StoredUser = JSON.parse(userRaw)
         if (user.onboardingCompleted === false) {
           router.replace('/setup')
           return
         }
+        // onboarding done — stay on page
+        return
       } catch {
-        // Ignore parse errors and continue
+        // malformed JSON — fall through to API check
       }
     }
+
+    // Fallback: ask the server whether the agent still needs onboarding
+    fetch('/api/setup/status', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return
+        // If wizard row exists but has no completed_at, redirect to setup
+        if (data.wizardState === null || data.wizardState?.completed_at === null) {
+          router.replace('/setup')
+        }
+      })
+      .catch(() => {
+        // Network failure — don't block the user; they'll be caught by setup/status
+      })
   }, [pathname, router])
 
   return null
