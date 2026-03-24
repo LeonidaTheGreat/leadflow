@@ -46,3 +46,11 @@
 - ✅ The issue described above is resolved (status now accurate)
 - ✅ Existing functionality is not broken (only updated database record)
 - ✅ Tests pass (migration validation test passes all 10 checks)
+
+## Fix: Genome Phase 1B — Telegram Reporter Path (2026-03-24)
+
+**Task:** 8b33d613-3bdf-4521-a462-8807cc292df7  
+**Repo:** `~/.openclaw/genome` branch `dev/8d2a8251-create-automated-tests-for-genome-core-m`  
+**Commit:** `6beaa12 fix: Replace broken telegram-reporter path with inline sendTelegram method`
+
+Replaced broken `require('../dashboard/telegram-reporter')` with inline `sendTelegram()` method using direct HTTPS in `HeartbeatExecutor`. All 98 genome tests pass.
