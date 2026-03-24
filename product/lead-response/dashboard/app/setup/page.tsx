@@ -310,9 +310,12 @@ export default function SetupPage() {
           <div className="w-full max-w-2xl">
             {state.currentStep === 'fub' && (
               <SetupFUB
-                agentId={state.agentId}
-                onComplete={handleFUBComplete}
-                onSkip={() => handleSkip('fub')}
+                onNext={() => handleFUBComplete(state.fubApiKey)}
+                setupData={{
+                  fubConnected: state.fubConnected,
+                  fubApiKey: state.fubApiKey,
+                }}
+                setSetupData={(data) => setState((prev) => ({ ...prev, ...data }))}
               />
             )}
             {state.currentStep === 'twilio' && (
@@ -343,10 +346,14 @@ export default function SetupPage() {
             )}
             {state.currentStep === 'complete' && (
               <SetupComplete
-                fubConnected={state.fubConnected}
-                twilioConnected={state.twilioConnected}
-                smsVerified={state.smsVerified}
-                onFinish={handleFinish}
+                onComplete={async () => handleFinish()}
+                onBack={() => goToStep('simulator')}
+                setupData={{
+                  fubConnected: state.fubConnected,
+                  smsConnected: state.twilioConnected,
+                  simulatorCompleted: state.simulatorCompleted,
+                }}
+                isLoading={false}
               />
             )}
           </div>

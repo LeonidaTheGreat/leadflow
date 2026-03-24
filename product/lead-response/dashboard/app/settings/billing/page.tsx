@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Check, Clock, Loader } from 'lucide-react'
@@ -36,7 +36,7 @@ const PLANS = [
   },
 ]
 
-export default function BillingPage() {
+function BillingPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
@@ -226,5 +226,13 @@ export default function BillingPage() {
         </a>
       </p>
     </div>
+  )
+}
+
+export default function BillingPage() {
+  return (
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <BillingPageContent />
+    </Suspense>
   )
 }

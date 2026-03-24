@@ -60,7 +60,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
   try {
     // Retrieve subscription and resolve price ID to tier
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+    const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as any
     const lineItem = subscription.items.data[0]
     const priceId = lineItem.price.id
     const tier = getTierFromPriceId(priceId)
