@@ -194,7 +194,7 @@ export default function HomePage() {
             Start with a free 30-day trial. Upgrade when you&apos;re ready.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             <PricingCard
               name="Starter"
               price="$49"
@@ -394,7 +394,7 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={isBrokerage ? '/contact' : `/signup?plan=${name.toLowerCase()}`}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${name.toLowerCase()}`}
         onClick={() => trackCTAClick(`pricing_${name.toLowerCase()}`, `${cta} ${name}`, 'pricing')}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
