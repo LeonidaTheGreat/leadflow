@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       .from('real_estate_agents')
       .update({
         onboarding_completed: true,
+        onboarding_completed_at: new Date().toISOString(),
         onboarding_step: 'complete'
       })
       .eq('id', payload.userId)
@@ -58,17 +59,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Log onboarding_completed event
-    await supabase.from('events').insert({
-      agent_id: payload.userId,
-      event_type: 'onboarding_completed',
-      event_data: {
-        fubConnected,
-        smsConnected,
-        simulatorCompleted
-      },
-      source: 'setup_wizard',
-      created_at: new Date().toISOString()
-    }).catch(() => {}) // Non-blocking
+    try {
+      await supabase.from('events').insert({
+        agent_id: payload.userId,
+        event_type: 'onboarding_completed',
+        event_data: {
+          fubConnected,
+          smsConnected,
+          simulatorCompleted
+        },
+        source: 'setup_wizard',
+        created_at: new Date().toISOString()
+      })
+    } catch {
+      // Non-blocking error logging
+    }
 
     return NextResponse.json({
       success: true,

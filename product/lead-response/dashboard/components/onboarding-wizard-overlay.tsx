@@ -179,10 +179,10 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
     saveWizardState(next)
   }
 
-  const handleSimulatorComplete = (responseTimeMs: number | null) => {
+  const handleSimulatorComplete = () => {
     const next: Partial<SetupState> = {
       simulatorCompleted: true,
-      simulatorResponseTimeMs: responseTimeMs,
+      simulatorResponseTimeMs: null,
       currentStep: 'complete',
     }
     setState((prev) => ({ ...prev, ...next }))
@@ -200,6 +200,7 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
 
   const handleSimulatorSkip = () => {
     const next: Partial<SetupState> = {
+      simulatorCompleted: false,
       simulatorSkipped: true,
       currentStep: 'complete',
     }
@@ -374,8 +375,9 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
             {state.currentStep === 'simulator' && (
               <SetupSimulator
                 agentId={state.agentId}
-                onComplete={handleSimulatorComplete}
-                onSkip={handleSimulatorSkip}
+                onNext={handleSimulatorComplete}
+                setupData={{ simulatorCompleted: state.simulatorCompleted }}
+                setSetupData={(data) => setState((prev) => ({ ...prev, ...data }))}
                 onBack={() => setState((prev) => ({ ...prev, currentStep: 'sms-verify' }))}
               />
             )}
