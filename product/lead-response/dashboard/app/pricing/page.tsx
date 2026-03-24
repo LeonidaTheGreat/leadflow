@@ -1,12 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-<<<<<<< HEAD
 import { useRouter } from 'next/navigation'
-import { Check, ArrowRight, Loader2 } from 'lucide-react'
-=======
-import { Check, Minus, ArrowRight } from 'lucide-react'
->>>>>>> 1768d052 (feat: add feature comparison table to /pricing page)
+import { Check, Minus, ArrowRight, Loader2 } from 'lucide-react'
 
 type BillingInterval = 'monthly' | 'annual'
 
@@ -34,16 +30,6 @@ const PRICING_PLANS = [
     tier: 'starter',
     monthlyPrice: 49,
     annualPrice: 490,
-<<<<<<< HEAD
-    description: 'Perfect for individual agents',
-    features: [
-      'Up to 100 SMS/month',
-      'Basic AI responses',
-      'Dashboard access',
-      'Calendar integration (1 agent)',
-      'Standard email support',
-      'Basic analytics',
-=======
     description: 'Perfect for testing the waters',
     features: [
       '100 SMS/month',
@@ -51,7 +37,6 @@ const PRICING_PLANS = [
       'Dashboard access',
       'FUB integration',
       'Email support',
->>>>>>> 1768d052 (feat: add feature comparison table to /pricing page)
     ],
     cta: 'Get Started',
     highlighted: false,
@@ -61,16 +46,6 @@ const PRICING_PLANS = [
     tier: 'pro',
     monthlyPrice: 149,
     annualPrice: 1490,
-<<<<<<< HEAD
-    description: 'Most popular for solo agents',
-    features: [
-      'Unlimited SMS',
-      'Full AI with SMS & email',
-      'Cal.com integration',
-      'Advanced analytics & API',
-      'Priority chat + email support',
-      'Custom AI training',
-=======
     description: 'Most popular for working agents',
     features: [
       'Unlimited SMS',
@@ -79,7 +54,6 @@ const PRICING_PLANS = [
       'Lead qualification',
       'Priority chat + email',
       'Full analytics',
->>>>>>> 1768d052 (feat: add feature comparison table to /pricing page)
     ],
     cta: 'Start Free Trial',
     highlighted: true,
@@ -89,35 +63,6 @@ const PRICING_PLANS = [
     tier: 'team',
     monthlyPrice: 399,
     annualPrice: 3990,
-<<<<<<< HEAD
-    description: 'For small teams (2-5 agents)',
-    features: [
-      'Everything in Pro',
-      'Up to 5 agents',
-      'Team dashboard',
-      'Lead routing & distribution',
-      'Performance tracking',
-      'Team collaboration tools',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: false,
-  },
-  {
-    name: 'Brokerage',
-    tier: 'brokerage',
-    monthlyPrice: 999,
-    annualPrice: 9990,
-    description: 'For large brokerages (20+ agents)',
-    features: [
-      'Unlimited leads',
-      'Multi-channel AI (SMS/email/voice/chat)',
-      'Unlimited agents',
-      'White-label options',
-      'Admin dashboard & compliance',
-      'Dedicated account manager',
-      'SLA guarantees (99.9% uptime)',
-      'Custom integrations',
-=======
     description: 'For small teams (up to 5 agents)',
     features: [
       'Unlimited SMS',
@@ -143,7 +88,6 @@ const PRICING_PLANS = [
       'SLA (99.9% uptime)',
       'Dedicated account manager',
       'Compliance reporting',
->>>>>>> 1768d052 (feat: add feature comparison table to /pricing page)
     ],
     cta: 'Contact Sales',
     highlighted: false,
@@ -357,11 +301,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-<<<<<<< HEAD
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-=======
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
->>>>>>> 1768d052 (feat: add feature comparison table to /pricing page)
             {PRICING_PLANS.map((plan) => {
               const price = interval === 'monthly' ? plan.monthlyPrice : Math.floor(plan.annualPrice / 12)
               const fullPrice = interval === 'monthly' ? plan.monthlyPrice * 12 : plan.annualPrice
@@ -442,7 +382,6 @@ export default function PricingPage() {
             })}
           </div>
 
-<<<<<<< HEAD
           {/* Checkout Error */}
           {checkoutError && (
             <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-sm text-center">
@@ -450,17 +389,6 @@ export default function PricingPage() {
             </div>
           )}
 
-          {/* Add-Ons */}
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-8 mb-16">
-            <h3 className="text-2xl font-bold text-white mb-8">Optional Add-Ons</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {ADD_ONS.map((addon) => (
-                <div key={addon.name} className="flex items-center justify-between p-4 bg-slate-700/20 rounded-lg border border-slate-600/30">
-                  <span className="text-slate-200">{addon.name}</span>
-                  <span className="font-semibold text-emerald-400">${addon.price}/mo</span>
-                </div>
-              ))}
-=======
           {/* Feature Comparison Table */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-white mb-8 text-center">Compare All Features</h3>
@@ -549,7 +477,6 @@ export default function PricingPage() {
                   </tbody>
                 </table>
               </div>
->>>>>>> 1768d052 (feat: add feature comparison table to /pricing page)
             </div>
           </div>
 
