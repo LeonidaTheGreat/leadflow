@@ -38,45 +38,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { fubConnected, smsConnected, simulatorCompleted } = await request.json()
+    // Get event data from request body
+    const { eventType, properties = {} } = await request.json()
 
-    // Update agent's onboarding status
-    const { error } = await supabase
-      .from('real_estate_agents')
-      .update({
-        onboarding_completed: true,
-        onboarding_step: 'complete'
-      })
-      .eq('id', payload.userId)
+    if (!eventType) {
+      return NextResponse.json(
+        { error: 'Event type is required' },
+        { status: 400 }
+      )
+    }
+
+    // Insert event into database
+    const { error } = await supabase.from('events').insert({
+      agent_id: payload.userId,
+      event_type: eventType,
+      event_data: properties,
+      source: 'client',
+      created_at: new Date().toISOString()
+    })
 
     if (error) {
-      console.error('Error completing setup:', error)
+      console.error('Error logging event:', error)
       return NextResponse.json(
-        { error: 'Failed to complete setup' },
+        { error: 'Failed to log event' },
         { status: 500 }
       )
     }
 
-    // Log onboarding_completed event
-    await supabase.from('events').insert({
-      agent_id: payload.userId,
-      event_type: 'onboarding_completed',
-      event_data: {
-        fubConnected,
-        smsConnected,
-        simulatorCompleted
-      },
-      source: 'setup_wizard',
-      created_at: new Date().toISOString()
-    }).catch(() => {}) // Non-blocking
-
-    return NextResponse.json({
-      success: true,
-      message: 'Setup completed successfully'
-    })
+    return NextResponse.json({ success: true })
 
   } catch (error) {
-    console.error('Setup complete error:', error)
+    console.error('Analytics event error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

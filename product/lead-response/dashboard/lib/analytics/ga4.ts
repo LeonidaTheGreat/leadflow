@@ -40,6 +40,7 @@ export type CTAId =
   | 'lead_magnet_cta'
   | 'get_started_hero'
   | 'get_started_nav'
+  | 'get_started_testimonial'
   | 'sign_in_nav'
   | string; // allow ad-hoc CTA ids
 
@@ -50,6 +51,7 @@ export type Section =
   | 'pricing'
   | 'lead_magnet'
   | 'features'
+  | 'testimonial'
   | 'footer'
   | string;
 

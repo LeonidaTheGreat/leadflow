@@ -1,0 +1,429 @@
+# UI Copy Document: Frictionless Onboarding Flow
+
+**Use Case:** feat-frictionless-onboarding-onboarding  
+**Scope:** All user-facing copy in onboarding flow  
+**Format:** JSON for easy integration
+
+---
+
+## 1. Landing Page Copy
+
+```json
+{
+  "landing_page": {
+    "hero": {
+      "headline": "Never Lose Another Lead to Slow Response",
+      "subheadline": "LeadFlow AI responds to your real estate leads in under 30 seconds—while you're showing houses, with clients, or sleeping.",
+      "primary_cta": "Start Free Trial — No Credit Card",
+      "cta_microcopy": "⚡ 14-day free trial • Up and running in 60 seconds • Cancel anytime",
+      "supporting_stat": "78% of real estate deals go to the first agent to respond"
+    },
+    "trust_bar": {
+      "social_proof": "Trusted by agents closing 200+ deals per year",
+      "signals": [
+        "🔒 SSL Secured",
+        "✓ No credit card required",
+        "✓ Cancel anytime",
+        "✓ Works with Follow Up Boss"
+      ]
+    },
+    "feature_ctas": {
+      "instant_response": "Your leads get answered in 30 seconds—even at 2 AM.",
+      "fub_integration": "Works with the CRM you already use. No migration. No learning curve.",
+      "sms_first": "98% of SMS messages get read. Your leads actually see your response."
+    },
+    "pricing_cta": {
+      "headline": "Not sure? Try everything free for 14 days.",
+      "subheadline": "No credit card. No setup fees. No catch.",
+      "button": "Start Free Trial"
+    },
+    "exit_intent": "Start your free trial — 14 days, no credit card required"
+  }
+}
+```
+
+---
+
+## 2. Signup Page Copy
+
+```json
+{
+  "signup_page": {
+    "header": {
+      "headline": "Start Your Free Trial",
+      "subheadline": "14 days free. No credit card required."
+    },
+    "form": {
+      "email": {
+        "label": "Email address",
+        "placeholder": "you@example.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Create a password (8+ characters)",
+        "helper_text": "Must be at least 8 characters"
+      }
+    },
+    "button_states": {
+      "default": "Create Account →",
+      "loading": "Creating your account...",
+      "success": "Success! Redirecting to dashboard..."
+    },
+    "errors": {
+      "duplicate_email": "This email is already registered. Sign in here →",
+      "weak_password": "Password must be at least 8 characters",
+      "network_error": "Something went wrong. Please try again."
+    },
+    "footer": {
+      "signin_link": "Already have an account? Sign in",
+      "trust_footer": "🔒 SSL secured • No CC required • Cancel anytime"
+    }
+  }
+}
+```
+
+---
+
+## 3. Dashboard First Visit
+
+```json
+{
+  "dashboard_first_visit": {
+    "sample_leads_banner": {
+      "text": "These are sample leads to show you how LeadFlow works. Connect FUB to see your real leads.",
+      "dismiss_button": "Got it"
+    },
+    "sample_leads": [
+      {
+        "name": "Sarah M.",
+        "source": "Zillow",
+        "phone": "+1 (***) ***-1234",
+        "ai_draft": "Hi Sarah! I saw you're interested in homes in the area. I'm here to help — what's your timeline?",
+        "timestamp": "3 min ago"
+      },
+      {
+        "name": "James K.",
+        "source": "Realtor.com",
+        "phone": "+1 (***) ***-5678",
+        "ai_draft": "Hey James, thanks for reaching out! Are you looking to buy or are you also considering selling?",
+        "timestamp": "12 min ago"
+      },
+      {
+        "name": "Maria L.",
+        "source": "Facebook Ad",
+        "phone": "+1 (***) ***-9012",
+        "ai_draft": "Hi Maria! Great news — we have several listings that match what you're looking for. When's a good time to chat?",
+        "timestamp": "1 hr ago"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 4. Trial Countdown Banner
+
+```json
+{
+  "trial_banner": {
+    "days_1_to_10": {
+      "text": "⏱ {{days_remaining}} days left in your free trial — Upgrade to keep your leads flowing",
+      "cta": "Upgrade Now"
+    },
+    "days_11_to_13": {
+      "text": "⚠️ {{days_remaining}} days left — don't let your leads go dark",
+      "cta": "Upgrade Now"
+    },
+    "day_14": {
+      "text": "🔴 Trial ending today — upgrade to keep responding",
+      "cta": "Upgrade Now"
+    }
+  }
+}
+```
+
+---
+
+## 5. Setup Wizard Copy
+
+```json
+{
+  "wizard": {
+    "navigation": {
+      "step_indicator": "Step {{current_step}} of 3",
+      "progress_labels": ["Connect FUB", "Verify SMS", "See It Work"],
+      "skip_option": "Skip for now →"
+    },
+    "step_1_fub": {
+      "title": "Connect Follow Up Boss",
+      "description": "LeadFlow works with your existing CRM. Enter your FUB API key to sync your leads.",
+      "input": {
+        "label": "FUB API Key",
+        "placeholder": "paste-your-api-key-here"
+      },
+      "primary_cta": "Connect FUB",
+      "help_link": "Where do I find my FUB API key?",
+      "help_tooltip": [
+        "1. Log into Follow Up Boss",
+        "2. Go to Admin → API",
+        "3. Copy your API key",
+        "4. Paste it here"
+      ],
+      "success": {
+        "title": "✓ Connected — {{lead_count}} leads synced",
+        "continue_button": "Continue →"
+      },
+      "errors": {
+        "invalid_key": "That API key didn't work. Find it in FUB → Admin → API",
+        "fub_unreachable": "FUB is temporarily unavailable — try again in a moment",
+        "already_registered": "Already connected — continue to next step"
+      }
+    },
+    "step_2_sms": {
+      "title": "Verify Your Phone Number",
+      "description": "We'll send you a test SMS to confirm everything is working. This is the number your leads will see.",
+      "input": {
+        "phone_label": "Your mobile number",
+        "phone_placeholder": "+1 (555) 123-4567",
+        "code_label": "Enter 4-digit code",
+        "code_placeholder": "1234"
+      },
+      "button_states": {
+        "send_sms": "Send Test SMS",
+        "verify_code": "Verify Code"
+      },
+      "test_sms_content": "LeadFlow AI is connected ✓ Reply READY to confirm.",
+      "success": {
+        "title": "✓ SMS verified — you're ready to respond to leads",
+        "continue_button": "Continue →"
+      },
+      "skip_note": "If skipped, LeadFlow will use a demo number for the simulator. Real SMS requires completion.",
+      "errors": {
+        "invalid_phone": "Please enter a valid phone number",
+        "invalid_code": "That code didn't match. Please try again.",
+        "sms_failed": "Couldn't send SMS. Please check your number and try again."
+      }
+    },
+    "step_3_simulator": {
+      "title": "See LeadFlow in Action",
+      "description": "Watch AI respond to your first lead in real-time.",
+      "incoming_lead": {
+        "name": "Sarah M. (Zillow Lead)",
+        "message": "Hi, I saw your listing on Zillow. Is it still available?"
+      },
+      "typing_indicator": "AI is generating response...",
+      "ai_response": "Hi Sarah! Yes, that listing is still available. I'd love to show it to you — are you free this Saturday afternoon?",
+      "success": {
+        "title": "✓ Your first lead was responded to in {{response_time}}s ⚡",
+        "subtitle": "That's 99% faster than the industry average.",
+        "cta": "Go to Dashboard →"
+      },
+      "failure": {
+        "title": "Simulator timed out — your system is still ready",
+        "subtitle": "This was just a demo. Your real AI is configured and ready.",
+        "cta": "Continue to Dashboard →"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 6. Trial Expiry Page
+
+```json
+{
+  "upgrade_page": {
+    "expired_state": {
+      "headline": "Your trial has ended",
+      "subheadline": "Upgrade now to keep your AI lead response running",
+      "features_list": [
+        "✓ Unlimited AI responses to your leads",
+        "✓ 30-second average response time",
+        "✓ Follow Up Boss integration",
+        "✓ SMS conversations with leads",
+        "✓ Appointment booking via Cal.com"
+      ],
+      "cta": "Choose Your Plan",
+      "data_notice": "Your leads and data are preserved. Nothing is deleted."
+    },
+    "plan_cards": {
+      "starter": {
+        "name": "Starter",
+        "price": "$49/mo",
+        "description": "Perfect for testing the waters",
+        "features": [
+          "100 SMS responses/month",
+          "Basic AI responses",
+          "Dashboard access",
+          "Email support"
+        ],
+        "cta": "Choose Starter"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$149/mo",
+        "badge": "Most Popular",
+        "description": "For serious agents ready to scale",
+        "features": [
+          "Unlimited SMS responses",
+          "Full AI with context memory",
+          "Cal.com appointment booking",
+          "Priority support",
+          "Analytics dashboard"
+        ],
+        "cta": "Choose Pro"
+      },
+      "team": {
+        "name": "Team",
+        "price": "$399/mo",
+        "description": "For small teams up to 5 agents",
+        "features": [
+          "Everything in Pro",
+          "5 agent seats",
+          "Team dashboard",
+          "Lead routing",
+          "Performance reports"
+        ],
+        "cta": "Choose Team"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 7. Error Messages (Global)
+
+```json
+{
+  "error_messages": {
+    "generic": {
+      "title": "Something went wrong",
+      "description": "Please try again in a moment.",
+      "retry_button": "Try Again"
+    },
+    "network": {
+      "title": "Connection issue",
+      "description": "Check your internet connection and try again.",
+      "retry_button": "Retry"
+    },
+    "unauthorized": {
+      "title": "Session expired",
+      "description": "Please sign in again to continue.",
+      "signin_button": "Sign In"
+    },
+    "trial_expired": {
+      "title": "Trial ended",
+      "description": "Your free trial has expired. Upgrade to continue using LeadFlow.",
+      "upgrade_button": "Upgrade Now"
+    },
+    "validation": {
+      "required": "This field is required",
+      "email_invalid": "Please enter a valid email address",
+      "password_short": "Password must be at least 8 characters",
+      "phone_invalid": "Please enter a valid phone number"
+    }
+  }
+}
+```
+
+---
+
+## 8. Success Messages
+
+```json
+{
+  "success_messages": {
+    "account_created": {
+      "title": "Welcome to LeadFlow!",
+      "description": "Your account is ready. Let's get you set up."
+    },
+    "fub_connected": {
+      "title": "Follow Up Boss connected",
+      "description": "Your leads will now sync automatically."
+    },
+    "sms_verified": {
+      "title": "SMS ready",
+      "description": "You can now respond to leads via text message."
+    },
+    "onboarding_complete": {
+      "title": "You're all set! 🎉",
+      "description": "LeadFlow is now responding to your leads. Check your dashboard to see it in action."
+    },
+    "upgrade_complete": {
+      "title": "Welcome to LeadFlow {{plan_name}}!",
+      "description": "Your subscription is active. Enjoy unlimited AI responses."
+    }
+  }
+}
+```
+
+---
+
+## 9. Analytics Event Labels
+
+```json
+{
+  "analytics_events": {
+    "signup": {
+      "trial_signup_start": "CTA click on landing page",
+      "trial_signup_complete": "Account created, redirected to dashboard"
+    },
+    "wizard": {
+      "wizard_opened": "Wizard overlay appears",
+      "wizard_step_1_complete": "FUB connected",
+      "wizard_step_1_skipped": "FUB step skipped",
+      "wizard_step_2_complete": "SMS verified",
+      "wizard_step_2_skipped": "SMS step skipped",
+      "wizard_step_3_complete": "Aha simulator complete",
+      "wizard_step_3_skipped": "Simulator skipped",
+      "wizard_completed": "All 3 steps done"
+    },
+    "activation": {
+      "aha_moment_achieved": "AI response rendered in <15s",
+      "sample_lead_viewed": "User viewed sample leads",
+      "sample_lead_dismissed": "User dismissed sample leads banner"
+    },
+    "trial": {
+      "trial_banner_shown": "Trial countdown banner displayed",
+      "trial_upgrade_clicked": "User clicked upgrade from banner",
+      "trial_expired_redirect": "User hit paywall after trial end"
+    }
+  }
+}
+```
+
+---
+
+## Usage Example
+
+```javascript
+// Example: Accessing wizard copy
+const wizardCopy = uiCopy.wizard.step_1_fub;
+
+// Example: Getting trial banner text
+function getTrialBanner(daysRemaining) {
+  if (daysRemaining <= 1) {
+    return uiCopy.trial_banner.day_14.text.replace('{{days_remaining}}', daysRemaining);
+  } else if (daysRemaining <= 3) {
+    return uiCopy.trial_banner.days_11_to_13.text.replace('{{days_remaining}}', daysRemaining);
+  } else {
+    return uiCopy.trial_banner.days_1_to_10.text.replace('{{days_remaining}}', daysRemaining);
+  }
+}
+
+// Example: Error message lookup
+function getErrorMessage(errorType, code) {
+  return uiCopy.error_messages[errorType][code] || uiCopy.error_messages.generic.description;
+}
+```
+
+---
+
+*Document Version: 1.0*  
+*Last Updated: 2026-03-11*  
+*Format: JSON-ready for implementation*
