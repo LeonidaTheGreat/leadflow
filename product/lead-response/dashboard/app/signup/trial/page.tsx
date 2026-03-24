@@ -3,8 +3,12 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import TrialSignupForm from '@/components/trial-signup-form'
+import { useUtmCapture } from '@/lib/utm-capture'
 
 export default function TrialSignupPage() {
+  // Capture UTM parameters on mount (first-touch wins)
+  useUtmCapture()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       <header className="border-b border-slate-700/50">

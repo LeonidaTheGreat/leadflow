@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { trackCTAClick, trackFormEvent } from '@/lib/analytics/ga4'
+import { useUtmCapture } from '@/lib/utm-capture'
 
 /**
  * /pilot — Pilot Application Form (FR-6: Backward Compatibility)
@@ -37,6 +38,9 @@ const LEAD_VOLUME_OPTIONS = [
 ]
 
 export default function PilotPage() {
+  // Capture UTM parameters on mount (first-touch wins)
+  useUtmCapture()
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
