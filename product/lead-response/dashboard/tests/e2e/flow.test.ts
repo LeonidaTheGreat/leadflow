@@ -15,8 +15,8 @@ const TEST_AGENT_ID = 'test-agent-id'
 
 // Initialize test Supabase client
 const supabaseTest = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_API_URL!,
+  process.env.API_SECRET_KEY!
 )
 
 describe('AI Lead Response System - E2E Tests', () => {

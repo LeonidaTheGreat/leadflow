@@ -62,7 +62,7 @@ jest.mock('next/server', () => ({
 }))
 
 // Mock supabase-js (for routes that create their own client)
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),

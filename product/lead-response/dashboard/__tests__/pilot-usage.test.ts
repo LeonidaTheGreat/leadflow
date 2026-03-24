@@ -65,7 +65,7 @@ const mockFrom = jest.fn((table: string) => {
   }
 })
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({ from: mockFrom })),
 }))
 
@@ -85,13 +85,13 @@ describe('GET /api/internal/pilot-usage', () => {
   beforeEach(() => {
     callCount = 0
     mockFrom.mockClear()
-    process.env.SUPABASE_SERVICE_ROLE_KEY = SERVICE_ROLE_KEY
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
+    process.env.API_SECRET_KEY = SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL = 'https://test.supabase.co'
   })
 
   afterEach(() => {
-    delete process.env.SUPABASE_SERVICE_ROLE_KEY
-    delete process.env.NEXT_PUBLIC_SUPABASE_URL
+    delete process.env.API_SECRET_KEY
+    delete process.env.NEXT_PUBLIC_API_URL
   })
 
   it('returns 401 when no auth token provided', async () => {

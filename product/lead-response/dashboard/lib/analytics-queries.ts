@@ -328,7 +328,7 @@ export async function generateSampleAnalyticsData() {
   const daysBack = 30
 
   // Generate sample messages
-  const messages = []
+  const messages: any[] = []
   for (let i = 0; i < daysBack; i++) {
     const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
     const dayMsgCount = Math.floor(Math.random() * 50) + 10

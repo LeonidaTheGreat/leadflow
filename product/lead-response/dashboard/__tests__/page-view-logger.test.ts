@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken'
 const mockInsert = jest.fn()
 const mockFrom = jest.fn(() => ({ insert: mockInsert }))
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({ from: mockFrom })),
 }))
 

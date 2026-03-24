@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  (process.env.NEXT_PUBLIC_API_URL)!,
+  (process.env.API_SECRET_KEY)!
 )
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'

@@ -2,9 +2,20 @@
   "permissions": {
     "allow": [
       "Bash(*)",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Agent",
       "WebSearch",
-      "WebFetch(domain:openrouter.ai)",
-      "WebFetch(domain:platform.moonshot.ai)"
+      "WebFetch(*)",
+      "Skill(*)",
+      "mcp__plugin_telegram_telegram__reply",
+      "mcp__plugin_telegram_telegram__react",
+      "mcp__plugin_telegram_telegram__edit_message",
+      "mcp__claude_ai_Gmail__gmail_*",
+      "mcp__claude_ai_Google_Calendar__gcal_*"
     ]
   }
 }

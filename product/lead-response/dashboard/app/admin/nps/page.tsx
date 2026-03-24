@@ -45,7 +45,7 @@ export default function AdminNPSPage() {
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'churn-risks'>('overview')
 
-  const serviceRoleKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || ''
+  const serviceRoleKey = process.env.API_SECRET_KEY || ''
 
   useEffect(() => {
     fetchData()

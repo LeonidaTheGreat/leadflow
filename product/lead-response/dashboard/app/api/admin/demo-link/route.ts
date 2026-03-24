@@ -15,11 +15,11 @@ import { createClient } from '@/lib/db'
  * Validates a demo token. Returns { valid: boolean, expiresAt?: string }
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const DB_URL = (process.env.NEXT_PUBLIC_API_URL)!
+const DB_KEY = (process.env.API_SECRET_KEY)!
 
-function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+function getDB() {
+  return createClient(DB_URL, DB_KEY)
 }
 
 function generateToken(): string {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     const token = generateToken()
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
-    const supabase = getSupabase()
+    const supabase = getDB()
     const { data, error } = await supabase
       .from('demo_tokens')
       .insert({
@@ -78,7 +78,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ valid: false, error: 'No token provided' }, { status: 400 })
     }
 
-    const supabase = getSupabase()
+    const supabase = getDB()
     const { data, error } = await supabase
       .from('demo_tokens')
       .select('token, expires_at, used_at')
