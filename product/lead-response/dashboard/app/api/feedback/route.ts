@@ -1,42 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitProductFeedback } from '@/lib/nps-service'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-interface JWTPayload {
-  userId: string
-  email: string
-  name?: string
-}
-
-function getAgentIdFromRequest(request: NextRequest): string | null {
-  const token = request.cookies.get('auth-token')?.value
-  if (!token) return null
-  try {
-    const payload = jwt.verify(token, JWT_SECRET) as JWTPayload
-    return payload.userId || null
-  } catch {
-    return null
-  }
-}
+import { validateSession } from '@/lib/session'
 
 export async function POST(request: NextRequest) {
   try {
+    // ── Auth ─────────────────────────────────────────────────────────────
+    const sessionToken = request.cookies.get('leadflow_session')?.value
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const session = await validateSession(sessionToken)
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const agentId = session.userId
+
+    // ── Validate body ─────────────────────────────────────────────────────
     const body = await request.json()
     const { feedbackType, content } = body
 
-    // Extract agentId from authenticated session (server-side, secure)
-    const agentId = getAgentIdFromRequest(request)
-
-    if (!agentId) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
-    }
-
-    // Validate required fields
     if (!feedbackType || !content) {
       return NextResponse.json(
         { error: 'Feedback type and content are required' },
