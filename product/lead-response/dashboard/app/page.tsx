@@ -72,6 +72,8 @@ export default function HomePage() {
                 Try Live AI Demo →
               </Link>
             </div>
+          </div>
+        </div>
       </section>
 
       {/* Stats Bar — PRD FR-2 Specification */}
@@ -282,6 +284,21 @@ export default function HomePage() {
               ]}
               cta="Contact Sales"
             />
+          </div>
+
+          {/* CTA: or start free trial link in pricing section (CTA Placement #3) */}
+          <div className="mt-8 text-center">
+            <p className="text-slate-600 dark:text-slate-400">
+              or{' '}
+              <Link
+                href="/signup/trial"
+                onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
+                className="text-emerald-500 hover:text-emerald-600 font-semibold"
+                data-cta-id="start_trial_pricing"
+              >
+                start free trial
+              </Link>
+            </p>
           </div>
         </div>
       </section>
