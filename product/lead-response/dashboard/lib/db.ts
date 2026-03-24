@@ -1,14 +1,13 @@
 /**
- * PostgREST Database Client
- * 
- * Wrapper around @supabase/postgrest-js that provides a compatible API
- * with Supabase's client while using PostgREST directly.
- * 
- * This replaces dependency on @supabase/supabase-js and uses the 
- * NEXT_PUBLIC_API_URL environment variable to connect to the PostgREST API.
+ * PostgREST Client (Pure Implementation)
+ *
+ * Direct PostgREST HTTP client with API compatible with Supabase SDK patterns.
+ * No dependencies on @supabase/* packages.
+ *
+ * API Base URL: Set via NEXT_PUBLIC_API_URL env var
+ * Production: https://api.imagineapi.org
  */
 
-import { PostgrestClient } from '@supabase/postgrest-js'
 import type { 
   Lead, 
   Agent, 
@@ -22,444 +21,282 @@ import type {
 
 const PLACEHOLDER_URL = 'https://placeholder.example.com'
 
-/**
- * Get the base URL for PostgREST API
- */
 function getBaseUrl(): string {
   return (process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL).trim()
 }
 
-/**
- * Get the API key for authentication
- */
 function getApiKey(): string {
   return (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
 }
 
-/**
- * Create a PostgREST client instance
- */
-function createPostgrestClient() {
-  const apiUrl = getBaseUrl()
-  const apiKey = getApiKey()
-  
-  const client = new PostgrestClient(apiUrl, {
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Profile': 'public',
-      'apikey': apiKey,
-    },
-    schema: 'public',
-  })
-  return client
+// ============================================
+// QUERY BUILDER CLASS
+// ============================================
+
+class QueryBuilder implements PromiseLike<any> {
+  private table: string
+  private baseUrl: string
+  private apiKey: string
+  private selectCols: string | null = null
+  private filters: Array<{ key: string; op: string; val: any }> = []
+  private orderBys: Array<{ col: string; asc: boolean }> = []
+  private limitVal: number | null = null
+  private offsetVal: number | null = null
+  private rangeStart: number | null = null
+  private rangeEnd: number | null = null
+  private singleVal = false
+  private maybeVal = false
+  private httpMethod: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'GET'
+  private bodyData: any = null
+  private cachedPromise: Promise<any> | null = null
+
+  constructor(table: string, baseUrl: string, apiKey: string) {
+    this.table = table
+    this.baseUrl = baseUrl
+    this.apiKey = apiKey
+  }
+
+  select(cols?: string): QueryBuilder {
+    this.selectCols = cols || '*'
+    return this
+  }
+
+  eq(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'eq', val })
+    return this
+  }
+
+  neq(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'neq', val })
+    return this
+  }
+
+  in(key: string, vals: any[]): QueryBuilder {
+    this.filters.push({ key, op: 'in', val: vals })
+    return this
+  }
+
+  not(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'not', val })
+    return this
+  }
+
+  order(col: string, opts?: { ascending?: boolean }): QueryBuilder {
+    this.orderBys.push({ col, asc: opts?.ascending ?? true })
+    return this
+  }
+
+  limit(n: number): QueryBuilder {
+    this.limitVal = n
+    return this
+  }
+
+  range(start: number, end: number): QueryBuilder {
+    this.rangeStart = start
+    this.rangeEnd = end
+    return this
+  }
+
+  single(): QueryBuilder {
+    this.singleVal = true
+    return this
+  }
+
+  maybeSingle(): QueryBuilder {
+    this.maybeVal = true
+    return this
+  }
+
+  insert(data: any | any[]): QueryBuilder {
+    this.httpMethod = 'POST'
+    this.bodyData = data
+    return this
+  }
+
+  update(data: any): QueryBuilder {
+    this.httpMethod = 'PATCH'
+    this.bodyData = data
+    return this
+  }
+
+  delete(): QueryBuilder {
+    this.httpMethod = 'DELETE'
+    return this
+  }
+
+  async execute(): Promise<{ data: any; error: any; count?: number | null }> {
+    try {
+      const url = this.buildUrl()
+      const headers = this.buildHeaders()
+      const body = this.httpMethod !== 'GET' && this.bodyData ? JSON.stringify(this.bodyData) : undefined
+
+      const response = await fetch(url, {
+        method: this.httpMethod,
+        headers,
+        body,
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        return {
+          data: null,
+          error: new Error(`HTTP ${response.status}: ${errorText}`),
+        }
+      }
+
+      let data = this.httpMethod === 'DELETE' ? null : await response.json()
+
+      // Handle single/maybeSingle
+      if ((this.singleVal || this.maybeVal) && Array.isArray(data)) {
+        data = data.length > 0 ? data[0] : null
+      }
+
+      return { data, error: null }
+    } catch (error) {
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error(String(error)),
+      }
+    }
+  }
+
+  then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): PromiseLike<TResult1 | TResult2> {
+    if (!this.cachedPromise) {
+      this.cachedPromise = this.execute()
+    }
+    return this.cachedPromise.then(onfulfilled, onrejected)
+  }
+
+  private buildUrl(): string {
+    const url = new URL(`${this.baseUrl}/${this.table}`)
+
+    if (this.selectCols) {
+      url.searchParams.set('select', this.selectCols)
+    }
+
+    for (const f of this.filters) {
+      if (f.op === 'eq') {
+        url.searchParams.set(f.key, `eq.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'neq') {
+        url.searchParams.set(f.key, `neq.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'in') {
+        const vals = (f.val as any[]).map(v => `"${v}"`).join(',')
+        url.searchParams.set(f.key, `in.(${vals})`)
+      } else if (f.op === 'not') {
+        url.searchParams.set(f.key, `not.${encodeURIComponent(f.val)}`)
+      }
+    }
+
+    if (this.orderBys.length > 0) {
+      const clauses = this.orderBys.map(o => `${o.col}.${o.asc ? 'asc' : 'desc'}`).join(',')
+      url.searchParams.set('order', clauses)
+    }
+
+    if (this.limitVal !== null) {
+      url.searchParams.set('limit', String(this.limitVal))
+    }
+
+    if (this.rangeStart !== null && this.rangeEnd !== null) {
+      url.searchParams.set('offset', String(this.rangeStart))
+      url.searchParams.set('limit', String(this.rangeEnd - this.rangeStart + 1))
+    }
+
+    return url.toString()
+  }
+
+  private buildHeaders(): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` }),
+    }
+  }
+}
+
+// ============================================
+// CLIENT OBJECTS
+// ============================================
+
+const baseUrl = getBaseUrl()
+const apiKey = getApiKey()
+
+export const postgrestAdmin = {
+  from: (table: string) => new QueryBuilder(table, baseUrl, apiKey),
+  rpc: async (name: string, params?: any) => rpcCall(name, params),
+}
+
+export const postgrestPublic = {
+  from: (table: string) => new QueryBuilder(table, baseUrl, ''),
+  channel: (name: string) => ({ on: () => ({ subscribe: () => {} }), subscribe: () => {} }),
+}
+
+export const supabase = postgrestPublic
+export const supabaseAdmin = postgrestAdmin
+
+// ============================================
+// PUBLIC API
+// ============================================
+
+export function from(table: string): QueryBuilder {
+  return new QueryBuilder(table, baseUrl, apiKey)
+}
+
+export async function rpc(name: string, params?: any): Promise<{ data: any; error: any }> {
+  return rpcCall(name, params)
+}
+
+async function rpcCall(name: string, params?: any): Promise<{ data: any; error: any }> {
+  try {
+    const url = `${baseUrl}/rpc/${name}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(apiKey && { 'Authorization': `Bearer ${apiKey}` }),
+      },
+      body: JSON.stringify(params || {}),
+    })
+
+    if (!response.ok) {
+      const err = await response.text()
+      return { data: null, error: new Error(`RPC error: ${err}`) }
+    }
+
+    const data = await response.json()
+    return { data, error: null }
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error(String(error)),
+    }
+  }
+}
+
+export function channel(name: string): any {
+  return {
+    on: () => ({ subscribe: () => {} }),
+    subscribe: () => {},
+    unsubscribe: () => {},
+  }
 }
 
 /**
- * Create a client-side PostgREST client (with appropriate headers)
+ * Drop-in replacement for @supabase/supabase-js createClient
  */
-function createPostgrestClientPublic() {
-  const apiUrl = getBaseUrl()
-  
-  const client = new PostgrestClient(apiUrl, {
-    headers: {
-      'Content-Profile': 'public',
-    },
-    schema: 'public',
-  })
-  return client
+export function createClient(url: string, key: string, opts?: any) {
+  const finalUrl = !url || url.includes('placeholder') ? baseUrl : url
+  const finalKey = !key || key === 'placeholder' ? apiKey : key
+
+  return {
+    from: (table: string) => new QueryBuilder(table, finalUrl, finalKey),
+    rpc: async (name: string, params?: any) => rpcCall(name, params),
+  }
 }
 
-/** Build-time placeholder detection */
-const isBuildTime = typeof window === 'undefined' && process.env.NODE_ENV === 'production' && !process.env.VERCEL_ENV
-
-/** Server-side admin client (uses service role key) */
-export const postgrestAdmin = createPostgrestClient()
-
-/** Client-side public client (no auth) */
-export const postgrestPublic = createPostgrestClientPublic()
-
-/**
- * Check if PostgREST is properly configured
- */
 export function isPostgrestConfigured(): boolean {
-  const apiUrl = getBaseUrl()
-  const apiKey = getApiKey()
-  
-  return (
-    apiUrl !== PLACEHOLDER_URL &&
-    apiUrl !== '' &&
-    apiKey !== ''
-  )
-}
-
-/**
- * createClient - Drop-in replacement for @supabase/supabase-js createClient
- * Provides a compatible API that uses PostgREST instead of Supabase SDK
- * 
- * @param url - PostgREST API URL (usually from NEXT_PUBLIC_API_URL)
- * @param key - Service role key or API key
- * @param options - Optional configuration
- * @returns PostgREST client instance
- */
-export function createClient(
-  url: string,
-  key: string,
-  options?: any
-) {
-  // If using placeholder values, fall back to env vars
-  const actualUrl = (!url || url === 'https://placeholder.supabase.co' || url === 'https://placeholder.example.com') 
-    ? getBaseUrl() 
-    : url
-  const actualKey = (!key || key === 'placeholder') 
-    ? getApiKey() 
-    : key
-
-  const client = new PostgrestClient(actualUrl, {
-    headers: {
-      'Authorization': `Bearer ${actualKey}`,
-      'Content-Profile': 'public',
-      'apikey': actualKey,
-    },
-    schema: 'public',
-  })
-
-  return client
-}
-
-// ============================================
-// LEAD OPERATIONS
-// ============================================
-
-export async function createLead(
-  lead: Partial<Lead>
-): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('leads')
-    .insert(lead)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-export async function getLeadById(id: string): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('leads')
-    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)')
-    .eq('id', id)
-    .single()
-
-  return { data, error }
-}
-
-export async function getLeadByPhone(phone: string): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('leads')
-    .select('*')
-    .eq('phone', phone)
-    .single()
-
-  return { data, error }
-}
-
-export async function getLeadsByAgent(
-  agentId: string,
-  options: {
-    status?: string
-    limit?: number
-    offset?: number
-  } = {}
-): Promise<{ data: Lead[]; count: number | null; error: any }> {
-  let query = postgrestAdmin
-    .from('leads')
-    .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)', { count: 'exact' })
-    .eq('agent_id', agentId)
-    .order('created_at', { ascending: false })
-
-  if (options.status) {
-    query = query.eq('status', options.status)
-  }
-
-  if (options.limit) {
-    query = query.limit(options.limit)
-  }
-
-  if (options.offset) {
-    query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
-  }
-
-  const { data, error, count } = await query
-  return { data: data || [], count, error }
-}
-
-export async function updateLead(
-  id: string,
-  updates: Partial<Lead>
-): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('leads')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-// ============================================
-// QUALIFICATION OPERATIONS
-// ============================================
-
-export async function createQualification(
-  qualification: Partial<Qualification>
-): Promise<{ data: Qualification | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('qualifications')
-    .insert(qualification)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-export async function getQualificationsByLead(
-  leadId: string
-): Promise<{ data: Qualification[]; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('qualifications')
-    .select('*')
-    .eq('lead_id', leadId)
-    .order('created_at', { ascending: false })
-
-  return { data: data || [], error }
-}
-
-// ============================================
-// MESSAGE OPERATIONS
-// ============================================
-
-export async function createMessage(
-  message: Partial<Message>
-): Promise<{ data: Message | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('messages')
-    .insert(message)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-export async function getMessagesByLead(
-  leadId: string
-): Promise<{ data: Message[]; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('messages')
-    .select('*')
-    .eq('lead_id', leadId)
-    .order('created_at', { ascending: true })
-
-  return { data: data || [], error }
-}
-
-export async function updateMessageStatus(
-  twilioSid: string,
-  status: string,
-  deliveredAt?: string
-): Promise<{ data: Message | null; error: any }> {
-  const updates: Partial<Message> = { 
-    status: status as Message['status'],
-    twilio_status: status,
-  }
-  
-  if (deliveredAt) {
-    updates.delivered_at = deliveredAt
-  }
-
-  const { data, error } = await postgrestAdmin
-    .from('messages')
-    .update(updates)
-    .eq('twilio_sid', twilioSid)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-// ============================================
-// AGENT OPERATIONS
-// ============================================
-
-export async function getAgentById(id: string): Promise<{ data: Agent | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('real_estate_agents')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  return { data, error }
-}
-
-export async function getAgentByEmail(email: string): Promise<{ data: Agent | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('real_estate_agents')
-    .select('*')
-    .eq('email', email)
-    .single()
-
-  return { data, error }
-}
-
-export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('real_estate_agents')
-    .select('*')
-    .eq('is_active', true)
-
-  return { data: data || [], error }
-}
-
-// ============================================
-// BOOKING OPERATIONS
-// ============================================
-
-export async function createBooking(
-  booking: Partial<Booking>
-): Promise<{ data: Booking | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('bookings')
-    .insert(booking)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-export async function getBookingsByLead(
-  leadId: string
-): Promise<{ data: Booking[]; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('bookings')
-    .select('*')
-    .eq('lead_id', leadId)
-    .order('start_time', { ascending: false })
-
-  return { data: data || [], error }
-}
-
-export async function updateBooking(
-  id: string,
-  updates: Partial<Booking>
-): Promise<{ data: Booking | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('bookings')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single()
-
-  return { data, error }
-}
-
-// ============================================
-// TEMPLATE OPERATIONS
-// ============================================
-
-export async function getTemplates(
-  options: {
-    category?: string
-    market?: string
-    isActive?: boolean
-  } = {}
-): Promise<{ data: Template[]; error: any }> {
-  let query = postgrestAdmin.from('templates').select('*')
-
-  if (options.category) {
-    query = query.eq('category', options.category)
-  }
-
-  if (options.market) {
-    query = query.eq('market', options.market)
-  }
-
-  if (options.isActive !== undefined) {
-    query = query.eq('is_active', options.isActive)
-  }
-
-  const { data, error } = await query.order('category')
-  return { data: data || [], error }
-}
-
-export async function getTemplateById(id: string): Promise<{ data: Template | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('templates')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  return { data, error }
-}
-
-export async function incrementTemplateUsage(id: string): Promise<void> {
-  await postgrestAdmin.rpc('increment_template_usage', { template_id: id })
-}
-
-// ============================================
-// EVENT/LOGGING OPERATIONS
-// ============================================
-
-export async function logEvent(
-  event: Partial<Event>
-): Promise<void> {
-  await postgrestAdmin.from('events').insert(event)
-}
-
-// ============================================
-// DASHBOARD STATS
-// ============================================
-
-export async function getDashboardStats(agentId: string): Promise<{ data: DashboardStats | null; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('dashboard_stats')
-    .select('*')
-    .eq('agent_id', agentId)
-    .single()
-
-  return { data, error }
-}
-
-export async function getLeadSummary(agentId: string): Promise<{ data: any[]; error: any }> {
-  const { data, error } = await postgrestAdmin
-    .from('lead_summary')
-    .select('*')
-    .eq('agent_id', agentId)
-    .order('created_at', { ascending: false })
-    .limit(50)
-
-  return { data: data || [], error }
-}
-
-// ============================================
-// REALTIME SUBSCRIPTIONS
-// ============================================
-// Note: PostgREST does not support realtime subscriptions directly.
-// For realtime functionality, you would need to use an alternative approach
-// such as WebSockets or polling. These functions are stubs for now.
-
-export function subscribeToLeads(callback: (payload: any) => void) {
-  // PostgREST does not support realtime subscriptions
-  // You would need to implement polling or WebSocket-based updates
-  console.warn('subscribeToLeads: PostgREST does not support realtime subscriptions')
-  return {
-    unsubscribe: () => {},
-  }
-}
-
-export function subscribeToMessages(leadId: string, callback: (payload: any) => void) {
-  // PostgREST does not support realtime subscriptions
-  // You would need to implement polling or WebSocket-based updates
-  console.warn('subscribeToMessages: PostgREST does not support realtime subscriptions')
-  return {
-    unsubscribe: () => {},
-  }
+  return baseUrl !== PLACEHOLDER_URL && baseUrl !== '' && apiKey !== ''
 }
