@@ -1,4 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
+/**
+ * PostgREST Database Client Re-exports
+ * 
+ * This module maintains backward compatibility by re-exporting functions
+ * from lib/db.ts. All imports from @supabase/supabase-js have been migrated
+ * to use PostgREST directly via NEXT_PUBLIC_API_URL.
+ */
+
+import { postgrestAdmin, postgrestPublic } from './db'
 import type { 
   Lead, 
   Agent, 
@@ -11,41 +19,22 @@ import type {
 } from '@/lib/types'
 
 // ============================================
-// SUPABASE CLIENTS
+// CLIENT RE-EXPORTS
 // ============================================
-// Build-safe client initialization
-// During build, env vars may not be available - use placeholders
-
-const isBuildTime = typeof window === 'undefined' && process.env.NODE_ENV === 'production' && !process.env.VERCEL_ENV
-
-const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co').trim()
-const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder').trim()
-const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder').trim()
-
-// Client-side client (for use in components)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Server-side admin client (for use in API routes only)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-})
+export const supabaseAdmin = postgrestAdmin
+
+// Client-side public client (for use in components)
+export const supabase = postgrestPublic
 
 // Lazy getters for runtime initialization
 export function getSupabaseClient() {
-  if (isBuildTime) {
-    return supabase
-  }
-  return supabase
+  return postgrestPublic
 }
 
 export function getSupabaseAdmin() {
-  if (isBuildTime) {
-    return supabaseAdmin
-  }
-  return supabaseAdmin
+  return postgrestAdmin
 }
 
 // ============================================
@@ -55,7 +44,7 @@ export function getSupabaseAdmin() {
 export async function createLead(
   lead: Partial<Lead>
 ): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('leads')
     .insert(lead)
     .select()
@@ -65,7 +54,7 @@ export async function createLead(
 }
 
 export async function getLeadById(id: string): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('leads')
     .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)')
     .eq('id', id)
@@ -75,7 +64,7 @@ export async function getLeadById(id: string): Promise<{ data: Lead | null; erro
 }
 
 export async function getLeadByPhone(phone: string): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('leads')
     .select('*')
     .eq('phone', phone)
@@ -92,7 +81,7 @@ export async function getLeadsByAgent(
     offset?: number
   } = {}
 ): Promise<{ data: Lead[]; count: number | null; error: any }> {
-  let query = supabaseAdmin
+  let query = postgrestAdmin
     .from('leads')
     .select('*, agent:real_estate_agents(*), latest_qualification:qualifications(*)', { count: 'exact' })
     .eq('agent_id', agentId)
@@ -118,7 +107,7 @@ export async function updateLead(
   id: string,
   updates: Partial<Lead>
 ): Promise<{ data: Lead | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('leads')
     .update(updates)
     .eq('id', id)
@@ -135,7 +124,7 @@ export async function updateLead(
 export async function createQualification(
   qualification: Partial<Qualification>
 ): Promise<{ data: Qualification | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('qualifications')
     .insert(qualification)
     .select()
@@ -147,7 +136,7 @@ export async function createQualification(
 export async function getQualificationsByLead(
   leadId: string
 ): Promise<{ data: Qualification[]; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('qualifications')
     .select('*')
     .eq('lead_id', leadId)
@@ -163,7 +152,7 @@ export async function getQualificationsByLead(
 export async function createMessage(
   message: Partial<Message>
 ): Promise<{ data: Message | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('messages')
     .insert(message)
     .select()
@@ -175,7 +164,7 @@ export async function createMessage(
 export async function getMessagesByLead(
   leadId: string
 ): Promise<{ data: Message[]; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('messages')
     .select('*')
     .eq('lead_id', leadId)
@@ -198,7 +187,7 @@ export async function updateMessageStatus(
     updates.delivered_at = deliveredAt
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('messages')
     .update(updates)
     .eq('twilio_sid', twilioSid)
@@ -213,7 +202,7 @@ export async function updateMessageStatus(
 // ============================================
 
 export async function getAgentById(id: string): Promise<{ data: Agent | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('real_estate_agents')
     .select('*')
     .eq('id', id)
@@ -223,7 +212,7 @@ export async function getAgentById(id: string): Promise<{ data: Agent | null; er
 }
 
 export async function getAgentByEmail(email: string): Promise<{ data: Agent | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('real_estate_agents')
     .select('*')
     .eq('email', email)
@@ -233,7 +222,7 @@ export async function getAgentByEmail(email: string): Promise<{ data: Agent | nu
 }
 
 export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
@@ -248,7 +237,7 @@ export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> 
 export async function createBooking(
   booking: Partial<Booking>
 ): Promise<{ data: Booking | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('bookings')
     .insert(booking)
     .select()
@@ -260,7 +249,7 @@ export async function createBooking(
 export async function getBookingsByLead(
   leadId: string
 ): Promise<{ data: Booking[]; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('bookings')
     .select('*')
     .eq('lead_id', leadId)
@@ -273,7 +262,7 @@ export async function updateBooking(
   id: string,
   updates: Partial<Booking>
 ): Promise<{ data: Booking | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('bookings')
     .update(updates)
     .eq('id', id)
@@ -294,7 +283,7 @@ export async function getTemplates(
     isActive?: boolean
   } = {}
 ): Promise<{ data: Template[]; error: any }> {
-  let query = supabaseAdmin.from('templates').select('*')
+  let query = postgrestAdmin.from('templates').select('*')
 
   if (options.category) {
     query = query.eq('category', options.category)
@@ -313,7 +302,7 @@ export async function getTemplates(
 }
 
 export async function getTemplateById(id: string): Promise<{ data: Template | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('templates')
     .select('*')
     .eq('id', id)
@@ -323,7 +312,7 @@ export async function getTemplateById(id: string): Promise<{ data: Template | nu
 }
 
 export async function incrementTemplateUsage(id: string): Promise<void> {
-  await supabaseAdmin.rpc('increment_template_usage', { template_id: id })
+  await postgrestAdmin.rpc('increment_template_usage', { template_id: id })
 }
 
 // ============================================
@@ -333,7 +322,7 @@ export async function incrementTemplateUsage(id: string): Promise<void> {
 export async function logEvent(
   event: Partial<Event>
 ): Promise<void> {
-  await supabaseAdmin.from('events').insert(event)
+  await postgrestAdmin.from('events').insert(event)
 }
 
 // ============================================
@@ -341,7 +330,7 @@ export async function logEvent(
 // ============================================
 
 export async function getDashboardStats(agentId: string): Promise<{ data: DashboardStats | null; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('dashboard_stats')
     .select('*')
     .eq('agent_id', agentId)
@@ -351,7 +340,7 @@ export async function getDashboardStats(agentId: string): Promise<{ data: Dashbo
 }
 
 export async function getLeadSummary(agentId: string): Promise<{ data: any[]; error: any }> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await postgrestAdmin
     .from('lead_summary')
     .select('*')
     .eq('agent_id', agentId)
@@ -364,21 +353,24 @@ export async function getLeadSummary(agentId: string): Promise<{ data: any[]; er
 // ============================================
 // REALTIME SUBSCRIPTIONS
 // ============================================
+// Note: PostgREST does not support realtime subscriptions directly.
+// For realtime functionality, you would need to use an alternative approach
+// such as WebSockets or polling. These functions are stubs for now.
 
 export function subscribeToLeads(callback: (payload: any) => void) {
-  return supabase
-    .channel('leads')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, callback)
-    .subscribe()
+  // PostgREST does not support realtime subscriptions
+  // You would need to implement polling or WebSocket-based updates
+  console.warn('subscribeToLeads: PostgREST does not support realtime subscriptions')
+  return {
+    unsubscribe: () => {},
+  }
 }
 
 export function subscribeToMessages(leadId: string, callback: (payload: any) => void) {
-  return supabase
-    .channel(`messages:${leadId}`)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'messages', filter: `lead_id=eq.${leadId}` },
-      callback
-    )
-    .subscribe()
+  // PostgREST does not support realtime subscriptions
+  // You would need to implement polling or WebSocket-based updates
+  console.warn('subscribeToMessages: PostgREST does not support realtime subscriptions')
+  return {
+    unsubscribe: () => {},
+  }
 }

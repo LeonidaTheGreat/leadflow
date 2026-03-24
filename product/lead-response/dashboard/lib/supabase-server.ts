@@ -1,36 +1,18 @@
-import { createClient } from '@supabase/supabase-js'
-
 /**
- * Build-safe server-side Supabase client.
+ * Server-side PostgREST client wrapper.
  *
- * During `next build`, env vars may not be set. Using '' as the URL
- * causes createClient() to throw "supabaseUrl is required" at module
- * evaluation time, which fails the build.
+ * During `next build`, env vars may not be set. This module provides
+ * a build-safe re-export of the PostgREST client from lib/db.ts.
  *
- * This module uses placeholders so the build succeeds. At runtime,
- * API route handlers should check `isSupabaseConfigured()` before
- * querying — returning 503 if credentials are missing.
+ * At runtime, API route handlers should check `isSupabaseConfigured()`
+ * before querying — returning 503 if credentials are missing.
  */
 
-const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
-const PLACEHOLDER_KEY = 'placeholder'
+import { postgrestAdmin as supabaseServer, isPostgrestConfigured } from './db'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || PLACEHOLDER_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || PLACEHOLDER_KEY
+export { supabaseServer }
 
-export const supabaseServer = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-})
-
-/** Returns true if real Supabase credentials are configured (not placeholders). */
+/** Returns true if real PostgREST credentials are configured. */
 export function isSupabaseConfigured(): boolean {
-  return (
-    supabaseUrl !== PLACEHOLDER_URL &&
-    supabaseKey !== PLACEHOLDER_KEY &&
-    supabaseUrl !== '' &&
-    supabaseKey !== ''
-  )
+  return isPostgrestConfigured()
 }

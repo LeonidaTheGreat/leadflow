@@ -350,4 +350,85 @@ bash scripts/setup-autonomous.sh
 
 ---
 
-*Architecture v1.0 - 2026-02-23*
+---
+
+## UC State Machine (added 2026-03-24)
+
+Use case `implementation_status` follows a formal state machine. Each transition has ONE owner handler — no other handler may make that transition.
+
+### States
+
+| State | Meaning | Terminal? |
+|-------|---------|-----------|
+| `not_started` | UC created, no work begun | No |
+| `in_progress` | At least one task active or completed | No |
+| `needs_merge` | Dev + QC done, PR has merge conflicts (< 3 days old) | No |
+| `complete` | All workflow steps done AND PR merged to main | **Yes** |
+| `stuck` | Failed to merge after retries, or circuit breaker tripped | **Soft-terminal** (PM re-evaluates weekly) |
+
+### Transitions
+
+```
+not_started ──[replenishQueue]──→ in_progress
+                                      │
+                  ┌───────────────────┤
+                  │                    │
+                  ↓                    ↓
+            needs_merge ←──[checkPRReviews]── PR conflict (branch < 3d old)
+                  │
+                  │──[retryNeedsMergeUCs, retry < 3]──→ in_progress
+                  │──[retryNeedsMergeUCs, retry ≥ 3 OR branch ≥ 3d]──→ stuck
+                  │
+            in_progress ──[sweepUCCompletions, merged PR exists]──→ complete
+                  │
+                  │──[rescueStuckChains, unrecoverable]──→ stuck
+                  │
+            complete ──[auditUCCompletions, no merged PR, < 48h]──→ needs_merge
+                    ──[auditUCCompletions, no merged PR, ≥ 48h]──→ stuck
+```
+
+### Invariants (enforced by code)
+
+1. **Only `sweepUCCompletions` can mark `complete`** — and ONLY if a merged PR exists (`_ucHasMergedPR`)
+2. **`retryStuckUCs` NEVER marks complete** — if all steps done but no merged PR, stays stuck
+3. **Circuit breaker**: Any UC with > 10 tasks or > $5 total cost → stuck (terminal)
+4. **Branch age gate**: `retryNeedsMergeUCs` rejects branches > 3 days old → stuck
+5. **Audit age gate**: Only UCs completed < 48h ago get retried; older ones → stuck
+
+### Circuit Breaker (cost protection)
+
+Every task spawn checks against limits that scale with UC workflow length:
+
+| Workflow Steps | Max Cost | Max Tasks |
+|----------------|----------|-----------|
+| 2 (dev→qc) | $10 | 15 |
+| 3 (pm→dev→qc) | $15 | 22 |
+| 4 (pm→design→dev→qc) | $20 | 30 |
+
+If exceeded, the system runs the **Investigate → Propose → Learn** protocol:
+
+1. **Trip**: UC → stuck, current task → cancelled
+2. **Investigate**: Auto-creates PM task to analyze WHY the UC is expensive (query task history, identify failure pattern)
+3. **Propose**: PM chooses: DECOMPOSE (split into smaller UCs), CHANGE APPROACH (different implementation), CANCEL (no longer needed), or INCREASE BUDGET (rare, must justify)
+4. **Learn**: Failure pattern recorded in learning system. Future UCs with similar characteristics get flagged early.
+
+This ensures expensive UCs are never silently abandoned — they get diagnosed and resolved through a cheaper path.
+
+### Merge Queue (conflict prevention)
+
+PRs are merged sequentially (max 1 per heartbeat) with:
+1. **Pre-merge rebase**: Always rebase onto latest main BEFORE attempting merge
+2. **Smallest-first ordering**: PRs sorted by diff size (fewer files = merge first)
+3. **Post-merge rebase**: After merge, rebase all other approved PRs
+4. **Area contention**: Only 1 in-flight dev task per file area
+
+### Design Principles
+
+1. **Every handler that creates tasks must guarantee loop termination.** If task completion doesn't resolve the trigger condition, the handler will loop.
+2. **State transitions are owned.** Only the designated handler can make each transition. This prevents fight conditions where multiple handlers cycle a UC between states.
+3. **Verify outcomes, don't assume them.** Check DB state after actions. Don't report "Spawned" until the task is `in_progress`. Don't mark `complete` until a merged PR exists.
+4. **Simpler is better.** Auto-approving orphan PRs (1 line) is more reliable than a QC review chain (50 lines) that can't close its own loop.
+
+---
+
+*Architecture v2.0 - 2026-03-24 (state machine, circuit breaker, merge queue)*
