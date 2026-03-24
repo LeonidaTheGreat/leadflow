@@ -2,25 +2,30 @@
   "project_id": "leadflow",
   "project_name": "LeadFlow AI",
   "project_dir": "/Users/clawdbot/projects/leadflow",
+
   "reference_docs": {
     "project_context": "CLAUDE.md",
     "use_cases": "USE_CASES.md",
     "business_strategy": "PMF.md",
     "dashboard": "DASHBOARD.md"
   },
+
   "telegram": {
     "chat_id": "-1003852328909",
     "thread_id": "10788"
   },
+
   "deployment": {
     "platform": "vercel",
     "dashboard_dir": "product/lead-response/dashboard",
     "deploy_command": "/opt/homebrew/bin/vercel --prod --yes"
   },
+
   "build_health": {
     "dashboard_dir": "product/lead-response/dashboard",
     "build_command": "npx next build"
   },
+
   "smoke_tests": [
     {
       "id": "vercel-health",
@@ -89,6 +94,7 @@
       "check_type": "signup_login_flow"
     }
   ],
+
   "products": [
     {
       "id": "customer-dashboard",
@@ -103,11 +109,7 @@
         "target_id": "vercel-dashboard",
         "cwd": "product/lead-response/dashboard",
         "command": "/opt/homebrew/bin/vercel --prod --yes",
-        "source_dirs": [
-          "app/",
-          "components/",
-          "lib/"
-        ],
+        "source_dirs": ["app/", "components/", "lib/"],
         "post_deploy_wait_ms": 15000
       }
     },
@@ -124,11 +126,7 @@
         "target_id": "vercel-webhook",
         "cwd": ".",
         "command": "/opt/homebrew/bin/vercel --prod --yes",
-        "source_dirs": [
-          "routes/",
-          "lib/",
-          "server.js"
-        ],
+        "source_dirs": ["routes/", "lib/", "server.js"],
         "post_deploy_wait_ms": 10000
       }
     },
@@ -183,6 +181,7 @@
       }
     }
   ],
+
   "journeys": [
     {
       "id": "new-agent-signup",
@@ -190,42 +189,14 @@
       "persona": "Real estate agent, first visit, not tech-savvy",
       "entry_point": "https://leadflow-ai-five.vercel.app",
       "expected_outcome": "Agent has an active account with integrations configured",
-      "products_involved": [
-        "landing-page",
-        "customer-dashboard",
-        "billing-flow"
-      ],
+      "products_involved": ["landing-page", "customer-dashboard", "billing-flow"],
       "steps": [
-        {
-          "action": "Find and click signup CTA",
-          "from": "/",
-          "to": "/signup"
-        },
-        {
-          "action": "Complete signup form with email, name, password",
-          "from": "/signup",
-          "to": "/login or /dashboard"
-        },
-        {
-          "action": "Log in with new credentials",
-          "from": "/login",
-          "to": "/dashboard"
-        },
-        {
-          "action": "Navigate to settings/integrations",
-          "from": "/dashboard",
-          "to": "/integrations"
-        },
-        {
-          "action": "Connect FUB integration",
-          "from": "/integrations",
-          "expected": "FUB connected status shown"
-        },
-        {
-          "action": "Select billing plan",
-          "from": "/settings",
-          "expected": "Stripe checkout loads"
-        }
+        { "action": "Find and click signup CTA", "from": "/", "to": "/signup" },
+        { "action": "Complete signup form with email, name, password", "from": "/signup", "to": "/login or /dashboard" },
+        { "action": "Log in with new credentials", "from": "/login", "to": "/dashboard" },
+        { "action": "Navigate to settings/integrations", "from": "/dashboard", "to": "/integrations" },
+        { "action": "Connect FUB integration", "from": "/integrations", "expected": "FUB connected status shown" },
+        { "action": "Select billing plan", "from": "/settings", "expected": "Stripe checkout loads" }
       ]
     },
     {
@@ -234,41 +205,21 @@
       "persona": "Inbound lead submitting info via FUB web form",
       "entry_point": "https://fub-inbound-webhook.vercel.app/webhook/fub",
       "expected_outcome": "Lead receives AI SMS response and appears in agent dashboard",
-      "products_involved": [
-        "fub-webhook",
-        "customer-dashboard"
-      ],
+      "products_involved": ["fub-webhook", "customer-dashboard"],
       "steps": [
-        {
-          "action": "Submit lead via FUB webhook payload",
-          "from": "/webhook/fub",
-          "expected": "200 OK response"
-        },
-        {
-          "action": "Verify lead appears in dashboard",
-          "from": "/dashboard",
-          "expected": "New lead visible in lead list"
-        },
-        {
-          "action": "Check SMS was sent to lead",
-          "from": "/dashboard/leads/{id}",
-          "expected": "AI response message shown"
-        }
+        { "action": "Submit lead via FUB webhook payload", "from": "/webhook/fub", "expected": "200 OK response" },
+        { "action": "Verify lead appears in dashboard", "from": "/dashboard", "expected": "New lead visible in lead list" },
+        { "action": "Check SMS was sent to lead", "from": "/dashboard/leads/{id}", "expected": "AI response message shown" }
       ]
     }
   ],
+
   "agents": {
     "id_map": {
-      "product": "product-manager"
+      "product": "product-manager",
+      "PM": "product-manager"
     },
-    "types": [
-      "dev",
-      "qc",
-      "design",
-      "product",
-      "marketing",
-      "analytics"
-    ],
+    "types": ["dev", "qc", "design", "product", "marketing", "analytics"],
     "labels": {
       "product": "PM",
       "dev": "Dev",
@@ -278,90 +229,42 @@
       "marketing": "Marketing"
     }
   },
+
   "default_workflow": {
-    "feature": [
-      "product",
-      "marketing",
-      "design",
-      "dev",
-      "qc"
-    ],
-    "fix": [
-      "dev",
-      "qc"
-    ]
+    "feature": ["product", "marketing", "design", "dev", "qc"],
+    "fix": ["dev", "qc"]
   },
+
   "budget": {
-    "daily_limit": 30.0,
-    "min_for_spawn": 0.5,
+    "daily_limit": 30.00,
+    "min_for_spawn": 0.50,
     "model_token_costs": {
-      "qwen": {
-        "input_per_1m": 0,
-        "output_per_1m": 0
-      },
-      "qwen3.5": {
-        "input_per_1m": 0,
-        "output_per_1m": 0
-      },
-      "qwen3-coder": {
-        "input_per_1m": 0,
-        "output_per_1m": 0
-      },
-      "kimi": {
-        "input_per_1m": 0.6,
-        "output_per_1m": 3.0,
-        "cache_read_per_1m": 0.1,
-        "cache_hit_rate": 0.85
-      },
-      "haiku": {
-        "input_per_1m": 1.0,
-        "output_per_1m": 5.0
-      },
-      "sonnet": {
-        "input_per_1m": 3.0,
-        "output_per_1m": 15.0
-      },
-      "opus": {
-        "input_per_1m": 5.0,
-        "output_per_1m": 25.0
-      }
+      "qwen":    { "input_per_1m": 0,     "output_per_1m": 0 },
+      "qwen3.5": { "input_per_1m": 0,     "output_per_1m": 0 },
+      "qwen3-coder": { "input_per_1m": 0, "output_per_1m": 0 },
+      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 2.50, "cache_read_per_1m": 0.10, "cache_hit_rate": 0.85 },
+      "codex":   { "input_per_1m": 0.80,   "output_per_1m": 3.00 },
+      "haiku":   { "input_per_1m": 1.00,   "output_per_1m": 5.00 },
+      "sonnet":  { "input_per_1m": 3.00,   "output_per_1m": 15.00 },
+      "opus":    { "input_per_1m": 5.00,   "output_per_1m": 25.00 }
     },
     "token_estimates": {
-      "product": {
-        "input": 80000,
-        "output": 15000
-      },
-      "dev": {
-        "input": 200000,
-        "output": 40000
-      },
-      "qc": {
-        "input": 120000,
-        "output": 20000
-      },
-      "design": {
-        "input": 80000,
-        "output": 20000
-      },
-      "marketing": {
-        "input": 60000,
-        "output": 15000
-      },
-      "analytics": {
-        "input": 100000,
-        "output": 15000
-      },
-      "default": {
-        "input": 100000,
-        "output": 20000
-      }
+      "product":   { "input": 80000,  "output": 15000 },
+      "dev":       { "input": 200000, "output": 40000 },
+      "qc":        { "input": 120000, "output": 20000 },
+      "design":    { "input": 80000,  "output": 20000 },
+      "marketing": { "input": 60000,  "output": 15000 },
+      "analytics": { "input": 100000, "output": 15000 },
+      "default":   { "input": 100000, "output": 20000 }
     }
   },
+
   "reporting": {
     "day_zero": "2026-02-15",
-    "day_target": 90,
+    "day_target": 60,
     "report_prefix": "LeadFlow Orchestrator"
   },
+
   "goals": [
     {
       "type": "mrr",
@@ -370,6 +273,7 @@
       "currency": "USD"
     }
   ],
+
   "failure_resolution": {
     "escalation_threshold": 3,
     "max_diagnosis_retries": 2,
@@ -377,20 +281,20 @@
     "diagnosis_model": "sonnet",
     "telegram_on_unresolvable": true
   },
+
   "product_reviews": {
     "periodic_interval_days": 7,
     "prd_completion_cooldown_days": 7,
-    "finding_auto_task_severities": [
-      "critical",
-      "high"
-    ],
+    "finding_auto_task_severities": ["critical", "high"],
     "review_model": "sonnet",
     "decision_implementation_model": "sonnet"
   },
+
   "journey_reviews": {
     "periodic_interval_days": 14,
     "review_model": "sonnet"
   },
+
   "genome_review": {
     "interval_hours": 12,
     "telegram_topic_id": "15243",
@@ -401,7 +305,7 @@
       "chain_completion_rate_min": 0.5,
       "pm_review_actionable_rate_min": 0.3,
       "model_success_rate_min": 0.4,
-      "cost_per_success_max_usd": 0.5
+      "cost_per_success_max_usd": 0.50
     }
   }
 }
