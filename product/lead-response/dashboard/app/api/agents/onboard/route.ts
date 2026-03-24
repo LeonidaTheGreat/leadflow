@@ -46,8 +46,6 @@ export async function POST(request: NextRequest) {
       utmCampaign,
       utmContent,
       utmTerm,
-      ahaCompleted,
-      ahaResponseTimeMs,
     } = body
 
     // Validate required fields — NO credit card or billing info needed

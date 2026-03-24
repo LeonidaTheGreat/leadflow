@@ -15,9 +15,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LeadFlow AI — AI-Powered Lead Response for Real Estate",
-  description:
-    "AI-powered lead response for real estate agents. Respond to leads in under 30 seconds, integrate with Follow Up Boss, and never miss an opportunity.",
+  title: "LeadFlow AI - AI Lead Response for Real Estate Agents | 24/7 SMS Follow-Up",
+  description: "Stop losing leads to slow response times. LeadFlow AI texts your real estate leads within 30 seconds, 24/7. Pilot program now open. TCPA-compliant.",
+  keywords: "real estate AI, lead response, SMS automation, Follow Up Boss, real estate automation",
+  openGraph: {
+    title: "LeadFlow AI - Never Lose Another Lead to Slow Response",
+    description: "AI responds to your real estate leads in under 30 seconds, 24/7. Join our pilot program.",
+    type: "website",
+  },
 };
 
 // GA4 Measurement ID — set NEXT_PUBLIC_GA4_MEASUREMENT_ID in Vercel env vars.

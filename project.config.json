@@ -216,7 +216,8 @@
 
   "agents": {
     "id_map": {
-      "product": "product-manager"
+      "product": "product-manager",
+      "PM": "product-manager"
     },
     "types": ["dev", "qc", "design", "product", "marketing", "analytics"],
     "labels": {
@@ -239,9 +240,10 @@
     "min_for_spawn": 0.50,
     "model_token_costs": {
       "qwen":    { "input_per_1m": 0,     "output_per_1m": 0 },
-      "qwen3.5":      { "input_per_1m": 0,     "output_per_1m": 0 },
-      "qwen3-coder":  { "input_per_1m": 0,     "output_per_1m": 0 },
-      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 3.00, "cache_read_per_1m": 0.10, "cache_hit_rate": 0.85 },
+      "qwen3.5": { "input_per_1m": 0,     "output_per_1m": 0 },
+      "qwen3-coder": { "input_per_1m": 0, "output_per_1m": 0 },
+      "kimi":    { "input_per_1m": 0.60,   "output_per_1m": 2.50, "cache_read_per_1m": 0.10, "cache_hit_rate": 0.85 },
+      "codex":   { "input_per_1m": 0.80,   "output_per_1m": 3.00 },
       "haiku":   { "input_per_1m": 1.00,   "output_per_1m": 5.00 },
       "sonnet":  { "input_per_1m": 3.00,   "output_per_1m": 15.00 },
       "opus":    { "input_per_1m": 5.00,   "output_per_1m": 25.00 }

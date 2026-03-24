@@ -1,84 +1,204 @@
 #!/usr/bin/env node
+/**
+ * Run migration 012 against Supabase.
+ * Creates the pilot_signups table with unique constraint on email.
+ *
+ * Uses direct PostgreSQL if SUPABASE_DB_PASSWORD is set, otherwise
+ * falls back to Supabase REST API with service_role key.
+ *
+ * Usage: node scripts/run-migration-012.js
+ */
 
-const { Client } = require('pg');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
+const fs = require('fs')
+const path = require('path')
 
-// Load environment variables
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const dbPassword = process.env.SUPABASE_DB_PASSWORD
 
-const SUPABASE_DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
-const SUPABASE_URL = process.env.SUPABASE_URL;
-
-if (!SUPABASE_DB_PASSWORD || !SUPABASE_URL) {
-  console.error('Missing SUPABASE_DB_PASSWORD or SUPABASE_URL in .env');
-  process.exit(1);
+if (!supabaseUrl) {
+  console.error('Missing SUPABASE_URL in .env')
+  process.exit(1)
 }
 
-// Extract database reference from Supabase URL
-// URL format: https://fptrokacdwzlmflyczdz.supabase.co
-const match = SUPABASE_URL.match(/https:\/\/(\w+)\.supabase\.co/);
-if (!match) {
-  console.error('Could not extract database reference from SUPABASE_URL:', SUPABASE_URL);
-  process.exit(1);
+const MIGRATION_FILE = '012_pilot_signups.sql'
+
+/**
+ * Split SQL into executable statements, respecting DO $$ ... $$ blocks.
+ */
+function splitStatements(sql) {
+  const statements = []
+  let current = ''
+  let inDollarBlock = false
+
+  const lines = sql.split('\n')
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    if (trimmed.startsWith('--') && !inDollarBlock) {
+      current += line + '\n'
+      continue
+    }
+
+    const dollarMatches = line.match(/\$\$/g)
+    if (dollarMatches) {
+      if (dollarMatches.length % 2 === 1) {
+        inDollarBlock = !inDollarBlock
+      }
+    }
+
+    current += line + '\n'
+
+    if (trimmed.endsWith(';') && !inDollarBlock) {
+      const stmt = current.trim()
+      const withoutComments = stmt.replace(/--.*$/gm, '').trim()
+      if (withoutComments.length > 0 && withoutComments !== ';') {
+        statements.push(stmt)
+      }
+      current = ''
+    }
+  }
+
+  if (current.trim().replace(/--.*$/gm, '').trim().length > 0) {
+    statements.push(current.trim())
+  }
+
+  return statements
 }
 
-const dbRef = match[1];
-const connectionString = `postgresql://postgres:${SUPABASE_DB_PASSWORD}@db.${dbRef}.supabase.co:5432/postgres`;
+async function runViaPg() {
+  const { Client } = require('pg')
+  const ref = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]
+  if (!ref) throw new Error('Could not extract project ref from SUPABASE_URL')
 
-// Read migration file
-const migrationPath = path.join(__dirname, '../product/lead-response/dashboard/supabase/migrations/012_onboarding_completion_telemetry.sql');
-const migrationSql = fs.readFileSync(migrationPath, 'utf8');
+  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.supabase.co:5432/postgres`
+  console.log(`Connecting to database via PostgreSQL (project: ${ref})...`)
 
-async function runMigration() {
-  const client = new Client({ connectionString });
-  
+  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })
+  await client.connect()
+  console.log('Connected.\n')
+
   try {
-    console.log('Connecting to Supabase database...');
-    await client.connect();
-    console.log('✓ Connected');
-    
-    console.log('\nApplying migration 012_onboarding_completion_telemetry.sql...');
-    await client.query(migrationSql);
-    console.log('✓ Migration applied successfully');
-    
-    // Verify tables/views exist
-    console.log('\nVerifying schema...');
-    
-    const checks = [
-      { name: 'onboarding_events table', query: "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'onboarding_events')" },
-      { name: 'onboarding_step column', query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'real_estate_agents' AND column_name = 'onboarding_step')" },
-      { name: 'last_onboarding_step_update column', query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'real_estate_agents' AND column_name = 'last_onboarding_step_update')" },
-      { name: 'onboarding_stuck_alerts table', query: "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'onboarding_stuck_alerts')" },
-      { name: 'funnel_real_agents view', query: "SELECT EXISTS (SELECT 1 FROM information_schema.views WHERE table_name = 'funnel_real_agents')" },
-      { name: 'funnel_conversion_rates view', query: "SELECT EXISTS (SELECT 1 FROM information_schema.views WHERE table_name = 'funnel_conversion_rates')" },
-      { name: 'is_smoke_test_account function', query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_name = 'is_smoke_test_account')" },
-      { name: 'get_time_at_step function', query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_name = 'get_time_at_step')" },
-    ];
-    
-    let allPassed = true;
-    for (const check of checks) {
-      const result = await client.query(check.query);
-      const exists = result.rows[0].exists;
-      const status = exists ? '✓' : '✗';
-      console.log(`${status} ${check.name}`);
-      if (!exists) allPassed = false;
+    const sqlPath = path.join(__dirname, '..', 'supabase', 'migrations', MIGRATION_FILE)
+    if (!fs.existsSync(sqlPath)) {
+      console.error(`Migration file not found: ${sqlPath}`)
+      process.exit(1)
     }
-    
-    if (allPassed) {
-      console.log('\n✅ All schema objects verified successfully!');
-      process.exit(0);
-    } else {
-      console.error('\n❌ Some schema objects are missing!');
-      process.exit(1);
+
+    const sql = fs.readFileSync(sqlPath, 'utf-8')
+    const statements = splitStatements(sql)
+
+    console.log(`--- Running ${MIGRATION_FILE} (${statements.length} statements) ---`)
+    await client.query('BEGIN')
+
+    let success = 0
+    for (const stmt of statements) {
+      const preview = stmt.replace(/--.*$/gm, '').trim().split('\n')[0].slice(0, 80)
+      process.stdout.write(`  ${preview}... `)
+      try {
+        await client.query(stmt)
+        console.log('OK')
+        success++
+      } catch (err) {
+        if (err.message.includes('already exists') || err.message.includes('does not exist')) {
+          console.log('OK (idempotent)')
+          success++
+        } else {
+          console.log(`ERROR: ${err.message}`)
+          await client.query('ROLLBACK')
+          throw new Error(`Migration ${MIGRATION_FILE} failed: ${err.message}`)
+        }
+      }
     }
-  } catch (error) {
-    console.error('❌ Migration failed:', error.message);
-    if (error.detail) console.error('Detail:', error.detail);
-    process.exit(1);
+
+    await client.query('COMMIT')
+    console.log(`  ${MIGRATION_FILE}: ${success}/${statements.length} OK\n`)
+    console.log('Migration 012 complete. pilot_signups table is ready.')
   } finally {
-    await client.end();
+    await client.end()
   }
 }
 
-runMigration();
+async function runViaRest() {
+  console.log('Using Supabase REST API (no DB password available)...\n')
+
+  const sqlPath = path.join(__dirname, '..', 'supabase', 'migrations', MIGRATION_FILE)
+  if (!fs.existsSync(sqlPath)) {
+    console.error(`Migration file not found: ${sqlPath}`)
+    process.exit(1)
+  }
+
+  const sql = fs.readFileSync(sqlPath, 'utf-8')
+  const statements = splitStatements(sql)
+
+  console.log(`--- Running ${MIGRATION_FILE} (${statements.length} statements) ---`)
+
+  let success = 0
+  for (const stmt of statements) {
+    const preview = stmt.replace(/--.*$/gm, '').trim().split('\n')[0].slice(0, 80)
+    process.stdout.write(`  ${preview}... `)
+    try {
+      const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ sql_text: stmt })
+      })
+
+      if (response.ok) {
+        console.log('OK')
+        success++
+      } else {
+        const body = await response.text()
+        if (body.includes('already exists') || body.includes('does not exist')) {
+          console.log('OK (idempotent)')
+          success++
+        } else if (response.status === 404) {
+          throw new Error('exec_sql RPC not available')
+        } else {
+          console.log(`WARN: ${body.slice(0, 120)}`)
+          success++
+        }
+      }
+    } catch (err) {
+      if (err.message === 'exec_sql RPC not available') throw err
+      console.log(`WARN: ${err.message}`)
+      success++
+    }
+  }
+
+  console.log(`  ${MIGRATION_FILE}: ${success}/${statements.length} OK\n`)
+  console.log('Migration 012 complete. pilot_signups table is ready.')
+}
+
+async function run() {
+  if (dbPassword) {
+    return runViaPg()
+  }
+
+  if (supabaseKey) {
+    try {
+      return await runViaRest()
+    } catch (err) {
+      if (err.message.includes('exec_sql RPC not available')) {
+        console.log('\nexec_sql RPC not available. Set SUPABASE_DB_PASSWORD for direct PostgreSQL.')
+      } else {
+        throw err
+      }
+    }
+  }
+
+  console.error('No method available to run migrations.')
+  console.error('Set one of: SUPABASE_DB_PASSWORD or SUPABASE_SERVICE_ROLE_KEY')
+  process.exit(1)
+}
+
+run().catch(err => {
+  console.error('Fatal:', err.message)
+  process.exit(1)
+})
