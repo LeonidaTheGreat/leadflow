@@ -5,19 +5,24 @@
  * markup and that trackCTAClick is called with correct parameters on click.
  *
  * PRD CTA IDs tested:
- *   - join_pilot_hero     (hero section)
- *   - get_started_hero    (hero section)
- *   - see_how_it_works    (hero section)
  *   - join_pilot_nav      (navigation)
  *   - sign_in_nav         (navigation)
+ *   - see_how_it_works    (hero section)
+ *   - start_trial_features (features section)
  *   - pricing_starter     (pricing section)
  *   - pricing_pro         (pricing section)
  *   - pricing_team        (pricing section)
- *   - lead_magnet_cta     (lead magnet section)
+ *   - start_trial_pricing (pricing section)
  */
 
 import { render, screen, fireEvent } from '@testing-library/react'
 import HomePage from '@/app/page'
+
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}))
 
 // Mock next/link to render as <a> with all props forwarded
 jest.mock('next/link', () => {
@@ -40,6 +45,12 @@ jest.mock('@/lib/analytics/ga4', () => ({
   attachScrollMilestoneObservers: (...args: unknown[]) => mockAttachScrollMilestoneObservers(...args),
 }))
 
+// Mock trial-signup-form component
+jest.mock('@/components/trial-signup-form', () => ({
+  __esModule: true,
+  default: () => null,
+}))
+
 // Mock IntersectionObserver
 window.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
@@ -56,15 +67,14 @@ describe('Landing Page CTA Analytics', () => {
     const { container } = render(<HomePage />)
 
     const requiredCtaIds = [
-      'join_pilot_hero',
-      'get_started_hero',
-      'see_how_it_works',
       'join_pilot_nav',
       'sign_in_nav',
+      'see_how_it_works',
+      'start_trial_features',
       'pricing_starter',
       'pricing_pro',
       'pricing_team',
-      'lead_magnet_cta',
+      'start_trial_pricing',
     ]
 
     requiredCtaIds.forEach((ctaId) => {
@@ -73,43 +83,23 @@ describe('Landing Page CTA Analytics', () => {
     })
   })
 
-  it('calls trackCTAClick(join_pilot_hero) on hero pilot CTA click', () => {
-    const { container } = render(<HomePage />)
-    const el = container.querySelector('[data-cta-id="join_pilot_hero"]')!
-    fireEvent.click(el)
-    expect(mockTrackCTAClick).toHaveBeenCalledWith(
-      'join_pilot_hero',
-      "Join the Pilot — It's Free",
-      'hero',
-    )
-  })
-
-  it('calls trackCTAClick(get_started_hero) on Get Started click', () => {
-    render(<HomePage />)
-    fireEvent.click(screen.getByText('Get Started Free'))
-    expect(mockTrackCTAClick).toHaveBeenCalledWith(
-      'get_started_hero',
-      'Get Started Free',
-      'hero',
-    )
-  })
-
   it('calls trackCTAClick(see_how_it_works) on demo button click', () => {
     render(<HomePage />)
-    fireEvent.click(screen.getByText('See How It Works'))
+    fireEvent.click(screen.getByText('See how it works ↓'))
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'see_how_it_works',
-      'See How It Works',
+      'See how it works',
       'hero',
     )
   })
 
   it('calls trackCTAClick(join_pilot_nav) on nav pilot CTA click', () => {
-    render(<HomePage />)
-    fireEvent.click(screen.getByText('Join Free Pilot'))
+    const { container } = render(<HomePage />)
+    const el = container.querySelector('[data-cta-id="join_pilot_nav"]')!
+    fireEvent.click(el)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'join_pilot_nav',
-      'Join Free Pilot',
+      'Pilot Program',
       'navigation',
     )
   })
@@ -125,44 +115,57 @@ describe('Landing Page CTA Analytics', () => {
     )
   })
 
-  it('calls trackCTAClick(pricing_starter) on starter pricing CTA click', () => {
+  it('calls trackCTAClick(start_trial_features) on features CTA click', () => {
     render(<HomePage />)
-    fireEvent.click(screen.getByText(/Starter — Free pilot/))
+    fireEvent.click(screen.getByText('Start Free Trial — No Credit Card'))
+    expect(mockTrackCTAClick).toHaveBeenCalledWith(
+      'start_trial_features',
+      'Start Free Trial — No Credit Card',
+      'features',
+    )
+  })
+
+  it('calls trackCTAClick(pricing_starter) on starter pricing CTA click', () => {
+    const { container } = render(<HomePage />)
+    const starterCta = container.querySelector('[data-cta-id="pricing_starter"]')!
+    fireEvent.click(starterCta)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'pricing_starter',
-      'Get Starter',
+      'Get Started Starter',
       'pricing',
     )
   })
 
   it('calls trackCTAClick(pricing_pro) on pro pricing CTA click', () => {
-    render(<HomePage />)
-    fireEvent.click(screen.getByText(/Pro — Most popular/))
+    const { container } = render(<HomePage />)
+    const proCta = container.querySelector('[data-cta-id="pricing_pro"]')!
+    fireEvent.click(proCta)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'pricing_pro',
-      'Get Pro',
+      'Get Started Pro',
       'pricing',
     )
   })
 
   it('calls trackCTAClick(pricing_team) on team pricing CTA click', () => {
-    render(<HomePage />)
-    fireEvent.click(screen.getByText(/Team — 5 agents/))
+    const { container } = render(<HomePage />)
+    const teamCta = container.querySelector('[data-cta-id="pricing_team"]')!
+    fireEvent.click(teamCta)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'pricing_team',
-      'Get Team',
+      'Get Started Team',
       'pricing',
     )
   })
 
-  it('calls trackCTAClick(lead_magnet_cta) on lead magnet CTA click', () => {
+  it('calls trackCTAClick(start_trial_pricing) on pricing trial link click', () => {
     const { container } = render(<HomePage />)
-    const el = container.querySelector('[data-cta-id="lead_magnet_cta"]')!
+    const el = container.querySelector('[data-cta-id="start_trial_pricing"]')!
     fireEvent.click(el)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
-      'lead_magnet_cta',
-      'Download Free Guide',
-      'lead_magnet',
+      'start_trial_pricing',
+      'or start free trial',
+      'pricing',
     )
   })
 

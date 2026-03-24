@@ -4,14 +4,8 @@ import Link from 'next/link'
 import { Suspense, useEffect, useRef } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
-import LeadMagnetSection from '@/components/LeadMagnetSection'
-import { useUtmCapture } from '@/lib/utm-capture'
-import { ScrollDepthTracker } from '@/components/scroll-depth-tracker'
 
 export default function HomePage() {
-  // Capture UTM parameters on mount (first-touch wins)
-  useUtmCapture()
-
   // Scroll-depth milestone refs (FR-3 / US-2)
   const ref25 = useRef<HTMLDivElement>(null)
   const ref50 = useRef<HTMLDivElement>(null)
@@ -27,10 +21,7 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
-      {/* Scroll Depth Tracking */}
-      <ScrollDepthTracker />
-
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -45,9 +36,9 @@ export default function HomePage() {
             {/* CTA: join_pilot_nav (FR-2) */}
             <Link
               href="/pilot"
-              onClick={() => trackCTAClick('join_pilot_nav', 'Join Free Pilot', 'navigation')}
-              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+              onClick={() => trackCTAClick('join_pilot_nav', 'Pilot Program', 'navigation')}
               data-cta-id="join_pilot_nav"
+              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Pilot Program
             </Link>
@@ -55,8 +46,8 @@ export default function HomePage() {
             <Link
               href="/login"
               onClick={() => trackCTAClick('sign_in_nav', 'Sign In', 'navigation')}
-              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
               data-cta-id="sign_in_nav"
+              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
               Sign In
             </Link>
@@ -76,7 +67,7 @@ export default function HomePage() {
               Never miss another opportunity. Start free — no credit card required.
             </p>
 
-            {/* Hero Trial CTA — CTA Placement #1 */}
+            {/* Hero Trial CTA */}
             <Suspense fallback={<div className="h-24" />}>
               <TrialSignupForm compact />
             </Suspense>
@@ -84,10 +75,10 @@ export default function HomePage() {
             <div className="mt-6 flex items-center justify-center gap-4 text-sm">
               {/* CTA: see_how_it_works (FR-2) */}
               <a
-                href="#how-it-works"
-                className="text-slate-400 hover:text-white underline underline-offset-4"
+                href="#features"
                 onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')}
                 data-cta-id="see_how_it_works"
+                className="text-slate-400 hover:text-white underline underline-offset-4"
               >
                 See how it works ↓
               </a>
@@ -97,120 +88,94 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats Bar — PRD FR-2 Specification */}
-      <section className="bg-slate-100 dark:bg-slate-800 py-12 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="flex flex-col items-center gap-2">
-              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">&lt;30s</div>
-              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Response Time</h4>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">78%</div>
-              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Deals to First Responder</h4>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">35%</div>
-              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Leads Never Responded To</h4>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">24/7</div>
-              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Always On</h4>
-            </div>
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            {[
+              { emoji: '😤', title: 'Missing calls during showings', desc: 'You\'re with a client. A hot lead texts. You see it 3 hours later. They\'ve already signed with someone else.' },
+              { emoji: '😴', title: 'After-hours leads go cold', desc: '60% of online leads come in after 6pm. Without instant response, they\'re gone by morning.' },
+              { emoji: '🔁', title: 'Manual follow-up takes hours', desc: 'Texting 50 leads, tracking responses, scheduling follow-ups — it\'s a full-time job on top of your job.' },
+            ].map((item) => (
+              <div key={item.title} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <div className="text-3xl mb-3">{item.emoji}</div>
+                <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-sm">{item.desc}</p>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
-
-      {/* How It Works — 3 Steps */}
-      <section id="how-it-works" data-testid="how-it-works" className="container mx-auto px-4 py-20">
-        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-          How It Works
-        </h3>
-        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-          Get started in minutes — no technical setup required.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <HowItWorksStep
-            step={1}
-            title="Connect Your CRM"
-            description="Link your Follow Up Boss account in one click. We sync your leads automatically."
-          />
-          <HowItWorksStep
-            step={2}
-            title="AI Responds Instantly"
-            description="When a new lead arrives, our AI qualifies them and sends a personalized SMS in under 30 seconds."
-          />
-          <HowItWorksStep
-            step={3}
-            title="Book & Close"
-            description="Qualified leads get booked on your calendar. You focus on showing homes and closing deals."
-          />
         </div>
       </section>
 
       {/* Features */}
-      <section ref={ref50} id="features" className="bg-white dark:bg-slate-900 py-20">
-        <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            Everything You Need to Convert More Leads
-          </h3>
-          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            LeadFlow AI handles the hard work so you can focus on closing deals.
+      <section ref={ref50} id="features" className="container mx-auto px-4 py-20">
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          Everything You Need to Convert More Leads
+        </h3>
+        <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+          LeadFlow AI handles the hard work so you can focus on closing deals.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FeatureCard
+            title="AI Qualification"
+            description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
+            icon="🤖"
+          />
+          <FeatureCard
+            title="Instant SMS Response"
+            description="Automatically send personalized SMS responses within seconds of lead creation."
+            icon="📱"
+          />
+          <FeatureCard
+            title="CRM Integration"
+            description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
+            icon="🔗"
+          />
+          <FeatureCard
+            title="Smart Booking"
+            description="AI books appointments directly on your calendar — leads go from inquiry to meeting in minutes."
+            icon="📅"
+          />
+          <FeatureCard
+            title="Lead Scoring"
+            description="Automatic scoring based on urgency, budget, and timeline. Focus on the hottest leads first."
+            icon="⭐"
+          />
+          <FeatureCard
+            title="Analytics Dashboard"
+            description="Track response times, conversion rates, and lead quality in real time."
+            icon="📊"
+          />
+        </div>
+
+        {/* CTA Placement #2: End of Features */}
+        <div className="mt-16 text-center">
+          <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+            Ready to Respond Faster?
+          </h4>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">
+            Join agents who are converting more leads with AI-powered responses.
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FeatureCard
-              title="AI Qualification"
-              description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
-              icon="🤖"
-            />
-            <FeatureCard
-              title="Instant SMS Response"
-              description="Automatically send personalized SMS responses within seconds of lead creation."
-              icon="📱"
-            />
-            <FeatureCard
-              title="CRM Integration"
-              description="Seamlessly sync with Follow Up Boss and Cal.com for booking appointments."
-              icon="🔗"
-            />
-            <FeatureCard
-              title="Smart Booking"
-              description="AI books appointments directly on your calendar — leads go from inquiry to meeting in minutes."
-              icon="📅"
-            />
-            <FeatureCard
-              title="Lead Scoring"
-              description="Automatic scoring based on urgency, budget, and timeline. Focus on the hottest leads first."
-              icon="⭐"
-            />
-            <FeatureCard
-              title="Analytics Dashboard"
-              description="Track response times, conversion rates, and lead quality in real time."
-              icon="📊"
-            />
-          </div>
-
-          {/* CTA: Start Free Trial link at end of features section (CTA Placement #2) */}
-          <div className="mt-12 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* CTA: start_trial_features */}
             <Link
               href="/signup/trial"
-              onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial', 'features')}
-              className="inline-block px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+              onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial — No Credit Card', 'features')}
               data-cta-id="start_trial_features"
+              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
             >
-              Start Free Trial
+              Start Free Trial — No Credit Card
+            </Link>
+            <Link
+              href="/pilot"
+              className="px-8 py-4 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Apply for Pilot Program →
             </Link>
           </div>
         </div>
       </section>
 
       {/* Testimonials — Social Proof Section */}
-      <section id="testimonials" data-testid="testimonials" className="bg-white dark:bg-slate-900 py-20">
+      <section id="testimonials" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             What Real Estate Agents Are Saying
@@ -231,17 +196,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Lead Magnet — Email Capture (feat-lead-magnet-email-capture) */}
-      <LeadMagnetSection />
-
       {/* Pricing — CTA Placement #3 */}
-      <section ref={ref75} id="pricing" data-testid="pricing" className="bg-white dark:bg-slate-900 py-20">
+      <section ref={ref75} id="pricing" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             Simple, Transparent Pricing
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Start with a free 30-day trial. Upgrade when you&apos;re ready.
+            Start with a free 14-day trial. No credit card required. Upgrade when you&apos;re ready.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -250,7 +212,6 @@ export default function HomePage() {
               price="$49"
               period="/month"
               description="Perfect for solo agents"
-              badge="Free pilot"
               features={[
                 'Up to 50 leads/month',
                 'AI SMS responses',
@@ -265,7 +226,6 @@ export default function HomePage() {
               period="/month"
               description="For growing agents"
               popular
-              badge="Most popular"
               features={[
                 'Up to 200 leads/month',
                 'AI SMS & email responses',
@@ -280,7 +240,6 @@ export default function HomePage() {
               price="$399"
               period="/month"
               description="For small teams (2-5 agents)"
-              badge="5 agents"
               features={[
                 'Up to 500 leads/month',
                 'Multi-channel AI',
@@ -295,7 +254,6 @@ export default function HomePage() {
               price="$999+"
               period="/month"
               description="For large brokerages (20+ agents)"
-              badge="Enterprise"
               features={[
                 'Unlimited leads',
                 'Multi-channel AI (SMS/email/voice)',
@@ -308,21 +266,6 @@ export default function HomePage() {
               ]}
               cta="Contact Sales"
             />
-          </div>
-
-          {/* CTA: or start free trial link in pricing section (CTA Placement #3) */}
-          <div className="mt-8 text-center">
-            <p className="text-slate-600 dark:text-slate-400">
-              or{' '}
-              <Link
-                href="/signup/trial"
-                onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
-                className="text-emerald-500 hover:text-emerald-600 font-semibold"
-                data-cta-id="start_trial_pricing"
-              >
-                start free trial
-              </Link>
-            </p>
           </div>
         </div>
       </section>
@@ -359,28 +302,6 @@ const testimonials = [
   },
 ]
 
-function HowItWorksStep({ step, title, description }: { step: number; title: string; description: string }) {
-  return (
-    <div className="text-center" data-testid={`how-it-works-step-${step}`}>
-      <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold">
-        {step}
-      </div>
-      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
-      <p className="text-slate-600 dark:text-slate-400">{description}</p>
-    </div>
-  )
-}
-
-function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
-  return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center hover:shadow-lg transition-shadow">
-      <div className="text-4xl mb-4">{icon}</div>
-      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
-      <p className="text-slate-600 dark:text-slate-400">{description}</p>
-    </div>
-  )
-}
-
 function TestimonialCard({
   quote,
   name,
@@ -391,8 +312,8 @@ function TestimonialCard({
   title: string
 }) {
   return (
-    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col" data-testid="testimonial-card">
-      <div className="text-emerald-500 text-4xl mb-4">"</div>
+    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col">
+      <div className="text-emerald-500 text-4xl mb-4">&ldquo;</div>
       <p className="text-slate-700 dark:text-slate-300 mb-6 flex-grow">{quote}</p>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -407,6 +328,16 @@ function TestimonialCard({
   )
 }
 
+function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 text-center hover:shadow-lg transition-shadow">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{title}</h4>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}
+
 function PricingCard({
   name,
   price,
@@ -414,8 +345,7 @@ function PricingCard({
   description,
   features,
   popular = false,
-  cta = 'Get Started',
-  badge
+  cta = 'Get Started'
 }: {
   name: string
   price: string
@@ -424,16 +354,8 @@ function PricingCard({
   features: string[]
   popular?: boolean
   cta?: string
-  badge?: string
 }) {
   const isBrokerage = name === 'Brokerage'
-
-  const getBadgeColor = () => {
-    if (popular) return 'bg-emerald-500 text-white'
-    if (name === 'Starter') return 'bg-blue-500 text-white'
-    if (name === 'Team') return 'bg-purple-500 text-white'
-    return 'bg-slate-600 text-white'
-  }
 
   // Map pricing card names to CTA IDs
   const getPricingCTAId = () => {
@@ -445,10 +367,10 @@ function PricingCard({
 
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
-      {badge && (
+      {popular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className={`${getBadgeColor()} text-xs font-bold px-3 py-1 rounded-full`}>
-            {badge}
+          <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+            MOST POPULAR
           </span>
         </div>
       )}
@@ -481,8 +403,8 @@ function PricingCard({
       {!isBrokerage && (
         <Link
           href="/signup/trial"
-          onClick={() => trackCTAClick('start_trial_pricing_card', 'or start free trial', 'pricing')}
-          data-cta-id="start_trial_pricing_card"
+          onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
+          data-cta-id="start_trial_pricing"
           className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
         >
           or start free trial →
