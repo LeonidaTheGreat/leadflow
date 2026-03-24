@@ -8,7 +8,6 @@ import OnboardingCalendar from './steps/calendar'
 import OnboardingSMS from './steps/sms-config'
 import OnboardingSimulator from './steps/simulator'
 import OnboardingConfirm from './steps/confirmation'
-import OnboardingSimulator from './steps/simulator'
 import OnboardingProgress from './components/progress'
 
 type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
@@ -211,9 +210,9 @@ function OnboardingPageInner() {
             {currentStep === 'simulator' && (
               <OnboardingSimulator
                 onBack={prevStep}
-                onComplete={completeOnboarding}
+                onNext={completeOnboarding}
                 agentData={agentData}
-                isLoading={isLoading}
+                setAgentData={setAgentData}
               />
             )}
           </div>

@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/inactivity-check",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/cron/check-stuck-agents",
