@@ -279,6 +279,7 @@ class QueryBuilder implements PromiseLike<any> {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...(this.apiKey && { 'apikey': this.apiKey }),
+      ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` }),
     }
     
     if (this.isUpsert) {
