@@ -278,7 +278,7 @@ class QueryBuilder implements PromiseLike<any> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` }),
+      ...(this.apiKey && { 'apikey': this.apiKey }),
     }
     
     if (this.isUpsert) {
