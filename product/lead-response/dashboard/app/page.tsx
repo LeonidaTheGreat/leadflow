@@ -65,6 +65,30 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Stats Bar — PRD FR-2 Specification */}
+      <section className="bg-slate-100 dark:bg-slate-800 py-12 px-4">
+        <div className="container mx-auto max-w-5xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">&lt;30s</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Response Time</h4>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">78%</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Deals to First Responder</h4>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">35%</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Leads Never Responded To</h4>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">24/7</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Always On</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works — 3 Steps */}
       <section id="how-it-works" data-testid="how-it-works" className="container mx-auto px-4 py-20">
         <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
@@ -170,12 +194,13 @@ export default function HomePage() {
             Start with a free 30-day trial. Upgrade when you&apos;re ready.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             <PricingCard
               name="Starter"
               price="$49"
               period="/month"
               description="Perfect for solo agents"
+              badge="Free pilot"
               features={[
                 'Up to 50 leads/month',
                 'AI SMS responses',
@@ -190,6 +215,7 @@ export default function HomePage() {
               period="/month"
               description="For growing agents"
               popular
+              badge="Most popular"
               features={[
                 'Up to 200 leads/month',
                 'AI SMS & email responses',
@@ -203,7 +229,8 @@ export default function HomePage() {
               name="Team"
               price="$399"
               period="/month"
-              description="For teams & brokerages"
+              description="For small teams"
+              badge="5 agents"
               features={[
                 'Up to 500 leads/month',
                 'Multi-channel AI',
@@ -212,6 +239,24 @@ export default function HomePage() {
                 'Dedicated support',
                 'White-label options'
               ]}
+            />
+            <PricingCard
+              name="Brokerage"
+              price="$999+"
+              period="/month"
+              description="For large brokerages (20+ agents)"
+              badge="Enterprise"
+              features={[
+                'Unlimited leads',
+                'Multi-channel AI (SMS/email/voice)',
+                'Unlimited agents',
+                'White-label options',
+                'Admin dashboard & compliance',
+                'Dedicated account manager',
+                'SLA guarantees (99.9% uptime)',
+                'Custom integrations'
+              ]}
+              cta="Contact Sales"
             />
           </div>
         </div>
@@ -303,7 +348,9 @@ function PricingCard({
   period,
   description,
   features,
-  popular = false
+  popular = false,
+  cta = 'Get Started',
+  badge
 }: {
   name: string
   price: string
@@ -311,14 +358,24 @@ function PricingCard({
   description: string
   features: string[]
   popular?: boolean
+  cta?: string
+  badge?: string
 }) {
-  const planSlug = name.toLowerCase() as 'starter' | 'pro' | 'team'
+  const isBrokerage = name === 'Brokerage'
+
+  const getBadgeColor = () => {
+    if (popular) return 'bg-emerald-500 text-white'
+    if (name === 'Starter') return 'bg-blue-500 text-white'
+    if (name === 'Team') return 'bg-purple-500 text-white'
+    return 'bg-slate-600 text-white'
+  }
+
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
-      {popular && (
+      {badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-            MOST POPULAR
+          <span className={`${getBadgeColor()} text-xs font-bold px-3 py-1 rounded-full`}>
+            {badge}
           </span>
         </div>
       )}
@@ -337,22 +394,24 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={`/signup?plan=${planSlug}`}
-        onClick={() => trackCTAClick(`pricing_${planSlug}`, `Get Started ${name}`, 'pricing')}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${name.toLowerCase()}`}
+        onClick={() => trackCTAClick(`pricing_${name.toLowerCase()}`, `${cta} ${name}`, 'pricing')}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
             : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white'
         }`}
       >
-        Get Started
+        {cta}
       </Link>
-      <Link
-        href="/signup/trial"
-        className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
-      >
-        or start free trial →
-      </Link>
+      {!isBrokerage && (
+        <Link
+          href="/signup/trial"
+          className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
+        >
+          or start free trial →
+        </Link>
+      )}
     </div>
   )
 }
