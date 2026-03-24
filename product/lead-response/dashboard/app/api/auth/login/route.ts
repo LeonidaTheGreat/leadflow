@@ -4,8 +4,12 @@ import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { logSessionStart } from '@/lib/session-analytics'
 
+// Use NEXT_PUBLIC_API_URL if set (already includes /rest/v1), otherwise construct from SUPABASE_URL
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NEXT_PUBLIC_SUPABASE_URL ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1` : undefined)
+
 const supabase = createClient(
-  (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
+  apiUrl!,
   (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)!
 )
 
