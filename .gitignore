@@ -104,3 +104,10 @@ e2e-*-results*.json
 *.log
 coverage/
 *.tsbuildinfo
+# Auto-generated orchestrator docs
+DASHBOARD.md
+E2E_MAPPINGS.md
+JOURNEYS.md
+ORCHESTRATOR-HEARTBEAT-LOG.md
+PRD_INDEX.md
+USE_CASES.md
