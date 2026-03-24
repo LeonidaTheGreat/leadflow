@@ -1,19 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitProductFeedback } from '@/lib/nps-service'
+import { validateSession } from '@/lib/session'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { agentId, feedbackType, content } = body
-
-    if (!agentId) {
-      return NextResponse.json(
-        { error: 'agentId is required' },
-        { status: 400 }
-      )
+    // ── Auth ─────────────────────────────────────────────────────────────
+    const sessionToken = request.cookies.get('leadflow_session')?.value
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Validate required fields
+    const session = await validateSession(sessionToken)
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const agentId = session.userId
+
+    // ── Validate body ─────────────────────────────────────────────────────
+    const body = await request.json()
+    const { feedbackType, content } = body
+
     if (!feedbackType || !content) {
       return NextResponse.json(
         { error: 'Feedback type and content are required' },

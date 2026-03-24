@@ -54,9 +54,19 @@ export function OnboardingGuard() {
       return
     }
 
-    // Note: Onboarding check is now handled by the dashboard page itself.
-    // The dashboard renders OnboardingWizardOverlay when onboarding_completed=false.
-    // This allows the wizard to appear as an overlay on the dashboard (AC-3).
+    // Check if onboarding is completed
+    const userRaw = getFromStorage('leadflow_user')
+    if (userRaw) {
+      try {
+        const user = JSON.parse(userRaw)
+        if (user.onboardingCompleted === false) {
+          router.replace('/setup')
+          return
+        }
+      } catch {
+        // Ignore parse errors and continue
+      }
+    }
   }, [pathname, router])
 
   return null

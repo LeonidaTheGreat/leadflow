@@ -4,6 +4,7 @@ import '../globals.css'
 import { DashboardNav } from './dashboard-nav'
 import { PageViewTracker } from '@/components/page-view-tracker'
 import { OnboardingGuard } from '@/components/onboarding-guard'
+import { FeedbackButton } from '@/components/dashboard/FeedbackButton'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,6 +27,7 @@ export default function DashboardLayout({
       <main className="container mx-auto px-4 py-6">
         {children}
       </main>
+      <FeedbackButton />
     </div>
   )
 }

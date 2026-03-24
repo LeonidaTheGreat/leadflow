@@ -37,6 +37,31 @@ function getSupabase() {
 }
 
 /**
+ * Check if user's onboarding is completed
+ * Returns true if onboarding is completed, false if incomplete or error
+ */
+async function isOnboardingCompleted(userId: string): Promise<boolean> {
+  try {
+    const supabase = getSupabase()
+    const { data: agent, error } = await supabase
+      .from('real_estate_agents')
+      .select('onboarding_completed')
+      .eq('id', userId)
+      .single()
+
+    if (error || !agent) {
+      // On error, allow access (fail open)
+      return true
+    }
+
+    return agent.onboarding_completed ?? false
+  } catch {
+    // On error, allow access (fail open)
+    return true
+  }
+}
+
+/**
  * Check if user's trial has expired
  * Returns true if user is on trial and trial has expired
  */
@@ -95,6 +120,18 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users from auth routes to dashboard
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // Check if onboarding is required and redirect to setup (AC-3)
+  // Skip this check for /setup and /onboarding routes
+  if (session?.userId && isProtectedRoute) {
+    const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
+    if (!isSetupRoute) {
+      const onboardingCompleted = await isOnboardingCompleted(session.userId)
+      if (!onboardingCompleted) {
+        return NextResponse.redirect(new URL('/setup', request.url))
+      }
+    }
   }
 
   // Check for expired trial and redirect to upgrade if needed (AC-8)
