@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import {
   verifySurveyToken,
   hashToken,
@@ -79,12 +80,60 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true })
     } else {
-      // In-app submission - for now, return a message that this needs auth
-      // In a real implementation, this would use authenticated session data
-      return NextResponse.json(
-        { success: false, error: 'In-app NPS submission requires authentication. Use email link instead.' },
-        { status: 400 }
+      // In-app submission - requires authenticated session
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      
+      const supabase = createClient(supabaseUrl, supabaseAnonKey)
+      
+      // Get session from cookies
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
+
+      if (sessionError || !session?.user) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
+
+      const userId = session.user.id
+
+      // Get the agent record by user ID
+      const { data: agent, error: agentError } = await supabaseServer
+        .from('real_estate_agents')
+        .select('id')
+        .eq('user_id', userId)
+        .single()
+
+      if (agentError || !agent) {
+        return NextResponse.json(
+          { success: false, error: 'Agent not found' },
+          { status: 404 }
+        )
+      }
+
+      agentId = agent.id
+
+      // Submit the NPS response (in-app submission, no token)
+      const result = await submitNPSResponse(
+        agentId,
+        score,
+        openText || null,
+        trigger,
+        'in_app'
       )
+
+      if (!result.success) {
+        return NextResponse.json(
+          { success: false, error: result.error },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({ success: true })
     }
   } catch (error: any) {
     console.error('Error submitting NPS response:', error)
