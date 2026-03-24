@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { trackCTAClick, trackFormEvent } from '@/lib/analytics/ga4'
 
 interface TrialSignupFormProps {
   compact?: boolean
@@ -19,10 +21,17 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDuplicateEmailError, setIsDuplicateEmailError] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setIsDuplicateEmailError(false)
+
+    // Track CTA click based on which section/mode initiated the form
+    const section = searchParams.get('source') === 'pricing' ? 'pricing' : 'hero'
+    const ctaId = compact ? 'start_trial_form' : 'get_started_hero'
+    trackCTAClick(ctaId, 'Start Free Trial', section)
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
@@ -35,13 +44,6 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
     }
 
     setLoading(true)
-
-    // Track trial_signup_started event (FR-8)
-    void fetch('/api/events/track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event: 'trial_signup_started', properties: { source: 'trial_cta' } }),
-    }).catch(() => { /* non-blocking */ })
 
     try {
       const response = await fetch('/api/auth/trial-signup', {
@@ -60,32 +62,34 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || 'Something went wrong. Please try again.')
+        const errorMessage = data.error || 'Something went wrong. Please try again.'
+        // Check if this is a duplicate email error (409 status or specific message)
+        if (response.status === 409 || errorMessage.toLowerCase().includes('already exists')) {
+          setIsDuplicateEmailError(true)
+        }
+        setError(errorMessage)
         setLoading(false)
         return
       }
 
-      // Store user data in localStorage so the dashboard wizard auto-trigger works.
-      // The session cookie (set by the server) handles protected-route auth.
-      if (data.user) {
-        try {
-          localStorage.setItem('leadflow_user', JSON.stringify(data.user))
-          sessionStorage.setItem('leadflow_user', JSON.stringify(data.user))
-        } catch {
-          // storage unavailable — cookie auth will still handle it
-        }
-      }
-      // Legacy token storage — keep for components that still read leadflow_token
+<<<<<<< HEAD
+      // Store auth token + user in localStorage BEFORE navigation (FR-2)
+      // This ensures /setup can render without calling /api/auth/me
       if (data.token) {
         try {
           localStorage.setItem('leadflow_token', data.token)
         } catch {
-          // ignore
+          // ignore storage errors
         }
       }
-
-      // Redirect to dashboard (frictionless: no email-verify gate for trial users)
-      router.push(data.redirectTo || '/dashboard')
+      if (data.user) {
+        try {
+          localStorage.setItem('leadflow_user', JSON.stringify(data.user))
+        } catch {
+          // ignore storage errors
+        }
+      }
+      router.push(data.redirectTo || '/setup')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
@@ -141,27 +145,38 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Start Free Trial <ArrowRight className="w-4 h-4" /></>}
           </button>
         </div>
-        {error && <p id="trial-error-compact" className="mt-2 text-sm text-red-400" role="alert">{error}</p>}
+        {error && (
+          <p id="trial-error-compact" className="mt-2 text-sm text-red-400" role="alert">
+            {isDuplicateEmailError ? (
+              <>
+                An account with this email already exists.{" "}
+                <Link href="/login" className="underline hover:text-red-300">
+                  Sign in
+                </Link>
+              </>
+            ) : (
+              error
+            )}
+          </p>
+        )}
         <p className="mt-3 text-sm text-white/60 text-center">Free for 14 days · No credit card · Cancel anytime</p>
       </form>
     )
   }
 
-  // Non-compact: full-width vertical layout matching login page orientation
   return (
     <form onSubmit={handleSubmit} className={`w-full max-w-[420px] mx-auto ${className}`}>
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-8 shadow-lg backdrop-blur-sm">
-        <h3 className="text-2xl font-bold text-white text-center mb-2">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-2">
           Start Your Free Trial
         </h3>
-        <p className="text-slate-400 text-center text-sm mb-6">
+        <p className="text-slate-500 dark:text-slate-400 text-center text-sm mb-6">
           No credit card required · 14 days free
         </p>
 
         <div className="space-y-4">
-          {/* Email — full-width vertical, label above input (matches login layout) */}
-          <div className="space-y-2">
-            <label htmlFor="trial-email" className="block text-sm font-medium text-slate-200">
+          <div>
+            <label htmlFor="trial-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Email address
             </label>
             <input
@@ -172,43 +187,39 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
               placeholder="you@example.com"
               required
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               aria-describedby={error ? 'trial-error' : undefined}
             />
           </div>
 
-          {/* Password — label OUTSIDE relative wrapper (matches login structure) */}
-          <div className="space-y-2">
-            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-200">
+          <div className="relative">
+            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Password
             </label>
-            <div className="relative">
-              <input
-                id="trial-password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(null) }}
-                placeholder="Min 8 characters"
-                required
-                minLength={8}
-                disabled={loading}
-                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
+            <input
+              id="trial-password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(null) }}
+              placeholder="Min 8 characters"
+              required
+              minLength={8}
+              disabled={loading}
+              className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
 
-          {/* Name — full-width vertical */}
-          <div className="space-y-2">
-            <label htmlFor="trial-name" className="block text-sm font-medium text-slate-200">
+          <div>
+            <label htmlFor="trial-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Your name <span className="text-slate-400">(optional)</span>
             </label>
             <input
@@ -218,14 +229,25 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>
 
         {error && (
-          <div id="trial-error" className="mt-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg" role="alert">
-            <p className="text-sm text-red-400">{error}</p>
+          <div id="trial-error" className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg" role="alert">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {isDuplicateEmailError ? (
+                <>
+                  An account with this email already exists.{" "}
+                  <Link href="/login" className="font-medium underline hover:text-red-500 dark:hover:text-red-300">
+                    Sign in
+                  </Link>
+                </>
+              ) : (
+                error
+              )}
+            </p>
           </div>
         )}
 
@@ -245,9 +267,9 @@ export default function TrialSignupForm({ compact = false, className = '' }: Tri
           Free for 14 days · No credit card · Cancel anytime
         </p>
 
-        <p className="mt-4 text-sm text-center text-slate-400">
+        <p className="mt-4 text-sm text-center text-slate-500 dark:text-slate-400">
           Already have an account?{' '}
-          <a href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">Sign in</a>
+          <a href="/login" className="text-emerald-500 hover:text-emerald-600 font-medium">Sign in</a>
         </p>
       </div>
     </form>

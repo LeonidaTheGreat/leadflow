@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 import jwt from 'jsonwebtoken'
 
 const supabase = createClient(
@@ -107,5 +107,5 @@ export async function getExpiredTrialAgents(): Promise<string[]> {
     return []
   }
 
-  return agents.map((a: any) => a.id)
+  return agents.map(a => a.id)
 }

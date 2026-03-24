@@ -1,17 +1,15 @@
 'use client'
 
-import { CheckCircle2, Zap, Clock } from 'lucide-react'
+import { CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function OnboardingConfirm({
   onBack,
-  onComplete,
+  onNext,
   agentData,
-  isLoading,
 }: {
   onBack: () => void
-  onComplete: () => void
+  onNext: () => void
   agentData: any
-  isLoading: boolean
 }) {
   return (
     <div className="animate-in fade-in-up duration-500">
@@ -90,55 +88,6 @@ export default function OnboardingConfirm({
                   {agentData.smsPhoneNumber ? '✓ Connected' : '○ Skipped'}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="text-slate-300">Aha Moment Simulator</span>
-                </div>
-                {agentData.ahaCompleted ? (
-                  <span className="text-sm font-medium text-emerald-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Completed
-                    {agentData.ahaResponseTimeMs && (
-                      <span className="text-emerald-300/70 ml-1">
-                        ({(agentData.ahaResponseTimeMs / 1000).toFixed(1)}s)
-                      </span>
-                    )}
-                  </span>
-                ) : agentData.ahaSkipped ? (
-                  <span className="text-sm font-medium text-slate-500">○ Skipped</span>
-                ) : (
-                  <span className="text-sm font-medium text-slate-500">○ Not completed</span>
-                )}
-              </div>
-              {agentData.ahaCompleted && agentData.ahaResponseTimeMs && (
-                <div className="flex items-center gap-2 text-xs text-emerald-300/70">
-                  <Clock className="w-3 h-3" />
-                  <span>
-                    AI responded in under 30 seconds — experience the power of instant lead response!
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Aha Moment Status */}
-          <div className="bg-slate-700/30 border border-slate-600/30 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-slate-200 mb-4 uppercase tracking-wide">
-              Aha Moment
-            </h3>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">⚡</span>
-                <span className="text-slate-300">AI Response Demo</span>
-              </div>
-              <span className={`text-sm font-medium ${
-                agentData.ahaCompleted ? 'text-emerald-400' : 'text-slate-500'
-              }`}>
-                {agentData.ahaCompleted 
-                  ? `✓ Completed (${agentData.ahaResponseTimeMs ? `${(agentData.ahaResponseTimeMs / 1000).toFixed(1)}s response)` : ')'}`
-                  : '○ Skipped'}
-              </span>
             </div>
           </div>
 
@@ -169,15 +118,15 @@ export default function OnboardingConfirm({
 
           {/* What's Next */}
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
-            <h3 className="text-sm font-semibold text-blue-300 mb-3">What&apos;s next?</h3>
+            <h3 className="text-sm font-semibold text-blue-300 mb-3">What's next?</h3>
             <ul className="space-y-2 text-sm text-blue-200/80">
               <li className="flex gap-2">
                 <span>1.</span>
-                <span>We&apos;ll create your LeadFlow AI account and dashboard</span>
+                <span>We'll create your LeadFlow AI account and dashboard</span>
               </li>
               <li className="flex gap-2">
                 <span>2.</span>
-                <span>You&apos;ll be able to connect lead sources (Zillow, Realtor.com, etc.)</span>
+                <span>You'll be able to connect lead sources (Zillow, Realtor.com, etc.)</span>
               </li>
               <li className="flex gap-2">
                 <span>3.</span>
@@ -205,27 +154,16 @@ export default function OnboardingConfirm({
         <div className="flex gap-3">
           <button
             onClick={onBack}
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50"
+            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
           >
             ← Back
           </button>
           <button
-            onClick={onComplete}
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+            onClick={onNext}
+            className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Saving your details...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-5 h-5" />
-                Start My Free Pilot →
-              </>
-            )}
+            <CheckCircle2 className="w-5 h-5" />
+            See Your First AI Response
           </button>
         </div>
       </div>
@@ -233,8 +171,8 @@ export default function OnboardingConfirm({
       {/* Testimonial */}
       <div className="mt-8 bg-slate-800/50 border border-slate-700/30 rounded-lg p-6 text-center">
         <p className="text-slate-300 italic mb-3">
-          &ldquo;I was missing 35% of my leads. LeadFlow AI changed the game for me. Now I respond
-          instantly and close more deals.&rdquo;
+          "I was missing 35% of my leads. LeadFlow AI changed the game for me. Now I respond
+          instantly and close more deals."
         </p>
         <p className="text-sm text-slate-400">— Real Estate Agent, California</p>
       </div>

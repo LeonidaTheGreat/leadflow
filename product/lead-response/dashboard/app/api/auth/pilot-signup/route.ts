@@ -298,7 +298,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       agentId: agent.id,
-      redirectTo: '/dashboard/onboarding',
+      redirectTo: '/setup',
       message: 'Pilot account created successfully',
       token,
       user: {
@@ -308,6 +308,7 @@ export async function POST(request: NextRequest) {
         lastName: agent.last_name,
         onboardingCompleted: false,
       },
+    })
     })
 
     response.cookies.set('auth-token', token, {

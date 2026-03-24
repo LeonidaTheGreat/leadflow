@@ -1,16 +1,29 @@
 /**
- * E2E test: trial-signup/route.ts redirectTo fix
- * Verifies the route returns redirectTo: '/setup' (not '/dashboard/onboarding')
- * Use case: fix-trial-signup-route-ts-still-redirects-to-dashboard
+ * E2E test: post-signup redirect to /dashboard/onboarding
+ * Verifies all signup routes return redirectTo: '/dashboard/onboarding'
+ * Use case: feat-post-signup-redirect-to-dashboard-onboarding
+ *
+ * Updated: stale assertion for /setup replaced with /dashboard/onboarding
+ * per decision 4ff87559 approved by Stojan 2026-03-13.
  */
 
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const ROUTE_FILE = path.join(
+const TRIAL_SIGNUP_ROUTE = path.join(
   __dirname,
   '../product/lead-response/dashboard/app/api/auth/trial-signup/route.ts'
+);
+
+const PILOT_SIGNUP_ROUTE = path.join(
+  __dirname,
+  '../product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts'
+);
+
+const TRIAL_START_ROUTE = path.join(
+  __dirname,
+  '../product/lead-response/dashboard/app/api/trial/start/route.ts'
 );
 
 let passed = 0;
@@ -27,29 +40,52 @@ function test(name, fn) {
   }
 }
 
-// Test 1: Route file contains correct redirectTo
-test('redirectTo is /setup (not /dashboard/onboarding)', () => {
-  const content = fs.readFileSync(ROUTE_FILE, 'utf8');
-  assert.ok(content.includes("redirectTo: '/setup'"), "redirectTo should be '/setup'");
-  assert.ok(!content.includes("redirectTo: '/dashboard/onboarding'"), "redirectTo must NOT be '/dashboard/onboarding'");
-});
-
-// Test 2: /setup page exists in the app
-test('/setup route exists in Next.js app', () => {
-  const setupPage = path.join(
-    __dirname,
-    '../product/lead-response/dashboard/app/setup/page.tsx'
+// Test 1: trial-signup route redirects to /dashboard/onboarding
+test('trial-signup: redirectTo is /dashboard/onboarding', () => {
+  const content = fs.readFileSync(TRIAL_SIGNUP_ROUTE, 'utf8');
+  assert.ok(
+    content.includes("redirectTo: '/dashboard/onboarding'"),
+    "trial-signup redirectTo should be '/dashboard/onboarding'"
   );
-  assert.ok(fs.existsSync(setupPage), '/setup/page.tsx must exist');
+  assert.ok(
+    !content.includes("redirectTo: '/setup'"),
+    "trial-signup redirectTo must NOT be '/setup'"
+  );
 });
 
-// Test 3: /dashboard/onboarding is not referenced as a post-signup redirect anywhere in the file
-test('No remaining /dashboard/onboarding redirect in trial-signup route', () => {
-  const content = fs.readFileSync(ROUTE_FILE, 'utf8');
-  // Allow it only in comments, not in code
-  const codeLines = content.split('\n').filter(l => !l.trim().startsWith('//') && !l.trim().startsWith('*'));
-  const hasOldRedirect = codeLines.some(l => l.includes('/dashboard/onboarding'));
-  assert.ok(!hasOldRedirect, '/dashboard/onboarding must not appear in non-comment code');
+// Test 2: pilot-signup route redirects to /dashboard/onboarding
+test('pilot-signup: redirectTo is /dashboard/onboarding', () => {
+  const content = fs.readFileSync(PILOT_SIGNUP_ROUTE, 'utf8');
+  assert.ok(
+    content.includes("redirectTo: '/dashboard/onboarding'"),
+    "pilot-signup redirectTo should be '/dashboard/onboarding'"
+  );
+  assert.ok(
+    !content.includes("redirectTo: '/setup'"),
+    "pilot-signup redirectTo must NOT be '/setup'"
+  );
+});
+
+// Test 3: trial/start route redirects to /dashboard/onboarding
+test('trial/start: redirectTo is /dashboard/onboarding', () => {
+  const content = fs.readFileSync(TRIAL_START_ROUTE, 'utf8');
+  assert.ok(
+    content.includes("redirectTo: '/dashboard/onboarding'"),
+    "trial/start redirectTo should be '/dashboard/onboarding'"
+  );
+  assert.ok(
+    !content.includes("redirectTo: '/setup'"),
+    "trial/start redirectTo must NOT be '/setup'"
+  );
+});
+
+// Test 4: /dashboard/onboarding page exists
+test('/dashboard/onboarding page exists in Next.js app', () => {
+  const onboardingPage = path.join(
+    __dirname,
+    '../product/lead-response/dashboard/app/dashboard/onboarding/page.tsx'
+  );
+  assert.ok(fs.existsSync(onboardingPage), '/dashboard/onboarding/page.tsx must exist');
 });
 
 console.log(`\n📊 Results: ${passed} passed, ${failed} failed`);
