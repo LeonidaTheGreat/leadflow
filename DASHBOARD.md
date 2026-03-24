@@ -11,7 +11,7 @@ autoRefresh: every_heartbeat
 **Goal:** $20,000 MRR within 60 days  
 **Current Day:** Day 38 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/24/2026, 7:28:49 AM
+**Last Updated:** 3/23/2026, 11:06:00 PM
 
 ---
 
@@ -33,20 +33,29 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 4 | In Progress: 0 | Blocked: 0 | Done: 920
+**Queue Health:** Ready: 8 | In Progress: 4 | Blocked: 0 | Done: 913
 
-### ▶️ Ready to Spawn (4 tasks)
+### ▶️ Ready to Spawn (8 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
+| Implement: Fix cookie name mismatch in trial/start route | sonnet | $1.20 | 🔴 P0 |
+| PM: Proactive Revenue Gap Analysis | codex | $0.00 | 🔴 P0 |
+| PM: Product Review — Marketing Landing Page — High-Converting Signup Flow | sonnet | $0.60 | 🔴 P0 |
 | PM: Product Review — UTM Parameter Capture & Marketing Attribution | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Aha Moment Simulator — Onboarding Step UI | sonnet | $0.60 | 🔴 P0 |
+| Dev (rescue): fix-walkthrough-spec-incomplete-missing-product-signup - Walkthrough spec incomplete — missing product signup/onboarding tests | haiku | $0.40 | 🟡 P1 |
 | PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
 | PM: Analyze ux_issue feedback | sonnet | $0.60 | 🟡 P1 |
-| PM: Analyze feature_request feedback | sonnet | $0.60 | 🟡 P1 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (4 tasks)
 
-*No active tasks*
+| Task | Agent | Model |
+|------|-------|-------|
+| PM: Product Review — Live AI Demo — Experience the Product Without Signing Up | product | sonnet |
+| PM: Product Review — UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | product | sonnet |
+| Smoke: Auth: signup then login failing | qc | kimi |
+| Dev (rescue): fix-no-evidence-of-wizard-auto-trigger-implementation - No evidence of wizard auto-trigger implementation | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -104,7 +113,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $484.24
+**Estimated project cost:** $483.74
 **Cost per task:** Avg $0.48
 
 ---
@@ -118,8 +127,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **4 tasks ready to spawn**
-2. 🔴 No active agents
+1. ✅ **8 tasks ready to spawn**
+2. ⚡ **4 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
