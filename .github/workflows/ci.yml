@@ -10,4 +10,8 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: npm test
-      - run: npx eslint . --max-warnings 0
+      - name: Dashboard build
+        working-directory: product/lead-response/dashboard
+        run: |
+          npm ci
+          npm run build

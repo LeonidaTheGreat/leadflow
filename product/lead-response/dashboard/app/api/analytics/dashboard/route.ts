@@ -7,9 +7,26 @@ import {
   getLeadConversion,
   getAvgResponseTime,
 } from '@/lib/analytics-queries'
+import { validateSession } from '@/lib/session'
 
 export async function GET(request: NextRequest) {
   try {
+    // ── Auth ─────────────────────────────────────────────────────────────
+    // API routes are excluded from the Next.js middleware matcher so we
+    // must validate the session manually here.
+    const sessionToken = request.cookies.get('leadflow_session')?.value
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const session = await validateSession(sessionToken)
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // session.userId is the authenticated agent's ID — used for scoped queries
+    const agentId = session.userId
+
     const searchParams = request.nextUrl.searchParams
     const daysBack = parseInt(searchParams.get('days') || '30', 10)
 
@@ -80,7 +97,7 @@ export async function GET(request: NextRequest) {
       },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+          'Cache-Control': 'private, no-store',
         },
       }
     )

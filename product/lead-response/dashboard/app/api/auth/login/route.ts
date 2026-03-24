@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import { createSession } from '@/lib/session'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +37,11 @@ export async function POST(request: NextRequest) {
     // Check if email is verified
     if (!user.email_verified) {
       return NextResponse.json(
-        { error: 'Please verify your email before signing in' },
+        { 
+          error: 'EMAIL_NOT_VERIFIED', 
+          message: 'Please confirm your email address.',
+          resendUrl: '/api/auth/resend-verification'
+        },
         { status: 403 }
       )
     }
@@ -54,16 +56,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate JWT token
-    const tokenExpiry = rememberMe ? '30d' : '24h'
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-      },
-      JWT_SECRET,
-      { expiresIn: tokenExpiry }
-    )
+    // Create server-side session
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined
+    const session = await createSession({
+      userId: user.id,
+      userAgent: request.headers.get('user-agent') || undefined,
+      ipAddress,
+      rememberMe,
+    })
 
     // Update last login timestamp
     await supabase
@@ -71,9 +71,9 @@ export async function POST(request: NextRequest) {
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
-    return NextResponse.json({
+    // Create response with user data and onboarding status
+    const response = NextResponse.json({
       success: true,
-      token,
       user: {
         id: user.id,
         email: user.email,
@@ -84,6 +84,19 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Set HTTP-only cookie with session token
+    const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60 // 30 days or 24 hours
+    response.cookies.set({
+      name: 'leadflow_session',
+      value: session.token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: cookieMaxAge,
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(

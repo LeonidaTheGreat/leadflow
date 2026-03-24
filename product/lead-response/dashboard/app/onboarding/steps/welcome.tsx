@@ -95,12 +95,19 @@ export default function OnboardingWelcome({
 
         {/* Title */}
         <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
-          Welcome to LeadFlow AI
+          Start Your Free Pilot
         </h2>
 
-        <p className="text-center text-slate-300 text-lg mb-8">
+        <p className="text-center text-slate-300 text-lg mb-4">
           Never miss a lead again. Respond to prospects in under 30 seconds.
         </p>
+
+        {/* Free pilot badge */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-medium">
+            ✨ 60 days free — no credit card required
+          </span>
+        </div>
 
         {/* Form */}
         <div className="space-y-4 mb-8">
@@ -194,7 +201,7 @@ export default function OnboardingWelcome({
             </>
           ) : (
             <>
-              Continue <span>→</span>
+              Start Free Pilot <span>→</span>
             </>
           )}
         </button>
@@ -214,7 +221,7 @@ export default function OnboardingWelcome({
         {/* Benefits */}
         <div className="mt-8 pt-6 border-t border-slate-700/50">
           <p className="text-xs font-semibold text-slate-300 mb-3 uppercase tracking-wide">
-            What you get
+            Included in your free pilot
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {[

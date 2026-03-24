@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Find lead by phone
     let { data: lead, error: leadError } = await supabaseAdmin
       .from('leads')
-      .select('*, agent:agents(*)')
+      .select('*, agent:real_estate_agents(*)')
       .eq('phone', phone)
       .maybeSingle()
 
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
     let agent: Agent | null = lead.agent as Agent
     if (!agent && lead.agent_id) {
       const { data: agentData } = await supabaseAdmin
-        .from('agents')
+        .from('real_estate_agents')
         .select('*')
         .eq('id', lead.agent_id)
         .single()
@@ -526,7 +526,7 @@ function escapeXml(text: string): string {
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
-    .from('agents')
+    .from('real_estate_agents')
     .select('*')
     .eq('is_active', true)
     .limit(1)

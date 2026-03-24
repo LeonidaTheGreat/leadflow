@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email exists in agents table
     const { data: existingAgent, error: agentError } = await supabase
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, email, status')
       .eq('email', normalizedEmail)
       .maybeSingle();
