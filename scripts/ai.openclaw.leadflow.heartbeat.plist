@@ -16,8 +16,10 @@
     
     <key>StartInterval</key>
     <integer>1800</integer>
-    <!-- Run every 30 minutes (1800 seconds) — hot path handled by realtime-dispatcher -->
-    
+
+    <key>KeepAlive</key>
+    <false/>
+
     <key>RunAtLoad</key>
     <true/>
     

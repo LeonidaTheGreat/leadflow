@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-23
+title: BO2026 Dashboard - Updated 2026-03-24
 author: LeadFlow Orchestrator
-date: 2026-03-23
+date: 2026-03-24
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 37 of 60  
+**Current Day:** Day 38 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/23/2026, 1:19:31 AM
+**Last Updated:** 3/23/2026, 11:06:00 PM
 
 ---
 
@@ -24,7 +24,7 @@ autoRefresh: every_heartbeat
 | **Twilio SMS** | ✅ TESTED | SMS sent successfully via API |
 | **AI Qualification** | ✅ READY | Claude integration ready |
 | **Dashboard** | ✅ LIVE | Lead feed, stats, detail view, analytics |
-| **Database** | ✅ LIVE | Local PostgreSQL connected, 30+ test leads verified |
+| **Database** | ✅ LIVE | Supabase connected, 30+ test leads, all tables verified |
 | **Compliance** | ✅ READY | TCPA audit complete, system approved |
 | **Pilot Accounts** | ✅ READY | 3 agents created and active |
 | **SMS Testing** | ✅ VERIFIED | Test SMS confirmed working |
@@ -33,19 +33,29 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 1 | In Progress: 1 | Blocked: 0 | Done: 925
+**Queue Health:** Ready: 8 | In Progress: 4 | Blocked: 0 | Done: 913
 
-### ▶️ Ready to Spawn (1 tasks)
+### ▶️ Ready to Spawn (8 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Implement: Fix cookie name mismatch in trial/start route | kimi | $0.00 | 🔴 P0 |
+| Implement: Fix cookie name mismatch in trial/start route | sonnet | $1.20 | 🔴 P0 |
+| PM: Proactive Revenue Gap Analysis | codex | $0.00 | 🔴 P0 |
+| PM: Product Review — Marketing Landing Page — High-Converting Signup Flow | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — UTM Parameter Capture & Marketing Attribution | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Aha Moment Simulator — Onboarding Step UI | sonnet | $0.60 | 🔴 P0 |
+| Dev (rescue): fix-walkthrough-spec-incomplete-missing-product-signup - Walkthrough spec incomplete — missing product signup/onboarding tests | haiku | $0.40 | 🟡 P1 |
+| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
+| PM: Analyze ux_issue feedback | sonnet | $0.60 | 🟡 P1 |
 
-### ⚡ In Progress (1 tasks)
+### ⚡ In Progress (4 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| PM: Product Review — Fix Signup Page — Plan Options Not Displayed | product-manager | kimi |
+| PM: Product Review — Live AI Demo — Experience the Product Without Signing Up | product | sonnet |
+| PM: Product Review — UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | product | sonnet |
+| Smoke: Auth: signup then login failing | qc | kimi |
+| Dev (rescue): fix-no-evidence-of-wizard-auto-trigger-implementation - No evidence of wizard auto-trigger implementation | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -103,7 +113,7 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $479.97
+**Estimated project cost:** $483.74
 **Cost per task:** Avg $0.48
 
 ---
@@ -117,8 +127,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **1 tasks ready to spawn**
-2. ⚡ **1 agents active**
+1. ✅ **8 tasks ready to spawn**
+2. ⚡ **4 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
