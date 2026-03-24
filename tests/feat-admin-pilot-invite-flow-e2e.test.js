@@ -8,7 +8,7 @@
  * - Agent activation
  */
 
-const fetch = require('node-fetch')
+// Use native fetch (Node 18+)
 const { v4: uuidv4 } = require('uuid')
 require('dotenv').config()
 
