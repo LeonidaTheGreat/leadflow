@@ -47,7 +47,16 @@ jest.mock('next/server', () => ({
 
 // Mock crypto
 jest.mock('crypto', () => ({
-  randomUUID: jest.fn().mockReturnValue('mocked-uuid-12345')
+  randomUUID: jest.fn().mockReturnValue('mocked-uuid-12345'),
+  randomBytes: jest.fn((size) => {
+    // Create a real Buffer for testing
+    const buffer = Buffer.alloc(size);
+    // Fill it with pseudo-random but consistent data
+    for (let i = 0; i < size; i++) {
+      buffer[i] = (i * 37 + 42) % 256;
+    }
+    return buffer;
+  })
 }));
 
 describe('Onboarding Simulator API - Start Action', () => {
@@ -78,7 +87,8 @@ describe('Onboarding Simulator API - Start Action', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.state.session_id).toBe('mocked-uuid-12345');
+      // Server prepends 'sim_' to the generated UUID
+      expect(data.state.session_id).toBe('sim_mocked-uuid-12345');
     });
 
     it('should accept start action with client-provided sessionId', async () => {
