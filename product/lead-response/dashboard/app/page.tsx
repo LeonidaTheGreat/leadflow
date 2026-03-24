@@ -311,7 +311,7 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Stats Bar — FR-2: 4 PRD-specified metrics */}
-      <section className="bg-teal-600 py-12 px-4 sm:px-6">
+      <section data-testid="stats-bar" className="bg-teal-600 py-12 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="flex flex-col items-center gap-2">
             <div className="text-4xl sm:text-5xl font-bold text-white">&lt;30s</div>
