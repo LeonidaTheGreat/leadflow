@@ -64,7 +64,7 @@ export default function PilotSignupForm({ compact = false, className = '' }: Pil
       }
 
       // Store auth token + user in localStorage BEFORE navigation (FR-2)
-      // This ensures /dashboard/onboarding can render without calling /api/auth/me
+      // This ensures /setup can render without calling /api/auth/me
       if (data.token) {
         try {
           localStorage.setItem('leadflow_token', data.token)
