@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSession } from '@/lib/session'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [

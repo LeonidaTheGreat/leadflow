@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import { randomBytes } from 'crypto'
 
 const supabase = createClient(

@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 

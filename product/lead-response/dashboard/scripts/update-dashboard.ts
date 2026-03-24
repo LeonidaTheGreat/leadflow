@@ -10,7 +10,7 @@
  */
 
 import { config } from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import * as fs from 'fs'
 import * as path from 'path'
 

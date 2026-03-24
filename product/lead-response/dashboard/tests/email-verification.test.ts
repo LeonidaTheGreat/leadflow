@@ -3,7 +3,7 @@
  * Tests for feat-email-verification-before-login
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

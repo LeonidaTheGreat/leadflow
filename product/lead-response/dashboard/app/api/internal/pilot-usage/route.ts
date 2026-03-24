@@ -7,7 +7,7 @@
  * Auth: SUPABASE_SERVICE_ROLE_KEY bearer token required.
  */
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from '@/lib/db'
 
 function getSupabase() {
   return createClient(
