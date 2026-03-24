@@ -26,10 +26,11 @@ interface Plan {
 }
 
 // Maps plan.id → checkout API `tier` value (matches PRICE_ID_ENV_MAP in create-checkout/route.ts)
+// Canonical tier names: starter, pro, team — all using _monthly suffix for the signup flow
 const PLAN_CHECKOUT_TIER: Record<string, string> = {
   starter: 'starter_monthly',
-  pro:     'professional_monthly',
-  team:    'enterprise_monthly',
+  pro:     'pro_monthly',
+  team:    'team_monthly',
 }
 
 const PLANS: Plan[] = [
