@@ -58,4 +58,24 @@ describe('PricingSection — FR-1 Acceptance Criteria', () => {
       expect(prices[i]).toBeGreaterThan(prices[i - 1])
     }
   })
+
+  it('Starter tier has "Free pilot" badge', () => {
+    const starter = PRICING_PLANS.find((p: { tier: string }) => p.tier === 'starter')
+    expect(starter.badge).toBe('Free pilot')
+  })
+
+  it('Pro tier has "Most popular" badge', () => {
+    const pro = PRICING_PLANS.find((p: { tier: string }) => p.tier === 'pro')
+    expect(pro.badge).toBe('Most popular')
+  })
+
+  it('Team tier has "5 agents" badge', () => {
+    const team = PRICING_PLANS.find((p: { tier: string }) => p.tier === 'team')
+    expect(team.badge).toBe('5 agents')
+  })
+
+  it('Brokerage tier has "Enterprise" badge', () => {
+    const brokerage = PRICING_PLANS.find((p: { tier: string }) => p.tier === 'brokerage')
+    expect(brokerage.badge).toBe('Enterprise')
+  })
 })
