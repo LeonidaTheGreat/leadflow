@@ -120,7 +120,7 @@ describe('Pilot Signup API', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.redirectTo).toBe('/dashboard/onboarding')
+      expect(data.redirectTo).toBe('/setup')
       
       // Verify the insert was called with pilot-specific fields
       expect(insertData).toBeDefined()

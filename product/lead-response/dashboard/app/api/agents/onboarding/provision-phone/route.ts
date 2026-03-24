@@ -171,7 +171,6 @@ export async function POST(request: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', agentId)
-
     console.log('[provision-phone] Provisioned:', assignedNumber, 'for agent:', agentId)
 
     return NextResponse.json({
