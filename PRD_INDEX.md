@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-24T03:06:00.726Z | Source: `prds` table
+> Generated: 2026-03-24T05:05:44.500Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -72,8 +72,11 @@
 | prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
+| PRD-UC-1-LEAD-INITIATED-SMS | Lead-Initiated SMS (UC-1) | draft | 2.0 | [docs/prd/PRD-UC-1-LEAD-INITIATED-SMS.md](docs/prd/PRD-UC-1-LEAD-INITIATED-SMS.md) |
 | PRD-UC-TRIAGE-001 | UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | approved | 1.0 | [docs/prd/PRD-UC-TRIAGE-001.md](docs/prd/PRD-UC-TRIAGE-001.md) |
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
+| PRD-UC5-LEAD-OPT-OUT | Lead Opt-Out (TCPA Compliance) | approved | 1.1 | [docs/prd/PRD-UC5-LEAD-OPT-OUT.md](docs/prd/PRD-UC5-LEAD-OPT-OUT.md) |
+| PRD-UC7-DASHBOARD-MANUAL-SMS | Dashboard Manual SMS — Send Manual SMS from Lead Detail | approved | 1.0 | [docs/prd/PRD-UC7-DASHBOARD-MANUAL-SMS.md](docs/prd/PRD-UC7-DASHBOARD-MANUAL-SMS.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
 | PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
 
