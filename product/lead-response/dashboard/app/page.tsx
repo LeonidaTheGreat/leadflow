@@ -75,6 +75,30 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Stats Bar — PRD FR-2 Specification */}
+      <section className="bg-slate-100 dark:bg-slate-800 py-12 px-4">
+        <div className="container mx-auto max-w-5xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">&lt;30s</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Response Time</h4>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">78%</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Deals to First Responder</h4>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">35%</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Leads Never Responded To</h4>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">24/7</div>
+              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Always On</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="container mx-auto px-4 py-20">
         <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
