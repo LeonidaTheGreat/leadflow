@@ -4,20 +4,27 @@ import { useState, useEffect } from 'react'
 import { Sparkles, AlertCircle, CheckCircle2, MessageCircle } from 'lucide-react'
 
 interface SetupSimulatorProps {
-  onNext: () => void
-  onBack: () => void
-  setupData: {
+  // New overlay interface
+  onComplete?: (responseTimeMs: number | null) => void
+  onSkip?: () => void
+  // Legacy setup page interface
+  onNext?: () => void
+  setupData?: {
     simulatorCompleted: boolean
   }
-  setSetupData: (data: any) => void
+  setSetupData?: (data: any) => void
+  // Common to both
+  onBack: () => void
   agentId: string | null
 }
 
 export default function SetupSimulator({ 
-  onNext, 
-  onBack, 
-  setupData, 
+  onComplete, 
+  onSkip,
+  onNext,
+  setupData,
   setSetupData,
+  onBack,
   agentId 
 }: SetupSimulatorProps) {
   const [simulationStatus, setSimulationStatus] = useState<'idle' | 'running' | 'complete'>('idle')
@@ -85,7 +92,6 @@ export default function SetupSimulator({
 
         if (data.state.status === 'success') {
           setSimulationStatus('complete')
-          setSetupData({ ...setupData, simulatorCompleted: true })
           
           // Log event
           await fetch('/api/analytics/event', {
@@ -97,6 +103,13 @@ export default function SetupSimulator({
             })
           }).catch(() => {})
           
+          // Handle completion based on which interface is being used
+          if (onComplete) {
+            onComplete(data.state.response_time_ms || null)
+          } else if (setSetupData && setupData) {
+            setSetupData({ ...setupData, simulatorCompleted: true })
+            if (onNext) onNext()
+          }
           return
         }
 
@@ -118,11 +131,20 @@ export default function SetupSimulator({
   }
 
   const handleContinue = () => {
-    onNext()
+    // Move to next step based on which interface is being used
+    if (onNext) {
+      onNext()
+    } else if (onSkip) {
+      onSkip()
+    }
   }
 
-  const handleSkip = () => {
-    onNext()
+  const handleSkipSimulator = () => {
+    if (onSkip) {
+      onSkip()
+    } else if (onNext) {
+      onNext()
+    }
   }
 
   return (
@@ -178,7 +200,7 @@ export default function SetupSimulator({
             </button>
 
             <button
-              onClick={handleSkip}
+              onClick={handleSkipSimulator}
               className="w-full py-3 px-4 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
             >
               Skip this for now

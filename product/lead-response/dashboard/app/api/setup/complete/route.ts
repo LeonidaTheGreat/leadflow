@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log onboarding_completed event
-    await supabase.from('events').insert({
+    void supabase.from('events').insert({
       agent_id: payload.userId,
       event_type: 'onboarding_completed',
       event_data: {
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       },
       source: 'setup_wizard',
       created_at: new Date().toISOString()
-    }).catch(() => {}) // Non-blocking
+    }) // Non-blocking, fire and forget
 
     return NextResponse.json({
       success: true,
