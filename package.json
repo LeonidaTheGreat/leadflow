@@ -13,7 +13,6 @@
     "test:stripe-smoke:local": "LOCAL_MODE=true node tests/integrated/stripe-production-smoke.test.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.97.0",
     "axios": "^1.13.5",
     "cron": "^3.1.6",
     "dotenv": "^16.6.1",
