@@ -100,7 +100,6 @@
 | feat-lead-satisfaction-feedback | E2E-SATISFACTION-003: Lead Satisfaction card visible in agent dashboard | test/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SATISFACTION-002: Lead reply classified and stored | test/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SATISFACTION-001: Satisfaction ping SMS sent after AI exchange | test/lead-satisfaction.test.ts | - | not_run |
-| feat-lead-satisfaction-feedback | E2E-SATISFACTION-004: Agent can disable satisfaction pings via settings toggle | test/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SAT-001: Satisfaction Ping Sent After AI Exchange | tests/e2e/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SAT-002: Reply Classification | tests/e2e/lead-satisfaction.test.ts | - | not_run |
 | feat-lead-satisfaction-feedback | E2E-SATISFACTION-005: Satisfaction ping sent only once per conversation | test/lead-satisfaction.test.ts | - | not_run |
@@ -190,8 +189,6 @@
 | fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | 2026-03-07 | pass |
 | fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
 | fix-deployed-pages-not-registered-in-system- | E2E-1: Auto-Sync on Heartbeat | tests/e2e/deployed-pages-sync.test.ts | 2026-03-07 | pass |
-| fix-deployed-pages-not-registered-in-system- | E2E-3: URL Accuracy Verification | tests/e2e/url-accuracy.test.ts | 2026-03-07 | pass |
-| fix-deployed-pages-not-registered-in-system- | E2E-2: Manual Sync API | tests/e2e/manual-sync-api.test.ts | 2026-03-07 | pass |
 | fix-madzunkov-hotmail-com-is-locked-out-email-verified | DB-MIGRATION-EVT-004: madzunkov@hotmail.com email_verified = TRUE | test/db-migration-email-verification.test.js | - | not_run |
 | fix-madzunkov-hotmail-com-is-locked-out-email-verified | DB-MIGRATION-EVT-005: no pre-feature accounts locked out | test/db-migration-email-verification.test.js | - | not_run |
 | fix-no-forgot-password-flow | FP-001: Forgot password link navigates to /forgot-password | test/forgot-password.test.ts | - | not_run |
@@ -212,7 +209,6 @@
 | fix-onboarding-500-error | E2E-ONBOARD-003: Health Check | test/health-endpoint.test.ts | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-BUILD-TRIAL-002: Next.js production build gate | product/lead-response/dashboard (build) | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-BUILD-TRIAL-001: Typecheck gate for trial-signup route | product/lead-response/dashboard (typecheck) | - | not_run |
-| fix-production-build-fails-typescript-error-in-trial-s | E2E-BUILD-TRIAL-002: Next.js production build gate | product/lead-response/dashboard (build) | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-TRIAL-SIGNUP-003: Trial signup happy path unchanged | app/api/auth/trial-signup/route.ts | - | not_run |
 | fix-production-build-fails-typescript-error-in-trial-s | E2E-TRIAL-SIGNUP-004: Analytics write failure is non-blocking | app/api/auth/trial-signup/route.ts | - | not_run |
 | fix-remaining-agents-table-references | Stripe portal session finds customer in real_estate_agents | app/api/stripe/portal-session/route.ts | - | not_run |
@@ -270,7 +266,6 @@
 | pm-action-items-dashboard | Orchestrator Reads Pending Action Items | - | - | not_run |
 | UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-1 | E2E-SMS-001: FUB webhook → SMS sent → delivery tracked | test/e2e/sms-delivery.test.ts | - | not_run |
-| UC-1 | UC-1: Lead-Initiated SMS Response | tests/e2e/uc-1-lead-initiated-sms.test.ts | - | pass |
 | UC-10 | UC-10: Billing Portal Access | tests/e2e/uc-10-billing-portal.test.ts | - | not_run |
 | UC-11 | UC-11: Subscription Upgrade | tests/e2e/uc-11-subscription-lifecycle.test.ts | - | not_run |
 | UC-12 | UC-12: MRR Reporting | tests/e2e/uc-12-mrr-reporting.test.ts | - | not_run |
@@ -729,29 +724,15 @@
 
 ### E2E-AHA-006: Confirmation page shows Aha Moment completion status
 
-- **File:** `e2e/onboarding-aha-moment-failure.spec.ts`
+- **File:** `e2e/onboarding-confirmation-aha-status.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Failure state is visible with actionable copy; Retry button re-triggers simulation; Continue action allows onboarding progression; onboarding does not crash."
-```
-
-### E2E-AHA-003: Skip Recovery — Dashboard Re-Prompt Until Completion
-
-- **File:** `e2e/onboarding-aha-moment-skip-reprompt.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Skip sets aha_moment_completed=false; first dashboard visit shows simulator prompt; completing simulation sets aha_moment_completed=true; prompt is removed on subsequent visits."
-```
-
-### E2E-AHA-004: Simulator Step Present in Wizard — Auto-Start + Progressive Bubbles
-
-- **File:** `e2e/onboarding-simulator-step-ui.spec.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"simulator step renders between sms and confirmation in wizard; simulation POST fires automatically on mount; poll requests fire every ~2s; lead bubble left-align with Simulated Lead label; AI bubble right-align with LeadFlow AI label; success banner shows response time in seconds; See the Dashboard CTA present; skip button visible after 5s; progress bar shows 5 steps; no TypeScript build errors"
+[
+  "Connected Integrations section contains \"AI Lead Response\" row",
+  "When ahaCompleted=true: shows \"✓ Live (X.Xs response)\" in emerald",
+  "When ahaCompleted=false: shows \"○ Skipped\" in grey"
+]
 ```
 
 ### E2E-AHA-005: Progress bar shows 6 steps on simulator step
@@ -778,16 +759,6 @@
 
 
 ## feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
-
-### Removed page marked deprecated
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Status changed to deprecated"
-]
-```
 
 ### URL change updated
 
@@ -848,36 +819,6 @@
   "New entry exists",
   "URL is correct",
   "Status is live"
-]
-```
-
-### Dashboard reflects sync
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "All components match system_components"
-]
-```
-
-### Failed sync retry
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Sync succeeds on retry"
-]
-```
-
-### Manual sync trigger
-
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Components updated without waiting for heartbeat"
 ]
 ```
 
@@ -1202,13 +1143,22 @@
 "bootstrap-project.js reads template; Creates PROJECT_STRUCTURE.md in project root; Template variables substituted"
 ```
 
-### E2E-STRUCT-001: Template file exists at canonical path
+### E2E-STRUCT-004: Project Structure section in PM spawn messages
 
-- **File:** `~/.openclaw/genome/templates/PROJECT_STRUCTURE.template.md`
+- **File:** `~/.openclaw/genome/core/workflow-engine.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Template file exists; Contains all required sections; Is valid markdown"
+"PM spawnRole contains Project Structure section; References PROJECT_STRUCTURE.md path"
+```
+
+### E2E-STRUCT-003: Project Structure section in design spawn messages
+
+- **File:** `~/.openclaw/genome/core/workflow-engine.js`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Design spawnRole contains Project Structure section; References PROJECT_STRUCTURE.md path"
 ```
 
 ### E2E-STRUCT-001: Template file exists at canonical path
@@ -1227,15 +1177,6 @@
 - **Assertions:**
 ```json
 "All SOUL.md files contain PROJECT_STRUCTURE.md reference; Rule is clear and actionable"
-```
-
-### E2E-STRUCT-004: Project Structure section in PM spawn messages
-
-- **File:** `~/.openclaw/genome/core/workflow-engine.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"PM spawnRole contains Project Structure section; References PROJECT_STRUCTURE.md path"
 ```
 
 
@@ -1277,7 +1218,7 @@
 "No \"API Endpoints\" heading found; No dev-documentation table visible; Page renders without errors"
 ```
 
-### E2E-CONV-06: Mobile Layout 375px
+### E2E-CONV-02: How It Works Section Present
 
 - **File:** `test/landing-page-conversion.test.ts`
 - **Result:** not_run
@@ -1334,14 +1275,15 @@
 ]
 ```
 
-### Demo link expires after 24 hours
+### Demo share link works without login
 
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Returns 401 or shows Link expired message",
-  "No simulator UI rendered for expired tokens"
+  "Page loads in incognito without login redirect",
+  "Simulator UI fully functional via demo link",
+  "Token is consumed/recorded in demo_tokens table"
 ]
 ```
 
@@ -1380,17 +1322,13 @@
 "Email capture section visible; headline present; email input present; CTA button present"
 ```
 
-### UTM parameters captured on submission
+### E2E-LEAD-MAGNET-007: Mobile Responsive Layout
 
-- **File:** `tests/e2e/lead-magnet-email-capture.test.ts`
+- **File:** `test/lead-magnet.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-[
-  "utm_source=google stored",
-  "utm_medium=cpc stored",
-  "utm_campaign=test stored"
-]
+"No horizontal scroll at 375px; input and button fully visible; form submits successfully on mobile viewport"
 ```
 
 ### E2E-LEAD-MAGNET-006: UTM Parameters Captured and Stored
@@ -1444,16 +1382,7 @@
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Inline validation error shown; no API call made; no pilot_signups row created"
-```
-
-### E2E-LEAD-MAGNET-001: Form Renders on Landing Page
-
-- **File:** `test/lead-magnet.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Email capture section visible; headline present; email input present; CTA button present"
+"Success message shown within 3s; pilot_signups row created with source=lead_magnet; API 200 success response"
 ```
 
 ### Successful email capture stores record and shows success state
@@ -1550,6 +1479,15 @@
 "[\"Toggle visible in Settings page (default: ON)\",\"Toggle state persists after page reload\",\"agents.satisfaction_ping_enabled=false when toggle is OFF\",\"No satisfaction ping SMS sent when toggle is OFF\",\"Pings resume when toggle turned back ON\"]"
 ```
 
+### E2E-SATISFACTION-003: Lead Satisfaction card visible in agent dashboard
+
+- **File:** `test/lead-satisfaction.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Card hidden below 5 events; visible with % positive/negative/neutral above 5 events; trend indicator present"
+```
+
 ### E2E-SATISFACTION-002: Lead reply classified and stored
 
 - **File:** `test/lead-satisfaction.test.ts`
@@ -1566,15 +1504,6 @@
 - **Assertions:**
 ```json
 "Satisfaction ping SMS sent via Twilio; event row created in Supabase with rating=null"
-```
-
-### E2E-SATISFACTION-004: Agent can disable satisfaction pings via settings toggle
-
-- **File:** `test/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Toggle persists in DB; no pings when disabled; pings resume when re-enabled"
 ```
 
 ### E2E-SAT-001: Satisfaction Ping Sent After AI Exchange
@@ -1602,15 +1531,6 @@
 - **Assertions:**
 ```json
 "Exactly 1 satisfaction ping SMS sent per conversation; exactly 1 DB row per conversation_id"
-```
-
-### E2E-SATISFACTION-003: Lead Satisfaction card visible in agent dashboard
-
-- **File:** `test/lead-satisfaction.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Card hidden below 5 events; visible with % positive/negative/neutral above 5 events; trend indicator present"
 ```
 
 
@@ -1670,24 +1590,6 @@
 "[\"PROJECT_STRUCTURE.md exists at repo root\",\"PROJECT_STRUCTURE.md lists all top-level directories with descriptions\",\"PROJECT_STRUCTURE.md contains keep-at-root exceptions list\",\"CLAUDE.md Key Directories section references config/, tests/e2e/, docs/prd/, scripts/\"]"
 ```
 
-### Runtime integrity after restructuring
-
-- **File:** `tests/e2e/repo-structure.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"node server.js starts without module-not-found errors\",\"Symlink task-store.js resolves and is readable\",\"Symlink project-config-loader.js resolves and is readable\",\"Symlink subagent-completion-report.js resolves and is readable\",\"vercel.json references server.js at root\",\"Vercel smoke test for fub-inbound-webhook returns 200\",\"Vercel smoke test for leadflow-ai dashboard returns 200\"]"
-```
-
-### Config directory structure verified
-
-- **File:** `tests/e2e/repo-structure.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"config/strategy-config.json exists\",\"config/swarm-config.json exists\",\"config/budget-tracker.json exists\",\"No stale root references to strategy-config.json, swarm-config.json, budget-tracker.json\"]"
-```
-
 
 ## feat-nps-agent-feedback — NPS & Feedback Survey for Agents
 
@@ -1711,20 +1613,11 @@
 
 ### NPS-006: Admin NPS view at /admin/nps shows score, breakdown, and recent responses
 
-- **File:** `test/nps-survey.test.ts`
+- **File:** `test/nps-admin.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"product_feedback churn_risk entry created; processed=false; agent_id correct"
-```
-
-### NPS-004: In-app NPS prompt appears when due and is dismissible
-
-- **File:** `test/nps-in-app.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Prompt shown when due; dismissible with 30-day suppression; not shown when not due"
+"Admin sees NPS score and breakdown; non-admin receives 403 or redirect"
 ```
 
 ### NPS-004: In-app NPS prompt appears when due and is dismissible
@@ -1857,30 +1750,15 @@
 ]
 ```
 
-### Day 45 urgent ROI email sends with urgency messaging
+### Sequence stops when pilot upgrades before next milestone
 
 - **File:** `tests/e2e/pilot-conversion-email-sequence.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
 [
-  "Day-45 template is selected (not day-30 or day-55)",
-  "Urgency messaging indicates 15 days remaining",
-  "Tracking record written with milestone=day_45"
-]
-```
-
-### Day 30 midpoint email sends with personalized stats and Pro checkout CTA
-
-- **File:** `tests/e2e/pilot-conversion-email-sequence.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Exactly one day-30 email is sent for eligible pilot",
-  "Email includes all required personalized stats",
-  "Email includes valid Stripe checkout CTA",
-  "Delivery attempt is logged in tracking table"
+  "No milestone email sent to upgraded agent",
+  "Skip outcome is auditable in logs/events"
 ]
 ```
 
@@ -2189,14 +2067,6 @@
 "[\"Telegram message sent on first check\",\"inactivity_alerts row inserted\",\"No duplicate alert within 24h window\"]"
 ```
 
-### Session logging failure does not break login
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Login succeeds despite session logging failure\",\"Dashboard renders normally\",\"Error is logged server-side only, not surfaced to user\"]"
-```
-
 
 ## feat-sms-analytics-dashboard — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion
 
@@ -2273,20 +2143,12 @@
 "[\"Trial badge element in navigation\",\"Badge shows days remaining\",\"Badge links to /settings/billing\"]"
 ```
 
-### Trial badge with days remaining visible in dashboard nav
+### Trial signup requires only email and password — no credit card
 
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Trial badge element in navigation\",\"Badge shows days remaining\",\"Badge links to /settings/billing\"]"
-```
-
-### Start Free Trial CTA present in hero, features, and pricing sections
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"CTA in hero section\",\"CTA in features section\",\"CTA in pricing section\"]"
+"[\"Email input present\",\"Password input present\",\"Credit card field NOT present\",\"Plan selector NOT present\",\"Form submits without error\"]"
 ```
 
 ### Start Free Trial CTA visible above fold on desktop and mobile
@@ -2390,13 +2252,13 @@
 
 ## feat-utm-capture-marketing-attribution — UTM Parameter Capture & Marketing Attribution
 
-### T-2: Direct Visit — Clean NULL
+### T-4: Attribution Table in Dashboard
 
 - **File:** `tests/e2e/utm-attribution.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"utm_source IS NULL\",\"utm_medium IS NULL\",\"utm_campaign IS NULL\",\"No errors thrown\"]"
+"[\"Attribution section renders\",\"All required columns present\",\"Direct row for NULL UTM agents\",\"Test agents visible with correct attribution\"]"
 ```
 
 ### T-2: Direct Visit — Clean NULL
@@ -2426,7 +2288,6 @@
 "[\"utm_source = email\",\"utm_campaign = wave1\",\"First-touch not overwritten\"]"
 ```
 
-### T-4: Attribution Table in Dashboard
 
 ## fix-api-endpoints-developer-table-embedded-in-marketin — API Endpoints developer table embedded in marketing landing page
 
@@ -2453,11 +2314,8 @@
 - **Result:** not_run
 - **Assertions:**
 ```json
-"[\"Attribution section renders\",\"All required columns present\",\"Direct row for NULL UTM agents\",\"Test agents visible with correct attribution\"]"
+"[\"GET /api/health returns HTTP 200\",\"Response body has status = ok\",\"checks.supabase_connectivity.ok = true\",\"checks.supabase_connectivity.detail = connected\",\"Source file does not reference from(agents) for connectivity check\"]"
 ```
-
-
-## fix-api-health-endpoint-wrong-table — Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents)
 
 ### Health endpoint Supabase connectivity check uses correct table
 
@@ -2465,14 +2323,6 @@
 - **Assertions:**
 ```json
 "[\"HTTP 200 returned\",\"status field equals ok\",\"supabase_connectivity.ok is true\",\"No agents table reference in route.ts\"]"
-```
-
-### Health endpoint returns OK with correct Supabase connectivity
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"GET /api/health returns HTTP 200\",\"Response body has status = ok\",\"checks.supabase_connectivity.ok = true\",\"checks.supabase_connectivity.detail = connected\",\"Source file does not reference from(agents) for connectivity check\"]"
 ```
 
 
@@ -2530,25 +2380,6 @@
 "table_exists = 1; no query error"
 ```
 
-### health-check-supabase-connectivity
-
-- **Result:** pass
-- **Assertions:**
-```json
-"[\"HTTP 200\",\"Supabase health indicator is ok/healthy\"]"
-```
-
-### pilot-signup-no-regression
-
-- **Result:** pass
-- **Assertions:**
-```json
-"[\"HTTP 201\",\"response.success === true\",\"row created in pilot_signups\"]"
-```
-
-
-## fix-db-migration-incomplete-email-verification-tokens- — DB migration incomplete: email_verification_tokens table does not exist
-
 ### DB-MIGRATION-EVT-003: resend-verification creates token row
 
 - **File:** `test/db-migration-email-verification.test.js`
@@ -2556,15 +2387,6 @@
 - **Assertions:**
 ```json
 "HTTP 200; row exists in email_verification_tokens; expires_at is approximately NOW() + 24h"
-```
-
-### DB-MIGRATION-EVT-002: indexes exist on email_verification_tokens
-
-- **File:** `test/db-migration-email-verification.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Both indexes present; no query error"
 ```
 
 ### DB-MIGRATION-EVT-002: indexes exist on email_verification_tokens
@@ -2663,59 +2485,6 @@
     "query": "component_name='Signup page' AND metadata->>'url' IS NOT NULL",
     "table": "system_components",
     "expect": "exists"
-  }
-]
-```
-
-### E2E-3: URL Accuracy Verification
-
-- **File:** `tests/e2e/url-accuracy.test.ts`
-- **Result:** pass
-- **Last run:** 2026-03-07T01:01:17.443Z
-- **Assertions:**
-```json
-[
-  {
-    "url": "https://leadflow-ai-five.vercel.app",
-    "type": "http",
-    "expect": 200
-  },
-  {
-    "url": "https://leadflow-ai-five.vercel.app/dashboard",
-    "type": "http",
-    "expect": 200
-  },
-  {
-    "url": "https://fub-inbound-webhook.vercel.app/health",
-    "type": "http",
-    "expect": 200
-  }
-]
-```
-
-### E2E-2: Manual Sync API
-
-- **File:** `tests/e2e/manual-sync-api.test.ts`
-- **Result:** pass
-- **Last run:** 2026-03-07T01:01:17.443Z
-- **Assertions:**
-```json
-[
-  {
-    "type": "api",
-    "expect": 200,
-    "endpoint": "POST /api/admin/sync-deployed-pages"
-  },
-  {
-    "path": "success",
-    "type": "response",
-    "expect": "true"
-  },
-  {
-    "type": "database",
-    "query": "status='live' AND status_emoji='🟢'",
-    "table": "system_components",
-    "expect": "count >= 4"
   }
 ]
 ```
@@ -2847,15 +2616,6 @@
 "[\"sessionStorage.getItem(\\\"leadflow_utm\\\") === null\"]"
 ```
 
-### FP-002: Forgot password dispatches reset email for valid account
-
-- **File:** `test/forgot-password.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Success message displayed; reset email received; link in email is valid"
-```
-
 
 ## fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
 
@@ -2897,11 +2657,11 @@
 
 ### E2E-ONBOARD-004: End-to-End User Journey
 
-- **File:** `test/billing-portal.test.ts`
+- **File:** `test/e2e-user-journey.test.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"Billing portal loads; Subscription details displayed; Queries real_estate_agents successfully"
+"Complete flow works without errors; Dashboard displays user data from real_estate_agents"
 ```
 
 ### E2E-ONBOARD-003: Health Check
@@ -2932,15 +2692,6 @@
 - **Assertions:**
 ```json
 "Typecheck exits 0; error TS2339 absent from output"
-```
-
-### E2E-BUILD-TRIAL-002: Next.js production build gate
-
-- **File:** `product/lead-response/dashboard (build)`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Build exits 0 and emits successful Next.js build output"
 ```
 
 ### E2E-TRIAL-SIGNUP-003: Trial signup happy path unchanged
@@ -2987,18 +2738,6 @@
   "POST /api/agents/check-email { email: \"new-unique@example.com\" } returns HTTP 200",
   "Response body contains { available: true }",
   "No 500 error (wrong table would return 500 or wrong result)"
-]
-```
-
-### Static analysis — no customer routes query agents table
-
-- **File:** `scripts/validate-system.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Zero from(agents) occurrences in auth/profile/webhook/stripe/onboarding routes",
-  "Only orchestrator-specific code (if any) references agents table with explicit comment"
 ]
 ```
 
@@ -3226,19 +2965,10 @@
 ]
 ```
 
-### E2E-STRIPE-SUBS-003: Webhook idempotency on event replay
-
-- **File:** `test/stripe-subscriptions.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"No duplicate rows; idempotent event processing via stripe_event_id uniqueness"
-```
-
 
 ## fix-trial-signup-redirects-to-nonexistent-onboarding-page — Fix trial signup redirect to non-existent /dashboard/onboarding page
 
-### E2E-REDIRECT-004: Trial start API returns redirectTo /setup
+### E2E-REDIRECT-003: Pilot signup API returns redirectTo /setup
 
 - **File:** `test/trial-signup-redirect.test.ts`
 - **Result:** not_run
@@ -3370,15 +3100,6 @@
 "Message truncated to 160 chars; Warning in console; SMS sent; Body stored correctly"
 ```
 
-### E2E-TWILIO-002: Invalid Phone Number Error Handling
-
-- **File:** `test/twilio-sms-integration.test.js`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
-```
-
 ### E2E-TWILIO-004: Status Update via Webhook Callback
 
 - **File:** `test/twilio-sms-integration.test.js`
@@ -3397,13 +3118,13 @@
 "Correct from-number per market; CA override works; Warning logged if missing; No errors"
 ```
 
-### E2E-TWILIO-007: Concurrent SMS Sends
+### E2E-TWILIO-002: Invalid Phone Number Error Handling
 
 - **File:** `test/twilio-sms-integration.test.js`
 - **Result:** not_run
 - **Assertions:**
 ```json
-"All SMS sent; Unique SIDs; All logged; Response time <2s each; No rate limit errors"
+"Error thrown; Code 21211; Category INVALID_NUMBER; Retryable false; Logged to DB"
 ```
 
 
@@ -3560,15 +3281,6 @@
 
 ## UC-1 — Lead-Initiated SMS
 
-### E2E-SMS-001: FUB webhook → SMS sent → delivery tracked
-
-- **File:** `test/e2e/sms-delivery.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-"Lead receives SMS within 30 seconds; Status tracked in conversations table; Message visible in dashboard"
-```
-
 ### UC-1: Lead-Initiated SMS Response
 
 - **File:** `tests/e2e/uc-1-lead-initiated-sms.test.ts`
@@ -3604,6 +3316,15 @@
     "expect": "exists"
   }
 ]
+```
+
+### E2E-SMS-001: FUB webhook → SMS sent → delivery tracked
+
+- **File:** `test/e2e/sms-delivery.test.ts`
+- **Result:** not_run
+- **Assertions:**
+```json
+"Lead receives SMS within 30 seconds; Status tracked in conversations table; Message visible in dashboard"
 ```
 
 
@@ -4319,7 +4040,7 @@
 
 ### UTM parameters captured in GA4 session
 
-- **File:** `e2e/analytics/graceful-missing-env.spec.ts`
+- **File:** `e2e/analytics/utm-capture.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
@@ -4701,22 +4422,11 @@
 
 ### Accessibility
 
-## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
-
-### E2E-REV-001: End-to-End Revenue Funnel
-
-- **File:** `tests/e2e/revenue-funnel.test.ts`
+- **File:** `e2e/landing-page.spec.ts`
 - **Result:** not_run
 - **Assertions:**
 ```json
-[
-  "Landing page loads with <3s LCP",
-  "Signup form submits without error",
-  "Onboarding completes successfully",
-  "Dashboard accessible post-onboarding",
-  "Payment processing succeeds",
-  "MRR increases correctly"
-]
+"[\"alt_text_present\",\"heading_hierarchy\",\"aria_labels\",\"contrast_aa\"]"
 ```
 
 ### Navigation Smooth Scroll
@@ -4794,57 +4504,7 @@
 ```
 
 
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Navigate to landing page\",\"Click CTA to signup\",\"Complete onboarding wizard\",\"Connect FUB integration\",\"Trigger test lead\",\"Verify SMS sent within 30s\",\"Upgrade to paid plan\",\"Verify MRR updated\"]"
-```
-
-### E2E-REV-002: Pilot Agent Onboarding
-
-- **File:** `tests/e2e/pilot-onboarding.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "Onboarding wizard renders",
-  "Account created in Supabase",
-  "FUB integration connects",
-  "Twilio integration connects",
-  "Test lead received within 5 min"
-]
-```
-
-### Pilot Agent Onboarding
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Recruit pilot agent\",\"Send onboarding link\",\"Complete all 4 steps\",\"Verify account created\",\"Verify FUB connection\",\"Verify Twilio connection\",\"Send test lead\",\"Verify SMS received\"]"
-```
-
-### E2E-REV-003: SMS Value Delivery
-
-- **File:** `tests/e2e/sms-value-delivery.test.ts`
-- **Result:** not_run
-- **Assertions:**
-```json
-[
-  "FUB webhook received",
-  "SMS sent within 30s",
-  "Message delivered to lead phone",
-  "Conversation logged in dashboard",
-  "Delivery status tracked"
-]
-```
-
-### SMS Value Delivery
-
-- **Result:** not_run
-- **Assertions:**
-```json
-"[\"Ensure Twilio integration active\",\"Submit lead via FUB webhook\",\"Verify SMS sent within 30s\",\"Verify message delivered\",\"Check dashboard for status\",\"Verify conversation logged\"]"
-```
+## UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
 
 ### E2E-REV-001: End-to-End Revenue Funnel
 

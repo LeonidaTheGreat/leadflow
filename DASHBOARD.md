@@ -41,7 +41,7 @@ autoRefresh: every_heartbeat
 |------|-------|------|----------|
 | Implement: Fix cookie name mismatch in trial/start route | kimi | $0.00 | 🔴 P0 |
 
-### ⚡ In Progress (0 tasks)
+### ⚡ In Progress (1 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
