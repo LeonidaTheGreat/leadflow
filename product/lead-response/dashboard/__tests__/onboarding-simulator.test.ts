@@ -4,18 +4,18 @@
  * Tests for the Aha Moment feature - Live Lead Simulator in Onboarding
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+// Using Jest globals (describe, it, expect, jest are globally available)
 
 // Mock fetch for API tests
-global.fetch = vi.fn()
+global.fetch = jest.fn()
 
 describe('Onboarding Simulator API', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    jest.restoreAllMocks()
   })
 
   describe('POST /api/onboarding/simulator', () => {
@@ -231,7 +231,7 @@ describe('Database Schema', () => {
       'updated_at',
     ]
 
-    expect(requiredColumns).toHaveLength(16)
+    expect(requiredColumns).toHaveLength(17)
   })
 
   it('should have valid status values', () => {

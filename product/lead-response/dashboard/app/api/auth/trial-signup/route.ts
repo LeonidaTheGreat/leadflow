@@ -122,7 +122,6 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
 
-<<<<<<< HEAD
     // Calculate trial end date (14 days from now)
     const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
     const now = new Date().toISOString()
