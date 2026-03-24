@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
+import { initializeSurveySchedule } from '@/lib/nps-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -96,27 +97,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Initialize NPS survey schedule for the new agent (non-blocking)
+    void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
+      console.error('Failed to initialize NPS survey schedule:', err)
+    })
+
     // Log trial_started event (fire-and-forget, non-blocking)
-    void (async () => {
-      try {
-        await supabase.from('analytics_events').insert({
-          event_type: 'trial_started',
-          agent_id: agent.id,
-          properties: {
-            source: 'trial_cta',
-            utm_source: utm_source || null,
-            utm_medium: utm_medium || null,
-            utm_campaign: utm_campaign || null,
-            plan_tier: 'trial',
-            trial_days: 30
-          },
-          created_at: new Date().toISOString()
-        })
-      } catch (err: unknown) {
-        // Non-blocking — don't fail signup if analytics insert fails
-        console.error('Failed to log trial_started event:', err)
-      }
-    })()
+    void Promise.resolve(supabase.from('analytics_events').insert({
+      event_type: 'trial_started',
+      agent_id: agent.id,
+      properties: {
+        source: 'trial_cta',
+        utm_source: utm_source || null,
+        utm_medium: utm_medium || null,
+        utm_campaign: utm_campaign || null,
+        plan_tier: 'trial',
+        trial_days: 30
+      },
+      created_at: new Date().toISOString()
+    })).catch((err: unknown) => {
+      // Non-blocking — don't fail signup if analytics insert fails
+      console.error('Failed to log trial_started event:', err)
+    })
 
     // Send welcome email (non-blocking)
     void sendWelcomeEmail(
