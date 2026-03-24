@@ -124,12 +124,13 @@ export async function POST(request: NextRequest) {
 
     if (!webhookResult.success) {
       // Webhook registration failed — the API key was stored but the webhook
+<<<<<<< HEAD
       // is not active. Return partial success so the agent can still proceed.
       console.error('❌ FUB webhook registration failed:', webhookResult.error)
       console.warn('⚠️  FUB API key stored but webhook not active — leads will not be pushed to LeadFlow')
       return NextResponse.json({
         valid: true,
-        message: 'FUB connected successfully, but webhook registration failed',
+        message: 'FUB connected successfully, but webhook registration failed. Lead events may not arrive automatically.',
         webhook_registered: false,
         webhook_error: webhookResult.error,
         webhook_subscriptions: [],
