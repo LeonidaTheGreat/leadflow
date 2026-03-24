@@ -9,7 +9,7 @@
  */
 
 import { config } from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import axios from 'axios'
 
 config()

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 // Statuses considered "stuck"
 const STUCK_STATUSES = ['needs_merge', 'not_started', 'in_progress', 'stuck']

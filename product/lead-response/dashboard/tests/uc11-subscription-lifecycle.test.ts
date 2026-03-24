@@ -14,7 +14,7 @@
 
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals'
 import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || ''
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || ''

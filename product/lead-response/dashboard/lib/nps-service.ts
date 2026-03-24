@@ -4,7 +4,7 @@
  * feat-nps-agent-feedback
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 

@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeAll } from '@jest/globals'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendSms, normalizePhone, isValidPhoneNumber } from '@/lib/twilio'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 // Test configuration
 const TEST_PHONE = '+14165551234'

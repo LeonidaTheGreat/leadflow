@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import Stripe from 'stripe'
 import jwt from 'jsonwebtoken'
 

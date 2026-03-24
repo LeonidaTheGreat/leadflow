@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { checkTrialStatus, canSendSms, getExpiredTrialAgents } from '@/lib/trial'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 // Mock Supabase
 vi.mock('@supabase/supabase-js', () => ({

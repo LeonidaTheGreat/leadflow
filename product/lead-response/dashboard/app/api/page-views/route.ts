@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 

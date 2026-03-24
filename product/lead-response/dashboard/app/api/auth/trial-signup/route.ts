@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { sendWelcomeEmail } from '@/lib/email-service'
