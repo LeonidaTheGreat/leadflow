@@ -206,15 +206,6 @@ function OnboardingPageInner() {
                 agentData={agentData}
               />
             )}
-
-            {currentStep === 'simulator' && (
-              <OnboardingSimulator
-                onNext={completeOnboarding}
-                onBack={prevStep}
-                agentData={agentData}
-                setAgentData={setAgentData}
-              />
-            )}
           </div>
         </main>
       </div>
