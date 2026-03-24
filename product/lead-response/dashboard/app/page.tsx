@@ -322,12 +322,25 @@ export default function LandingPage() {
           <div className="text-sm opacity-85 flex flex-wrap justify-center gap-x-6"><span>✓ No setup fees</span><span>✓ Works with Follow Up Boss</span><span>✓ Cancel anytime</span></div>
         </div>
       </section>
+      {/* Stats Bar - PRD FR-2 Specification */}
       <section className="bg-gray-50 py-10 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="flex flex-col items-center gap-3"><div className="text-2xl">🔒</div><h4 className="text-sm font-semibold text-slate-800">TCPA Compliant</h4></div>
-          <div className="flex flex-col items-center gap-3"><div className="text-2xl">⚡</div><h4 className="text-sm font-semibold text-slate-800">Responds &lt; 30s</h4></div>
-          <div className="flex flex-col items-center gap-3"><div className="text-2xl">✓</div><h4 className="text-sm font-semibold text-slate-800">30-day free pilot</h4></div>
-          <div className="flex flex-col items-center gap-3"><div className="text-2xl">🏆</div><h4 className="text-sm font-semibold text-slate-800">Built for agents</h4></div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="text-4xl font-bold text-teal-600">&lt;30s</div>
+            <h4 className="text-sm font-semibold text-slate-800">Response Time</h4>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="text-4xl font-bold text-teal-600">78%</div>
+            <h4 className="text-sm font-semibold text-slate-800">Deals to First Responder</h4>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="text-4xl font-bold text-teal-600">35%</div>
+            <h4 className="text-sm font-semibold text-slate-800">Leads Never Responded To</h4>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="text-4xl font-bold text-teal-600">24/7</div>
+            <h4 className="text-sm font-semibold text-slate-800">Always On</h4>
+          </div>
         </div>
       </section>
       <section className="py-20 px-4 sm:px-6 bg-white">
