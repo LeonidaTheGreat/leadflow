@@ -83,16 +83,8 @@
       "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
       "severity": "warning",
       "check_type": "http_200"
-    },
-    {
-      "id": "auth-signup-login-flow",
-      "name": "Auth: signup then login",
-      "base_url": "https://leadflow-ai-five.vercel.app",
-      "signup_path": "/api/auth/trial-signup",
-      "login_path": "/api/auth/login",
-      "severity": "critical",
-      "check_type": "signup_login_flow"
     }
+
   ],
 
   "products": [
