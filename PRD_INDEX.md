@@ -1,11 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.726Z | Source: `prds` table
-=======
-> Generated: 2026-03-06T21:09:35.713Z | Source: `prds` table
->>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -20,7 +16,6 @@
 | PRD-CORE-SMS | Core SMS Lead Response | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-CORE-SMS.md](/Users/clawdbot/projects/leadflow/PRD-CORE-SMS.md) |
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
-<<<<<<< HEAD
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
 | prd-email-verification-before-login | Email Verification — Confirm Inbox Before Login | approved | - | [docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md](docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md) |
 | prd-email-verification-db-migration-fix | Email Verification DB Migration Fix | approved | - | [docs/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md](docs/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md) |
@@ -70,29 +65,16 @@
 | prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/PRD-SESSION-ANALYTICS-PILOT.md](docs/PRD-SESSION-ANALYTICS-PILOT.md) |
 | PRD-SIGNUP-AUTH-TOKEN-FIX-001 | Fix Auth Token Gap — Signup → Onboarding Redirect | approved | - | [docs/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md](docs/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md) |
-=======
-| PRD-FIX-ONBOARDING-500-001 | Fix Onboarding 500 Error — Complete Agents Table Migration | approved | 1.1 | [docs/PRD-FIX-ONBOARDING-500-001.md](docs/PRD-FIX-ONBOARDING-500-001.md) |
-| PRD-INTEGRATIONS | CRM & Calendar Integrations | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md](/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md) |
-| PRD-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 1.0 | [docs/PRD-LANDING-MARKETING-001.md](docs/PRD-LANDING-MARKETING-001.md) |
-| PRD-LANDING-PAGE-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | approved | 2.0 | [docs/PRD-LANDING-PAGE-MARKETING-001.md](docs/PRD-LANDING-PAGE-MARKETING-001.md) |
-| PRD-ONBOARDING-500-FIX | Fix Onboarding 500 Error — Deployment | approved | 1.0 | [docs/PRD-ONBOARDING-500-FIX.md](docs/PRD-ONBOARDING-500-FIX.md) |
-| PRD-OPT-OUT-CA | Lead Opt-Out Compliance Enhancement — Canada Support | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md](/Users/clawdbot/projects/leadflow/PRD-OPT-OUT-CA.md) |
-| PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/PRD-REVENUE-RECOVERY-001.md](docs/PRD-REVENUE-RECOVERY-001.md) |
->>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 | PRD-SMOKE-ROUTE-DISCOVERY-001 | Route Discovery Smoke Test | draft | 1.0 | [docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md](docs/PRD-SMOKE-ROUTE-DISCOVERY-001.md) |
 | PRD-SMS-ANALYTICS-DASHBOARD | SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | approved | 1.0 | [docs/PRD-SMS-ANALYTICS-DASHBOARD.md](docs/PRD-SMS-ANALYTICS-DASHBOARD.md) |
 | prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/prd/PRD-START-FREE-TRIAL-CTA.md](docs/prd/PRD-START-FREE-TRIAL-CTA.md) |
 | PRD-STATUS-REPORT-20260306 | LeadFlow Product Status Report — Day 20 of 60 | approved | 1.0 | [docs/PRD-STATUS-REPORT-20260306.md](docs/PRD-STATUS-REPORT-20260306.md) |
 | prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
-<<<<<<< HEAD
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
 | PRD-UC-TRIAGE-001 | UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | approved | 1.0 | [docs/prd/PRD-UC-TRIAGE-001.md](docs/prd/PRD-UC-TRIAGE-001.md) |
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
 | PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
-=======
-| PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
->>>>>>> 465186fd (feat: implement marketing landing page with high-converting signup flow)
 
 > Full PRD documents (PRD-*.md) are agent-authored. Update the `prds` table when creating or modifying them.
