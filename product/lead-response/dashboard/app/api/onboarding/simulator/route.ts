@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { randomUUID, randomBytes } from 'crypto'
+import { randomUUID } from 'crypto'
 
 /**
  * POST /api/onboarding/simulator
@@ -21,16 +21,6 @@ const LEAD_SCRIPTS = [
   () => `Yes, I'd like to see some listings. My budget is around $600,000.`,
   () => `That sounds great! When can we schedule a call to discuss?`,
 ]
-
-/**
- * Generate a cryptographically secure random integer in range [0, max)
- */
-function secureRandomInt(max: number): number {
-  if (max <= 0) return 0
-  const bytes = randomBytes(4)
-  const num = bytes.readUInt32BE(0)
-  return num % max
-}
 
 // Scripted AI responses
 function generateAiResponse(turn: number, leadName: string, propertyInterest: string | null): string {
@@ -91,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // sessionId is required for status and skip, but optional for start
-    // Server generates sessionId for start action and returns it to client
+    // (client can generate it, or server can generate it)
     if ((action === 'status' || action === 'skip') && !sessionId) {
       return NextResponse.json(
         { error: `sessionId required for ${action} action` },
@@ -101,8 +91,7 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'start':
-        // AC: Start Simulation accepts only agentId — server generates sessionId
-        return await startSimulation(agentId, sessionId || undefined)
+        return await startSimulation(agentId, sessionId)
       case 'status':
         return await getSimulationStatus(agentId, sessionId)
       case 'skip':
@@ -122,21 +111,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function startSimulation(agentId: string, sessionId?: string) {
+async function startSimulation(agentId: string, sessionId: string) {
   const now = Date.now()
   const simulationId = randomUUID()
-  // Generate sessionId server-side if not provided by client
-  // AC: Start Simulation is called with only agentId; server returns sessionId for subsequent polls
-  const resolvedSessionId = sessionId || `sim_${randomUUID()}`
   
-  // Generate a realistic lead using cryptographically secure randomness
+  // Generate a realistic lead
   const leadNames = ['Sarah Johnson', 'Michael Chen', 'Emily Rodriguez', 'David Thompson', 'Lisa Park']
-  const leadName = leadNames[secureRandomInt(leadNames.length)]
+  const leadName = leadNames[Math.floor(Math.random() * leadNames.length)]
   const propertyInterests = ['a 3-bedroom home', 'a downtown condo', 'a family house', 'investment property', 'a new construction']
-  const propertyInterest = propertyInterests[secureRandomInt(propertyInterests.length)]
+  const propertyInterest = propertyInterests[Math.floor(Math.random() * propertyInterests.length)]
 
-  // Initialize simulation in memory using resolvedSessionId
-  simulationProgress.set(resolvedSessionId, {
+  // Initialize simulation in memory
+  simulationProgress.set(sessionId, {
     status: 'running',
     conversation: [],
     startedAt: now,
@@ -149,7 +135,7 @@ async function startSimulation(agentId: string, sessionId?: string) {
     .from('onboarding_simulations')
     .insert({
       id: simulationId,
-      session_id: resolvedSessionId,
+      session_id: sessionId,
       agent_id: agentId,
       status: 'running',
       simulation_started_at: new Date(now).toISOString(),
@@ -164,18 +150,16 @@ async function startSimulation(agentId: string, sessionId?: string) {
   }
 
   // Simulate the conversation asynchronously
-  simulateConversation(resolvedSessionId, leadName, propertyInterest)
+  simulateConversation(sessionId, leadName, propertyInterest)
 
   // Log analytics event
-  await logAnalyticsEvent('onboarding_simulation_started', agentId, resolvedSessionId, { simulationId })
+  await logAnalyticsEvent('onboarding_simulation_started', agentId, sessionId, { simulationId })
 
-  // Return state including the server-generated session_id
-  // AC: sessionId from start response is used for subsequent status polls
   return NextResponse.json({
     success: true,
     state: {
       id: simulationId,
-      session_id: resolvedSessionId,
+      session_id: sessionId,
       agent_id: agentId,
       status: 'running',
       simulation_started_at: new Date(now).toISOString(),
@@ -196,9 +180,8 @@ async function simulateConversation(sessionId: string, leadName: string, propert
   
   // Simulate 3 turns with realistic timing
   for (let turn = 0; turn < 3; turn++) {
-    // Simulate network/processing delay (1-2 seconds per turn) using secure randomness
-    const randomDelayMs = secureRandomInt(1000)
-    await delay(1000 + randomDelayMs)
+    // Simulate network/processing delay (1-2 seconds per turn)
+    await delay(1000 + Math.random() * 1000)
     
     const now = Date.now()
     const leadTimestamp = new Date(now).toISOString()
@@ -233,9 +216,8 @@ async function simulateConversation(sessionId: string, leadName: string, propert
       }
     }
 
-    // Simulate AI "thinking" time (500ms - 1.5s) using secure randomness
-    const randomThinkingMs = secureRandomInt(1000)
-    await delay(500 + randomThinkingMs)
+    // Simulate AI "thinking" time (500ms - 1.5s)
+    await delay(500 + Math.random() * 1000)
     
     const aiNow = Date.now()
     const aiTimestamp = new Date(aiNow).toISOString()
