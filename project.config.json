@@ -86,11 +86,12 @@
     },
     {
       "id": "auth-signup-login-flow",
-      "name": "Auth: login page reachable",
-      "url": "https://leadflow-ai-five.vercel.app/login",
+      "name": "Auth: signup then login",
+      "base_url": "https://leadflow-ai-five.vercel.app",
+      "signup_path": "/api/auth/trial-signup",
+      "login_path": "/api/auth/login",
       "severity": "critical",
-      "check_type": "http_200",
-      "note": "Downgraded from signup_login_flow (unimplemented check_type) — PRD-SMOKE-AUTH-LOOP-FIX-V5"
+      "check_type": "signup_login_flow"
     }
   ],
 
