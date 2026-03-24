@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-10
+title: BO2026 Dashboard - Updated 2026-03-24
 author: LeadFlow Orchestrator
-date: 2026-03-10
+date: 2026-03-24
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 24 of 60  
+**Current Day:** Day 38 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/10/2026, 6:20:12 PM
+**Last Updated:** 3/23/2026, 11:06:00 PM
 
 ---
 
@@ -33,22 +33,29 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 3 | In Progress: 2 | Blocked: 0 | Done: 579
+**Queue Health:** Ready: 8 | In Progress: 4 | Blocked: 0 | Done: 913
 
-### ▶️ Ready to Spawn (3 tasks)
+### ▶️ Ready to Spawn (8 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: feat-aha-moment-lead-simulator - Aha Moment: Live Lead Simulator in Onboarding — First AI Response in <30s | kimi | $0.24 | 🔴 P0 |
-| Dev: fix-nps-api-routes-api-nps-verify-and-api-nps-submit-r - NPS API routes /api/nps/verify and /api/nps/submit return 404 | sonnet | $0.60 | 🔴 P0 |
-| Dev Fix: Merge conflicts with main | kimi | $0.12 | 🟢 P2 |
+| Implement: Fix cookie name mismatch in trial/start route | sonnet | $1.20 | 🔴 P0 |
+| PM: Proactive Revenue Gap Analysis | codex | $0.00 | 🔴 P0 |
+| PM: Product Review — Marketing Landing Page — High-Converting Signup Flow | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — UTM Parameter Capture & Marketing Attribution | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Aha Moment Simulator — Onboarding Step UI | sonnet | $0.60 | 🔴 P0 |
+| Dev (rescue): fix-walkthrough-spec-incomplete-missing-product-signup - Walkthrough spec incomplete — missing product signup/onboarding tests | haiku | $0.40 | 🟡 P1 |
+| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
+| PM: Analyze ux_issue feedback | sonnet | $0.60 | 🟡 P1 |
 
-### ⚡ In Progress (2 tasks)
+### ⚡ In Progress (4 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Apply subscriptions schema migration and fix Stripe webhook handler | dev | haiku |
-| Dev: fix-resend-api-key-not-set-in-vercel-email-delivery-no - RESEND_API_KEY not set in Vercel — email delivery non-functional | dev | sonnet |
+| PM: Product Review — Live AI Demo — Experience the Product Without Signing Up | product | sonnet |
+| PM: Product Review — UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | product | sonnet |
+| Smoke: Auth: signup then login failing | qc | kimi |
+| Dev (rescue): fix-no-evidence-of-wizard-auto-trigger-implementation - No evidence of wizard auto-trigger implementation | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -106,8 +113,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $280.54
-**Cost per task:** Avg $0.42
+**Estimated project cost:** $483.74
+**Cost per task:** Avg $0.48
 
 ---
 
@@ -120,8 +127,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **3 tasks ready to spawn**
-2. ⚡ **2 agents active**
+1. ✅ **8 tasks ready to spawn**
+2. ⚡ **4 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
