@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
+import { logSessionStart } from '@/lib/session-analytics'
 
 const supabase = createClient(
   (process.env.NEXT_PUBLIC_API_URL)!,
@@ -57,7 +58,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create server-side session
-    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip') 
+      ?? undefined
     const session = await createSession({
       userId: user.id,
       userAgent: request.headers.get('user-agent') || undefined,
@@ -71,9 +74,14 @@ export async function POST(request: NextRequest) {
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
+    // Log session analytics (fail silently — must not break login)
+    const analyticsSessionId = await logSessionStart(user.id, ipAddress, request.headers.get('user-agent') || null)
+
     // Create response with user data and onboarding status
     const response = NextResponse.json({
       success: true,
+      token: session.token,
+      analyticsSessionId,
       user: {
         id: user.id,
         email: user.email,
