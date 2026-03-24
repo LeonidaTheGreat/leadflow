@@ -52,7 +52,7 @@ const qwenLocal = createOpenAI({
 })
 
 // Get the appropriate model client based on configuration
-function getModelClient() {
+function getModelClient(): any {
   switch (AI_PROVIDER) {
     case 'anthropic':
       return anthropic(AI_MODEL || 'claude-3-haiku-20240307')

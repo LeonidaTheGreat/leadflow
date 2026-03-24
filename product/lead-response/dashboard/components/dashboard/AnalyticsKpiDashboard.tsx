@@ -69,7 +69,10 @@ export function AnalyticsKpiDashboard() {
       ])
 
       setData({
-        messagesPerDay: msgPerDay.data,
+        messagesPerDay: (msgPerDay.data || []).map((item: any) => ({
+          date: item.date,
+          count: Number(item.count) || 0,
+        })),
         deliveryStats: delivery,
         responseRate: response,
         sequenceCompletion: sequence,

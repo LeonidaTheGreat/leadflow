@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/db'
-import { randomBytes } from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,6 +27,7 @@ export interface SessionCreateInput {
  * Generate a cryptographically secure session token
  */
 export function generateSessionToken(): string {
+  const { randomBytes } = require('crypto')
   return randomBytes(32).toString('hex')
 }
 
@@ -157,7 +157,7 @@ export async function getUserSessions(userId: string): Promise<Session[]> {
     return []
   }
 
-  return data.map(session => ({
+  return data.map((session: any) => ({
     id: session.id,
     userId: session.user_id,
     token: session.token,

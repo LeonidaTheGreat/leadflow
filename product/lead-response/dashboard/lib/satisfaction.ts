@@ -246,10 +246,10 @@ export async function getSatisfactionStats(agentId: string): Promise<Satisfactio
 
   const events = current || []
   const total = events.length
-  const positive = events.filter((e) => e.rating === 'positive').length
-  const negative = events.filter((e) => e.rating === 'negative').length
-  const neutral = events.filter((e) => e.rating === 'neutral').length
-  const unclassified = events.filter((e) => e.rating === 'unclassified').length
+  const positive = events.filter((e: any) => e.rating === 'positive').length
+  const negative = events.filter((e: any) => e.rating === 'negative').length
+  const neutral = events.filter((e: any) => e.rating === 'neutral').length
+  const unclassified = events.filter((e: any) => e.rating === 'unclassified').length
 
   const positivePct = total > 0 ? Math.round((positive / total) * 100) : 0
   const negativePct = total > 0 ? Math.round((negative / total) * 100) : 0
@@ -259,7 +259,7 @@ export async function getSatisfactionStats(agentId: string): Promise<Satisfactio
   let trend: SatisfactionStats['trend'] = 'insufficient_data'
   const priorEvents = prior || []
   if (priorEvents.length >= 3 && total >= 3) {
-    const priorPositive = priorEvents.filter((e) => e.rating === 'positive').length
+    const priorPositive = priorEvents.filter((e: any) => e.rating === 'positive').length
     const priorPositivePct = Math.round((priorPositive / priorEvents.length) * 100)
     const diff = positivePct - priorPositivePct
     if (diff >= 5) trend = 'improving'
