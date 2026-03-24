@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
     // ── Validate body ─────────────────────────────────────────────────────
     const body = await request.json()
     const { feedbackType, content } = body
-
     if (!feedbackType || !content) {
       return NextResponse.json(
         { error: 'Feedback type and content are required' },
