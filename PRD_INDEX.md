@@ -1,15 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 > Generated: 2026-03-24T03:06:00.726Z | Source: `prds` table
-=======
-> Generated: 2026-03-11T00:15:15.481Z | Source: `prds` table
->>>>>>> 6ae243be (fix: replace from('agents') with from('real_estate_agents') in 5 product routes)
-=======
-> Generated: 2026-03-11T00:55:30.754Z | Source: `prds` table
->>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -42,10 +34,7 @@
 | PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
 | PRD-FIX-TRIAL-SIGNUP-REDIRECT-001 | Fix Trial Signup Redirect — Broken Post-Signup Navigation | approved | - | [docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md](docs/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md) |
 | PRD-FORGOT-PASSWORD | Forgot Password / Password Reset Flow | draft | 1.0 | [docs/PRD-FORGOT-PASSWORD.md](docs/PRD-FORGOT-PASSWORD.md) |
-<<<<<<< HEAD
 | PRD-FR5-STUCK-ALERT-PRODUCT-FEEDBACK | FR-5: Stuck-Agent Alerts Must Insert Into product_feedback | approved | 1.0 | [docs/prd/PRD-FR5-STUCK-ALERT-PRODUCT-FEEDBACK.md](docs/prd/PRD-FR5-STUCK-ALERT-PRODUCT-FEEDBACK.md) |
-=======
->>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 | PRD-FRICTIONLESS-ONBOARDING-001 | Self-Serve Frictionless Onboarding Flow | approved | - | [docs/PRD-FRICTIONLESS-ONBOARDING-001.md](docs/PRD-FRICTIONLESS-ONBOARDING-001.md) |
 | PRD-INTEGRATIONS | CRM & Calendar Integrations | approved | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md](/Users/clawdbot/projects/leadflow/PRD-INTEGRATIONS.md) |
 | PRD-LANDING-ANALYTICS-GA4-001 | Landing Page Analytics: GA4 CTA & Conversion Tracking | approved | 1.0 | [docs/PRD-LANDING-ANALYTICS-GA4-001.md](docs/PRD-LANDING-ANALYTICS-GA4-001.md) |
@@ -83,10 +72,7 @@
 | prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
-<<<<<<< HEAD
 | PRD-UC-TRIAGE-001 | UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | approved | 1.0 | [docs/prd/PRD-UC-TRIAGE-001.md](docs/prd/PRD-UC-TRIAGE-001.md) |
-=======
->>>>>>> bfc85dc9 (feat: implement frictionless onboarding flow with trial signup, sample leads, and guided setup wizard)
 | PRD-UC2-RETRY | FUB New Lead Auto-SMS — Retry Logic Enhancement | draft | 1.0 | [/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md](/Users/clawdbot/projects/leadflow/PRD-UC2-RETRY.md) |
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
 | PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
