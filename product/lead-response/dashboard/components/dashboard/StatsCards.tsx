@@ -20,7 +20,7 @@ export function StatsCards() {
         .select('*')
 
       // Sum up stats across all agents
-      const totals = allStats?.reduce((acc, curr) => ({
+      const totals = allStats?.reduce((acc: any, curr: any) => ({
         new_leads: (acc.new_leads || 0) + (curr.new_leads || 0),
         qualified_leads: (acc.qualified_leads || 0) + (curr.qualified_leads || 0),
         responded_leads: (acc.responded_leads || 0) + (curr.responded_leads || 0),

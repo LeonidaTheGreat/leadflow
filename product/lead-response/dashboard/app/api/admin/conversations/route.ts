@@ -58,7 +58,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch messages for all these leads
-    const leadIds = leads.map((l) => l.id)
+    const leadIds = leads.map((l: any) => l.id)
     const { data: messages, error: msgError } = await supabase
       .from('sms_messages')
       .select('id, lead_id, direction, message_body, created_at, status')
@@ -80,11 +80,11 @@ export async function GET(request: Request) {
 
     // Build conversation objects
     let conversations = leads
-      .filter((lead) => {
+      .filter((lead: any) => {
         const msgs = messagesByLead[lead.id] || []
         return msgs.length > 0 // Only include leads that have messages
       })
-      .map((lead) => {
+      .map((lead: any) => {
         const msgs = messagesByLead[lead.id] || []
         const firstName = lead.name ? lead.name.split(' ')[0] : 'Lead'
         const outcome = deriveOutcome(lead.status)
@@ -97,7 +97,7 @@ export async function GET(request: Request) {
           messageCount: msgs.length,
           outcome,
           status: lead.status,
-          messages: msgs.map((m) => ({
+          messages: msgs.map((m: any) => ({
             id: m.id,
             direction: m.direction === 'inbound' ? 'inbound' : 'outbound',
             body: m.message_body,
@@ -108,7 +108,7 @@ export async function GET(request: Request) {
 
     // Apply outcome filter
     if (outcomeFilter !== 'all') {
-      conversations = conversations.filter((c) => c.outcome === outcomeFilter)
+      conversations = conversations.filter((c: any) => c.outcome === outcomeFilter)
     }
 
     // Return top 10

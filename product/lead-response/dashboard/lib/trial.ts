@@ -107,5 +107,5 @@ export async function getExpiredTrialAgents(): Promise<string[]> {
     return []
   }
 
-  return agents.map(a => a.id)
+  return agents.map((a: any) => a.id)
 }

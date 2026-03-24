@@ -31,7 +31,7 @@ export function ResponseHistory() {
           *,
           lead:leads(*)
         `)
-        .eq('lead.agent_id', user.id)
+        .eq('lead.agent_id', (user as any).id)
         .order('created_at', { ascending: false })
         .limit(100)
 

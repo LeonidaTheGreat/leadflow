@@ -49,6 +49,8 @@ class QueryBuilder implements PromiseLike<any> {
   private httpMethod: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'GET'
   private bodyData: any = null
   private cachedPromise: Promise<any> | null = null
+  private isUpsert = false
+  private upsertConflictColumn: string | null | undefined = undefined
 
   constructor(table: string, baseUrl: string, apiKey: string) {
     this.table = table
@@ -56,8 +58,10 @@ class QueryBuilder implements PromiseLike<any> {
     this.apiKey = apiKey
   }
 
-  select(cols?: string): QueryBuilder {
+  select(cols?: string, opts?: { count?: 'exact' | 'planned' | 'estimated'; head?: boolean }): QueryBuilder {
     this.selectCols = cols || '*'
+    // Note: count and head options would require additional header support for PostgREST
+    // For now, we just accept the parameters for API compatibility
     return this
   }
 
@@ -76,8 +80,48 @@ class QueryBuilder implements PromiseLike<any> {
     return this
   }
 
-  not(key: string, val: any): QueryBuilder {
-    this.filters.push({ key, op: 'not', val })
+  not(key: string, op?: string, val?: any): QueryBuilder {
+    // Support both not(key, val) and not(key, op, val) syntaxes
+    if (op !== undefined && val === undefined) {
+      // not(key, val) - old syntax
+      this.filters.push({ key, op: 'not', val: op })
+    } else if (op && val !== undefined) {
+      // not(key, op, val) - new syntax, e.g., not('rating', 'is', null)
+      if (op === 'is' && val === null) {
+        this.filters.push({ key, op: 'is.null', val: 'null' })
+      } else {
+        this.filters.push({ key, op: `not.${op}`, val })
+      }
+    }
+    return this
+  }
+
+  gt(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'gt', val })
+    return this
+  }
+
+  gte(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'gte', val })
+    return this
+  }
+
+  lt(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'lt', val })
+    return this
+  }
+
+  lte(key: string, val: any): QueryBuilder {
+    this.filters.push({ key, op: 'lte', val })
+    return this
+  }
+
+  is(key: string, val: any): QueryBuilder {
+    if (val === null) {
+      this.filters.push({ key, op: 'is.null', val: 'null' })
+    } else {
+      this.filters.push({ key, op: 'is', val })
+    }
     return this
   }
 
@@ -121,6 +165,14 @@ class QueryBuilder implements PromiseLike<any> {
 
   delete(): QueryBuilder {
     this.httpMethod = 'DELETE'
+    return this
+  }
+
+  upsert(data: any, opts?: { onConflict?: string; ignoreDuplicates?: boolean }): QueryBuilder {
+    this.httpMethod = 'POST'
+    this.bodyData = Array.isArray(data) ? data : [data]
+    this.isUpsert = true
+    this.upsertConflictColumn = opts?.onConflict || undefined
     return this
   }
 
@@ -187,6 +239,21 @@ class QueryBuilder implements PromiseLike<any> {
         url.searchParams.set(f.key, `in.(${vals})`)
       } else if (f.op === 'not') {
         url.searchParams.set(f.key, `not.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'is.null') {
+        url.searchParams.set(f.key, 'is.null')
+      } else if (f.op === 'is') {
+        url.searchParams.set(f.key, `is.${encodeURIComponent(f.val)}`)
+      } else if (f.op.startsWith('not.')) {
+        const innerOp = f.op.substring(4)
+        url.searchParams.set(f.key, `not.${innerOp}.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'gt') {
+        url.searchParams.set(f.key, `gt.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'gte') {
+        url.searchParams.set(f.key, `gte.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'lt') {
+        url.searchParams.set(f.key, `lt.${encodeURIComponent(f.val)}`)
+      } else if (f.op === 'lte') {
+        url.searchParams.set(f.key, `lte.${encodeURIComponent(f.val)}`)
       }
     }
 
@@ -208,11 +275,19 @@ class QueryBuilder implements PromiseLike<any> {
   }
 
   private buildHeaders(): Record<string, string> {
-    return {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` }),
     }
+    
+    if (this.isUpsert) {
+      headers['Prefer'] = this.upsertConflictColumn 
+        ? `resolution=merge-duplicates,on_conflict=${this.upsertConflictColumn}`
+        : 'resolution=merge-duplicates'
+    }
+    
+    return headers
   }
 }
 
@@ -230,7 +305,11 @@ export const postgrestAdmin = {
 
 export const postgrestPublic = {
   from: (table: string) => new QueryBuilder(table, baseUrl, ''),
-  channel: (name: string) => ({ on: () => ({ subscribe: () => {} }), subscribe: () => {} }),
+  channel: (name: string) => channel(name),
+  auth: {
+    getUser: async () => ({ data: { user: null }, error: null }),
+    getSession: async () => ({ data: { session: null }, error: null }),
+  },
 }
 
 export const supabase = postgrestPublic
@@ -278,9 +357,15 @@ async function rpcCall(name: string, params?: any): Promise<{ data: any; error: 
 
 export function channel(name: string): any {
   return {
-    on: () => ({ subscribe: () => {} }),
-    subscribe: () => {},
-    unsubscribe: () => {},
+    on: (event: string, config?: any, callback?: any) => {
+      // Support both on() with no args and on(event, config, callback)
+      return {
+        subscribe: () => Promise.resolve(),
+        unsubscribe: () => Promise.resolve(),
+      }
+    },
+    subscribe: () => Promise.resolve(),
+    unsubscribe: () => Promise.resolve(),
   }
 }
 
@@ -294,6 +379,11 @@ export function createClient(url: string, key: string, opts?: any) {
   return {
     from: (table: string) => new QueryBuilder(table, finalUrl, finalKey),
     rpc: async (name: string, params?: any) => rpcCall(name, params),
+    channel: (name: string) => channel(name),
+    auth: {
+      getUser: async () => ({ data: { user: null }, error: null }),
+      getSession: async () => ({ data: { session: null }, error: null }),
+    },
   }
 }
 
