@@ -288,9 +288,8 @@ function DashboardOnboardingInner() {
             {currentStep === 'confirmation' && (
               <OnboardingConfirm
                 onBack={prevStep}
-                onComplete={completeOnboarding}
+                onNext={completeOnboarding}
                 agentData={agentData}
-                isLoading={isLoading}
               />
             )}
           </div>

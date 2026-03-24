@@ -12,7 +12,7 @@ interface OnboardingStatus {
 const ONBOARDING_STEPS = [
   { id: 'welcome', label: 'Welcome', description: 'Get started with LeadFlow' },
   { id: 'fub', label: 'Connect FUB', description: 'Link your Follow Up Boss account' },
-  { id: 'sms', label: 'Configure SMS', label: 'Set up Twilio for messaging' },
+  { id: 'sms', label: 'Configure SMS', description: 'Set up Twilio for messaging' },
   { id: 'simulator', label: 'See AI in Action', description: 'Watch the AI respond to a lead' },
   { id: 'complete', label: 'All Set!', description: 'You\'re ready to convert leads' }
 ]
