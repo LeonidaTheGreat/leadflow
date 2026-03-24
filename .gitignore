@@ -102,3 +102,5 @@ Thumbs.db
 e2e-*-results*.json
 *-test-results*.json
 *.log
+coverage/
+*.tsbuildinfo
