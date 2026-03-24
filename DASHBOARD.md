@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-08
+title: BO2026 Dashboard - Updated 2026-03-24
 author: LeadFlow Orchestrator
-date: 2026-03-08
+date: 2026-03-24
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 22 of 60  
+**Current Day:** Day 38 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/8/2026, 1:46:59 AM
+**Last Updated:** 3/23/2026, 11:06:00 PM
 
 ---
 
@@ -33,26 +33,29 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 0 | In Progress: 10 | Blocked: 0 | Done: 272
+**Queue Health:** Ready: 8 | In Progress: 4 | Blocked: 0 | Done: 913
 
-### ▶️ Ready to Spawn (0 tasks)
+### ▶️ Ready to Spawn (8 tasks)
 
-*No ready tasks*
+| Task | Model | Cost | Priority |
+|------|-------|------|----------|
+| Implement: Fix cookie name mismatch in trial/start route | sonnet | $1.20 | 🔴 P0 |
+| PM: Proactive Revenue Gap Analysis | codex | $0.00 | 🔴 P0 |
+| PM: Product Review — Marketing Landing Page — High-Converting Signup Flow | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — UTM Parameter Capture & Marketing Attribution | sonnet | $0.60 | 🔴 P0 |
+| PM: Product Review — Aha Moment Simulator — Onboarding Step UI | sonnet | $0.60 | 🔴 P0 |
+| Dev (rescue): fix-walkthrough-spec-incomplete-missing-product-signup - Walkthrough spec incomplete — missing product signup/onboarding tests | haiku | $0.40 | 🟡 P1 |
+| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
+| PM: Analyze ux_issue feedback | sonnet | $0.60 | 🟡 P1 |
 
-### ⚡ In Progress (10 tasks)
+### ⚡ In Progress (4 tasks)
 
 | Task | Agent | Model |
 |------|-------|-------|
-| Fix: Dashboard build errors | dev | qwen3.5 |
-| Dev (rescue): fix-signup-plan-options-not-displayed - Signup page shows Choose Your Plan but no plan options are listed | dev | kimi |
-| PM: Product Review — UTM Parameter Capture & Marketing Attribution | product | sonnet |
-| Dev (rescue): Fix: Dashboard build errors | dev | sonnet |
-| Dev: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | dev | sonnet |
-| Dev: feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | dev | sonnet |
-| PM: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | product | sonnet |
-| PM: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | product | sonnet |
-| PM: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | product | sonnet |
-| PM: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | product | sonnet |
+| PM: Product Review — Live AI Demo — Experience the Product Without Signing Up | product | sonnet |
+| PM: Product Review — UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report | product | sonnet |
+| Smoke: Auth: signup then login failing | qc | kimi |
+| Dev (rescue): fix-no-evidence-of-wizard-auto-trigger-implementation - No evidence of wizard auto-trigger implementation | dev | haiku |
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -110,8 +113,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $167.75
-**Cost per task:** Avg $0.52
+**Estimated project cost:** $483.74
+**Cost per task:** Avg $0.48
 
 ---
 
@@ -124,8 +127,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. 🔴 No ready tasks
-2. ⚡ **10 agents active**
+1. ✅ **8 tasks ready to spawn**
+2. ⚡ **4 agents active**
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
