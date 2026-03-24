@@ -54,7 +54,7 @@ export default function HomePage() {
               Never miss another opportunity. Start free — no credit card required.
             </p>
 
-            {/* Hero Trial CTA */}
+            {/* Hero Trial CTA — CTA Placement #1 */}
             <Suspense fallback={<div className="h-24" />}>
               <TrialSignupForm compact />
             </Suspense>
@@ -170,6 +170,18 @@ export default function HomePage() {
               icon="📊"
             />
           </div>
+
+          {/* CTA: Start Free Trial link at end of features section (CTA Placement #2) */}
+          <div className="mt-12 text-center">
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial', 'features')}
+              className="inline-block px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+              data-cta-id="start_trial_features"
+            >
+              Start Free Trial
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -272,6 +284,21 @@ export default function HomePage() {
               ]}
               cta="Contact Sales"
             />
+          </div>
+
+          {/* CTA: or start free trial link in pricing section (CTA Placement #3) */}
+          <div className="mt-8 text-center">
+            <p className="text-slate-600 dark:text-slate-400">
+              or{' '}
+              <Link
+                href="/signup/trial"
+                onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
+                className="text-emerald-500 hover:text-emerald-600 font-semibold"
+                data-cta-id="start_trial_pricing"
+              >
+                start free trial
+              </Link>
+            </p>
           </div>
         </div>
       </section>
