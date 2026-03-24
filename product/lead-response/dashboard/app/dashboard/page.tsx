@@ -40,8 +40,10 @@ export default function DashboardPage() {
         <StatsCards />
       </Suspense>
 
-      {/* SMS Analytics — Delivery Rate, Reply Rate, Booking Conversion */}
-      <SmsAnalyticsCards />
+      {/* SMS Analytics Cards — displays SMS delivery, reply, and booking conversion rates */}
+      <Suspense fallback={<SmsAnalyticsCardsSkeleton />}>
+        <SmsAnalyticsCards />
+      </Suspense>
 
       {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
       {/* TODO: Replace 'test-agent-id' with real agentId from auth session */}
@@ -74,6 +76,23 @@ function StatsCardsSkeleton() {
           <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
         </div>
       ))}
+    </div>
+  )
+}
+
+function SmsAnalyticsCardsSkeleton() {
+  return (
+    <div className="space-y-3">
+      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-32 animate-pulse"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-800 animate-pulse">
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24 mb-2"></div>
+            <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16 mb-2"></div>
+            <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-28"></div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
