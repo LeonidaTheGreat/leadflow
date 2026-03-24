@@ -92,6 +92,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           // ignore storage errors
         }
       }
+
       router.push(data.redirectTo || '/setup')
     } catch {
       setError('Something went wrong. Please try again.')

@@ -59,15 +59,19 @@ export default function HomePage() {
               <TrialSignupForm compact />
             </Suspense>
 
-            <p className="mt-6 text-sm text-slate-400">
+            <div className="mt-6 flex items-center justify-center gap-4 text-sm">
               <a
                 href="#how-it-works"
-                className="hover:text-white underline underline-offset-4"
+                className="text-slate-400 hover:text-white underline underline-offset-4"
                 onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')}
               >
                 See how it works ↓
               </a>
-            </p>
+              <span className="text-slate-600">|</span>
+              <Link href="/demo" className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-4">
+                Try Live AI Demo →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -239,7 +243,7 @@ export default function HomePage() {
               name="Team"
               price="$399"
               period="/month"
-              description="For small teams"
+              description="For small teams (2-5 agents)"
               badge="5 agents"
               features={[
                 'Up to 500 leads/month',
@@ -359,8 +363,12 @@ function PricingCard({
   description,
   features,
   popular = false,
+<<<<<<< HEAD
   cta = 'Get Started',
   badge
+=======
+  cta = 'Get Started'
+>>>>>>> 3c6b26e8 (fix: add Brokerage tier to landing page pricing section)
 }: {
   name: string
   price: string
@@ -369,6 +377,7 @@ function PricingCard({
   features: string[]
   popular?: boolean
   cta?: string
+<<<<<<< HEAD
   badge?: string
 }) {
   const isBrokerage = name === 'Brokerage'
@@ -380,6 +389,11 @@ function PricingCard({
     return 'bg-slate-600 text-white'
   }
 
+=======
+}) {
+  const isBrokerage = name === 'Brokerage'
+
+>>>>>>> 3c6b26e8 (fix: add Brokerage tier to landing page pricing section)
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
       {badge && (
@@ -405,7 +419,10 @@ function PricingCard({
       </ul>
       <Link
         href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${name.toLowerCase()}`}
+<<<<<<< HEAD
         onClick={() => trackCTAClick(`pricing_${name.toLowerCase()}`, `${cta} ${name}`, 'pricing')}
+=======
+>>>>>>> 3c6b26e8 (fix: add Brokerage tier to landing page pricing section)
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
@@ -425,5 +442,3 @@ function PricingCard({
     </div>
   )
 }
-
-
