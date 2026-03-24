@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 import { trackCTAClick } from '@/lib/analytics/ga4'
+import LeadMagnetSection from '@/components/LeadMagnetSection'
 
 export default function HomePage() {
   return (
@@ -183,6 +184,9 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+
+      {/* Lead Magnet — Email Capture (feat-lead-magnet-email-capture) */}
+      <LeadMagnetSection />
 
       {/* Pricing — CTA Placement #3 */}
       <section id="pricing" data-testid="pricing" className="bg-white dark:bg-slate-900 py-20">
