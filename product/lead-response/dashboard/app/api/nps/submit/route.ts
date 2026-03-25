@@ -8,6 +8,9 @@ import {
   submitNPSResponse,
 } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export async function POST(request: NextRequest) {
   try {
@@ -80,32 +83,38 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true })
     } else {
-      // In-app submission - requires authenticated session
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      
-      const supabase = createClient(supabaseUrl, supabaseAnonKey)
-      
-      // Get session from cookies
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession()
-
-      if (sessionError || !session?.user) {
+      // In-app submission - requires authenticated JWT cookie
+      const authToken = request.cookies.get('auth-token')?.value
+      if (!authToken) {
         return NextResponse.json(
           { success: false, error: 'Unauthorized' },
           { status: 401 }
         )
       }
 
-      const userId = session.user.id
+      let jwtPayload: { userId?: string; id?: string } | null = null
+      try {
+        jwtPayload = jwt.verify(authToken, JWT_SECRET) as { userId?: string; id?: string }
+      } catch {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
 
-      // Get the agent record by user ID
+      const resolvedAgentId = jwtPayload.userId || jwtPayload.id
+      if (!resolvedAgentId) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
+
+      // Verify agent exists
       const { data: agent, error: agentError } = await supabaseServer
         .from('real_estate_agents')
         .select('id')
-        .eq('user_id', userId)
+        .eq('id', resolvedAgentId)
         .single()
 
       if (agentError || !agent) {

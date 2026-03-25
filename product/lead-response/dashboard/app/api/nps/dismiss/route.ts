@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { dismissNPSPrompt } from '@/lib/nps-service'
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 /**
  * POST /api/nps/dismiss
@@ -20,43 +23,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get the authenticated agent's ID from the session cookie
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-    
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-    
-    // Get session from cookies
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    if (sessionError || !session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    // Authenticate via JWT auth-token cookie
+    const authToken = request.cookies.get('auth-token')?.value
+    if (!authToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = session.user.id
+    let payload: { userId?: string; id?: string } | null = null
+    try {
+      payload = jwt.verify(authToken, JWT_SECRET) as { userId?: string; id?: string }
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-    // Get the agent record by user ID
-    const supabaseServer = createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY || '', {
-      auth: { autoRefreshToken: false, persistSession: false },
-    })
+    const agentId = payload.userId || payload.id
+    if (!agentId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Verify agent exists
+    const supabaseServer = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
 
     const { data: agent, error: agentError } = await supabaseServer
       .from('real_estate_agents')
       .select('id')
-      .eq('user_id', userId)
+      .eq('id', agentId)
       .single()
 
     if (agentError || !agent) {
-      return NextResponse.json(
-        { error: 'Agent not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
     }
 
     // Dismiss the prompt
