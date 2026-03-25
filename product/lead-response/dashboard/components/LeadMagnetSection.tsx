@@ -149,42 +149,45 @@ export default function LeadMagnetSection() {
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+            className="flex flex-col gap-3 max-w-md mx-auto"
           >
-            {/* First name (optional) */}
-            <input
-              type="text"
-              placeholder="First name (optional)"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="flex-shrink-0 sm:w-36 px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              aria-label="First name (optional)"
-            />
+            {/* Name and Email row */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* First name (optional) */}
+              <input
+                type="text"
+                placeholder="First name (optional)"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="flex-1 sm:flex-shrink-0 sm:w-40 px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                aria-label="First name (optional)"
+              />
 
-            {/* Email */}
-            <input
-              type="email"
-              required
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                if (formState === 'error') setFormState('idle')
-              }}
-              className={`flex-1 px-4 py-3 rounded-lg border ${
-                formState === 'error'
-                  ? 'border-red-400 focus:ring-red-400'
-                  : 'border-slate-300 dark:border-slate-600 focus:ring-emerald-500'
-              } bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2`}
-              aria-label="Email address"
-              aria-describedby={formState === 'error' ? 'lead-magnet-error' : undefined}
-            />
+              {/* Email */}
+              <input
+                type="email"
+                required
+                placeholder="Your email address"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (formState === 'error') setFormState('idle')
+                }}
+                className={`flex-1 px-4 py-3 rounded-lg border ${
+                  formState === 'error'
+                    ? 'border-red-400 focus:ring-red-400'
+                    : 'border-slate-300 dark:border-slate-600 focus:ring-emerald-500'
+                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2`}
+                aria-label="Email address"
+                aria-describedby={formState === 'error' ? 'lead-magnet-error' : undefined}
+              />
+            </div>
 
-            {/* CTA Button */}
+            {/* CTA Button - full width on mobile */}
             <button
               type="submit"
               disabled={formState === 'loading'}
-              className="flex-shrink-0 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 text-white font-semibold rounded-lg transition-colors whitespace-nowrap"
+              className="w-full px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 text-white font-semibold rounded-lg transition-colors whitespace-nowrap"
             >
               {formState === 'loading' ? 'Sending…' : 'Send Me the Playbook'}
             </button>
