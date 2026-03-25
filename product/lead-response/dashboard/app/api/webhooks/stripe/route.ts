@@ -7,7 +7,7 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
-const resendKey = process.env.RESEND_API_KEY
+const resendKey = process.env.RESEND_API_KEY?.trim()
 const resend = resendKey ? new Resend(resendKey) : null
 
 // Helper functions

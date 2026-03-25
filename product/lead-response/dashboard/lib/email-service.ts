@@ -12,7 +12,7 @@ async function getResend() {
   if (!process.env.RESEND_API_KEY) return null
   try {
     const { Resend } = await import('resend')
-    _resend = new Resend(process.env.RESEND_API_KEY)
+    _resend = new Resend(process.env.RESEND_API_KEY!.trim())
     return _resend
   } catch {
     return null
@@ -22,7 +22,8 @@ async function getResend() {
 // Use Resend's shared domain as fallback — leadflow.ai domain must be verified
 // in Resend before @leadflow.ai addresses will work in production.
 // Until then, set FROM_EMAIL env var to a verified address (e.g. onboarding@resend.dev).
-const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev'
+// .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@resend.dev').trim()
 const COMPANY_NAME = 'LeadFlow AI'
 const SUPPORT_EMAIL = 'support@leadflow.ai'
 

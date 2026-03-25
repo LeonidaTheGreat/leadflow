@@ -16,14 +16,15 @@ async function getResend() {
   if (!process.env.RESEND_API_KEY) return null
   try {
     const { Resend } = await import('resend')
-    _resend = new Resend(process.env.RESEND_API_KEY)
+    _resend = new Resend(process.env.RESEND_API_KEY!.trim())
     return _resend
   } catch {
     return null
   }
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'stojan@leadflow.ai'
+// .trim() guards against trailing whitespace/newlines in env var values
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'stojan@leadflow.ai').trim()
 const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'https://leadflow-ai-five.vercel.app/pilot'
 const LANDING_URL = process.env.NEXT_PUBLIC_LANDING_URL || 'https://leadflow-ai-five.vercel.app'
 
