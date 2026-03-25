@@ -5,7 +5,7 @@
  */
 
 // Mock Supabase client
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: jest.fn().mockReturnValue({
       select: jest.fn().mockReturnValue({

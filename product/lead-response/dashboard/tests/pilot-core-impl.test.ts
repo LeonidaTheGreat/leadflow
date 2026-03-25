@@ -25,7 +25,7 @@ let fromImpl: (table: string) => unknown
 const insertedEvents: unknown[] = []
 const insertedIntegrations: unknown[] = []
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: (table: string) => fromImpl(table),
   })),

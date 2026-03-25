@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 
 const supabase = createClient(
