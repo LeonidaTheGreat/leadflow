@@ -25,11 +25,17 @@ let fromImpl: (table: string) => unknown
 const insertedEvents: unknown[] = []
 const insertedIntegrations: unknown[] = []
 
-jest.mock('@/lib/db', () => ({
-  createClient: jest.fn(() => ({
+jest.mock('@/lib/db', () => {
+  const createClient = jest.fn(() => ({
     from: (table: string) => fromImpl(table),
-  })),
-}))
+  }))
+  return {
+    createClient,
+    postgrestAdmin: {
+      from: (table: string) => fromImpl(table),
+    },
+  }
+})
 
 jest.mock('bcryptjs', () => ({ hash: jest.fn(() => Promise.resolve('hashed_pw')) }))
 jest.mock('jsonwebtoken', () => ({
@@ -100,6 +106,11 @@ function makeDefaultFromImpl(agentExists = false, agentData: unknown = null) {
           insertedEvents.push(data)
           return Promise.resolve({ error: null })
         },
+      }
+    }
+    if (table === 'email_verification_tokens') {
+      return {
+        insert: () => Promise.resolve({ error: null }),
       }
     }
     // Reject any attempt to use analytics_events (table does not exist in production)
