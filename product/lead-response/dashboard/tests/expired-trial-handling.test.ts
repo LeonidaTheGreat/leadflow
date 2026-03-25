@@ -3,14 +3,14 @@
 // Mock Supabase BEFORE importing modules that use it
 // Note: lib/trial.ts creates supabase at module-load time, so we must use
 // a chainable mock from the start (mockReturnValue in beforeEach is too late)
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: jest.fn(),
   }))
 }))
 
 import { checkTrialStatus, canSendSms, getExpiredTrialAgents } from '@/lib/trial'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/db'
 
 describe('Expired Trial Handling (AC-8)', () => {
   let mockFrom: any

@@ -21,7 +21,7 @@ const mockUpdateChain = {
 const mockUpdate = jest.fn(() => mockUpdateChain)
 mockUpdateChain.eq.mockResolvedValue({ error: null })
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
       update: mockUpdate,
