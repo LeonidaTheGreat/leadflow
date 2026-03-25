@@ -146,3 +146,10 @@ export function NotificationsSectionWireframe() {
     </div>
   )
 }
+
+// ─────────────────────────────────────────────
+// JEST PLACEHOLDER TEST
+// ─────────────────────────────────────────────
+describe('SatisfactionPingToggle.spec.tsx', () => {
+  it.todo('implement design spec tests')
+})

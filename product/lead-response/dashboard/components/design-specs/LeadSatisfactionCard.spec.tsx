@@ -300,3 +300,10 @@ function LoadingSkeleton() {
     </div>
   )
 }
+
+// ─────────────────────────────────────────────
+// JEST PLACEHOLDER TEST
+// ─────────────────────────────────────────────
+describe('LeadSatisfactionCard.spec.tsx', () => {
+  it.todo('implement design spec tests')
+})

@@ -1,4 +1,6 @@
 /**
+ * @jest-environment node
+ * 
  * End-to-End Test Suite
  * Tests complete flow: Lead Created → AI Qualification → SMS Response
  * Run with: npm test
