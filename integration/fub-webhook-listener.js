@@ -16,6 +16,7 @@ const { EventEmitter } = require('events');
 const axios = require('axios');
 const { sendSmsViatwilio } = require('../lib/twilio-sms');
 const { scheduleSatisfactionPing } = require('../lib/satisfaction-service');
+const { createLeadSequence, findLeadByFubId } = require('../lib/sequence-service');
 
 const router = express.Router();
 
@@ -142,7 +143,21 @@ fubEventBus.on('lead.created', async (leadData) => {
       timestamp: new Date().toISOString(),
     });
 
-    // 8. Schedule satisfaction ping after cooldown (fire-and-forget)
+    // 8. Create no_response follow-up sequence (UC-8)
+    // Triggered when no reply is received within 24h of initial SMS
+    const internalLeadId = await findLeadByFubId(fullLead.id);
+    if (internalLeadId) {
+      await createLeadSequence({
+        lead_id: internalLeadId,
+        sequence_type: 'no_response',
+        trigger_reason: 'new_lead_no_response',
+        metadata: { fub_id: String(fullLead.id), triggered_by: 'lead.created' },
+      });
+    } else {
+      console.warn(`⚠️  Could not create no_response sequence: lead not found in DB for fub_id=${fullLead.id}`);
+    }
+
+    // 9. Schedule satisfaction ping after cooldown (fire-and-forget)
     const agentId = fullLead.assignedTo?.id || null;
     const satisfactionEnabled = fullLead.satisfactionPingEnabled !== false;
     scheduleSatisfactionPing({
@@ -202,6 +217,8 @@ fubEventBus.on('lead.status_changed', async (leadData) => {
       'Appointment Set': 'appointment_confirmation',
       'Viewed': 'follow_up_after_showing',
       'Offer': 'offer_acknowledgment',
+      'No Show': 'no_show_follow_up',
+      'Missed': 'no_show_follow_up',
     };
 
     if (!statusTriggers[newStatus]) {
@@ -233,6 +250,32 @@ fubEventBus.on('lead.status_changed', async (leadData) => {
       trigger: statusTriggers[newStatus],
       timestamp: new Date().toISOString(),
     });
+
+    // UC-8: Create follow-up sequences based on status transition
+    const internalLeadId = await findLeadByFubId(fullLead.id);
+    if (internalLeadId) {
+      // "Appointment Set" / confirmed booking → post_viewing sequence (4h after viewing)
+      if (newStatus === 'Appointment Set') {
+        await createLeadSequence({
+          lead_id: internalLeadId,
+          sequence_type: 'post_viewing',
+          trigger_reason: 'booking_confirmed',
+          metadata: { fub_id: String(fullLead.id), triggered_by: 'lead.status_changed', new_status: newStatus },
+        });
+      }
+
+      // "No Show" or "Missed" → no_show sequence (30m after missed appointment)
+      if (newStatus === 'No Show' || newStatus === 'Missed') {
+        await createLeadSequence({
+          lead_id: internalLeadId,
+          sequence_type: 'no_show',
+          trigger_reason: 'missed_appointment',
+          metadata: { fub_id: String(fullLead.id), triggered_by: 'lead.status_changed', new_status: newStatus },
+        });
+      }
+    } else {
+      console.warn(`⚠️  Could not create sequence: lead not found in DB for fub_id=${fullLead.id}`);
+    }
 
     // Schedule satisfaction ping after cooldown (fire-and-forget)
     const agentId = fullLead.assignedTo?.id || null;
