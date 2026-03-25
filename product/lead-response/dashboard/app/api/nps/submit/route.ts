@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import { validateSession } from '@/lib/session'
 import {
   verifySurveyToken,
   hashToken,
@@ -7,7 +8,11 @@ import {
   markTokenUsed,
   submitNPSResponse,
 } from '@/lib/nps-service'
-import { supabaseServer } from '@/lib/supabase-server'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_API_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,31 +86,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true })
     } else {
       // In-app submission - requires authenticated session
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-      
-      const supabase = createClient(supabaseUrl, supabaseAnonKey)
-      
-      // Get session from cookies
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession()
+      const sessionToken = request.cookies.get('leadflow_session')?.value
 
-      if (sessionError || !session?.user) {
+      if (!sessionToken) {
         return NextResponse.json(
           { success: false, error: 'Unauthorized' },
           { status: 401 }
         )
       }
 
-      const userId = session.user.id
+      const session = await validateSession(sessionToken)
+
+      if (!session) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
 
       // Get the agent record by user ID
-      const { data: agent, error: agentError } = await supabaseServer
+      const { data: agent, error: agentError } = await supabase
         .from('real_estate_agents')
         .select('id')
-        .eq('user_id', userId)
+        .eq('id', session.userId)
         .single()
 
       if (agentError || !agent) {
