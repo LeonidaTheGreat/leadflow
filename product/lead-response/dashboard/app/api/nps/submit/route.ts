@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 import {
   verifySurveyToken,
   hashToken,
@@ -84,15 +84,15 @@ export async function POST(request: NextRequest) {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
       
-      const supabase = createClient(supabaseUrl, supabaseAnonKey)
+      const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
       
       // Get session from cookies
       const {
         data: { session },
         error: sessionError,
-      } = await supabase.auth.getSession()
+      } = await supabaseClient.auth.getSession()
 
-      if (sessionError || !session?.user) {
+      if (sessionError || !session || !session.user) {
         return NextResponse.json(
           { success: false, error: 'Unauthorized' },
           { status: 401 }
