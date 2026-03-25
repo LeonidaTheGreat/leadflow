@@ -13,7 +13,7 @@ async function getResend() {
   if (!process.env.RESEND_API_KEY) return null
   try {
     const { Resend } = await import('resend') // resend is installed; falls through to catch if missing
-    _resend = new Resend(process.env.RESEND_API_KEY)
+    _resend = new Resend(process.env.RESEND_API_KEY!.trim())
     return _resend
   } catch {
     return null
@@ -21,7 +21,8 @@ async function getResend() {
 }
 
 // Use Resend's shared domain as fallback — leadflow.ai must be verified on Resend first.
-const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev'
+// .trim() guards against trailing whitespace/newlines in env var values
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@resend.dev').trim()
 const COMPANY_NAME = 'LeadFlow AI'
 const SUPPORT_EMAIL = 'support@leadflow.ai'
 const DASHBOARD_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'

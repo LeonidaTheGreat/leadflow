@@ -18,7 +18,9 @@ export function validateEmailConfig(): EmailConfigValidation {
   const warnings: string[] = []
 
   // Check RESEND_API_KEY
-  if (!process.env.RESEND_API_KEY) {
+  // .trim() guards against trailing whitespace/newlines in env var values
+  const resendApiKey = process.env.RESEND_API_KEY?.trim()
+  if (!resendApiKey) {
     issues.push(
       'RESEND_API_KEY is not configured. Email delivery will not work. ' +
         'See: https://resend.com/api-keys'
@@ -26,7 +28,8 @@ export function validateEmailConfig(): EmailConfigValidation {
   }
 
   // Check FROM_EMAIL
-  const fromEmail = process.env.FROM_EMAIL || 'stojan@leadflow.ai'
+  // .trim() guards against trailing whitespace/newlines in env var values
+  const fromEmail = (process.env.FROM_EMAIL || 'stojan@leadflow.ai').trim()
   if (!process.env.FROM_EMAIL) {
     warnings.push(
       `FROM_EMAIL not configured, using default: ${fromEmail}`
