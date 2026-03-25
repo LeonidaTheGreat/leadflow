@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
         first_name: firstName,
         last_name: lastName,
         password_hash: passwordHash,
-        email_verified: false, // Require email verification before login
+        email_verified: true, // No email gate for pilot users per PRD
         plan_tier: 'pilot',
         pilot_started_at: pilotStartedAt,
         pilot_expires_at: pilotExpiresAt,
