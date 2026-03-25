@@ -180,7 +180,7 @@ export async function GET(request: NextRequest) {
     let agentsMap: Record<string, any> = {}
     if (agentIds.length > 0) {
       const { data: agentsData, error: agentsError } = await supabase
-        .from('agents')
+        .from('real_estate_agents')
         .select('id, name, email, phone, calcom_username, market, settings')
         .in('id', agentIds)
 

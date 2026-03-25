@@ -169,7 +169,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
 
   return (
     <form onSubmit={handleSubmit} className={`w-full max-w-[420px] mx-auto ${className}`}>
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
+      <div className="bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-2">
           Start Your Free Trial
         </h3>
@@ -190,35 +190,37 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               placeholder="you@example.com"
               required
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               aria-describedby={error ? 'trial-error' : undefined}
             />
           </div>
 
-          <div className="relative">
-            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <div className="space-y-2">
+            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
               Password
             </label>
-            <input
-              id="trial-password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(null) }}
-              placeholder="Min 8 characters"
-              required
-              minLength={8}
-              disabled={loading}
-              className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-              tabIndex={-1}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
+            <div className="relative">
+              <input
+                id="trial-password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(null) }}
+                placeholder="Min 8 characters"
+                required
+                minLength={8}
+                disabled={loading}
+                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-600 bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                tabIndex={-1}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <div>
@@ -232,7 +234,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>

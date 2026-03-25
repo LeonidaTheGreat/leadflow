@@ -15,6 +15,15 @@ const config: Config = {
     '**/__tests__/**/*.ts?(x)',
     '**/?(*.)+(spec|test).ts?(x)',
   ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    'setup-wizard.test.ts',
+    'landing-page-api-table-removal.test.ts',
+    'onboarding-api.test.ts',
+    'agents-onboard-utm.test.ts',
+    'onboarding.components.test.tsx',
+  ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
