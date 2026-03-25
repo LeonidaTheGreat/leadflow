@@ -19,7 +19,7 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let lastInsertedData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({
     from: (table: string) => {
       if (table === 'real_estate_agents') {

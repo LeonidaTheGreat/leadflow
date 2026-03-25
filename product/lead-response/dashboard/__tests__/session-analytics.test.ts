@@ -20,7 +20,7 @@ const mockState = {
   fromImpl: null as null | (() => Record<string, jest.Mock>),
 }
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: () => ({
     from: (table: string) => mockState.fromImpl ? mockState.fromImpl() : {},
   }),

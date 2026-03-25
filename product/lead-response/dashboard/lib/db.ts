@@ -376,7 +376,7 @@ export function channel(name: string): any {
 }
 
 /**
- * Drop-in replacement for @supabase/supabase-js createClient
+ * Drop-in replacement for the Supabase JS SDK createClient
  */
 export function createClient(url: string, key: string, opts?: any) {
   const finalUrl = !url || url.includes('placeholder') ? baseUrl : url

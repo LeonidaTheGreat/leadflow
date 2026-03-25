@@ -2,7 +2,7 @@
  * PostgREST Database Client Re-exports
  * 
  * This module maintains backward compatibility by re-exporting from lib/db.ts.
- * All imports from @supabase/supabase-js have been migrated to use PostgREST.
+ * All imports have been migrated from the Supabase SDK to use the PostgREST client (lib/db.ts).
  */
 
 import { postgrestAdmin, postgrestPublic } from './db'

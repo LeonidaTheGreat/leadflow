@@ -78,7 +78,7 @@ const mockFrom = jest.fn().mockReturnValue({
   insert: mockInsert,
 })
 
-jest.mock('@supabase/supabase-js', () => ({
+jest.mock('@/lib/db', () => ({
   createClient: jest.fn().mockReturnValue({ from: (...args: unknown[]) => mockFrom(...args) }),
 }))
 
