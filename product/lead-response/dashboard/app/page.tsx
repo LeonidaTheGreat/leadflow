@@ -330,28 +330,28 @@ const testimonials = [
   {
     quote: "I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight.",
     name: "Sarah M.",
-    title: "Solo Agent, Austin TX",
+    role: "Solo Agent, Austin TX",
   },
   {
     quote: "My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month.",
     name: "Mike R.",
-    title: "Team Lead, Denver CO",
+    role: "Team Lead, Denver CO",
   },
   {
     quote: "Setup took 5 minutes. The AI sounds like me, not a robot.",
     name: "Jennifer K.",
-    title: "Realtor, Miami FL",
+    role: "Realtor, Miami FL",
   },
 ]
 
 function TestimonialCard({
   quote,
   name,
-  title,
+  role,
 }: {
   quote: string
   name: string
-  title: string
+  role: string
 }) {
   return (
     <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col">
@@ -363,7 +363,7 @@ function TestimonialCard({
         </div>
         <div>
           <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{role}</p>
         </div>
       </div>
     </div>
