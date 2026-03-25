@@ -313,8 +313,8 @@ export const postgrestPublic = {
   from: (table: string) => new QueryBuilder(table, baseUrl, ''),
   channel: (name: string) => channel(name),
   auth: {
-    getUser: async () => ({ data: { user: null }, error: null }),
-    getSession: async () => ({ data: { session: null }, error: null }),
+    getUser: async () => ({ data: { user: null as { id: string; email?: string } | null }, error: null }),
+    getSession: async () => ({ data: { session: null as { user: { id: string; email?: string } } | null }, error: null }),
   },
 }
 
@@ -387,8 +387,8 @@ export function createClient(url: string, key: string, opts?: any) {
     rpc: async (name: string, params?: any) => rpcCall(name, params),
     channel: (name: string) => channel(name),
     auth: {
-      getUser: async () => ({ data: { user: null }, error: null }),
-      getSession: async () => ({ data: { session: null }, error: null }),
+      getUser: async () => ({ data: { user: null as { id: string; email?: string } | null }, error: null }),
+      getSession: async () => ({ data: { session: null as { user: { id: string; email?: string } } | null }, error: null }),
     },
   }
 }
