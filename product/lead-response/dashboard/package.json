@@ -18,8 +18,6 @@
     "@ai-sdk/anthropic": "^3.0.44",
     "@ai-sdk/openai": "^1.0.2",
     "@radix-ui/react-checkbox": "^1.3.3",
-    "@supabase/ssr": "0.10.0-rc.76",
-    "@supabase/supabase-js": "^2.45.0",
     "ai": "^6.0.86",
     "axios": "^1.7.9",
     "bcryptjs": "^3.0.3",
