@@ -85,13 +85,13 @@ describe('GET /api/internal/pilot-usage', () => {
   beforeEach(() => {
     callCount = 0
     mockFrom.mockClear()
-    process.env.API_SECRET_KEY = SERVICE_ROLE_KEY
-    process.env.NEXT_PUBLIC_API_URL = 'https://test.supabase.co'
+    process.env.SUPABASE_SERVICE_ROLE_KEY = SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
   })
 
   afterEach(() => {
-    delete process.env.API_SECRET_KEY
-    delete process.env.NEXT_PUBLIC_API_URL
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL
   })
 
   it('returns 401 when no auth token provided', async () => {

@@ -1,127 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-24T03:06:00.852Z
+Last updated: 2026-03-25T06:59:56.810Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-05T15:56:13.434Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T15:56:57.414Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Smoke tests: 7/7 passed",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-05T15:57:17.477Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Smoke tests: 7/7 passed",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-05T16:21:57.032Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Smoke tests: 7/7 passed",
-      "Product sync: 5 components updated",
-      "Feedback→PM: bug from pm_journey_review",
-      "Journey review triggered: New Agent Signup",
-      "Journey review triggered: Lead Response Flow",
-      "Processed product review: 0 decisions, 1 tasks",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-05T16:37:53.044Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 4,
-      "blocked": 0,
-      "done": 155,
-      "total": 200
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":4,\"blocked\":0,\"done\":155,\"total\":200}",
-      "Reset zombie: PM: Spec fix — Onboarding completion fails - 500 error on /api/agents/onboard (retry 1/3) [unknown]",
-      "Reset zombie: PM: Analyze bug feedback (retry 1/3) [unknown]",
-      "Reset zombie: PM: Journey Review — New Agent Signup (retry 1/3) [unknown]",
-      "Reset zombie: PM: Journey Review — Lead Response Flow (retry 1/3) [unknown]",
-      "Smoke tests: 7/7 passed",
-      "Product sync: 5 components updated",
-      "Replenished: Dev task for fix-onboarding-500-error",
-      "Journey review triggered: New Agent Signup",
-      "Journey review triggered: Lead Response Flow",
-      "Processed product review: 0 decisions, 1 tasks",
-      "Processed product review: 0 decisions, 3 tasks",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-06T10:14:55.704Z",
     "status": {
@@ -2561,9 +2442,126 @@ Last updated: 2026-03-24T03:06:00.852Z
     "spawned": 2,
     "completed": 1,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-25T06:29:58.543Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1931
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":1741,\"total\":1931}",
+      "Escalation fix: improve-add-start-free-trial-cta-frictionless (qc stuck)",
+      "UC stuck: improve-add-start-free-trial-cta-frictionless (rescue failed for qc)",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Backfilled PR #603 for dev/ae41a56d-fix-codebase-rule-violated-no-supabase-i",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "🛑 UC STUCK: improve-add-start-free-trial-cta-frictionless\nName: Add Start Free Trial CTA — frictionless trial entry for pilot recruitment\nFailed agent: qc\nRoot cause: unknown: Max retries exhausted at spawn time\n\nEscalated to genome fix task. Also needs human review.\nUse: !unstuck improve-add-start-free-trial-cta-frictionless to retry with new instructions"
+    ]
+  },
+  {
+    "timestamp": "2026-03-25T06:35:17.696Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1932
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":1741,\"total\":1932}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #603",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-25T06:39:54.871Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1932
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":1741,\"total\":1932}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-25T06:55:02.593Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1932
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":1741,\"total\":1932}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-25T06:59:56.803Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1932
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":1741,\"total\":1932}",
+      "Re-triggered 2 stuck spawn(s)",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":5,"inProgress":10,"blocked":0,"done":895,"total":1000}
+- Last status: {"ready":3,"inProgress":1,"blocked":0,"done":1741,"total":1932}

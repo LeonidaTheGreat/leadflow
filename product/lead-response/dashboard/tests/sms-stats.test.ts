@@ -109,17 +109,17 @@ describe('GET /api/analytics/sms-stats', () => {
     })
 
     it('filters outbound direction using outbound-api (Twilio value)', async () => {
-      const directionValues: string[] = []
+      const directionFilters: (string | string[])[] = []
 
       fromImpl = (_table: string) => {
         const chain: any = {}
         chain.select = jest.fn(() => chain)
-        chain.eq = jest.fn((col: string, val: string) => {
-          if (col === 'direction') directionValues.push(val)
+        chain.eq = jest.fn(() => chain)
+        chain.gte = jest.fn(() => chain)
+        chain.in = jest.fn((col: string, val: string[]) => {
+          if (col === 'direction') directionFilters.push(...val)
           return chain
         })
-        chain.gte = jest.fn(() => chain)
-        chain.in = jest.fn(() => chain)
         chain.then = jest.fn((cb: any) => Promise.resolve(cb({ data: [], error: null })))
         return chain
       }
@@ -127,12 +127,12 @@ describe('GET /api/analytics/sms-stats', () => {
       const req = makeRequest()
       await GET(req)
 
-      expect(directionValues).toContain('outbound-api')
-      expect(directionValues).not.toContain('outbound')
+      expect(directionFilters).toContain('outbound-api')
+      expect(directionFilters).not.toContain('outbound')
     })
 
     it('uses message_body column for opt-out detection — NOT body', async () => {
-      const outboundData = [{ id: '1', status: 'delivered', lead_id: 'lead-1' }]
+      const outboundData = [{ id: '1', twilio_status: 'delivered', lead_id: 'lead-1' }]
       const inboundData = [{ lead_id: 'lead-1', message_body: 'STOP' }]
 
       // Shared counter so second from('sms_messages') returns inboundData
@@ -232,10 +232,10 @@ describe('GET /api/analytics/sms-stats', () => {
   describe('Metric calculations', () => {
     it('calculates delivery rate correctly', async () => {
       const outboundData = [
-        { id: '1', status: 'delivered', lead_id: 'lead-1' },
-        { id: '2', status: 'delivered', lead_id: 'lead-2' },
-        { id: '3', status: 'failed', lead_id: 'lead-3' },
-        { id: '4', status: 'sent', lead_id: 'lead-4' },
+        { id: '1', twilio_status: 'delivered', lead_id: 'lead-1' },
+        { id: '2', twilio_status: 'delivered', lead_id: 'lead-2' },
+        { id: '3', twilio_status: 'failed', lead_id: 'lead-3' },
+        { id: '4', twilio_status: 'sent', lead_id: 'lead-4' },
       ]
 
       let smsCallCount = 0
@@ -265,8 +265,8 @@ describe('GET /api/analytics/sms-stats', () => {
 
     it('calculates reply rate excluding opt-outs', async () => {
       const outboundData = [
-        { id: '1', status: 'delivered', lead_id: 'lead-1' },
-        { id: '2', status: 'delivered', lead_id: 'lead-2' },
+        { id: '1', twilio_status: 'delivered', lead_id: 'lead-1' },
+        { id: '2', twilio_status: 'delivered', lead_id: 'lead-2' },
       ]
       const inboundData = [
         { lead_id: 'lead-1', message_body: 'Interested!' },
@@ -303,8 +303,8 @@ describe('GET /api/analytics/sms-stats', () => {
 
     it('calculates booking conversion relative to replying leads', async () => {
       const outboundData = [
-        { id: '1', status: 'delivered', lead_id: 'lead-1' },
-        { id: '2', status: 'delivered', lead_id: 'lead-2' },
+        { id: '1', twilio_status: 'delivered', lead_id: 'lead-1' },
+        { id: '2', twilio_status: 'delivered', lead_id: 'lead-2' },
       ]
       const inboundData = [
         { lead_id: 'lead-1', message_body: 'Yes interested' },
@@ -359,7 +359,7 @@ describe('GET /api/analytics/sms-stats', () => {
     })
 
     it('returns partial data (null bookingConversion) if bookings query fails', async () => {
-      const outboundData = [{ id: '1', status: 'delivered', lead_id: 'lead-1' }]
+      const outboundData = [{ id: '1', twilio_status: 'delivered', lead_id: 'lead-1' }]
       const inboundData = [{ lead_id: 'lead-1', message_body: 'Yes!' }]
 
       let smsCallCount = 0

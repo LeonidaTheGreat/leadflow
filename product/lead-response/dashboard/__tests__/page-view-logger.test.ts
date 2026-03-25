@@ -23,7 +23,8 @@ jest.mock('@/lib/supabase-server', () => ({
 // ---- Import after mocks ----
 const { POST, isTrackedPage } = require('@/app/api/page-views/route')
 
-const JWT_SECRET = 'your-secret-key-change-in-production'
+// Use the same JWT_SECRET configured in jest.setup.ts
+const JWT_SECRET = 'test-jwt-secret'
 const AGENT_ID = '703b59fe-e16c-4dc6-8afa-a802db8c33d4'
 const SESSION_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
