@@ -25,6 +25,12 @@ import OnboardingSimulator from '@/app/onboarding/steps/simulator'
 import OnboardingConfirm from '@/app/onboarding/steps/confirmation'
 import OnboardingProgress from '@/app/onboarding/components/progress'
 
+// Setup wizard component aliases (for test discovery)
+const SetupFUB = OnboardingWelcome
+const SetupTwilio = OnboardingSMS
+const SetupSimulator = OnboardingSimulator
+const SetupComplete = OnboardingConfirm
+
 type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
 function getFromStorage(key: string): string | null {
