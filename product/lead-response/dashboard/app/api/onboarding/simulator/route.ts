@@ -89,13 +89,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Generate sessionId if not provided for start action
+    const finalSessionId = sessionId || (action === 'start' ? `sim_${randomUUID()}` : undefined)
+
     switch (action) {
       case 'start':
-        return await startSimulation(agentId, sessionId)
+        return await startSimulation(agentId, finalSessionId!)
       case 'status':
-        return await getSimulationStatus(agentId, sessionId)
+        return await getSimulationStatus(agentId, sessionId!)
       case 'skip':
-        return await skipSimulation(agentId, sessionId, reason)
+        return await skipSimulation(agentId, sessionId!, reason)
       default:
         return NextResponse.json(
           { error: 'Invalid action. Must be start, status, or skip' },

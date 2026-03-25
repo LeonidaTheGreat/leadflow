@@ -60,8 +60,13 @@ jest.mock('@supabase/supabase-js', () => ({
           }),
         }
       }
+      // Default: support insert().select() chaining for all other tables
       return {
-        insert: () => Promise.resolve({ error: null }),
+        insert: (data: any) => ({
+          select: (columns?: string) => ({
+            single: () => Promise.resolve({ data: { id: '1' }, error: null }),
+          }),
+        }),
       }
     },
   })),

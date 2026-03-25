@@ -6,7 +6,7 @@ import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_API_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 

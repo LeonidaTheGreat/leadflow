@@ -1,4 +1,6 @@
 /**
+ * @jest-environment node
+ * 
  * Tests for the Stripe webhook route
  * Verifies that webhook events update real_estate_agents (not the orchestration agents table)
  * 
