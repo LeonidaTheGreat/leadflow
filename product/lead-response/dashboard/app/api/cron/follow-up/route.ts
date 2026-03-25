@@ -23,6 +23,9 @@ import { createMessage } from '@/lib/supabase'
  * - Message length validated to fit single SMS (160 chars) after footer
  * - Respects quiet hours: 9 PM - 9 AM (no sends outside business hours)
  * - DNC and SMS consent required before sending
+ *
+ * FIX (2026-03-25): Replaced nested PostgREST join with separate queries
+ * to avoid FK relationship requirement that was missing in the DB schema.
  */
 
 // TCPA Compliance: Standard opt-out footer for SMS
@@ -42,7 +45,7 @@ function isQuietHours(): boolean {
 }
 
 // Check if lead has reached frequency cap (max messages per 24h)
-async function hasReachedFrequencyCap(leadId: string, supabase: any): Promise<boolean> {
+async function hasReachedFrequencyCap(leadId: string): Promise<boolean> {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
   
   const { data: recentMessages, error } = await supabase
@@ -131,31 +134,10 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Query active sequences due for sending
-    const { data: sequences, error: sequencesError } = await supabase
+    // Step 1: Query active sequences due for sending (no nested joins to avoid FK requirement)
+    const { data: rawSequences, error: sequencesError } = await supabase
       .from('lead_sequences')
-      .select(`
-        *,
-        leads:lead_id (
-          id,
-          name,
-          phone,
-          email,
-          status,
-          dnc,
-          consent_sms,
-          agent_id,
-          agents:agent_id (
-            id,
-            name,
-            email,
-            phone,
-            calcom_username,
-            market,
-            settings
-          )
-        )
-      `)
+      .select('*')
       .eq('status', 'active')
       .lte('next_send_at', new Date().toISOString())
       .lt('total_messages_sent', 3) // Max 3 messages per sequence
@@ -163,18 +145,68 @@ export async function GET(request: NextRequest) {
     if (sequencesError) {
       console.error('❌ Error fetching sequences:', sequencesError)
       return NextResponse.json(
-        { error: 'Failed to fetch sequences' },
+        { error: 'Failed to fetch sequences', details: sequencesError.message },
         { status: 500 }
       )
     }
 
-    if (!sequences || sequences.length === 0) {
+    if (!rawSequences || rawSequences.length === 0) {
       return NextResponse.json({
         success: true,
         message: 'No sequences due',
         processed: 0,
       })
     }
+
+    // Step 2: Collect unique lead IDs and fetch leads separately
+    const leadIds = [...new Set(rawSequences.map((s: any) => s.lead_id).filter(Boolean))]
+    
+    const { data: leadsData, error: leadsError } = await supabase
+      .from('leads')
+      .select('id, name, phone, email, status, dnc, consent_sms, agent_id')
+      .in('id', leadIds)
+
+    if (leadsError) {
+      console.error('❌ Error fetching leads:', leadsError)
+      return NextResponse.json(
+        { error: 'Failed to fetch leads', details: leadsError.message },
+        { status: 500 }
+      )
+    }
+
+    // Step 3: Collect unique agent IDs and fetch agents separately
+    const agentIds = [...new Set((leadsData || []).map((l: any) => l.agent_id).filter(Boolean))]
+
+    let agentsMap: Record<string, any> = {}
+    if (agentIds.length > 0) {
+      const { data: agentsData, error: agentsError } = await supabase
+        .from('agents')
+        .select('id, name, email, phone, calcom_username, market, settings')
+        .in('id', agentIds)
+
+      if (agentsError) {
+        console.warn('⚠️ Error fetching agents (continuing without agent data):', agentsError)
+      } else {
+        for (const agent of agentsData || []) {
+          agentsMap[agent.id] = agent
+        }
+      }
+    }
+
+    // Build lookup maps
+    const leadsMap: Record<string, any> = {}
+    for (const lead of leadsData || []) {
+      leadsMap[lead.id] = {
+        ...lead,
+        agents: agentsMap[lead.agent_id] || null,
+      }
+    }
+
+    // Assemble sequences with enriched lead/agent data
+    const sequences = rawSequences.map((s: any) => ({
+      ...s,
+      leads: leadsMap[s.lead_id] || null,
+    }))
 
     console.log(`📋 Found ${sequences.length} sequences to process`)
 
@@ -185,7 +217,7 @@ export async function GET(request: NextRequest) {
 
     for (const sequence of sequences) {
       const lead = sequence.leads
-      const agent = lead.agents
+      const agent = lead?.agents
 
       // Safety checks
       if (!lead || !agent) {
@@ -209,7 +241,7 @@ export async function GET(request: NextRequest) {
 
       try {
         // Check frequency cap: max 3 messages per lead per 24h
-        const atFrequencyCap = await hasReachedFrequencyCap(lead.id, supabase)
+        const atFrequencyCap = await hasReachedFrequencyCap(lead.id)
         if (atFrequencyCap) {
           console.warn(`⚠️ Lead ${lead.id} at frequency cap (3 messages in 24h) - skipping`)
           skipped++
