@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,7 +50,9 @@ export async function POST(request: NextRequest) {
 
     // TODO: Integrate with Twilio to send test SMS
     // For now, generate a test code and pretend to send it
-    const testCode = String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+    const randomBytes = crypto.randomBytes(2)
+    const randomNumber = randomBytes.readUInt16BE(0) % 10000
+    const testCode = String(randomNumber).padStart(4, '0')
 
     // Store test code in cache/memory for verification
     // In production, use Redis or a temporary table
