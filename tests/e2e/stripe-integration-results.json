@@ -1,0 +1,89 @@
+{
+  "passed": 20,
+  "failed": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "name": "Checkout: Create session for starter plan",
+      "status": "PASSED"
+    },
+    {
+      "name": "Checkout: Create session for pro plan",
+      "status": "PASSED"
+    },
+    {
+      "name": "Checkout: Create session with promotion codes allowed",
+      "status": "PASSED"
+    },
+    {
+      "name": "Checkout: Create session with automatic tax enabled",
+      "status": "PASSED"
+    },
+    {
+      "name": "Customer: Create new customer with metadata",
+      "status": "PASSED"
+    },
+    {
+      "name": "Customer: Retrieve customer by ID",
+      "status": "PASSED"
+    },
+    {
+      "name": "Customer: Handle non-existent customer gracefully",
+      "status": "PASSED"
+    },
+    {
+      "name": "Subscription: Create subscription with items",
+      "status": "PASSED"
+    },
+    {
+      "name": "Portal: Create billing portal session",
+      "status": "PASSED"
+    },
+    {
+      "name": "Portal: Create session with custom return URL",
+      "status": "PASSED"
+    },
+    {
+      "name": "MRR: Calculate monthly recurring revenue from subscription",
+      "status": "PASSED"
+    },
+    {
+      "name": "MRR: Calculate MRR from annual subscription",
+      "status": "PASSED"
+    },
+    {
+      "name": "Tier: Map starter price ID to tier",
+      "status": "PASSED"
+    },
+    {
+      "name": "Error: Handle invalid customer ID format",
+      "status": "PASSED"
+    },
+    {
+      "name": "Error: Handle missing checkout parameters",
+      "status": "PASSED"
+    },
+    {
+      "name": "Integrity: Verify customer data persists across operations",
+      "status": "PASSED"
+    },
+    {
+      "name": "Integrity: Session data integrity after creation",
+      "status": "PASSED"
+    },
+    {
+      "name": "Schema: Checkout session has required fields",
+      "status": "PASSED"
+    },
+    {
+      "name": "Schema: Subscription has required fields",
+      "status": "PASSED"
+    },
+    {
+      "name": "Workflow: Complete upgrade flow (checkout → subscription → portal)",
+      "status": "PASSED"
+    }
+  ],
+  "startTime": 1774400481350,
+  "endTime": 1774400481353
+}
