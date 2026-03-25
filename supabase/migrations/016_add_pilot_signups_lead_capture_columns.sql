@@ -7,7 +7,8 @@ ALTER TABLE pilot_signups
   ADD COLUMN IF NOT EXISTS first_name TEXT,
   ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'nurture',
   ADD COLUMN IF NOT EXISTS utm_source TEXT,
-  ADD COLUMN IF NOT EXISTS utm_medium TEXT;
+  ADD COLUMN IF NOT EXISTS utm_medium TEXT,
+  ADD COLUMN IF NOT EXISTS utm_campaign TEXT;
 
 -- Clean up duplicate unique constraints on email
 -- Drop any unique constraints that aren't the primary key
