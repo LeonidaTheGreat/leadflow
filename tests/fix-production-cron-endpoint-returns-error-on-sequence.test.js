@@ -2,16 +2,19 @@
  * Tests for fix: Production cron endpoint returns error on sequences query
  * Task: d7930089-8eb9-4936-9372-ff229aeb1f33
  *
- * Root cause: The cron endpoint used nested PostgREST joins
+ * Root cause 1: The cron endpoint used nested PostgREST joins
  * (leads:lead_id(agents:agent_id(...))) which requires FK relationships
  * to be defined in the DB schema. The Supabase DB lacked these FKs,
- * causing the query to fail with "Failed to fetch sequences".
+ * causing PGRST200 "Could not find a relationship" → "Failed to fetch sequences".
  *
- * Fix: Replaced nested join with three separate flat queries:
- *   1. lead_sequences (flat)
- *   2. leads (by id, flat)
- *   3. agents (by id, flat)
- * Then assembles the enriched data in-memory.
+ * Root cause 2: The PostgREST QueryBuilder in db.ts called encodeURIComponent()
+ * on filter values AND passed them to url.searchParams.set() which also encodes.
+ * This double-encoding broke timestamp filters: ':' → '%3A' → '%253A'.
+ * PostgreSQL received "%3A" literally and failed with "invalid input syntax for
+ * type timestamp with time zone".
+ *
+ * Fix 1: Replace nested join with three flat, separate queries.
+ * Fix 2: Remove encodeURIComponent() from filter value building in db.ts.
  */
 
 const fs = require('fs')
@@ -22,25 +25,32 @@ const CRON_ROUTE_PATH = path.join(
   '../product/lead-response/dashboard/app/api/cron/follow-up/route.ts'
 )
 
+const DB_LIB_PATH = path.join(
+  __dirname,
+  '../product/lead-response/dashboard/lib/db.ts'
+)
+
 describe('fix-production-cron-endpoint-returns-error-on-sequence', () => {
   let routeSource
+  let dbSource
 
   beforeAll(() => {
     routeSource = fs.readFileSync(CRON_ROUTE_PATH, 'utf-8')
+    dbSource = fs.readFileSync(DB_LIB_PATH, 'utf-8')
   })
 
   test('cron route file exists', () => {
     expect(fs.existsSync(CRON_ROUTE_PATH)).toBe(true)
   })
 
+  // --- Fix 1: Nested join removal ---
+
   test('does NOT use nested PostgREST join that requires FK relationships', () => {
-    // The old broken pattern: .select(`*, leads:lead_id (... agents:agent_id (...))`)
     expect(routeSource).not.toMatch(/leads:lead_id\s*\(/m)
     expect(routeSource).not.toMatch(/agents:agent_id\s*\(/m)
   })
 
   test('queries lead_sequences with flat select (no joins)', () => {
-    // Must query lead_sequences with just '*' or flat columns
     expect(routeSource).toMatch(/\.from\(['"]lead_sequences['"]\)\s*\n?\s*\.select\(['"]?\*['"]?\)/)
   })
 
@@ -54,19 +64,15 @@ describe('fix-production-cron-endpoint-returns-error-on-sequence', () => {
   })
 
   test('assembles enriched data in-memory via map lookups', () => {
-    // Should have map objects for leads and agents
     expect(routeSource).toMatch(/leadsMap/)
     expect(routeSource).toMatch(/agentsMap/)
   })
 
   test('returns detailed error message including error details', () => {
-    // Error response should include details field for better debugging
     expect(routeSource).toMatch(/details.*sequencesError\.message/)
   })
 
   test('hasReachedFrequencyCap no longer passes supabase as parameter', () => {
-    // Old version: hasReachedFrequencyCap(leadId, supabase)
-    // New version: hasReachedFrequencyCap(leadId)
     expect(routeSource).not.toMatch(/hasReachedFrequencyCap\(lead\.id,\s*supabase\)/)
     expect(routeSource).toMatch(/hasReachedFrequencyCap\(lead\.id\)/)
   })
@@ -92,5 +98,30 @@ describe('fix-production-cron-endpoint-returns-error-on-sequence', () => {
   test('still handles dry-run mode', () => {
     expect(routeSource).toMatch(/isDryRun/)
     expect(routeSource).toMatch(/DRY-RUN/)
+  })
+
+  // --- Fix 2: Double-encoding fix in db.ts ---
+
+  test('db.ts does not use encodeURIComponent for lte filter values', () => {
+    // Should be: url.searchParams.set(f.key, `lte.${f.val}`)
+    // NOT: url.searchParams.set(f.key, `lte.${encodeURIComponent(f.val)}`)
+    expect(dbSource).not.toMatch(/lte\.\$\{encodeURIComponent/)
+  })
+
+  test('db.ts does not use encodeURIComponent for gte filter values', () => {
+    expect(dbSource).not.toMatch(/gte\.\$\{encodeURIComponent/)
+  })
+
+  test('db.ts does not use encodeURIComponent for eq filter values', () => {
+    expect(dbSource).not.toMatch(/eq\.\$\{encodeURIComponent/)
+  })
+
+  test('db.ts does not use encodeURIComponent for lt filter values', () => {
+    expect(dbSource).not.toMatch(/lt\.\$\{encodeURIComponent/)
+  })
+
+  test('db.ts passes raw filter values to searchParams (no double-encode)', () => {
+    expect(dbSource).toMatch(/url\.searchParams\.set\(f\.key,\s*`lte\.\$\{f\.val\}`\)/)
+    expect(dbSource).toMatch(/url\.searchParams\.set\(f\.key,\s*`gte\.\$\{f\.val\}`\)/)
   })
 })

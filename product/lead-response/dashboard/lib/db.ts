@@ -230,30 +230,34 @@ class QueryBuilder implements PromiseLike<any> {
     }
 
     for (const f of this.filters) {
+      // NOTE: Do NOT use encodeURIComponent() here — url.searchParams.set()
+      // already handles URL encoding. Using encodeURIComponent() causes
+      // double-encoding (e.g. ':' → '%3A' → '%253A') which breaks timestamp
+      // filters in PostgreSQL (PGRST error: invalid input syntax for timestamp).
       if (f.op === 'eq') {
-        url.searchParams.set(f.key, `eq.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `eq.${f.val}`)
       } else if (f.op === 'neq') {
-        url.searchParams.set(f.key, `neq.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `neq.${f.val}`)
       } else if (f.op === 'in') {
         const vals = (f.val as any[]).map(v => `"${v}"`).join(',')
         url.searchParams.set(f.key, `in.(${vals})`)
       } else if (f.op === 'not') {
-        url.searchParams.set(f.key, `not.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `not.${f.val}`)
       } else if (f.op === 'is.null') {
         url.searchParams.set(f.key, 'is.null')
       } else if (f.op === 'is') {
-        url.searchParams.set(f.key, `is.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `is.${f.val}`)
       } else if (f.op.startsWith('not.')) {
         const innerOp = f.op.substring(4)
-        url.searchParams.set(f.key, `not.${innerOp}.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `not.${innerOp}.${f.val}`)
       } else if (f.op === 'gt') {
-        url.searchParams.set(f.key, `gt.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `gt.${f.val}`)
       } else if (f.op === 'gte') {
-        url.searchParams.set(f.key, `gte.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `gte.${f.val}`)
       } else if (f.op === 'lt') {
-        url.searchParams.set(f.key, `lt.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `lt.${f.val}`)
       } else if (f.op === 'lte') {
-        url.searchParams.set(f.key, `lte.${encodeURIComponent(f.val)}`)
+        url.searchParams.set(f.key, `lte.${f.val}`)
       }
     }
 
