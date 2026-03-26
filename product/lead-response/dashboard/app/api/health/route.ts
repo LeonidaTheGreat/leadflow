@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 
 /**
  * GET /api/health — Server-side health check for smoke tests
@@ -35,9 +35,8 @@ export async function GET() {
   const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
   if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
     try {
-      const client = createClient(apiUrl, apiKey)
       // Query real_estate_agents (the product customer table) to verify connectivity
-      const { error } = await client.from('real_estate_agents').select('id').limit(1)
+      const { error } = await supabaseAdmin.from('real_estate_agents').select('id').limit(1)
       checks['api_connectivity'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected',

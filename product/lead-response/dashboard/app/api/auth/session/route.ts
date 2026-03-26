@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateSession, getUserSessions } from '@/lib/session'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
-)
+const supabase = supabaseAdmin
 
 export async function GET(request: NextRequest) {
   const sessionToken = request.cookies.get('leadflow_session')?.value

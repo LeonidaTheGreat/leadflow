@@ -8,8 +8,8 @@
 import { createClient } from '@/lib/db'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
+  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
 )
 
 // In-memory rate limiter for touchSession (1 write per 60s per session)

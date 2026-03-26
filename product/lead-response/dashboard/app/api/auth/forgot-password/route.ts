@@ -8,17 +8,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 import crypto from 'crypto'
 import { sendPasswordResetEmail } from '@/lib/email-service'
 
 const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
 const PLACEHOLDER_KEY = 'placeholder'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL,
-  process.env.API_SECRET_KEY || PLACEHOLDER_KEY
-)
+const supabase = supabaseAdmin
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'

@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
-)
+const supabase = supabaseAdmin
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 

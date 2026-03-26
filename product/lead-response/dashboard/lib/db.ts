@@ -26,7 +26,7 @@ function getBaseUrl(): string {
 }
 
 function getApiKey(): string {
-  return (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim()
+  return (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 }
 
 // ============================================
