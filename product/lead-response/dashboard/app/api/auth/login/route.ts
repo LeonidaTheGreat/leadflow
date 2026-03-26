@@ -4,10 +4,7 @@ import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { logSessionStart } from '@/lib/session-analytics'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
-)
+const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')
 
 export async function POST(request: NextRequest) {
   try {
