@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/db'
+import { createClient } from '@/lib/db'
 
 // Statuses considered "stuck"
 const STUCK_STATUSES = ['needs_merge', 'not_started', 'in_progress', 'stuck']
@@ -154,4 +154,51 @@ export async function GET(request: NextRequest) {
       )
     }
 
-const supabase = supabaseAdmin
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
+      process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
+    )
+
+    const useCases = await fetchUseCases(supabase)
+    const categories = categorizeUseCases(useCases)
+    const stuckUseCases = STUCK_STATUSES.flatMap(status => categories[status])
+    const analyses = stuckUseCases.map(analyzeUseCase)
+
+    // Generate summary
+    const summary = {
+      total: useCases.length,
+      stuck: stuckUseCases.length,
+      by_status: {
+        needs_merge: categories.needs_merge.length,
+        not_started: categories.not_started.length,
+        in_progress: categories.in_progress.length,
+        stuck: categories.stuck.length,
+      },
+      by_recommendation: analyses.reduce((acc: Record<string, number>, a: Analysis) => {
+        acc[a.recommendation || 'UNKNOWN'] = (acc[a.recommendation || 'UNKNOWN'] || 0) + 1
+        return acc
+      }, {}),
+    }
+
+    // Sort analyses by priority and recommendation
+    const priorityOrder = ['START', 'MERGE', 'ESCALATE', 'REVIEW', 'CONTINUE', 'BACKLOG', 'DEPRECATE']
+    analyses.sort((a, b) => {
+      const recDiff = priorityOrder.indexOf(a.recommendation || '') - priorityOrder.indexOf(b.recommendation || '')
+      if (recDiff !== 0) return recDiff
+      return (PRIORITY_WEIGHTS[b.priority] || 0) - (PRIORITY_WEIGHTS[a.priority] || 0)
+    })
+
+    return NextResponse.json({
+      success: true,
+      summary,
+      analyses,
+      generated_at: new Date().toISOString(),
+    })
+  } catch (error: any) {
+    console.error('[/api/admin/triage-use-cases] Error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

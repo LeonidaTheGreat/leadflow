@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/db'
+import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 
@@ -87,4 +87,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ logged: false, reason: 'no_session_id' }, { status: 200 })
     }
 
-const supabase = supabaseAdmin
+    const supabase = createClient(DB_URL, DB_KEY)
+
+    const { error } = await supabase.from('agent_page_views').insert({
+      agent_id: agentId,
+      session_id: sessionId,
+      page,
+      visited_at: new Date().toISOString(),
+    })
+
+    if (error) {
+      console.error('[page-views] Insert failed:', error.message, { agentId, sessionId, page, code: error.code })
+      return NextResponse.json({ logged: false, reason: error.code }, { status: 200 })
+    }
+
+    return NextResponse.json({ logged: true }, { status: 200 })
+  } catch (err) {
+    console.error('[page-views] Unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
