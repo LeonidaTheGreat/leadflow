@@ -12,9 +12,6 @@ import { supabaseAdmin } from '@/lib/db'
 import crypto from 'crypto'
 import { sendPasswordResetEmail } from '@/lib/email-service'
 
-const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
-const PLACEHOLDER_KEY = 'placeholder'
-
 const supabase = supabaseAdmin
 
 const APP_URL =
