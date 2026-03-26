@@ -8,17 +8,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
 
 const PLACEHOLDER_URL = 'https://placeholder.supabase.co'
 const PLACEHOLDER_KEY = 'placeholder'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL,
-  process.env.API_SECRET_KEY || PLACEHOLDER_KEY
-)
+const supabase = supabaseAdmin
 
 export async function POST(request: NextRequest) {
   try {

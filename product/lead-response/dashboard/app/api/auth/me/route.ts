@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
-)
+const supabase = supabaseAdmin
 
 /**
  * GET /api/auth/me
