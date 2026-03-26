@@ -11,8 +11,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
+  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
 )
 
 const INACTIVITY_THRESHOLD_MS = 72 * 60 * 60 * 1000  // 72 hours

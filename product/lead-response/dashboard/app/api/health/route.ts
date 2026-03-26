@@ -8,16 +8,16 @@ import { createClient } from '@/lib/db'
  * Returns structured JSON so the orchestrator's smoke test can parse it.
  *
  * This runs server-side, catching config issues that only manifest as
- * client-side JS crashes (e.g. missing NEXT_PUBLIC_SUPABASE_URL).
+ * client-side JS crashes (e.g. missing NEXT_PUBLIC_API_URL).
  */
 export async function GET() {
   const checks: Record<string, { ok: boolean; detail: string }> = {}
 
   // 1. Required env vars (existence only, never expose values)
   const requiredEnvVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
+    'NEXT_PUBLIC_API_URL',
+    'NEXT_PUBLIC_API_KEY',
+    'API_SECRET_KEY',
     'RESEND_API_KEY',
   ]
 
@@ -30,26 +30,26 @@ export async function GET() {
     }
   }
 
-  // 2. Supabase connectivity (only if env vars are present)
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (supabaseUrl && supabaseKey && supabaseUrl !== 'https://placeholder.supabase.co' && supabaseKey !== 'placeholder') {
+  // 2. API connectivity (only if env vars are present)
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
+  const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
+  if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
     try {
-      const client = createClient(supabaseUrl, supabaseKey)
-      // Query real_estate_agents (the product customer table) to verify Supabase connectivity
+      const client = createClient(apiUrl, apiKey)
+      // Query real_estate_agents (the product customer table) to verify connectivity
       const { error } = await client.from('real_estate_agents').select('id').limit(1)
-      checks['supabase_connectivity'] = {
+      checks['api_connectivity'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected',
       }
     } catch (err: any) {
-      checks['supabase_connectivity'] = {
+      checks['api_connectivity'] = {
         ok: false,
         detail: `exception: ${err.message}`,
       }
     }
   } else {
-    checks['supabase_connectivity'] = {
+    checks['api_connectivity'] = {
       ok: false,
       detail: 'skipped — missing credentials',
     }

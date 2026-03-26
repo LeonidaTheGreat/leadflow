@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(req: NextRequest) {
   try {
     // Call the internal pilot-usage API with service role key
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const serviceKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
     if (!serviceKey) {
       return NextResponse.json(
         { error: 'Service configuration error: missing authentication key' },
