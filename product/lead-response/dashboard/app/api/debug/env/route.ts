@@ -40,7 +40,7 @@ export async function GET() {
 
   return NextResponse.json({
     api_url: apiUrl.substring(0, 80),
-    has_api_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    has_api_key: !!(process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY),
     node_env: process.env.NODE_ENV,
     sequences_error: sequencesError,
     sequences_accessible: !sequencesError,

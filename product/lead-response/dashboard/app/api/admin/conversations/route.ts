@@ -14,11 +14,11 @@ import { createClient } from '@/lib/db'
  *   ?outcome=all|booked|in-progress|opted-out (default: all)
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
+const API_SERVICE_KEY = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
 
 function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  return createClient(API_URL, API_SERVICE_KEY)
 }
 
 function maskPhone(phone: string | null): string {
