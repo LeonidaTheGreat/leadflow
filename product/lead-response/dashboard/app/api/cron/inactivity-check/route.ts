@@ -8,12 +8,9 @@
  * Secured by CRON_SECRET header.
  */
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
-)
+const supabase = supabaseAdmin
 
 const INACTIVITY_THRESHOLD_MS = 72 * 60 * 60 * 1000  // 72 hours
 const ALERT_DEDUP_MS          = 24 * 60 * 60 * 1000  // 24 hours
