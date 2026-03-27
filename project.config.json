@@ -407,5 +407,14 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.5
     }
-  }
+  },
+  "codebase_rules": [
+    {
+      "id": "no-supabase-imports",
+      "severity": "critical",
+      "description": "All DB access must go through lib/db.ts PostgREST client, not Supabase SDK",
+      "check": "grep -r \"from.*['\\\"]@supabase\" product/lead-response/dashboard --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' 2>/dev/null | grep -v node_modules | grep -v '.next' | wc -l",
+      "expected": "0"
+    }
+  ]
 }
