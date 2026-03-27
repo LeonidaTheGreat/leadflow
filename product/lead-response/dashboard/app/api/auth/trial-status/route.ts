@@ -14,23 +14,38 @@ interface JWTPayload {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get auth token from cookie
-    const token = request.cookies.get('auth-token')?.value
+    // Support both auth methods:
+    // 1. auth-token cookie (JWT from trial-signup)
+    // 2. leadflow_session cookie (session token from login)
+    let userId: string | null = null
 
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
+    const jwtToken = request.cookies.get('auth-token')?.value
+    if (jwtToken) {
+      try {
+        const payload = jwt.verify(jwtToken, JWT_SECRET) as JWTPayload
+        userId = payload.userId
+      } catch {}
     }
 
-    // Verify JWT token
-    let payload: JWTPayload
-    try {
-      payload = jwt.verify(token, JWT_SECRET) as JWTPayload
-    } catch {
+    if (!userId) {
+      const sessionToken = request.cookies.get('leadflow_session')?.value
+      if (sessionToken) {
+        // Look up session in DB to get userId
+        const { data: session } = await supabase
+          .from('sessions')
+          .select('user_id, expires_at')
+          .eq('token', sessionToken)
+          .single()
+
+        if (session && new Date(session.expires_at) > new Date()) {
+          userId = session.user_id
+        }
+      }
+    }
+
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Invalid token' },
+        { error: 'Not authenticated' },
         { status: 401 }
       )
     }
@@ -38,8 +53,8 @@ export async function GET(request: NextRequest) {
     // Fetch agent's trial status
     const { data: agent, error } = await supabase
       .from('real_estate_agents')
-      .select('plan_tier, trial_started_at, trial_ends_at, onboarding_completed, onboarding_step')
-      .eq('id', payload.userId)
+      .select('plan_tier, trial_ends_at, pilot_started_at, pilot_expires_at, onboarding_completed, onboarding_step')
+      .eq('id', userId)
       .single()
 
     if (error || !agent) {
@@ -61,18 +76,18 @@ export async function GET(request: NextRequest) {
       ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
       : 0
 
-    // Calculate days remaining for pilot (60 days)
-    const pilotExpiresAt = agent.trial_ends_at ? new Date(agent.trial_ends_at) : null
-    const pilotDaysRemaining = pilotExpiresAt 
+    // Calculate days remaining for pilot
+    const pilotExpiresAt = agent.pilot_expires_at ? new Date(agent.pilot_expires_at) : null
+    const pilotDaysRemaining = pilotExpiresAt
       ? Math.max(0, Math.ceil((pilotExpiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
       : 0
 
     return NextResponse.json({
-      agentId: payload.userId,
+      agentId: userId,
       isTrial,
       isPilot,
       planTier: agent.plan_tier,
-      trialStartedAt: agent.trial_started_at,
+      trialStartedAt: agent.pilot_started_at,
       trialEndsAt: agent.trial_ends_at,
       daysRemaining: isTrial ? daysRemaining : pilotDaysRemaining,
       isExpired,

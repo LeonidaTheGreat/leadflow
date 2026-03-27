@@ -46,75 +46,26 @@ export default function SetupSimulator({
       })
 
       if (!response.ok) {
-        throw new Error('Failed to start simulation')
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.error || `Simulation failed (${response.status})`)
       }
 
       const data = await response.json()
-      setConversation(data.state.conversation || [])
+      const messages = data.state.conversation || []
 
-      // Poll for updates
-      await pollSimulationStatus(agentId)
-    } catch (err) {
-      setError('Failed to start simulation. Please try again.')
+      // Animate messages appearing one by one
+      for (let i = 0; i < messages.length; i++) {
+        await new Promise(r => setTimeout(r, i === 0 ? 800 : 1200 + Math.random() * 800))
+        setConversation(prev => [...prev, messages[i]])
+      }
+
+      // Mark complete
+      setSimulationStatus('complete')
+      setSetupData({ ...setupData, simulatorCompleted: true })
+    } catch (err: any) {
+      setError(err?.message || 'Failed to start simulation. Please try again.')
       setSimulationStatus('idle')
     }
-  }
-
-  const pollSimulationStatus = async (agentId: string) => {
-    let attempts = 0
-    const maxAttempts = 30 // 30 seconds timeout
-
-    const poll = async () => {
-      try {
-        const response = await fetch('/api/onboarding/simulator', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'status',
-            agentId,
-            sessionId: `setup-${agentId}-${Date.now()}`
-          })
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to check status')
-        }
-
-        const data = await response.json()
-        setConversation(data.state.conversation || [])
-
-        if (data.state.status === 'success') {
-          setSimulationStatus('complete')
-          setSetupData({ ...setupData, simulatorCompleted: true })
-          
-          // Log event
-          await fetch('/api/analytics/event', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              eventType: 'aha_simulation_completed',
-              properties: { responseTimeMs: data.state.response_time_ms }
-            })
-          }).catch(() => {})
-          
-          return
-        }
-
-        if (data.state.status === 'timeout' || attempts >= maxAttempts) {
-          setError('Simulation took too long. Please try again.')
-          setSimulationStatus('idle')
-          return
-        }
-
-        attempts++
-        setTimeout(poll, 500)
-      } catch (err) {
-        setError('Failed to check simulation status')
-        setSimulationStatus('idle')
-      }
-    }
-
-    poll()
   }
 
   const handleContinue = () => {

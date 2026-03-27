@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       .update({
         onboarding_completed: true,
         onboarding_completed_at: new Date().toISOString(),
-        onboarding_step: 'complete'
+        onboarding_step: 99 // 99 = complete
       })
       .eq('id', payload.userId)
 

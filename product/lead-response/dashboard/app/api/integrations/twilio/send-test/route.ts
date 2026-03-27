@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import twilio from 'twilio'
 
-const fromNumber = process.env.TWILIO_PHONE_NUMBER || ''
+const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_PHONE_NUMBER_US || ''
 
 // Lazy initialization of Twilio client
 function getTwilioClient() {

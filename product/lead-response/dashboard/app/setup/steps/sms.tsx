@@ -15,7 +15,6 @@ interface SetupSMSProps {
 
 export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: SetupSMSProps) {
   const [phoneNumber, setPhoneNumber] = useState(setupData.smsPhoneNumber || '')
-  const [testCode, setTestCode] = useState('')
   const [step, setStep] = useState<'input' | 'sending' | 'sent' | 'verified'>(
     setupData.smsConnected ? 'verified' : 'input'
   )
@@ -29,7 +28,7 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
 
   const handleSendTest = async () => {
     setError('')
-    
+
     if (!validatePhone(phoneNumber)) {
       setError('Please enter a valid 10-digit phone number')
       return
@@ -46,47 +45,22 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
       })
 
       if (!response.ok) {
-        throw new Error('Failed to send test SMS')
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.message || data.error || `SMS failed (${response.status})`)
       }
 
       setStep('sent')
-    } catch (err) {
-      setError('Failed to send test SMS. Please try again.')
+    } catch (err: any) {
+      setError(err?.message || 'Failed to send test SMS. Please try again.')
       setStep('input')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleVerify = async () => {
-    setError('')
-    setIsLoading(true)
-
-    try {
-      // For demo purposes, we'll accept any 4-digit code
-      // In production, this would verify against the actual sent code
-      if (testCode.length !== 4) {
-        setError('Please enter the 4-digit code')
-        return
-      }
-
-      setStep('verified')
-      setSetupData({ ...setupData, smsConnected: true, smsPhoneNumber: phoneNumber })
-      
-      // Log event
-      await fetch('/api/analytics/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventType: 'wizard_step_completed',
-          properties: { step_name: 'sms', success: true }
-        })
-      }).catch(() => {})
-    } catch (err) {
-      setError('Verification failed. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
+  const handleConfirmReceived = () => {
+    setStep('verified')
+    setSetupData({ ...setupData, smsConnected: true, smsPhoneNumber: phoneNumber })
   }
 
   const handleContinue = () => {
@@ -137,7 +111,7 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
                 />
               </div>
               <p className="text-xs text-slate-400 mt-2">
-                We'll send a test message to verify your number
+                We&apos;ll send a test message to verify your number
               </p>
             </div>
 
@@ -153,17 +127,8 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
               disabled={isLoading || phoneNumber.length < 10}
               className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Send Test Message
-                </>
-              )}
+              <Send className="w-5 h-5" />
+              Send Test Message
             </button>
           </div>
         )}
@@ -177,28 +142,14 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
           </div>
         )}
 
-        {/* Step 3: Code Verification */}
+        {/* Step 3: Confirm Receipt */}
         {step === 'sent' && (
           <div className="space-y-6 mb-8">
             <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
               <p className="text-blue-300 text-sm">
-                We've sent a 4-digit code to <strong className="text-white">{formatPhone(phoneNumber)}</strong>. 
-                Enter it below to verify.
+                We sent a test message to <strong className="text-white">{formatPhone(phoneNumber)}</strong>.
+                Check your phone — did you receive it?
               </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
-                Verification Code
-              </label>
-              <input
-                type="text"
-                value={testCode}
-                onChange={(e) => setTestCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                placeholder="0000"
-                maxLength={4}
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-center text-2xl tracking-widest"
-              />
             </div>
 
             {error && (
@@ -210,17 +161,17 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
 
             <div className="flex gap-3">
               <button
-                onClick={() => setStep('input')}
+                onClick={() => { setStep('input'); setError('') }}
                 className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
               >
-                Back
+                Try Different Number
               </button>
               <button
-                onClick={handleVerify}
-                disabled={isLoading || testCode.length !== 4}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-all duration-200"
+                onClick={handleConfirmReceived}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
               >
-                {isLoading ? 'Verifying...' : 'Verify'}
+                <CheckCircle2 className="w-5 h-5" />
+                SMS Working
               </button>
             </div>
           </div>
@@ -266,13 +217,13 @@ export default function SetupSMS({ onNext, onBack, setupData, setSetupData }: Se
             onClick={onBack}
             className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
           >
-            ← Back
+            &larr; Back
           </button>
           <button
             onClick={handleContinue}
             className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
-            Continue →
+            Continue &rarr;
           </button>
         </div>
       </div>
