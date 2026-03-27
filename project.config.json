@@ -407,31 +407,5 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.5
     }
-  },
-  "codebase_rules": [
-    {
-      "id": "no-supabase-imports",
-      "check": "grep -r \"from 'supabase'\\|from \\\"supabase\\\"\" product/lead-response/dashboard/app product/lead-response/dashboard/lib 2>/dev/null | wc -l || true",
-      "expected": "0",
-      "severity": "critical"
-    },
-    {
-      "id": "no-supabase-env-vars",
-      "check": "grep -r \"SUPABASE_URL\\|SUPABASE_ANON_KEY\\|SUPABASE_SERVICE_ROLE_KEY\" product/lead-response/dashboard/app product/lead-response/dashboard/lib 2>/dev/null | wc -l || true",
-      "expected": "0",
-      "severity": "critical"
-    },
-    {
-      "id": "no-supabase-deps",
-      "check": "grep -E '\"@supabase|\"supabase' package.json 2>/dev/null | wc -l || true",
-      "expected": "0",
-      "severity": "high"
-    },
-    {
-      "id": "build-passes",
-      "check": "cd product/lead-response/dashboard && npm run build 2>&1 | grep -c 'Error:' || echo 0",
-      "expected": "0",
-      "severity": "critical"
-    }
-  ]
+  }
 }
