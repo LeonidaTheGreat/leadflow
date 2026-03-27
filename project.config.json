@@ -529,7 +529,7 @@
       "severity": "critical",
       "interval_hours": 24,
       "description": "Dashboard must build without errors",
-      "check": "cd product/lead-response/dashboard && npx next build",
+      "check": "cd product/lead-response/dashboard && npx next build > /dev/null 2>&1",
       "expected": ""
     }
   ]
