@@ -278,11 +278,15 @@ async function sendEmail(
     }
 
     // Send email via Resend
+    // Disable click tracking — Resend's redirect rewrites URLs through
+    // us-east-1.resend-clicks.com which URL-encodes query params, breaking
+    // reset tokens and other URLs with ?key=value parameters.
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: to,
       subject: subject,
-      html: html
+      html: html,
+      click_tracking: false
     })
 
     if (error) {
