@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
       : 0
 
     return NextResponse.json({
+      agentId: payload.userId,
       isTrial,
       isPilot,
       planTier: agent.plan_tier,
