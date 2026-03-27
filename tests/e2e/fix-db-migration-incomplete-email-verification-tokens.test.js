@@ -15,8 +15,15 @@
 const assert = require('assert');
 const { createClient } = require('@supabase/supabase-js');
 
-const SUPABASE_URL = 'https://fptrokacdwzlmflyczdz.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHJva2FjZHd6bG1mbHljemR6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTcxMTgxNSwiZXhwIjoyMDg3Mjg3ODE1fQ.NcGeeYQyTaY3n-w22yjxUPxJ5ZC4v6b3Kv7gnr0TGcU';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('FAIL: Missing required environment variables:');
+  if (!SUPABASE_URL) console.error('  - SUPABASE_URL');
+  if (!SUPABASE_SERVICE_ROLE_KEY) console.error('  - SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
