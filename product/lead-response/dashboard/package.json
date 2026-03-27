@@ -10,9 +10,7 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "jest tests/e2e",
-    "db:types": "supabase gen types typescript --project-id your-project-id --schema public > lib/types/database.ts",
-    "db:migrate": "supabase db push"
+    "test:e2e": "jest tests/e2e"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.44",
