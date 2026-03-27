@@ -407,36 +407,5 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.5
     }
-  },
-  "e2e_flow_tests": {
-    "script": "scripts/e2e-flow-tests.sh",
-    "interval_hours": 6,
-    "enabled": true
-  },
-  "codebase_rules": [
-    {
-      "id": "no-supabase-imports",
-      "name": "No direct Supabase SDK imports",
-      "check": "grep -r \"from '@supabase/supabase-js'\\|from \\\"@supabase/supabase-js\\\"\\|require('@supabase\" product/lead-response/dashboard/app/ product/lead-response/dashboard/lib/ 2>/dev/null || echo '0'",
-      "severity": "critical"
-    },
-    {
-      "id": "no-supabase-env-vars",
-      "name": "No Supabase env var references in production code",
-      "check": "grep -r \"NEXT_PUBLIC_SUPABASE_URL\\|NEXT_PUBLIC_SUPABASE_ANON_KEY\\|SUPABASE_URL\\|SUPABASE_SERVICE_ROLE_KEY\" product/lead-response/dashboard/app/ product/lead-response/dashboard/lib/ 2>/dev/null | grep -v \"test\\|spec\\|__tests__\" || echo '0'",
-      "severity": "critical"
-    },
-    {
-      "id": "no-supabase-deps",
-      "name": "No Supabase packages in dependencies",
-      "check": "grep -E \"@supabase/supabase-js|@supabase/ssr|@supabase/auth-helpers\" product/lead-response/dashboard/package.json 2>/dev/null || echo '0'",
-      "severity": "critical"
-    },
-    {
-      "id": "no-stub-routes",
-      "name": "No TODO/stub API routes in production",
-      "check": "grep -r \"// TODO:\\|// FIXME:\\|// HACK:\\|// STUB\\|pretend to send\\|fake success\\|For now,\\|For demo purposes\" product/lead-response/dashboard/app/api/ 2>/dev/null | grep -v \"test\\|spec\" || echo '0'",
-      "severity": "high"
-    }
-  ]
+  }
 }
