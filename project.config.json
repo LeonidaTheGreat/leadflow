@@ -519,7 +519,8 @@
       "severity": "critical",
       "description": "Supabase packages must not be in package.json",
       "check": "(grep -n '@supabase/supabase-js\\|@supabase/ssr\\|@supabase/auth-helpers' product/lead-response/dashboard/package.json 2>/dev/null) || true",
-      "expected": ""
+      "expected": "",
+      "command": "(grep -n '@supabase/supabase-js\\|@supabase/ssr\\|@supabase/auth-helpers' product/lead-response/dashboard/package.json 2>/dev/null) || true"
     },
     {
       "id": "build-passes",
