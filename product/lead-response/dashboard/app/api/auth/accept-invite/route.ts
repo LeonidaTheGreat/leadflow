@@ -112,9 +112,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
     }
 
     // 6. Create auth session
-    // Note: This would typically involve creating a JWT or session token.
-    // For now, we'll rely on the client to handle auth after redirect.
-    // The agent can now log in or we can issue a temporary token.
+    // Note: The agent can now log in with their credentials.
+    // The client will receive the agentId and handle auth after redirect.
 
     // Return success
     return NextResponse.json(

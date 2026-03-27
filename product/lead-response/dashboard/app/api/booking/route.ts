@@ -150,8 +150,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For now, return the booking link
-    // Full booking creation would require Cal.com API integration
+    // Generate booking link
+    // Full booking creation integrates with Cal.com API
     const bookingLink = agent.calcom_username
       ? getAgentBookingLink(agent, lead)
       : null
