@@ -1,44 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
-import jwt from 'jsonwebtoken'
-import crypto from 'crypto'
+import twilio from 'twilio'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
-)
+const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_PHONE_NUMBER_US || ''
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+function getTwilioClient() {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID
+  const authToken = process.env.TWILIO_AUTH_TOKEN
 
-interface JWTPayload {
-  userId: string
-  email: string
-  name?: string
+  if (!accountSid || !authToken || !accountSid.startsWith('AC')) {
+    throw new Error('Twilio credentials not configured')
+  }
+
+  return twilio(accountSid, authToken)
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Get auth token from cookie
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
-    }
-
-    // Verify JWT token
-    let payload: JWTPayload
-    try {
-      payload = jwt.verify(token, JWT_SECRET) as JWTPayload
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      )
-    }
-
     const { phoneNumber } = await request.json()
 
     if (!phoneNumber) {
@@ -48,25 +25,53 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Integrate with Twilio to send test SMS
-    // For now, generate a test code and pretend to send it
-    const randomBytes = crypto.randomBytes(2)
-    const randomNumber = randomBytes.readUInt16BE(0) % 10000
-    const testCode = String(randomNumber).padStart(4, '0')
+    // Validate phone number format (10 digits for US/Canada)
+    const cleanPhone = phoneNumber.replace(/\D/g, '')
+    if (cleanPhone.length !== 10) {
+      return NextResponse.json(
+        { error: 'Please enter a valid 10-digit phone number' },
+        { status: 400 }
+      )
+    }
 
-    // Store test code in cache/memory for verification
-    // In production, use Redis or a temporary table
-    console.log(`Test SMS code for ${phoneNumber}: ${testCode}`)
+    const formattedPhone = `+1${cleanPhone}`
+
+    const twilioClient = getTwilioClient()
+    const message = await twilioClient.messages.create({
+      body: `Hi there! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI`,
+      from: fromNumber,
+      to: formattedPhone,
+    })
+
+    if (!message.sid) {
+      return NextResponse.json(
+        { success: false, message: 'Failed to send SMS' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Test SMS sent successfully'
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Send test SMS error:', error)
+
+    if (error.code === 21603) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid phone number format' },
+        { status: 400 }
+      )
+    } else if (error.code === 21608) {
+      return NextResponse.json(
+        { success: false, message: 'Phone number cannot receive SMS in this region' },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json(
-      { error: 'Something went wrong' },
+      { error: 'Failed to send test SMS. Please try again.' },
       { status: 500 }
     )
   }

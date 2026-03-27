@@ -112,7 +112,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
     }
 
     // 6. Create auth session
-    // Note: The agent can now log in with their credentials.
+    // Note: The agent can log in with their credentials.
     // The client will receive the agentId and handle auth after redirect.
 
     // Return success

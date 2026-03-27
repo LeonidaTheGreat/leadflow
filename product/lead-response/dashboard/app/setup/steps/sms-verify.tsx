@@ -51,14 +51,24 @@ export default function SetupSMSVerify({ agentId, agentName, twilioPhone, onComp
           agentName: agentName || 'Agent',
         }),
       })
+      if (!res.ok) {
+        const text = await res.text()
+        try {
+          const data = JSON.parse(text)
+          setError(data.message || data.error || `SMS failed (${res.status})`)
+        } catch {
+          setError(`SMS failed (${res.status}): server returned non-JSON response`)
+        }
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setSent(true)
       } else {
         setError(data.message || 'Failed to send test SMS. Please try again.')
       }
-    } catch {
-      setError('Failed to send test SMS. Please try again.')
+    } catch (err: any) {
+      setError(`Failed to send test SMS: ${err?.message || 'network error'}`)
     } finally {
       setIsSending(false)
     }

@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString()
 
     // Create agent record with trial tier
+    // Note: only include columns that exist in the real_estate_agents table
     const { data: agent, error: createError } = await supabase
       .from('real_estate_agents')
       .insert({
@@ -133,17 +134,11 @@ export async function POST(request: NextRequest) {
         password_hash: passwordHash,
         email_verified: true, // No email verification gate for trial (per PRD)
         plan_tier: 'trial',
-        trial_started_at: now,
         trial_ends_at: trialEndsAt,
         mrr: 0,
         source: 'trial_cta',
-        utm_source: utm_source || null,
-        utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
         onboarding_completed: false,
-        onboarding_step: 'welcome', // Track wizard progress
-        created_at: now,
-        updated_at: now
+        onboarding_step: 0, // 0 = welcome step
       })
       .select('id, email, first_name, last_name')
       .single()

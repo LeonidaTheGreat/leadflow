@@ -286,10 +286,13 @@ class QueryBuilder implements PromiseLike<any> {
       ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` }),
     }
     
-    if (this.isUpsert) {
-      // PostgREST resolution=merge-duplicates handles upsertion
-      // on_conflict parameter should reference unique constraint name, not column
-      // For simplicity, let PostgREST find unique constraints automatically
+    // PostgREST requires Prefer: return=representation to return data after INSERT/PATCH/DELETE
+    // This is needed for .insert().select().single() and .update().select() chains
+    if (this.httpMethod !== 'GET' && this.selectCols) {
+      headers['Prefer'] = this.isUpsert
+        ? 'resolution=merge-duplicates,return=representation'
+        : 'return=representation'
+    } else if (this.isUpsert) {
       headers['Prefer'] = 'resolution=merge-duplicates'
     }
     

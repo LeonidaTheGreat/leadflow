@@ -50,11 +50,11 @@ export async function POST(request: NextRequest) {
     // Hash the incoming raw token the same way we stored it
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-    // Look up the token in DB using correct schema: token_hash, agent_id, used (boolean)
+    // Look up the token in DB
     const { data: resetToken, error: tokenError } = await supabase
       .from('password_reset_tokens')
-      .select('id, agent_id, expires_at, used')
-      .eq('token_hash', tokenHash)
+      .select('id, email, expires_at, used_at')
+      .eq('token', tokenHash)
       .single()
 
     if (tokenError || !resetToken) {
@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check used (boolean field, not used_at timestamp)
-    if (resetToken.used) {
+    // Check used
+    if (resetToken.used_at) {
       return NextResponse.json(
         { error: 'This reset link has already been used.' },
         { status: 400 }
@@ -83,14 +83,14 @@ export async function POST(request: NextRequest) {
     // Hash new password (12 rounds)
     const passwordHash = await bcrypt.hash(password, 12)
 
-    // Update password in real_estate_agents using agent_id
+    // Update password in real_estate_agents
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
         password_hash: passwordHash,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', resetToken.agent_id)
+      .eq('email', resetToken.email)
 
     if (updateError) {
       console.error('Failed to update password:', updateError.message)
@@ -100,10 +100,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Mark token as used (boolean field, not timestamp)
+    // Mark token as used
     await supabase
       .from('password_reset_tokens')
-      .update({ used: true })
+      .update({ used_at: new Date().toISOString() })
       .eq('id', resetToken.id)
 
     return NextResponse.json({ success: true })

@@ -47,19 +47,18 @@ export async function POST(request: NextRequest) {
       // Invalidate any existing unexpired, unused tokens for this agent
       await supabase
         .from('password_reset_tokens')
-        .update({ used: true })
-        .eq('agent_id', agent.id)
-        .eq('used', false)
+        .update({ used_at: new Date().toISOString() })
+        .eq('email', agent.email)
+        .is('used_at', null)
         .gt('expires_at', new Date().toISOString())
 
-      // Insert new token with correct schema: agent_id, token_hash, expires_at, used
+      // Insert new token
       const { error: insertError } = await supabase
         .from('password_reset_tokens')
         .insert({
-          agent_id: agent.id,
-          token_hash: tokenHash,
+          email: agent.email,
+          token: tokenHash,
           expires_at: expiresAt.toISOString(),
-          used: false,
         })
 
       if (insertError) {
