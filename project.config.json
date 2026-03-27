@@ -407,5 +407,35 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.5
     }
-  }
+  },
+  "codebase_rules": [
+    {
+      "id": "no-supabase-imports",
+      "name": "No Supabase Imports",
+      "description": "Ensure no direct Supabase JS client imports in codebase",
+      "check": "grep -r \"from [\\\"']@supabase\" --include='*.js' --include='*.ts' --include='*.jsx' --include='*.tsx' . 2>/dev/null | grep -v node_modules | grep -v .next || true",
+      "expected": ""
+    },
+    {
+      "id": "no-supabase-env-vars",
+      "name": "No Hardcoded Supabase Env Vars",
+      "description": "Ensure Supabase credentials are not hardcoded in source files",
+      "check": "grep -r \"const.*supabaseUrl.*=.*'https://.*\\.supabase\\.co\" --include='*.js' --include='*.ts' --include='*.jsx' --include='*.tsx' . 2>/dev/null | grep -v node_modules | grep -v .next || true",
+      "expected": ""
+    },
+    {
+      "id": "no-supabase-deps",
+      "name": "No Direct Supabase Dependencies",
+      "description": "Verify Supabase client is only used for migrations, not in production code",
+      "check": "grep -r 'require.*supabase' --include='*.js' --include='*.ts' product/lead-response/dashboard/app 2>/dev/null | grep -v node_modules || true",
+      "expected": ""
+    },
+    {
+      "id": "build-passes",
+      "name": "Build Passes",
+      "description": "Ensure the dashboard builds successfully",
+      "check": "cd product/lead-response/dashboard && npx next build >/dev/null 2>&1 && echo '' || exit 1",
+      "expected": ""
+    }
+  ]
 }
