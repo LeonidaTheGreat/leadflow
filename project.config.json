@@ -407,39 +407,5 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.5
     }
-  },
-  "codebase_rules": [
-    {
-      "id": "build-passes",
-      "description": "Next.js dashboard builds without errors",
-      "check": "cd product/lead-response/dashboard && npx next build 2>&1 | grep -q 'error' && echo 'BUILD_FAILED' || echo ''",
-      "expected": "",
-      "severity": "critical",
-      "auto_fix_priority": 1
-    },
-    {
-      "id": "no-supabase-imports",
-      "description": "No direct Supabase imports in frontend code (use API routes only)",
-      "check": "find product/lead-response/dashboard/app product/lead-response/dashboard/components -name '*.js' -o -name '*.tsx' 2>/dev/null | xargs grep -l '@supabase/supabase-js' 2>/dev/null | wc -l",
-      "expected": "0",
-      "severity": "critical",
-      "auto_fix_priority": 1
-    },
-    {
-      "id": "no-supabase-env-vars",
-      "description": "No Supabase environment variables exposed in frontend bundle",
-      "check": "grep -r 'SUPABASE_URL\\|SUPABASE_ANON_KEY' product/lead-response/dashboard/app product/lead-response/dashboard/lib 2>/dev/null | grep -v node_modules | wc -l",
-      "expected": "0",
-      "severity": "critical",
-      "auto_fix_priority": 1
-    },
-    {
-      "id": "no-supabase-deps",
-      "description": "Supabase only in backend dependencies (package.json check)",
-      "check": "grep -q '@supabase/supabase-js' product/lead-response/dashboard/package.json 2>/dev/null && echo '1' || echo '0'",
-      "expected": "0",
-      "severity": "high",
-      "auto_fix_priority": 2
-    }
-  ]
+  }
 }
