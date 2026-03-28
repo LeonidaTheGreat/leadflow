@@ -417,7 +417,7 @@
     {
       "id": "no-supabase-imports",
       "name": "No direct Supabase SDK imports",
-      "pattern": "from '@supabase/supabase-js'|from \"@supabase/supabase-js\"|require\\('@supabase",
+      "pattern": "@supabase/supabase-js|require.*@supabase",
       "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
       "severity": "critical"
     },
