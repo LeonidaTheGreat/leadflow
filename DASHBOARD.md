@@ -1,7 +1,7 @@
 ---
-title: BO2026 Dashboard - Updated 2026-03-08
+title: BO2026 Dashboard - Updated 2026-03-25
 author: LeadFlow Orchestrator
-date: 2026-03-08
+date: 2026-03-25
 autoRefresh: every_heartbeat
 ---
 
@@ -9,9 +9,9 @@ autoRefresh: every_heartbeat
 
 **Project:** LeadFlow AI  
 **Goal:** $20,000 MRR within 60 days  
-**Current Day:** Day 22 of 60  
+**Current Day:** Day 39 of 60  
 **Status:** 🟢 **ACTIVE - PILOT DEPLOYMENT COMPLETE**  
-**Last Updated:** 3/8/2026, 7:43:57 PM
+**Last Updated:** 3/25/2026, 2:39:54 AM
 
 ---
 
@@ -33,29 +33,20 @@ autoRefresh: every_heartbeat
 
 ## 🚀 Task Queue (Supabase)
 
-**Queue Health:** Ready: 5 | In Progress: 7 | Blocked: 0 | Done: 307
+**Queue Health:** Ready: 4 | In Progress: 0 | Blocked: 0 | Done: 919
 
-### ▶️ Ready to Spawn (5 tasks)
+### ▶️ Ready to Spawn (4 tasks)
 
 | Task | Model | Cost | Priority |
 |------|-------|------|----------|
-| Dev: feat-sms-analytics-dashboard - SMS Analytics Dashboard — Delivery, Reply & Booking Conversion | sonnet | $1.20 | 🟡 P1 |
-| Dev: fix-main-landing-page-has-no-cta-analytics-instrumenta - Main landing page (/) has no CTA analytics instrumentation | codex | $0.60 | 🟡 P1 |
-| Design: feat-lead-magnet-email-capture - Lead Magnet / Email Capture on Landing Page | sonnet | $0.54 | 🟡 P1 |
-| QC: improve-landing-page-pricing-4-tiers - Landing Page Pricing Section — All 4 Tiers with Feature Comparison | kimi | $0.13 | 🟡 P1 |
-| Dev: feat-session-analytics-pilot - Session Analytics — Pilot Agent Usage Tracking | kimi | $0.24 | 🟡 P1 |
+| PM: Product Review — UTM Parameter Capture & Marketing Attribution | sonnet | $0.60 | 🔴 P0 |
+| PM: Analyze bug feedback | sonnet | $0.60 | 🟡 P1 |
+| PM: Analyze ux_issue feedback | sonnet | $0.60 | 🟡 P1 |
+| PM: Analyze feature_request feedback | sonnet | $0.60 | 🟡 P1 |
 
-### ⚡ In Progress (7 tasks)
+### ⚡ In Progress (0 tasks)
 
-| Task | Agent | Model |
-|------|-------|-------|
-| Fix: Dashboard build errors | dev | kimi |
-| Dev: feat-post-login-onboarding-wizard - Post-Login Onboarding Wizard for New Agents | dev | sonnet |
-| Dev: feat-lead-satisfaction-feedback - Lead Satisfaction Feedback Collection | dev | sonnet |
-| Dev: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment | dev | sonnet |
-| Dev: feat-lead-experience-simulator - Lead Experience Simulator & Conversation Viewer | dev | sonnet |
-| Dev: UC-LANDING-ANALYTICS-GA4-001 - Landing Page Analytics — GA4 CTA & Conversion Tracking | dev | sonnet |
-| Dev: feat-nps-agent-feedback - NPS & Feedback Survey for Agents | dev | kimi |
+*No active tasks*
 
 ### ⏸️ Blocked (0 tasks)
 
@@ -113,8 +104,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 💰 Cost Summary
 
-**Estimated project cost:** $187.28
-**Cost per task:** Avg $0.51
+**Estimated project cost:** $484.00
+**Cost per task:** Avg $0.48
 
 ---
 
@@ -127,8 +118,8 @@ All technical work complete. System ready for pilot launch.
 
 ## 🎯 Next Actions
 
-1. ✅ **5 tasks ready to spawn**
-2. ⚡ **7 agents active**
+1. ✅ **4 tasks ready to spawn**
+2. 🔴 No active agents
 3. ✅ No blockers
 
 **Your Call:** Ready to approve "go ahead with recruitment"?
