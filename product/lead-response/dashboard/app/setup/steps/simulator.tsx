@@ -55,7 +55,8 @@ export default function SetupSimulator({
 
       // Animate messages appearing one by one
       for (let i = 0; i < messages.length; i++) {
-        await new Promise(r => setTimeout(r, i === 0 ? 800 : 1200 + Math.random() * 800))
+        const randomDelay = i === 0 ? 800 : 1200 + (crypto.getRandomValues(new Uint8Array(1))[0] / 255) * 800
+        await new Promise(r => setTimeout(r, randomDelay))
         setConversation(prev => [...prev, messages[i]])
       }
 
