@@ -85,7 +85,7 @@
       "url": "https://leadflow-ai-five.vercel.app/login",
       "severity": "critical",
       "check_type": "http_200",
-      "note": "Smoke test checks login page availability. Full signup→login flow tested in tests/integration/auth-signup-login-flow.test.js. Downgraded from signup_login_flow (unimplemented in Genome) — PRD-SMOKE-AUTH-LOOP-FIX-V5"
+      "note": "Downgraded from signup_login_flow (unimplemented check_type) \u2014 PRD-SMOKE-AUTH-LOOP-FIX-V5"
     }
   ],
   "products": [
