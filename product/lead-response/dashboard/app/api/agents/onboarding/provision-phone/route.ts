@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthenticatedAgent } from '@/lib/onboarding-auth'
+import { getAuthUserId } from '@/lib/auth'
 import twilio from 'twilio'
 
 /**
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
   }
 
-  const agentId = await getAuthenticatedAgent(request)
+  const agentId = await getAuthUserId(request)
   if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

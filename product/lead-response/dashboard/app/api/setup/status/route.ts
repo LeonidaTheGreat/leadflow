@@ -1,22 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
-import jwt from 'jsonwebtoken'
+import { getAuthUserId } from '@/lib/auth'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-function getAgentIdFromRequest(request: NextRequest): string | null {
-  const auth = request.headers.get('authorization')
-  if (!auth?.startsWith('Bearer ')) return null
-  try {
-    const token = auth.split(' ')[1]
-    const payload = jwt.verify(token, JWT_SECRET) as { userId?: string }
-    return payload.userId || null
-  } catch {
-    return null
-  }
-}
 
 /**
  * GET /api/setup/status
@@ -27,7 +13,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ wizardState: null })
   }
 
-  const agentId = getAgentIdFromRequest(request)
+  const agentId = await getAuthUserId(request)
   if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -61,7 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  const agentId = getAgentIdFromRequest(request)
+  const agentId = await getAuthUserId(request)
   if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

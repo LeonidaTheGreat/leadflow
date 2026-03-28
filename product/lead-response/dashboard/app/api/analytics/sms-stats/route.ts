@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { validateSession } from '@/lib/session'
+import { getAuthUserId } from '@/lib/auth'
 
 // Force dynamic rendering — stats must reflect current data
 export const dynamic = 'force-dynamic'
@@ -37,19 +37,12 @@ function isOptOut(body: string): boolean {
 export async function GET(request: NextRequest) {
   // ============================================================
   // AUTH — agent_id comes from the session, never from query params
+  // Unified auth: checks auth-token (JWT from signup) and leadflow_session (from login)
   // ============================================================
-  const sessionToken = request.cookies.get('leadflow_session')?.value
-  if (!sessionToken) {
+  const agentId = await getAuthUserId(request)
+  if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
-  const session = await validateSession(sessionToken)
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  // The authenticated agent's ID — used for all data queries
-  const agentId = session.userId
 
   try {
     const { searchParams } = request.nextUrl
@@ -76,7 +69,7 @@ export async function GET(request: NextRequest) {
 
     let outboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('id, twilio_status, lead_id')
+      .select('id, status, lead_id')
       .in('direction', ['outbound-api', 'outbound-reply'])
       .eq('agent_id', agentId)
 
@@ -88,12 +81,21 @@ export async function GET(request: NextRequest) {
 
     if (outboundError) {
       console.error('[sms-stats] Error fetching outbound messages:', outboundError)
-      throw outboundError
+      // Return empty stats instead of crashing — table may have different schema
+      return NextResponse.json({
+        deliveryRate: null,
+        replyRate: null,
+        totalOutbound: 0,
+        totalDelivered: 0,
+        totalReplies: 0,
+        uniqueLeadsMessaged: 0,
+        error: outboundError.message || 'Failed to fetch SMS stats'
+      })
     }
 
     const totalOutbound = outboundMessages?.length || 0
     const totalDelivered = outboundMessages?.filter(
-      (m: any) => m.twilio_status === 'delivered'
+      (m: any) => m.status === 'delivered' || m.twilio_status === 'delivered'
     ).length || 0
 
     const deliveryRate = totalOutbound > 0 ? totalDelivered / totalOutbound : null

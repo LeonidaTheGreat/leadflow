@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkTrialStatus } from '@/lib/trial'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+import { getAuthUserId } from '@/lib/auth'
 
 /**
  * GET /api/trial/status
@@ -10,29 +8,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get auth token from cookie
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
+    const userId = await getAuthUserId(request)
+    if (!userId) {
       return NextResponse.json(
         { error: 'Not authenticated' },
         { status: 401 }
       )
     }
 
-    // Verify JWT token
-    let payload: any
-    try {
-      payload = jwt.verify(token, JWT_SECRET)
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      )
-    }
-
     // Check trial status
-    const trialStatus = await checkTrialStatus(payload.userId)
+    const trialStatus = await checkTrialStatus(userId)
 
     return NextResponse.json(trialStatus)
 

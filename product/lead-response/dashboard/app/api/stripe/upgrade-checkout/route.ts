@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import Stripe from 'stripe'
-import jwt from 'jsonwebtoken'
+import { getAuthUserId } from '@/lib/auth'
 
 const supabase = supabaseAdmin
 
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
-
-interface JWTPayload {
-  userId: string
-  email: string
-  name?: string
-}
 
 // Plan → Stripe price ID mapping.
 // In production these are set via Vercel env vars.
@@ -37,17 +30,9 @@ const PLAN_PRICE_IDS: Record<string, string> = {
 export async function POST(request: NextRequest) {
   try {
     // ── 1. Authenticate ──────────────────────────────────────────────────────
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
+    const userId = await getAuthUserId(request)
+    if (!userId) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
-
-    let payload: JWTPayload
-    try {
-      payload = jwt.verify(token, JWT_SECRET) as JWTPayload
-    } catch {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
     // ── 2. Validate Stripe config ─────────────────────────────────────────────
@@ -73,7 +58,7 @@ export async function POST(request: NextRequest) {
     const { data: agent, error: agentError } = await supabase
       .from('real_estate_agents')
       .select('id, email, stripe_customer_id, plan_tier, first_name, last_name')
-      .eq('id', payload.userId)
+      .eq('id', userId)
       .single()
 
     if (agentError || !agent) {

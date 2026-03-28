@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { shouldShowNPSPrompt } from '@/lib/nps-service'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+import { getAuthUserId } from '@/lib/auth'
 
 /**
  * GET /api/nps/prompt-status
@@ -12,20 +10,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
  */
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate via JWT auth-token cookie
-    const authToken = request.cookies.get('auth-token')?.value
-    if (!authToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    let payload: { userId?: string; id?: string } | null = null
-    try {
-      payload = jwt.verify(authToken, JWT_SECRET) as { userId?: string; id?: string }
-    } catch {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const agentId = payload.userId || payload.id
+    // Authenticate via auth-token or leadflow_session cookie
+    const agentId = await getAuthUserId(request)
     if (!agentId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
