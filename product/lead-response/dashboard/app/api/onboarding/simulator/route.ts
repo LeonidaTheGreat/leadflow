@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { randomUUID } from 'crypto'
+import { randomUUID, randomInt } from 'crypto'
 
 /**
  * POST /api/onboarding/simulator
@@ -14,10 +14,10 @@ import { randomUUID } from 'crypto'
 
 function generateConversation(): { leadName: string, conversation: Array<{role: string, message: string, timestamp: string}> } {
   const leadNames = ['Sarah Johnson', 'Michael Chen', 'Emily Rodriguez', 'David Thompson', 'Lisa Park']
-  const leadName = leadNames[Math.floor(Math.random() * leadNames.length)]
+  const leadName = leadNames[randomInt(leadNames.length)]
   const firstName = leadName.split(' ')[0]
   const properties = ['a 3-bedroom home', 'a downtown condo', 'a family house', 'investment property', 'a new construction']
-  const property = properties[Math.floor(Math.random() * properties.length)]
+  const property = properties[randomInt(properties.length)]
 
   const now = Date.now()
   const conversation = [
