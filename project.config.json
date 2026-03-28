@@ -407,5 +407,51 @@
       "model_success_rate_min": 0.4,
       "cost_per_success_max_usd": 0.5
     }
-  }
+  },
+  "e2e_flow_tests": {
+    "script": "scripts/e2e-flow-tests.sh",
+    "interval_hours": 6,
+    "enabled": true
+  },
+  "codebase_rules": [
+    {
+      "id": "no-supabase-imports",
+      "name": "No direct Supabase SDK imports",
+      "pattern": "from '@supabase/supabase-js'|from \"@supabase/supabase-js\"|require\\('@supabase",
+      "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
+      "severity": "critical"
+    },
+    {
+      "id": "no-supabase-env-vars",
+      "name": "No Supabase env var references in production code",
+      "pattern": "NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_URL|SUPABASE_SERVICE_ROLE_KEY",
+      "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
+      "exclude_patterns": ["*.test.*", "*.spec.*", "__tests__/"],
+      "severity": "critical"
+    },
+    {
+      "id": "no-supabase-deps",
+      "name": "No Supabase packages in dependencies",
+      "pattern": "@supabase/supabase-js|@supabase/ssr|@supabase/auth-helpers",
+      "scan_files": ["product/lead-response/dashboard/package.json"],
+      "severity": "critical"
+    },
+    {
+      "id": "no-stub-routes",
+      "name": "No TODO/stub API routes in production",
+      "pattern": "// TODO:|// FIXME:|// HACK:|// STUB|pretend to send|fake success",
+      "scan_dirs": ["product/lead-response/dashboard/app/api/"],
+      "exclude_patterns": ["*.test.*"],
+      "severity": "high"
+    },
+    {
+      "id": "no-auth-token-only",
+      "name": "No routes using auth-token cookie without getAuthUserId",
+      "pattern": "get\\('auth-token'\\)",
+      "scan_dirs": ["product/lead-response/dashboard/app/api/"],
+      "exclude_patterns": ["*/auth.ts"],
+      "severity": "high",
+      "description": "All auth routes must use lib/auth.ts getAuthUserId() which checks both cookies"
+    }
+  ]
 }
