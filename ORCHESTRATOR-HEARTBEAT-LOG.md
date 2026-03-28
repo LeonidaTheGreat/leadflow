@@ -1,413 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-18T00:05:54.167Z
+Last updated: 2026-03-25T06:39:54.879Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-05T05:41:36.162Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Merged PR #20",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T05:46:00.164Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Product review triggered: Core SMS Lead Response",
-      "Product review triggered: CRM & Calendar Integrations",
-      "Periodic product review triggered",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T05:53:23.998Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:07:26.122Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:16:01.969Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:25:34.238Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:25:34.313Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:33:06.516Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:44:47.680Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 140,
-      "total": 181
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":140,\"total\":181}",
-      "Product sync: 5 components updated",
-      "Replenished: PM task for UC-AUTH-FIX-001",
-      "Replenished: PM task for UC-BILLING-FIX-001",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T06:56:24.118Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 4,
-      "blocked": 0,
-      "done": 140,
-      "total": 185
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":4,\"blocked\":0,\"done\":140,\"total\":185}",
-      "Completed (via stdout): PM: UC-AUTH-FIX-001 - Implement Authentication Flow - Signup/Login",
-      "Chained: product->design for UC-AUTH-FIX-001",
-      "Marked 45ca706a-24db-4508-b01d-4594e56c20af as done",
-      "Chained: product->design for UC-AUTH-FIX-001",
-      "Marked 86839aac-8b0e-4633-9d1a-70509432d45f as done",
-      "Marked 078e2734-d372-4069-a817-840687b2e954 as done",
-      "Chained: product->dev for UC-BILLING-FIX-001",
-      "Marked 9d8b2487-4dee-4627-986e-c471fe292ad9 as done",
-      "Chained: product->dev for UC-BILLING-FIX-001",
-      "Marked 86839aac-8b0e-4633-9d1a-70509432d45f as done",
-      "Smoke fail → QC: Login page (haiku)",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 6,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T07:09:08.994Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 5,
-      "blocked": 0,
-      "done": 144,
-      "total": 190
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":5,\"blocked\":0,\"done\":144,\"total\":190}",
-      "Marked 0114e9ce-2e31-42b8-a49c-9f1ffcd572de as done",
-      "Marked 80171670-7660-431e-b032-da6afa07cd5d as done",
-      "Created PR #21 for dev/80171670-dev-uc-billing-fix-001-fix-billing-integ",
-      "Marked 7431d6db-3fb3-48fb-8630-a32409233d8e as done",
-      "Marked 8b88fbd7-a652-449e-a2cb-31ac22d93d66 as done",
-      "Marked 098b629f-783b-4fff-8dd6-4b288b229722 as done",
-      "Created PR #22 for design/098b629f-design-uc-auth-fix-001-implement-authent",
-      "Marked 098b629f-783b-4fff-8dd6-4b288b229722 as done",
-      "Smoke escalated → Dev: Login page",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 6,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T15:52:48.851Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 154,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":154,\"total\":196}",
-      "Completed (via stdout): QC: fix-signup-creates-customer-record-but-login - signup creates customer record but login queries agents table - auth flow is broken because signup and login use different database tables and password is never collected during signup",
-      "UC complete: fix-signup-creates-customer-record-but-login",
-      "Marked 722a9eff-853c-437d-993c-ec8df6689f9a as done",
-      "Created PR #25 for dev/722a9eff-dev-fix-signup-creates-customer-record-b",
-      "Marked 353d8df8-cb96-4d94-8ca3-360513363da1 as done",
-      "Marked 353d8df8-cb96-4d94-8ca3-360513363da1 as done",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 4,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T15:53:16.993Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Product sync: 5 components updated",
-      "Merged PR #25",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T15:55:52.088Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T15:56:13.434Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": [
-      "Smoke tests: JSON object requested, multiple (or no) rows returned"
-    ]
-  },
-  {
-    "timestamp": "2026-03-05T15:56:57.414Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Smoke tests: 7/7 passed",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-05T15:57:17.477Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 155,
-      "total": 196
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
-      "Smoke tests: 7/7 passed",
-      "Product sync: 5 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-05T16:21:57.032Z",
     "status": {
@@ -2425,9 +2020,558 @@ Last updated: 2026-03-18T00:05:54.167Z
     "spawned": 1,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:04:33.193Z",
+    "status": {
+      "ready": 34,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 1149,
+      "total": 1280
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":34,\"inProgress\":2,\"blocked\":0,\"done\":1149,\"total\":1280}",
+      "Merge retry 1/3: fix-signup-page-has-no-link-back-to-login-an",
+      "Merge retry 1/3: feat-add-session-management-with-server-side-",
+      "Merge retry 1/3: fix-no-analytics-tracking-implemented-ga4-utm-conversi",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: fix-signup-page-has-no-link-back-to-login-an",
+      "Merge gate blocked: feat-add-session-management-with-server-side-",
+      "Merge gate blocked: fix-no-analytics-tracking-implemented-ga4-utm-conversi",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:09:33.134Z",
+    "status": {
+      "ready": 36,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1151,
+      "total": 1283
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":36,\"inProgress\":1,\"blocked\":0,\"done\":1151,\"total\":1283}",
+      "Completed (via stdout): PM: Product Review — Post-Login Onboarding Wizard for New Agents",
+      "Merge retry 1/3: feat-add-auth-middleware-to-protect-dashboard",
+      "Merge retry 1/3: fix-pricing-section-shows-pilot-only-pricing-instead-o",
+      "Merge retry 1/3: feat-utm-capture-marketing-attribution",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: fix-pricing-section-shows-pilot-only-pricing-instead-o",
+      "Merge gate blocked: feat-utm-capture-marketing-attribution",
+      "Merge gate blocked: feat-add-auth-middleware-to-protect-dashboard",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:14:29.389Z",
+    "status": {
+      "ready": 37,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 1152,
+      "total": 1286
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":37,\"inProgress\":0,\"blocked\":0,\"done\":1152,\"total\":1286}",
+      "Re-triggered 8 stuck spawn(s)",
+      "Merge retry 1/3: feat-session-analytics-pilot",
+      "Merge retry 1/3: fix-landing-page-does-not-capture-utm-params-to-sessio",
+      "Merge retry 1/3: fix-no-self-serve-upgrade-path-from-pilot-to-paid",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: feat-session-analytics-pilot",
+      "Merge gate blocked: fix-landing-page-does-not-capture-utm-params-to-sessio",
+      "Merge gate blocked: fix-no-self-serve-upgrade-path-from-pilot-to-paid",
+      "Merged PR #412",
+      "Product review triggered: Fix Auth Token Gap — Signup → Onboarding Redirect",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "Build health: this.store.supabase.from(...).select(...).eq(...).ilike is not a function"
+    ]
+  },
+  {
+    "timestamp": "2026-03-23T05:14:33.856Z",
+    "status": {
+      "ready": 38,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 1152,
+      "total": 1289
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":38,\"inProgress\":2,\"blocked\":0,\"done\":1152,\"total\":1289}",
+      "Merge retry 1/3: fix-feature-comparison-table-absent-from-pricing-page",
+      "Merge retry 1/3: UC-REVENUE-RECOVERY-001",
+      "Merge retry 1/3: fix-team-tier-399-mo-missing-from-pricing-page-only-3-",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "UC completed (sweep): feat-post-signup-dashboard-onboarding-redirect",
+      "Merge gate blocked: fix-feature-comparison-table-absent-from-pricing-page",
+      "Merge gate blocked: UC-REVENUE-RECOVERY-001",
+      "Merge gate blocked: fix-team-tier-399-mo-missing-from-pricing-page-only-3-",
+      "Merged PR #413",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-23T05:19:32.267Z",
+    "status": {
+      "ready": 42,
+      "inProgress": 3,
+      "blocked": 0,
+      "done": 1152,
+      "total": 1294
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":42,\"inProgress\":3,\"blocked\":0,\"done\":1152,\"total\":1294}",
+      "Completed (via stdout): PM: Periodic Product Review",
+      "Re-triggered 3 stuck spawn(s)",
+      "Merge retry 1/3: fix-onboarding-still-present-in-auth-routes-middleware",
+      "Merge retry 1/3: fix-frontend-components-still-fall-back-to-dashboard-o",
+      "Merge retry 1/3: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/8 passed",
+      "Product sync: 6 components updated",
+      "Merge gate blocked: fix-onboarding-still-present-in-auth-routes-middleware",
+      "Merge gate blocked: fix-frontend-components-still-fall-back-to-dashboard-o",
+      "UC completed (sweep): feat-add-auth-middleware-to-protect-dashboard",
+      "Merge gate blocked: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T02:34:34.957Z",
+    "status": {
+      "ready": 6,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 904,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":6,\"inProgress\":0,\"blocked\":0,\"done\":904,\"total\":1000}",
+      "Spawned dev for Implement: Fix cookie name mismatch in trial/start route",
+      "Spawned product for PM: Proactive Revenue Gap Analysis",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke fail → QC: Auth: signup then login (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "UC completed (sweep): fix-api-endpoints-developer-table-embedded-in-marketin",
+      "UC completed (sweep): fix-resend-api-key-not-configured-in-vercel-email-deli",
+      "UC completed (sweep): fix-sync-system-components-js-used-wrong-column-names-",
+      "UC completed (sweep): fix-no-pilot-to-paid-conversion-email-sequence",
+      "Feedback→PM: bug from pm_review",
+      "Feedback→PM: bug from pm_review",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Cleaned up 15 stale branch(es)",
+      "Product review triggered: Fix Deployed Pages Sync - Schema Alignment",
+      "Product review triggered: Marketing Landing Page — High-Converting Signup Flow",
+      "Product review triggered: UTM Parameter Capture & Marketing Attribution",
+      "Product review triggered: Landing Page Analytics — GA4/PostHog CTA, Scroll Depth & Conversion Funnel",
+      "Product review triggered: Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof",
+      "Product review triggered: Fix TypeScript Build Blocker in Trial Signup Route",
+      "Product review triggered: Aha Moment Simulator — Onboarding Step UI",
+      "Product review triggered: Live AI Demo — Experience the Product Without Signing Up",
+      "Product review triggered: Repository Structure Convention for LeadFlow",
+      "Product review triggered: UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys",
+      "Product review triggered: UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Processed product review: 0 decisions, 3 UCs",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Processed product review: 0 decisions, 0 UCs",
+      "Processed product review: 0 decisions, 0 UCs",
+      "Processed product review: 0 decisions, 2 UCs",
+      "Processed product review: 0 decisions, 3 UCs",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Processed product review: 0 decisions, 3 UCs",
+      "Processed product review: 1 decisions, 2 UCs",
+      "Processed product review: 0 decisions, 3 UCs",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Processed product review: 0 decisions, 4 UCs",
+      "Processed product review: 0 decisions, 2 UCs",
+      "Processed product review: 0 decisions, 0 UCs",
+      "Processed product review: 0 decisions, 5 UCs",
+      "Processed product review: 0 decisions, 5 UCs",
+      "Processed product review: 0 decisions, 3 UCs",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Processed product review: 0 decisions, 3 UCs",
+      "⚠️ DECISIONS NEEDED (4):\n\n🔴 Twilio provisioning model: LeadFlow-owned vs. agent-owned Twilio accounts [architecture]\n  1. LeadFlow provisions numbers from its own Twilio account and passes cost through Stripe (/mo add-on)\n  2. Agent brings their own Twilio account credentials (BYOT) — LeadFlow uses agent Twilio SID/AuthToken\n  3. Hybrid: LeadFlow manages by default, allow BYOT for Pro/Team plans\n  💡 PM recommends: For pilot agents, minimizing setup friction is critical. BYOT requires agents to have Twilio accounts — a blocker for non-technical agents. Post-pilot, offer BYOT for cost-sensitive Pro/Team customers.\n  → !decide 66238375 <1|2|3>\n\n🔴 Merge dev branch to main before next deployment [deployment]\n  1. [object Object]\n  2. [object Object]\n  💡 PM recommends: Feature is in production but not in main. Any main-branch deploy will overwrite and remove the invite flow.\n  → !decide 87062ee3 <1|2|3>\n\n🔴 Should Stripe setup be done in test mode first or go straight to live mode? [deployment]\n  1. [object Object]\n  2. [object Object]\n  💡 PM recommends: Test mode allows verifying the complete checkout → webhook → plan_tier update flow without real money. Once confirmed working, swap to live keys. Much lower risk given the 5 critical issues identified.\n  → !decide 73bd8035 <1|2|3>\n\n🔴 Landing page CTA: Trial-first vs Pilot-first [ux]\n  1. [object Object]\n  2. [object Object]\n  3. [object Object]\n  💡 PM recommends: At Day 12 of 60-day sprint to $20K MRR, trial-first removes friction and maximizes speed to first paying customer. Pilot CTA remains as secondary for enterprise/team use.\n  → !decide e1a520e5 <1|2|3>",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T02:38:24.055Z",
+    "status": {
+      "ready": 18,
+      "inProgress": 2,
+      "blocked": 0,
+      "done": 890,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":18,\"inProgress\":2,\"blocked\":0,\"done\":890,\"total\":1000}",
+      "Spawned qc for Smoke: Auth: signup then login failing",
+      "Spawned product-manager for PM: Product Review — Fix Signup Page — Plan Options Not Displayed",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Closed conflicted PR #383",
+      "Closed conflicted PR #384",
+      "Closed conflicted PR #388",
+      "Closed conflicted PR #385",
+      "Merged PR #386",
+      "Closed conflicted PR #387",
+      "Closed conflicted PR #390",
+      "Closed conflicted PR #389",
+      "Closed conflicted PR #392",
+      "Closed conflicted PR #380",
+      "Closed conflicted PR #382",
+      "Closed conflicted PR #378",
+      "Closed conflicted PR #379",
+      "Closed conflicted PR #391",
+      "Merged PR #393",
+      "Closed conflicted PR #394",
+      "Closed conflicted PR #395",
+      "Closed conflicted PR #396",
+      "Closed conflicted PR #397",
+      "Closed conflicted PR #398",
+      "Closed conflicted PR #399",
+      "Closed conflicted PR #400",
+      "Closed conflicted PR #401",
+      "Closed conflicted PR #402",
+      "Closed conflicted PR #403",
+      "Closed conflicted PR #404",
+      "Closed conflicted PR #405",
+      "Merged PR #406",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T02:42:28.155Z",
+    "status": {
+      "ready": 16,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 890,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":16,\"inProgress\":4,\"blocked\":0,\"done\":890,\"total\":1000}",
+      "Completed (via stdout): PM: Product Review — Fix Signup Page — Plan Options Not Displayed",
+      "Spawned product for PM: Product Review — Fix Deployed Pages Sync - Schema Alignment",
+      "Spawned product for PM: Product Review — Marketing Landing Page — High-Converting Signup Flow",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T02:45:14.055Z",
+    "status": {
+      "ready": 15,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 891,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":15,\"inProgress\":4,\"blocked\":0,\"done\":891,\"total\":1000}",
+      "Completed (via stdout): Smoke: Auth: signup then login failing",
+      "Completed (via stdout): PM: Product Review — Fix Deployed Pages Sync - Schema Alignment",
+      "Spawned product for PM: Product Review — Marketing Landing Page — High-Converting Signup Flow",
+      "Spawned product for PM: Product Review — UTM Parameter Capture & Marketing Attribution",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke fail → QC: Auth: signup then login (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Processed product review: 0 decisions, 0 UCs",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 2,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T02:51:04.871Z",
+    "status": {
+      "ready": 14,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 892,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":14,\"inProgress\":4,\"blocked\":0,\"done\":892,\"total\":1000}",
+      "Spawned product for PM: Product Review — Landing Page Analytics — GA4/PostHog CTA, Scroll Depth & Conversion Funnel",
+      "Spawned product for PM: Product Review — Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Cleaned up 1 stale branch(es)",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T02:56:14.303Z",
+    "status": {
+      "ready": 13,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 892,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":13,\"inProgress\":5,\"blocked\":0,\"done\":892,\"total\":1000}",
+      "Completed (via stdout): PM: Product Review — Landing Page Analytics — GA4/PostHog CTA, Scroll Depth & Conversion Funnel",
+      "Spawned product for PM: Product Review — Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof",
+      "Spawned product for PM: Product Review — Fix TypeScript Build Blocker in Trial Signup Route",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: ux_issue from telemetry_alert",
+      "Feedback→PM: bug from pm_review",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T03:01:12.725Z",
+    "status": {
+      "ready": 12,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 893,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":12,\"inProgress\":5,\"blocked\":0,\"done\":893,\"total\":1000}",
+      "Completed (via stdout): PM: Product Review — Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof",
+      "Spawned product for PM: Product Review — Fix TypeScript Build Blocker in Trial Signup Route",
+      "Spawned product for PM: Product Review — Aha Moment Simulator — Onboarding Step UI",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Feedback→PM: bug from pm_review",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T03:02:11.091Z",
+    "status": {
+      "ready": 11,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 894,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":11,\"inProgress\":5,\"blocked\":0,\"done\":894,\"total\":1000}",
+      "Spawned product for PM: Product Review — Aha Moment Simulator — Onboarding Step UI",
+      "Spawned product for PM: Product Review — Live AI Demo — Experience the Product Without Signing Up",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-24T03:06:00.792Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 10,
+      "blocked": 0,
+      "done": 895,
+      "total": 1000
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":10,\"blocked\":0,\"done\":895,\"total\":1000}",
+      "Completed (via stdout): PM: Product Review — Fix TypeScript Build Blocker in Trial Signup Route",
+      "Spawned product for PM: Product Review — Live AI Demo — Experience the Product Without Signing Up",
+      "Spawned product for PM: Product Review — UC Triage: 23 Stuck (needs_merge) Use Cases — Disposition Report",
+      "Self-healed 1 critical issue(s)",
+      "Smoke fail → QC: Vercel dashboard health (kimi)",
+      "Smoke tests: 7/9 passed",
+      "Product sync: 6 components updated",
+      "Processed product review: 0 decisions, 0 UCs",
+      "Processed product review: 0 decisions, 0 UCs",
+      "Processed product review: 0 decisions, 1 UCs",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-25T06:29:58.543Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1931
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":0,\"blocked\":0,\"done\":1741,\"total\":1931}",
+      "Escalation fix: improve-add-start-free-trial-cta-frictionless (qc stuck)",
+      "UC stuck: improve-add-start-free-trial-cta-frictionless (rescue failed for qc)",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Backfilled PR #603 for dev/ae41a56d-fix-codebase-rule-violated-no-supabase-i",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": [
+      "🛑 UC STUCK: improve-add-start-free-trial-cta-frictionless\nName: Add Start Free Trial CTA — frictionless trial entry for pilot recruitment\nFailed agent: qc\nRoot cause: unknown: Max retries exhausted at spawn time\n\nEscalated to genome fix task. Also needs human review.\nUse: !unstuck improve-add-start-free-trial-cta-frictionless to retry with new instructions"
+    ]
+  },
+  {
+    "timestamp": "2026-03-25T06:35:17.696Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1932
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":1741,\"total\":1932}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Merged PR #603",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-25T06:39:54.871Z",
+    "status": {
+      "ready": 3,
+      "inProgress": 1,
+      "blocked": 0,
+      "done": 1741,
+      "total": 1932
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":3,\"inProgress\":1,\"blocked\":0,\"done\":1741,\"total\":1932}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":5,"inProgress":0,"blocked":0,"done":909,"total":1000}
+- Last status: {"ready":3,"inProgress":1,"blocked":0,"done":1741,"total":1932}
