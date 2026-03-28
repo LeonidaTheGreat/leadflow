@@ -1,30 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer, isSupabaseConfigured } from '@/lib/supabase-server'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-/**
- * Extract agent ID from JWT cookie (supports both 'auth_token' and 'auth-token').
- */
-function getAgentIdFromCookies(request: NextRequest): string | null {
-  const authToken =
-    request.cookies.get('auth_token')?.value ||
-    request.cookies.get('auth-token')?.value
-
-  if (!authToken) return null
-
-  try {
-    // JWT payload may use either 'id' (trial signup) or 'userId' (login route)
-    const payload = jwt.verify(authToken, JWT_SECRET) as {
-      id?: string
-      userId?: string
-    }
-    return payload.id || payload.userId || null
-  } catch {
-    return null
-  }
-}
+import { getAuthUserId } from '@/lib/auth'
 
 /**
  * Three sample leads with AI-drafted SMS responses.
@@ -162,7 +138,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ eligible: false, leads: [] })
   }
 
-  const agentId = getAgentIdFromCookies(request)
+  const agentId = await getAuthUserId(request)
   if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

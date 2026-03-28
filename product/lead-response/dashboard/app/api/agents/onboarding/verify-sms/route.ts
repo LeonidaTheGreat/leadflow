@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthenticatedAgent } from '@/lib/onboarding-auth'
+import { getAuthUserId } from '@/lib/auth'
 
 /**
  * POST /api/agents/onboarding/verify-sms
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
   }
 
-  const agentId = await getAuthenticatedAgent(request)
+  const agentId = await getAuthUserId(request)
   if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -93,11 +93,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, message: userMessage }, { status: 500 })
   }
 
-  // Mark SMS verified and advance step
+  // Advance onboarding step (only use columns that exist on the table)
   const { error: updateError } = await supabase
     .from('real_estate_agents')
     .update({
-      sms_verified: true,
       onboarding_step: 3,
       updated_at: new Date().toISOString(),
     })

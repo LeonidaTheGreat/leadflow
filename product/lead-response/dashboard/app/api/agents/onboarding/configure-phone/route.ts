@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthenticatedAgent } from '@/lib/onboarding-auth'
+import { getAuthUserId } from '@/lib/auth'
 
 /**
  * POST /api/agents/onboarding/configure-phone
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
   }
 
-  const agentId = await getAuthenticatedAgent(request)
+  const agentId = await getAuthUserId(request)
   if (!agentId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -59,11 +59,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to save phone number' }, { status: 500 })
   }
 
-  // Update agent onboarding state
+  // Update agent onboarding state (only use columns that exist on the table)
   await supabase
     .from('real_estate_agents')
     .update({
-      phone_configured: true,
       onboarding_step: 2,
       updated_at: new Date().toISOString(),
     })

@@ -1,25 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import Stripe from 'stripe'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+import { getAuthUserId } from '@/lib/auth'
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20' as any })
   : null
-
-/**
- * Validate JWT token from auth-token cookie
- */
-function validateJWTToken(token: string): { id: string; email: string } | null {
-  try {
-    const payload = jwt.verify(token, JWT_SECRET) as { id: string; email: string }
-    return payload
-  } catch {
-    return null
-  }
-}
 
 /**
  * Map plan ID to Stripe price ID from environment variables
@@ -67,19 +53,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get JWT token from cookie for authentication
-    const authToken = request.cookies.get('auth-token')?.value
-    
-    if (!authToken) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-    
-    // Validate JWT token
-    const jwtPayload = validateJWTToken(authToken)
-    if (!jwtPayload) {
+    // Authenticate via auth-token or leadflow_session cookie
+    const userId = await getAuthUserId(request)
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -90,7 +66,7 @@ export async function POST(request: NextRequest) {
     const { data: agent, error: agentError } = await supabase
       .from('real_estate_agents')
       .select('id, email')
-      .eq('id', jwtPayload.id)
+      .eq('id', userId)
       .single()
 
     if (agentError || !agent) {

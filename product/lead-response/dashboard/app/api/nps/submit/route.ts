@@ -8,9 +8,7 @@ import {
   submitNPSResponse,
 } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+import { getAuthUserId } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -83,26 +81,8 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true })
     } else {
-      // In-app submission - requires authenticated JWT cookie
-      const authToken = request.cookies.get('auth-token')?.value
-      if (!authToken) {
-        return NextResponse.json(
-          { success: false, error: 'Unauthorized' },
-          { status: 401 }
-        )
-      }
-
-      let jwtPayload: { userId?: string; id?: string } | null = null
-      try {
-        jwtPayload = jwt.verify(authToken, JWT_SECRET) as { userId?: string; id?: string }
-      } catch {
-        return NextResponse.json(
-          { success: false, error: 'Unauthorized' },
-          { status: 401 }
-        )
-      }
-
-      const resolvedAgentId = jwtPayload.userId || jwtPayload.id
+      // In-app submission - requires authenticated cookie (JWT or session)
+      const resolvedAgentId = await getAuthUserId(request)
       if (!resolvedAgentId) {
         return NextResponse.json(
           { success: false, error: 'Unauthorized' },

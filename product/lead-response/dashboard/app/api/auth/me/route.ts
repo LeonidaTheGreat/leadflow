@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+import { getAuthUserId } from '@/lib/auth'
 
 const supabase = supabaseAdmin
 
 /**
  * GET /api/auth/me
  *
- * Reads the HTTP-only `auth-token` cookie, validates the JWT,
+ * Reads the HTTP-only `auth-token` or `leadflow_session` cookie,
  * and returns the authenticated user object.
  *
  * Used as a server-side fallback when localStorage is empty
@@ -21,26 +19,7 @@ const supabase = supabaseAdmin
  */
 export async function GET(request: NextRequest) {
   try {
-    const authToken = request.cookies.get('auth-token')?.value
-
-    if (!authToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Validate JWT
-    let payload: { userId?: string; id?: string; email?: string } | null = null
-    try {
-      payload = jwt.verify(authToken, JWT_SECRET) as {
-        userId?: string
-        id?: string
-        email?: string
-      }
-    } catch {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Support both `userId` (trial/pilot signup) and `id` (trial/start) field names
-    const agentId = payload.userId || payload.id
+    const agentId = await getAuthUserId(request)
     if (!agentId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

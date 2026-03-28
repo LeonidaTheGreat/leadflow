@@ -1,36 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
-import jwt from 'jsonwebtoken'
+import { getAuthUserId } from '@/lib/auth'
 
 const supabase = supabaseAdmin
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-interface JWTPayload {
-  userId: string
-  email: string
-  name?: string
-}
-
 export async function POST(request: NextRequest) {
   try {
-    // Get auth token from cookie
-    const token = request.cookies.get('auth-token')?.value
-
-    if (!token) {
+    const userId = await getAuthUserId(request)
+    if (!userId) {
       return NextResponse.json(
         { error: 'Not authenticated' },
-        { status: 401 }
-      )
-    }
-
-    // Verify JWT token
-    let payload: JWTPayload
-    try {
-      payload = jwt.verify(token, JWT_SECRET) as JWTPayload
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
         { status: 401 }
       )
     }
@@ -47,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Insert event into database
     const { error } = await supabase.from('events').insert({
-      agent_id: payload.userId,
+      agent_id: userId,
       event_type: eventType,
       event_data: properties,
       source: 'client',

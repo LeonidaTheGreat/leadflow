@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { auth } from '@/lib/api-auth'
+import { getAuthUserId } from '@/lib/auth'
 
 // GET /api/agents/profile - Get current agent profile
 export async function GET(request: NextRequest) {
-  // Require an active authenticated session before returning any data
-  const { user } = await auth(request)
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const agentId = user.id
+  // Unified auth: checks auth-token (JWT from signup) and leadflow_session (from login)
+  const agentId = await getAuthUserId(request)
+  if (!agentId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
     const { data: agent, error } = await supabase
@@ -35,7 +33,7 @@ export async function GET(request: NextRequest) {
     // Get additional profile data if available
     const { data: profile } = await supabase
       .from('agent_profiles')
-      .select('bio, company_name, website, profile_image')
+      .select('bio, photo_url')
       .eq('agent_id', agentId)
       .single()
 
@@ -52,9 +50,9 @@ export async function GET(request: NextRequest) {
         trial_ends_at: agent.trial_ends_at,
         pilot_expires_at: agent.pilot_expires_at,
         bio: profile?.bio || '',
-        companyName: profile?.company_name || '',
-        website: profile?.website || '',
-        profileImage: profile?.profile_image || '',
+        companyName: '',
+        website: '',
+        profileImage: profile?.photo_url || '',
         createdAt: agent.created_at,
         onboardingCompleted: agent.onboarding_completed ?? false,
       },
@@ -70,11 +68,9 @@ export async function GET(request: NextRequest) {
 
 // PUT /api/agents/profile - Update agent profile
 export async function PUT(request: NextRequest) {
-  // Require an active authenticated session before updating data
-  const { user } = await auth(request)
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const agentId = user.id
+  // Unified auth: checks auth-token (JWT from signup) and leadflow_session (from login)
+  const agentId = await getAuthUserId(request)
+  if (!agentId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
     const body = await request.json()
@@ -135,9 +131,7 @@ export async function PUT(request: NextRequest) {
       .upsert({
         agent_id: agentId,
         bio: bio || null,
-        company_name: companyName || null,
-        website: website || null,
-        profile_image: profileImage || null,
+        photo_url: profileImage || null,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'agent_id',

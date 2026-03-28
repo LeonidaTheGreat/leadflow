@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import { getAuthUserId } from '@/lib/auth'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
@@ -25,20 +26,10 @@ function getSupabase() {
   return createClient(url, key)
 }
 
-function getAgentIdFromRequest(request: NextRequest): string | null {
-  // Try auth cookie
-  const cookieToken =
-    request.cookies.get('auth-token')?.value ||
-    request.cookies.get('auth_token')?.value
-
-  if (cookieToken) {
-    try {
-      const payload = jwt.verify(cookieToken, JWT_SECRET) as { userId?: string; id?: string }
-      return payload.userId || payload.id || null
-    } catch {
-      // invalid token — fall through
-    }
-  }
+async function getAgentIdFromRequest(request: NextRequest): Promise<string | null> {
+  // Try unified auth helper (checks auth-token JWT + leadflow_session cookie)
+  const userId = await getAuthUserId(request)
+  if (userId) return userId
 
   // Try Bearer header (client sends token from localStorage)
   const authHeader = request.headers.get('authorization')
@@ -79,7 +70,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const agentId = getAgentIdFromRequest(request)
+    const agentId = await getAgentIdFromRequest(request)
 
     const supabase = getSupabase()
 
