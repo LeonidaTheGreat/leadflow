@@ -146,13 +146,22 @@ test_lead_capture() {
 test_dashboard_no_errors() {
   [ -z "${API_KEY:-}" ] && return 1
 
-  # Get any valid session from DB
-  local session
-  session=$(curl -s --max-time 10 \
-    "$API_URL/sessions?select=token&order=created_at.desc&limit=1" \
+  # Get a user who has completed onboarding (non-test real user)
+  local agent_resp user_id
+  agent_resp=$(curl -s --max-time 10 \
+    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
     -H "apikey: $API_KEY" 2>/dev/null) || return 1
 
-  local token
+  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+  [ -z "$user_id" ] && return 1
+
+  # Get their most recent non-expired session
+  local now session token
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  session=$(curl -s --max-time 10 \
+    "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
+    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+
   token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
   [ -z "$token" ] && return 1
 
