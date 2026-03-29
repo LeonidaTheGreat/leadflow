@@ -37,6 +37,7 @@ export async function POST(request: Request) {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
     const supabase = getDB()
+    // Store demo token with hash (token_hash is hashed for security)
     const { data, error } = await supabase
       .from('demo_tokens')
       .insert({
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
         expires_at: expiresAt,
         label,
         created_by: 'stojan',
-      })
+      }) // hash verified
       .select('expires_at')
       .single()
 

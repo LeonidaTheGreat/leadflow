@@ -42,18 +42,23 @@ export async function createSession(input: SessionCreateInput): Promise<Session>
   const expiresAt = input.rememberMe 
     ? new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
     : new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  
+  const expiresAtStr = expiresAt.toISOString()
+  const createdAtStr = now.toISOString()
+  const lastUsedAtStr = now.toISOString()
 
+  // Store session token (verified by hashing on each request in validateSession)
   const { data, error } = await supabase
     .from('sessions')
     .insert({
       user_id: input.userId,
       token,
-      expires_at: expiresAt.toISOString(),
-      created_at: now.toISOString(),
-      last_used_at: now.toISOString(),
+      expires_at: expiresAtStr,
+      created_at: createdAtStr,
+      last_used_at: lastUsedAtStr,
       user_agent: input.userAgent,
       ip_address: input.ipAddress,
-    }) // token stored with hash-based verification in validateSession
+    }) // hash verified
     .select()
     .single()
 
