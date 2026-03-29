@@ -1,8 +1,227 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-29T06:30:41.232Z
+Last updated: 2026-03-25T06:39:54.879Z
 ## Recent Heartbeats
 ```json
 [
+  {
+    "timestamp": "2026-03-05T16:21:57.032Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 155,
+      "total": 196
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":155,\"total\":196}",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Feedback→PM: bug from pm_journey_review",
+      "Journey review triggered: New Agent Signup",
+      "Journey review triggered: Lead Response Flow",
+      "Processed product review: 0 decisions, 1 tasks",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-05T16:37:53.044Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 155,
+      "total": 200
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":4,\"blocked\":0,\"done\":155,\"total\":200}",
+      "Reset zombie: PM: Spec fix — Onboarding completion fails - 500 error on /api/agents/onboard (retry 1/3) [unknown]",
+      "Reset zombie: PM: Analyze bug feedback (retry 1/3) [unknown]",
+      "Reset zombie: PM: Journey Review — New Agent Signup (retry 1/3) [unknown]",
+      "Reset zombie: PM: Journey Review — Lead Response Flow (retry 1/3) [unknown]",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Replenished: Dev task for fix-onboarding-500-error",
+      "Journey review triggered: New Agent Signup",
+      "Journey review triggered: Lead Response Flow",
+      "Processed product review: 0 decisions, 1 tasks",
+      "Processed product review: 0 decisions, 3 tasks",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T10:14:55.704Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 8,
+      "blocked": 0,
+      "done": 193,
+      "total": 247
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":8,\"blocked\":0,\"done\":193,\"total\":247}",
+      "Reset zombie: QC: fix-deployed-pages-not-registered-in-system- - Auto-Sync Deployed Vercel Pages to System Components (retry 1/3) [unknown]",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T10:16:25.798Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 8,
+      "blocked": 0,
+      "done": 193,
+      "total": 247
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":8,\"blocked\":0,\"done\":193,\"total\":247}",
+      "Reset zombie: QC: fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision (retry 2/3) [unknown]",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T10:17:36.315Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 8,
+      "blocked": 0,
+      "done": 193,
+      "total": 247
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":8,\"blocked\":0,\"done\":193,\"total\":247}",
+      "Completed (via stdout): QC: fix-deployed-pages-not-registered-in-system- - Auto-Sync Deployed Vercel Pages to System Components",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 1,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T10:19:41.755Z",
+    "status": {
+      "ready": 5,
+      "inProgress": 8,
+      "blocked": 0,
+      "done": 194,
+      "total": 248
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":5,\"inProgress\":8,\"blocked\":0,\"done\":194,\"total\":248}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T10:24:40.778Z",
+    "status": {
+      "ready": 6,
+      "inProgress": 6,
+      "blocked": 0,
+      "done": 196,
+      "total": 248
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":6,\"inProgress\":6,\"blocked\":0,\"done\":196,\"total\":248}",
+      "Reset zombie: Test Follow-up Cron Endpoint (retry 2/3) [unknown]",
+      "Reset zombie: QC: Verify SUPABASE_SERVICE_ROLE_KEY deployment fix (retry 1/3) [unknown]",
+      "Reset zombie: QC (rescue): fix-onboarding-500-error - Fix Onboarding Endpoint - Resolve Agents Table Schema Collision (retry 2/3) [permission_error]",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-06T10:29:45.718Z",
+    "status": {
+      "ready": 6,
+      "inProgress": 5,
+      "blocked": 0,
+      "done": 197,
+      "total": 248
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":6,\"inProgress\":5,\"blocked\":0,\"done\":197,\"total\":248}",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-08T23:43:57.413Z",
+    "status": {
+      "ready": 11,
+      "inProgress": 4,
+      "blocked": 0,
+      "done": 312,
+      "total": 386
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":11,\"inProgress\":4,\"blocked\":0,\"done\":312,\"total\":386}",
+      "Completed (via stdout): PM: Product Review — SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking",
+      "Spawned dev for Dev: feat-start-free-trial-cta - Start Free Trial CTA — Frictionless Trial Entry for Pilot Recruitment",
+      "Spawned dev for Dev: feat-lead-experience-simulator - Lead Experience Simulator & Conversation Viewer",
+      "Self-healed 1 critical issue(s)",
+      "Smoke tests: 7/7 passed",
+      "Product sync: 5 components updated",
+      "Processed product review: 0 decisions, 4 UCs",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 2,
+    "completed": 1,
+    "errors": []
+  },
   {
     "timestamp": "2026-03-09T04:49:18.992Z",
     "status": {
@@ -2350,217 +2569,9 @@ Last updated: 2026-03-29T06:30:41.232Z
     "spawned": 0,
     "completed": 0,
     "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T05:34:10.230Z",
-    "status": {
-      "ready": 1,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 1815,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":1,\"inProgress\":1,\"blocked\":0,\"done\":1815,\"total\":1996}",
-      "Completed (via stdout): Fix: Genome breach — project_quality_genome",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Backfilled PR #671 for dev/ff9088d5-fix-genome-breach-project-quality-genome",
-      "Backfilled PR #672 for dev/64ea3859-fix-genome-breach-high-findings",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 1,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T05:39:06.989Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 1,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":1,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T05:44:07.710Z",
-    "status": {
-      "ready": 1,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":1,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T05:54:20.114Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T06:09:08.063Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T06:14:04.358Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T06:19:19.872Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T06:24:21.464Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-03-29T06:30:41.223Z",
-    "status": {
-      "ready": 0,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1816,
-      "total": 1996
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":0,\"inProgress\":0,\"blocked\":0,\"done\":1816,\"total\":1996}",
-      "Smoke fail → QC: Vercel /health endpoint (sonnet)",
-      "Smoke dev retry 1: Vercel dashboard health",
-      "Smoke escalated → Dev: Supabase read access",
-      "Smoke escalated → Dev: Signup page",
-      "Smoke dev retry 1: Login page",
-      "Smoke escalated → Dev: Lead Experience Simulator",
-      "Smoke fail → QC: Auth: login page reachable (sonnet)",
-      "Smoke tests: 2/9 passed",
-      "Product sync: 6 components updated",
-      "Cleaned up 1 stale branch(es)",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":0,"blocked":0,"done":1816,"total":1996}
+- Last status: {"ready":3,"inProgress":1,"blocked":0,"done":1741,"total":1932}

@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-29T06:30:41.091Z | Source: `prds` table
+> Generated: 2026-03-25T06:39:54.775Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -77,7 +77,6 @@
 | PRD-SMS-ANALYTICS-DASHBOARD | SMS Analytics Dashboard — Delivery, Reply & Booking Conversion Tracking | approved | 1.0 | [docs/PRD-SMS-ANALYTICS-DASHBOARD.md](docs/PRD-SMS-ANALYTICS-DASHBOARD.md) |
 | prd-start-free-trial-cta | Start Free Trial CTA — Frictionless Trial Entry | approved | 1.0 | [docs/prd/PRD-START-FREE-TRIAL-CTA.md](docs/prd/PRD-START-FREE-TRIAL-CTA.md) |
 | PRD-STATUS-REPORT-20260306 | LeadFlow Product Status Report — Day 20 of 60 | approved | 1.0 | [docs/PRD-STATUS-REPORT-20260306.md](docs/PRD-STATUS-REPORT-20260306.md) |
-| PRD-STRATEGIC-REVIEW-2026-03-27 | Daily Strategic Review — 2026-03-27 | approved | - | [docs/prd/PRD-STRATEGIC-REVIEW-2026-03-27.md](docs/prd/PRD-STRATEGIC-REVIEW-2026-03-27.md) |
 | prd-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | approved | 1.0 | [docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md](docs/prd/PRD-STRIPE-CHECKOUT-PRODUCTION-E2E.md) |
 | PRD-SYSTEM-SYNC-001 | Auto-Sync Deployed Pages to System Components | draft | 1.0 | [docs/PRD-SYSTEM-SYNC-001.md](docs/PRD-SYSTEM-SYNC-001.md) |
 | PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER | Fix TypeScript Build Blocker in Trial Signup Route | approved | 1.0 | [docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md](docs/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md) |
