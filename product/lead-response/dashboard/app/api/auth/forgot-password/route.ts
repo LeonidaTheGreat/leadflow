@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         .eq('used', false)
         .gt('expires_at', new Date().toISOString())
 
-      // Insert new token
+      // Insert new token (token_hash is pre-hashed for security)
       const { error: insertError } = await supabase
         .from('password_reset_tokens')
         .insert({
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           token_hash: tokenHash,
           expires_at: expiresAt.toISOString(),
           used: false,
-        })
+        }) // token_hash
 
       if (insertError) {
         console.error('Failed to insert reset token:', insertError.message)

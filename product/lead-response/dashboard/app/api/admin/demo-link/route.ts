@@ -40,7 +40,8 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from('demo_tokens')
       .insert({
-        token: tokenHash,
+        token: rawToken,
+        token_hash: tokenHash,
         expires_at: expiresAt,
         label,
         created_by: 'stojan',
@@ -85,7 +86,7 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from('demo_tokens')
       .select('expires_at, used_at')
-      .eq('token', tokenHash)
+      .eq('token_hash', tokenHash)
       .single()
 
     if (error || !data) {

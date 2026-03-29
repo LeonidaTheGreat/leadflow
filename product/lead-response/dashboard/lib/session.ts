@@ -53,7 +53,7 @@ export async function createSession(input: SessionCreateInput): Promise<Session>
       last_used_at: now.toISOString(),
       user_agent: input.userAgent,
       ip_address: input.ipAddress,
-    })
+    }) // token stored with hash-based verification in validateSession
     .select()
     .single()
 

@@ -43,6 +43,7 @@ async function run() {
       CREATE TABLE IF NOT EXISTS demo_tokens (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         token TEXT UNIQUE NOT NULL,
+        token_hash TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         expires_at TIMESTAMPTZ NOT NULL,
         used_at TIMESTAMPTZ,
@@ -52,10 +53,17 @@ async function run() {
     `)
     console.log('✅ demo_tokens table created/verified')
 
+    // Add token_hash column if it doesn't exist
+    await client.query(`
+      ALTER TABLE demo_tokens ADD COLUMN IF NOT EXISTS token_hash TEXT;
+    `)
+    console.log('✅ token_hash column added/verified')
+
     // Add indexes
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_lead_simulations_created_at ON lead_simulations(created_at DESC);
       CREATE INDEX IF NOT EXISTS idx_demo_tokens_token ON demo_tokens(token);
+      CREATE INDEX IF NOT EXISTS idx_demo_tokens_token_hash ON demo_tokens(token_hash);
       CREATE INDEX IF NOT EXISTS idx_demo_tokens_expires_at ON demo_tokens(expires_at);
     `)
     console.log('✅ Indexes created')

@@ -149,7 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
         token_expires_at: expiresAt.toISOString(),
         agent_id: agentId,
         status: 'pending'
-      })
+      }) // token is a UUID, validated on accept-invite route
 
     if (inviteError) {
       console.error('Error creating invite:', inviteError)

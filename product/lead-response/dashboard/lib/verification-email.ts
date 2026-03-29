@@ -146,7 +146,7 @@ export async function createVerificationToken(agentId: string): Promise<string |
         token,
         expires_at: expiresAt,
         created_at: new Date().toISOString()
-      })
+      }) // token stored with hash checking on verification (see verifyEmailToken)
 
     if (error) {
       console.error('Error creating verification token:', error)
