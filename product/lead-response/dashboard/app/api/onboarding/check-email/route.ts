@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { OnboardingValidator } from '@/lib/onboarding-validation';
 
@@ -153,5 +154,6 @@ function generateEmailSuggestion(email: string): string | undefined {
     `${localPart}.realty@${domain}`,
   ];
 
-  return suggestions[Math.floor(Math.random() * suggestions.length)];
+  const randomIndex = crypto.randomBytes(1)[0] % suggestions.length;
+  return suggestions[randomIndex];
 }

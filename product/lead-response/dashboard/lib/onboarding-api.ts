@@ -55,7 +55,10 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const getRetryDelay = (attempt: number, baseDelay: number): number => {
   const delay = Math.min(baseDelay * Math.pow(2, attempt), MAX_RETRY_DELAY_MS);
   // Add jitter to prevent thundering herd
-  return delay + Math.random() * 1000;
+  const randomBytes = new Uint8Array(1);
+  crypto.getRandomValues(randomBytes);
+  const jitter = (randomBytes[0] / 255) * 1000;
+  return delay + jitter;
 };
 
 /**
