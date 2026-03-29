@@ -75,14 +75,6 @@ const PLANS: Plan[] = [
   }
 ]
 
-export default function SignupPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />}>
-      <SignupPageInner />
-    </Suspense>
-  )
-}
-
 function SignupPageInner() {
   const searchParams = useSearchParams()
   const isTrialMode = searchParams.get('mode') === 'trial'
@@ -113,6 +105,14 @@ function SignupPageInner() {
 
   // Default: existing paid signup flow
   return <PaidSignupFlow />
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+      <SignupPageInner />
+    </Suspense>
+  )
 }
 
 function PaidSignupFlow() {
