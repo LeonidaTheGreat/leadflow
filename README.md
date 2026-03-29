@@ -26,7 +26,7 @@ npm start              # Start local server
 ```
 
 ## Success Target
-$20,000/month recurring revenue within 60 days of pilot start.
+$20,000/month recurring revenue within 90 days of pilot start.
 
 ---
 
