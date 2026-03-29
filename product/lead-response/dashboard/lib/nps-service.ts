@@ -227,7 +227,7 @@ export async function submitNPSResponse(
   tokenHash?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // Insert the NPS response
+    // Insert the NPS response (token_hash is stored hashed for security)
     const { error: responseError } = await supabase.from('agent_nps_responses').insert({
       agent_id: agentId,
       score,
@@ -235,7 +235,7 @@ export async function submitNPSResponse(
       survey_trigger: trigger,
       responded_via: respondedVia,
       token_hash: tokenHash || null,
-    })
+    }) // token_hash
 
     if (responseError) {
       console.error('Error inserting NPS response:', responseError)

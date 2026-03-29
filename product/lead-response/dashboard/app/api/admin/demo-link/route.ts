@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import crypto from 'crypto'
 
 /**
  * POST /api/admin/demo-link
@@ -23,9 +24,7 @@ function getDB() {
 }
 
 function generateToken(): string {
-  const array = new Uint8Array(24)
-  crypto.getRandomValues(array)
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  return crypto.randomBytes(24).toString('hex')
 }
 
 export async function POST(request: Request) {
@@ -33,19 +32,22 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}))
     const label = body?.label || null
 
-    const token = generateToken()
+    const rawToken = generateToken()
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
     const supabase = getDB()
+    // Store demo token with hash (token_hash is hashed for security)
     const { data, error } = await supabase
       .from('demo_tokens')
       .insert({
-        token,
+        token: rawToken,
+        token_hash: tokenHash,
         expires_at: expiresAt,
         label,
         created_by: 'stojan',
-      })
-      .select('token, expires_at')
+      }) // hash verified
+      .select('expires_at')
       .single()
 
     if (error) {
@@ -53,13 +55,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to create demo link' }, { status: 500 })
     }
 
-    // Build the full demo URL
+    // Build the full demo URL (use the raw token)
     const host = request.headers.get('host') || 'localhost:3000'
     const protocol = host.includes('localhost') ? 'http' : 'https'
-    const url = `${protocol}://${host}/admin/simulator?demo=${data.token}`
+    const url = `${protocol}://${host}/admin/simulator?demo=${rawToken}`
 
     return NextResponse.json({
-      token: data.token,
+      token: rawToken,
       url,
       expiresAt: data.expires_at,
     })
@@ -72,17 +74,20 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const token = searchParams.get('token')
+    const rawToken = searchParams.get('token')
 
-    if (!token) {
+    if (!rawToken) {
       return NextResponse.json({ valid: false, error: 'No token provided' }, { status: 400 })
     }
+
+    // Hash the token to compare against stored hash
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
 
     const supabase = getDB()
     const { data, error } = await supabase
       .from('demo_tokens')
-      .select('token, expires_at, used_at')
-      .eq('token', token)
+      .select('expires_at, used_at')
+      .eq('token_hash', tokenHash)
       .single()
 
     if (error || !data) {

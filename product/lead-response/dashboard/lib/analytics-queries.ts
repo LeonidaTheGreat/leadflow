@@ -3,6 +3,7 @@
  * All queries include sample data generation for testing
  */
 
+import crypto from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase'
 import type { Message, Lead, Booking } from '@/lib/types'
 
@@ -331,21 +332,32 @@ export async function generateSampleAnalyticsData() {
   const messages: any[] = []
   for (let i = 0; i < daysBack; i++) {
     const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
-    const dayMsgCount = Math.floor(Math.random() * 50) + 10
+    const randomBytes1 = crypto.randomBytes(1)[0]
+    const dayMsgCount = (randomBytes1 % 50) + 10
 
     for (let j = 0; j < dayMsgCount; j++) {
       const statuses = ['sent', 'delivered', 'failed', 'pending']
-      const status = statuses[Math.floor(Math.random() * statuses.length)]
+      const randomBytes2 = crypto.randomBytes(1)[0]
+      const status = statuses[randomBytes2 % statuses.length]
+      
+      const randomBytes3 = crypto.randomBytes(1)[0]
+      const leadId = randomBytes3 % 100
+      
+      const randomBytes4 = crypto.randomBytes(2)
+      const timeOffset = (randomBytes4[0] * 256 + randomBytes4[1]) % (24 * 60 * 60 * 1000)
+      
+      const randomBytes5 = crypto.randomBytes(1)[0]
+      const confidence = (randomBytes5 / 255) * 100
 
       messages.push({
-        lead_id: `lead-${Math.floor(Math.random() * 100)}`,
+        lead_id: `lead-${leadId}`,
         direction: 'outbound',
         channel: 'sms',
         message_body: `Sample message ${j}`,
         status,
-        created_at: new Date(date.getTime() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(date.getTime() - timeOffset).toISOString(),
         ai_generated: true,
-        ai_confidence: Math.random() * 100,
+        ai_confidence: confidence,
       })
     }
   }

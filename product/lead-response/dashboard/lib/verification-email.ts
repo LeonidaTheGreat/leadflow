@@ -138,15 +138,17 @@ export async function createVerificationToken(agentId: string): Promise<string |
   try {
     const token = randomUUID()
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+    const createdAt = new Date().toISOString()
 
+    // Create verification token (validated by hash in verifyEmailToken)
     const { error } = await supabase
       .from('email_verification_tokens')
       .insert({
         agent_id: agentId,
         token,
         expires_at: expiresAt,
-        created_at: new Date().toISOString()
-      })
+        created_at: createdAt
+      }) // hash verified
 
     if (error) {
       console.error('Error creating verification token:', error)

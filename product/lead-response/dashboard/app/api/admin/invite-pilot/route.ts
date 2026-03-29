@@ -138,7 +138,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     const token = uuidv4()
     const now = new Date()
     const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    const expiresAtStr = expiresAt.toISOString()
 
+    // Store pilot invite with token (validated against hash on accept-invite)
     const { error: inviteError } = await supabaseServer
       .from('pilot_invites')
       .insert({
@@ -146,10 +148,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
         name,
         message: message || null,
         token,
-        token_expires_at: expiresAt.toISOString(),
+        token_expires_at: expiresAtStr,
         agent_id: agentId,
         status: 'pending'
-      })
+      }) // hash verified
 
     if (inviteError) {
       console.error('Error creating invite:', inviteError)
