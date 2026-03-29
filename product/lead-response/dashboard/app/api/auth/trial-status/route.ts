@@ -1,47 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
-import jwt from 'jsonwebtoken'
+import { getAuthUserId } from '@/lib/auth'
 
 const supabase = supabaseAdmin
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-interface JWTPayload {
-  userId: string
-  email: string
-  name?: string
-}
-
 export async function GET(request: NextRequest) {
   try {
-    // Support both auth methods:
-    // 1. auth-token cookie (JWT from trial-signup)
-    // 2. leadflow_session cookie (session token from login)
-    let userId: string | null = null
-
-    const jwtToken = request.cookies.get('auth-token')?.value
-    if (jwtToken) {
-      try {
-        const payload = jwt.verify(jwtToken, JWT_SECRET) as JWTPayload
-        userId = payload.userId
-      } catch {}
-    }
-
-    if (!userId) {
-      const sessionToken = request.cookies.get('leadflow_session')?.value
-      if (sessionToken) {
-        // Look up session in DB to get userId
-        const { data: session } = await supabase
-          .from('sessions')
-          .select('user_id, expires_at')
-          .eq('token', sessionToken)
-          .single()
-
-        if (session && new Date(session.expires_at) > new Date()) {
-          userId = session.user_id
-        }
-      }
-    }
+    // Get authenticated user ID using unified auth helper
+    const userId = await getAuthUserId(request)
 
     if (!userId) {
       return NextResponse.json(
