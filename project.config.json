@@ -15,7 +15,12 @@
   "deployment": {
     "platform": "vercel",
     "dashboard_dir": "product/lead-response/dashboard",
-    "deploy_command": "/opt/homebrew/bin/vercel --prod --yes"
+    "deploy_mode": "github_integration",
+    "deploy_note": "Vercel GitHub integration auto-deploys on push to main. No CLI deploy needed.",
+    "verify_command": "bash scripts/e2e-flow-tests.sh --json",
+    "auto_deploy_after_merge": false,
+    "verify_after_deploy": true,
+    "rollback_on_failure": true
   },
   "build_health": {
     "dashboard_dir": "product/lead-response/dashboard",
