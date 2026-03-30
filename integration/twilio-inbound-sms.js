@@ -12,17 +12,13 @@
 
 const express = require('express');
 const crypto = require('crypto');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 const axios = require('axios');
 
 const router = express.Router();
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+// Initialize database client (PostgREST via Cloudflare tunnel)
+const supabase = createClient();
 
 // ===== CONSTANTS =====
 
