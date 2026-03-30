@@ -375,7 +375,7 @@
     {
       "type": "mrr",
       "target": 20000,
-      "target_date": "2026-04-15",
+      "target_date": "2026-05-16",
       "currency": "USD"
     }
   ],
@@ -425,7 +425,15 @@
       "pattern": "from '@supabase/supabase-js'|from \"@supabase/supabase-js\"|require\\('@supabase",
       "scan_dirs": [
         "product/lead-response/dashboard/app/",
-        "product/lead-response/dashboard/lib/"
+        "product/lead-response/dashboard/lib/",
+        "integration/",
+        "lib/",
+        "routes/"
+      ],
+      "exclude_patterns": [
+        "*.test.*",
+        "*.spec.*",
+        "db-pool.js"
       ],
       "severity": "critical"
     },
@@ -435,12 +443,15 @@
       "pattern": "NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_URL|SUPABASE_SERVICE_ROLE_KEY",
       "scan_dirs": [
         "product/lead-response/dashboard/app/",
-        "product/lead-response/dashboard/lib/"
+        "product/lead-response/dashboard/lib/",
+        "integration/",
+        "lib/",
+        "routes/"
       ],
       "exclude_patterns": [
         "*.test.*",
         "*.spec.*",
-        "__tests__/"
+        "db-pool.js"
       ],
       "severity": "critical"
     },

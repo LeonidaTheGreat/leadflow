@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
           expiresAt: pilotExpiresAt.toISOString(),
         },
       },
-      { status: 201 }
+      { status: 200 }
     )
   } catch (error) {
     console.error('Onboarding error:', error)
