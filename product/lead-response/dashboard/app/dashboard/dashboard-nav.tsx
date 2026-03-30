@@ -28,7 +28,7 @@ export function DashboardNav() {
   }, [])
 
   return (
-    <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+    <nav data-testid="dashboard-nav" className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
@@ -36,10 +36,10 @@ export function DashboardNav() {
               LeadFlow AI
             </a>
             <div className="hidden md:flex items-center gap-4">
-              <a href="/dashboard" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Lead Feed</a>
-              <a href="/dashboard/history" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">History</a>
-              <a href="/dashboard/analytics" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Analytics</a>
-              <a href="/admin/simulator" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Simulator</a>
+              <a href="/dashboard" data-testid="nav-link-feed" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Lead Feed</a>
+              <a href="/dashboard/history" data-testid="nav-link-history" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">History</a>
+              <a href="/dashboard/analytics" data-testid="nav-link-analytics" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Analytics</a>
+              <a href="/admin/simulator" data-testid="nav-link-simulator" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Simulator</a>
             </div>
           </div>
           <div className="flex items-center gap-4">

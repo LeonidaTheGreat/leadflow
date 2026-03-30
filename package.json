@@ -10,7 +10,13 @@
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
     "test:stripe-smoke": "node tests/integrated/stripe-production-smoke.test.js",
-    "test:stripe-smoke:local": "LOCAL_MODE=true node tests/integrated/stripe-production-smoke.test.js"
+    "test:stripe-smoke:local": "LOCAL_MODE=true node tests/integrated/stripe-production-smoke.test.js",
+    "test:load": "node scripts/load-test.js",
+    "test:load:quick": "node scripts/load-test.js --quick",
+    "test:load:local": "node scripts/load-test.js --target local",
+    "test:browser": "npx playwright test --config=e2e/playwright.config.ts",
+    "test:browser:headed": "npx playwright test --config=e2e/playwright.config.ts --headed",
+    "test:browser:local": "PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --config=e2e/playwright.config.ts"
   },
   "dependencies": {
     "axios": "^1.13.5",
@@ -24,6 +30,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "nodemon": "^3.0.2"
   }
 }

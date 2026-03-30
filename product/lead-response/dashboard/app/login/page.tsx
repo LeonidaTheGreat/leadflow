@@ -161,7 +161,7 @@ function LoginPageContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-slate-200">Email Address</Label>
                 <div className="relative">
@@ -177,6 +177,7 @@ function LoginPageContent() {
                     required
                     disabled={loading}
                     autoComplete="email"
+                    data-testid="login-email-input"
                   />
                 </div>
               </div>
@@ -196,6 +197,7 @@ function LoginPageContent() {
                     required
                     disabled={loading}
                     autoComplete="current-password"
+                    data-testid="login-password-input"
                   />
                   <button
                     type="button"
@@ -226,7 +228,7 @@ function LoginPageContent() {
               </div>
 
               {error && (
-                <div className={`${errorType === 'EMAIL_NOT_VERIFIED' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-red-500/10 border-red-500/50 text-red-400'} border px-4 py-3 rounded-lg text-sm`}>
+                <div data-testid="login-error-message" className={`${errorType === 'EMAIL_NOT_VERIFIED' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-red-500/10 border-red-500/50 text-red-400'} border px-4 py-3 rounded-lg text-sm`}>
                   <div className="flex items-start gap-2">
                     {errorType === 'EMAIL_NOT_VERIFIED' && <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
                     <div className="flex-1">
@@ -265,6 +267,7 @@ function LoginPageContent() {
                 type="submit"
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-6"
+                data-testid="login-submit-button"
               >
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Signing in...</>

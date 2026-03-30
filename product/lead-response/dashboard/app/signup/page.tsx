@@ -326,8 +326,9 @@ function PaidSignupFlow() {
 
               <div className="grid md:grid-cols-3 gap-6">
                 {PLANS.map((plan) => (
-                  <Card 
+                  <Card
                     key={plan.id}
+                    data-testid={`signup-plan-card-${plan.id}`}
                     className={`relative border-2 transition-all cursor-pointer ${
                       plan.popular 
                         ? 'border-emerald-500 bg-gradient-to-br from-slate-800 to-slate-900 ring-2 ring-emerald-500/20' 
@@ -388,7 +389,7 @@ function PaidSignupFlow() {
               <Card className="border-slate-700 bg-slate-800/50">
                 <CardContent className="p-8">
                   {/* space-y-4 matches login page field spacing */}
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-4" data-testid="signup-form">
                     {/* Email — full-width vertical stack matching login layout */}
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-slate-200">Email Address *</Label>
@@ -402,6 +403,7 @@ function PaidSignupFlow() {
                         className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
+                        data-testid="signup-email-input"
                       />
                     </div>
 
@@ -451,6 +453,7 @@ function PaidSignupFlow() {
                         required
                         disabled={loading}
                         minLength={8}
+                        data-testid="signup-password-input"
                       />
                     </div>
 
