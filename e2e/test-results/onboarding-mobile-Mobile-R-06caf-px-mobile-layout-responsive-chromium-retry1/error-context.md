@@ -1,0 +1,59 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e8]: ▶
+          - heading "LeadFlow AI" [level=1] [ref=e9]
+        - generic [ref=e10]: Step 1 of 6
+    - paragraph [ref=e15]: "Progress: 1 of 6"
+    - main [ref=e16]:
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e21]: 🚀
+          - heading "Start Your Free Pilot" [level=2] [ref=e22]
+          - paragraph [ref=e23]: Never miss a lead again. Respond to prospects in under 30 seconds.
+          - generic [ref=e25]: ✨ 60 days free — no credit card required
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e28]: Email Address
+              - generic [ref=e29]:
+                - img [ref=e30]
+                - textbox "you@example.com" [ref=e33]
+            - generic [ref=e34]:
+              - generic [ref=e35]: Password
+              - textbox "At least 8 characters" [ref=e36]
+            - generic [ref=e37]:
+              - generic [ref=e38]: Confirm Password
+              - textbox "Confirm your password" [ref=e39]
+          - button "Start Free Pilot →" [ref=e40]:
+            - text: Start Free Pilot
+            - generic [ref=e41]: →
+          - paragraph [ref=e42]:
+            - text: By signing up, you agree to our
+            - link "Terms of Service" [ref=e43] [cursor=pointer]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=e44] [cursor=pointer]:
+              - /url: /privacy
+          - generic [ref=e45]:
+            - paragraph [ref=e46]: Included in your free pilot
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - generic [ref=e49]: ⚡
+                - text: <30s responses
+              - generic [ref=e50]:
+                - generic [ref=e51]: 🤖
+                - text: AI qualification
+              - generic [ref=e52]:
+                - generic [ref=e53]: 📅
+                - text: Calendar sync
+        - paragraph [ref=e54]:
+          - text: Already have an account?
+          - link "Sign in" [ref=e55] [cursor=pointer]:
+            - /url: /login
+  - alert [ref=e56]
+```
