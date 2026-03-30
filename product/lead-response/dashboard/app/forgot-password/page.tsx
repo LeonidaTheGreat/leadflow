@@ -127,6 +127,7 @@ export default function ForgotPasswordPage() {
                       required
                       disabled={loading}
                       autoComplete="email"
+                      data-testid="forgot-password-email-input"
                     />
                   </div>
                 </div>
@@ -141,6 +142,7 @@ export default function ForgotPasswordPage() {
                   type="submit"
                   disabled={loading}
                   className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-6"
+                  data-testid="forgot-password-submit-button"
                 >
                   {loading ? (
                     <>
