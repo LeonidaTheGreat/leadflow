@@ -14,9 +14,9 @@
     "test:load": "node scripts/load-test.js",
     "test:load:quick": "node scripts/load-test.js --quick",
     "test:load:local": "node scripts/load-test.js --target local",
-    "test:browser": "npx playwright test --config=e2e/playwright.config.ts",
-    "test:browser:headed": "npx playwright test --config=e2e/playwright.config.ts --headed",
-    "test:browser:local": "PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --config=e2e/playwright.config.ts"
+    "test:browser": "npx playwright test --config=playwright.config.js",
+    "test:browser:headed": "npx playwright test --config=playwright.config.js --headed",
+    "test:browser:local": "PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --config=playwright.config.js"
   },
   "dependencies": {
     "axios": "^1.13.5",
