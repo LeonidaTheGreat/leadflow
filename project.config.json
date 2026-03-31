@@ -106,7 +106,8 @@
       "deploy": {
         "target_id": "vercel-dashboard",
         "cwd": "product/lead-response/dashboard",
-        "command": "/opt/homebrew/bin/vercel --prod --yes",
+        "command": "/opt/homebrew/bin/vercel promote $(/opt/homebrew/bin/vercel api '/v6/deployments?projectId=prj_p9ZX952UhE1cl1PYZAgVW53FqVm9&target=production&state=READY&limit=1' 2>/dev/null | grep -o '\"uid\": \"dpl_[^\"]*\"' | head -1 | grep -o 'dpl_[^\"]*') --yes",
+        "deploy_note": "GitHub integration auto-deploys on push to main (alwaysRefuseToBuild=true blocks CLI builds). This command promotes the latest GitHub-built production deployment to production alias.",
         "source_dirs": [
           "app/",
           "components/",
@@ -127,7 +128,8 @@
       "deploy": {
         "target_id": "vercel-webhook",
         "cwd": ".",
-        "command": "/opt/homebrew/bin/vercel --prod --yes",
+        "command": "/opt/homebrew/bin/vercel promote $(/opt/homebrew/bin/vercel api '/v6/deployments?projectId=prj_W7P97ggE1vbIAZujq8CxSyCBwcIe&target=production&state=READY&limit=1' 2>/dev/null | grep -o '\"uid\": \"dpl_[^\"]*\"' | head -1 | grep -o 'dpl_[^\"]*') --yes",
+        "deploy_note": "GitHub integration auto-deploys on push to main (alwaysRefuseToBuild=true blocks CLI builds). This promotes the latest GitHub-built production deployment.",
         "source_dirs": [
           "routes/",
           "lib/",
@@ -148,7 +150,8 @@
       "deploy": {
         "target_id": "vercel-dashboard",
         "cwd": "product/lead-response/dashboard",
-        "command": "/opt/homebrew/bin/vercel --prod --yes"
+        "command": "/opt/homebrew/bin/vercel promote $(/opt/homebrew/bin/vercel api '/v6/deployments?projectId=prj_p9ZX952UhE1cl1PYZAgVW53FqVm9&target=production&state=READY&limit=1' 2>/dev/null | grep -o '\"uid\": \"dpl_[^\"]*\"' | head -1 | grep -o 'dpl_[^\"]*') --yes",
+        "deploy_note": "GitHub integration auto-deploys on push to main. This promotes the latest ready production deployment."
       }
     },
     {
@@ -183,7 +186,8 @@
       "deploy": {
         "target_id": "vercel-dashboard",
         "cwd": "product/lead-response/dashboard",
-        "command": "/opt/homebrew/bin/vercel --prod --yes"
+        "command": "/opt/homebrew/bin/vercel promote $(/opt/homebrew/bin/vercel api '/v6/deployments?projectId=prj_p9ZX952UhE1cl1PYZAgVW53FqVm9&target=production&state=READY&limit=1' 2>/dev/null | grep -o '\"uid\": \"dpl_[^\"]*\"' | head -1 | grep -o 'dpl_[^\"]*') --yes",
+        "deploy_note": "GitHub integration auto-deploys on push to main. This promotes the latest ready production deployment."
       }
     }
   ],
