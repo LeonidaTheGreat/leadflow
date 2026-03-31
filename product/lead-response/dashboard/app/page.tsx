@@ -174,11 +174,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials — Social Proof Section */}
-      <section id="testimonials" className="bg-white dark:bg-slate-900 py-20">
+      {/* How It Works Section */}
+      <section id="how-it-works" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            What Real Estate Agents Are Saying
+            How It Works
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            LeadFlow AI responds to leads in three simple steps.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <HowItWorksStep 
+              step={1} 
+              title="Lead Arrives" 
+              description="A potential buyer texts about a property or fills out a form on your website."
+            />
+            <HowItWorksStep 
+              step={2} 
+              title="AI Qualifies" 
+              description="LeadFlow AI analyzes the lead instantly — extracting intent, budget, and timeline."
+            />
+            <HowItWorksStep 
+              step={3} 
+              title="Auto-Response Sent" 
+              description="A personalized SMS response is sent within seconds, with a booking link to your calendar."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials — Social Proof Section */}
+      <section data-testid="testimonials" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            What Agents Are Saying
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
             Join hundreds of agents who have transformed their lead response.
@@ -186,8 +216,20 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {testimonials.map((testimonial, index) => (
-              <TestimonialCard key={index} {...testimonial} />
+              <TestimonialCard key={index} quote={testimonial.quote} name={testimonial.name} role={testimonial.role} />
             ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            {/* CTA: get_started_testimonial */}
+            <Link
+              href="/signup/trial"
+              onClick={() => trackCTAClick('get_started_testimonial', 'Get Started', 'testimonials')}
+              data-cta-id="get_started_testimonial"
+              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"
+            >
+              Get Started Today →
+            </Link>
           </div>
 
           <p className="mt-8 text-center text-sm text-slate-400 dark:text-slate-500 italic">
@@ -338,6 +380,18 @@ function FeatureCard({ title, description, icon }: { title: string; description:
   )
 }
 
+function HowItWorksStep({ step, title, description }: { step: number; title: string; description: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-8 text-center">
+      <div className="w-12 h-12 rounded-full bg-emerald-500 text-white font-bold text-xl flex items-center justify-center mx-auto mb-4">
+        {step}
+      </div>
+      <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">{title}</h4>
+      <p className="text-slate-600 dark:text-slate-400">{description}</p>
+    </div>
+  )
+}
+
 function PricingCard({
   name,
   price,
@@ -356,14 +410,7 @@ function PricingCard({
   cta?: string
 }) {
   const isBrokerage = name === 'Brokerage'
-
-  // Map pricing card names to CTA IDs
-  const getPricingCTAId = () => {
-    if (name === 'Starter') return 'pricing_starter'
-    if (name === 'Pro') return 'pricing_pro'
-    if (name === 'Team') return 'pricing_team'
-    return `pricing_${name.toLowerCase()}`
-  }
+  const planSlug = name.toLowerCase()
 
   return (
     <div className={`rounded-xl border-2 p-8 ${popular ? 'border-emerald-500 relative shadow-lg shadow-emerald-500/10' : 'border-slate-200 dark:border-slate-700'}`}>
@@ -389,9 +436,9 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${name.toLowerCase()}`}
-        onClick={() => trackCTAClick(getPricingCTAId(), `${cta} ${name}`, 'pricing')}
-        data-cta-id={getPricingCTAId()}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${planSlug}`}
+        onClick={() => trackCTAClick(`pricing_${planSlug}`, `${cta} ${name}`, 'pricing')}
+        data-cta-id={`pricing_${planSlug}`}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
           popular
             ? 'bg-emerald-500 hover:bg-emerald-600 text-white'

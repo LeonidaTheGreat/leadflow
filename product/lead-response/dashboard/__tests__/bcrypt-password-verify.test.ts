@@ -19,7 +19,7 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let lastInsertedData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
-jest.mock('@/lib/db', () => ({
+jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
     from: (table: string) => {
       if (table === 'real_estate_agents') {
@@ -60,8 +60,13 @@ jest.mock('@/lib/db', () => ({
           }),
         }
       }
+      // Default: support insert().select() chaining for all other tables
       return {
-        insert: () => Promise.resolve({ error: null }),
+        insert: (data: any) => ({
+          select: (columns?: string) => ({
+            single: () => Promise.resolve({ data: { id: '1' }, error: null }),
+          }),
+        }),
       }
     },
   })),
