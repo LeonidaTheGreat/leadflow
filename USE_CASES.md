@@ -1,7 +1,11 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
+<<<<<<< Updated upstream
 > Generated: 2026-03-31T16:50:57.130Z | Source: `use_cases` + `prds` tables
+=======
+> Generated: 2026-03-25T14:04:52.796Z | Source: `use_cases` + `prds` tables
+>>>>>>> Stashed changes
 
 **Progress: 228/261 complete**
 
