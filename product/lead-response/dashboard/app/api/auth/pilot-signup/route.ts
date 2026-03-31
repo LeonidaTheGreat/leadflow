@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
 
-const supabase = supabaseAdmin
+const supabase = createClient(
+  (process.env.NEXT_PUBLIC_API_URL)!,
+  (process.env.SUPABASE_SERVICE_ROLE_KEY)!
+)
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
