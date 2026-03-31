@@ -19,6 +19,9 @@ export async function GET() {
     'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY',
   ]
 
   for (const key of requiredEnvVars) {
@@ -30,16 +33,45 @@ export async function GET() {
     }
   }
 
-  // 2. API connectivity (only if env vars are present)
+  // 2. Supabase connectivity
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (supabaseUrl && supabaseKey && supabaseUrl !== 'https://placeholder.supabase.co' && supabaseKey !== 'placeholder') {
+    try {
+      // Query real_estate_agents (the product customer table) to verify connectivity
+      const { error } = await supabaseAdmin.from('real_estate_agents').select('id').limit(1)
+      checks['supabase_connectivity'] = {
+        ok: !error,
+        detail: error ? `query failed: ${error.message}` : 'connected',
+      }
+    } catch (err: any) {
+      checks['supabase_connectivity'] = {
+        ok: false,
+        detail: `exception: ${err.message}`,
+      }
+    }
+  } else {
+    checks['supabase_connectivity'] = {
+      ok: false,
+      detail: 'skipped — missing credentials',
+    }
+  }
+
+  // 3. API connectivity (only if env vars are present)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
   const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
   if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
     try {
-      // Query real_estate_agents (the product customer table) to verify connectivity
-      const { error } = await supabaseAdmin.from('real_estate_agents').select('id').limit(1)
+      // Verify API connectivity with a simple health check
+      const response = await fetch(`${apiUrl}/api/health`, {
+        headers: {
+          'x-api-key': apiKey,
+        },
+        signal: AbortSignal.timeout(5000),
+      })
       checks['api_connectivity'] = {
-        ok: !error,
-        detail: error ? `query failed: ${error.message}` : 'connected',
+        ok: response.ok,
+        detail: response.ok ? 'connected' : `HTTP ${response.status}`,
       }
     } catch (err: any) {
       checks['api_connectivity'] = {
