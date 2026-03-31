@@ -1,11 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
-<<<<<<< Updated upstream
-> Generated: 2026-03-31T16:50:57.150Z | Source: `project.config.json` journeys + `product_reviews` table
-=======
-> Generated: 2026-03-25T14:04:53.146Z | Source: `project.config.json` journeys + `product_reviews` table
->>>>>>> Stashed changes
+> Generated: 2026-03-31T18:42:03.755Z | Source: `project.config.json` journeys + `product_reviews` table
 
 Review interval: every 14 days
 
