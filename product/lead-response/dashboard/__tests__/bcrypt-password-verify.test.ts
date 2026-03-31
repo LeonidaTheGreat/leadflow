@@ -19,8 +19,9 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let lastInsertedData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
-jest.mock('@/lib/db', () => ({
-  createClient: jest.fn(() => ({
+// Shared mock implementation for database operations
+function createMockDbClient() {
+  return {
     from: (table: string) => {
       if (table === 'real_estate_agents') {
         return {
@@ -37,19 +38,34 @@ jest.mock('@/lib/db', () => ({
           }),
           insert: (data: any) => {
             lastInsertedData = data
-            // Store in mock DB for login tests
+            // Store in mock DB for login tests - MUST include password_hash for bcrypt verification
             if (data.email) {
-              mockAgentsDb.set(data.email.toLowerCase(), {
+              const storedAgent = {
                 ...data,
-                id: data.id || 'agent-123',
-                email_verified: true,
-                onboarding_completed: false,
-              })
+                id: data.id || 'agent-' + Math.random().toString(36).substr(2, 9),
+                email: data.email,
+                password_hash: data.password_hash, // CRITICAL: preserve hashed password
+                email_verified: data.email_verified !== undefined ? data.email_verified : true,
+                onboarding_completed: data.onboarding_completed || false,
+                first_name: data.first_name || '',
+                last_name: data.last_name || '',
+              }
+              mockAgentsDb.set(data.email.toLowerCase(), storedAgent)
+              
+              // Return chainable select/single for post-insert queries
+              return {
+                select: (columns?: string) => ({
+                  single: () => Promise.resolve({
+                    data: storedAgent,
+                    error: null,
+                  }),
+                }),
+              }
             }
             return {
-              select: () => ({
+              select: (columns?: string) => ({
                 single: () => Promise.resolve({
-                  data: { ...mockAgent, email: data.email },
+                  data: data,
                   error: null,
                 }),
               }),
@@ -60,11 +76,23 @@ jest.mock('@/lib/db', () => ({
           }),
         }
       }
+      // For other tables (leads, messages, etc.)
       return {
-        insert: () => Promise.resolve({ error: null }),
+        insert: (data: any) => ({
+          select: (columns?: string) => Promise.resolve({
+            data: Array.isArray(data) ? data.map((d: any, i: number) => ({ ...d, id: 'id-' + i })) : [{ ...data, id: 'id-1' }],
+            error: null,
+          }),
+        }),
       }
     },
-  })),
+  }
+}
+
+jest.mock('@/lib/db', () => ({
+  createClient: jest.fn(() => createMockDbClient()),
+  supabaseAdmin: createMockDbClient(),
+  postgrestAdmin: createMockDbClient(),
 }))
 
 jest.mock('jsonwebtoken', () => ({
@@ -78,6 +106,28 @@ global.fetch = jest.fn(() =>
     text: () => Promise.resolve(''),
   })
 ) as jest.Mock
+
+// Mock session management
+jest.mock('@/lib/session', () => ({
+  createSession: jest.fn(async (data: any) => ({
+    token: 'mock_session_token_' + Math.random().toString(36),
+    userId: data.userId,
+    createdAt: new Date().toISOString(),
+  })),
+  validateSession: jest.fn(async (token: string) => ({
+    userId: 'agent-123',
+    email: 'test@example.com',
+  })),
+}))
+
+// Mock session analytics
+jest.mock('@/lib/session-analytics', () => ({
+  logSessionStart: jest.fn(async (userId: string, ip: string, userAgent: string) => ({
+    id: 'analytics-session-' + Math.random().toString(36).substr(2, 9),
+    userId,
+    timestamp: new Date().toISOString(),
+  })),
+}))
 
 // Mock agent-session
 jest.mock('@/lib/agent-session', () => ({
