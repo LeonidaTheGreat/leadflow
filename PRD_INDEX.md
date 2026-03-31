@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-31T13:20:04.229Z | Source: `prds` table
+> Generated: 2026-03-31T17:41:01.567Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -79,6 +79,7 @@
 | PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/prd/PRD-REVENUE-RECOVERY-001.md](docs/prd/PRD-REVENUE-RECOVERY-001.md) |
 | prd-revenue-recovery-002 | Revenue Recovery — Close $9.6K MRR Gap | draft | - | [docs/prd/PRD-REVENUE-RECOVERY-002.md](docs/prd/PRD-REVENUE-RECOVERY-002.md) |
 | PRD-REVENUE-RECOVERY-BOTTLENECK-001 | Revenue Recovery — Bottleneck Analysis & Reprioritization | approved | - | [docs/prd/PRD-REVENUE-RECOVERY-BOTTLENECK-ANALYSIS.md](docs/prd/PRD-REVENUE-RECOVERY-BOTTLENECK-ANALYSIS.md) |
+| PRD-REVENUE-RECOVERY-CRITICAL-2026-03-31 | Revenue Recovery — Critical Path to First $20K MRR | draft | 1.0 | [docs/prd/PRD-REVENUE-RECOVERY-CRITICAL.md](docs/prd/PRD-REVENUE-RECOVERY-CRITICAL.md) |
 | prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/prd/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/prd/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/prd/PRD-SESSION-ANALYTICS-PILOT.md](docs/prd/PRD-SESSION-ANALYTICS-PILOT.md) |
 | PRD-SIGNUP-AUTH-TOKEN-FIX-001 | Fix Auth Token Gap — Signup → Onboarding Redirect | approved | - | [docs/prd/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md](docs/prd/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md) |
