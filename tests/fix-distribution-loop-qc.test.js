@@ -78,9 +78,9 @@ test('REQ-1: UC gate logged with clear message', () => {
 
 // ── REQ-2: Task Cooldown Check ────────────────────────────────────────────────
 
-test('REQ-2: createDistributionTasks computes 48-hour window', () => {
-  assert(sourceCode.includes('48 * 60 * 60 * 1000'), 
-    'Should compute 48-hour window (48 * 60 * 60 * 1000 milliseconds)')
+test('REQ-2: createDistributionTasks computes 24-hour window', () => {
+  assert(sourceCode.includes('24 * 60 * 60 * 1000'), 
+    'Should compute 24-hour window (24 * 60 * 60 * 1000 milliseconds)')
 })
 
 test('REQ-2: createDistributionTasks queries recent tasks by use_case_id', () => {
@@ -88,9 +88,9 @@ test('REQ-2: createDistributionTasks queries recent tasks by use_case_id', () =>
     'Should filter recent tasks by use_case_id')
 })
 
-test('REQ-2: createDistributionTasks uses gte on created_at with 48h timestamp', () => {
-  assert(sourceCode.includes(".gte('created_at', fortyEightHoursAgo)"), 
-    'Should check tasks created_at >= 48 hours ago')
+test('REQ-2: createDistributionTasks uses gte on created_at with 24h timestamp', () => {
+  assert(sourceCode.includes(".gte('created_at', twentyFourHoursAgo)"), 
+    'Should check tasks created_at >= 24 hours ago')
 })
 
 test('REQ-2: createDistributionTasks skips if recent task exists', () => {
@@ -100,7 +100,7 @@ test('REQ-2: createDistributionTasks skips if recent task exists', () => {
 })
 
 test('REQ-2: Cooldown check does not filter by status (all statuses checked)', () => {
-  const cooldownSection = sourceCode.match(/const fortyEightHoursAgo[\s\S]*?if \(recentTasks/)[0]
+  const cooldownSection = sourceCode.match(/const twentyFourHoursAgo[\s\S]*?if \(recentTasks/)[0]
   assert(!cooldownSection.includes(".eq('status'"), 
     'Cooldown should NOT filter by status — checks done, failed, and in_progress')
 })
@@ -138,8 +138,8 @@ test('REQ-4: Skipped issues logged with UC completion reason', () => {
 test('REQ-4: Skipped tasks logged with cooldown reason', () => {
   assert(sourceCode.includes("[Distribution] Skipping"), 
     'Should log when skipping task creation')
-  assert(sourceCode.includes('within 48h') || sourceCode.includes('48h'), 
-    'Log should indicate 48-hour cooldown was the reason')
+  assert(sourceCode.includes('within 24h') || sourceCode.includes('24h'), 
+    'Log should indicate 24-hour cooldown was the reason')
 })
 
 test('REQ-4: Cooldown log includes task ID and status', () => {
@@ -148,8 +148,8 @@ test('REQ-4: Cooldown log includes task ID and status', () => {
   // The cooldown log should include references to recent.id and recent.status
   assert(sourceCode.includes('recent.id'), 'Cooldown log should reference recent.id (task ID)')
   assert(sourceCode.includes('recent.status'), 'Cooldown log should reference recent.status')
-  assert(sourceCode.includes('[Distribution] Skipping') && sourceCode.includes('48h'), 
-    'Should have skipping log with 48h cooldown reference')
+  assert(sourceCode.includes('[Distribution] Skipping') && sourceCode.includes('24h'), 
+    'Should have skipping log with 24h cooldown reference')
 })
 
 // ── Export & Validation ─────────────────────────────────────────────────────
