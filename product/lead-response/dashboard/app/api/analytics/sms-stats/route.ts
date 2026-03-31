@@ -59,10 +59,55 @@ export async function GET(request: NextRequest) {
     const windowStart = parseWindowStart(windowParam)
 
     // ============================================================
+    // GET AGENT'S LEAD IDS
+    // sms_messages table doesn't have agent_id directly; must join through leads
+    // ============================================================
+    
+    let agentLeadsQuery = supabaseAdmin
+      .from('leads')
+      .select('id')
+      .eq('agent_id', agentId)
+
+    if (windowStart) {
+      agentLeadsQuery = agentLeadsQuery.gte('created_at', windowStart.toISOString())
+    }
+
+    const { data: agentLeads, error: agentLeadsError } = await agentLeadsQuery
+
+    if (agentLeadsError || !agentLeads) {
+      console.error('[sms-stats] Error fetching agent leads:', agentLeadsError)
+      return NextResponse.json({
+        deliveryRate: null,
+        replyRate: null,
+        totalOutbound: 0,
+        totalDelivered: 0,
+        totalReplies: 0,
+        uniqueLeadsMessaged: 0,
+        error: agentLeadsError?.message || 'Failed to fetch agent leads'
+      })
+    }
+
+    const agentLeadIds = agentLeads.map((l: any) => l.id)
+    if (agentLeadIds.length === 0) {
+      // No leads for this agent, return zero stats
+      return NextResponse.json({
+        window: windowParam,
+        deliveryRate: null,
+        replyRate: null,
+        bookingConversion: null,
+        messagesSent: 0,
+        messagesDelivered: 0,
+        leadsMessaged: 0,
+        leadsReplied: 0,
+        bookingsMade: 0,
+      })
+    }
+
+    // ============================================================
     // DELIVERY RATE
     // delivery_rate = delivered / total_outbound
     //
-    // Uses sms_messages table which has a direct agent_id column.
+    // Uses sms_messages table via lead_id join.
     // Twilio stores direction as 'outbound-api' or 'outbound-reply', not 'outbound'.
     // Use .in() to capture all outbound Twilio direction variants.
     // ============================================================
@@ -71,7 +116,7 @@ export async function GET(request: NextRequest) {
       .from('sms_messages')
       .select('id, status, lead_id')
       .in('direction', ['outbound-api', 'outbound-reply'])
-      .eq('agent_id', agentId)
+      .in('lead_id', agentLeadIds)
 
     if (windowStart) {
       outboundQuery = outboundQuery.gte('created_at', windowStart.toISOString())
@@ -110,16 +155,16 @@ export async function GET(request: NextRequest) {
     // reply_rate = unique_leads_replied / unique_leads_messaged
     // Excludes opt-out replies
     //
-    // Uses message_body column for opt-out detection.
+    // Uses body column for opt-out detection.
     // ============================================================
 
-    // Fix: query sms_messages; Twilio stores inbound direction as 'inbound'.
-    // Use message_body column (sms_messages column name vs 'body' in messages table).
+    // Query sms_messages; Twilio stores inbound direction as 'inbound'.
+    // Use body column (the actual column name in production sms_messages table).
     let inboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('lead_id, message_body')
+      .select('lead_id, body')
       .eq('direction', 'inbound')
-      .eq('agent_id', agentId)
+      .in('lead_id', agentLeadIds)
 
     if (windowStart) {
       inboundQuery = inboundQuery.gte('created_at', windowStart.toISOString())
@@ -133,10 +178,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Unique leads who replied (excluding opt-outs)
-    // Use message_body — the column name in sms_messages (not 'body')
+    // Use body — the actual column name in sms_messages table
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.message_body))
+        .filter((m: any) => !isOptOut(m.body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
@@ -155,14 +200,11 @@ export async function GET(request: NextRequest) {
     // booking_conversion = unique_leads_booked / unique_leads_replied
     // ============================================================
 
-    // NOTE: bookings.agent_id may be NULL if not set during webhook processing.
-    // We must join through leads to find all bookings for an agent's leads.
-    // Uses Supabase foreign table syntax: leads!inner(agent_id) for cross-table filter
-
+    // Filter bookings by lead_id (already filtered to agent's leads above)
     let bookingsQuery = supabaseAdmin
       .from('bookings')
-      .select('lead_id, leads!inner(agent_id)')
-      .eq('leads.agent_id', agentId)
+      .select('lead_id')
+      .in('lead_id', agentLeadIds)
 
     if (windowStart) {
       bookingsQuery = bookingsQuery.gte('created_at', windowStart.toISOString())

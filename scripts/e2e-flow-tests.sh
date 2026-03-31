@@ -25,6 +25,12 @@ PASSED=0
 FAILED=0
 RESULTS=()
 
+# E2E test state — set by test_trial_signup_flow, used by dashboard/billing/sms-stats tests
+E2E_TOKEN=""
+E2E_EMAIL=""
+E2E_AGENT_ID=""
+E2E_SESSION_TOKEN=""
+
 run_test() {
   local id="$1"
   local name="$2"
@@ -101,6 +107,26 @@ test_trial_signup_flow() {
 
   E2E_TOKEN=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null) || true
   E2E_EMAIL="$email"
+  E2E_AGENT_ID=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agentId',''))" 2>/dev/null) || true
+
+  # Create a login session and prepare the user for dashboard/billing/sms-stats tests
+  if [ -n "${API_KEY:-}" ] && [ -n "$E2E_AGENT_ID" ]; then
+    # Mark onboarding complete and set future trial expiry so dashboard access works
+    curl -s --max-time 10 -X PATCH \
+      "$API_URL/real_estate_agents?id=eq.$E2E_AGENT_ID" \
+      -H "apikey: $API_KEY" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"onboarding_completed":true,"trial_ends_at":"2030-01-01T00:00:00Z"}' \
+      >/dev/null 2>&1 || true
+
+    # Login to create a real leadflow_session cookie (sessions table)
+    local login_resp
+    login_resp=$(curl -s --max-time 15 -X POST "$BASE_URL/api/auth/login" \
+      -H "Content-Type: application/json" \
+      -d "{\"email\":\"$email\",\"password\":\"E2eTest123!\"}" 2>/dev/null) || true
+    E2E_SESSION_TOKEN=$(echo "$login_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null) || true
+  fi
 }
 
 # Test 7: Trial-status returns agentId when authenticated
@@ -144,25 +170,25 @@ test_lead_capture() {
 
 # Test 10: Dashboard loads without client-side errors (needs session)
 test_dashboard_no_errors() {
-  [ -z "${API_KEY:-}" ] && return 1
+  # Use session from E2E trial signup flow (onboarding_completed=true, valid trial)
+  local token="${E2E_SESSION_TOKEN:-}"
 
-  # Get a user who has completed onboarding (non-test real user)
-  local agent_resp user_id
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+  # Fallback: try to find an existing session in DB for a user with onboarding complete
+  if [ -z "$token" ] && [ -n "${API_KEY:-}" ]; then
+    local now user_id agent_resp session
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || true
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    if [ -n "$user_id" ]; then
+      now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      session=$(curl -s --max-time 10 \
+        "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
+        -H "apikey: $API_KEY" 2>/dev/null) || true
+      token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
+    fi
+  fi
 
-  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-  [ -z "$user_id" ] && return 1
-
-  # Get their most recent non-expired session
-  local now session token
-  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  session=$(curl -s --max-time 10 \
-    "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
-
-  token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
   [ -z "$token" ] && return 1
 
   # Load dashboard with session, check for error strings
@@ -179,15 +205,22 @@ test_dashboard_no_errors() {
 
 # Test 11: Billing page loads without errors
 test_billing_no_errors() {
-  [ -z "${API_KEY:-}" ] && return 1
+  # Use session from E2E trial signup flow
+  local token="${E2E_SESSION_TOKEN:-}"
 
-  local session token html
-  session=$(curl -s --max-time 10 \
-    "$API_URL/sessions?select=token&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
-  token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
+  # Fallback: try to find any session in DB
+  if [ -z "$token" ] && [ -n "${API_KEY:-}" ]; then
+    local now session
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    session=$(curl -s --max-time 10 \
+      "$API_URL/sessions?select=token&expires_at=gte.${now}&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || true
+    token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
+  fi
+
   [ -z "$token" ] && return 1
 
+  local html
   html=$(curl -s --max-time 15 "$BASE_URL/settings/billing" \
     -H "Cookie: leadflow_session=$token" 2>/dev/null) || return 1
 
@@ -197,20 +230,34 @@ test_billing_no_errors() {
 
 # Test 12: SMS stats API doesn't crash
 test_sms_stats_no_crash() {
-  [ -z "${API_KEY:-}" ] && return 1
+  # Use session from E2E trial signup flow, or JWT auth-token as fallback
+  local token="${E2E_SESSION_TOKEN:-}"
+  local jwt_token="${E2E_TOKEN:-}"
 
-  local session token
-  session=$(curl -s --max-time 10 \
-    "$API_URL/sessions?select=token,user_id&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
-  token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
-  [ -z "$token" ] && return 1
+  # Fallback: try to find any non-expired session in DB
+  if [ -z "$token" ] && [ -n "${API_KEY:-}" ]; then
+    local now session
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    session=$(curl -s --max-time 10 \
+      "$API_URL/sessions?select=token&expires_at=gte.${now}&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || true
+    token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
+  fi
 
-  local resp
-  resp=$(curl -s --max-time 10 "$BASE_URL/api/analytics/sms-stats?window=30" \
-    -H "Cookie: leadflow_session=$token" 2>/dev/null) || return 1
+  # Must have at least one auth method
+  [ -z "$token" ] && [ -z "$jwt_token" ] && return 1
 
-  # Should NOT contain "does not exist"
+  local resp cookie_header
+  if [ -n "$token" ]; then
+    cookie_header="leadflow_session=$token"
+  else
+    cookie_header="auth-token=$jwt_token"
+  fi
+
+  resp=$(curl -s --max-time 10 "$BASE_URL/api/analytics/sms-stats?window=30d" \
+    -H "Cookie: $cookie_header" 2>/dev/null) || return 1
+
+  # Should NOT contain "does not exist" (schema error)
   echo "$resp" | grep -q 'does not exist' && return 1
   return 0
 }
