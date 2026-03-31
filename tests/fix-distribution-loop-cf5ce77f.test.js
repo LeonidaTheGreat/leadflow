@@ -12,6 +12,7 @@
 const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const assert = require('assert').strict
 
 const DISTRIBUTION_COLLECTOR = path.resolve('/Users/clawdbot/.openclaw/genome/scripts/distribution-collector.js')
 const TASK_STORE = path.resolve('/Users/clawdbot/.openclaw/genome/core/task-store.js')
