@@ -1,0 +1,15 @@
+-- Migration 006: Distribution Loop Detector Cooldown
+-- This migration documents the loop detector fixes applied:
+-- 1. Changed loop detector dedup from status-only to 24h time window
+-- 2. Added UC completion gate in distribution-collector.js
+-- 3. Updated cooldown from 30 minutes to 48 hours
+--
+-- The actual code changes are in:
+-- - ~/.openclaw/genome/scripts/distribution-collector.js (UC completion gate, 48h cooldown)
+-- - No schema changes needed - existing distribution_channels/metrics tables are sufficient
+--
+-- Verification: After this fix, no new PM:Distribution tasks should be created
+-- within 48 hours of the previous identical task, and completed UCs should not
+-- trigger distribution issues.
+
+-- No DDL changes required - this documents system-level fixes only
