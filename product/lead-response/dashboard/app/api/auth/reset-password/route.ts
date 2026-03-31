@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
     // Look up the token in DB
     const { data: resetToken, error: tokenError } = await supabase
       .from('password_reset_tokens')
-      .select('id, email, expires_at, used_at')
-      .eq('token', tokenHash)
+      .select('id, agent_id, expires_at, used')
+      .eq('token_hash', tokenHash)
       .single()
 
     if (tokenError || !resetToken) {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check used
-    if (resetToken.used_at) {
+    if (resetToken.used) {
       return NextResponse.json(
         { error: 'This reset link has already been used.' },
         { status: 400 }
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         password_hash: passwordHash,
         updated_at: new Date().toISOString(),
       })
-      .eq('email', resetToken.email)
+      .eq('id', resetToken.agent_id)
 
     if (updateError) {
       console.error('Failed to update password:', updateError.message)
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     // Mark token as used
     await supabase
       .from('password_reset_tokens')
-      .update({ used_at: new Date().toISOString() })
+      .update({ used: true })
       .eq('id', resetToken.id)
 
     return NextResponse.json({ success: true })
