@@ -1,1 +1,10 @@
 project.config.json merge=ours
+
+# Auto-generated files — regenerated every heartbeat.
+# Always keep "ours" on merge conflicts to prevent blocking the git index.
+DASHBOARD.md merge=ours
+E2E_MAPPINGS.md merge=ours
+JOURNEYS.md merge=ours
+ORCHESTRATOR-HEARTBEAT-LOG.md merge=ours
+PRD_INDEX.md merge=ours
+USE_CASES.md merge=ours
