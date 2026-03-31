@@ -1,30 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-31T16:50:57.156Z
+Last updated: 2026-03-31T18:06:43.378Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-30T06:18:47.674Z",
-    "status": {
-      "ready": 4,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1837,
-      "total": 2021
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":4,\"inProgress\":0,\"blocked\":0,\"done\":1837,\"total\":2021}",
-      "Re-triggered 2 stuck spawn(s)",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-30T06:28:48.953Z",
     "status": {
@@ -2219,9 +2197,42 @@ Last updated: 2026-03-31T16:50:57.156Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-31T18:06:43.373Z",
+    "status": {
+      "ready": 0,
+      "inProgress": 2,
+      "blocked": 3,
+      "done": 2062,
+      "total": 2258
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":0,\"inProgress\":2,\"blocked\":3,\"done\":2062,\"total\":2258}",
+      "Checked 3 blocked tasks",
+      "Smoke tests: 8/9 passed",
+      "Product sync: 6 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "UC acceptance failed: uc-distribution-loop-dedup",
+      "UC acceptance failed: UC-FIX-DISTRIBUTION-LOOP-001",
+      "UC completed (sweep): uc-fix-loop-detector-cooldown",
+      "UC acceptance failed: uc-fix-revenue-alert-loop",
+      "Backfilled PR #732 for dev/439436ba-dev-uc-acceptance-failed-uc-fix-loop-det",
+      "Backfilled PR #733 for dev/4e30e060-dev-uc-acceptance-failed-uc-fix-revenue-",
+      "Backfilled PR #734 for dev/e1556b76-dev-uc-acceptance-failed-uc-distribution",
+      "Product review triggered: Distribution Loop Fix — Wave 4 (Migration Missing + PostgREST Gone)",
+      "Product review triggered: Fix Distribution Loop — Wave 5 Emergency Escalation",
+      "Processed product review: 0 decisions, 0 UCs, 0 action items",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":1,"blocked":3,"done":1969,"total":2164}
+- Last status: {"ready":0,"inProgress":2,"blocked":3,"done":2062,"total":2258}
