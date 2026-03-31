@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-30T14:44:48.480Z | Source: `prds` table
+> Generated: 2026-03-31T02:39:50.060Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -17,9 +17,13 @@
 | PRD-DEPLOYED-PAGES-SYNC | Auto-Sync Deployed Pages to System Components | approved | 1.1 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC.md) |
 | PRD-DEPLOYED-PAGES-SYNC-FIX | Fix Deployed Pages Sync - Schema Alignment | approved | 1.3 | [/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md](/Users/clawdbot/projects/leadflow/docs/PRD-DEPLOYED-PAGES-SYNC-FIX.md) |
 | PRD-DIAGNOSIS-SIGNUP-PLAN-001 | Diagnosis: Signup Plan Render Failure — QC Failure Root Cause | approved | 1 | [docs/prd/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md](docs/prd/PRD-DIAGNOSIS-SIGNUP-PLAN-RENDER-FAILURE.md) |
-| PRD-DISTRIBUTION-LOOP-DEDUP-FIX | Distribution Loop Deduplication Fix — Definitive Spec (Wave 3) | approved | - | [docs/prd/PRD-DISTRIBUTION-LOOP-DEDUP-FIX.md](docs/prd/PRD-DISTRIBUTION-LOOP-DEDUP-FIX.md) |
-| prd-distribution-loop-fix | Distribution Loop Fix — Prevent Duplicate Create Landing Page Tasks | draft | - | [docs/prd/PRD-DISTRIBUTION-LOOP-FIX.md](docs/prd/PRD-DISTRIBUTION-LOOP-FIX.md) |
+| prd-distribution-loop-dedup | Distribution Loop Deduplication Fix | draft | - | [docs/prd/PRD-DISTRIBUTION-LOOP-DEDUP.md](docs/prd/PRD-DISTRIBUTION-LOOP-DEDUP.md) |
+| PRD-DISTRIBUTION-LOOP-DEDUP-FIX | Distribution Loop Fix — Wave 4 (Migration Missing + PostgREST Gone) | approved | - | [docs/prd/PRD-DISTRIBUTION-LOOP-DEDUP-FIX.md](docs/prd/PRD-DISTRIBUTION-LOOP-DEDUP-FIX.md) |
+| prd-distribution-loop-fix | Fix Distribution Health Check Loop | draft | - | [docs/prd/PRD-DISTRIBUTION-LOOP-FIX.md](docs/prd/PRD-DISTRIBUTION-LOOP-FIX.md) |
 | prd-distribution-loop-migration-006 | Distribution Loop — Migration 006 Not Applied to Local PostgreSQL | approved | - | [docs/prd/PRD-DISTRIBUTION-LOOP-MIGRATION-006.md](docs/prd/PRD-DISTRIBUTION-LOOP-MIGRATION-006.md) |
+| prd-distribution-loop-wave10 | Distribution Loop — Wave 10 FINAL ESCALATION | approved | - | [docs/prd/PRD-DISTRIBUTION-LOOP-WAVE10.md](docs/prd/PRD-DISTRIBUTION-LOOP-WAVE10.md) |
+| prd-distribution-loop-wave8 | Fix Distribution Loop — Wave 8 Investigation | approved | - | [docs/prd/PRD-DISTRIBUTION-LOOP-WAVE8.md](docs/prd/PRD-DISTRIBUTION-LOOP-WAVE8.md) |
+| prd-distribution-loop-wave9 | Distribution Loop — Wave 9 Investigation | approved | - | [docs/prd/PRD-DISTRIBUTION-LOOP-WAVE9.md](docs/prd/PRD-DISTRIBUTION-LOOP-WAVE9.md) |
 | prd-email-verification-before-login | Email Verification — Confirm Inbox Before Login | approved | - | [docs/prd/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md](docs/prd/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md) |
 | prd-email-verification-db-migration-fix | Email Verification DB Migration Fix | approved | - | [docs/prd/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md](docs/prd/PRD-EMAIL-VERIFICATION-DB-MIGRATION-FIX.md) |
 | PRD-FEAT-DEMO-WITHOUT-SIGNUP-001 | Live AI Demo — Experience the Product Without Signing Up | approved | 1.0 | [docs/prd/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md](docs/prd/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md) |
@@ -28,7 +32,12 @@
 | prd-fix-api-health-endpoint-wrong-table | Fix API Health Endpoint — Wrong Table Query | approved | - | [docs/prd/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md](docs/prd/PRD-FIX-API-HEALTH-ENDPOINT-WRONG-TABLE.md) |
 | PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS | Fix Checkout — Replace subscription_attempts with checkout_sessions | approved | - | [docs/prd/PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS.md](docs/prd/PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS.md) |
 | PRD-FIX-DISTRIBUTION-LOOP | Fix Distribution Health Check Loop | approved | - | [docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md](docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md) |
+| prd-fix-distribution-loop-consolidated | Fix Distribution Loop — Consolidated Spec (Wave 7) | approved | - | [docs/prd/PRD-FIX-DISTRIBUTION-LOOP-CONSOLIDATED.md](docs/prd/PRD-FIX-DISTRIBUTION-LOOP-CONSOLIDATED.md) |
+| prd-fix-distribution-loop-wave6 | Fix Distribution Loop — Wave 6 (Definitive Execution Spec) | approved | - | [docs/prd/PRD-FIX-DISTRIBUTION-LOOP-WAVE6.md](docs/prd/PRD-FIX-DISTRIBUTION-LOOP-WAVE6.md) |
+| prd-fix-distribution-loop-wave7 | Fix Distribution Loop — Wave 7 Investigation | approved | - | [docs/prd/PRD-FIX-DISTRIBUTION-LOOP-WAVE7.md](docs/prd/PRD-FIX-DISTRIBUTION-LOOP-WAVE7.md) |
 | PRD-FIX-LEAD-CAPTURE-PROD-ENV | Fix /api/lead-capture Production Environment Failure | approved | 1.0 | [docs/prd/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md](docs/prd/PRD-FIX-LEAD-CAPTURE-PROD-ENV.md) |
+| prd-fix-loop-detector-cooldown | Fix Loop Detector Cooldown — Wave 4 Consolidated Spec | approved | - | [docs/prd/PRD-FIX-LOOP-DETECTOR-COOLDOWN.md](docs/prd/PRD-FIX-LOOP-DETECTOR-COOLDOWN.md) |
+| prd-fix-loop-detector-wave5 | Fix Distribution Loop — Wave 5 Emergency Escalation | approved | - | [docs/prd/PRD-FIX-LOOP-DETECTOR-WAVE5.md](docs/prd/PRD-FIX-LOOP-DETECTOR-WAVE5.md) |
 | PRD-FIX-ONBOARDING-500-001 | Fix Onboarding 500 Error — Complete Agents Table Migration | approved | 1.1 | [docs/prd/PRD-FIX-ONBOARDING-500-001.md](docs/prd/PRD-FIX-ONBOARDING-500-001.md) |
 | PRD-FIX-PRICING-CORRECTION | Fix Pricing — Correct 10x Price Error in BillingCard and Checkout | approved | - | [docs/prd/PRD-FIX-PRICING-CORRECTION.md](docs/prd/PRD-FIX-PRICING-CORRECTION.md) |
 | PRD-FIX-REMAINING-AGENTS-TABLE | Fix Remaining agents Table References — Product Routes | approved | 1.0 | [docs/prd/PRD-FIX-REMAINING-AGENTS-TABLE.md](docs/prd/PRD-FIX-REMAINING-AGENTS-TABLE.md) |
@@ -62,9 +71,14 @@
 | PRD-PRODUCT-STATUS-001 | LeadFlow Product Status Report — Day 19 of 60 | approved | 1.0 | [docs/prd/PRD-PRODUCT-STATUS-REPORT-001.md](docs/prd/PRD-PRODUCT-STATUS-REPORT-001.md) |
 | PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM | Project Structure Convention System | draft | 1.0 | [docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md](docs/prd/PRD-PROJECT-STRUCTURE-CONVENTION-SYSTEM.md) |
 | prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |
-| prd-revenue-alert-dedup | Revenue Alert Task Deduplication | draft | - | [docs/prd/PRD-REVENUE-ALERT-DEDUPLICATION.md](docs/prd/PRD-REVENUE-ALERT-DEDUPLICATION.md) |
+| PRD-REVENUE-ALERT-CRITICAL-MRR | Revenue Alert — Critical MRR Gap Analysis & Action Plan | draft | 1.0 | [docs/prd/PRD-REVENUE-ALERT-CRITICAL-MRR.md](docs/prd/PRD-REVENUE-ALERT-CRITICAL-MRR.md) |
+| prd-revenue-alert-dedup | Revenue Alert Task Deduplication | approved | 1.0 | [docs/prd/PRD-REVENUE-ALERT-DEDUPLICATION.md](docs/prd/PRD-REVENUE-ALERT-DEDUPLICATION.md) |
+| prd-revenue-alert-idempotency | Revenue Alert Idempotency & Loop Prevention | draft | 1.0 | [docs/prd/PRD-REVENUE-ALERT-IDEMPOTENCY.md](docs/prd/PRD-REVENUE-ALERT-IDEMPOTENCY.md) |
+| prd-revenue-alert-loop-fix | Fix Revenue Alert Loop Detection | draft | 1 | [docs/prd/PRD-REVENUE-ALERT-LOOP-FIX.md](docs/prd/PRD-REVENUE-ALERT-LOOP-FIX.md) |
+| prd-revenue-alert-loop-root-cause | Revenue Alert Loop — Root Cause & Fix Specification | draft | 1 | [docs/prd/PRD-REVENUE-ALERT-LOOP-ROOT-CAUSE.md](docs/prd/PRD-REVENUE-ALERT-LOOP-ROOT-CAUSE.md) |
 | PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/prd/PRD-REVENUE-RECOVERY-001.md](docs/prd/PRD-REVENUE-RECOVERY-001.md) |
 | prd-revenue-recovery-002 | Revenue Recovery — Close $9.6K MRR Gap | draft | - | [docs/prd/PRD-REVENUE-RECOVERY-002.md](docs/prd/PRD-REVENUE-RECOVERY-002.md) |
+| PRD-REVENUE-RECOVERY-BOTTLENECK-001 | Revenue Recovery — Bottleneck Analysis & Reprioritization | approved | - | [docs/prd/PRD-REVENUE-RECOVERY-BOTTLENECK-ANALYSIS.md](docs/prd/PRD-REVENUE-RECOVERY-BOTTLENECK-ANALYSIS.md) |
 | prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/prd/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/prd/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/prd/PRD-SESSION-ANALYTICS-PILOT.md](docs/prd/PRD-SESSION-ANALYTICS-PILOT.md) |
 | PRD-SIGNUP-AUTH-TOKEN-FIX-001 | Fix Auth Token Gap — Signup → Onboarding Redirect | approved | - | [docs/prd/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md](docs/prd/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md) |

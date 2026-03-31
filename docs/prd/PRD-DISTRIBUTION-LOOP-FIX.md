@@ -1,166 +1,167 @@
-# PRD: Fix Distribution Health Loop — Prevent Repeated "Create Landing Page" Task Spawning
-
-**PRD ID:** prd-distribution-loop-fix-001  
-**Status:** approved  
-**Priority:** 1 (Blocker — loop wastes agent budget and creates noise)  
-**Author:** Product Manager  
-**Date:** 2026-03-28  
-**Project:** genome (affects `~/.openclaw/genome/scripts/distribution-collector.js`)
+# PRD: Fix Distribution Health Check Loop
+**ID:** prd-distribution-loop-fix  
+**Status:** draft  
+**Priority:** 1 (Blocker — tasks are being duplicated, wasting agent budget and creating noise)  
+**Author:** PM Agent  
+**Date:** 2026-03-30
 
 ---
 
 ## Problem Statement
 
-The `distribution-collector.js` health check (Loop 6) repeatedly spawns "PM: Distribution — Create Landing Page" tasks because:
+The distribution health check (`distribution-collector.js`) creates "PM: Distribution — Create Landing Page" tasks repeatedly without any cooldown or completion-aware deduplication. Over 10 such tasks were created in 2 hours, exhausting agent budget and flooding the task queue.
 
-1. The check queries `distribution_channels` for `status = 'active'` and `channel_type = 'landing_page'`
-2. When no active channel exists, it spawns a task
-3. The spawned task runs and completes (`done`) — but **never updates `distribution_channels`**
-4. Next heartbeat: same check, same result → new task spawned → infinite loop
+### Root Cause Analysis
 
-This created 12+ identical tasks on 2026-03-02 over ~3 hours. The loop was manually broken by inserting a `distribution_channels` row with `status = 'active'`, NOT by fixing the root cause. The loop can recur for any of the 5 distribution issue types (`no_landing_page`, `zero_traffic`, `zero_signups`, `low_conversion`, `low_trial_conversion`).
+**File:** `~/.openclaw/genome/scripts/distribution-collector.js`  
+**Function:** `createDistributionTasks()`
+
+**Root Cause 1 — Deduplication only blocks active tasks:**  
+`TaskStore.createTask()` checks for duplicate tasks via:
+- UC + agent dedup: `NOT status IN ('done','failed','cancelled')` — **only prevents duplicates while a task is still active**
+- Once the PM task completes (`status=done`), dedup allows a new identical task on the next health check cycle
+
+**Root Cause 2 — Workflow doesn't chain:**  
+`createDistributionTasks` creates only the FIRST step of the workflow (PM task). After PM writes a spec, no mechanism chains to design → dev → qc. The landing page is never built.
+
+**Root Cause 3 — `distribution_channels` table stays empty:**  
+No task in the workflow writes a record to `distribution_channels` when the landing page is deployed. So `checkDistributionHealth()` permanently sees "no active landing page" and keeps raising the issue.
+
+**Evidence:**
+```
+distribution_channels: [] (empty forever)
+10+ tasks titled "PM: Distribution — Create Landing Page" all status=done
+```
 
 ---
 
-## Root Cause Analysis
+## Goals
 
-### Primary cause: No cooldown on recently-completed tasks
+1. Stop the task creation loop for "Distribution — Create Landing Page"
+2. Ensure the distribution workflow chains properly (PM → Marketing → Design → Dev → QC)
+3. Ensure `distribution_channels` is populated when a landing page goes live
+4. Give the genome loop-safe distribution health checks with cooldown logic
 
-`checkDistributionHealth()` checks infrastructure state (`distribution_channels` table), but not task state. After a task completes (`done`), the infrastructure state may not reflect the fix yet — either because:
-- The agent completed the spec/PRD but code hasn't been deployed
-- The `distribution_channels` table wasn't updated as part of task acceptance criteria
+---
 
-### Secondary cause: UC dedup only fires for non-done tasks
+## Out of Scope
 
-`TaskStore.createTask()` deduplicates by `use_case_id + agent_id` only for active (non-done) tasks. If the task completes quickly (before next heartbeat), the dedup window expires.
-
-### Contributing factor: Missing acceptance check
-
-The `gtm-landing-page` use case has `implementation_status: 'complete'` but `e2e_tests_defined: false` and no acceptance checks. The distribution health loop should respect UC completion status.
+- Building the actual landing page (separate Design/Dev task)
+- General landing page content or design
 
 ---
 
 ## Requirements
 
-### REQ-1: UC Completion Gate (in `checkDistributionHealth`)
+### REQ-1: Per-Issue-Type Cooldown in `createDistributionTasks`
 
-Before raising any distribution issue that maps to a use case, check if the linked UC has `implementation_status = 'complete'`:
+Before creating a task for any issue type (e.g., `no_landing_page`), check for existing tasks created in the last **7 days** for the same `use_case_id` regardless of status (including `done`).
 
 ```
-If UC.implementation_status === 'complete', skip this issue type entirely.
+IF exists task WHERE:
+  use_case_id = template.use_case_id
+  AND created_at > NOW() - INTERVAL '7 days'
+THEN: skip creation, log "cooldown active"
 ```
 
-**Affected issue types and their UC IDs:**
-- `no_landing_page` → `gtm-landing-page`
-- `zero_traffic` → `gtm-content`
-- `zero_signups` → `gtm-conversion`
-- `low_conversion` → `gtm-conversion`
-- `low_trial_conversion` → `gtm-onboarding`
+Implementation: Add a 7-day completed-task check to `createDistributionTasks()` before calling `store.createTask()`.
 
-### REQ-2: Task Cooldown Check (in `createDistributionTasks`)
+### REQ-2: Use Case Status Check
 
-Before calling `store.createTask()` for an issue type, query for recent tasks of the same title (or same `use_case_id`) created within the last **48 hours** that are `done`, `failed`, or `in_progress`:
+Before creating a distribution task, check the `use_cases` table for the related UC's status:
+- If `status = 'in_progress'` or `status = 'done'`: skip task creation, log reason
+- If `status = 'not_started'` or `status = 'backlog'`: proceed
 
-```javascript
-const recentTasks = await supabase
-  .from('tasks')
-  .select('id, status, created_at')
-  .eq('project_id', PROJECT_ID)
-  .eq('use_case_id', template.use_case_id)
-  .gte('created_at', fortyEightHoursAgo)
-  .order('created_at', { ascending: false })
-  .limit(1)
+### REQ-3: Register Landing Page on Completion
 
-if (recentTasks?.length > 0) {
-  console.log(`  Skipping ${template.name} — task already created within 48h (${recentTasks[0].id}: ${recentTasks[0].status})`)
-  continue
-}
+When the dev/qc step of the landing page workflow completes, insert a row into `distribution_channels`:
+
+```sql
+INSERT INTO distribution_channels (project_id, channel_type, name, url, status, created_at)
+VALUES ('leadflow', 'landing_page', 'LeadFlow Landing Page', '<deployed URL>', 'active', NOW())
+ON CONFLICT DO NOTHING;
 ```
 
-### REQ-3: Suppress `no_landing_page` When Channel Exists But Recent Task Failed
+This must happen in the dev or QC completion step of the `gtm-landing-page` use case workflow. The QC agent should verify the URL is live before inserting.
 
-If a landing page channel exists with any status (not just `active`), and there's a recent task — do not re-raise `no_landing_page`. Only raise it if no channel row exists at all.
+### REQ-4: Genome — `TaskStore.createTask` Cooldown Option
 
-Change the check from:
-```javascript
-.eq('status', 'active')
-```
-To:
-```javascript
-// Any row = channel is known to exist (even if inactive/building)
-// Only raise if NO row exists at all
-if (!landingPages || landingPages.length === 0) { /* raise issue */ }
+Add an optional `cooldownDays` parameter to `TaskStore.createTask()`:
+
+```js
+store.createTask({
+  ...,
+  cooldownDays: 7  // Don't recreate if same use_case_id completed within 7 days
+})
 ```
 
-Remove the `.eq('status', 'active')` filter for the `no_landing_page` check. A non-active channel means work is in progress, not absent.
-
-### REQ-4: Log Loop Prevention
-
-When skipping task creation due to cooldown or UC completion, log clearly:
-```
-[Distribution] Skipping "Create Landing Page" — gtm-landing-page is complete
-[Distribution] Skipping "Content Marketing Campaign" — task created 4h ago (abc-123: done)
-```
+`createDistributionTasks` should pass `cooldownDays: 7` for all distribution tasks.
 
 ---
 
 ## Acceptance Criteria
 
-1. **No duplicate tasks within 48h**: If "PM: Distribution — Create Landing Page" was created in the last 48h, `createDistributionTasks()` skips it and logs the skip.
-2. **UC completion respected**: If `gtm-landing-page.implementation_status = 'complete'`, `checkDistributionHealth()` does NOT raise `no_landing_page`.
-3. **Channel check loosened**: A `distribution_channels` row with any status (active, building, inactive) suppresses `no_landing_page` issue.
-4. **Logs emit correctly**: Skipped issues are logged with reason.
-5. **Existing channels preserved**: No changes to existing `distribution_channels` data or schema.
+### AC-1: No duplicate tasks within 7 days
+After the PM task for "Create Landing Page" completes, running `checkDistributionHealth()` again should NOT create a new task for 7 days.
 
----
+**Verifiable:** Query tasks table — no two tasks with `use_case_id = 'gtm-landing-page'` and `agent_id = 'product'` should have `created_at` within 7 days of each other (after fix lands).
 
-## File to Modify
+### AC-2: Workflow chains after PM step
+After PM creates a spec for the landing page, a Marketing task and Design task should be spawned automatically within the next heartbeat cycle.
 
-**Genome project only:** `~/.openclaw/genome/scripts/distribution-collector.js`
+### AC-3: `distribution_channels` populated on deploy
+When the landing page is deployed and QC passes, a record exists in `distribution_channels` with `channel_type = 'landing_page'` and `status = 'active'`.
 
-- Function: `checkDistributionHealth()` — add UC completion gate (REQ-1) and loosen channel check (REQ-3)
-- Function: `createDistributionTasks()` — add cooldown check (REQ-2) and skip logging (REQ-4)
+**Verifiable:** `SELECT count(*) FROM distribution_channels WHERE project_id = 'leadflow' AND channel_type = 'landing_page' AND status = 'active'` returns >= 1 after deployment.
 
-**No changes to LeadFlow product code.**
+### AC-4: No new "Loop detected" tasks after fix
+After the fix lands, no new "PM: Loop detected — PM: Distribution — Create Landing Page" tasks should appear in the next 48 hours.
 
 ---
 
 ## E2E Test Specs
 
-### Test 1: UC-complete gate prevents task creation
-- Setup: `gtm-landing-page` has `implementation_status = 'complete'`
-- Action: Run `checkDistributionHealth()` with empty `distribution_channels`
-- Expected: `no_landing_page` issue is NOT in the returned issues array
+### T1: Distribution Dedup Guard
+- **Setup:** Ensure `gtm-landing-page` UC has a `done` task from 3 days ago
+- **Action:** Run `checkDistributionHealth()` + `createDistributionTasks()`
+- **Expected:** No new task created; log shows "cooldown active"
 
-### Test 2: Recent task cooldown prevents duplicate
-- Setup: A task with `use_case_id = 'gtm-landing-page'` created 2h ago exists
-- Action: Run `createDistributionTasks([{ type: 'no_landing_page', uc_template: 'landing-page', ... }])`
-- Expected: No new task inserted, cooldown message logged
+### T2: Distribution Channel Registration  
+- **Setup:** Complete landing page dev + QC
+- **Action:** Check `distribution_channels` table
+- **Expected:** Row with `channel_type=landing_page`, `status=active` exists
 
-### Test 3: No channel row = issue raised
-- Setup: `distribution_channels` is empty, `gtm-landing-page.implementation_status = 'planned'`
-- Action: Run `checkDistributionHealth()`
-- Expected: `no_landing_page` appears in issues (if no recent task either)
-
-### Test 4: Non-active channel suppresses issue
-- Setup: `distribution_channels` has a row with `status = 'building'`
-- Action: Run `checkDistributionHealth()`
-- Expected: `no_landing_page` NOT raised
+### T3: No Loop on Next Heartbeat
+- **Setup:** `distribution_channels` is empty but a recent PM task for `gtm-landing-page` exists (< 7 days)
+- **Action:** Run heartbeat loop 6 (distribution collection)
+- **Expected:** No new landing page task created
 
 ---
 
-## Migration / Immediate Fix
+## Implementation Notes
 
-No migration required. The `distribution_channels` table already has the active landing page row for LeadFlow (`leadflow-ai-five.vercel.app`). The fix is purely logic changes in `distribution-collector.js`.
+**Files to modify (Genome — `~/.openclaw/genome/`):**
+1. `scripts/distribution-collector.js` — Add 7-day cooldown check in `createDistributionTasks()` before `store.createTask()`
+2. `core/task-store.js` — Add optional `cooldownDays` parameter support in `createTask()`
 
-**Immediate state (no code change needed for LeadFlow):**
-- `distribution_channels` row exists: `status = 'active'`, `channel_type = 'landing_page'` ✅
-- `gtm-landing-page` UC: `implementation_status = 'complete'` ✅
-- Loop is currently resolved — fix prevents recurrence
+**Files to modify (LeadFlow — `/Users/clawdbot/projects/leadflow/`):**
+3. QC completion handler for `gtm-landing-page` — Add `distribution_channels` INSERT on pass
+
+**Agent responsible for genome fix:** Dev (genome project)  
+**Agent responsible for distribution_channels insert:** Dev (leadflow project)  
+**Project:** This fix spans both `genome` and `leadflow` projects.
 
 ---
 
-## Affected Projects
+## Acceptance Checks (Machine-Verifiable)
 
-- **genome** — `distribution-collector.js` needs the dedup and cooldown logic
-- **leadflow** — no code changes needed (loop is already broken by manual channel insert)
+```json
+[
+  {
+    "id": "no-recent-dup-tasks",
+    "command": "node -e \"require('dotenv').config({path:'/Users/clawdbot/projects/leadflow/.env'}); const {createClient}=require('@supabase/supabase-js'); const sb=createClient('http://localhost:8787',process.env.LEADFLOW_API_KEY,{auth:{autoRefreshToken:false,persistSession:false}}); sb.from('tasks').select('id,created_at').eq('project_id','leadflow').eq('use_case_id','gtm-landing-page').eq('agent_id','product').order('created_at',{ascending:false}).limit(2).then(r=>{const tasks=r.data||[];if(tasks.length<2){console.log('0');return;} const diff=(new Date(tasks[0].created_at)-new Date(tasks[1].created_at))/86400000; console.log(diff<1?'1':'0');}).catch(()=>console.log('0'))\"",
+    "expected": "0",
+    "description": "Two most recent PM landing page tasks should be >= 1 day apart (cooldown active)"
+  }
+]
+```

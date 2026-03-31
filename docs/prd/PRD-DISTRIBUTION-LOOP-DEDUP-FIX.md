@@ -1,11 +1,11 @@
-# PRD: Distribution Loop Deduplication Fix — Definitive Spec (Wave 3)
+# PRD: Distribution Loop Deduplication Fix — Definitive Spec (Wave 4)
 
 **PRD ID:** PRD-DISTRIBUTION-LOOP-DEDUP-FIX  
 **Status:** approved  
 **Priority:** 1 (Blocker — causes recurring noise tasks every heartbeat, wasting agent budget)  
 **Owner:** Product Manager  
 **Created:** 2026-03-30 (Wave 1)  
-**Updated:** 2026-03-30 — Wave 3 (3rd occurrence). Definitive spec with Bug 2 added. MUST be fixed this wave.
+**Updated:** 2026-03-30 — Wave 4 (4th occurrence). CONFIRMED ROOT CAUSE: Migration 006 never applied to local PostgreSQL. Tables don't exist. MUST execute Fix A-pre before anything else.
 
 ---
 
@@ -31,21 +31,42 @@ Wave 3 concrete task IDs (today, 12:36–12:43):
 
 ## Root Cause Analysis — Two Bugs
 
-### Bug 1: `distribution_channels` table empty (PRIMARY TRIGGER)
+### Bug 1: `distribution_channels` table DOES NOT EXIST (PRIMARY TRIGGER — CONFIRMED WAVE 4)
 
-`checkDistributionHealth()` in `~/.openclaw/genome/scripts/distribution-collector.js` queries:
-```js
-const { data: landingPages } = await supabase
-  .from('distribution_channels')
-  .select('*')
-  .eq('project_id', PROJECT_ID)
-  .eq('channel_type', 'landing_page')
-  .eq('status', 'active')
+`checkDistributionHealth()` in `~/.openclaw/genome/scripts/distribution-collector.js` queries the `distribution_channels` table via PostgREST at `LOCAL_POSTGREST_URL` (http://localhost:8787).
+
+**Wave 4 investigation confirmed:**
+- `distribution_channels` table does NOT exist in local PostgreSQL
+- `distribution_metrics` table does NOT exist in local PostgreSQL
+- Migration `006_distribution_metrics.sql` was NEVER applied to local PG
+- PostgREST at `localhost:8787` returns "Not found" for all queries
+- The Supabase JS client silently returns `null/[]` when PostgREST is unavailable
+- Result: query always returns empty → always raises `no_landing_page` → always creates a new task
+
+**Corrected Fix A — run migration first, then seed:**
+
+Step 1 — Apply migration:
+```bash
+psql "$LOCAL_PG_URL" -f ~/.openclaw/genome/migrations/006_distribution_metrics.sql
 ```
 
-The `distribution_channels` table exists (created by migration `006_distribution_metrics.sql`) but has **never been seeded** with the LeadFlow landing page record. This query always returns empty → always raises `no_landing_page` → always creates a new task.
+Step 2 — Seed the landing page record (using direct psql since PostgREST is gone):
+```sql
+INSERT INTO distribution_channels (project_id, channel_type, name, url, status, metadata)
+VALUES (
+  'leadflow',
+  'landing_page',
+  'LeadFlow Marketing Landing Page',
+  'https://www.imagineapi.org',
+  'active',
+  '{"source": "manual_seed", "seeded_at": "2026-03-30", "notes": "Landing page deployed at Wave 1 - Day 1."}'
+) ON CONFLICT (project_id, channel_type, name) DO UPDATE SET status = 'active';
+```
 
-**Confirmed:** `SELECT COUNT(*) FROM distribution_channels WHERE project_id='leadflow' AND channel_type='landing_page' AND status='active'` returns 0.
+**But this only solves seeding. The distribution-collector.js also needs to use direct PG (not PostgREST) since PostgREST no longer runs.**
+
+Step 3 — Update `distribution-collector.js` to use direct PostgreSQL:
+Replace the PostgREST/supabase client with a `pg.Pool` using `LOCAL_PG_URL` from `~/.env`.
 
 ### Bug 2: Loop detector itself has no cooldown (AMPLIFIER — NEWLY IDENTIFIED)
 
@@ -176,12 +197,14 @@ const { data: existingInv } = await this.supabase.from('tasks').select('id')
 
 ## Implementation Sequence
 
-1. **Genome Dev** — Fix A: Apply SQL seed for `distribution_channels` (5 minutes)
-2. **Genome Dev** — Fix B: Add dedup guard in `distribution-collector.js` (15 minutes)
-3. **Genome Dev** — Fix C: Add 24h cooldown in `task-store.js` loop detector (10 minutes)
-4. **Genome QC** — Verify all 3 acceptance checks pass
+1. **Genome Dev** — Fix A-pre: Apply migration `006_distribution_metrics.sql` to local PostgreSQL (2 minutes)
+2. **Genome Dev** — Fix A: Seed landing page record in `distribution_channels` (2 minutes)
+3. **Genome Dev** — Fix A-db: Update `distribution-collector.js` to use `pg.Pool` with `LOCAL_PG_URL` instead of PostgREST (30 minutes)
+4. **Genome Dev** — Fix B: Add dedup guard in `distribution-collector.js` createDistributionTasks() (15 minutes)
+5. **Genome Dev** — Fix C: Add 24h cooldown in `task-store.js` loop detector (10 minutes)
+6. **Genome QC** — Verify all acceptance checks pass
 
-**Order is important:** Fix A eliminates the trigger. Fix B prevents accumulation if Fix A ever lapses. Fix C stops the investigation task from looping independently.
+**Order is critical:** Fix A-pre + A must run first (eliminates trigger). Fix A-db is required because PostgREST is no longer running. Fixes B and C are defense-in-depth layers.
 
 ---
 
@@ -190,8 +213,18 @@ const { data: existingInv } = await this.supabase.from('tasks').select('id')
 ```json
 [
   {
+    "id": "distribution-table-exists",
+    "command": "cd /Users/clawdbot/projects/leadflow && node -e \"require('dotenv').config({path:'.env'});const {Pool}=require('pg');const p=new Pool({connectionString:process.env.LOCAL_PG_URL});p.query(\\\"SELECT COUNT(*)::int as c FROM information_schema.tables WHERE table_name='distribution_channels'\\\").then(r=>{console.log(r.rows[0].c);p.end()})\" 2>/dev/null | tail -1",
+    "expected": "1"
+  },
+  {
     "id": "distribution-channels-seeded",
     "command": "cd /Users/clawdbot/projects/leadflow && node -e \"require('dotenv').config({path:'.env'});const {Pool}=require('pg');const p=new Pool({connectionString:process.env.LOCAL_PG_URL});p.query(\\\"SELECT COUNT(*)::int as c FROM distribution_channels WHERE project_id='leadflow' AND channel_type='landing_page' AND status='active'\\\").then(r=>{console.log(r.rows[0].c);p.end()})\" 2>/dev/null | tail -1",
+    "expected": "1"
+  },
+  {
+    "id": "collector-uses-pg-not-postgrest",
+    "command": "grep -c 'LOCAL_PG_URL\\|pg.Pool\\|new Pool' ~/.openclaw/genome/scripts/distribution-collector.js || echo 0",
     "expected": "1"
   },
   {

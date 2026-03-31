@@ -8,17 +8,18 @@ const sb = createClient(
 
 async function main() {
   try {
-    // Check existing PRDs to see what status values are used
+    // Get a sample use case to see the structure
     const { data, error } = await sb
-      .from('prds')
-      .select('id, status')
-      .limit(5);
+      .from('use_cases')
+      .select('*')
+      .eq('project_id', 'leadflow')
+      .limit(1);
     
     if (error) {
       console.error('Error:', error);
-    } else {
-      console.log('Sample PRDs with statuses:');
-      data.forEach(row => console.log(`  ${row.id}: ${row.status}`));
+    } else if (data && data.length > 0) {
+      console.log('Sample use case columns:');
+      console.log(JSON.stringify(data[0], null, 2));
     }
     
     process.exit(0);
