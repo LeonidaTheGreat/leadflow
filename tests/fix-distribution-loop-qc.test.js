@@ -50,8 +50,13 @@ test('REQ-1: UC_ISSUE_MAP maps all 5 issue types', () => {
 })
 
 test('REQ-1: UC_ISSUE_MAP maps no_landing_page to gtm-landing-page', () => {
-  assert(sourceCode.includes("no_landing_page: 'gtm-landing-page'"), 
-    'no_landing_page should map to gtm-landing-page')
+  // Check either direct string or via UC_LANDING_PAGE variable
+  const hasDirect = sourceCode.includes("no_landing_page: 'gtm-landing-page'")
+  const hasVariable = sourceCode.includes('const UC_LANDING_PAGE') && 
+                       sourceCode.includes('UC_LANDING_PAGE = \'gtm-landing-page\'') &&
+                       sourceCode.includes('no_landing_page: UC_LANDING_PAGE')
+  assert(hasDirect || hasVariable, 
+    'no_landing_page should map to gtm-landing-page (either directly or via UC_LANDING_PAGE variable)')
 })
 
 test('REQ-1: checkDistributionHealth queries completedUcs', () => {
