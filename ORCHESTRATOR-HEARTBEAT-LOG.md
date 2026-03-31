@@ -1,29 +1,8 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-03-31T13:20:04.238Z
+Last updated: 2026-03-31T21:46:16.149Z
 ## Recent Heartbeats
 ```json
 [
-  {
-    "timestamp": "2026-03-30T06:13:47.002Z",
-    "status": {
-      "ready": 4,
-      "inProgress": 0,
-      "blocked": 0,
-      "done": 1837,
-      "total": 2021
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":4,\"inProgress\":0,\"blocked\":0,\"done\":1837,\"total\":2021}",
-      "Smoke tests: 9/9 passed",
-      "Product sync: 6 components updated",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
   {
     "timestamp": "2026-03-30T06:18:47.674Z",
     "status": {
@@ -2215,9 +2194,37 @@ Last updated: 2026-03-31T13:20:04.238Z
     "spawned": 0,
     "completed": 0,
     "errors": []
+  },
+  {
+    "timestamp": "2026-03-31T21:46:16.145Z",
+    "status": {
+      "ready": 7,
+      "inProgress": 2,
+      "blocked": 3,
+      "done": 2089,
+      "total": 2299
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":7,\"inProgress\":2,\"blocked\":3,\"done\":2089,\"total\":2299}",
+      "Checked 3 blocked tasks",
+      "Self-healed 1 critical issue(s)",
+      "🛑 HUMAN NEEDED: Lead Experience Simulator — 3 failed fix attempts",
+      "Smoke tests: 4/9 passed",
+      "Product sync: 6 components updated",
+      "Revenue: 1 goal(s) off-track",
+      "UC acceptance failed: fix-loop-handler-distribution-dedup",
+      "UC acceptance failed: uc-fix-revenue-alert-loop",
+      "Merged PR #752",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":0,"inProgress":4,"blocked":2,"done":1944,"total":2131}
+- Last status: {"ready":7,"inProgress":2,"blocked":3,"done":2089,"total":2299}
