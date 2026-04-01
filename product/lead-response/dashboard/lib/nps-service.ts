@@ -438,6 +438,12 @@ export async function getNPSStats(): Promise<NPSStats> {
   const total = current.length
   const currentNPS = total > 0 ? Math.round(((promoters - detractors) / total) * 100) : 0
 
+  // Ensure all created_at values are strings (fix for Date object serialization)
+  const normalizedRecentResponses = (recentResponses || []).map((r: any) => ({
+    ...r,
+    created_at: typeof r.created_at === 'string' ? r.created_at : new Date(r.created_at).toISOString(),
+  }))
+
   return {
     currentNPS,
     responseCount: current.length,
@@ -445,7 +451,7 @@ export async function getNPSStats(): Promise<NPSStats> {
     promoters,
     passives,
     detractors,
-    recentResponses: recentResponses || [],
+    recentResponses: normalizedRecentResponses,
   }
 }
 
