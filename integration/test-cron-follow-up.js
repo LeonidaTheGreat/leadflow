@@ -477,6 +477,9 @@ class CronFollowUpTestSuite {
     console.log('║                    TEST SUMMARY                         ║');
     console.log('╚════════════════════════════════════════════════════════╝');
 
+    // Ensure findings is always an array - defensive programming against malformed data
+    const findings = Array.isArray(this.results.findings) ? this.results.findings : [];
+
     console.log(`\n📊 Results:`);
     console.log(`   ✅ Passed: ${this.results.passed}`);
     console.log(`   ❌ Failed: ${this.results.failed}`);
@@ -485,16 +488,16 @@ class CronFollowUpTestSuite {
 
     if (this.results.critical > 0) {
       console.log(`\n🔴 CRITICAL FINDINGS:`);
-      this.results.findings
+      findings
         .filter(f => f.severity === 'critical')
         .forEach(f => {
           console.log(`   • ${f.type}: ${f.message}`);
         });
     }
 
-    if (this.results.findings.filter(f => f.severity === 'medium').length > 0) {
+    if (findings.filter(f => f.severity === 'medium').length > 0) {
       console.log(`\n⚠️  MEDIUM FINDINGS:`);
-      this.results.findings
+      findings
         .filter(f => f.severity === 'medium')
         .forEach(f => {
           console.log(`   • ${f.type}: ${f.message}`);
@@ -510,7 +513,7 @@ class CronFollowUpTestSuite {
       console.log('VERDICT: ❌ CRITICAL ISSUES - BLOCKING');
       console.log(`${' '.repeat(56)}`);
       console.log('Issues that must be fixed before deployment:');
-      this.results.findings
+      findings
         .filter(f => f.severity === 'critical')
         .forEach(f => {
           console.log(`  • ${f.message}`);
