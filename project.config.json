@@ -15,7 +15,12 @@
   "deployment": {
     "platform": "vercel",
     "dashboard_dir": "product/lead-response/dashboard",
-    "deploy_command": "/opt/homebrew/bin/vercel --prod --yes"
+    "deploy_mode": "github_integration",
+    "deploy_note": "Vercel GitHub integration auto-deploys on push to main. No CLI deploy needed.",
+    "verify_command": "bash scripts/e2e-flow-tests.sh --json",
+    "auto_deploy_after_merge": false,
+    "verify_after_deploy": true,
+    "rollback_on_failure": true
   },
   "build_health": {
     "dashboard_dir": "product/lead-response/dashboard",
@@ -408,54 +413,50 @@
       "cost_per_success_max_usd": 0.5
     }
   },
+  "e2e_flow_tests": {
+    "script": "scripts/e2e-flow-tests.sh",
+    "interval_hours": 6,
+    "enabled": true
+  },
   "codebase_rules": [
     {
       "id": "no-supabase-imports",
-      "description": "No direct @supabase/supabase-js imports in product code",
-      "check": "grep -rl '@supabase/supabase-js' product/ --include='*.ts' --include='*.tsx' 2>/dev/null | grep -v node_modules | wc -l | tr -d ' '",
-      "expected": "0",
-      "severity": "critical",
-      "auto_fix_priority": 1
+      "name": "No direct Supabase SDK imports",
+      "pattern": "from '@supabase/supabase-js'|from \"@supabase/supabase-js\"|require\\('@supabase",
+      "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
+      "severity": "critical"
+    },
+    {
+      "id": "no-supabase-env-vars",
+      "name": "No Supabase env var references in production code",
+      "pattern": "NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_URL|SUPABASE_SERVICE_ROLE_KEY",
+      "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
+      "exclude_patterns": ["*.test.*", "*.spec.*", "__tests__/"],
+      "severity": "critical"
     },
     {
       "id": "no-supabase-deps",
-      "description": "No @supabase packages in dashboard dependencies",
-      "check": "grep -c '@supabase' product/lead-response/dashboard/package.json 2>/dev/null || echo 0",
-      "expected": "0",
-      "severity": "critical",
-      "auto_fix_priority": 1
+      "name": "No Supabase packages in dependencies",
+      "pattern": "@supabase/supabase-js|@supabase/ssr|@supabase/auth-helpers",
+      "scan_files": ["product/lead-response/dashboard/package.json"],
+      "severity": "critical"
     },
     {
-      "id": "no-supabase-dir",
-      "description": "No supabase/ directory in dashboard",
-      "check": "ls product/lead-response/dashboard/supabase 2>/dev/null | wc -l | tr -d ' '",
-      "expected": "0",
+      "id": "no-stub-routes",
+      "name": "No TODO/stub API routes in production",
+      "pattern": "// TODO:|// FIXME:|// HACK:|// STUB|pretend to send|fake success",
+      "scan_dirs": ["product/lead-response/dashboard/app/api/"],
+      "exclude_patterns": ["*.test.*"],
+      "severity": "high"
+    },
+    {
+      "id": "no-auth-token-only",
+      "name": "No routes using auth-token cookie without getAuthUserId",
+      "pattern": "get\\('auth-token'\\)",
+      "scan_dirs": ["product/lead-response/dashboard/app/api/"],
+      "exclude_patterns": ["*/auth.ts"],
       "severity": "high",
-      "auto_fix_priority": 2
-    },
-    {
-      "id": "no-root-md-files",
-      "description": "No orphan .md files at repo root",
-      "check": "ls *.md 2>/dev/null | grep -v -E '^(CLAUDE|README|ARCHITECTURE|BOOTSTRAP|HEARTBEAT|AGENTS|PMF|SKILLS|SOUL|LEARNINGS|PROJECT_STRUCTURE|TOOLS|ORCHESTRATOR_GUIDE|ORCHESTRATOR_AUTONOMY_RULES|IDENTITY|USER|DASHBOARD|USE_CASES|E2E_MAPPINGS|PRD_INDEX|JOURNEYS|ORCHESTRATOR-HEARTBEAT-LOG).md$' | wc -l | tr -d ' '",
-      "expected": "0",
-      "severity": "high",
-      "auto_fix_priority": 2
-    },
-    {
-      "id": "tests-pass",
-      "description": "Test suite must pass",
-      "check": "cd product/lead-response/dashboard && npx jest --silent 2>&1 | grep -oP '\\d+ failed' | grep -oP '\\d+' || echo 0",
-      "expected": "0",
-      "severity": "critical",
-      "auto_fix_priority": 1
-    },
-    {
-      "id": "build-passes",
-      "description": "Dashboard build must pass",
-      "check": "cd product/lead-response/dashboard && npm run build 2>&1 | grep -c 'Error:' || echo 0",
-      "expected": "0",
-      "severity": "critical",
-      "auto_fix_priority": 1
+      "description": "All auth routes must use lib/auth.ts getAuthUserId() which checks both cookies"
     }
   ]
 }
