@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSession } from '@/lib/session'
 import { createClient } from '@/lib/db'
+import jwt from 'jsonwebtoken'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -29,11 +30,64 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
   '/logout',
 ]
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
-const SUPABASE_SERVICE_KEY = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
+// Get the Supabase REST endpoint URL for session validation
+// Try NEXT_PUBLIC_API_URL first (already has /rest/v1), fall back to constructing from NEXT_PUBLIC_SUPABASE_URL
+function getSupabaseRestUrl(): string {
+  // Prefer NEXT_PUBLIC_API_URL if it looks like a Supabase REST endpoint
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  if (apiUrl && apiUrl.includes('supabase') && apiUrl.includes('/rest/v1')) {
+    return apiUrl
+  }
+  
+  // Fall back to constructing from NEXT_PUBLIC_SUPABASE_URL
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (baseUrl && baseUrl.includes('supabase.co')) {
+    return `${baseUrl}/rest/v1`
+  }
+  
+  return 'https://placeholder.supabase.co/rest/v1'
+}
+
+const SUPABASE_URL = getSupabaseRestUrl()
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 function getSupabase() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+}
+
+/**
+ * Extract userId from either JWT (auth-token) or session token (leadflow_session)
+ * Returns userId if authenticated, null otherwise
+ */
+async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
+  // Try JWT token first (from trial-signup)
+  const jwtToken = request.cookies.get('auth-token')?.value
+  if (jwtToken) {
+    try {
+      const payload = jwt.verify(jwtToken, JWT_SECRET) as any
+      if (payload.userId) {
+        return payload.userId
+      }
+    } catch {
+      // JWT validation failed, try session token
+    }
+  }
+
+  // Try session token (from login)
+  const sessionToken = request.cookies.get('leadflow_session')?.value
+  if (sessionToken) {
+    try {
+      const session = await validateSession(sessionToken)
+      if (session) {
+        return session.userId
+      }
+    } catch {
+      // Session validation failed
+    }
+  }
+
+  return null
 }
 
 /**
@@ -93,12 +147,9 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Get session token from cookie
-  const sessionToken = request.cookies.get('leadflow_session')?.value
-  
-  // Validate session against database
-  const session = sessionToken ? await validateSession(sessionToken) : null
-  const isAuthenticated = !!session
+  // Get userId from either JWT or session token
+  const userId = await getUserIdFromRequest(request)
+  const isAuthenticated = !!userId
   
   // Check if current path is protected
   const isProtectedRoute = PROTECTED_ROUTES.some(route => 
@@ -124,10 +175,10 @@ export async function middleware(request: NextRequest) {
 
   // Check if onboarding is required and redirect to setup (AC-3)
   // Skip this check for /setup and /onboarding routes
-  if (session?.userId && isProtectedRoute) {
+  if (userId && isProtectedRoute) {
     const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
     if (!isSetupRoute) {
-      const onboardingCompleted = await isOnboardingCompleted(session.userId)
+      const onboardingCompleted = await isOnboardingCompleted(userId)
       if (!onboardingCompleted) {
         return NextResponse.redirect(new URL('/setup', request.url))
       }
@@ -135,8 +186,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check for expired trial and redirect to upgrade if needed (AC-8)
-  if (session?.userId && isProtectedRoute) {
-    const isExpired = await isTrialExpired(session.userId)
+  if (userId && isProtectedRoute) {
+    const isExpired = await isTrialExpired(userId)
     if (isExpired) {
       // Check if current route is allowed for expired trials
       const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some(route =>
