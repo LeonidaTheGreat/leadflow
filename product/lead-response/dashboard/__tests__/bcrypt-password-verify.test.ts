@@ -76,12 +76,11 @@ function createMockDbClient() {
           }),
         }
       }
-      // For other tables (leads, messages, etc.)
+      // Default: support insert().select() chaining for all other tables
       return {
         insert: (data: any) => ({
-          select: (columns?: string) => Promise.resolve({
-            data: Array.isArray(data) ? data.map((d: any, i: number) => ({ ...d, id: 'id-' + i })) : [{ ...data, id: 'id-1' }],
-            error: null,
+          select: (columns?: string) => ({
+            single: () => Promise.resolve({ data: { id: '1' }, error: null }),
           }),
         }),
       }

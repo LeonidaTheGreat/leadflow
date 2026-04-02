@@ -169,7 +169,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
 
   return (
     <form onSubmit={handleSubmit} className={`w-full max-w-[420px] mx-auto ${className}`}>
-      <div className="bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-2">
           Start Your Free Trial
         </h3>
@@ -177,9 +177,9 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           No credit card required · 14 days free
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div>
-            <label htmlFor="trial-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label htmlFor="trial-email" className="text-slate-200">
               Email address
             </label>
             <input
@@ -190,13 +190,13 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               placeholder="you@example.com"
               required
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               aria-describedby={error ? 'trial-error' : undefined}
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="trial-password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            <label htmlFor="trial-password" className="text-slate-200">
               Password
             </label>
             <div className="relative">
@@ -209,7 +209,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
                 required
                 minLength={8}
                 disabled={loading}
-                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-600 bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
               <button
                 type="button"
@@ -224,7 +224,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           </div>
 
           <div>
-            <label htmlFor="trial-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label htmlFor="trial-name" className="text-slate-200">
               Your name <span className="text-slate-400">(optional)</span>
             </label>
             <input
@@ -234,7 +234,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>

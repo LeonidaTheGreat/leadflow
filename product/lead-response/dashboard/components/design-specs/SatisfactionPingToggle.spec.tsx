@@ -147,6 +147,15 @@ export function NotificationsSectionWireframe() {
   )
 }
 
+// SPEC: Placeholder test to prevent Jest from failing on empty test file
+describe('SatisfactionPingToggle.spec.tsx', () => {
+  it('design spec — implementation pending', () => {
+    // This spec file contains the design/wireframe for the SatisfactionPingToggle component
+    // Implementation should follow the patterns defined in the NotificationsSectionWireframe function
+    expect(true).toBe(true)
+  })
+})
+
 // ─────────────────────────────────────────────
 // JEST PLACEHOLDER TEST
 // ─────────────────────────────────────────────
