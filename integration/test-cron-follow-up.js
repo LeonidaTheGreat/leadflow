@@ -477,6 +477,11 @@ class CronFollowUpTestSuite {
     console.log('║                    TEST SUMMARY                         ║');
     console.log('╚════════════════════════════════════════════════════════╝');
 
+    // Ensure findings is always an array (defensive programming)
+    if (!Array.isArray(this.results.findings)) {
+      this.results.findings = [];
+    }
+
     console.log(`\n📊 Results:`);
     console.log(`   ✅ Passed: ${this.results.passed}`);
     console.log(`   ❌ Failed: ${this.results.failed}`);
