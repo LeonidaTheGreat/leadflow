@@ -1,8 +1,51 @@
 # Orchestrator Heartbeat Log
-Last updated: 2026-04-02T10:36:28.116Z
+Last updated: 2026-03-31T13:20:04.238Z
 ## Recent Heartbeats
 ```json
 [
+  {
+    "timestamp": "2026-03-30T06:13:47.002Z",
+    "status": {
+      "ready": 4,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 1837,
+      "total": 2021
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":4,\"inProgress\":0,\"blocked\":0,\"done\":1837,\"total\":2021}",
+      "Smoke tests: 9/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
+  {
+    "timestamp": "2026-03-30T06:18:47.674Z",
+    "status": {
+      "ready": 4,
+      "inProgress": 0,
+      "blocked": 0,
+      "done": 1837,
+      "total": 2021
+    },
+    "actions": [
+      "Optimizer: switched to speed mode (goal critical)",
+      "Queried state: {\"ready\":4,\"inProgress\":0,\"blocked\":0,\"done\":1837,\"total\":2021}",
+      "Re-triggered 2 stuck spawn(s)",
+      "Smoke tests: 9/9 passed",
+      "Product sync: 6 components updated",
+      "Dashboard updated",
+      "Report prepared for topic 10788"
+    ],
+    "spawned": 0,
+    "completed": 0,
+    "errors": []
+  },
   {
     "timestamp": "2026-03-30T06:28:48.953Z",
     "status": {
@@ -2172,62 +2215,9 @@ Last updated: 2026-04-02T10:36:28.116Z
     "spawned": 0,
     "completed": 0,
     "errors": []
-  },
-  {
-    "timestamp": "2026-04-02T10:26:13.596Z",
-    "status": {
-      "ready": 11,
-      "inProgress": 1,
-      "blocked": 4,
-      "done": 2171,
-      "total": 2501
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":11,\"inProgress\":1,\"blocked\":4,\"done\":2171,\"total\":2501}",
-      "UC completed (had merged PR): fix-distribution-loop-dedup",
-      "Checked 4 blocked tasks",
-      "Smoke tests: 4/9 passed",
-      "Product sync: 6 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Merged PR #773",
-      "Backfilled PR #779 for dev/5886cf18-dev-re-merge-fix-distribution-loop-dedup",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
-  },
-  {
-    "timestamp": "2026-04-02T10:36:28.110Z",
-    "status": {
-      "ready": 9,
-      "inProgress": 1,
-      "blocked": 4,
-      "done": 2173,
-      "total": 2501
-    },
-    "actions": [
-      "Optimizer: switched to speed mode (goal critical)",
-      "Queried state: {\"ready\":9,\"inProgress\":1,\"blocked\":4,\"done\":2173,\"total\":2501}",
-      "Re-triggered 9 stuck spawn(s)",
-      "Checked 4 blocked tasks",
-      "Smoke tests: 4/9 passed",
-      "Product sync: 6 components updated",
-      "Revenue: 1 goal(s) off-track",
-      "Closed conflicted PR #775",
-      "Merged PR #762",
-      "Backfilled PR #780 for dev/ef28105e-fix-auth-login-page-reachable-smoke-",
-      "Dashboard updated",
-      "Report prepared for topic 10788"
-    ],
-    "spawned": 0,
-    "completed": 0,
-    "errors": []
   }
 ]
 ```
 ## Summary
 - Total heartbeats: 100
-- Last status: {"ready":9,"inProgress":1,"blocked":4,"done":2173,"total":2501}
+- Last status: {"ready":0,"inProgress":4,"blocked":2,"done":1944,"total":2131}
