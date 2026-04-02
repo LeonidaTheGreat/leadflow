@@ -136,9 +136,19 @@ test_reset_password_chain() {
     -H "Content-Type: application/json" \
     -d "{\"email\":\"$E2E_EMAIL\"}" >/dev/null 2>&1 || return 1
 
+  # Get agent_id from email
+  local agent_resp agent_id
+  agent_resp=$(curl -s --max-time 10 \
+    "$API_URL/real_estate_agents?select=id&email=eq.$E2E_EMAIL&limit=1" \
+    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+
+  agent_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+  [ -z "$agent_id" ] && return 1
+
+  # Check that reset token was created for this agent
   local tokens
   tokens=$(curl -s --max-time 10 \
-    "$API_URL/password_reset_tokens?select=id&email=eq.$E2E_EMAIL&used_at=is.null&limit=1" \
+    "$API_URL/password_reset_tokens?select=id&agent_id=eq.$agent_id&used=eq.false&limit=1" \
     -H "apikey: $API_KEY" 2>/dev/null) || return 1
 
   echo "$tokens" | grep -q '"id"' || return 1
