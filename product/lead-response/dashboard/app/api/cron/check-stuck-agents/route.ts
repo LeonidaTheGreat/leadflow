@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_API_URL || '',
-      process.env.API_SECRET_KEY || ''
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || ''
     )
 
     const result = await onboardingTelemetry.checkAndAlertStuckAgents(supabase)
