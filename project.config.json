@@ -14,13 +14,44 @@
   },
   "deployment": {
     "platform": "vercel",
-    "dashboard_dir": "product/lead-response/dashboard",
+    "project_id": "prj_p9ZX952UhE1cl1PYZAgVW53FqVm9",
+    "team_id": "team_f6bohlhVY2mNroXiNqk1NUF5",
+    "root_directory": "product/lead-response/dashboard",
+    "production_url": "https://leadflow-ai-five.vercel.app",
+    "framework": "nextjs",
     "deploy_mode": "github_integration",
-    "deploy_note": "Vercel GitHub integration auto-deploys on push to main. No CLI deploy needed.",
+    "health_endpoint": "/api/health",
+    "build_command": "npm run build",
     "verify_command": "bash scripts/e2e-flow-tests.sh --json",
-    "auto_deploy_after_merge": false,
-    "verify_after_deploy": true,
-    "rollback_on_failure": true
+    "browser_test_command": "npx playwright test tests/browser/pages.spec.js tests/browser/health.spec.js --reporter=json",
+    "preview_deploys": false,
+    "auto_rollback": true,
+    "rollback_threshold": 2,
+    "env_validation": {
+      "required": [
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_API_KEY",
+        "API_SECRET_KEY",
+        "RESEND_API_KEY"
+      ],
+      "no_placeholders": true,
+      "trim_whitespace": true
+    },
+    "auto_generated_files": [
+      "DASHBOARD.md",
+      "E2E_MAPPINGS.md",
+      "JOURNEYS.md",
+      "ORCHESTRATOR-HEARTBEAT-LOG.md",
+      "PRD_INDEX.md",
+      "USE_CASES.md"
+    ],
+    "protected_files": [
+      "next.config.ts",
+      ".gitattributes",
+      "vercel.json",
+      "playwright.config.js"
+    ],
+    "protected_files_note": "Changes to protected files require build verification before merge — not blocked, but gated."
   },
   "build_health": {
     "dashboard_dir": "product/lead-response/dashboard",
@@ -90,7 +121,7 @@
       "url": "https://leadflow-ai-five.vercel.app/login",
       "severity": "critical",
       "check_type": "http_200",
-      "note": "Downgraded from signup_login_flow (unimplemented check_type) \u2014 PRD-SMOKE-AUTH-LOOP-FIX-V5"
+      "note": "Downgraded from signup_login_flow (unimplemented check_type) — PRD-SMOKE-AUTH-LOOP-FIX-V5"
     }
   ],
   "products": [
@@ -297,7 +328,7 @@
     ]
   },
   "budget": {
-    "daily_limit": 30.0,
+    "daily_limit": 30,
     "min_for_spawn": 0.5,
     "model_token_costs": {
       "qwen": {
@@ -320,19 +351,19 @@
       },
       "codex": {
         "input_per_1m": 0.8,
-        "output_per_1m": 3.0
+        "output_per_1m": 3
       },
       "haiku": {
-        "input_per_1m": 1.0,
-        "output_per_1m": 5.0
+        "input_per_1m": 1,
+        "output_per_1m": 5
       },
       "sonnet": {
-        "input_per_1m": 3.0,
-        "output_per_1m": 15.0
+        "input_per_1m": 3,
+        "output_per_1m": 15
       },
       "opus": {
-        "input_per_1m": 5.0,
-        "output_per_1m": 25.0
+        "input_per_1m": 5,
+        "output_per_1m": 25
       }
     },
     "token_estimates": {
@@ -423,38 +454,58 @@
       "id": "no-supabase-imports",
       "name": "No direct Supabase SDK imports",
       "pattern": "from '@supabase/supabase-js'|from \"@supabase/supabase-js\"|require\\('@supabase",
-      "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
+      "scan_dirs": [
+        "product/lead-response/dashboard/app/",
+        "product/lead-response/dashboard/lib/"
+      ],
       "severity": "critical"
     },
     {
       "id": "no-supabase-env-vars",
       "name": "No Supabase env var references in production code",
       "pattern": "NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_URL|SUPABASE_SERVICE_ROLE_KEY",
-      "scan_dirs": ["product/lead-response/dashboard/app/", "product/lead-response/dashboard/lib/"],
-      "exclude_patterns": ["*.test.*", "*.spec.*", "__tests__/"],
+      "scan_dirs": [
+        "product/lead-response/dashboard/app/",
+        "product/lead-response/dashboard/lib/"
+      ],
+      "exclude_patterns": [
+        "*.test.*",
+        "*.spec.*",
+        "__tests__/"
+      ],
       "severity": "critical"
     },
     {
       "id": "no-supabase-deps",
       "name": "No Supabase packages in dependencies",
       "pattern": "@supabase/supabase-js|@supabase/ssr|@supabase/auth-helpers",
-      "scan_files": ["product/lead-response/dashboard/package.json"],
+      "scan_files": [
+        "product/lead-response/dashboard/package.json"
+      ],
       "severity": "critical"
     },
     {
       "id": "no-stub-routes",
       "name": "No TODO/stub API routes in production",
       "pattern": "// TODO:|// FIXME:|// HACK:|// STUB|pretend to send|fake success",
-      "scan_dirs": ["product/lead-response/dashboard/app/api/"],
-      "exclude_patterns": ["*.test.*"],
+      "scan_dirs": [
+        "product/lead-response/dashboard/app/api/"
+      ],
+      "exclude_patterns": [
+        "*.test.*"
+      ],
       "severity": "high"
     },
     {
       "id": "no-auth-token-only",
       "name": "No routes using auth-token cookie without getAuthUserId",
       "pattern": "get\\('auth-token'\\)",
-      "scan_dirs": ["product/lead-response/dashboard/app/api/"],
-      "exclude_patterns": ["*/auth.ts"],
+      "scan_dirs": [
+        "product/lead-response/dashboard/app/api/"
+      ],
+      "exclude_patterns": [
+        "*/auth.ts"
+      ],
       "severity": "high",
       "description": "All auth routes must use lib/auth.ts getAuthUserId() which checks both cookies"
     }

@@ -5,6 +5,7 @@
   "description": "AI-powered real estate lead response system",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/validate-env.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
