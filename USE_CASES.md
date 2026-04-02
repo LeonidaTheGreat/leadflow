@@ -1,169 +1,184 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # Use Cases
 
-> Generated: 2026-03-31T13:20:04.212Z | Source: `use_cases` + `prds` tables
+> Generated: 2026-04-02T18:23:15.893Z | Source: `use_cases` + `prds` tables
 
-**Progress: 226/261 complete**
+**Progress: 244/276 complete**
 
 | UC | Name | Phase | Status | Priority | E2E | Workflow |
 |----|------|-------|--------|----------|-----|----------|
-| feat-admin-pilot-invite-flow | Admin Pilot Invite Flow — Direct Recruitment by Stojan | Phase 1 | complete | 0 | - | PM > Dev > QC |
-| UC-REVENUE-RECOVERY-001 | Revenue Recovery — Close MRR Gap | Phase 3 | complete | 0 | defined | PM > Dev > Marketing > QC |
-| feat-post-signup-dashboard-onboarding-redirect | Post-Signup Redirect to /dashboard/onboarding Wizard | Phase 1 | complete | 0 | defined | PM > Dev > QC |
-| fix-onboarding-500-error | Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | Phase 3 | complete | 0 | - | Dev > QC |
-| feat-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | Phase 1 | complete | 0 | - | PM > Dev > QC |
-| UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | complete | 0 | defined | PM > Marketing > Design > Dev > QC |
-| feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | complete | 0 | - | PM > Dev > QC |
-| fix-trial-signup-redirects-to-nonexistent-onboarding-page | Fix trial signup redirect to non-existent /dashboard/onboarding page | mvp | complete | 0 | - | PM > Dev > QC |
-| implement-twilio-sms-integration | Implement Real Twilio SMS Integration - Replace Mock | Phase 1 | complete | 0 | defined | Dev > QC |
+| feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | feat-stripe-checkout-production-e2e | Stripe Checkout Production Verification — First Real Transaction Test | Phase 1 | complete | 0 | defined | PM > Dev > QC |
 | free-pilot-no-credit-card-required | Free Pilot Onboarding — No Credit Card Required | Phase 1 | complete | 0 | defined | Dev > QC |
-| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | complete | 0 | - | PM > Dev > QC |
-| feat-add-session-management-with-server-side- | add session management with server-side tokens | Phase 3 | complete | 0 | - | PM > Dev > QC |
+| feat-post-signup-dashboard-onboarding-redirect | Post-Signup Redirect to /dashboard/onboarding Wizard | Phase 1 | complete | 0 | defined | PM > Dev > QC |
 | feat-aha-moment-lead-simulator | Aha Moment: Live Lead Simulator in Onboarding — First AI Response in <30s | - | complete | 0 | defined | PM > Dev > QC |
-| feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | complete | 0 | - | PM > Dev > QC |
 | UC-AUTH-FIX-001 | Implement Authentication Flow - Signup/Login | Phase 3 | complete | 0 | - | PM > Design > Dev > QC |
+| feat-add-auth-middleware-to-protect-dashboard | add auth middleware to protect dashboard and settings routes | Phase 3 | complete | 0 | - | PM > Dev > QC |
+| feat-admin-pilot-invite-flow | Admin Pilot Invite Flow — Direct Recruitment by Stojan | Phase 1 | complete | 0 | - | PM > Dev > QC |
+| fix-trial-signup-redirects-to-nonexistent-onboarding-page | Fix trial signup redirect to non-existent /dashboard/onboarding page | mvp | complete | 0 | - | PM > Dev > QC |
+| UC-LANDING-MARKETING-001 | Marketing Landing Page — High-Converting Signup Flow | Phase 3 | complete | 0 | defined | PM > Marketing > Design > Dev > QC |
+| UC-REVENUE-RECOVERY-001 | Revenue Recovery — Close MRR Gap | Phase 3 | complete | 0 | defined | PM > Dev > Marketing > QC |
 | fix-remaining-agents-table-references | Fix remaining from(agents) table references — 15 routes still query wrong table | - | complete | 0 | - | Dev > QC |
+| feat-add-login-page-with-email-and-password | add login page with email and password | Phase 3 | complete | 0 | - | PM > Dev > QC |
+| UC-BILLING-FIX-001 | Fix Billing Integration - Agent Not Found Error | Phase 3 | complete | 0 | - | PM > Dev > QC |
+| fix-onboarding-500-error | Fix Onboarding Endpoint - Resolve Agents Table Schema Collision | Phase 3 | complete | 0 | - | Dev > QC |
+| implement-twilio-sms-integration | Implement Real Twilio SMS Integration - Replace Mock | Phase 1 | complete | 0 | defined | Dev > QC |
+| feat-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | Phase 1 | complete | 0 | - | PM > Dev > QC |
+| feat-onboarding-completion-telemetry | Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off | Phase 1 | complete | 1 | defined | PM > Dev > QC |
+| fix-smsanalyticscards-component-imported-but-never-ren | SmsAnalyticsCards component imported but never rendered in dashboard | - | complete | 1 | - | Dev > QC |
+| fix-fixed-satisfaction-ping-route-was-using-agents-tab | Fixed: satisfaction-ping route was using agents table instead of real_estate_agents | - | complete | 1 | - | Dev > QC |
 | fix-triage-the-get-free-playbook-section | PM triage: In the "Get free playbook" section, the text field for name cuts off the text, and the buttons are going out  | - | complete | 1 | - | Dev > QC |
 | fix-lib-onboarding-telemetry-js-does-not-exist | lib/onboarding-telemetry.js does not exist | - | needs_merge | 1 | - | Dev > QC |
-| fix-ga4-script-tag-missing-from-layout-tsx-all-analyti | GA4 script tag missing from layout.tsx — all analytics events are no-ops | - | complete | 1 | - | Dev > QC |
 | fix-api-api-lead-capture-returns-500-db-schema-migrati | API /api/lead-capture returns 500 — DB schema migration not run | - | complete | 1 | - | Dev > QC |
 | fix-primary-signup-api-api-agents-onboard-does-not-cap | Primary signup API (/api/agents/onboard) does not capture or write UTM parameters | - | complete | 1 | - | Dev > QC |
-| fix-pilot-signup-route-ts-still-redirects-to-dashboard | pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences) | - | complete | 1 | - | Dev > QC |
-| fix-product-spec-selfserve-frictionless-onboarding | Product Spec: Self-Serve Frictionless Onboarding Flow | - | complete | 1 | - | Dev > QC |
+| UC-9 | Customer Sign-Up Flow | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
 | fix-trial-start-route-ts-redirects-to-onboarding-which | trial/start/route.ts redirects to /onboarding which blocks authenticated users | - | complete | 1 | - | Dev > QC |
-| fix-webhook-lead-persistence | Fix Webhook Lead Persistence - Store Leads in Supabase | Phase 1 | complete | 1 | - | Dev > QC |
-| uc-smoke-loop-dedup | Smoke Test Loop Deduplication | engine | complete | 1 | defined | PM > Dev > QC |
-| fix-distribution-channels-table-missing-from-local-pos | distribution_channels table missing from local PostgreSQL | - | not_started | 1 | - | Dev > QC |
+| fix-distribution-loop-migration-and-dedup | Fix Distribution Loop — Apply Migration 006, Migrate to Direct PG, Add Dedup Guards | - | ready | 1 | - | PM > Dev > QC |
+| fix-no-self-serve-upgrade-path-from-pilot-to-paid | No self-serve upgrade path from pilot to paid | - | complete | 1 | - | Dev > QC |
+| fix-pilot-signup-route-ts-still-redirects-to-dashboard | pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences) | - | complete | 1 | - | Dev > QC |
+| fix-distribution-loop-dedup | Fix distribution-collector loop: add deduplication and schema guard | - | complete | 1 | defined | Dev > QC |
 | fix-production-cron-endpoint-returns-error-on-sequence | Production cron endpoint returns error on sequences query | - | complete | 1 | - | Dev > QC |
-| fix-pilot-signups-database-table-missing | pilot_signups database table missing | - | complete | 1 | - | Dev > QC |
-| fix-triage-the-simple-transparent-section-the | PM triage: In the Simple transparent section, the 3 tiers of pricing "Starter — Free pilot
-Pro — Most popular
-Team — 5 a | - | complete | 1 | - | Dev > QC |
+| fix-product-spec-selfserve-frictionless-onboarding | Product Spec: Self-Serve Frictionless Onboarding Flow | - | complete | 1 | - | Dev > QC |
+| fix-test-gateway-path | test gateway path | - | complete | 1 | - | Dev > QC |
 | UC-2 | FUB New Lead Auto-SMS | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | UC-1 | Lead-Initiated SMS | Phase 1 | complete | 1 | pass | PM > Dev > QC |
-| UC-EMAIL-DELIVERY-FIX | Fix Email Delivery Pipeline — Verify <30s | stabilization | ready | 1 | - | PM > Dev > QC |
-| UC-ONBOARDING-MOBILE-FIRST | Mobile-First Onboarding Redesign — Fix 86% Drop-Off | stabilization | ready | 1 | - | PM > Dev > QC |
+| fix-db-migration-incomplete-email-verification-tokens- | DB migration incomplete: email_verification_tokens table does not exist | - | complete | 1 | - | Dev > QC |
+| uc-smoke-loop-dedup | Smoke Test Loop Deduplication | engine | complete | 1 | defined | PM > Dev > QC |
 | fix-signup-creates-customer-record-but-login | signup creates customer record but login queries agents table - auth flow is broken because signup and login use different database tables and password is never collected during signup | - | complete | 1 | - | Dev > QC |
-| genome-phase1b-error-propagation | Genome Phase 1B: Error propagation — stop swallowing errors | - | complete | 1 | - | Dev > QC |
+| fix-webhook-lead-persistence | Fix Webhook Lead Persistence - Store Leads in Supabase | Phase 1 | complete | 1 | - | Dev > QC |
 | fix-get-api-internal-pilot-usage-endpoint-does-not-exi | GET /api/internal/pilot-usage endpoint does not exist | - | complete | 1 | - | Dev > QC |
-| genome-phase1a-observability | Genome Phase 1A: Observability — make all failures visible | - | complete | 1 | - | Dev > QC |
-| fix-column-name-mismatch-in-webhook-handler | Column name mismatch in webhook handler | - | complete | 1 | - | Dev > QC |
-| fix-smoke-auth-signup-login-loop | Fix Smoke Test Loop — Auth signup then login | - | complete | 1 | - | Dev > QC |
+| fix-ga4-script-tag-missing-from-layout-tsx-all-analyti | GA4 script tag missing from layout.tsx — all analytics events are no-ops | - | complete | 1 | - | Dev > QC |
+| fix-pilot-signups-database-table-missing | pilot_signups database table missing | - | complete | 1 | - | Dev > QC |
 | fix-auth-routes-dead-supabase-env-vars | Fix 23 API routes using dead Supabase env vars — login/auth/billing all broken on Vercel | - | complete | 1 | - | Dev > QC |
 | fix-bcrypt-password-verify-fails-after-signup | Fix: Stored password cannot be verified after account creation (bcrypt compareSync returns false) | - | complete | 1 | - | Dev > QC |
-| fix-e2e-test-confirms-implementation-gaps | E2E test confirms implementation gaps | - | complete | 1 | - | Dev > QC |
+| fix-smoke-auth-signup-login-loop | Fix Smoke Test Loop — Auth signup then login | - | complete | 1 | - | Dev > QC |
 | fix-unify-auth-cookies | fix-unify-auth-cookies | - | complete | 1 | - | Dev > QC |
-| genome-phase1c-testing | Genome Phase 1C: Testing — automated tests for genome core | - | complete | 1 | - | Dev > QC |
+| genome-phase1b-error-propagation | Genome Phase 1B: Error propagation — stop swallowing errors | - | complete | 1 | - | Dev > QC |
 | fix-api-lead-capture-endpoint-returns-db-error-in-prod | /api/lead-capture endpoint returns DB error in production | - | complete | 1 | pass | Dev > QC |
 | fix-trial-signup-redirects-to-non-existent-route-dashb | Trial signup redirects to non-existent route /dashboard/onboarding | - | complete | 1 | - | Dev > QC |
 | fix-signup-plan-options-not-displayed | Signup page shows Choose Your Plan but no plan options are listed | - | complete | 1 | defined | Dev > QC |
-| fix-api-health-endpoint-wrong-table | Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents) | - | complete | 1 | - | Dev > QC |
+| genome-phase1a-observability | Genome Phase 1A: Observability — make all failures visible | - | complete | 1 | - | Dev > QC |
 | fix-marketing-landing-page-not-deployed-to-production | Marketing landing page not deployed to production | - | complete | 1 | - | Dev > QC |
 | fix-first-session-sample-leads-fr-4-not-implemented | First-session sample leads (FR-4) not implemented | - | complete | 1 | - | Dev > QC |
 | fix-remaining-from-agents-refs-satisfaction-debug | Fix remaining from(agents) references in satisfaction and debug routes | - | complete | 1 | - | Dev > QC |
 | fix-no-feedback-button-in-dashboard-us-2-completely-ab | No Feedback button in dashboard — US-2 completely absent | - | complete | 1 | - | Dev > QC |
 | fix-landing-page-has-no-pricing-section | Landing page has NO pricing section | - | complete | 1 | - | Dev > QC |
-| fix-trial-signup-route-ts-still-redirects-to-dashboard | trial-signup/route.ts still redirects to /dashboard/onboarding | - | complete | 1 | - | Dev > QC |
+| fix-triage-the-simple-transparent-section-the | PM triage: In the Simple transparent section, the 3 tiers of pricing "Starter — Free pilot
+Pro — Most popular
+Team — 5 a | - | complete | 1 | - | Dev > QC |
 | fix-resend-api-key-not-configured-in-vercel-email-deli | RESEND_API_KEY not configured in Vercel — email delivery will not work | - | complete | 1 | - | Dev > QC |
-| uc-revenue-alert-idempotency | Revenue Alert Idempotency & Loop Prevention | ready | needs_merge | 1 | - | PM > Dev > QC |
-| fix-simulator-tsx-step-component-does-not-exist | simulator.tsx step component does not exist | - | complete | 1 | - | Dev > QC |
-| fix-start-free-trial-cta-missing-from-landing-page-3-p | Start Free Trial CTA missing from landing page — 3 placements not implemented | - | complete | 1 | - | Dev > QC |
+| fix-e2e-test-confirms-implementation-gaps | E2E test confirms implementation gaps | - | complete | 1 | - | Dev > QC |
+| genome-phase1c-testing | Genome Phase 1C: Testing — automated tests for genome core | - | complete | 1 | - | Dev > QC |
+| fix-api-health-endpoint-wrong-table | Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents) | - | complete | 1 | - | Dev > QC |
 | feat-demo-without-signup | Live AI Demo — Experience the Product Without Signing Up | Phase 1 | complete | 1 | - | PM > Design > Dev > QC |
-| fix-no-self-serve-upgrade-path-from-pilot-to-paid | No self-serve upgrade path from pilot to paid | - | complete | 1 | - | Dev > QC |
+| fix-trial-signup-route-ts-still-redirects-to-dashboard | trial-signup/route.ts still redirects to /dashboard/onboarding | - | complete | 1 | - | Dev > QC |
 | fix-bookings-table-does-not-exist-booking-conversion-a | bookings table does not exist — booking conversion always null | - | complete | 1 | - | Dev > QC |
-| fix-fix-not-implemented-23-api-routes-still-query-wron | Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents) | - | complete | 1 | - | Dev > QC |
-| UC-ACCOUNT-TYPE-FILTER | Isolate Real Agents from Test Accounts | stabilization | in_progress | 1 | - | PM > Dev > QC |
+| fix-column-name-mismatch-in-webhook-handler | Column name mismatch in webhook handler | - | complete | 1 | - | Dev > QC |
+| UC-ONBOARDING-MOBILE-FIRST | Mobile-First Onboarding Redesign — Fix 86% Drop-Off | stabilization | complete | 1 | - | PM > Dev > QC |
 | fix-madzunkov-hotmail-com-is-locked-out-email-verified | madzunkov@hotmail.com is locked out — email_verified=false, no way to verify | - | complete | 1 | - | Dev > QC |
 | fix-touchsession-middleware-not-implemented-no-session | touchSession() middleware not implemented — no session heartbeat | - | complete | 1 | - | Dev > QC |
-| feat-post-signup-redirect-to-dashboard-onboarding | Post-Signup Redirect to /dashboard/onboarding | - | complete | 1 | defined | Dev > QC |
+| fix-start-free-trial-cta-missing-from-landing-page-3-p | Start Free Trial CTA missing from landing page — 3 placements not implemented | - | complete | 1 | - | Dev > QC |
 | feat-pilot-conversion-email-sequence | Pilot-to-Paid Conversion Email Sequence | Phase 1 | complete | 1 | defined | PM > Dev > QC |
+| UC-EMAIL-DELIVERY-FIX | Fix Email Delivery Pipeline — Verify <30s | stabilization | complete | 1 | - | PM > Dev > QC |
+| uc-dashboard-trial-countdown | Dashboard: Trial Expiration Countdown & Upgrade CTA | Phase 3 | complete | 1 | - | PM > Dev > QC |
+| uc-revenue-alert-idempotency | Revenue Alert Idempotency & Loop Prevention | ready | complete | 1 | - | PM > Dev > QC |
+| uc-first-paid-customer-proof | Critical: Get First Trial User to Paid (Proof of Concept) | Phase 3 | complete | 1 | - | PM > Dev > QC |
+| uc-trial-email-sequence-activate | Activate Pilot-to-Paid Email Sequence for Trial Users | Phase 3 | complete | 1 | - | PM > Dev > QC |
+| uc-pricing-page-conversion-refresh | Pricing Page: Testimonials + Feature Comparison + Urgency | Phase 3 | complete | 1 | - | PM > Dev > QC |
 | fix-pricing-page-shows-prices-10x-higher-than-pmf-md-s | /pricing page shows prices 10x higher than PMF.md strategy | - | complete | 1 | - | Dev > QC |
-| uc-trial-email-sequence-activate | Activate Pilot-to-Paid Email Sequence for Trial Users | Phase 3 | in_progress | 1 | - | PM > Dev > QC |
-| uc-dashboard-trial-countdown | Dashboard: Trial Expiration Countdown & Upgrade CTA | Phase 3 | not_started | 1 | - | PM > Dev > QC |
-| uc-pricing-page-conversion-refresh | Pricing Page: Testimonials + Feature Comparison + Urgency | Phase 3 | not_started | 1 | - | PM > Dev > QC |
-| UC-PILOT-DIRECT-RECRUITMENT | Direct Pilot Recruitment — 5-10 Real Agents (White-Glove) | pilot | ready | 1 | - | PM > Dev > QC |
-| uc-first-paid-customer-proof | Critical: Get First Trial User to Paid (Proof of Concept) | Phase 3 | not_started | 1 | - | PM > Dev > QC |
 | fix-api-endpoint-queries-non-existent-agent-id-column- | API endpoint queries non-existent "agent_id" column on messages table | - | complete | 1 | - | Dev > QC |
-| fix-distribution-loop | Fix: Distribution loop — deduplicate task creation with 7-day cooldown | - | needs_merge | 1 | - | PM > Dev > QC |
+| UC-ACCOUNT-TYPE-FILTER | Isolate Real Agents from Test Accounts | stabilization | complete | 1 | - | PM > Dev > QC |
 | uc-revenue-alert-dedup | Fix: Revenue Alert Deduplication | Phase 1 | ready | 1 | defined | PM > Dev > QC |
-| UC-PILOT-WHITE-GLOVE | White-Glove Pilot Onboarding Support | pilot | ready | 1 | - | PM > Dev > QC |
-| uc-distribution-loop-fix | Fix Distribution Health Check Loop | planning | in_progress | 1 | - | PM > Dev > QC |
-| fix-session-logging-not-integrated-into-login-flow | Session logging not integrated into login flow | - | complete | 1 | - | Dev > QC |
-| uc-distribution-loop-dedup | Distribution Loop Dedup — Stop Recurring Duplicate Task Creation | infrastructure | in_progress | 1 | - | PM > Dev > QC |
-| fix-page-view-logging-not-implemented-agent-page-views | Page view logging not implemented — agent_page_views table empty | - | complete | 1 | - | Dev > QC |
-| uc-distribution-loop-migration-fix | Fix: Apply migration 006 to local PG — stop distribution loop | - | not_started | 1 | - | PM > Dev > QC |
-| UC-FIX-DISTRIBUTION-LOOP-001 | Fix Distribution Health Check Infinite Loop | - | not_started | 1 | - | Dev |
-| feat-landing-page-conversion-cleanup | Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof | - | complete | 1 | - | PM > Dev > QC |
-| fix-schema-column-mismatch-satisfaction-ping-enabled-n | Schema column mismatch: satisfaction_ping_enabled not in real_estate_agents table | - | complete | 1 | - | Dev > QC |
+| uc-fix-loop-detector-cooldown | Fix Loop Detector Cooldown + Apply Migration 006 | now | needs_merge | 1 | - | Dev > QC |
+| uc-distribution-loop-fix | Fix Distribution Health Check Loop | planning | needs_merge | 1 | - | PM > Dev > QC |
+| uc-distribution-loop-dedup | Distribution Loop Dedup — Stop Recurring Duplicate Task Creation | infrastructure | needs_merge | 1 | - | PM > Dev > QC |
+| fix-simulator-tsx-step-component-does-not-exist | simulator.tsx step component does not exist | - | complete | 1 | - | Dev > QC |
+| uc-distribution-loop-migration-fix | Fix: Apply migration 006 to local PG — stop distribution loop | - | complete | 1 | - | PM > Dev > QC |
+| fix-fix-not-implemented-23-api-routes-still-query-wron | Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents) | - | complete | 1 | - | Dev > QC |
+| uc-revenue-recovery-critical-2026-03-31 | Revenue Recovery — Critical Path to First $20K MRR | Phase 1 | ready | 1 | - | PM > Dev > QC |
+| UC-FIX-DISTRIBUTION-LOOP-001 | Fix Distribution Health Check Infinite Loop | - | needs_merge | 1 | - | Dev |
 | fix-page-tsx-not-updated-simulator-step-not-wired-into | page.tsx not updated — simulator step not wired into wizard | - | complete | 1 | - | Dev > QC |
-| uc-fix-loop-detector-cooldown | Fix Loop Detector Cooldown + Apply Migration 006 | now | not_started | 1 | - | Dev > QC |
 | fix-test-genome-separation | test genome separation | - | complete | 1 | - | Dev > QC |
-| fix-start-free-trial-cta-feature-not-integrated-into-l | Start Free Trial CTA feature not integrated into landing page | - | complete | 1 | - | Dev > QC |
-| uc-fix-revenue-alert-loop | Fix Revenue Alert Loop Handler | - | in_progress | 1 | - | PM > Dev > QC |
+| feat-post-signup-redirect-to-dashboard-onboarding | Post-Signup Redirect to /dashboard/onboarding | - | complete | 1 | defined | Dev > QC |
+| uc-fix-revenue-alert-loop | Fix Revenue Alert Loop Handler | - | complete | 1 | - | PM > Dev > QC |
 | fix-pilot-recruitment-blocked-2-action-items-waiting-s | Pilot recruitment blocked — 2 action items WAITING since Feb 25 with no response | - | complete | 1 | - | Dev > QC |
+| fix-session-logging-not-integrated-into-login-flow | Session logging not integrated into login flow | - | complete | 1 | - | Dev > QC |
+| fix-api-endpoint-uses-non-existent-column-status-inste | API endpoint uses non-existent column "status" instead of "twilio_status" | - | complete | 1 | - | Dev > QC |
+| uc-first-agent-activation-test | First Agent Onboarding — Validate Product Stickiness | Phase 3 | complete | 1 | - | PM > Dev > QC |
 | uc-email-verification-trial-activation | Fix Email Verification & Trial Activation — Enable Agents to Access Product | Phase 3 | ready | 1 | - | PM > Dev > QC |
 | uc-stripe-checkout-end-to-end | Validate Stripe Checkout — Trial to Paid Conversion Flow | Phase 3 | ready | 1 | - | PM > Dev > QC |
-| uc-first-agent-activation-test | First Agent Onboarding — Validate Product Stickiness | Phase 3 | ready | 1 | - | PM > Dev > QC |
 | uc-marketing-campaign-launch | Launch Acquisition Campaign — Signups 10+/Day Minimum | Phase 3 | ready | 1 | - | PM > Dev > QC |
-| fix-table-reference-mismatch-in-webhook-handler | Table reference mismatch in webhook handler | - | complete | 1 | - | Dev > QC |
-| fix-api-endpoint-uses-non-existent-column-status-inste | API endpoint uses non-existent column "status" instead of "twilio_status" | - | complete | 1 | - | Dev > QC |
-| fix-loop-handler-distribution-dedup | Fix: Distribution loop — dedup guard + UC completion gate + loop detector cooldown | - | in_progress | 1 | - | PM > Dev > QC |
-| fix-distribution-loop-dedup | Fix distribution-collector loop: add deduplication and schema guard | - | in_progress | 1 | defined | Dev > QC |
+| fix-page-view-logging-not-implemented-agent-page-views | Page view logging not implemented — agent_page_views table empty | - | complete | 1 | - | Dev > QC |
+| feat-landing-page-conversion-cleanup | Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof | - | complete | 1 | - | PM > Dev > QC |
+| UC-PILOT-DIRECT-RECRUITMENT | Direct Pilot Recruitment — 5-10 Real Agents (White-Glove) | pilot | ready | 1 | - | PM > Dev > QC |
+| uc-onboarding-aha-moment-completion | Enable Onboarding Completion + Aha Moment | Phase 3 | not_started | 1 | - | PM > Dev > QC |
+| fix-distribution-loop | Fix: Distribution loop — deduplicate task creation with 7-day cooldown | - | complete | 1 | - | PM > Dev > QC |
 | feat-transactional-email-resend | Transactional Email Delivery via Resend — Activate the Signup Funnel | - | complete | 1 | - | Dev > QC |
+| fix-distribution-channels-table-missing-from-local-pos | distribution_channels table missing from local PostgreSQL | - | complete | 1 | - | Dev > QC |
 | fix-three-consecutive-vercel-builds-failing-fix-never- | Three consecutive Vercel builds failing — fix never reached production | - | complete | 1 | - | Dev > QC |
+| fix-start-free-trial-cta-feature-not-integrated-into-l | Start Free Trial CTA feature not integrated into landing page | - | complete | 1 | - | Dev > QC |
+| fix-schema-column-mismatch-satisfaction-ping-enabled-n | Schema column mismatch: satisfaction_ping_enabled not in real_estate_agents table | - | complete | 1 | - | Dev > QC |
+| fix-loop-handler-distribution-dedup | Fix: Distribution loop — dedup guard + UC completion gate + loop detector cooldown | - | complete | 1 | - | PM > Dev > QC |
+| uc-revenue-pilot-recruitment | Pilot Recruitment Campaign Launch | stabilization | ready | 1 | - | PM > Dev > QC |
 | fix-nps-api-routes-api-nps-verify-and-api-nps-submit-r | NPS API routes /api/nps/verify and /api/nps/submit return 404 | - | complete | 1 | - | Dev > QC |
-| fix-triage-there-are-join-the-pilot | PM triage: There are "Join the Pilot - It's Free" and "Get Started Free" options on the landing page. This needs to be r | - | complete | 1 | - | Dev > QC |
-| fix-email-delivery-non-functional-resend-api-key-not-s | Email delivery non-functional - RESEND_API_KEY not set in Vercel | - | complete | 1 | - | Dev > QC |
 | fix-admin-nps-page-does-not-exist-us-3-pm-dashboard-ab | /admin/nps page does not exist — US-3 PM dashboard absent | - | complete | 1 | - | Dev > QC |
-| fix-stripe-price-ids-are-placeholder-values-not-real-s | Stripe price IDs are placeholder values, not real Stripe IDs | - | complete | 1 | - | Dev > QC |
+| feat-agent-referral-program | Agent Referral Program — Viral Growth via Word-of-Mouth | Phase 2 | not_started | 1 | - | PM > Dev > QC |
+| feat-weekly-performance-email | Weekly AI Performance Report — Prove ROI, Drive Upgrades | Phase 2 | not_started | 1 | - | PM > Dev > QC |
+| fix-table-reference-mismatch-in-webhook-handler | Table reference mismatch in webhook handler | - | complete | 1 | - | Dev > QC |
 | feat-supabase-to-postgrest-migration | Complete Supabase→PostgREST migration in dashboard API routes | - | complete | 1 | - | Dev > QC |
 | fix-signup-onboarding-email-check-queries-wrong-table- | Signup/onboarding email check queries wrong table — always returns available regardless of registrations | - | complete | 1 | - | Dev > QC |
 | fix-stripe-webhook-updates-orchestration-agents-table- | Stripe webhook updates orchestration agents table instead of real estate agent records | - | complete | 1 | - | Dev > QC |
-| feat-post-login-onboarding-wizard | Post-Login Onboarding Wizard for New Agents | - | complete | 1 | defined | PM > Marketing > Design > Dev > QC |
-| fix-dashboard-routes-are-publicly-accessible | dashboard routes are publicly accessible with no auth protection | - | complete | 1 | - | Dev > QC |
+| uc-trial-to-paid-conversion-path | Implement Trial-to-Paid Conversion Path | Phase 3 | not_started | 1 | - | PM > Dev > QC |
+| fix-stripe-price-ids-are-placeholder-values-not-real-s | Stripe price IDs are placeholder values, not real Stripe IDs | - | complete | 1 | - | Dev > QC |
 | fix-production-build-fails-typescript-error-in-trial-s | Production build fails: TypeScript error in trial-signup route | - | complete | 1 | - | Dev > QC |
-| fix-landing-page-has-no-links-to-signup-or-o | landing page has no links to signup or onboarding pages | - | complete | 1 | - | Dev > QC |
-| fix-signup-page-has-no-link-back-to-login-an | signup page has no link back to login and no login page exists | - | complete | 1 | - | Dev > QC |
+| fix-triage-there-are-join-the-pilot | PM triage: There are "Join the Pilot - It's Free" and "Get Started Free" options on the landing page. This needs to be r | - | complete | 1 | - | Dev > QC |
+| feat-frictionless-demo-no-fub | Frictionless Demo Mode — See AI Respond in 60 Seconds (No FUB Required) | Phase 1 | not_started | 1 | - | PM > Dev > QC |
+| fix-dashboard-routes-are-publicly-accessible | dashboard routes are publicly accessible with no auth protection | - | complete | 1 | - | Dev > QC |
 | fix-migration-012-not-applied-to-supabase-all-telemetr | Migration 012 not applied to Supabase — all telemetry tables/views missing | - | complete | 1 | - | Dev > QC |
-| fix-triage-108-stuck-ucs-determine-which | PM: Triage 108 stuck UCs — determine which are still needed | - | complete | 1 | - | Dev > QC |
+| fix-landing-page-has-no-links-to-signup-or-o | landing page has no links to signup or onboarding pages | - | complete | 1 | - | Dev > QC |
+| UC-PILOT-WHITE-GLOVE | White-Glove Pilot Onboarding Support | pilot | ready | 1 | - | PM > Dev > QC |
+| uc-revenue-funnel-diagnostics | Funnel Diagnostics — Trial Activation Analysis | stabilization | ready | 1 | - | PM > Dev > QC |
 | fix-signup-form-layout-inconsistency | Fix Signup Form Layout — Match Login Field Orientation | - | complete | 1 | - | Dev > QC |
-| fix-loop-detector-uses-status-only-dedup-instead-of-24 | Loop detector uses status-only dedup instead of 24h time window | - | not_started | 1 | - | Dev > QC |
+| uc-revenue-pricing-clarity | Pricing Clarity for Trial Users | stabilization | ready | 1 | - | PM > Dev > QC |
+| uc-revenue-aha-moment | Trial Aha Moment — AI Response by Day 3 | stabilization | ready | 1 | - | PM > Dev > QC |
+| uc-revenue-checkout-friction | Frictionless Stripe Checkout E2E | stabilization | ready | 1 | - | PM > Dev > QC |
+| fix-signup-page-has-no-link-back-to-login-an | signup page has no link back to login and no login page exists | - | complete | 1 | - | Dev > QC |
+| fix-email-delivery-non-functional-resend-api-key-not-s | Email delivery non-functional - RESEND_API_KEY not set in Vercel | - | complete | 1 | - | Dev > QC |
+| fix-loop-detector-uses-status-only-dedup-instead-of-24 | Loop detector uses status-only dedup instead of 24h time window | - | complete | 1 | - | Dev > QC |
 | UC-5 | Lead Opt-Out | Phase 1 | complete | 1 | pass | PM > Dev > QC |
-| fix-status | status | - | complete | 1 | - | Dev > QC |
 | fix-resend-api-key-not-set-in-vercel-email-delivery-no | RESEND_API_KEY not set in Vercel — email delivery non-functional | - | complete | 1 | - | Dev > QC |
+| uc-revenue-email-sequence | Active Trial Conversion Email Sequence | stabilization | ready | 1 | - | PM > Dev > QC |
+| uc-landing-page-revenue-optimization | Optimize Landing Page for Acquisition & Conversion | Phase 3 | not_started | 1 | - | PM > Design > Dev > QC |
+| uc-revenue-countdown-widget | Trial Countdown Widget & Urgency | stabilization | ready | 1 | - | PM > Dev > QC |
 | fix-stripe-webhook-secret-not-set-in-vercel-production | STRIPE_WEBHOOK_SECRET not set in Vercel production | - | complete | 1 | - | Dev > QC |
 | fix-api-lead-capture-still-returns-500-in-production | /api/lead-capture still returns 500 in production | - | complete | 1 | - | Dev > QC |
-| fix-distribution-loop-migration-and-dedup | Fix Distribution Loop — Apply Migration 006, Migrate to Direct PG, Add Dedup Guards | - | ready | 1 | - | PM > Dev > QC |
-| fix-test-gateway-path | test gateway path | - | complete | 1 | - | Dev > QC |
+| fix-status | status | - | complete | 1 | - | Dev > QC |
 | fix-post-login-onboarding-wizard-fub-sms-aha-is-stuck- | Post-login onboarding wizard (FUB/SMS/aha) is STUCK and never auto-triggers | - | complete | 1 | - | Dev > QC |
+| feat-post-login-onboarding-wizard | Post-Login Onboarding Wizard for New Agents | - | complete | 1 | defined | PM > Marketing > Design > Dev > QC |
 | fix-aha-moment-lead-simulator-not-implemented-not-star | Aha moment lead simulator not implemented (not_started at day 22) | - | complete | 1 | - | Dev > QC |
-| fix-deployed-pages-not-registered-in-system- | Auto-Sync Deployed Vercel Pages to System Components | - | complete | 1 | pass | Dev > QC |
 | fix-api-queries-wrong-table-sms-stats-endpoint-returns | API queries wrong table — sms-stats endpoint returns 500 | - | complete | 1 | - | Dev > QC |
-| UC-10 | Billing Portal | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
+| fix-deployed-pages-not-registered-in-system- | Auto-Sync Deployed Vercel Pages to System Components | - | complete | 1 | pass | Dev > QC |
 | fix-stripe-secret-key-not-set-in-vercel-production | STRIPE_SECRET_KEY not set in Vercel production | - | complete | 1 | - | Dev > QC |
-| UC-11 | Subscription Lifecycle | Phase 3 | complete | 1 | defined | PM > Dev > QC |
+| fix-smoke-auth-dashboard-not-deployed | Deploy Next.js Dashboard to resolve Auth smoke failures | pilot | not_started | 1 | - | PM > Dev > QC |
 | feat-frictionless-onboarding-flow | Self-Serve Frictionless Onboarding Flow | - | complete | 1 | defined | PM > Marketing > Design > Dev > QC |
-| UC-3 | FUB Status Change | Phase 1 | complete | 1 | defined | PM > Dev > QC |
-| fix-db-migration-incomplete-email-verification-tokens- | DB migration incomplete: email_verification_tokens table does not exist | - | complete | 1 | - | Dev > QC |
+| fix-triage-108-stuck-ucs-determine-which | PM: Triage 108 stuck UCs — determine which are still needed | - | complete | 1 | - | Dev > QC |
+| UC-10 | Billing Portal | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
+| UC-11 | Subscription Lifecycle | Phase 3 | complete | 1 | defined | PM > Dev > QC |
 | fix-failing-test-suite | Fix 90 failing tests blocking CI pipeline | - | complete | 1 | - | Dev > QC |
 | fix-createstuckalerts-not-wired-into-heartbeat | createStuckAlerts() not wired into heartbeat | - | complete | 1 | - | Dev > QC |
 | fix-pricing-page-checkout-buttons-do-nothing | Pricing page checkout buttons do nothing | - | complete | 1 | - | Dev > QC |
 | fix-mrr-is-0-no-paying-customers-despite-all-technical | MRR is $0 — no paying customers despite all technical blockers being resolved | - | complete | 1 | - | Dev > QC |
 | fix-stripe-webhook-secret-missing-from-vercel-leadflow | STRIPE_WEBHOOK_SECRET missing from Vercel leadflow-ai project | - | complete | 1 | - | Dev > QC |
-| UC-9 | Customer Sign-Up Flow | Phase 3 | complete | 1 | defined | PM > Design > Dev > QC |
+| UC-3 | FUB Status Change | Phase 1 | complete | 1 | defined | PM > Dev > QC |
 | fix-stripe-secret-key-missing-from-vercel-leadflow-ai- | STRIPE_SECRET_KEY missing from Vercel leadflow-ai project | - | complete | 1 | - | Dev > QC |
-| feat-onboarding-completion-telemetry | Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off | Phase 1 | complete | 1 | defined | PM > Dev > QC |
-| fix-smsanalyticscards-component-imported-but-never-ren | SmsAnalyticsCards component imported but never rendered in dashboard | - | complete | 1 | - | Dev > QC |
-| fix-fixed-satisfaction-ping-route-was-using-agents-tab | Fixed: satisfaction-ping route was using agents table instead of real_estate_agents | - | complete | 1 | - | Dev > QC |
-| fix-uc-completion-gate-missing-in-checkdistributionhea | UC completion gate missing in checkDistributionHealth() | - | not_started | 2 | - | Dev > QC |
+| fix-uc-completion-gate-missing-in-checkdistributionhea | UC completion gate missing in checkDistributionHealth() | - | complete | 2 | - | Dev > QC |
 | fix-api-accepts-agent-id-as-query-parameter-instead-of | API accepts agent_id as query parameter instead of reading from session | - | complete | 2 | - | Dev > QC |
 | fix-trial-period-set-to-30-days-prd-specifies-14-days | Trial period set to 30 days — PRD specifies 14 days | - | complete | 2 | - | Dev > QC |
 | improve-landing-page-analytics-ga4 | Landing Page Analytics — GA4/PostHog for CTA Clicks, Scroll Depth & Conversion Funnel | - | complete | 2 | defined | PM > Dev > QC |
 | fix-how-it-works-section-not-implemented | How It Works section not implemented | - | complete | 2 | - | Dev > QC |
 | fix-pilot-pricing-decision-implemented-as-uc-spec | Pilot pricing decision implemented as UC spec | - | complete | 2 | - | Dev > QC |
-| fix-subscriptions-table-never-populated | Subscriptions table never populated | - | complete | 2 | - | Dev > QC |
 | fix-ga4-property-and-vercel-env-var-setup-required | GA4 property and Vercel env var setup required | - | complete | 2 | - | Dev > QC |
+| fix-subscriptions-table-never-populated | Subscriptions table never populated | - | complete | 2 | - | Dev > QC |
 | fix-team-tier-399-mo-missing-from-pricing-page-only-3- | Team tier ($399/mo) missing from /pricing page — only 3 tiers shown | - | complete | 2 | - | Dev > QC |
 | fix-verify-stripe-webhook-secret-in-production | Verify Stripe webhook secret in production | - | complete | 2 | - | Dev > QC |
 | fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign | Onboarding wizard stuck - no aha moment for new signups | - | complete | 2 | - | Design > Dev > QC |
@@ -256,7 +271,7 @@ Team — 5 a | - | complete | 1 | - | Dev > QC |
 | fix-api-endpoint-not-protected-by-session-middleware | API endpoint not protected by session middleware | - | complete | 2 | - | Dev > QC |
 | fix-tier-naming-inconsistency-between-pricing-page-and | Tier naming inconsistency between pricing page and checkout API | - | complete | 2 | - | Dev > QC |
 | fix-use-cases-implementation-status-marked-complete-bu | use_cases.implementation_status marked complete but feature is non-functional | - | complete | 2 | - | Dev > QC |
-| uc-trial-user-cohort-analytics | Analytics: Trial User Cohort Tracking & Conversion Prediction | Phase 3 | not_started | 2 | - | PM > Dev > QC |
+| uc-trial-user-cohort-analytics | Analytics: Trial User Cohort Tracking & Conversion Prediction | Phase 3 | complete | 2 | - | PM > Dev > QC |
 | feat-lead-satisfaction-feedback | Lead Satisfaction Feedback Collection | - | complete | 2 | defined | PM > Marketing > Design > Dev > QC |
 | fix-api-endpoint-has-no-authentication-middleware | API endpoint has no authentication middleware | - | complete | 2 | - | Dev > QC |
 | fix-agents-table-mismatch-auth-routes | Fix agents Table Mismatch in Auth/Onboarding API Routes | - | complete | 2 | - | Dev > QC |
@@ -271,104 +286,403 @@ Team — 5 a | - | complete | 1 | - | Dev > QC |
 | UC-7 | Dashboard Manual SMS | Phase 2 | complete | 3 | pass | PM > Design > Dev > QC |
 | fix-stripe-subscriptions-table | Fix: Create Subscriptions Table for Stripe Webhook Storage | - | complete | 3 | - | Dev > QC |
 
-## Phase: Phase 1
+## Phase: Phase 3
 
-### feat-admin-pilot-invite-flow — Admin Pilot Invite Flow — Direct Recruitment by Stojan
+### feat-add-session-management-with-server-side- — add session management with server-side tokens
 
-- **PRD:** prd-admin-pilot-invite-flow
+- **PRD:** PRD-BILLING
 - **Status:** complete
 - **Priority:** 0
-- **Description:** Enable Stojan to directly recruit pilot agents without relying on inbound traffic.
-
-## Problem
-Zero real agents have entered the funnel. Pilot recruitment has been waiting on action items for 22+ days. The product needs a direct-invite path: Stojan pastes an email, system creates the account, sends a personalized invite with a magic-link that bypasses email verification (trust is granted via invite).
-
-## Acceptance Criteria
-- AC-1: POST /api/admin/invite-pilot accepts {email, name, message} and requires admin authentication (env-based secret or separate admin token)
-- AC-2: Creates a real_estate_agents row with status='invited', plan_tier='pilot', email_verified=true (bypasses email verification for invited agents)
-- AC-3: Sends personalized pilot invite email via Resend with a direct one-click login link (magic token, expires 7 days)
-- AC-4: Returns pilot invite URL that Stojan can also send manually (fallback)
-- AC-5: Admin UI at /admin/invite (simple form: email + name + optional note)
-- AC-6: pilot_invites table tracks: email, invited_at, accepted_at, invited_by, status
-- AC-7: Smoke test verifies the invite endpoint works and email is dispatched
-
-## Why This Unblocks Revenue
-Without this, Stojan must wait for organic inbound + email verification — which has already cost 22+ days. With direct invites, Stojan can onboard 3 agents this week.
+- **Description:** Feature request: add session management with server-side tokens
 - **Acceptance Criteria:**
-  - ["AC-1: POST /api/admin/invite-pilot requires admin auth (X-Admin-Token header)","AC-2: Creates real_estate_agents row with status=invited, plan_tier=pilot, email_verified=true","AC-3: Sends personalized Resend email with magic-link (expires 7 days)","AC-4: Returns invite URL in API response for manual fallback","AC-5: Admin UI at /admin/invite with form and invite list","AC-6: pilot_invites table tracks all invite lifecycle fields","AC-7: Smoke test verifies invite endpoint and email dispatch"]
+  - Supabase Auth configured for server-side session management
+  - Access token stored securely (httpOnly cookie)
+  - Refresh token rotation implemented
+  - Session expiry handled automatically (token refresh)
+  - Server-side session validation on API requests
+  - Session persistence across page refreshes
+  - Concurrent session handling (multiple devices)
+  - Session revocation on logout
+  - Session timeout after inactivity (configurable)
+  - Secure cookie flags set (Secure, SameSite)
 - **Workflow:** PM > Dev > QC
 
-### feat-post-signup-dashboard-onboarding-redirect — Post-Signup Redirect to /dashboard/onboarding Wizard
+### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
 
-- **PRD:** PRD-SIGNUP-AUTH-TOKEN-FIX-001
+- **PRD:** PRD-BILLING
 - **Status:** complete
 - **Priority:** 0
-- **Description:** After successful signup (pilot, trial, or standard), new agents are redirected to /dashboard/onboarding — a dedicated onboarding wizard embedded within the dashboard shell. The wizard guides agents through FUB connection, Twilio SMS setup, SMS verification, and an Aha Moment lead simulator. Upon completion, the agent lands on the main /dashboard.
+- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
 - **Acceptance Criteria:**
-  - Pilot signup (/api/auth/pilot-signup) redirects to /dashboard/onboarding on success
-  - Trial signup (/api/auth/trial-signup) redirects to /dashboard/onboarding on success
-  - Trial start (/api/trial/start) redirects to /dashboard/onboarding on success
-  - /dashboard/onboarding page exists and renders the 4-step wizard (FUB → SMS → Verify → Simulator)
-  - Wizard layout (layout.tsx) excludes OnboardingGuard to allow new-user access
-  - Wizard loads existing wizard state from /api/setup/status (resumes from last incomplete step)
-  - Completing the wizard redirects to /dashboard
-  - Skipping the wizard redirects to /dashboard
-  - Unauthenticated users hitting /dashboard/onboarding are redirected to /login
-  - Wizard state (fub_connected, twilio_connected, sms_verified, simulator_completed) is persisted via /api/setup/status POST
-  - onboarding_completed = true set on /api/setup/complete POST after wizard completion or simulator skip
-  - Page is mobile-responsive
-  - After successful trial signup, user lands on /dashboard/onboarding and wizard renders WITHOUT redirect to /login
-  - After successful pilot signup, user lands on /dashboard/onboarding and wizard renders WITHOUT redirect to /login
-  - /api/auth/me returns user identity from valid auth-token cookie (200) or 401 when unauthenticated
-  - Both trial-signup and pilot-signup APIs return token and user object in JSON response body
-  - TrialSignupForm stores token and user in localStorage BEFORE calling router.push(redirectTo)
-  - /dashboard/onboarding page falls back to /api/auth/me when localStorage.leadflow_user is absent
-  - Login page (/login) redirects un-onboarded users (onboardingCompleted === false) to /dashboard/onboarding (not /setup)
-- **Depends on:** feat-post-login-onboarding-wizard
-- **Workflow:** PM > Dev > QC
+  - Signup button visible on landing page
+  - Login button visible on landing page
+  - Email/password registration form works
+  - Login form works with valid credentials
+  - Password reset flow implemented
+  - Protected routes redirect to login when unauthenticated
+  - Authenticated users see dashboard on login
+  - User session persists across page refreshes
+  - Logout functionality works
+  - Welcome email sent after signup
+  - Auth state reflected in UI (show user name/email)
+- **Workflow:** PM > Design > Dev > QC
 
-### feat-self-serve-stripe-checkout — Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow
+### feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
 
-- **PRD:** prd-self-serve-stripe-checkout
+- **PRD:** PRD-BILLING
 - **Status:** complete
 - **Priority:** 0
-- **Description:** Pilot agents and trial users can upgrade to a paid plan (Starter/Pro/Team) directly from the dashboard without contacting Stojan. An "Upgrade" button in the dashboard/settings opens a Stripe Checkout session for the selected plan. On success, plan_tier and stripe_customer_id update automatically. Acceptance criteria: (1) Upgrade CTA visible in dashboard for pilot/trial agents; (2) Stripe Checkout session created server-side; (3) Webhook updates agent plan_tier on checkout.session.completed; (4) Dashboard reflects new tier immediately after payment; (5) Confirmation email sent via Resend; (6) Failed payments surface clear error UI.
+- **Description:** Feature request: add auth middleware to protect dashboard and settings routes
 - **Acceptance Criteria:**
-  - Upgrade CTA visible in dashboard for pilot/trial agents (plan_tier: trial, pilot, null)
-  - Upgrade CTA NOT shown for paid agents (starter, pro, team)
-  - POST /api/billing/create-checkout-session creates Stripe Checkout session server-side
-  - Checkout session uses correct price_id for selected plan
-  - client_reference_id set to agent_id for webhook correlation
-  - checkout.session.completed webhook validates Stripe signature
-  - Webhook updates real_estate_agents: plan_tier, stripe_customer_id, stripe_subscription_id, plan_activated_at
-  - Dashboard shows success banner on /dashboard?upgrade=success
-  - Upgrade CTA absent after successful payment
-  - Confirmation email sent via Resend with plan name, price, next billing date
-  - Cancel redirect shows no-charge message at /settings/billing?upgrade=cancelled
-  - Webhook is idempotent — repeated delivery does not double-update
+  - Middleware checks for valid Supabase session on protected routes
+  - Unauthenticated users redirected to /login
+  - Protected routes: /dashboard, /dashboard/*, /settings, /settings/*
+  - Public routes remain accessible: /, /login, /signup
+  - Session validation happens server-side for API routes
+  - Client-side route guards prevent flash of protected content
+  - After login, user redirected to originally requested page
+  - Logout clears session and redirects to /login
+  - Session expiry handled gracefully (refresh token flow)
+  - Auth state available via context/hook for UI components
 - **Workflow:** PM > Dev > QC
 
-### implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
+### UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
+
+- **PRD:** PRD-LANDING-MARKETING-001
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Transform the root route (/) from a developer-focused API docs page into a high-converting marketing landing page. Drive trial signups with clear value proposition, social proof, pricing transparency, and frictionless CTAs. Critical for distribution — currently blocking all prospect traffic.
+- **Acceptance Criteria:**
+  - Hero section with compelling headline, subheadline, and dual CTAs
+  - Stats bar with 4 key metrics (<30s, 78%, 35%, 24/7)
+  - Problem section with 3 pain point cards
+  - Solution section with 4 feature cards
+  - Social proof section with testimonials and trust badges
+  - How It Works section with 3-step process
+  - Pricing section with 4 tiers (Starter/Pro/Team/Brokerage)
+  - FAQ section with 7 accordion items
+  - Final CTA section with signup prompt
+  - Fixed navigation with smooth scroll links
+  - Footer with compliance links
+  - Page load time <2 seconds
+  - Responsive design (mobile-first)
+  - WCAG 2.1 AA accessibility compliance
+  - SEO meta tags and structured data
+  - Analytics tracking for CTAs and scroll depth
+- **Workflow:** PM > Marketing > Design > Dev > QC
+
+### UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
 
 - **PRD:** PRD-REVENUE-RECOVERY-001
 - **Status:** complete
 - **Priority:** 0
-- **Description:** Replace the mock SMS implementation with real Twilio integration. The current sendSmsViatwilio() function only logs to console and returns fake data. Implement actual Twilio API calls to send SMS messages to leads. Include proper error handling, delivery status tracking, and message logging to the database.
+- **Description:** Analyze conversion funnel, reprioritize use cases by revenue impact, and execute 3 critical actions to get first paying agents within 44 days.
 - **Acceptance Criteria:**
-  - Twilio SDK installed and configured (twilio npm package)
-  - Environment variables set: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER_US, TWILIO_PHONE_NUMBER_CA
-  - sendSmsViaTwilio() function calls twilio.messages.create() with real API
-  - SMS message includes: to (lead phone), from (Twilio number), body (AI message)
-  - Twilio SID and status returned and stored in messages table
-  - Failed SMS sends are retried with exponential backoff (max 3 attempts)
-  - Delivery status callbacks from Twilio update message status in database
-  - Messages table tracks: twilio_sid, status (sent/delivered/failed), sent_at, delivered_at
-  - Error handling: invalid phone numbers, insufficient funds, rate limits
-  - Cost tracking: log message cost per SMS for billing/usage analytics
-  - Test: Submit lead → Receive actual SMS on test phone number
-  - Test: Verify message appears in dashboard with correct status
-  - A2P 10DLC compliance: registered sender ID for production use
+  - Conversion funnel analyzed and bottlenecks documented
+  - Use cases reprioritized by revenue impact (P0/P1/P2/P3)
+  - 3 critical actions identified to close MRR gap
+  - Onboarding fix unblocks signup flow (fix-onboarding-500-error)
+  - Landing page deployed and converting (UC-LANDING-MARKETING-001)
+  - Real Twilio SMS activated (implement-twilio-sms-integration)
+  - Weekly KPI tracking established
+  - Go/No-Go decision points defined (Day 22, 25, 35)
+  - Risk mitigation plan documented
+- **Workflow:** PM > Dev > Marketing > QC
+
+### feat-add-login-page-with-email-and-password — add login page with email and password
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Feature request: add login page with email and password
+- **Acceptance Criteria:**
+  - Login page accessible at /login route
+  - Email input field with validation
+  - Password input field with masking
+  - Login button triggers Supabase Auth
+  - Error message displayed for invalid credentials
+  - Successful login redirects to /dashboard
+  - Session persisted across page refreshes
+  - Link to signup page for new users
+  - Link to password reset for forgotten passwords
+  - Responsive design works on mobile devices
+- **Workflow:** PM > Dev > QC
+
+### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
+- **Acceptance Criteria:**
+  - Root cause of Agent not found error identified and documented
+  - Billing records created for all 3 pilot agents in Stripe
+  - Agent-billing association lookup fixed in API
+  - Settings > Billing & Subscription loads without errors
+  - Current subscription plan displays correctly
+  - Payment methods list populates
+  - Invoice history visible with download links
+  - Graceful error handling for edge cases implemented
+  - E2E test for billing portal passes
+- **Workflow:** PM > Dev > QC
+
+### fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
+
+- **PRD:** PRD-ONBOARDING-500-FIX
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Fix the critical 500 error on /api/agents/onboard that prevents new user account creation. The onboarding wizard completes successfully on the frontend, but the backend endpoint fails due to a schema collision between the orchestrator agents table and the product agents table in the same Supabase database.
+- **Acceptance Criteria:**
+  - Migration 013 runs successfully - real_estate_agents table exists
+  - Core API routes updated: onboard, create, login (COMPLETED)
+  - All remaining API routes updated to use real_estate_agents (PENDING: 12 files)
+  - All library files updated: supabase.ts, subscription-service.js, webhook-processor.js, billing-cycle-manager.js, calcom-webhook-handler.js, booking-link-service.js (PENDING: 6 files)
+  - All scripts/utilities updated (PENDING: 5 files)
+  - No references to from("agents") remain in product code
+  - Signup flow works end-to-end without 500 errors
+  - Login works with migrated table
+  - Billing portal loads without "Agent not found" error
+  - Stripe webhooks process correctly
+  - Health check confirms real_estate_agents table accessible
+  - All E2E tests pass
 - **Workflow:** Dev > QC
+
+### UC-9 — Customer Sign-Up Flow
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Stripe checkout + onboarding for new customers
+- **Acceptance Criteria:**
+  - Landing page has visible signup CTA
+  - Plan selection clearly shows pricing and features
+  - Email/password registration works (Supabase Auth)
+  - Stripe Checkout session created correctly
+  - Payment processing succeeds >95% of time
+  - Account activated immediately after successful payment
+  - User redirected to dashboard post-signup
+  - Welcome email sent
+- **Workflow:** PM > Design > Dev > QC
+
+### uc-dashboard-trial-countdown — Dashboard: Trial Expiration Countdown & Upgrade CTA
+
+- **PRD:** prd-revenue-recovery-002
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Add persistent header in dashboard showing "Your trial expires in X days" + prominent "Upgrade to Pro" button.
+- **Workflow:** PM > Dev > QC
+
+### uc-first-paid-customer-proof — Critical: Get First Trial User to Paid (Proof of Concept)
+
+- **PRD:** prd-revenue-recovery-002
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Manually recruit 1 pilot user to upgrade. Email offer: "Your trial was great. Here's $50 off Pro." Confirm Stripe webhook fires.
+- **Workflow:** PM > Dev > QC
+
+### uc-trial-email-sequence-activate — Activate Pilot-to-Paid Email Sequence for Trial Users
+
+- **PRD:** prd-revenue-recovery-002
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Email sequence triggers when trial_ends_at approaches. Sends: day 10 reminder, day 13 urgency, day 14 final notice, day +1 expired notice.
+- **Workflow:** PM > Dev > QC
+
+### uc-pricing-page-conversion-refresh — Pricing Page: Testimonials + Feature Comparison + Urgency
+
+- **PRD:** prd-revenue-recovery-002
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Add pilot user testimonials, feature comparison table, removed API docs, added "why Pro is popular" narrative.
+- **Workflow:** PM > Dev > QC
+
+### uc-first-agent-activation-test — First Agent Onboarding — Validate Product Stickiness
+
+- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Manual test with first trial user. Confirm: login → dashboard → FUB config → test lead → SMS → aha moment in <5 min.
+- **Workflow:** PM > Dev > QC
+
+### uc-email-verification-trial-activation — Fix Email Verification & Trial Activation — Enable Agents to Access Product
+
+- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Email verification required but broken (34% completion). Agents cannot access trial. Fix: Resend API, auto-activate trial on verification. Acceptance: Emails send, verification works, verified accounts get trial access.
+- **Workflow:** PM > Dev > QC
+
+### uc-stripe-checkout-end-to-end — Validate Stripe Checkout — Trial to Paid Conversion Flow
+
+- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Test Stripe integration end-to-end. Payment must succeed, subscription created, agent marked paid. This unblocks revenue.
+- **Workflow:** PM > Dev > QC
+
+### uc-marketing-campaign-launch — Launch Acquisition Campaign — Signups 10+/Day Minimum
+
+- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Activate Facebook + Reddit + FUB Marketplace + referral program. Target: 10+ signups/day, CAC <$100, conversion >2%.
+- **Workflow:** PM > Dev > QC
+
+### uc-onboarding-aha-moment-completion — Enable Onboarding Completion + Aha Moment
+
+- **PRD:** PRD-REVENUE-RECOVERY-CRITICAL-DAY45
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Deploy lead simulator as final onboarding step. Enable agents to see AI responding to sample lead in <30 seconds. Target: 5+ agents complete by day 52. Impact: Increases trial-to-paid conversion probability from 0% to 20-30%, potentially 2–3 paid agents → $300–600 MRR.
+- **Workflow:** PM > Dev > QC
+
+### uc-trial-to-paid-conversion-path — Implement Trial-to-Paid Conversion Path
+
+- **PRD:** PRD-REVENUE-RECOVERY-CRITICAL-DAY45
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Deploy trial countdown banner, email nurture sequence (day 3, 10, 13, 14), and verify Stripe checkout end-to-end. Target: 1+ paid conversion by day 59. Impact: 1 Pro agent = $149 MRR; 2–3 total = $300–600 MRR.
+- **Workflow:** PM > Dev > QC
+
+### uc-landing-page-revenue-optimization — Optimize Landing Page for Acquisition & Conversion
+
+- **PRD:** PRD-REVENUE-RECOVERY-CRITICAL-DAY45
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Remove API docs, add pricing transparency, fix trial messaging (14-day consistent), add social proof (testimonials, agent count). Target: 5+ signups/week and improved conversion intent by day 66. Impact: Improve signup rate from 2.5/week to 5/week → 2.5 additional agents/week → 30% conversion → 0.75 paid agents/week → 3 agents/month → ~$450/month MRR.
+- **Workflow:** PM > Design > Dev > QC
+
+### UC-10 — Billing Portal
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Customer self-serve billing management via Stripe portal
+- **Acceptance Criteria:**
+  - Billing section loads without errors
+  - Current subscription plan displayed
+  - Monthly price shown
+  - Next billing date visible
+  - Payment methods listed
+  - Invoice history with download links
+  - Update payment method works
+  - Link to Stripe Customer Portal works
+  - Graceful error handling if billing data missing
+- **Depends on:** UC-9
+- **Workflow:** PM > Design > Dev > QC
+
+### UC-11 — Subscription Lifecycle
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Handle upgrades, downgrades, cancellations, renewals
+- **Acceptance Criteria:**
+  - Upgrade processes immediately with proration
+  - Downgrade schedules correctly for next period
+  - Cancellation stops auto-renewal
+  - Access continues until paid period ends
+  - All lifecycle events send confirmation emails
+  - Failed payments retry (Stripe Smart Retries)
+  - Dunning emails sent on failed payment
+  - Grace period before account suspension
+- **Depends on:** UC-9
+- **Workflow:** PM > Dev > QC
+
+### UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Deploy the landing page to Vercel by integrating it into the existing Next.js customer dashboard. Configure the landing page as the root route (/), set up deploy pipeline, create smoke test, and configure production URL.
+- **Acceptance Criteria:**
+  - Landing page integrated into Next.js app at root route (/)
+  - Existing dashboard routes preserved (e.g., /dashboard)
+  - Vercel project configured for production deployment
+  - Deploy pipeline configured (GitHub → Vercel)
+  - Environment variables set (if needed)
+  - Smoke test created and passing
+  - Production URL active and accessible (e.g., leadflow-ai-five.vercel.app)
+  - Landing page displays correctly on production URL
+  - All links on landing page functional
+  - Mobile responsiveness verified
+- **Workflow:** Dev > QC
+
+### feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
+
+- **PRD:** PRD-SMOKE-ROUTE-DISCOVERY-001
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Add smoke test that automatically discovers all application routes and validates they return expected responses. Tests both public and protected routes with appropriate authentication.
+- **Acceptance Criteria:**
+  - Smoke test discovers all application routes automatically
+  - Test validates each route returns HTTP 200
+  - Public routes tested without authentication
+  - Protected routes tested with valid session
+  - Test reports pass/fail status per route
+  - Routes to test: /, /login, /signup, /dashboard, /settings, /integrations
+  - Test runs on every deployment
+  - Failed routes optionally block deployment
+  - Test execution time under 30 seconds
+  - Test results logged with timestamps
+- **Workflow:** PM > Dev > QC
+
+### UC-12 — MRR Reporting
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Monthly recurring revenue tracking and analytics dashboard
+- **Acceptance Criteria:**
+  - MRR calculated accurately from Stripe data
+  - Breakdown by plan tier (Starter/Pro/Team/Brokerage)
+  - New MRR (new customers this month)
+  - Churned MRR (cancellations)
+  - Expansion MRR (upgrades)
+  - Contraction MRR (downgrades)
+  - Net MRR growth rate
+  - Dashboard updates in real-time or near-real-time
+  - Export to CSV available
+- **Depends on:** UC-11
+- **Workflow:** PM > Analytics
+
+### uc-trial-user-cohort-analytics — Analytics: Trial User Cohort Tracking & Conversion Prediction
+
+- **PRD:** prd-revenue-recovery-002
+- **Status:** complete
+- **Priority:** 2
+- **Description:** Track trial user feature usage (FUB connected, SMS sent, sequences created). Identify high-intent users for sales calls.
+- **Workflow:** PM > Dev > QC
+
+### uc-landing-page-refresh-messaging — Landing Page: Messaging & Conversion Refresh
+
+- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
+- **Status:** ready
+- **Priority:** 2
+- **Description:** Value prop, social proof, CTAs, mobile, tracking, A/B test. Target: 5%+ signup conversion.
+- **Workflow:** PM > Dev > QC
+
+### feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
+
+- **PRD:** PRD-SYSTEM-SYNC-001
+- **Status:** complete
+- **Priority:** 3
+- **Description:** Automatically detect deployed Vercel pages and sync their URLs to the system_components table during each heartbeat. Ensures dashboard always shows accurate component status and URLs.
+- **Acceptance Criteria:**
+  - Heartbeat detects all deployed Vercel pages automatically
+  - Page URLs extracted from Vercel deployment API
+  - system_components table updated with page URLs
+  - Component status synced (live, building, error)
+  - New deployments trigger immediate sync (not just heartbeat)
+  - Removed pages marked as deprecated in system_components
+  - Sync logs stored for debugging
+  - Failed syncs retry with exponential backoff
+  - Dashboard reflects current deployment state within 5 minutes
+  - Manual sync trigger available via admin endpoint
+- **Workflow:** PM > Dev > QC
+
+
+## Phase: Phase 1
 
 ### feat-stripe-checkout-production-e2e — Stripe Checkout Production Verification — First Real Transaction Test
 
@@ -470,26 +784,133 @@ Current `/api/agents/signup` (or equivalent) must:
   - No Stripe charge or card-on-file created during pilot signup flow
 - **Workflow:** Dev > QC
 
-### fix-webhook-lead-persistence — Fix Webhook Lead Persistence - Store Leads in Supabase
+### feat-post-signup-dashboard-onboarding-redirect — Post-Signup Redirect to /dashboard/onboarding Wizard
 
-- **PRD:** PRD-BILLING
+- **PRD:** PRD-SIGNUP-AUTH-TOKEN-FIX-001
+- **Status:** complete
+- **Priority:** 0
+- **Description:** After successful signup (pilot, trial, or standard), new agents are redirected to /dashboard/onboarding — a dedicated onboarding wizard embedded within the dashboard shell. The wizard guides agents through FUB connection, Twilio SMS setup, SMS verification, and an Aha Moment lead simulator. Upon completion, the agent lands on the main /dashboard.
+- **Acceptance Criteria:**
+  - Pilot signup (/api/auth/pilot-signup) redirects to /dashboard/onboarding on success
+  - Trial signup (/api/auth/trial-signup) redirects to /dashboard/onboarding on success
+  - Trial start (/api/trial/start) redirects to /dashboard/onboarding on success
+  - /dashboard/onboarding page exists and renders the 4-step wizard (FUB → SMS → Verify → Simulator)
+  - Wizard layout (layout.tsx) excludes OnboardingGuard to allow new-user access
+  - Wizard loads existing wizard state from /api/setup/status (resumes from last incomplete step)
+  - Completing the wizard redirects to /dashboard
+  - Skipping the wizard redirects to /dashboard
+  - Unauthenticated users hitting /dashboard/onboarding are redirected to /login
+  - Wizard state (fub_connected, twilio_connected, sms_verified, simulator_completed) is persisted via /api/setup/status POST
+  - onboarding_completed = true set on /api/setup/complete POST after wizard completion or simulator skip
+  - Page is mobile-responsive
+  - After successful trial signup, user lands on /dashboard/onboarding and wizard renders WITHOUT redirect to /login
+  - After successful pilot signup, user lands on /dashboard/onboarding and wizard renders WITHOUT redirect to /login
+  - /api/auth/me returns user identity from valid auth-token cookie (200) or 401 when unauthenticated
+  - Both trial-signup and pilot-signup APIs return token and user object in JSON response body
+  - TrialSignupForm stores token and user in localStorage BEFORE calling router.push(redirectTo)
+  - /dashboard/onboarding page falls back to /api/auth/me when localStorage.leadflow_user is absent
+  - Login page (/login) redirects un-onboarded users (onboardingCompleted === false) to /dashboard/onboarding (not /setup)
+- **Depends on:** feat-post-login-onboarding-wizard
+- **Workflow:** PM > Dev > QC
+
+### feat-admin-pilot-invite-flow — Admin Pilot Invite Flow — Direct Recruitment by Stojan
+
+- **PRD:** prd-admin-pilot-invite-flow
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Enable Stojan to directly recruit pilot agents without relying on inbound traffic.
+
+## Problem
+Zero real agents have entered the funnel. Pilot recruitment has been waiting on action items for 22+ days. The product needs a direct-invite path: Stojan pastes an email, system creates the account, sends a personalized invite with a magic-link that bypasses email verification (trust is granted via invite).
+
+## Acceptance Criteria
+- AC-1: POST /api/admin/invite-pilot accepts {email, name, message} and requires admin authentication (env-based secret or separate admin token)
+- AC-2: Creates a real_estate_agents row with status='invited', plan_tier='pilot', email_verified=true (bypasses email verification for invited agents)
+- AC-3: Sends personalized pilot invite email via Resend with a direct one-click login link (magic token, expires 7 days)
+- AC-4: Returns pilot invite URL that Stojan can also send manually (fallback)
+- AC-5: Admin UI at /admin/invite (simple form: email + name + optional note)
+- AC-6: pilot_invites table tracks: email, invited_at, accepted_at, invited_by, status
+- AC-7: Smoke test verifies the invite endpoint works and email is dispatched
+
+## Why This Unblocks Revenue
+Without this, Stojan must wait for organic inbound + email verification — which has already cost 22+ days. With direct invites, Stojan can onboard 3 agents this week.
+- **Acceptance Criteria:**
+  - ["AC-1: POST /api/admin/invite-pilot requires admin auth (X-Admin-Token header)","AC-2: Creates real_estate_agents row with status=invited, plan_tier=pilot, email_verified=true","AC-3: Sends personalized Resend email with magic-link (expires 7 days)","AC-4: Returns invite URL in API response for manual fallback","AC-5: Admin UI at /admin/invite with form and invite list","AC-6: pilot_invites table tracks all invite lifecycle fields","AC-7: Smoke test verifies invite endpoint and email dispatch"]
+- **Workflow:** PM > Dev > QC
+
+### implement-twilio-sms-integration — Implement Real Twilio SMS Integration - Replace Mock
+
+- **PRD:** PRD-REVENUE-RECOVERY-001
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Replace the mock SMS implementation with real Twilio integration. The current sendSmsViatwilio() function only logs to console and returns fake data. Implement actual Twilio API calls to send SMS messages to leads. Include proper error handling, delivery status tracking, and message logging to the database.
+- **Acceptance Criteria:**
+  - Twilio SDK installed and configured (twilio npm package)
+  - Environment variables set: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER_US, TWILIO_PHONE_NUMBER_CA
+  - sendSmsViaTwilio() function calls twilio.messages.create() with real API
+  - SMS message includes: to (lead phone), from (Twilio number), body (AI message)
+  - Twilio SID and status returned and stored in messages table
+  - Failed SMS sends are retried with exponential backoff (max 3 attempts)
+  - Delivery status callbacks from Twilio update message status in database
+  - Messages table tracks: twilio_sid, status (sent/delivered/failed), sent_at, delivered_at
+  - Error handling: invalid phone numbers, insufficient funds, rate limits
+  - Cost tracking: log message cost per SMS for billing/usage analytics
+  - Test: Submit lead → Receive actual SMS on test phone number
+  - Test: Verify message appears in dashboard with correct status
+  - A2P 10DLC compliance: registered sender ID for production use
+- **Workflow:** Dev > QC
+
+### feat-self-serve-stripe-checkout — Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow
+
+- **PRD:** prd-self-serve-stripe-checkout
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Pilot agents and trial users can upgrade to a paid plan (Starter/Pro/Team) directly from the dashboard without contacting Stojan. An "Upgrade" button in the dashboard/settings opens a Stripe Checkout session for the selected plan. On success, plan_tier and stripe_customer_id update automatically. Acceptance criteria: (1) Upgrade CTA visible in dashboard for pilot/trial agents; (2) Stripe Checkout session created server-side; (3) Webhook updates agent plan_tier on checkout.session.completed; (4) Dashboard reflects new tier immediately after payment; (5) Confirmation email sent via Resend; (6) Failed payments surface clear error UI.
+- **Acceptance Criteria:**
+  - Upgrade CTA visible in dashboard for pilot/trial agents (plan_tier: trial, pilot, null)
+  - Upgrade CTA NOT shown for paid agents (starter, pro, team)
+  - POST /api/billing/create-checkout-session creates Stripe Checkout session server-side
+  - Checkout session uses correct price_id for selected plan
+  - client_reference_id set to agent_id for webhook correlation
+  - checkout.session.completed webhook validates Stripe signature
+  - Webhook updates real_estate_agents: plan_tier, stripe_customer_id, stripe_subscription_id, plan_activated_at
+  - Dashboard shows success banner on /dashboard?upgrade=success
+  - Upgrade CTA absent after successful payment
+  - Confirmation email sent via Resend with plan name, price, next billing date
+  - Cancel redirect shows no-charge message at /settings/billing?upgrade=cancelled
+  - Webhook is idempotent — repeated delivery does not double-update
+- **Workflow:** PM > Dev > QC
+
+### feat-onboarding-completion-telemetry — Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off
+
+- **PRD:** PRD-ONBOARDING-COMPLETION-TELEMETRY
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Fix the critical bug where FUB webhook receives lead events but does NOT persist them to the Supabase leads table. The webhook handler emits events asynchronously but the event handlers never insert leads into the database. This causes the dashboard to always appear empty even when leads are received.
+- **Description:** Track where real agents drop out of the onboarding wizard with step-level telemetry, enabling rapid iteration on the highest-impact friction point.
+
+## Problem
+All real_estate_agents records show onboarding_step=0, onboarding_completed=false. We cannot distinguish whether agents are abandoning at signup, email verification, FUB connection, SMS setup, or the aha moment simulator. Without step-level data, we cannot fix what breaks the funnel.
+
+## Acceptance Criteria
+- AC-1: onboarding_step field updated in real time as agents progress (step 0→1→2→3→4)
+- AC-2: onboarding_events table logs each step transition: {agent_id, step_name, status, timestamp, metadata}
+- AC-3: Step names: 'email_verified', 'fub_connected', 'phone_configured', 'sms_verified', 'aha_completed'
+- AC-4: Admin view at /admin/funnel shows real agents (exclude smoke-test emails) with their current step and time-at-step
+- AC-5: Alert fires (via product_feedback insert) if any real agent is stuck at the same step for >24 hours
+- AC-6: Dashboard shows funnel conversion rates (Step N → Step N+1) per day
+- AC-7: Exclude all smoke-test@* and *@leadflow-test.com emails from funnel counts
+
+## Why This Unblocks Revenue
+Without step-level telemetry, every pilot recruit who drops off is invisible. We cannot fix what we cannot see. This is the foundation for all onboarding improvement.
 - **Acceptance Criteria:**
-  - Lead.created event handler inserts lead into Supabase leads table
-  - Lead data includes: id, fub_id, name, email, phone, source, status, agent_id
-  - Lead.updated event handler updates existing lead record
-  - Duplicate leads (same fub_id) are handled (upsert, not duplicate insert)
-  - Lead status changes are persisted to database
-  - Dashboard shows newly created leads within 5 seconds of webhook receipt
-  - Lead appears in lead_summary view immediately after creation
-  - Foreign key agent_id is correctly set based on FUB assignment or default agent
-  - Error handling: failed inserts are logged and retried
-  - Webhook returns 200 only after successful database persistence (or queue for retry)
-  - Test: Submit lead via webhook → Verify in dashboard within 10 seconds
-  - Test: Update lead in FUB → Verify changes reflected in dashboard
-- **Workflow:** Dev > QC
+  - AC-1: onboarding_step field updated in real time as agents progress (step 0→1→2→3→4→5)
+  - AC-2: onboarding_events table logs each step transition: {agent_id, step_name, status, timestamp, metadata}
+  - AC-3: Step names: 'email_verified', 'fub_connected', 'phone_configured', 'sms_verified', 'aha_completed'
+  - AC-4: Admin view at /admin/funnel shows real agents (exclude smoke-test emails) with current step and time-at-step
+  - AC-5: Alert inserts into product_feedback if any real agent is stuck at same step for >24 hours
+  - AC-6: Dashboard shows funnel conversion rates (Step N → Step N+1) per day
+  - AC-7: Exclude smoke-test@* and *@leadflow-test.com emails from funnel counts
+- **Workflow:** PM > Dev > QC
 
 ### UC-2 — FUB New Lead Auto-SMS
 
@@ -520,6 +941,27 @@ Current `/api/agents/signup` (or equivalent) must:
   - Conversation synced to FUB timeline
   - Message appears in dashboard history
 - **Workflow:** PM > Dev > QC
+
+### fix-webhook-lead-persistence — Fix Webhook Lead Persistence - Store Leads in Supabase
+
+- **PRD:** PRD-BILLING
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Fix the critical bug where FUB webhook receives lead events but does NOT persist them to the Supabase leads table. The webhook handler emits events asynchronously but the event handlers never insert leads into the database. This causes the dashboard to always appear empty even when leads are received.
+- **Acceptance Criteria:**
+  - Lead.created event handler inserts lead into Supabase leads table
+  - Lead data includes: id, fub_id, name, email, phone, source, status, agent_id
+  - Lead.updated event handler updates existing lead record
+  - Duplicate leads (same fub_id) are handled (upsert, not duplicate insert)
+  - Lead status changes are persisted to database
+  - Dashboard shows newly created leads within 5 seconds of webhook receipt
+  - Lead appears in lead_summary view immediately after creation
+  - Foreign key agent_id is correctly set based on FUB assignment or default agent
+  - Error handling: failed inserts are logged and retried
+  - Webhook returns 200 only after successful database persistence (or queue for retry)
+  - Test: Submit lead via webhook → Verify in dashboard within 10 seconds
+  - Test: Update lead in FUB → Verify changes reflected in dashboard
+- **Workflow:** Dev > QC
 
 ### feat-demo-without-signup — Live AI Demo — Experience the Product Without Signing Up
 
@@ -570,6 +1012,28 @@ Current `/api/agents/signup` (or equivalent) must:
   - AC-6: Task metadata includes goal_type, trajectory, last_checked, days_remaining
 - **Workflow:** PM > Dev > QC
 
+### uc-revenue-recovery-critical-2026-03-31 — Revenue Recovery — Critical Path to First $20K MRR
+
+- **PRD:** PRD-REVENUE-RECOVERY-CRITICAL-2026-03-31
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Execute three-phase plan to convert $0 MRR to $20K
+- **Workflow:** PM > Dev > QC
+
+### feat-frictionless-demo-no-fub — Frictionless Demo Mode — See AI Respond in 60 Seconds (No FUB Required)
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Current product requires FUB webhook setup (30-60 min) before agent sees AI work. Demo mode: agent enters fake lead data post-signup, AI responds in 30s, no FUB required. 3-demo limit then FUB connect CTA. Removes #1 onboarding friction; expected 2x+ improvement in activation rate.
+- **Acceptance Criteria:**
+  - Demo at /dashboard/demo post-signup no FUB required
+  - AI response < 30 seconds
+  - Response editable before send
+  - 3-demo limit then FUB connect CTA
+  - Funnel events tracked
+- **Workflow:** PM > Dev > QC
+
 ### UC-5 — Lead Opt-Out
 
 - **PRD:** PRD-CORE-SMS
@@ -597,37 +1061,6 @@ Current `/api/agents/signup` (or equivalent) must:
   - SMS only sent for configured status transitions
   - Message content appropriate for new status
   - Status history maintained in database
-- **Workflow:** PM > Dev > QC
-
-### feat-onboarding-completion-telemetry — Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off
-
-- **PRD:** PRD-ONBOARDING-COMPLETION-TELEMETRY
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Track where real agents drop out of the onboarding wizard with step-level telemetry, enabling rapid iteration on the highest-impact friction point.
-
-## Problem
-All real_estate_agents records show onboarding_step=0, onboarding_completed=false. We cannot distinguish whether agents are abandoning at signup, email verification, FUB connection, SMS setup, or the aha moment simulator. Without step-level data, we cannot fix what breaks the funnel.
-
-## Acceptance Criteria
-- AC-1: onboarding_step field updated in real time as agents progress (step 0→1→2→3→4)
-- AC-2: onboarding_events table logs each step transition: {agent_id, step_name, status, timestamp, metadata}
-- AC-3: Step names: 'email_verified', 'fub_connected', 'phone_configured', 'sms_verified', 'aha_completed'
-- AC-4: Admin view at /admin/funnel shows real agents (exclude smoke-test emails) with their current step and time-at-step
-- AC-5: Alert fires (via product_feedback insert) if any real agent is stuck at the same step for >24 hours
-- AC-6: Dashboard shows funnel conversion rates (Step N → Step N+1) per day
-- AC-7: Exclude all smoke-test@* and *@leadflow-test.com emails from funnel counts
-
-## Why This Unblocks Revenue
-Without step-level telemetry, every pilot recruit who drops off is invisible. We cannot fix what we cannot see. This is the foundation for all onboarding improvement.
-- **Acceptance Criteria:**
-  - AC-1: onboarding_step field updated in real time as agents progress (step 0→1→2→3→4→5)
-  - AC-2: onboarding_events table logs each step transition: {agent_id, step_name, status, timestamp, metadata}
-  - AC-3: Step names: 'email_verified', 'fub_connected', 'phone_configured', 'sms_verified', 'aha_completed'
-  - AC-4: Admin view at /admin/funnel shows real agents (exclude smoke-test emails) with current step and time-at-step
-  - AC-5: Alert inserts into product_feedback if any real agent is stuck at same step for >24 hours
-  - AC-6: Dashboard shows funnel conversion rates (Step N → Step N+1) per day
-  - AC-7: Exclude smoke-test@* and *@leadflow-test.com emails from funnel counts
 - **Workflow:** PM > Dev > QC
 
 ### UC-4 — FUB Agent Assignment
@@ -722,397 +1155,6 @@ Without step-level telemetry, every pilot recruit who drops off is invisible. We
 - **Workflow:** Dev > QC
 
 
-## Phase: Phase 3
-
-### UC-REVENUE-RECOVERY-001 — Revenue Recovery — Close MRR Gap
-
-- **PRD:** PRD-REVENUE-RECOVERY-001
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Analyze conversion funnel, reprioritize use cases by revenue impact, and execute 3 critical actions to get first paying agents within 44 days.
-- **Acceptance Criteria:**
-  - Conversion funnel analyzed and bottlenecks documented
-  - Use cases reprioritized by revenue impact (P0/P1/P2/P3)
-  - 3 critical actions identified to close MRR gap
-  - Onboarding fix unblocks signup flow (fix-onboarding-500-error)
-  - Landing page deployed and converting (UC-LANDING-MARKETING-001)
-  - Real Twilio SMS activated (implement-twilio-sms-integration)
-  - Weekly KPI tracking established
-  - Go/No-Go decision points defined (Day 22, 25, 35)
-  - Risk mitigation plan documented
-- **Workflow:** PM > Dev > Marketing > QC
-
-### fix-onboarding-500-error — Fix Onboarding Endpoint - Resolve Agents Table Schema Collision
-
-- **PRD:** PRD-ONBOARDING-500-FIX
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Fix the critical 500 error on /api/agents/onboard that prevents new user account creation. The onboarding wizard completes successfully on the frontend, but the backend endpoint fails due to a schema collision between the orchestrator agents table and the product agents table in the same Supabase database.
-- **Acceptance Criteria:**
-  - Migration 013 runs successfully - real_estate_agents table exists
-  - Core API routes updated: onboard, create, login (COMPLETED)
-  - All remaining API routes updated to use real_estate_agents (PENDING: 12 files)
-  - All library files updated: supabase.ts, subscription-service.js, webhook-processor.js, billing-cycle-manager.js, calcom-webhook-handler.js, booking-link-service.js (PENDING: 6 files)
-  - All scripts/utilities updated (PENDING: 5 files)
-  - No references to from("agents") remain in product code
-  - Signup flow works end-to-end without 500 errors
-  - Login works with migrated table
-  - Billing portal loads without "Agent not found" error
-  - Stripe webhooks process correctly
-  - Health check confirms real_estate_agents table accessible
-  - All E2E tests pass
-- **Workflow:** Dev > QC
-
-### UC-LANDING-MARKETING-001 — Marketing Landing Page — High-Converting Signup Flow
-
-- **PRD:** PRD-LANDING-MARKETING-001
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Transform the root route (/) from a developer-focused API docs page into a high-converting marketing landing page. Drive trial signups with clear value proposition, social proof, pricing transparency, and frictionless CTAs. Critical for distribution — currently blocking all prospect traffic.
-- **Acceptance Criteria:**
-  - Hero section with compelling headline, subheadline, and dual CTAs
-  - Stats bar with 4 key metrics (<30s, 78%, 35%, 24/7)
-  - Problem section with 3 pain point cards
-  - Solution section with 4 feature cards
-  - Social proof section with testimonials and trust badges
-  - How It Works section with 3-step process
-  - Pricing section with 4 tiers (Starter/Pro/Team/Brokerage)
-  - FAQ section with 7 accordion items
-  - Final CTA section with signup prompt
-  - Fixed navigation with smooth scroll links
-  - Footer with compliance links
-  - Page load time <2 seconds
-  - Responsive design (mobile-first)
-  - WCAG 2.1 AA accessibility compliance
-  - SEO meta tags and structured data
-  - Analytics tracking for CTAs and scroll depth
-- **Workflow:** PM > Marketing > Design > Dev > QC
-
-### feat-add-login-page-with-email-and-password — add login page with email and password
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Feature request: add login page with email and password
-- **Acceptance Criteria:**
-  - Login page accessible at /login route
-  - Email input field with validation
-  - Password input field with masking
-  - Login button triggers Supabase Auth
-  - Error message displayed for invalid credentials
-  - Successful login redirects to /dashboard
-  - Session persisted across page refreshes
-  - Link to signup page for new users
-  - Link to password reset for forgotten passwords
-  - Responsive design works on mobile devices
-- **Workflow:** PM > Dev > QC
-
-### UC-BILLING-FIX-001 — Fix Billing Integration - Agent Not Found Error
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Debug and fix the billing integration error that shows Agent not found when accessing Billing & Subscription settings. Includes creating missing billing records for pilot agents and fixing agent-billing association lookup.
-- **Acceptance Criteria:**
-  - Root cause of Agent not found error identified and documented
-  - Billing records created for all 3 pilot agents in Stripe
-  - Agent-billing association lookup fixed in API
-  - Settings > Billing & Subscription loads without errors
-  - Current subscription plan displays correctly
-  - Payment methods list populates
-  - Invoice history visible with download links
-  - Graceful error handling for edge cases implemented
-  - E2E test for billing portal passes
-- **Workflow:** PM > Dev > QC
-
-### feat-add-session-management-with-server-side- — add session management with server-side tokens
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Feature request: add session management with server-side tokens
-- **Acceptance Criteria:**
-  - Supabase Auth configured for server-side session management
-  - Access token stored securely (httpOnly cookie)
-  - Refresh token rotation implemented
-  - Session expiry handled automatically (token refresh)
-  - Server-side session validation on API requests
-  - Session persistence across page refreshes
-  - Concurrent session handling (multiple devices)
-  - Session revocation on logout
-  - Session timeout after inactivity (configurable)
-  - Secure cookie flags set (Secure, SameSite)
-- **Workflow:** PM > Dev > QC
-
-### feat-add-auth-middleware-to-protect-dashboard — add auth middleware to protect dashboard and settings routes
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Feature request: add auth middleware to protect dashboard and settings routes
-- **Acceptance Criteria:**
-  - Middleware checks for valid Supabase session on protected routes
-  - Unauthenticated users redirected to /login
-  - Protected routes: /dashboard, /dashboard/*, /settings, /settings/*
-  - Public routes remain accessible: /, /login, /signup
-  - Session validation happens server-side for API routes
-  - Client-side route guards prevent flash of protected content
-  - After login, user redirected to originally requested page
-  - Logout clears session and redirects to /login
-  - Session expiry handled gracefully (refresh token flow)
-  - Auth state available via context/hook for UI components
-- **Workflow:** PM > Dev > QC
-
-### UC-AUTH-FIX-001 — Implement Authentication Flow - Signup/Login
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Add visible authentication flow to customer dashboard landing page. Implement Supabase Auth with email/password signup, login, and protected routes. Enable self-serve account creation for pilot agents.
-- **Acceptance Criteria:**
-  - Signup button visible on landing page
-  - Login button visible on landing page
-  - Email/password registration form works
-  - Login form works with valid credentials
-  - Password reset flow implemented
-  - Protected routes redirect to login when unauthenticated
-  - Authenticated users see dashboard on login
-  - User session persists across page refreshes
-  - Logout functionality works
-  - Welcome email sent after signup
-  - Auth state reflected in UI (show user name/email)
-- **Workflow:** PM > Design > Dev > QC
-
-### uc-trial-email-sequence-activate — Activate Pilot-to-Paid Email Sequence for Trial Users
-
-- **PRD:** prd-revenue-recovery-002
-- **Status:** in_progress
-- **Priority:** 1
-- **Description:** Email sequence triggers when trial_ends_at approaches. Sends: day 10 reminder, day 13 urgency, day 14 final notice, day +1 expired notice.
-- **Workflow:** PM > Dev > QC
-
-### uc-dashboard-trial-countdown — Dashboard: Trial Expiration Countdown & Upgrade CTA
-
-- **PRD:** prd-revenue-recovery-002
-- **Status:** not_started
-- **Priority:** 1
-- **Description:** Add persistent header in dashboard showing "Your trial expires in X days" + prominent "Upgrade to Pro" button.
-- **Workflow:** PM > Dev > QC
-
-### uc-pricing-page-conversion-refresh — Pricing Page: Testimonials + Feature Comparison + Urgency
-
-- **PRD:** prd-revenue-recovery-002
-- **Status:** not_started
-- **Priority:** 1
-- **Description:** Add pilot user testimonials, feature comparison table, removed API docs, added "why Pro is popular" narrative.
-- **Workflow:** PM > Dev > QC
-
-### uc-first-paid-customer-proof — Critical: Get First Trial User to Paid (Proof of Concept)
-
-- **PRD:** prd-revenue-recovery-002
-- **Status:** not_started
-- **Priority:** 1
-- **Description:** Manually recruit 1 pilot user to upgrade. Email offer: "Your trial was great. Here's $50 off Pro." Confirm Stripe webhook fires.
-- **Workflow:** PM > Dev > QC
-
-### uc-email-verification-trial-activation — Fix Email Verification & Trial Activation — Enable Agents to Access Product
-
-- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Email verification required but broken (34% completion). Agents cannot access trial. Fix: Resend API, auto-activate trial on verification. Acceptance: Emails send, verification works, verified accounts get trial access.
-- **Workflow:** PM > Dev > QC
-
-### uc-stripe-checkout-end-to-end — Validate Stripe Checkout — Trial to Paid Conversion Flow
-
-- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Test Stripe integration end-to-end. Payment must succeed, subscription created, agent marked paid. This unblocks revenue.
-- **Workflow:** PM > Dev > QC
-
-### uc-first-agent-activation-test — First Agent Onboarding — Validate Product Stickiness
-
-- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Manual test with first trial user. Confirm: login → dashboard → FUB config → test lead → SMS → aha moment in <5 min.
-- **Workflow:** PM > Dev > QC
-
-### uc-marketing-campaign-launch — Launch Acquisition Campaign — Signups 10+/Day Minimum
-
-- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Activate Facebook + Reddit + FUB Marketplace + referral program. Target: 10+ signups/day, CAC <$100, conversion >2%.
-- **Workflow:** PM > Dev > QC
-
-### UC-10 — Billing Portal
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Customer self-serve billing management via Stripe portal
-- **Acceptance Criteria:**
-  - Billing section loads without errors
-  - Current subscription plan displayed
-  - Monthly price shown
-  - Next billing date visible
-  - Payment methods listed
-  - Invoice history with download links
-  - Update payment method works
-  - Link to Stripe Customer Portal works
-  - Graceful error handling if billing data missing
-- **Depends on:** UC-9
-- **Workflow:** PM > Design > Dev > QC
-
-### UC-11 — Subscription Lifecycle
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Handle upgrades, downgrades, cancellations, renewals
-- **Acceptance Criteria:**
-  - Upgrade processes immediately with proration
-  - Downgrade schedules correctly for next period
-  - Cancellation stops auto-renewal
-  - Access continues until paid period ends
-  - All lifecycle events send confirmation emails
-  - Failed payments retry (Stripe Smart Retries)
-  - Dunning emails sent on failed payment
-  - Grace period before account suspension
-- **Depends on:** UC-9
-- **Workflow:** PM > Dev > QC
-
-### UC-9 — Customer Sign-Up Flow
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Stripe checkout + onboarding for new customers
-- **Acceptance Criteria:**
-  - Landing page has visible signup CTA
-  - Plan selection clearly shows pricing and features
-  - Email/password registration works (Supabase Auth)
-  - Stripe Checkout session created correctly
-  - Payment processing succeeds >95% of time
-  - Account activated immediately after successful payment
-  - User redirected to dashboard post-signup
-  - Welcome email sent
-- **Workflow:** PM > Design > Dev > QC
-
-### UC-DEPLOY-LANDING-001 — Deploy Landing Page to Vercel
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Deploy the landing page to Vercel by integrating it into the existing Next.js customer dashboard. Configure the landing page as the root route (/), set up deploy pipeline, create smoke test, and configure production URL.
-- **Acceptance Criteria:**
-  - Landing page integrated into Next.js app at root route (/)
-  - Existing dashboard routes preserved (e.g., /dashboard)
-  - Vercel project configured for production deployment
-  - Deploy pipeline configured (GitHub → Vercel)
-  - Environment variables set (if needed)
-  - Smoke test created and passing
-  - Production URL active and accessible (e.g., leadflow-ai-five.vercel.app)
-  - Landing page displays correctly on production URL
-  - All links on landing page functional
-  - Mobile responsiveness verified
-- **Workflow:** Dev > QC
-
-### feat-add-route-discovery-smoke-test — Route Discovery Smoke Test
-
-- **PRD:** PRD-SMOKE-ROUTE-DISCOVERY-001
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Add smoke test that automatically discovers all application routes and validates they return expected responses. Tests both public and protected routes with appropriate authentication.
-- **Acceptance Criteria:**
-  - Smoke test discovers all application routes automatically
-  - Test validates each route returns HTTP 200
-  - Public routes tested without authentication
-  - Protected routes tested with valid session
-  - Test reports pass/fail status per route
-  - Routes to test: /, /login, /signup, /dashboard, /settings, /integrations
-  - Test runs on every deployment
-  - Failed routes optionally block deployment
-  - Test execution time under 30 seconds
-  - Test results logged with timestamps
-- **Workflow:** PM > Dev > QC
-
-### UC-12 — MRR Reporting
-
-- **PRD:** PRD-BILLING
-- **Status:** complete
-- **Priority:** 2
-- **Description:** Monthly recurring revenue tracking and analytics dashboard
-- **Acceptance Criteria:**
-  - MRR calculated accurately from Stripe data
-  - Breakdown by plan tier (Starter/Pro/Team/Brokerage)
-  - New MRR (new customers this month)
-  - Churned MRR (cancellations)
-  - Expansion MRR (upgrades)
-  - Contraction MRR (downgrades)
-  - Net MRR growth rate
-  - Dashboard updates in real-time or near-real-time
-  - Export to CSV available
-- **Depends on:** UC-11
-- **Workflow:** PM > Analytics
-
-### uc-trial-user-cohort-analytics — Analytics: Trial User Cohort Tracking & Conversion Prediction
-
-- **PRD:** prd-revenue-recovery-002
-- **Status:** not_started
-- **Priority:** 2
-- **Description:** Track trial user feature usage (FUB connected, SMS sent, sequences created). Identify high-intent users for sales calls.
-- **Workflow:** PM > Dev > QC
-
-### uc-landing-page-refresh-messaging — Landing Page: Messaging & Conversion Refresh
-
-- **PRD:** PRD-REVENUE-ALERT-CRITICAL-MRR
-- **Status:** ready
-- **Priority:** 2
-- **Description:** Value prop, social proof, CTAs, mobile, tracking, A/B test. Target: 5%+ signup conversion.
-- **Workflow:** PM > Dev > QC
-
-### feat-auto-sync-deployed-pages-to-system-compo — Auto-Sync Deployed Pages to System Components
-
-- **PRD:** PRD-SYSTEM-SYNC-001
-- **Status:** complete
-- **Priority:** 3
-- **Description:** Automatically detect deployed Vercel pages and sync their URLs to the system_components table during each heartbeat. Ensures dashboard always shows accurate component status and URLs.
-- **Acceptance Criteria:**
-  - Heartbeat detects all deployed Vercel pages automatically
-  - Page URLs extracted from Vercel deployment API
-  - system_components table updated with page URLs
-  - Component status synced (live, building, error)
-  - New deployments trigger immediate sync (not just heartbeat)
-  - Removed pages marked as deprecated in system_components
-  - Sync logs stored for debugging
-  - Failed syncs retry with exponential backoff
-  - Dashboard reflects current deployment state within 5 minutes
-  - Manual sync trigger available via admin endpoint
-- **Workflow:** PM > Dev > QC
-
-
-## Phase: mvp
-
-### fix-trial-signup-redirects-to-nonexistent-onboarding-page — Fix trial signup redirect to non-existent /dashboard/onboarding page
-
-- **PRD:** PRD-FIX-TRIAL-SIGNUP-REDIRECT-001
-- **Status:** complete
-- **Priority:** 0
-- **Description:** Trial signup, pilot signup, and trial/start API routes all redirect to /dashboard/onboarding which does not exist. Users hit a 404 immediately after account creation. Fix by redirecting to /setup.
-- **Acceptance Criteria:**
-  - AC-1: After trial signup, user lands on /setup (not 404)
-  - AC-2: pilot-signup response has redirectTo: /setup
-  - AC-3: trial/start response has redirectTo: /setup
-  - AC-4: /setup loads successfully for authenticated user
-  - AC-5: No redirect in codebase points to /dashboard/onboarding
-  - AC-6: Welcome email links to /setup, not /dashboard/onboarding
-  - AC-7: Dashboard build passes (npm run build exits 0)
-- **Workflow:** PM > Dev > QC
-
-
 ## Phase: Unassigned
 
 ### feat-aha-moment-lead-simulator — Aha Moment: Live Lead Simulator in Onboarding — First AI Response in <30s
@@ -1178,6 +1220,44 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
   - npm test passes with no new failures
 - **Workflow:** Dev > QC
 
+### fix-smsanalyticscards-component-imported-but-never-ren — SmsAnalyticsCards component imported but never rendered in dashboard
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## SmsAnalyticsCards component imported but never rendered in dashboard
+**Type:** critical
+**Severity:** critical
+**Source:** Product review 8da6920b-9240-4990-a672-e68b29b3326d
+
+**Details:** The main dashboard page.tsx imports SmsAnalyticsCards on line 2, but it is never called or rendered in the JSX. The component exists but is invisible to users.
+
+**Suggested fix:** Add <SmsAnalyticsCards /> between <StatsCards /> and <LeadFeed /> in dashboard/page.tsx
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-fixed-satisfaction-ping-route-was-using-agents-tab — Fixed: satisfaction-ping route was using agents table instead of real_estate_agents
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## Fixed: satisfaction-ping route was using agents table instead of real_estate_agents
+**Type:** bug_fix
+**Severity:** critical
+**Source:** Product review 81d98c51-bff4-4ed5-8b42-256534b58f82
+
+**Details:** The /api/agents/satisfaction-ping route (both PATCH and GET methods) was querying the old "agents" table. Updated both methods to use "real_estate_agents" table per the schema migration.
+
+**Suggested fix:** Migration complete - all product routes now use real_estate_agents
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
 ### fix-triage-the-get-free-playbook-section — PM triage: In the "Get free playbook" section, the text field for name cuts off the text, and the buttons are going out 
 
 - **PRD:** -
@@ -1199,25 +1279,6 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
 **Details:** The file lib/onboarding-telemetry.js is completely absent from the codebase. createStuckAlerts() has never been implemented. 5 prior dev attempts have been false positives — no code was ever actually written to this file. There is no function anywhere in the codebase that inserts product_feedback rows when agents are stuck at onboarding steps >24h.
 
 **Suggested fix:** Create lib/onboarding-telemetry.js with a createStuckAlerts() function that: (1) queries onboarding_events for agents stuck at a step for >24h, (2) inserts a product_feedback row with feedback_type=ux_issue, source=telemetry_alert, and data payload containing agent_id, step, hours_stuck. Must be called from the heartbeat cycle.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-ga4-script-tag-missing-from-layout-tsx-all-analyti — GA4 script tag missing from layout.tsx — all analytics events are no-ops
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## GA4 script tag missing from layout.tsx — all analytics events are no-ops
-**Type:** bug
-**Severity:** critical
-**Source:** Product review 4c2acde8-47b9-4bf2-9f32-36bd311e8582
-
-**Details:** FR-1 (P0) requires adding the gtag.js Script component to app/layout.tsx with NEXT_PUBLIC_GA4_MEASUREMENT_ID env var. This was NOT done. The ga4.ts helper checks typeof window.gtag !== function before firing any event. Since gtag is never loaded, every trackEvent(), trackCTAClick(), trackFormEvent() and trackScrollMilestone() call is silently dropped. Zero events reach GA4 in production.
-
-**Suggested fix:** Add GA4 Script tag to product/lead-response/dashboard/app/layout.tsx using the pattern from the PRD: import Script from next/script; const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID; and add Script tags with strategy=afterInteractive. Also add NEXT_PUBLIC_GA4_MEASUREMENT_ID to Vercel environment variables (Stojan provides the actual Measurement ID).
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -1262,33 +1323,6 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-pilot-signup-route-ts-still-redirects-to-dashboard — pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences)
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences)
-**Type:** bug
-**Severity:** critical
-**Source:** Product review 800c1a93-d8e9-4acb-b800-e5402ab3fed7
-
-**Details:** Line 288: redirectTo: "/dashboard/onboarding". Line 112: hardcoded email href to https://leadflow-ai-five.vercel.app/dashboard/onboarding. Both are broken and unfixed.
-
-**Suggested fix:** Change both occurrences to /setup and fix email href accordingly
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-product-spec-selfserve-frictionless-onboarding — Product Spec: Self-Serve Frictionless Onboarding Flow
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Product Spec: Self-Serve Frictionless Onboarding Flow
-- **Workflow:** Dev > QC
-
 ### fix-trial-start-route-ts-redirects-to-onboarding-which — trial/start/route.ts redirects to /onboarding which blocks authenticated users
 
 - **PRD:** -
@@ -1308,23 +1342,58 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-distribution-channels-table-missing-from-local-pos — distribution_channels table missing from local PostgreSQL
+### fix-distribution-loop-migration-and-dedup — Fix Distribution Loop — Apply Migration 006, Migrate to Direct PG, Add Dedup Guards
+
+- **PRD:** PRD-DISTRIBUTION-LOOP-DEDUP-FIX
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Distribution health check (Loop 6) creates noise tasks every heartbeat. Root cause: migration 006_distribution_metrics.sql was never applied to local PostgreSQL — tables do not exist. distribution-collector.js still uses PostgREST (localhost:8787) which is no longer running. Required fixes: (1) apply migration 006, (2) seed landing page record, (3) rewrite collector to use pg.Pool with LOCAL_PG_URL, (4) add 7-day dedup guard in createDistributionTasks(), (5) add 24h cooldown in task-store.js loop detector.
+- **Workflow:** PM > Dev > QC
+
+### fix-no-self-serve-upgrade-path-from-pilot-to-paid — No self-serve upgrade path from pilot to paid
 
 - **PRD:** -
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 1
-- **Description:** ## distribution_channels table missing from local PostgreSQL
-**Type:** bug
+- **Description:** ## No self-serve upgrade path from pilot to paid
+**Type:** revenue_gap
 **Severity:** critical
-**Source:** Product review 368d7056-d0f9-44a7-94da-22c9d5c3831e
+**Source:** Product review ab254083-2a70-4148-8daf-ead95f544cea
 
-**Details:** PostgREST query to http://localhost:8787/distribution_channels returns Not found. Migration 006_distribution_metrics.sql has not been run against local PG. This causes checkDistributionHealth() to receive null on every query and trigger PM: Distribution — Create Landing Page on every heartbeat.
+**Details:** Pilot agents get free access but there is zero self-serve mechanism to upgrade to paid. Conversion requires manual Stojan intervention — will not scale to K MRR.
 
-**Suggested fix:** Run: psql postgresql://clawdbot@localhost/openclaw -f ~/.openclaw/genome/migrations/006_distribution_metrics.sql then seed landing page record with status=active
+**Suggested fix:** Add self-serve Stripe checkout flow triggered from dashboard upgrade button. New UC: feat-self-serve-stripe-checkout.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
 - Tests pass
+- **Workflow:** Dev > QC
+
+### fix-pilot-signup-route-ts-still-redirects-to-dashboard — pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences)
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## pilot-signup/route.ts still redirects to /dashboard/onboarding (2 occurrences)
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 800c1a93-d8e9-4acb-b800-e5402ab3fed7
+
+**Details:** Line 288: redirectTo: "/dashboard/onboarding". Line 112: hardcoded email href to https://leadflow-ai-five.vercel.app/dashboard/onboarding. Both are broken and unfixed.
+
+**Suggested fix:** Change both occurrences to /setup and fix email href accordingly
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-distribution-loop-dedup — Fix distribution-collector loop: add deduplication and schema guard
+
+- **PRD:** prd-distribution-loop-dedup
+- **Status:** complete
+- **Priority:** 1
+- **Description:** distribution-collector.js creates duplicate tasks on every heartbeat. Root causes: (1) distribution_channels table missing, (2) no dedup check in createDistributionTasks, (3) completed UCs not suppressed, (4) no cooldown. Fix all four layers.
 - **Workflow:** Dev > QC
 
 ### fix-production-cron-endpoint-returns-error-on-sequence — Production cron endpoint returns error on sequences query
@@ -1340,6 +1409,94 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
 **Details:** GET https://leadflow-ai-five.vercel.app/api/cron/follow-up?test=true returns {"error":"Failed to fetch sequences"}. The route uses supabaseServer client but CLAUDE.md states Supabase has been fully removed (database is local PostgreSQL). Production Vercel deployment likely has stale/broken Supabase env vars causing the lead_sequences query to fail. Local DB has the lead_sequences table; Vercel environment may not.
 
 **Suggested fix:** Verify SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL env vars in Vercel dashboard point to correct database. If using local PG via tunnel, configure Vercel env vars accordingly. Check error logs in Vercel dashboard for the specific DB connection error.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-product-spec-selfserve-frictionless-onboarding — Product Spec: Self-Serve Frictionless Onboarding Flow
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Product Spec: Self-Serve Frictionless Onboarding Flow
+- **Workflow:** Dev > QC
+
+### fix-test-gateway-path — test gateway path
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Quick fix: test gateway path
+- **Workflow:** Dev > QC
+
+### fix-db-migration-incomplete-email-verification-tokens- — DB migration incomplete: email_verification_tokens table does not exist
+
+- **PRD:** prd-email-verification-db-migration-fix
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## DB migration incomplete: email_verification_tokens table does not exist
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 854fb6be-6629-4029-8017-41113bcbf543
+
+**Details:** The email_verification_tokens table was never created. The PRD specifies a CREATE TABLE statement for this table, and lib/verification-email.ts queries it extensively (createVerificationToken, checkResendRateLimit, verifyEmailToken). Without this table, no verification tokens can be created or validated. This makes the entire email verification feature non-functional: signup sends no verification email, resend-verification returns "Failed to create verification token", and verify-email route cannot validate any token. The email_verified column on real_estate_agents exists (partial migration), but the dependent tokens table was not created.
+
+**Suggested fix:** Run the DB migration: CREATE TABLE email_verification_tokens (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), agent_id UUID NOT NULL REFERENCES real_estate_agents(id) ON DELETE CASCADE, token TEXT NOT NULL UNIQUE, expires_at TIMESTAMPTZ NOT NULL, used_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE INDEX idx_evt_token ON email_verification_tokens(token); CREATE INDEX idx_evt_agent_id ON email_verification_tokens(agent_id);
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Acceptance Criteria:**
+  - email_verification_tokens table exists in production Supabase (SELECT COUNT(*) returns 0, not error)
+  - idx_evt_token and idx_evt_agent_id indexes exist on the table
+  - madzunkov@hotmail.com has email_verified = TRUE in real_estate_agents
+  - POST /api/auth/resend-verification for unverified account returns 200 and creates row in email_verification_tokens
+  - No accounts created before 2026-03-09 have email_verified = FALSE
+  - Existing login and signup flows are not broken
+- **Workflow:** Dev > QC
+
+### fix-signup-creates-customer-record-but-login — signup creates customer record but login queries agents table - auth flow is broken because signup and login use different database tables and password is never collected during signup
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Quick fix: signup creates customer record but login queries agents table - auth flow is broken because signup and login use different database tables and password is never collected during signup
+- **Workflow:** Dev > QC
+
+### fix-get-api-internal-pilot-usage-endpoint-does-not-exi — GET /api/internal/pilot-usage endpoint does not exist
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## GET /api/internal/pilot-usage endpoint does not exist
+**Type:** feature_missing
+**Severity:** critical
+**Source:** Product review 7578d6f4-72b3-4225-bde2-fb545637ba4e
+
+**Details:** FR-4 defines an internal analytics endpoint that aggregates per-pilot session data. This route does not exist anywhere in the Next.js app/api directory. Searching the codebase found no file matching internal/pilot-usage. Without this, Stojan has no programmatic visibility into pilot engagement.
+
+**Suggested fix:** Create /app/api/internal/pilot-usage/route.ts. Authenticate via SUPABASE_SERVICE_ROLE_KEY bearer token. Query agent_sessions joined to agents/real_estate_agents for: lastLogin, sessionsLast7d (count where session_start > now()-7d), topPage (mode of agent_page_views.page), inactiveHours (hours since last_active_at). Return JSON per PRD spec.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-ga4-script-tag-missing-from-layout-tsx-all-analyti — GA4 script tag missing from layout.tsx — all analytics events are no-ops
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## GA4 script tag missing from layout.tsx — all analytics events are no-ops
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 4c2acde8-47b9-4bf2-9f32-36bd311e8582
+
+**Details:** FR-1 (P0) requires adding the gtag.js Script component to app/layout.tsx with NEXT_PUBLIC_GA4_MEASUREMENT_ID env var. This was NOT done. The ga4.ts helper checks typeof window.gtag !== function before firing any event. Since gtag is never loaded, every trackEvent(), trackCTAClick(), trackFormEvent() and trackScrollMilestone() call is silently dropped. Zero events reach GA4 in production.
+
+**Suggested fix:** Add GA4 Script tag to product/lead-response/dashboard/app/layout.tsx using the pattern from the PRD: import Script from next/script; const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID; and add Script tags with strategy=afterInteractive. Also add NEXT_PUBLIC_GA4_MEASUREMENT_ID to Vercel environment variables (Stojan provides the actual Measurement ID).
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -1363,94 +1520,6 @@ The login route (/api/auth/login) was already fixed to query real_estate_agents 
 - The issue described above is resolved
 - Existing functionality is not broken
 - Tests pass
-- **Workflow:** Dev > QC
-
-### fix-triage-the-simple-transparent-section-the — PM triage: In the Simple transparent section, the 3 tiers of pricing "Starter — Free pilot
-Pro — Most popular
-Team — 5 a
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** PM triage: In the Simple transparent section, the 3 tiers of pricing "Starter — Free pilot
-Pro — Most popular
-Team — 5 a
-- **Workflow:** Dev > QC
-
-### fix-signup-creates-customer-record-but-login — signup creates customer record but login queries agents table - auth flow is broken because signup and login use different database tables and password is never collected during signup
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Quick fix: signup creates customer record but login queries agents table - auth flow is broken because signup and login use different database tables and password is never collected during signup
-- **Workflow:** Dev > QC
-
-### genome-phase1b-error-propagation — Genome Phase 1B: Error propagation — stop swallowing errors
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Audit all ~80 try/catch blocks in heartbeat-executor.js. Classify each as fatal (rethrow), degraded (log+continue), or expected (silent). Fatal errors must abort the step and report to Telegram. Add stepOutcome tracking: each step reports success/failure/skipped. Genome review should check for steps with 0 output (silent crash = breach). Exit criteria: zero silent failures per heartbeat for 48h.
-- **Workflow:** Dev > QC
-
-### fix-get-api-internal-pilot-usage-endpoint-does-not-exi — GET /api/internal/pilot-usage endpoint does not exist
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## GET /api/internal/pilot-usage endpoint does not exist
-**Type:** feature_missing
-**Severity:** critical
-**Source:** Product review 7578d6f4-72b3-4225-bde2-fb545637ba4e
-
-**Details:** FR-4 defines an internal analytics endpoint that aggregates per-pilot session data. This route does not exist anywhere in the Next.js app/api directory. Searching the codebase found no file matching internal/pilot-usage. Without this, Stojan has no programmatic visibility into pilot engagement.
-
-**Suggested fix:** Create /app/api/internal/pilot-usage/route.ts. Authenticate via SUPABASE_SERVICE_ROLE_KEY bearer token. Query agent_sessions joined to agents/real_estate_agents for: lastLogin, sessionsLast7d (count where session_start > now()-7d), topPage (mode of agent_page_views.page), inactiveHours (hours since last_active_at). Return JSON per PRD spec.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### genome-phase1a-observability — Genome Phase 1A: Observability — make all failures visible
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Replace stdio:pipe with inherit in heartbeat-wrapper.js. Add structured JSON logging to heartbeat-executor.js (timestamp, step, outcome, duration per step). Create Telegram alerts for heartbeat failure, agent crash, budget breach, stale tasks >2h. Add /genome-health REST endpoint to dashboard server. Verify every heartbeat step produces visible output. Exit criteria: all steps visible in logs, alerts fire within 5 min of failure.
-- **Workflow:** Dev > QC
-
-### fix-column-name-mismatch-in-webhook-handler — Column name mismatch in webhook handler
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## Column name mismatch in webhook handler
-**Type:** structural_issue
-**Severity:** critical
-**Source:** Product review 10346cc1-f33b-4f29-b441-9365e7534de6
-
-**Details:** Webhook handler inserts to subscription_events and payments tables using agent_id column, but migration schema defines user_id. This will cause runtime errors when webhooks are triggered. Affected lines: product/lead-response/dashboard/app/api/webhooks/stripe/route.ts lines 56, 76, 85, 103, 121, 133, 144, 160
-
-**Suggested fix:** Replace all instances of agent_id with user_id in webhook handler inserts to subscription_events and payments tables
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-smoke-auth-signup-login-loop — Fix Smoke Test Loop — Auth signup then login
-
-- **PRD:** prd-smoke-auth-loop-fix-v5
-- **Status:** complete
-- **Priority:** 1
-- **Description:** auth-signup-login-flow smoke test always fails (unimplemented signup_login_flow check_type in genome). Causes 7+ task spawns/2h. Fix: implement signup_login_flow in genome/health/smoke-tests.js + write lastTaskCompleted in heartbeat-executor.js.
-- **Acceptance Criteria:**
-  - project.config.json smoke_tests contains NO entry with check_type: signup_login_flow
-  - project.config.json has id: auth-signup-login-flow with check_type: http_200 and url key
-  - JSON remains valid after the change
-  - Change is committed and pushed to git
-  - No new Smoke: Auth: signup then login failing tasks created in next 2 heartbeat cycles
 - **Workflow:** Dev > QC
 
 ### fix-auth-routes-dead-supabase-env-vars — Fix 23 API routes using dead Supabase env vars — login/auth/billing all broken on Vercel
@@ -1482,23 +1551,18 @@ Fix required:
 - Do NOT re-hash existing affected rows — instead ensure the fix prevents future bad hashes and document that pre-existing broken accounts need a password reset.
 - **Workflow:** Dev > QC
 
-### fix-e2e-test-confirms-implementation-gaps — E2E test confirms implementation gaps
+### fix-smoke-auth-signup-login-loop — Fix Smoke Test Loop — Auth signup then login
 
-- **PRD:** -
+- **PRD:** prd-fix-smoke-auth-deploy-dashboard
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## E2E test confirms implementation gaps
-**Type:** test_failure
-**Severity:** critical
-**Source:** Product review 5d82fced-c838-4ef7-8cc7-4c01124cdebb
-
-**Details:** Test: tests/fix-start-free-trial-cta-missing.test.js shows 4 of 5 tests FAILING. Failures: (1) CTA Placement #1: TrialSignupForm compact not in hero (expected: '<TrialSignupForm compact'), (2) CTA Placement #2: Features CTA missing (expected href='/signup/trial' with 'Start Free Trial' text), (3) CTA Placement #3: Pricing CTA missing (expected 'or start free trial' text with href='/signup/trial'), (4) TrialSignupForm not imported. Only passing test: No stale /signup?mode=trial URLs remain.
-
-**Suggested fix:** Update product/lead-response/dashboard/app/page.tsx to match test expectations. The test file is the source of truth for implementation requirements.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
+- **Description:** auth-signup-login-flow smoke test always fails (unimplemented signup_login_flow check_type in genome). Causes 7+ task spawns/2h. Fix: implement signup_login_flow in genome/health/smoke-tests.js + write lastTaskCompleted in heartbeat-executor.js.
+- **Acceptance Criteria:**
+  - project.config.json smoke_tests contains NO entry with check_type: signup_login_flow
+  - project.config.json has id: auth-signup-login-flow with check_type: http_200 and url key
+  - JSON remains valid after the change
+  - Change is committed and pushed to git
+  - No new Smoke: Auth: signup then login failing tasks created in next 2 heartbeat cycles
 - **Workflow:** Dev > QC
 
 ### fix-unify-auth-cookies — fix-unify-auth-cookies
@@ -1509,12 +1573,12 @@ Fix required:
 - **Description:** 12 API routes only check auth-token cookie (JWT from signup). Must also check leadflow_session (from login). Use lib/auth.ts getAuthUserId() helper.
 - **Workflow:** Dev > QC
 
-### genome-phase1c-testing — Genome Phase 1C: Testing — automated tests for genome core
+### genome-phase1b-error-propagation — Genome Phase 1B: Error propagation — stop swallowing errors
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Write tests for: local-pg.js (select, insert, update, delete, .not(), .is(), .contains(), .in()), workflow-engine.js (selectInitialModel, classifyAreas, checkAreaContention, estimateCost), and regression tests for all bugs found 2026-03-23 (parseUTC Date objects, .not(is null) string, insert().select().single(), prepareAndQueueSpawn status, createTask model defaults). Integration test: createTask → findTaskByTitle → updateTask. Set up GitHub Actions CI on openclaw-genome repo. Exit criteria: npm test passes, >60% coverage on core/.
+- **Description:** Audit all ~80 try/catch blocks in heartbeat-executor.js. Classify each as fatal (rethrow), degraded (log+continue), or expected (silent). Fatal errors must abort the step and report to Telegram. Add stepOutcome tracking: each step reports success/failure/skipped. Genome review should check for steps with 0 output (silent crash = breach). Exit criteria: zero silent failures per heartbeat for 48h.
 - **Workflow:** Dev > QC
 
 ### fix-api-lead-capture-endpoint-returns-db-error-in-prod — /api/lead-capture endpoint returns DB error in production
@@ -1575,25 +1639,12 @@ Fix required:
   - npm run build succeeds without undefined env var warnings
 - **Workflow:** Dev > QC
 
-### fix-api-health-endpoint-wrong-table — Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents)
+### genome-phase1a-observability — Genome Phase 1A: Observability — make all failures visible
 
-- **PRD:** PRD-FIX-API-HEALTH-ENDPOINT
+- **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Fix /api/health endpoint — queries wrong table
-**Type:** bug
-**Severity:** high
-**Source:** PM Triage a27037b1
-
-The /api/health route probes Supabase connectivity by querying the agents table. The correct table is real_estate_agents. Fix: change to real_estate_agents or use SELECT 1.
-
-**File:** product/lead-response/dashboard/app/api/health/route.ts
-- **Acceptance Criteria:**
-  - - /api/health no longer queries agents table
-- Uses real_estate_agents or SELECT 1
-- GET /api/health returns 200 with status: ok
-- supabase_connectivity.ok = true
-- TypeScript build passes
+- **Description:** Replace stdio:pipe with inherit in heartbeat-wrapper.js. Add structured JSON logging to heartbeat-executor.js (timestamp, step, outcome, duration per step). Create Telegram alerts for heartbeat failure, agent crash, budget breach, stale tasks >2h. Add /genome-health REST endpoint to dashboard server. Verify every heartbeat step produces visible output. Exit criteria: all steps visible in logs, alerts fire within 5 min of failure.
 - **Workflow:** Dev > QC
 
 ### fix-marketing-landing-page-not-deployed-to-production — Marketing landing page not deployed to production
@@ -1687,23 +1738,16 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-trial-signup-route-ts-still-redirects-to-dashboard — trial-signup/route.ts still redirects to /dashboard/onboarding
+### fix-triage-the-simple-transparent-section-the — PM triage: In the Simple transparent section, the 3 tiers of pricing "Starter — Free pilot
+Pro — Most popular
+Team — 5 a
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## trial-signup/route.ts still redirects to /dashboard/onboarding
-**Type:** bug
-**Severity:** critical
-**Source:** Product review 800c1a93-d8e9-4acb-b800-e5402ab3fed7
-
-**Details:** Line 131 of app/api/auth/trial-signup/route.ts contains redirectTo: "/dashboard/onboarding". This page does not exist (404). The required fix (change to /setup) was NOT applied despite three prior dev tasks being marked done.
-
-**Suggested fix:** Change redirectTo: "/dashboard/onboarding" → "/setup" at line 131
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
+- **Description:** PM triage: In the Simple transparent section, the 3 tiers of pricing "Starter — Free pilot
+Pro — Most popular
+Team — 5 a
 - **Workflow:** Dev > QC
 
 ### fix-resend-api-key-not-configured-in-vercel-email-deli — RESEND_API_KEY not configured in Vercel — email delivery will not work
@@ -1725,55 +1769,67 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-simulator-tsx-step-component-does-not-exist — simulator.tsx step component does not exist
+### fix-e2e-test-confirms-implementation-gaps — E2E test confirms implementation gaps
 
-- **PRD:** PRD-AHA-MOMENT-SIMULATOR-UI
+- **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## simulator.tsx step component does not exist
-**Type:** missing_implementation
+- **Description:** ## E2E test confirms implementation gaps
+**Type:** test_failure
 **Severity:** critical
-**Source:** Product review 4111cb47-5a5b-4e97-88f9-33fcb45d87cc
+**Source:** Product review 5d82fced-c838-4ef7-8cc7-4c01124cdebb
 
-**Details:** The primary deliverable — steps/simulator.tsx — was never created. The steps directory only contains: agent-info.tsx, calendar.tsx, confirmation.tsx, fub-integration.tsx, sms-config.tsx, welcome.tsx. The Aha Moment UI step is entirely absent from the codebase.
+**Details:** Test: tests/fix-start-free-trial-cta-missing.test.js shows 4 of 5 tests FAILING. Failures: (1) CTA Placement #1: TrialSignupForm compact not in hero (expected: '<TrialSignupForm compact'), (2) CTA Placement #2: Features CTA missing (expected href='/signup/trial' with 'Start Free Trial' text), (3) CTA Placement #3: Pricing CTA missing (expected 'or start free trial' text with href='/signup/trial'), (4) TrialSignupForm not imported. Only passing test: No stale /signup?mode=trial URLs remain.
 
-**Suggested fix:** Create product/lead-response/dashboard/app/onboarding/steps/simulator.tsx implementing all FR-1 through FR-8 as specified in the PRD.
+**Suggested fix:** Update product/lead-response/dashboard/app/page.tsx to match test expectations. The test file is the source of truth for implementation requirements.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-start-free-trial-cta-missing-from-landing-page-3-p — Start Free Trial CTA missing from landing page — 3 placements not implemented
+### genome-phase1c-testing — Genome Phase 1C: Testing — automated tests for genome core
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Start Free Trial CTA missing from landing page — 3 placements not implemented
+- **Description:** Write tests for: local-pg.js (select, insert, update, delete, .not(), .is(), .contains(), .in()), workflow-engine.js (selectInitialModel, classifyAreas, checkAreaContention, estimateCost), and regression tests for all bugs found 2026-03-23 (parseUTC Date objects, .not(is null) string, insert().select().single(), prepareAndQueueSpawn status, createTask model defaults). Integration test: createTask → findTaskByTitle → updateTask. Set up GitHub Actions CI on openclaw-genome repo. Exit criteria: npm test passes, >60% coverage on core/.
+- **Workflow:** Dev > QC
+
+### fix-api-health-endpoint-wrong-table — Fix /api/health endpoint — queries wrong table (agents vs real_estate_agents)
+
+- **PRD:** PRD-FIX-API-HEALTH-ENDPOINT
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## Fix /api/health endpoint — queries wrong table
+**Type:** bug
+**Severity:** high
+**Source:** PM Triage a27037b1
+
+The /api/health route probes Supabase connectivity by querying the agents table. The correct table is real_estate_agents. Fix: change to real_estate_agents or use SELECT 1.
+
+**File:** product/lead-response/dashboard/app/api/health/route.ts
+- **Acceptance Criteria:**
+  - - /api/health no longer queries agents table
+- Uses real_estate_agents or SELECT 1
+- GET /api/health returns 200 with status: ok
+- supabase_connectivity.ok = true
+- TypeScript build passes
+- **Workflow:** Dev > QC
+
+### fix-trial-signup-route-ts-still-redirects-to-dashboard — trial-signup/route.ts still redirects to /dashboard/onboarding
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## trial-signup/route.ts still redirects to /dashboard/onboarding
 **Type:** bug
 **Severity:** critical
-**Source:** Product review 075a0c75-ce7c-4f4f-a990-8d9f94f2c970
+**Source:** Product review 800c1a93-d8e9-4acb-b800-e5402ab3fed7
 
-**Details:** The acceptance criteria requires a Start Free Trial button in the hero, features section, and pricing section (3 placements). The deployed landing page only shows Join the Pilot and Get Started Free (to /onboarding) in the hero. No Start Free Trial CTA pointing to /signup/trial exists anywhere on the landing page. The TrialSignupForm component and /signup/trial page exist but are unreachable from the landing page.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
+**Details:** Line 131 of app/api/auth/trial-signup/route.ts contains redirectTo: "/dashboard/onboarding". This page does not exist (404). The required fix (change to /setup) was NOT applied despite three prior dev tasks being marked done.
 
-### fix-no-self-serve-upgrade-path-from-pilot-to-paid — No self-serve upgrade path from pilot to paid
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## No self-serve upgrade path from pilot to paid
-**Type:** revenue_gap
-**Severity:** critical
-**Source:** Product review ab254083-2a70-4148-8daf-ead95f544cea
-
-**Details:** Pilot agents get free access but there is zero self-serve mechanism to upgrade to paid. Conversion requires manual Stojan intervention — will not scale to K MRR.
-
-**Suggested fix:** Add self-serve Stripe checkout flow triggered from dashboard upgrade button. New UC: feat-self-serve-stripe-checkout.
+**Suggested fix:** Change redirectTo: "/dashboard/onboarding" → "/setup" at line 131
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -1799,36 +1855,19 @@ The /api/health route probes Supabase connectivity by querying the agents table.
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-fix-not-implemented-23-api-routes-still-query-wron — Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents)
+### fix-column-name-mismatch-in-webhook-handler — Column name mismatch in webhook handler
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents)
-**Type:** bug
+- **Description:** ## Column name mismatch in webhook handler
+**Type:** structural_issue
 **Severity:** critical
-**Source:** Product review 0a39800d-db7c-4d15-9fe6-5243bcaef79f
+**Source:** Product review 10346cc1-f33b-4f29-b441-9365e7534de6
 
-**Details:** Despite use_case implementation_status being marked "complete", the codebase still has 23 occurrences of .from("agents") across 13 product API route files. The agents table is the orchestration task-management table (columns: agent_name, agent_type, project_id, status_emoji) — NOT customer data. Querying it for real estate agent customers returns wrong data or empty results.
+**Details:** Webhook handler inserts to subscription_events and payments tables using agent_id column, but migration schema defines user_id. This will cause runtime errors when webhooks are triggered. Affected lines: product/lead-response/dashboard/app/api/webhooks/stripe/route.ts lines 56, 76, 85, 103, 121, 133, 144, 160
 
-Affected files:
-- app/api/webhook/route.ts (1 ref)
-- app/api/webhook/fub/route.ts (2 refs)
-- app/api/webhook/twilio/route.ts (2 refs)
-- app/api/agents/check-email/route.ts (1 ref)
-- app/api/agents/satisfaction-ping/route.ts (2 refs)
-- app/api/agents/profile/route.ts (2 refs)
-- app/api/satisfaction/stats/route.ts (1 ref)
-- app/api/webhooks/stripe/route.ts (4 refs)
-- app/api/onboarding/check-email/route.ts (1 ref)
-- app/api/onboarding/submit/route.ts (2 refs)
-- app/api/stripe/portal-session/route.ts (3 refs)
-- app/api/debug/test-formdata/route.ts (1 ref)
-- app/api/debug/test-full-flow/route.ts (1 ref)
-
-PRD required all 21 references replaced; 23 remain. AC-5 fails completely.
-
-**Suggested fix:** Run: cd product/lead-response/dashboard && find app -name "*.ts" -o -name "*.tsx" | xargs sed -i "" "s/.from('agents')/.from('real_estate_agents')/g" then redeploy.
+**Suggested fix:** Replace all instances of agent_id with user_id in webhook handler inserts to subscription_events and payments tables
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -1877,25 +1916,21 @@ PRD required all 21 references replaced; 23 remain. AC-5 fails completely.
 - Tests pass
 - **Workflow:** Dev > QC
 
-### feat-post-signup-redirect-to-dashboard-onboarding — Post-Signup Redirect to /dashboard/onboarding
+### fix-start-free-trial-cta-missing-from-landing-page-3-p — Start Free Trial CTA missing from landing page — 3 placements not implemented
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Connect all signup flows to redirect new users to /dashboard/onboarding (in-dashboard wizard overlay) instead of /setup.
+- **Description:** ## Start Free Trial CTA missing from landing page — 3 placements not implemented
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 075a0c75-ce7c-4f4f-a990-8d9f94f2c970
 
-Decision 4ff87559 approved by Stojan 2026-03-13. The /dashboard/onboarding page is fully implemented. Remaining: update 3 routes returning redirectTo /setup → /dashboard/onboarding, update email links, archive stale conflicting test.
-
-Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line ~149), product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts (line ~289, ~113), product/lead-response/dashboard/app/api/trial/start/route.ts (line ~162). Stale test: tests/fix-trial-signup-route-ts-still-redirects-to-dashboard.test.js (update to assert /dashboard/onboarding).
-- **Acceptance Criteria:**
-  - AC-1: trial-signup/route.ts returns redirectTo: "/dashboard/onboarding"
-  - AC-2: pilot-signup/route.ts returns redirectTo: "/dashboard/onboarding"
-  - AC-3: trial/start/route.ts returns redirectTo: "/dashboard/onboarding"
-  - AC-4: Welcome email links point to /dashboard/onboarding (not /setup)
-  - AC-5: tests/fix-trial-signup-route-ts-still-redirects-to-dashboard.test.js updated to assert /dashboard/onboarding
-  - AC-6: /dashboard/onboarding page loads post-signup (no 404)
-  - AC-7: Completing wizard redirects to /dashboard
-  - AC-8: Skipping wizard redirects to /dashboard
+**Details:** The acceptance criteria requires a Start Free Trial button in the hero, features section, and pricing section (3 placements). The deployed landing page only shows Join the Pilot and Get Started Free (to /onboarding) in the hero. No Start Free Trial CTA pointing to /signup/trial exists anywhere on the landing page. The TrialSignupForm component and /signup/trial page exist but are unreachable from the landing page.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
 - **Workflow:** Dev > QC
 
 ### fix-pricing-page-shows-prices-10x-higher-than-pmf-md-s — /pricing page shows prices 10x higher than PMF.md strategy
@@ -1936,50 +1971,19 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-distribution-loop — Fix: Distribution loop — deduplicate task creation with 7-day cooldown
+### fix-simulator-tsx-step-component-does-not-exist — simulator.tsx step component does not exist
 
-- **PRD:** prd-distribution-loop-fix
-- **Status:** needs_merge
-- **Priority:** 1
-- **Description:** Distribution health check creates identical tasks every heartbeat.
-- **Acceptance Criteria:**
-  - No duplicate distribution tasks created within 7-day cooldown window
-  - distribution_channels table has active landing_page entry after deploy
-  - No new Loop detected tasks appear after fix lands
-- **Workflow:** PM > Dev > QC
-
-### fix-session-logging-not-integrated-into-login-flow — Session logging not integrated into login flow
-
-- **PRD:** -
+- **PRD:** PRD-AHA-MOMENT-SIMULATOR-UI
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Session logging not integrated into login flow
-**Type:** bug
+- **Description:** ## simulator.tsx step component does not exist
+**Type:** missing_implementation
 **Severity:** critical
-**Source:** Product review 7578d6f4-72b3-4225-bde2-fb545637ba4e
+**Source:** Product review 4111cb47-5a5b-4e97-88f9-33fcb45d87cc
 
-**Details:** The /api/auth/login/route.ts updates last_login_at on real_estate_agents but does NOT insert a row into agent_sessions. The logSessionStart() function described in FR-1 does not exist anywhere in the codebase. The agent_sessions table is empty despite being created.
+**Details:** The primary deliverable — steps/simulator.tsx — was never created. The steps directory only contains: agent-info.tsx, calendar.tsx, confirmation.tsx, fub-integration.tsx, sms-config.tsx, welcome.tsx. The Aha Moment UI step is entirely absent from the codebase.
 
-**Suggested fix:** Add logSessionStart(agentId, req) call at end of successful login in /api/auth/login/route.ts. Insert into agent_sessions with agent_id, ip_address (from req headers), user_agent, session_start = now(), last_active_at = now(). Return session_id and store in JWT claims or response.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-page-view-logging-not-implemented-agent-page-views — Page view logging not implemented — agent_page_views table empty
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## Page view logging not implemented — agent_page_views table empty
-**Type:** bug
-**Severity:** critical
-**Source:** Product review 7578d6f4-72b3-4225-bde2-fb545637ba4e
-
-**Details:** FR-3 requires that each dashboard navigation creates a row in agent_page_views. No such middleware exists. The agent_page_views table was created (schema present) but has 0 rows and no code path writes to it. Pages tracked per spec: /dashboard, /dashboard/conversations, /dashboard/settings, /dashboard/billing.
-
-**Suggested fix:** Add page view middleware in middleware.ts (or a route handler wrapper) that detects navigation to tracked pages and inserts into agent_page_views with agent_id, session_id, page, visited_at. Rate limit to one write per page per session to avoid duplicates on API calls.
+**Suggested fix:** Create product/lead-response/dashboard/app/onboarding/steps/simulator.tsx implementing all FR-1 through FR-8 as specified in the PRD.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -1989,57 +1993,56 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 ### uc-distribution-loop-migration-fix — Fix: Apply migration 006 to local PG — stop distribution loop
 
 - **PRD:** prd-fix-distribution-loop-consolidated
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 1
 - **Description:** Apply migration 006_distribution_metrics.sql to local PostgreSQL, seed distribution_channels with the active landing page, add dedup guard to createDistributionTasks(), and extend loop detector cooldown in task-store.js.
 - **Workflow:** PM > Dev > QC
 
-### UC-FIX-DISTRIBUTION-LOOP-001 — Fix Distribution Health Check Infinite Loop
-
-- **PRD:** PRD-FIX-DISTRIBUTION-LOOP
-- **Status:** not_started
-- **Priority:** 1
-- **Description:** Fix 3 bugs in Genome Loop 6: (1) missing distribution_channels table causes no_landing_page issue every heartbeat, (2) no dedup guard in createDistributionTasks(), (3) loop detector fires again on completed investigation tasks.
-- **Acceptance Criteria:**
-  - {"text":"No duplicate distribution tasks. No loop-detection self-loop. distribution_channels table exists."}
-- **Workflow:** Dev
-
-### feat-landing-page-conversion-cleanup — Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof
-
-- **PRD:** PRD-LANDING-PAGE-CONVERSION-001
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Three high-friction issues on the marketing landing page are suppressing signup conversion: (1) An "API Endpoints" developer table is embedded mid-page between the feature cards and lead magnet section — real estate agents will bounce when they see raw API endpoint documentation; (2) Pricing is inconsistent — landing page labels Starter as "Starter - Free pilot" but the signup page shows $49/month, creating distrust; (3) No social proof (testimonials, agent count, results). This UC fixes all three: removes the API docs section, aligns pricing messaging, and adds a testimonials/social proof section. At $0 MRR on Day 22, improving landing page conversion is the fastest way to increase top-of-funnel signup volume.
-- **Acceptance Criteria:**
-  - API Endpoints developer table is absent from landing page DOM (no "API Endpoints" heading, no endpoint docs table)
-  - A "How It Works" section is visible with exactly 3 clearly labeled steps explaining setup, instant response, and close workflow
-  - Pricing copy is consistent between landing and signup pages for all displayed tiers (same price + same trial messaging)
-  - No conflicting "Free pilot" language appears unless that plan is genuinely $0 on both pages
-  - Pricing tier CTAs deep-link to /signup?plan=starter|pro|team and signup preselects the corresponding plan
-  - A social proof/testimonials section is present with at least 1 testimonial card containing quote + attribution
-  - Mobile viewport (375px) has no horizontal overflow; How It Works and testimonials stack correctly
-  - GA4 click events fire for hero CTAs and pricing/testimonial CTAs
-  - Landing page performance remains <2s load under normal conditions
-- **Workflow:** PM > Dev > QC
-
-### fix-schema-column-mismatch-satisfaction-ping-enabled-n — Schema column mismatch: satisfaction_ping_enabled not in real_estate_agents table
+### fix-fix-not-implemented-23-api-routes-still-query-wron — Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents)
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Schema column mismatch: satisfaction_ping_enabled not in real_estate_agents table
-**Type:** schema_mismatch
+- **Description:** ## Fix NOT implemented — 23 API routes still query wrong table (agents vs real_estate_agents)
+**Type:** bug
 **Severity:** critical
-**Source:** Product review e5b46c19-a23e-4894-8e20-13e5e54d72b8
+**Source:** Product review 0a39800d-db7c-4d15-9fe6-5243bcaef79f
 
-**Details:** Migration 008 adds satisfaction_ping_enabled to agents table (orchestrator) instead of real_estate_agents (customers). Code correctly queries real_estate_agents but column does not exist. Runtime failures will occur in PATCH /api/agents/satisfaction-ping and GET /api/satisfaction/stats.
+**Details:** Despite use_case implementation_status being marked "complete", the codebase still has 23 occurrences of .from("agents") across 13 product API route files. The agents table is the orchestration task-management table (columns: agent_name, agent_type, project_id, status_emoji) — NOT customer data. Querying it for real estate agent customers returns wrong data or empty results.
 
-**Suggested fix:** Create migration 009 to add satisfaction_ping_enabled to real_estate_agents and fix FK in lead_satisfaction_events
+Affected files:
+- app/api/webhook/route.ts (1 ref)
+- app/api/webhook/fub/route.ts (2 refs)
+- app/api/webhook/twilio/route.ts (2 refs)
+- app/api/agents/check-email/route.ts (1 ref)
+- app/api/agents/satisfaction-ping/route.ts (2 refs)
+- app/api/agents/profile/route.ts (2 refs)
+- app/api/satisfaction/stats/route.ts (1 ref)
+- app/api/webhooks/stripe/route.ts (4 refs)
+- app/api/onboarding/check-email/route.ts (1 ref)
+- app/api/onboarding/submit/route.ts (2 refs)
+- app/api/stripe/portal-session/route.ts (3 refs)
+- app/api/debug/test-formdata/route.ts (1 ref)
+- app/api/debug/test-full-flow/route.ts (1 ref)
+
+PRD required all 21 references replaced; 23 remain. AC-5 fails completely.
+
+**Suggested fix:** Run: cd product/lead-response/dashboard && find app -name "*.ts" -o -name "*.tsx" | xargs sed -i "" "s/.from('agents')/.from('real_estate_agents')/g" then redeploy.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
 - Tests pass
 - **Workflow:** Dev > QC
+
+### UC-FIX-DISTRIBUTION-LOOP-001 — Fix Distribution Health Check Infinite Loop
+
+- **PRD:** PRD-FIX-DISTRIBUTION-LOOP
+- **Status:** needs_merge
+- **Priority:** 1
+- **Description:** Fix 3 bugs in Genome Loop 6: (1) missing distribution_channels table causes no_landing_page issue every heartbeat, (2) no dedup guard in createDistributionTasks(), (3) loop detector fires again on completed investigation tasks.
+- **Acceptance Criteria:**
+  - {"text":"No duplicate distribution tasks. No loop-detection self-loop. distribution_channels table exists."}
+- **Workflow:** Dev
 
 ### fix-page-tsx-not-updated-simulator-step-not-wired-into — page.tsx not updated — simulator step not wired into wizard
 
@@ -2068,29 +2071,31 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - **Description:** Quick fix: test genome separation
 - **Workflow:** Dev > QC
 
-### fix-start-free-trial-cta-feature-not-integrated-into-l — Start Free Trial CTA feature not integrated into landing page
+### feat-post-signup-redirect-to-dashboard-onboarding — Post-Signup Redirect to /dashboard/onboarding
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Start Free Trial CTA feature not integrated into landing page
-**Type:** implementation_incomplete
-**Severity:** critical
-**Source:** Product review 5d82fced-c838-4ef7-8cc7-4c01124cdebb
+- **Description:** Connect all signup flows to redirect new users to /dashboard/onboarding (in-dashboard wizard overlay) instead of /setup.
 
-**Details:** The TrialSignupForm component (trial-signup-form.tsx) exists and is well-implemented, but is NOT imported or displayed anywhere on the landing page (product/lead-response/dashboard/app/page.tsx). The feature spec requires 3 CTA placements: (1) compact form in hero section, (2) 'Start Free Trial' link at end of features section linking to /signup/trial, (3) 'or start free trial' link in pricing section linking to /signup/trial. Current landing page only shows 'Join the Pilot' (to /pilot) and 'Get Started Free' (to /onboarding) buttons.
+Decision 4ff87559 approved by Stojan 2026-03-13. The /dashboard/onboarding page is fully implemented. Remaining: update 3 routes returning redirectTo /setup → /dashboard/onboarding, update email links, archive stale conflicting test.
 
-**Suggested fix:** Import TrialSignupForm component in page.tsx: import TrialSignupForm from '@/components/trial-signup-form'. Add: (1) <TrialSignupForm compact /> in hero div after description, (2) Link with href='/signup/trial' and text 'Start Free Trial' at end of features section, (3) Link with href='/signup/trial' and text 'or start free trial' in pricing section
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
+Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line ~149), product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts (line ~289, ~113), product/lead-response/dashboard/app/api/trial/start/route.ts (line ~162). Stale test: tests/fix-trial-signup-route-ts-still-redirects-to-dashboard.test.js (update to assert /dashboard/onboarding).
+- **Acceptance Criteria:**
+  - AC-1: trial-signup/route.ts returns redirectTo: "/dashboard/onboarding"
+  - AC-2: pilot-signup/route.ts returns redirectTo: "/dashboard/onboarding"
+  - AC-3: trial/start/route.ts returns redirectTo: "/dashboard/onboarding"
+  - AC-4: Welcome email links point to /dashboard/onboarding (not /setup)
+  - AC-5: tests/fix-trial-signup-route-ts-still-redirects-to-dashboard.test.js updated to assert /dashboard/onboarding
+  - AC-6: /dashboard/onboarding page loads post-signup (no 404)
+  - AC-7: Completing wizard redirects to /dashboard
+  - AC-8: Skipping wizard redirects to /dashboard
 - **Workflow:** Dev > QC
 
 ### uc-fix-revenue-alert-loop — Fix Revenue Alert Loop Handler
 
 - **PRD:** prd-revenue-alert-loop-root-cause
-- **Status:** in_progress
+- **Status:** complete
 - **Priority:** 1
 - **Description:** Implement 4 fixes to prevent loop detector from creating duplicate meta-tasks: (1) Add 24h cooldown to meta-task creation, (2) Add dedup check to revenue-collector, (3) Add auto-timeout reaper for stuck tasks, (4) Guard against auth failures
 - **Workflow:** PM > Dev > QC
@@ -2114,19 +2119,19 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-table-reference-mismatch-in-webhook-handler — Table reference mismatch in webhook handler
+### fix-session-logging-not-integrated-into-login-flow — Session logging not integrated into login flow
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Table reference mismatch in webhook handler
-**Type:** structural_issue
+- **Description:** ## Session logging not integrated into login flow
+**Type:** bug
 **Severity:** critical
-**Source:** Product review 10346cc1-f33b-4f29-b441-9365e7534de6
+**Source:** Product review 7578d6f4-72b3-4225-bde2-fb545637ba4e
 
-**Details:** Webhook handler attempts to update real_estate_agents table, which does not exist. The correct table name is agents. This affects all subscription-related updates. Affected lines: 47, 113, 150 in route.ts
+**Details:** The /api/auth/login/route.ts updates last_login_at on real_estate_agents but does NOT insert a row into agent_sessions. The logSessionStart() function described in FR-1 does not exist anywhere in the codebase. The agent_sessions table is empty despite being created.
 
-**Suggested fix:** Replace all .from('real_estate_agents') with .from('agents') in webhook handler
+**Suggested fix:** Add logSessionStart(agentId, req) call at end of successful login in /api/auth/login/route.ts. Insert into agent_sessions with agent_id, ip_address (from req headers), user_agent, session_start = now(), last_active_at = now(). Return session_id and store in JWT claims or response.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -2152,21 +2157,54 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-loop-handler-distribution-dedup — Fix: Distribution loop — dedup guard + UC completion gate + loop detector cooldown
+### fix-page-view-logging-not-implemented-agent-page-views — Page view logging not implemented — agent_page_views table empty
 
-- **PRD:** prd-distribution-loop-wave8
-- **Status:** in_progress
+- **PRD:** -
+- **Status:** complete
 - **Priority:** 1
-- **Description:** Stop the recurring distribution loop by: (1) adding UC completion gate in distribution-collector.js to skip issues where UC is already complete, (2) adding 30-min task cooldown in createDistributionTasks(), (3) replacing status-based dedup with timestamp-based dedup in task-store.js loop detector.
+- **Description:** ## Page view logging not implemented — agent_page_views table empty
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 7578d6f4-72b3-4225-bde2-fb545637ba4e
+
+**Details:** FR-3 requires that each dashboard navigation creates a row in agent_page_views. No such middleware exists. The agent_page_views table was created (schema present) but has 0 rows and no code path writes to it. Pages tracked per spec: /dashboard, /dashboard/conversations, /dashboard/settings, /dashboard/billing.
+
+**Suggested fix:** Add page view middleware in middleware.ts (or a route handler wrapper) that detects navigation to tracked pages and inserts into agent_page_views with agent_id, session_id, page, visited_at. Rate limit to one write per page per session to avoid duplicates on API calls.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### feat-landing-page-conversion-cleanup — Landing Page Conversion Cleanup — Remove API Docs, Fix Pricing, Add Social Proof
+
+- **PRD:** PRD-LANDING-PAGE-CONVERSION-001
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Three high-friction issues on the marketing landing page are suppressing signup conversion: (1) An "API Endpoints" developer table is embedded mid-page between the feature cards and lead magnet section — real estate agents will bounce when they see raw API endpoint documentation; (2) Pricing is inconsistent — landing page labels Starter as "Starter - Free pilot" but the signup page shows $49/month, creating distrust; (3) No social proof (testimonials, agent count, results). This UC fixes all three: removes the API docs section, aligns pricing messaging, and adds a testimonials/social proof section. At $0 MRR on Day 22, improving landing page conversion is the fastest way to increase top-of-funnel signup volume.
+- **Acceptance Criteria:**
+  - API Endpoints developer table is absent from landing page DOM (no "API Endpoints" heading, no endpoint docs table)
+  - A "How It Works" section is visible with exactly 3 clearly labeled steps explaining setup, instant response, and close workflow
+  - Pricing copy is consistent between landing and signup pages for all displayed tiers (same price + same trial messaging)
+  - No conflicting "Free pilot" language appears unless that plan is genuinely $0 on both pages
+  - Pricing tier CTAs deep-link to /signup?plan=starter|pro|team and signup preselects the corresponding plan
+  - A social proof/testimonials section is present with at least 1 testimonial card containing quote + attribution
+  - Mobile viewport (375px) has no horizontal overflow; How It Works and testimonials stack correctly
+  - GA4 click events fire for hero CTAs and pricing/testimonial CTAs
+  - Landing page performance remains <2s load under normal conditions
 - **Workflow:** PM > Dev > QC
 
-### fix-distribution-loop-dedup — Fix distribution-collector loop: add deduplication and schema guard
+### fix-distribution-loop — Fix: Distribution loop — deduplicate task creation with 7-day cooldown
 
-- **PRD:** prd-distribution-loop-dedup
-- **Status:** in_progress
+- **PRD:** prd-distribution-loop-fix
+- **Status:** complete
 - **Priority:** 1
-- **Description:** distribution-collector.js creates duplicate tasks on every heartbeat. Root causes: (1) distribution_channels table missing, (2) no dedup check in createDistributionTasks, (3) completed UCs not suppressed, (4) no cooldown. Fix all four layers.
-- **Workflow:** Dev > QC
+- **Description:** Distribution health check creates identical tasks every heartbeat.
+- **Acceptance Criteria:**
+  - No duplicate distribution tasks created within 7-day cooldown window
+  - distribution_channels table has active landing_page entry after deploy
+  - No new Loop detected tasks appear after fix lands
+- **Workflow:** PM > Dev > QC
 
 ### feat-transactional-email-resend — Transactional Email Delivery via Resend — Activate the Signup Funnel
 
@@ -2184,6 +2222,25 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
   - All emails render correctly in Gmail and mobile
   - Bounced/failed emails logged to Supabase for monitoring
   - Test coverage: automated test verifies email delivery end-to-end
+- **Workflow:** Dev > QC
+
+### fix-distribution-channels-table-missing-from-local-pos — distribution_channels table missing from local PostgreSQL
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## distribution_channels table missing from local PostgreSQL
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 368d7056-d0f9-44a7-94da-22c9d5c3831e
+
+**Details:** PostgREST query to http://localhost:8787/distribution_channels returns Not found. Migration 006_distribution_metrics.sql has not been run against local PG. This causes checkDistributionHealth() to receive null on every query and trigger PM: Distribution — Create Landing Page on every heartbeat.
+
+**Suggested fix:** Run: psql postgresql://clawdbot@localhost/openclaw -f ~/.openclaw/genome/migrations/006_distribution_metrics.sql then seed landing page record with status=active
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
 - **Workflow:** Dev > QC
 
 ### fix-three-consecutive-vercel-builds-failing-fix-never- — Three consecutive Vercel builds failing — fix never reached production
@@ -2205,6 +2262,52 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
+### fix-start-free-trial-cta-feature-not-integrated-into-l — Start Free Trial CTA feature not integrated into landing page
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## Start Free Trial CTA feature not integrated into landing page
+**Type:** implementation_incomplete
+**Severity:** critical
+**Source:** Product review 5d82fced-c838-4ef7-8cc7-4c01124cdebb
+
+**Details:** The TrialSignupForm component (trial-signup-form.tsx) exists and is well-implemented, but is NOT imported or displayed anywhere on the landing page (product/lead-response/dashboard/app/page.tsx). The feature spec requires 3 CTA placements: (1) compact form in hero section, (2) 'Start Free Trial' link at end of features section linking to /signup/trial, (3) 'or start free trial' link in pricing section linking to /signup/trial. Current landing page only shows 'Join the Pilot' (to /pilot) and 'Get Started Free' (to /onboarding) buttons.
+
+**Suggested fix:** Import TrialSignupForm component in page.tsx: import TrialSignupForm from '@/components/trial-signup-form'. Add: (1) <TrialSignupForm compact /> in hero div after description, (2) Link with href='/signup/trial' and text 'Start Free Trial' at end of features section, (3) Link with href='/signup/trial' and text 'or start free trial' in pricing section
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-schema-column-mismatch-satisfaction-ping-enabled-n — Schema column mismatch: satisfaction_ping_enabled not in real_estate_agents table
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## Schema column mismatch: satisfaction_ping_enabled not in real_estate_agents table
+**Type:** schema_mismatch
+**Severity:** critical
+**Source:** Product review e5b46c19-a23e-4894-8e20-13e5e54d72b8
+
+**Details:** Migration 008 adds satisfaction_ping_enabled to agents table (orchestrator) instead of real_estate_agents (customers). Code correctly queries real_estate_agents but column does not exist. Runtime failures will occur in PATCH /api/agents/satisfaction-ping and GET /api/satisfaction/stats.
+
+**Suggested fix:** Create migration 009 to add satisfaction_ping_enabled to real_estate_agents and fix FK in lead_satisfaction_events
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-loop-handler-distribution-dedup — Fix: Distribution loop — dedup guard + UC completion gate + loop detector cooldown
+
+- **PRD:** prd-distribution-loop-wave8
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Stop the recurring distribution loop by: (1) adding UC completion gate in distribution-collector.js to skip issues where UC is already complete, (2) adding 30-min task cooldown in createDistributionTasks(), (3) replacing status-based dedup with timestamp-based dedup in task-store.js loop detector.
+- **Workflow:** PM > Dev > QC
+
 ### fix-nps-api-routes-api-nps-verify-and-api-nps-submit-r — NPS API routes /api/nps/verify and /api/nps/submit return 404
 
 - **PRD:** -
@@ -2218,33 +2321,6 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 **Details:** The survey page at /survey calls /api/nps/verify (to validate the JWT token) and /api/nps/submit (to save the response). Both return 404 in production. The nps-service.ts library functions are implemented but no API route files exist under app/api/nps/. Any agent who clicks an NPS survey email link will see a broken experience — token verification fails, form never renders as valid, submission is impossible.
 
 **Suggested fix:** Create app/api/nps/verify/route.ts (GET handler using verifySurveyToken + isTokenUsed from nps-service.ts) and app/api/nps/submit/route.ts (POST handler using submitNPSResponse + createChurnRiskAlert from nps-service.ts). Both are thin wrappers around already-implemented service functions.
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-triage-there-are-join-the-pilot — PM triage: There are "Join the Pilot - It's Free" and "Get Started Free" options on the landing page. This needs to be r
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** PM triage: There are "Join the Pilot - It's Free" and "Get Started Free" options on the landing page. This needs to be r
-- **Workflow:** Dev > QC
-
-### fix-email-delivery-non-functional-resend-api-key-not-s — Email delivery non-functional - RESEND_API_KEY not set in Vercel
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## Email delivery non-functional - RESEND_API_KEY not set in Vercel
-**Type:** integration
-**Severity:** critical
-**Source:** Product review 6213e6dd-72b0-4b31-b3d1-0a3ed9cee980
-
-**Details:** RESEND_API_KEY is not configured in Vercel environment. This means: (1) signup confirmation emails not sent, (2) password reset emails fail, (3) lead magnet playbook not delivered even though API returns success. Without working transactional email, the entire activation funnel is broken - users sign up but cannot confirm their account or recover access.
-
-**Suggested fix:** Configure RESEND_API_KEY in Vercel project settings for leadflow-ai. Verify by triggering a test email via the /api/lead-capture endpoint and checking delivery.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -2270,19 +2346,19 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-stripe-price-ids-are-placeholder-values-not-real-s — Stripe price IDs are placeholder values, not real Stripe IDs
+### fix-table-reference-mismatch-in-webhook-handler — Table reference mismatch in webhook handler
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## Stripe price IDs are placeholder values, not real Stripe IDs
-**Type:** placeholder_config
+- **Description:** ## Table reference mismatch in webhook handler
+**Type:** structural_issue
 **Severity:** critical
-**Source:** Product review 6e578fe1-5937-44c2-a27c-cfd3508bee00
+**Source:** Product review 10346cc1-f33b-4f29-b441-9365e7534de6
 
-**Details:** Vercel production has NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY=price_starter_49, NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY=price_pro_149, NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY=price_team_399. These are placeholder strings, not real Stripe price IDs (which look like price_1AbCDEFGHIJKL). Additionally, the checkout API uses server-side env vars (STRIPE_PRICE_STARTER_MONTHLY, STRIPE_PRICE_PROFESSIONAL_MONTHLY) which are not set at all — only the NEXT_PUBLIC_ versions exist. This means even after adding the secret key, checkout sessions will fail with Stripe API errors.
+**Details:** Webhook handler attempts to update real_estate_agents table, which does not exist. The correct table name is agents. This affects all subscription-related updates. Affected lines: 47, 113, 150 in route.ts
 
-**Suggested fix:** Create Stripe products and prices in the Stripe Dashboard (or via CLI). Update Vercel env vars with real price IDs. Fix env var naming: create server-side STRIPE_PRICE_STARTER_MONTHLY, STRIPE_PRICE_PROFESSIONAL_MONTHLY, STRIPE_PRICE_ENTERPRISE_MONTHLY (matching what create-checkout/route.ts expects).
+**Suggested fix:** Replace all .from('real_estate_agents') with .from('agents') in webhook handler
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -2335,22 +2411,23 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### feat-post-login-onboarding-wizard — Post-Login Onboarding Wizard for New Agents
-
-- **PRD:** PRD-ONBOARDING-WIZARD-001
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Guided setup wizard shown to new agents after first login. Walks through 3 steps: (1) Connect FUB integration via API key + webhook registration, (2) Configure Twilio phone number (provision new or enter existing), (3) Verify SMS by sending a test message to agent mobile. Wizard state persisted per agent; skipped steps accessible later in Settings -> Integrations.
-- **Acceptance Criteria:**
-  - ["Wizard auto-triggers on first login if onboarding_completed = false","Wizard does NOT re-trigger for agents with onboarding_completed = true","Step 1: FUB API key validation is a real live call to FUB API","Step 1: On success, webhook URL is auto-registered in FUB","Step 2: Agent can provision a new Twilio number by area code","Step 2: Agent can enter an existing Twilio number (E.164 validated)","Step 3: Test SMS is actually delivered to agent mobile number","agents table updated at each step (fub_connected, phone_configured, sms_verified)","Agent can skip any step and complete later via Settings -> Integrations","onboarding_completed = true set on completion screen","All wizard API endpoints require authenticated session","UI is mobile-responsive","E2E: full wizard flow (all 3 steps) passes","E2E: partial flow with skipped steps passes"]
-- **Workflow:** PM > Marketing > Design > Dev > QC
-
-### fix-dashboard-routes-are-publicly-accessible — dashboard routes are publicly accessible with no auth protection
+### fix-stripe-price-ids-are-placeholder-values-not-real-s — Stripe price IDs are placeholder values, not real Stripe IDs
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Quick fix: dashboard routes are publicly accessible with no auth protection
+- **Description:** ## Stripe price IDs are placeholder values, not real Stripe IDs
+**Type:** placeholder_config
+**Severity:** critical
+**Source:** Product review 6e578fe1-5937-44c2-a27c-cfd3508bee00
+
+**Details:** Vercel production has NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY=price_starter_49, NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY=price_pro_149, NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY=price_team_399. These are placeholder strings, not real Stripe price IDs (which look like price_1AbCDEFGHIJKL). Additionally, the checkout API uses server-side env vars (STRIPE_PRICE_STARTER_MONTHLY, STRIPE_PRICE_PROFESSIONAL_MONTHLY) which are not set at all — only the NEXT_PUBLIC_ versions exist. This means even after adding the secret key, checkout sessions will fail with Stripe API errors.
+
+**Suggested fix:** Create Stripe products and prices in the Stripe Dashboard (or via CLI). Update Vercel env vars with real price IDs. Fix env var naming: create server-side STRIPE_PRICE_STARTER_MONTHLY, STRIPE_PRICE_PROFESSIONAL_MONTHLY, STRIPE_PRICE_ENTERPRISE_MONTHLY (matching what create-checkout/route.ts expects).
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
 - **Workflow:** Dev > QC
 
 ### fix-production-build-fails-typescript-error-in-trial-s — Production build fails: TypeScript error in trial-signup route
@@ -2367,20 +2444,20 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
   - /api/lead-capture fix can be included in a successful production deployment after this blocker is removed
 - **Workflow:** Dev > QC
 
-### fix-landing-page-has-no-links-to-signup-or-o — landing page has no links to signup or onboarding pages
+### fix-triage-there-are-join-the-pilot — PM triage: There are "Join the Pilot - It's Free" and "Get Started Free" options on the landing page. This needs to be r
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Quick fix: landing page has no links to signup or onboarding pages
+- **Description:** PM triage: There are "Join the Pilot - It's Free" and "Get Started Free" options on the landing page. This needs to be r
 - **Workflow:** Dev > QC
 
-### fix-signup-page-has-no-link-back-to-login-an — signup page has no link back to login and no login page exists
+### fix-dashboard-routes-are-publicly-accessible — dashboard routes are publicly accessible with no auth protection
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Quick fix: signup page has no link back to login and no login page exists
+- **Description:** Quick fix: dashboard routes are publicly accessible with no auth protection
 - **Workflow:** Dev > QC
 
 ### fix-migration-012-not-applied-to-supabase-all-telemetr — Migration 012 not applied to Supabase — all telemetry tables/views missing
@@ -2402,12 +2479,12 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-triage-108-stuck-ucs-determine-which — PM: Triage 108 stuck UCs — determine which are still needed
+### fix-landing-page-has-no-links-to-signup-or-o — landing page has no links to signup or onboarding pages
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** PM: Triage 108 stuck UCs — determine which are still needed
+- **Description:** Quick fix: landing page has no links to signup or onboarding pages
 - **Workflow:** Dev > QC
 
 ### fix-signup-form-layout-inconsistency — Fix Signup Form Layout — Match Login Field Orientation
@@ -2418,10 +2495,37 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - **Description:** On the signup page, the email and password fields render small and horizontally (side-by-side). On the login page, the same fields render full-width and vertically stacked — the correct, readable layout. This visual inconsistency breaks the perceived quality of the auth flow and confuses users who move between the two pages. The fix: update the signup form to use the same vertical, full-width field layout as the login page. No functional changes — purely CSS/layout alignment. Files to check: product/lead-response/dashboard/app/signup/page.tsx (and any sub-components like TrialSignupForm), compared against product/lead-response/dashboard/app/login/page.tsx.
 - **Workflow:** Dev > QC
 
+### fix-signup-page-has-no-link-back-to-login-an — signup page has no link back to login and no login page exists
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Quick fix: signup page has no link back to login and no login page exists
+- **Workflow:** Dev > QC
+
+### fix-email-delivery-non-functional-resend-api-key-not-s — Email delivery non-functional - RESEND_API_KEY not set in Vercel
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## Email delivery non-functional - RESEND_API_KEY not set in Vercel
+**Type:** integration
+**Severity:** critical
+**Source:** Product review 6213e6dd-72b0-4b31-b3d1-0a3ed9cee980
+
+**Details:** RESEND_API_KEY is not configured in Vercel environment. This means: (1) signup confirmation emails not sent, (2) password reset emails fail, (3) lead magnet playbook not delivered even though API returns success. Without working transactional email, the entire activation funnel is broken - users sign up but cannot confirm their account or recover access.
+
+**Suggested fix:** Configure RESEND_API_KEY in Vercel project settings for leadflow-ai. Verify by triggering a test email via the /api/lead-capture endpoint and checking delivery.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
 ### fix-loop-detector-uses-status-only-dedup-instead-of-24 — Loop detector uses status-only dedup instead of 24h time window
 
 - **PRD:** -
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 1
 - **Description:** ## Loop detector uses status-only dedup instead of 24h time window
 **Type:** bug
@@ -2435,14 +2539,6 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - The issue described above is resolved
 - Existing functionality is not broken
 - Tests pass
-- **Workflow:** Dev > QC
-
-### fix-status — status
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** Quick fix: status
 - **Workflow:** Dev > QC
 
 ### fix-resend-api-key-not-set-in-vercel-email-delivery-no — RESEND_API_KEY not set in Vercel — email delivery non-functional
@@ -2507,20 +2603,12 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-distribution-loop-migration-and-dedup — Fix Distribution Loop — Apply Migration 006, Migrate to Direct PG, Add Dedup Guards
-
-- **PRD:** PRD-DISTRIBUTION-LOOP-DEDUP-FIX
-- **Status:** ready
-- **Priority:** 1
-- **Description:** Distribution health check (Loop 6) creates noise tasks every heartbeat. Root cause: migration 006_distribution_metrics.sql was never applied to local PostgreSQL — tables do not exist. distribution-collector.js still uses PostgREST (localhost:8787) which is no longer running. Required fixes: (1) apply migration 006, (2) seed landing page record, (3) rewrite collector to use pg.Pool with LOCAL_PG_URL, (4) add 7-day dedup guard in createDistributionTasks(), (5) add 24h cooldown in task-store.js loop detector.
-- **Workflow:** PM > Dev > QC
-
-### fix-test-gateway-path — test gateway path
+### fix-status — status
 
 - **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** Quick fix: test gateway path
+- **Description:** Quick fix: status
 - **Workflow:** Dev > QC
 
 ### fix-post-login-onboarding-wizard-fub-sms-aha-is-stuck- — Post-login onboarding wizard (FUB/SMS/aha) is STUCK and never auto-triggers
@@ -2542,6 +2630,16 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
+### feat-post-login-onboarding-wizard — Post-Login Onboarding Wizard for New Agents
+
+- **PRD:** PRD-ONBOARDING-WIZARD-001
+- **Status:** complete
+- **Priority:** 1
+- **Description:** Guided setup wizard shown to new agents after first login. Walks through 3 steps: (1) Connect FUB integration via API key + webhook registration, (2) Configure Twilio phone number (provision new or enter existing), (3) Verify SMS by sending a test message to agent mobile. Wizard state persisted per agent; skipped steps accessible later in Settings -> Integrations.
+- **Acceptance Criteria:**
+  - ["Wizard auto-triggers on first login if onboarding_completed = false","Wizard does NOT re-trigger for agents with onboarding_completed = true","Step 1: FUB API key validation is a real live call to FUB API","Step 1: On success, webhook URL is auto-registered in FUB","Step 2: Agent can provision a new Twilio number by area code","Step 2: Agent can enter an existing Twilio number (E.164 validated)","Step 3: Test SMS is actually delivered to agent mobile number","agents table updated at each step (fub_connected, phone_configured, sms_verified)","Agent can skip any step and complete later via Settings -> Integrations","onboarding_completed = true set on completion screen","All wizard API endpoints require authenticated session","UI is mobile-responsive","E2E: full wizard flow (all 3 steps) passes","E2E: partial flow with skipped steps passes"]
+- **Workflow:** PM > Marketing > Design > Dev > QC
+
 ### fix-aha-moment-lead-simulator-not-implemented-not-star — Aha moment lead simulator not implemented (not_started at day 22)
 
 - **PRD:** -
@@ -2555,6 +2653,25 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 **Details:** feat-aha-moment-lead-simulator is not_started. No activation = no retention = no conversion. Core funnel leak explaining /bin/zsh MRR at day 22.
 
 **Suggested fix:** Escalate to P0. Agents must see AI responding in <30s before leaving onboarding.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
+### fix-api-queries-wrong-table-sms-stats-endpoint-returns — API queries wrong table — sms-stats endpoint returns 500
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 1
+- **Description:** ## API queries wrong table — sms-stats endpoint returns 500
+**Type:** bug
+**Severity:** critical
+**Source:** Product review 6a87e655-abce-4ca8-a523-0e8b30ef89a2
+
+**Details:** The /api/analytics/sms-stats route queries the messages table (which lacks an agent_id column), causing a runtime error and HTTP 500 response. The correct table is sms_messages, which has id, direction, status, agent_id, lead_id, and message_body columns. This makes the entire SMS Analytics feature non-functional in production.
+
+**Suggested fix:** Change supabaseAdmin.from("messages") to supabaseAdmin.from("sms_messages") in route.ts. Also update: (1) body column reference from body to message_body for opt-out detection, (2) direction filter values from outbound/inbound to outbound-api/inbound (verify actual Twilio values in production data).
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -2575,25 +2692,6 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
   - Status emojis set appropriately (🟢 for live)
   - Manual sync via node scripts/sync-system-components.js works
   - Heartbeat integration calls sync successfully
-- **Workflow:** Dev > QC
-
-### fix-api-queries-wrong-table-sms-stats-endpoint-returns — API queries wrong table — sms-stats endpoint returns 500
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## API queries wrong table — sms-stats endpoint returns 500
-**Type:** bug
-**Severity:** critical
-**Source:** Product review 6a87e655-abce-4ca8-a523-0e8b30ef89a2
-
-**Details:** The /api/analytics/sms-stats route queries the messages table (which lacks an agent_id column), causing a runtime error and HTTP 500 response. The correct table is sms_messages, which has id, direction, status, agent_id, lead_id, and message_body columns. This makes the entire SMS Analytics feature non-functional in production.
-
-**Suggested fix:** Change supabaseAdmin.from("messages") to supabaseAdmin.from("sms_messages") in route.ts. Also update: (1) body column reference from body to message_body for opt-out detection, (2) direction filter values from outbound/inbound to outbound-api/inbound (verify actual Twilio values in production data).
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
 - **Workflow:** Dev > QC
 
 ### fix-stripe-secret-key-not-set-in-vercel-production — STRIPE_SECRET_KEY not set in Vercel production
@@ -2641,30 +2739,12 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
   - AC-12: Wizard does not re-trigger after onboarding_completed=true
 - **Workflow:** PM > Marketing > Design > Dev > QC
 
-### fix-db-migration-incomplete-email-verification-tokens- — DB migration incomplete: email_verification_tokens table does not exist
+### fix-triage-108-stuck-ucs-determine-which — PM: Triage 108 stuck UCs — determine which are still needed
 
-- **PRD:** prd-email-verification-db-migration-fix
+- **PRD:** -
 - **Status:** complete
 - **Priority:** 1
-- **Description:** ## DB migration incomplete: email_verification_tokens table does not exist
-**Type:** bug
-**Severity:** critical
-**Source:** Product review 854fb6be-6629-4029-8017-41113bcbf543
-
-**Details:** The email_verification_tokens table was never created. The PRD specifies a CREATE TABLE statement for this table, and lib/verification-email.ts queries it extensively (createVerificationToken, checkResendRateLimit, verifyEmailToken). Without this table, no verification tokens can be created or validated. This makes the entire email verification feature non-functional: signup sends no verification email, resend-verification returns "Failed to create verification token", and verify-email route cannot validate any token. The email_verified column on real_estate_agents exists (partial migration), but the dependent tokens table was not created.
-
-**Suggested fix:** Run the DB migration: CREATE TABLE email_verification_tokens (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), agent_id UUID NOT NULL REFERENCES real_estate_agents(id) ON DELETE CASCADE, token TEXT NOT NULL UNIQUE, expires_at TIMESTAMPTZ NOT NULL, used_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE INDEX idx_evt_token ON email_verification_tokens(token); CREATE INDEX idx_evt_agent_id ON email_verification_tokens(agent_id);
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Acceptance Criteria:**
-  - email_verification_tokens table exists in production Supabase (SELECT COUNT(*) returns 0, not error)
-  - idx_evt_token and idx_evt_agent_id indexes exist on the table
-  - madzunkov@hotmail.com has email_verified = TRUE in real_estate_agents
-  - POST /api/auth/resend-verification for unverified account returns 200 and creates row in email_verification_tokens
-  - No accounts created before 2026-03-09 have email_verified = FALSE
-  - Existing login and signup flows are not broken
+- **Description:** PM: Triage 108 stuck UCs — determine which are still needed
 - **Workflow:** Dev > QC
 
 ### fix-failing-test-suite — Fix 90 failing tests blocking CI pipeline
@@ -2770,48 +2850,10 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
-### fix-smsanalyticscards-component-imported-but-never-ren — SmsAnalyticsCards component imported but never rendered in dashboard
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## SmsAnalyticsCards component imported but never rendered in dashboard
-**Type:** critical
-**Severity:** critical
-**Source:** Product review 8da6920b-9240-4990-a672-e68b29b3326d
-
-**Details:** The main dashboard page.tsx imports SmsAnalyticsCards on line 2, but it is never called or rendered in the JSX. The component exists but is invisible to users.
-
-**Suggested fix:** Add <SmsAnalyticsCards /> between <StatsCards /> and <LeadFeed /> in dashboard/page.tsx
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-fixed-satisfaction-ping-route-was-using-agents-tab — Fixed: satisfaction-ping route was using agents table instead of real_estate_agents
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 1
-- **Description:** ## Fixed: satisfaction-ping route was using agents table instead of real_estate_agents
-**Type:** bug_fix
-**Severity:** critical
-**Source:** Product review 81d98c51-bff4-4ed5-8b42-256534b58f82
-
-**Details:** The /api/agents/satisfaction-ping route (both PATCH and GET methods) was querying the old "agents" table. Updated both methods to use "real_estate_agents" table per the schema migration.
-
-**Suggested fix:** Migration complete - all product routes now use real_estate_agents
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
 ### fix-uc-completion-gate-missing-in-checkdistributionhea — UC completion gate missing in checkDistributionHealth()
 
 - **PRD:** -
-- **Status:** not_started
+- **Status:** complete
 - **Priority:** 2
 - **Description:** ## UC completion gate missing in checkDistributionHealth()
 **Type:** bug
@@ -2913,6 +2955,23 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 - Tests pass
 - **Workflow:** Dev > QC
 
+### fix-ga4-property-and-vercel-env-var-setup-required — GA4 property and Vercel env var setup required
+
+- **PRD:** -
+- **Status:** complete
+- **Priority:** 2
+- **Description:** ## GA4 property and Vercel env var setup required
+**Type:** action_item
+**Severity:** high
+**Source:** Product review c8710612-deea-4dcc-beea-34d5e2eef80b
+
+**Details:** Implementation is code-complete but non-functional until: (1) GA4 property is created in Google Analytics, (2) NEXT_PUBLIC_GA4_MEASUREMENT_ID is set in Vercel leadflow-ai project settings, (3) dashboard is redeployed with env var.
+## Acceptance Criteria
+- The issue described above is resolved
+- Existing functionality is not broken
+- Tests pass
+- **Workflow:** Dev > QC
+
 ### fix-subscriptions-table-never-populated — Subscriptions table never populated
 
 - **PRD:** -
@@ -2926,23 +2985,6 @@ Files: product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (line 
 **Details:** The webhook handler creates subscription_events and payments entries but never inserts the main subscription record into the subscriptions table. This means the primary subscription tracking table will remain empty. The checkout.session.completed handler should create a subscription record.
 
 **Suggested fix:** Add subscription insert in handleCheckoutComplete function to create the initial subscription record with user_id, stripe_customer_id, stripe_subscription_id, status, tier, and period dates
-## Acceptance Criteria
-- The issue described above is resolved
-- Existing functionality is not broken
-- Tests pass
-- **Workflow:** Dev > QC
-
-### fix-ga4-property-and-vercel-env-var-setup-required — GA4 property and Vercel env var setup required
-
-- **PRD:** -
-- **Status:** complete
-- **Priority:** 2
-- **Description:** ## GA4 property and Vercel env var setup required
-**Type:** action_item
-**Severity:** high
-**Source:** Product review c8710612-deea-4dcc-beea-34d5e2eef80b
-
-**Details:** Implementation is code-complete but non-functional until: (1) GA4 property is created in Google Analytics, (2) NEXT_PUBLIC_GA4_MEASUREMENT_ID is set in Vercel leadflow-ai project settings, (3) dashboard is redeployed with env var.
 ## Acceptance Criteria
 - The issue described above is resolved
 - Existing functionality is not broken
@@ -4510,6 +4552,25 @@ After signup, users must click a confirmation link sent to their email inbox bef
 - **Workflow:** Dev > QC
 
 
+## Phase: mvp
+
+### fix-trial-signup-redirects-to-nonexistent-onboarding-page — Fix trial signup redirect to non-existent /dashboard/onboarding page
+
+- **PRD:** PRD-FIX-TRIAL-SIGNUP-REDIRECT-001
+- **Status:** complete
+- **Priority:** 0
+- **Description:** Trial signup, pilot signup, and trial/start API routes all redirect to /dashboard/onboarding which does not exist. Users hit a 404 immediately after account creation. Fix by redirecting to /setup.
+- **Acceptance Criteria:**
+  - AC-1: After trial signup, user lands on /setup (not 404)
+  - AC-2: pilot-signup response has redirectTo: /setup
+  - AC-3: trial/start response has redirectTo: /setup
+  - AC-4: /setup loads successfully for authenticated user
+  - AC-5: No redirect in codebase points to /dashboard/onboarding
+  - AC-6: Welcome email links to /setup, not /dashboard/onboarding
+  - AC-7: Dashboard build passes (npm run build exits 0)
+- **Workflow:** PM > Dev > QC
+
+
 ## Phase: engine
 
 ### uc-smoke-loop-dedup — Smoke Test Loop Deduplication
@@ -4531,28 +4592,84 @@ After signup, users must click a confirmation link sent to their email inbox bef
 
 ## Phase: stabilization
 
-### UC-EMAIL-DELIVERY-FIX — Fix Email Delivery Pipeline — Verify <30s
-
-- **PRD:** PRD-REVENUE-RECOVERY-BOTTLENECK-001
-- **Status:** ready
-- **Priority:** 1
-- **Description:** 26% of real agents never verify email. Debug Resend API integration, ensure emails are sent, links work, agents land on onboarding.
-- **Workflow:** PM > Dev > QC
-
 ### UC-ONBOARDING-MOBILE-FIRST — Mobile-First Onboarding Redesign — Fix 86% Drop-Off
 
 - **PRD:** PRD-REVENUE-RECOVERY-BOTTLENECK-001
-- **Status:** ready
+- **Status:** complete
 - **Priority:** 1
 - **Description:** 86% of verified agents drop out before completing onboarding. Redesign UX for mobile, simplify form validation, test on 2G/4G networks.
+- **Workflow:** PM > Dev > QC
+
+### UC-EMAIL-DELIVERY-FIX — Fix Email Delivery Pipeline — Verify <30s
+
+- **PRD:** PRD-REVENUE-RECOVERY-BOTTLENECK-001
+- **Status:** complete
+- **Priority:** 1
+- **Description:** 26% of real agents never verify email. Debug Resend API integration, ensure emails are sent, links work, agents land on onboarding.
 - **Workflow:** PM > Dev > QC
 
 ### UC-ACCOUNT-TYPE-FILTER — Isolate Real Agents from Test Accounts
 
 - **PRD:** PRD-REVENUE-RECOVERY-BOTTLENECK-001
-- **Status:** in_progress
+- **Status:** complete
 - **Priority:** 1
 - **Description:** Add account_type field to real_estate_agents table to separate real users from test/QC accounts. Stop test pollution of analytics (currently 91% of signups are test accounts).
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-pilot-recruitment — Pilot Recruitment Campaign Launch
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Facebook, Reddit, LinkedIn outreach. Target 30 pilots in 30 days. Message: Free AI lead response.
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-funnel-diagnostics — Funnel Diagnostics — Trial Activation Analysis
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Query trial users by activation: leads captured, SMS sent, FUB integration. Segment into Active/Onboarded/Never-activated.
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-pricing-clarity — Pricing Clarity for Trial Users
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Ensure pricing table visible on dashboard/onboarding. 90% of trial users can articulate what they would pay for.
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-aha-moment — Trial Aha Moment — AI Response by Day 3
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Guarantee 80% of trial users see AI send response to a lead by day 3. Use simulator or sample lead.
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-checkout-friction — Frictionless Stripe Checkout E2E
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Trial user clicks Upgrade → Stripe checkout loads → payment completes → dashboard. Test E2E.
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-email-sequence — Active Trial Conversion Email Sequence
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Day 0: Welcome. Day 1: AI aha. Day 3: Upgrade. Day 7: Warning. Day 14: Expired. Day 15: Final chance.
+- **Workflow:** PM > Dev > QC
+
+### uc-revenue-countdown-widget — Trial Countdown Widget & Urgency
+
+- **PRD:** prd-revenue-funnel-analysis-recovery
+- **Status:** ready
+- **Priority:** 1
+- **Description:** Dashboard shows trial expiration countdown. Green/yellow/red urgency indicator. Large Upgrade button.
 - **Workflow:** PM > Dev > QC
 
 ### UC-AHA-MOMENT-DEMO — Implement Aha Moment Demo — No FUB Required
@@ -4569,9 +4686,54 @@ After signup, users must click a confirmation link sent to their email inbox bef
 ### uc-revenue-alert-idempotency — Revenue Alert Idempotency & Loop Prevention
 
 - **PRD:** prd-revenue-alert-idempotency
-- **Status:** needs_merge
+- **Status:** complete
 - **Priority:** 1
 - **Description:** When a revenue goal is off-track, the system should create ONE alert task, not duplicate it across heartbeats.
+- **Workflow:** PM > Dev > QC
+
+
+## Phase: now
+
+### uc-fix-loop-detector-cooldown — Fix Loop Detector Cooldown + Apply Migration 006
+
+- **PRD:** prd-fix-loop-detector-wave5
+- **Status:** needs_merge
+- **Priority:** 1
+- **Description:** Three-part fix: (1) Apply genome migration 006 to local PG + seed landing page record, (2) Change loop detector dedup from status-only to 24h time window, (3) Add UC completion gate in distribution-collector.js. All 3 fixes stop the recurring distribution loop.
+- **Acceptance Criteria:**
+  - {"summary":"Three machine-verifiable fixes: (1) migration 006 applied to local PG with active landing_page row, (2) loop detector has 24h time-based cooldown in task-store.js, (3) UC completion gate added to distribution-collector.js. After fix: no new PM:Distribution tasks for 30+ minutes."}
+- **Workflow:** Dev > QC
+
+
+## Phase: planning
+
+### uc-distribution-loop-fix — Fix Distribution Health Check Loop
+
+- **PRD:** PRD-DISTRIBUTION-LOOP-DEDUP-FIX
+- **Status:** needs_merge
+- **Priority:** 1
+- **Description:** Prevent duplicate PM:Distribution→Create Landing Page task spawning by adding deduplication guard and seeding distribution_channels table
+- **Acceptance Criteria:**
+  - distribution_channels table exists and is populated with landing page
+  - Landing page record has status=active
+  - createDistributionTasks() skips creation if equivalent task exists in last 7 days
+  - No new duplicate PM:Distribution tasks on next heartbeat
+- **Workflow:** PM > Dev > QC
+
+
+## Phase: infrastructure
+
+### uc-distribution-loop-dedup — Distribution Loop Dedup — Stop Recurring Duplicate Task Creation
+
+- **PRD:** prd-distribution-loop-wave10
+- **Status:** needs_merge
+- **Priority:** 1
+- **Description:** Fix distribution health check loop: (1) CREATE distribution_channels table and seed active landing page row to stop no_landing_page trigger; (2) Add deduplication guard in createDistributionTasks() in ~/.openclaw/genome/scripts/distribution-collector.js to prevent creating duplicate tasks when one is already active. See PRD-DISTRIBUTION-LOOP-DEDUP-FIX.md for full spec. THIS IS A BLOCKER — loop creates noise every heartbeat and wastes agent capacity.
+- **Acceptance Criteria:**
+  - distribution_channels has >= 1 active landing_page row for leadflow
+  - createDistributionTasks() skips if equivalent task exists in last 7 days
+  - Loop detector uses 24h cooldown (grep: cooldownStart in task-store.js)
+  - Zero new PM: Distribution tasks over 3 consecutive heartbeats
 - **Workflow:** PM > Dev > QC
 
 
@@ -4593,64 +4755,47 @@ After signup, users must click a confirmation link sent to their email inbox bef
 - **Description:** PM + Dev provide direct support for 5-10 pilot agents: email updates, Slack/Zoom calls, real-time debugging. Ensure all agents reach aha moment and convert to trial.
 - **Workflow:** PM > Dev > QC
 
+### fix-smoke-auth-dashboard-not-deployed — Deploy Next.js Dashboard to resolve Auth smoke failures
 
-## Phase: planning
-
-### uc-distribution-loop-fix — Fix Distribution Health Check Loop
-
-- **PRD:** PRD-DISTRIBUTION-LOOP-DEDUP-FIX
-- **Status:** in_progress
-- **Priority:** 1
-- **Description:** Prevent duplicate PM:Distribution→Create Landing Page task spawning by adding deduplication guard and seeding distribution_channels table
-- **Acceptance Criteria:**
-  - distribution_channels table exists and is populated with landing page
-  - Landing page record has status=active
-  - createDistributionTasks() skips creation if equivalent task exists in last 7 days
-  - No new duplicate PM:Distribution tasks on next heartbeat
-- **Workflow:** PM > Dev > QC
-
-
-## Phase: infrastructure
-
-### uc-distribution-loop-dedup — Distribution Loop Dedup — Stop Recurring Duplicate Task Creation
-
-- **PRD:** prd-distribution-loop-wave10
-- **Status:** in_progress
-- **Priority:** 1
-- **Description:** Fix distribution health check loop: (1) CREATE distribution_channels table and seed active landing page row to stop no_landing_page trigger; (2) Add deduplication guard in createDistributionTasks() in ~/.openclaw/genome/scripts/distribution-collector.js to prevent creating duplicate tasks when one is already active. See PRD-DISTRIBUTION-LOOP-DEDUP-FIX.md for full spec. THIS IS A BLOCKER — loop creates noise every heartbeat and wastes agent capacity.
-- **Acceptance Criteria:**
-  - distribution_channels has >= 1 active landing_page row for leadflow
-  - createDistributionTasks() skips if equivalent task exists in last 7 days
-  - Loop detector uses 24h cooldown (grep: cooldownStart in task-store.js)
-  - Zero new PM: Distribution tasks over 3 consecutive heartbeats
-- **Workflow:** PM > Dev > QC
-
-
-## Phase: now
-
-### uc-fix-loop-detector-cooldown — Fix Loop Detector Cooldown + Apply Migration 006
-
-- **PRD:** prd-fix-loop-detector-wave5
+- **PRD:** prd-fix-smoke-auth-deploy-dashboard
 - **Status:** not_started
 - **Priority:** 1
-- **Description:** Three-part fix: (1) Apply genome migration 006 to local PG + seed landing page record, (2) Change loop detector dedup from status-only to 24h time window, (3) Add UC completion gate in distribution-collector.js. All 3 fixes stop the recurring distribution loop.
+- **Description:** The Next.js dashboard (product/lead-response/dashboard/) is not deployed to leadflow-ai-five.vercel.app. All auth pages return 404.
 - **Acceptance Criteria:**
-  - {"summary":"Three machine-verifiable fixes: (1) migration 006 applied to local PG with active landing_page row, (2) loop detector has 24h time-based cooldown in task-store.js, (3) UC completion gate added to distribution-collector.js. After fix: no new PM:Distribution tasks for 30+ minutes."}
-- **Workflow:** Dev > QC
-
-
-## Phase: growth
-
-### UC-LANDING-PAGE-V2 — Landing Page Redesign V2 — High-Converting Variant
-
-- **PRD:** PRD-REVENUE-RECOVERY-BOTTLENECK-001
-- **Status:** ready
-- **Priority:** 2
-- **Description:** Replace current landing page with high-converting design. ICP-focused copy, clear benefits, strong CTA to signup. A/B test active by day 47.
+  - GET /login returns HTTP 200
+  - GET /signup returns HTTP 200
+  - POST /api/auth/trial-signup returns 200 with agentId and token
+  - POST /api/auth/login returns 200 with token after valid signup
 - **Workflow:** PM > Dev > QC
 
 
 ## Phase: Phase 2
+
+### feat-agent-referral-program — Agent Referral Program — Viral Growth via Word-of-Mouth
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Real estate agents trust other agents. Add a referral system: each paid agent gets a unique referral link. When a referred agent signs up and pays for any plan, the referrer gets 1 free month. Dashboard shows referral count and earned credits. Revenue impact: each activated referrer drives 2+ new paid agents at $149/mo.
+- **Acceptance Criteria:**
+  - Referral link in account/settings page
+  - Landing page /r/{code} tracking
+  - Automatic credit on referral conversion
+  - Conversion notification email to referrer
+- **Workflow:** PM > Dev > QC
+
+### feat-weekly-performance-email — Weekly AI Performance Report — Prove ROI, Drive Upgrades
+
+- **PRD:** -
+- **Status:** not_started
+- **Priority:** 1
+- **Description:** Every Monday, each active agent receives an email showing: leads AI responded to, average response time vs 9-min benchmark, appointments booked, estimated revenue impact. Upgrade CTA for Starter users. Revenue impact: agents who see ROI data upgrade at 3x rate — critical for Starter→Pro conversion.
+- **Acceptance Criteria:**
+  - Weekly email at 9am agent timezone
+  - Shows lead count, response time, appointments
+  - Upgrade CTA for Starter plan users
+  - UTM tracking on upgrade link
+- **Workflow:** PM > Dev > QC
 
 ### UC-8 — Follow-up Sequences
 
@@ -4717,6 +4862,17 @@ After signup, users must click a confirmation link sent to their email inbox bef
   - Delivery status shown (sent, delivered, failed)
   - Message appears in history immediately
 - **Workflow:** PM > Design > Dev > QC
+
+
+## Phase: growth
+
+### UC-LANDING-PAGE-V2 — Landing Page Redesign V2 — High-Converting Variant
+
+- **PRD:** PRD-REVENUE-RECOVERY-BOTTLENECK-001
+- **Status:** ready
+- **Priority:** 2
+- **Description:** Replace current landing page with high-converting design. ICP-focused copy, clear benefits, strong CTA to signup. A/B test active by day 47.
+- **Workflow:** PM > Dev > QC
 
 
 ## Phase: GTM
