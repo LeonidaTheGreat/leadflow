@@ -5,6 +5,14 @@
  * Accepts an email address, generates a secure reset token, stores its hash
  * in `password_reset_tokens`, and sends the reset email via Resend.
  * Always returns 200 (anti-enumeration — never reveals whether the email exists).
+ *
+ * DB schema for password_reset_tokens:
+ *   id          uuid (PK)
+ *   agent_id    uuid (FK → real_estate_agents.id)
+ *   token_hash  text  (SHA-256 of raw token)
+ *   expires_at  timestamptz
+ *   used        boolean (default false)
+ *   created_at  timestamptz
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -15,7 +23,10 @@ import { sendPasswordResetEmail } from '@/lib/email-service'
 const supabase = supabaseAdmin
 
 const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
+  process.env.NEXT_PUBLIC_APP_URL ||
+  process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'https://dashboard-three-orcin-75.vercel.app'
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,19 +58,18 @@ export async function POST(request: NextRequest) {
       // Invalidate any existing unexpired, unused tokens for this agent
       await supabase
         .from('password_reset_tokens')
-        .update({ used_at: new Date().toISOString() })
-        .eq('email', agent.email)
-        .is('used_at', null)
+        .update({ used: true })
+        .eq('agent_id', agent.id)
+        .eq('used', false)
         .gt('expires_at', new Date().toISOString())
 
-      // Insert new token
+      // Insert new token using correct schema columns
       const { error: insertError } = await supabase
         .from('password_reset_tokens')
         .insert({
-          email: agent.email,
-          token: tokenHash,
+          agent_id: agent.id,
+          token_hash: tokenHash,
           expires_at: expiresAt.toISOString(),
-          
         })
 
       if (insertError) {
@@ -69,7 +79,8 @@ export async function POST(request: NextRequest) {
       }
 
       // Build the reset URL with the RAW token (not the hash)
-      const resetUrl = `${APP_URL}/reset-password?token=${rawToken}`
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dashboard-three-orcin-75.vercel.app'
+      const resetUrl = `${appUrl}/reset-password?token=${rawToken}`
 
       // Send the reset email
       const agentName = agent.first_name || undefined

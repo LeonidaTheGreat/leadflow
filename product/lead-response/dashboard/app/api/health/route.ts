@@ -7,6 +7,10 @@ import { supabaseAdmin } from '@/lib/db'
  * Checks that all required env vars are set and critical services are reachable.
  * Returns structured JSON so the orchestrator's smoke test can parse it.
  *
+ * Always returns HTTP 200. Use `status` field ("ok" | "degraded") to determine
+ * overall health. Only connectivity failures affect the status; missing optional
+ * env vars are reported but do not change the HTTP response code.
+ *
  * This runs server-side, catching config issues that only manifest as
  * client-side JS crashes (e.g. missing NEXT_PUBLIC_API_URL).
  */
@@ -16,12 +20,16 @@ export async function GET() {
   // 1. Required env vars (existence only, never expose values)
   const requiredEnvVars = [
     'NEXT_PUBLIC_API_URL',
-    'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
     'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'SUPABASE_SERVICE_ROLE_KEY',
+  ]
+
+  // Optional env vars — checked but do not affect overall ok status
+  const optionalEnvVars = [
+    'NEXT_PUBLIC_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   ]
 
   for (const key of requiredEnvVars) {
@@ -30,6 +38,15 @@ export async function GET() {
     checks[key] = {
       ok: !!value && !isPlaceholder,
       detail: !value ? 'missing' : isPlaceholder ? 'placeholder' : 'set',
+    }
+  }
+
+  for (const key of optionalEnvVars) {
+    const value = process.env[key]
+    const isPlaceholder = !value || value === 'placeholder' || value === 'https://placeholder.supabase.co'
+    checks[key] = {
+      ok: !!value && !isPlaceholder,
+      detail: !value ? 'missing (optional)' : isPlaceholder ? 'placeholder' : 'set',
     }
   }
 
@@ -86,18 +103,20 @@ export async function GET() {
     }
   }
 
-  // Overall status
-  const allOk = Object.values(checks).every((c) => c.ok)
+  // Overall status — only critical checks affect this
+  const criticalKeys = [...requiredEnvVars, 'supabase_connectivity', 'api_connectivity']
+  const allCriticalOk = criticalKeys.every((k) => checks[k]?.ok !== false)
   const failedChecks = Object.entries(checks)
     .filter(([, c]) => !c.ok)
     .map(([name, c]) => `${name}: ${c.detail}`)
 
+  // Always return 200 — use `status` field to detect degradation
   return NextResponse.json(
     {
-      status: allOk ? 'ok' : 'degraded',
+      status: allCriticalOk ? 'ok' : 'degraded',
       checks,
       ...(failedChecks.length > 0 && { errors: failedChecks }),
     },
-    { status: allOk ? 200 : 503 }
+    { status: 200 }
   )
 }

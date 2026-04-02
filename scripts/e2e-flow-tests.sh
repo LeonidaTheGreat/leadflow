@@ -8,9 +8,19 @@
 
 set -euo pipefail
 
-BASE_URL="${LEADFLOW_APP_URL:-https://leadflow-ai-five.vercel.app}"
-API_URL="${LEADFLOW_API_URL:-https://api.imagineapi.org/rest/v1}"
-API_KEY="${LEADFLOW_API_KEY:-}"
+BASE_URL="${LEADFLOW_APP_URL:-https://dashboard-three-orcin-75.vercel.app}"
+# Supabase PostgREST API URL and service role key for direct DB queries in tests
+API_URL="${LEADFLOW_API_URL:-https://fptrokacdwzlmflyczdz.supabase.co/rest/v1}"
+# Load API key from env; fall back to ~/.env if not set
+if [ -z "${LEADFLOW_API_KEY:-}" ] && [ -f "$HOME/.env" ]; then
+  LEADFLOW_API_KEY=$(grep -E '^LEADFLOW_API_KEY=' "$HOME/.env" 2>/dev/null | cut -d= -f2- | head -1)
+fi
+# Also load the Supabase service role key for PostgREST auth
+if [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ] && [ -f "$HOME/.env" ]; then
+  SUPABASE_SERVICE_ROLE_KEY=$(grep -E '^SUPABASE_SERVICE_ROLE_KEY=' "$HOME/.env" 2>/dev/null | cut -d= -f2- | head -1)
+fi
+# Use Supabase service role key as the primary API key for PostgREST queries
+API_KEY="${SUPABASE_SERVICE_ROLE_KEY:-${LEADFLOW_API_KEY:-}}"
 VERBOSE=false
 JSON_OUTPUT=false
 
@@ -123,10 +133,21 @@ test_reset_password_chain() {
     -H "Content-Type: application/json" \
     -d "{\"email\":\"$E2E_EMAIL\"}" >/dev/null 2>&1 || return 1
 
+  # Look up agent_id for the E2E email, then query tokens by agent_id
+  # password_reset_tokens schema: id, agent_id, token_hash, expires_at, used, created_at
+  local agent_id
+  agent_id=$(curl -s --max-time 10 \
+    "$API_URL/real_estate_agents?select=id&email=eq.$E2E_EMAIL&limit=1" \
+    -H "apikey: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" 2>/dev/null | \
+    python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || return 1
+  [ -z "$agent_id" ] && return 1
+
   local tokens
   tokens=$(curl -s --max-time 10 \
-    "$API_URL/password_reset_tokens?select=id&email=eq.$E2E_EMAIL&used_at=is.null&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    "$API_URL/password_reset_tokens?select=id&agent_id=eq.$agent_id&used=eq.false&limit=1" \
+    -H "apikey: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" 2>/dev/null) || return 1
 
   echo "$tokens" | grep -q '"id"' || return 1
 }
@@ -150,7 +171,8 @@ test_dashboard_no_errors() {
   local agent_resp user_id
   agent_resp=$(curl -s --max-time 10 \
     "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    -H "apikey: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" 2>/dev/null) || return 1
 
   user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
   [ -z "$user_id" ] && return 1
@@ -160,7 +182,8 @@ test_dashboard_no_errors() {
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   session=$(curl -s --max-time 10 \
     "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    -H "apikey: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" 2>/dev/null) || return 1
 
   token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
   [ -z "$token" ] && return 1
@@ -184,7 +207,8 @@ test_billing_no_errors() {
   local session token html
   session=$(curl -s --max-time 10 \
     "$API_URL/sessions?select=token&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    -H "apikey: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" 2>/dev/null) || return 1
   token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
   [ -z "$token" ] && return 1
 
@@ -202,7 +226,8 @@ test_sms_stats_no_crash() {
   local session token
   session=$(curl -s --max-time 10 \
     "$API_URL/sessions?select=token,user_id&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    -H "apikey: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" 2>/dev/null) || return 1
   token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
   [ -z "$token" ] && return 1
 

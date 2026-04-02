@@ -5,6 +5,14 @@
  * Validates the reset token, hashes the new password with bcrypt,
  * updates real_estate_agents.password_hash, and marks the token as used.
  * Returns 400 on invalid/expired tokens.
+ *
+ * DB schema for password_reset_tokens:
+ *   id          uuid (PK)
+ *   agent_id    uuid (FK → real_estate_agents.id)
+ *   token_hash  text  (SHA-256 of raw token)
+ *   expires_at  timestamptz
+ *   used        boolean (default false)
+ *   created_at  timestamptz
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -50,11 +58,11 @@ export async function POST(request: NextRequest) {
     // Hash the incoming raw token the same way we stored it
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-    // Look up the token in DB
+    // Look up the token in DB using correct column names (token_hash, agent_id, used)
     const { data: resetToken, error: tokenError } = await supabase
       .from('password_reset_tokens')
-      .select('id, email, expires_at, used_at')
-      .eq('token', tokenHash)
+      .select('id, agent_id, expires_at, used')
+      .eq('token_hash', tokenHash)
       .single()
 
     if (tokenError || !resetToken) {
@@ -64,8 +72,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check used
-    if (resetToken.used_at) {
+    if (resetToken.used) {
       return NextResponse.json(
         { error: 'This reset link has already been used.' },
         { status: 400 }
@@ -83,14 +90,14 @@ export async function POST(request: NextRequest) {
     // Hash new password (12 rounds)
     const passwordHash = await bcrypt.hash(password, 12)
 
-    // Update password in real_estate_agents
+    // Update password in real_estate_agents using agent_id
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
         password_hash: passwordHash,
         updated_at: new Date().toISOString(),
       })
-      .eq('email', resetToken.email)
+      .eq('id', resetToken.agent_id)
 
     if (updateError) {
       console.error('Failed to update password:', updateError.message)
@@ -100,10 +107,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Mark token as used
+    // Mark token as used (boolean column, not timestamp)
     await supabase
       .from('password_reset_tokens')
-      .update({ used_at: new Date().toISOString() })
+      .update({ used: true })
       .eq('id', resetToken.id)
 
     return NextResponse.json({ success: true })
