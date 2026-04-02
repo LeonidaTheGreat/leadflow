@@ -88,6 +88,10 @@ function createMockDbClient() {
   }
 }
 
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => createMockDbClient()),
+}))
+
 jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => createMockDbClient()),
   supabaseAdmin: createMockDbClient(),
