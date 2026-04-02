@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-03-31T13:20:04.229Z | Source: `prds` table
+> Generated: 2026-04-02T10:26:13.592Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -43,6 +43,7 @@
 | PRD-FIX-REMAINING-AGENTS-TABLE | Fix Remaining agents Table References — Product Routes | approved | 1.0 | [docs/prd/PRD-FIX-REMAINING-AGENTS-TABLE.md](docs/prd/PRD-FIX-REMAINING-AGENTS-TABLE.md) |
 | prd-fix-signup-login-table-mismatch | Fix Signup/Login Table Mismatch — Remaining agents Table References | approved | - | [docs/prd/PRD-fix-signup-login-table-mismatch.md](docs/prd/PRD-fix-signup-login-table-mismatch.md) |
 | PRD-FIX-SIGNUP-PLAN-OPTIONS-001 | Fix Signup Page — Plan Options Not Displayed | approved | 1.0 | [docs/prd/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md](docs/prd/PRD-FIX-SIGNUP-PLAN-OPTIONS-001.md) |
+| prd-fix-smoke-auth-deploy-dashboard | Fix Smoke Auth — Deploy Next.js Dashboard to Vercel | approved | - | [docs/prd/PRD-FIX-SMOKE-AUTH-DEPLOY-DASHBOARD.md](docs/prd/PRD-FIX-SMOKE-AUTH-DEPLOY-DASHBOARD.md) |
 | prd-fix-stripe-env-vars-vercel | Fix — STRIPE_SECRET_KEY & STRIPE_WEBHOOK_SECRET Missing from Vercel Production | approved | 1.0 | [docs/prd/PRD-FIX-STRIPE-ENV-VARS-VERCEL.md](docs/prd/PRD-FIX-STRIPE-ENV-VARS-VERCEL.md) |
 | PRD-FIX-STRIPE-SUBS-TABLE | Fix — Create Subscriptions Table in Supabase for Stripe Webhook Storage | approved | - | [docs/prd/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md](docs/prd/PRD-STRIPE-SUBSCRIPTIONS-TABLE.md) |
 | PRD-FIX-TRIAL-SIGNUP-REDIRECT-001 | Fix Trial Signup Redirect — Broken Post-Signup Navigation | approved | - | [docs/prd/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md](docs/prd/PRD-FIX-TRIAL-SIGNUP-REDIRECT-001.md) |
@@ -76,9 +77,12 @@
 | prd-revenue-alert-idempotency | Revenue Alert Idempotency & Loop Prevention | draft | 1.0 | [docs/prd/PRD-REVENUE-ALERT-IDEMPOTENCY.md](docs/prd/PRD-REVENUE-ALERT-IDEMPOTENCY.md) |
 | prd-revenue-alert-loop-fix | Fix Revenue Alert Loop Detection | draft | 1 | [docs/prd/PRD-REVENUE-ALERT-LOOP-FIX.md](docs/prd/PRD-REVENUE-ALERT-LOOP-FIX.md) |
 | prd-revenue-alert-loop-root-cause | Revenue Alert Loop — Root Cause & Fix Specification | draft | 1 | [docs/prd/PRD-REVENUE-ALERT-LOOP-ROOT-CAUSE.md](docs/prd/PRD-REVENUE-ALERT-LOOP-ROOT-CAUSE.md) |
+| prd-revenue-funnel-analysis-recovery | Revenue Funnel Analysis & Recovery — Urgent P0 | draft | - | [docs/prd/PRD-REVENUE-FUNNEL-ANALYSIS-AND-RECOVERY.md](docs/prd/PRD-REVENUE-FUNNEL-ANALYSIS-AND-RECOVERY.md) |
 | PRD-REVENUE-RECOVERY-001 | Revenue Recovery Plan — Critical MRR Gap Closure | approved | 1.0 | [docs/prd/PRD-REVENUE-RECOVERY-001.md](docs/prd/PRD-REVENUE-RECOVERY-001.md) |
 | prd-revenue-recovery-002 | Revenue Recovery — Close $9.6K MRR Gap | draft | - | [docs/prd/PRD-REVENUE-RECOVERY-002.md](docs/prd/PRD-REVENUE-RECOVERY-002.md) |
 | PRD-REVENUE-RECOVERY-BOTTLENECK-001 | Revenue Recovery — Bottleneck Analysis & Reprioritization | approved | - | [docs/prd/PRD-REVENUE-RECOVERY-BOTTLENECK-ANALYSIS.md](docs/prd/PRD-REVENUE-RECOVERY-BOTTLENECK-ANALYSIS.md) |
+| PRD-REVENUE-RECOVERY-CRITICAL-2026-03-31 | Revenue Recovery — Critical Path to First $20K MRR | draft | 1.0 | [docs/prd/PRD-REVENUE-RECOVERY-CRITICAL.md](docs/prd/PRD-REVENUE-RECOVERY-CRITICAL.md) |
+| PRD-REVENUE-RECOVERY-CRITICAL-DAY45 | Revenue Recovery — Critical MRR Gap Analysis & Action Plan | approved | 1.0 | [docs/prd/PRD-REVENUE-RECOVERY-CRITICAL-DAY45.md](docs/prd/PRD-REVENUE-RECOVERY-CRITICAL-DAY45.md) |
 | prd-self-serve-stripe-checkout | Self-Serve Stripe Checkout — In-Dashboard Upgrade Flow | draft | 1.0 | [docs/prd/PRD-SELF-SERVE-STRIPE-CHECKOUT.md](docs/prd/PRD-SELF-SERVE-STRIPE-CHECKOUT.md) |
 | PRD-SESSION-ANALYTICS-PILOT | Session Analytics for Agent Dashboard — Pilot Usage Tracking | approved | 1.0 | [docs/prd/PRD-SESSION-ANALYTICS-PILOT.md](docs/prd/PRD-SESSION-ANALYTICS-PILOT.md) |
 | PRD-SIGNUP-AUTH-TOKEN-FIX-001 | Fix Auth Token Gap — Signup → Onboarding Redirect | approved | - | [docs/prd/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md](docs/prd/PRD-SIGNUP-AUTH-TOKEN-FIX-001.md) |
