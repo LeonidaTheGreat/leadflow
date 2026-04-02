@@ -439,10 +439,30 @@ export async function getNPSStats(): Promise<NPSStats> {
   const currentNPS = total > 0 ? Math.round(((promoters - detractors) / total) * 100) : 0
 
   // Ensure all created_at values are strings (fix for Date object serialization)
-  const normalizedRecentResponses = (recentResponses || []).map((r: any) => ({
-    ...r,
-    created_at: typeof r.created_at === 'string' ? r.created_at : new Date(r.created_at).toISOString(),
-  }))
+  const normalizedRecentResponses = (recentResponses || []).map((r: any) => {
+    let createdAtValue = r.created_at
+    
+    // Handle different types of created_at values
+    if (!createdAtValue) {
+      createdAtValue = new Date().toISOString()
+    } else if (typeof createdAtValue === 'string') {
+      createdAtValue = createdAtValue
+    } else if (typeof createdAtValue === 'object' && createdAtValue instanceof Date) {
+      createdAtValue = createdAtValue.toISOString()
+    } else {
+      // Fallback for unexpected types
+      try {
+        createdAtValue = new Date(createdAtValue).toISOString()
+      } catch {
+        createdAtValue = new Date().toISOString()
+      }
+    }
+    
+    return {
+      ...r,
+      created_at: createdAtValue,
+    }
+  })
 
   return {
     currentNPS,

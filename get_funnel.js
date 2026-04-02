@@ -30,7 +30,15 @@ const client = new Client({ connectionString: url });
     console.log('\n=== AGENT STATE SAMPLE (first 5) ===\n');
     const sample = await client.query('SELECT email, plan_tier, stripe_customer_id, mrr, created_at FROM real_estate_agents LIMIT 5;');
     sample.rows.forEach(r => {
-      console.log(`${r.email}: tier=${r.plan_tier}, customer_id=${r.stripe_customer_id || 'NONE'}, mrr=${r.mrr}, created=${r.created_at.toISOString().split('T')[0]}`);
+      // Handle created_at as either Date object or string
+      const createdDate = typeof r.created_at === 'string' 
+        ? r.created_at 
+        : r.created_at?.toISOString?.() || new Date().toISOString();
+      const dateOnly = typeof createdDate === 'string' 
+        ? createdDate.slice(0, 10)
+        : createdDate;
+      
+      console.log(`${r.email}: tier=${r.plan_tier}, customer_id=${r.stripe_customer_id || 'NONE'}, mrr=${r.mrr}, created=${dateOnly}`);
     });
     
     await client.end();
