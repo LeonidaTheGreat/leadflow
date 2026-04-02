@@ -41,75 +41,76 @@ describe('Fix Distribution Loop (cf5ce77f)', () => {
   describe('AC-1 + AC-2: distribution_channels table and landing page seed', () => {
     it('distribution_channels table exists in local PG', () => {
       const result = pgQuery('SELECT COUNT(*) FROM information_schema.tables WHERE table_name=\'distribution_channels\'')
-      expect(parseInt(result, 10)).toBe(1)
+      assert.strictEqual(parseInt(result, 10), 1)
     })
 
     it('active landing page row exists for leadflow project', () => {
       const count = pgQuery(
         "SELECT COUNT(*) FROM distribution_channels WHERE project_id='leadflow' AND channel_type='landing_page' AND status='active'"
       )
-      expect(parseInt(count, 10)).toBeGreaterThanOrEqual(1)
+      assert.ok(parseInt(count, 10) >= 1, 'Expected at least 1 active landing page row')
     })
   })
 
   describe('AC-3: UC completion gate in distribution-collector.js', () => {
     it('distribution-collector.js contains UC_ISSUE_MAP definition', () => {
       const content = fs.readFileSync(DISTRIBUTION_COLLECTOR, 'utf8')
-      expect(content).toContain('UC_ISSUE_MAP')
+      assert.ok(content.includes('UC_ISSUE_MAP'), 'UC_ISSUE_MAP should be defined')
     })
 
     it('distribution-collector.js checks completedUcIds before pushing issues', () => {
       const content = fs.readFileSync(DISTRIBUTION_COLLECTOR, 'utf8')
-      expect(content).toContain('completedUcIds')
+      assert.ok(content.includes('completedUcIds'), 'completedUcIds should be used for UC gate checks')
     })
 
     it('UC_ISSUE_MAP covers all 5 issue types', () => {
       const content = fs.readFileSync(DISTRIBUTION_COLLECTOR, 'utf8')
-      expect(content).toContain('no_landing_page')
-      expect(content).toContain('zero_traffic')
-      expect(content).toContain('zero_signups')
-      expect(content).toContain('low_conversion')
-      expect(content).toContain('low_trial_conversion')
+      assert.ok(content.includes('no_landing_page'), 'Should include no_landing_page')
+      assert.ok(content.includes('zero_traffic'), 'Should include zero_traffic')
+      assert.ok(content.includes('zero_signups'), 'Should include zero_signups')
+      assert.ok(content.includes('low_conversion'), 'Should include low_conversion')
+      assert.ok(content.includes('low_trial_conversion'), 'Should include low_trial_conversion')
     })
 
     it('grep -c of UC_ISSUE_MAP|completedUcIds in distribution-collector.js >= 2', () => {
       const count = grepCount(DISTRIBUTION_COLLECTOR, 'completedUcIds|UC_ISSUE_MAP')
-      expect(count).toBeGreaterThanOrEqual(2)
+      assert.ok(count >= 2, `Expected grep count >= 2, got ${count}`)
     })
   })
 
   describe('AC-4: 30-min task cooldown in distribution-collector.js', () => {
     it('distribution-collector.js contains thirtyMinutesAgo variable', () => {
       const content = fs.readFileSync(DISTRIBUTION_COLLECTOR, 'utf8')
-      expect(content).toContain('thirtyMinutesAgo')
+      assert.ok(content.includes('thirtyMinutesAgo'), 'thirtyMinutesAgo variable should be defined')
     })
 
     it('30-min cooldown is computed from 30 * 60 * 1000', () => {
       const content = fs.readFileSync(DISTRIBUTION_COLLECTOR, 'utf8')
-      expect(content).toContain('30 * 60 * 1000')
+      assert.ok(content.includes('30 * 60 * 1000'), '30-min window should be computed as 30 * 60 * 1000')
     })
 
     it('grep -c thirtyMinutesAgo in distribution-collector.js >= 1', () => {
       const count = grepCount(DISTRIBUTION_COLLECTOR, 'thirtyMinutesAgo')
-      expect(count).toBeGreaterThanOrEqual(1)
+      assert.ok(count >= 1, `Expected grep count >= 1, got ${count}`)
     })
   })
 
   describe('AC-5: timestamp-based loop dedup in task-store.js', () => {
     it('task-store.js contains thirtyMinutesAgo variable', () => {
       const content = fs.readFileSync(TASK_STORE, 'utf8')
-      expect(content).toContain('thirtyMinutesAgo')
+      assert.ok(content.includes('thirtyMinutesAgo'), 'thirtyMinutesAgo variable should be defined in task-store.js')
     })
 
     it('task-store.js loop detector uses .gte with timestamp (not status check)', () => {
       const content = fs.readFileSync(TASK_STORE, 'utf8')
       // Should have .gte('created_at', thirtyMinutesAgo) in the loop detection block
-      expect(content).toMatch(/\.gte\('created_at',\s*thirtyMinutesAgo\)/)
+      const pattern = /\.gte\('created_at',\s*thirtyMinutesAgo\)/
+      assert.ok(pattern.test(content), 'task-store.js should use .gte with timestamp for loop detection')
     })
 
     it('grep -c thirtyMinutesAgo in task-store.js >= 1', () => {
       const count = grepCount(TASK_STORE, 'thirtyMinutesAgo')
-      expect(count).toBeGreaterThanOrEqual(1)
+      assert.ok(count >= 1, `Expected grep count >= 1, got ${count}`)
     })
   })
 })
