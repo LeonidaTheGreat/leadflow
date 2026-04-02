@@ -145,7 +145,16 @@ export async function GET(request: NextRequest) {
     if (sequencesError) {
       console.error('❌ Error fetching sequences:', sequencesError)
       return NextResponse.json(
-        { error: 'Failed to fetch sequences', details: sequencesError.message },
+        {
+          success: false,
+          error: 'Failed to fetch sequences',
+          details: sequencesError.message,
+          processed: 0,
+          sent: 0,
+          skipped: 0,
+          failed: 0,
+          dry_run: isDryRun,
+        },
         { status: 500 }
       )
     }
@@ -155,6 +164,10 @@ export async function GET(request: NextRequest) {
         success: true,
         message: 'No sequences due',
         processed: 0,
+        sent: 0,
+        skipped: 0,
+        failed: 0,
+        dry_run: isDryRun,
       })
     }
 
@@ -169,7 +182,16 @@ export async function GET(request: NextRequest) {
     if (leadsError) {
       console.error('❌ Error fetching leads:', leadsError)
       return NextResponse.json(
-        { error: 'Failed to fetch leads', details: leadsError.message },
+        {
+          success: false,
+          error: 'Failed to fetch leads',
+          details: leadsError.message,
+          processed: rawSequences.length,
+          sent: 0,
+          skipped: 0,
+          failed: 0,
+          dry_run: isDryRun,
+        },
         { status: 500 }
       )
     }
@@ -310,17 +332,29 @@ export async function GET(request: NextRequest) {
           ? getNextSendTime(sequence.sequence_type, nextStep)
           : null
 
-        await supabase
-          .from('lead_sequences')
-          .update({
-            step: nextStep,
-            total_messages_sent: totalSent,
-            last_sent_at: new Date().toISOString(),
-            next_send_at: nextSendAt,
-            status: newStatus,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', sequence.id)
+        try {
+          const { error: updateErr } = await supabase
+            .from('lead_sequences')
+            .update({
+              step: nextStep,
+              total_messages_sent: totalSent,
+              last_sent_at: new Date().toISOString(),
+              next_send_at: nextSendAt,
+              status: newStatus,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', sequence.id)
+          
+          if (updateErr) {
+            console.error(`❌ Failed to update sequence ${sequence.id}:`, updateErr)
+            failed++
+            continue
+          }
+        } catch (updateErr: any) {
+          console.error(`❌ Exception updating sequence ${sequence.id}:`, updateErr.message)
+          failed++
+          continue
+        }
 
         console.log(`✅ Sent follow-up to ${lead.name} (sequence ${sequence.sequence_type}, step ${nextStep})`)
         
@@ -353,7 +387,16 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('❌ Cron follow-up error:', error)
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      {
+        success: false,
+        error: 'Internal server error',
+        details: error.message,
+        processed: 0,
+        sent: 0,
+        skipped: 0,
+        failed: 0,
+        dry_run: false,
+      },
       { status: 500 }
     )
   }
