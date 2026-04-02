@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 // GA4 Measurement ID — set NEXT_PUBLIC_GA4_MEASUREMENT_ID in Vercel env vars.
 // In local dev the script loads in no-op mode (ID is undefined → script skipped).
-const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+const GA_ID = (process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || '').trim() || undefined;
 
 export default function RootLayout({
   children,
