@@ -201,8 +201,10 @@ export async function GET(request: NextRequest) {
       }
 
       if (recentAlerts && recentAlerts.length > 0) {
+        const alertedAt = recentAlerts[0].alerted_at
+        const alertedAtStr = typeof alertedAt === 'string' ? alertedAt : new Date(alertedAt).toISOString()
         console.log(
-          `[inactivity-alerts] Skipping agent ${agentId} — alert sent at ${recentAlerts[0].alerted_at}`
+          `[inactivity-alerts] Skipping agent ${agentId} — alert sent at ${alertedAtStr}`
         )
         skipped++
         results.push({
