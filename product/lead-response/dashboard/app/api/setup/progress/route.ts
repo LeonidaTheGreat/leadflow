@@ -24,10 +24,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Map step name to integer (DB column is integer, frontend sends string)
+    const stepMap: Record<string, number> = { fub: 1, sms: 2, simulator: 3, complete: 4 }
+    const stepNum = typeof step === 'number' ? step : (stepMap[step] ?? 0)
+
     // Update agent's onboarding step
     const { error } = await supabase
       .from('real_estate_agents')
-      .update({ onboarding_step: step })
+      .update({ onboarding_step: stepNum })
       .eq('id', userId)
 
     if (error) {
