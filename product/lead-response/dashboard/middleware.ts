@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { validateSession } from '@/lib/session'
+import { validateSession, type Session } from '@/lib/session'
 import { createClient } from '@/lib/db'
 
 // Routes that require authentication
@@ -91,73 +91,102 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
-  // Get session token from cookie
-  const sessionToken = request.cookies.get('leadflow_session')?.value
-  
-  // Validate session against database
-  const session = sessionToken ? await validateSession(sessionToken) : null
-  const isAuthenticated = !!session
-  
-  // Check if current path is protected
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
-  )
-  
-  // Check if current path is an auth route
-  const isAuthRoute = AUTH_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
-  )
-  
-  // Redirect unauthenticated users from protected routes to login
-  if (isProtectedRoute && !isAuthenticated) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
-  
-  // Redirect authenticated users from auth routes to dashboard
-  if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
+  try {
+    const { pathname } = request.nextUrl
+    
+    // Get session token from cookie
+    const sessionToken = request.cookies.get('leadflow_session')?.value
+    
+    // Validate session against database with error handling
+    let session: Session | null = null
+    try {
+      session = sessionToken ? await validateSession(sessionToken) : null
+    } catch (error) {
+      // Log error but don't fail - allow request to continue
+      console.error('Session validation error:', error)
+      session = null
+    }
+    const isAuthenticated = !!session
+    
+    // Check if current path is protected
+    const isProtectedRoute = PROTECTED_ROUTES.some(route => 
+      pathname === route || pathname.startsWith(`${route}/`)
+    )
+    
+    // Check if current path is an auth route
+    const isAuthRoute = AUTH_ROUTES.some(route => 
+      pathname === route || pathname.startsWith(`${route}/`)
+    )
+    
+    // Redirect unauthenticated users from protected routes to login
+    if (isProtectedRoute && !isAuthenticated) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+    
+    // Redirect authenticated users from auth routes to dashboard
+    if (isAuthRoute && isAuthenticated) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
 
-  // Check if onboarding is required and redirect to setup (AC-3)
-  // Skip this check for /setup and /onboarding routes
-  if (session?.userId && isProtectedRoute) {
-    const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
-    if (!isSetupRoute) {
-      const onboardingCompleted = await isOnboardingCompleted(session.userId)
-      if (!onboardingCompleted) {
-        return NextResponse.redirect(new URL('/setup', request.url))
+    // Check if onboarding is required and redirect to setup (AC-3)
+    // Skip this check for /setup and /onboarding routes
+    if (session?.userId && isProtectedRoute) {
+      const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
+      if (!isSetupRoute) {
+        try {
+          const onboardingCompleted = await isOnboardingCompleted(session.userId)
+          if (!onboardingCompleted) {
+            return NextResponse.redirect(new URL('/setup', request.url))
+          }
+        } catch (error) {
+          console.error('Onboarding check error:', error)
+          // Allow request to continue if onboarding check fails
+        }
       }
     }
-  }
 
-  // Check for expired trial and redirect to upgrade if needed (AC-8)
-  if (session?.userId && isProtectedRoute) {
-    const isExpired = await isTrialExpired(session.userId)
-    if (isExpired) {
-      // Check if current route is allowed for expired trials
-      const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some(route =>
-        pathname === route || pathname.startsWith(`${route}/`)
-      )
+    // Check for expired trial and redirect to upgrade if needed (AC-8)
+    if (session?.userId && isProtectedRoute) {
+      try {
+        const isExpired = await isTrialExpired(session.userId)
+        if (isExpired) {
+          // Check if current route is allowed for expired trials
+          const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some(route =>
+            pathname === route || pathname.startsWith(`${route}/`)
+          )
 
-      if (!isAllowedRoute) {
-        // Redirect to upgrade page
-        return NextResponse.redirect(new URL('/upgrade', request.url))
+          if (!isAllowedRoute) {
+            // Redirect to upgrade page
+            return NextResponse.redirect(new URL('/upgrade', request.url))
+          }
+        }
+      } catch (error) {
+        console.error('Trial expiration check error:', error)
+        // Allow request to continue if trial check fails
       }
     }
-  }
 
-  // Add security headers
-  const response = NextResponse.next()
-  
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  
-  return response
+    // Add security headers
+    const response = NextResponse.next()
+    
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    
+    return response
+  } catch (error) {
+    // If anything else goes wrong, log it but allow the request to proceed
+    console.error('Middleware error:', error)
+    
+    const response = NextResponse.next()
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    
+    return response
+  }
 }
 
 export const config = {
