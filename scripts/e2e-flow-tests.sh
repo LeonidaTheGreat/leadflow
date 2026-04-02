@@ -9,7 +9,20 @@
 set -euo pipefail
 
 BASE_URL="${LEADFLOW_APP_URL:-https://leadflow-ai-five.vercel.app}"
-API_URL="${LEADFLOW_API_URL:-https://api.imagineapi.org/rest/v1}"
+
+# Load Supabase credentials from project .env — each var loaded independently
+# if not already set via environment. The .env file is the canonical source.
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_ENV_FILE="$_SCRIPT_DIR/../product/lead-response/dashboard/.env"
+if [ -f "$_ENV_FILE" ]; then
+  _ENV_API_URL=$(grep '^NEXT_PUBLIC_API_URL=' "$_ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")
+  _ENV_API_KEY=$(grep '^API_SECRET_KEY=' "$_ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")
+  # Always use .env values — they are authoritative for Supabase connectivity
+  LEADFLOW_API_URL="${_ENV_API_URL:-${LEADFLOW_API_URL:-}}"
+  LEADFLOW_API_KEY="${_ENV_API_KEY:-${LEADFLOW_API_KEY:-}}"
+fi
+
+API_URL="${LEADFLOW_API_URL:-https://fptrokacdwzlmflyczdz.supabase.co/rest/v1}"
 API_KEY="${LEADFLOW_API_KEY:-}"
 VERBOSE=false
 JSON_OUTPUT=false
@@ -142,33 +155,43 @@ test_lead_capture() {
   return 0
 }
 
-# Test 10: Dashboard loads without client-side errors (needs session)
+# Test 10: Dashboard loads without client-side errors (needs session or JWT)
 test_dashboard_no_errors() {
   [ -z "${API_KEY:-}" ] && return 1
 
-  # Get a user who has completed onboarding (non-test real user)
-  local agent_resp user_id
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+  local token cookie_name
 
-  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-  [ -z "$user_id" ] && return 1
+  # Try using JWT from trial-signup first (if available)
+  if [ -n "${E2E_TOKEN:-}" ]; then
+    token="$E2E_TOKEN"
+    cookie_name="auth-token"
+  else
+    # Get a user who has completed onboarding (non-test real user)
+    local agent_resp user_id
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
 
-  # Get their most recent non-expired session
-  local now session token
-  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  session=$(curl -s --max-time 10 \
-    "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    [ -z "$user_id" ] && return 1
 
-  token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
-  [ -z "$token" ] && return 1
+    # Get their most recent non-expired session
+    local now session
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    session=$(curl -s --max-time 10 \
+      "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
 
-  # Load dashboard with session, check for error strings
+    token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
+    [ -z "$token" ] && return 1
+    
+    cookie_name="leadflow_session"
+  fi
+
+  # Load dashboard with token, check for error strings
   local html
   html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
-    -H "Cookie: leadflow_session=$token" 2>/dev/null) || return 1
+    -H "Cookie: ${cookie_name}=${token}" 2>/dev/null) || return 1
 
   # Should not contain PostgREST error patterns
   echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error' && return 1
