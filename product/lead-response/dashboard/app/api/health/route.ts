@@ -63,11 +63,20 @@ export async function GET() {
   if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
     try {
       // Verify API connectivity with a simple health check
-      const response = await fetch(`${apiUrl}/api/health`, {
+      // Try /health endpoint first (used by root server), fall back to /api/health
+      let response = await fetch(`${apiUrl}/health`, {
         headers: {
           'x-api-key': apiKey,
         },
         signal: AbortSignal.timeout(5000),
+      }).catch(async () => {
+        // Fall back to /api/health if /health fails
+        return fetch(`${apiUrl}/api/health`, {
+          headers: {
+            'x-api-key': apiKey,
+          },
+          signal: AbortSignal.timeout(5000),
+        })
       })
       checks['api_connectivity'] = {
         ok: response.ok,
@@ -87,17 +96,31 @@ export async function GET() {
   }
 
   // Overall status
-  const allOk = Object.values(checks).every((c) => c.ok)
+  // Critical checks: env vars and Supabase (dashboard can't work without these)
+  // Non-critical: API connectivity (informational only, doesn't block dashboard)
+  const criticalCheckNames = new Set([
+    'NEXT_PUBLIC_API_URL',
+    'NEXT_PUBLIC_API_KEY',
+    'API_SECRET_KEY',
+    'RESEND_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'supabase_connectivity',
+  ])
+  const allCriticalOk = Object.entries(checks)
+    .filter(([name]) => criticalCheckNames.has(name))
+    .every(([, c]) => c.ok)
   const failedChecks = Object.entries(checks)
     .filter(([, c]) => !c.ok)
     .map(([name, c]) => `${name}: ${c.detail}`)
 
   return NextResponse.json(
     {
-      status: allOk ? 'ok' : 'degraded',
+      status: allCriticalOk ? 'ok' : 'degraded',
       checks,
       ...(failedChecks.length > 0 && { errors: failedChecks }),
     },
-    { status: allOk ? 200 : 503 }
+    { status: allCriticalOk ? 200 : 503 }
   )
 }
