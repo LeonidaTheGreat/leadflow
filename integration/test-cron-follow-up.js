@@ -477,7 +477,8 @@ class CronFollowUpTestSuite {
     console.log('║                    TEST SUMMARY                         ║');
     console.log('╚════════════════════════════════════════════════════════╝');
 
-    // Ensure findings is always an array (defensive programming)
+    // Ensure findings is always an array (defensive programming) - CRITICAL FIX
+    // This check must happen BEFORE any calls to .filter() on findings
     if (!Array.isArray(this.results.findings)) {
       this.results.findings = [];
     }
@@ -488,6 +489,7 @@ class CronFollowUpTestSuite {
     console.log(`   🔴 Critical: ${this.results.critical}`);
     console.log(`   ⚠️  Warnings: ${this.results.warnings}`);
 
+    // Safe to call .filter() now that findings is guaranteed to be an array
     if (this.results.critical > 0) {
       console.log(`\n🔴 CRITICAL FINDINGS:`);
       this.results.findings
@@ -497,6 +499,8 @@ class CronFollowUpTestSuite {
         });
     }
 
+    // This is the line that was throwing "findings.filter is not a function"
+    // It's now safe because we've ensured findings is an array above
     if (this.results.findings.filter(f => f.severity === 'medium').length > 0) {
       console.log(`\n⚠️  MEDIUM FINDINGS:`);
       this.results.findings
