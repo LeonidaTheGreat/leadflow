@@ -2,6 +2,12 @@
   "project_id": "leadflow",
   "project_name": "LeadFlow AI",
   "project_dir": "/Users/clawdbot/projects/leadflow",
+  "browser_tests": {
+    "command": "npx playwright test tests/browser/ --reporter=json --project=chromium",
+    "base_url": "https://leadflow-ai-five.vercel.app",
+    "interval_hours": 6,
+    "priority_on_failure": 1
+  },
   "reference_docs": {
     "project_context": "CLAUDE.md",
     "use_cases": "USE_CASES.md",
