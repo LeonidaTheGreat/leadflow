@@ -488,22 +488,20 @@ class CronFollowUpTestSuite {
     console.log(`   🔴 Critical: ${this.results.critical}`);
     console.log(`   ⚠️  Warnings: ${this.results.warnings}`);
 
-    if (this.results.critical > 0) {
+    const criticalFindings = this.results.findings.filter(f => f.severity === 'critical');
+    if (criticalFindings.length > 0) {
       console.log(`\n🔴 CRITICAL FINDINGS:`);
-      this.results.findings
-        .filter(f => f.severity === 'critical')
-        .forEach(f => {
-          console.log(`   • ${f.type}: ${f.message}`);
-        });
+      criticalFindings.forEach(f => {
+        console.log(`   • ${f.type}: ${f.message}`);
+      });
     }
 
-    if (this.results.findings.filter(f => f.severity === 'medium').length > 0) {
+    const mediumFindings = this.results.findings.filter(f => f.severity === 'medium');
+    if (mediumFindings.length > 0) {
       console.log(`\n⚠️  MEDIUM FINDINGS:`);
-      this.results.findings
-        .filter(f => f.severity === 'medium')
-        .forEach(f => {
-          console.log(`   • ${f.type}: ${f.message}`);
-        });
+      mediumFindings.forEach(f => {
+        console.log(`   • ${f.type}: ${f.message}`);
+      });
     }
 
     const passRate = ((this.results.passed / (this.results.passed + this.results.failed)) * 100).toFixed(1);
