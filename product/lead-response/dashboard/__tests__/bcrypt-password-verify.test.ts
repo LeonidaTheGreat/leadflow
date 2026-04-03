@@ -19,9 +19,14 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let lastInsertedData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
+<<<<<<< Updated upstream
 // Shared mock implementation for database operations
 function createMockDbClient() {
   return {
+=======
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+>>>>>>> Stashed changes
     from: (table: string) => {
       if (table === 'real_estate_agents') {
         return {
