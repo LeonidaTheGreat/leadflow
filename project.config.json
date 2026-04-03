@@ -10,6 +10,7 @@
   },
   "reference_docs": {
     "project_context": "CLAUDE.md",
+    "tech_stack": "TECH_STACK.md",
     "use_cases": "USE_CASES.md",
     "business_strategy": "PMF.md",
     "dashboard": "DASHBOARD.md"
