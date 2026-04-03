@@ -69,8 +69,8 @@ process.env.SUPABASE_URL = 'http://mock';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock-key';
 
 // Patch createClient
-const { createClient: origCreateClient } = require('@supabase/supabase-js');
-const supabaseModule = require('@supabase/supabase-js');
+const { createClient: origCreateClient } = require('../../lib/db-client');
+const supabaseModule = require('../../lib/db-client');
 const origCreate = supabaseModule.createClient;
 supabaseModule.createClient = () => mockSupabase;
 

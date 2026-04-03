@@ -10,7 +10,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../../lib/db-client');
 
 // ==================== CONFIGURATION ====================
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';

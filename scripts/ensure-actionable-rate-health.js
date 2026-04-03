@@ -12,7 +12,7 @@
  * 4. Samples findings structures for correctness
  */
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 async function ensureActionableRateHealth() {
   const url = process.env.SUPABASE_URL;
@@ -59,8 +59,15 @@ async function ensureActionableRateHealth() {
       .eq('project_id', 'leadflow')
       .gte('created_at', sevenDaysAgo);
 
+    // Normalize findings and resulting_uc_ids to ensure they're always arrays
+    const normalizedAllReviews = (allReviews || []).map(r => ({
+      ...r,
+      findings: Array.isArray(r.findings) ? r.findings : [],
+      resulting_uc_ids: Array.isArray(r.resulting_uc_ids) ? r.resulting_uc_ids : []
+    }));
+
     const statusCounts = {};
-    allReviews.forEach(review => {
+    normalizedAllReviews.forEach(review => {
       const status = review.status || 'unknown';
       const hasUCs = Array.isArray(review.resulting_uc_ids) && review.resulting_uc_ids.length > 0;
       const key = `${status}:${hasUCs ? 'with_ucs' : 'without_ucs'}`;
@@ -74,7 +81,7 @@ async function ensureActionableRateHealth() {
 
     // ─── STEP 3: Calculate actionable_rate metric ───
     console.log('\nStep 3: Calculating actionable_rate metric...');
-    const completedReviews = (allReviews || []).filter(r => r.status === 'completed');
+    const completedReviews = normalizedAllReviews.filter(r => r.status === 'completed');
     const reviewsWithUCs = completedReviews.filter(r =>
       Array.isArray(r.resulting_uc_ids) && r.resulting_uc_ids.length > 0
     );

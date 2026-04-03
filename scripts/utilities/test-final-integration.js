@@ -3,7 +3,7 @@
  * Final integration test - Simulates dashboard header display
  */
 
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
 const supabase = createClient(

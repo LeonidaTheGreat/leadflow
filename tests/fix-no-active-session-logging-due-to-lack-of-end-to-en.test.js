@@ -23,7 +23,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') })
 
 const assert = require('assert')
 const https = require('https')
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('../lib/db-client')
 
 // ── Config ────────────────────────────────────────────────────────────────────
 

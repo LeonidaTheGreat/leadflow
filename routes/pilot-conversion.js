@@ -16,11 +16,11 @@ const {
   getAgentStats 
 } = require('../../lib/pilot-conversion-service');
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/postgrest-client');
 
-// Initialize Supabase
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Initialize PostgREST client
+const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY;
 const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
 /**

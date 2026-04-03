@@ -381,9 +381,9 @@ router.post('/store-booking-url', async (req, res) => {
             });
         }
 
-        const { createClient } = require('@supabase/supabase-js');
-        const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const { createClient } = require('../lib/postgrest-client');
+        const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL;
+        const supabaseKey = process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
             return res.status(500).json({
@@ -391,9 +391,7 @@ router.post('/store-booking-url', async (req, res) => {
             });
         }
 
-        const supabase = createClient(supabaseUrl, supabaseKey, {
-            auth: { autoRefreshToken: false, persistSession: false }
-        });
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
         // Update or create agent booking config
         const { data, error } = await supabase

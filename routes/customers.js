@@ -5,13 +5,13 @@
 
 const express = require('express');
 const router = express.Router();
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/postgrest-client');
 const Stripe = require('stripe');
 
-// Initialize Supabase client
+// Initialize PostgREST client
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL,
+  process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY
 );
 
 // Initialize Stripe

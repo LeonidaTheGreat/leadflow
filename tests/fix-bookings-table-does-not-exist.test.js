@@ -12,7 +12,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 

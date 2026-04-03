@@ -20,7 +20,7 @@
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '..', '.env') })
 
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('../../lib/db-client')
 const { checkAndAlertStuckAgents } = require('../../lib/onboarding-telemetry')
 
 const supabaseUrl = process.env.SUPABASE_URL

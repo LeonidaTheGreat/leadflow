@@ -11,7 +11,7 @@
  * - booking_reminders
  */
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../../lib/db-client');
 const fs = require('fs');
 const path = require('path');
 

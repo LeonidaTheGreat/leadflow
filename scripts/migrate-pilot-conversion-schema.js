@@ -16,7 +16,7 @@
 
 require('dotenv').config();
 const fs = require('fs');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

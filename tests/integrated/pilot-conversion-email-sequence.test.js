@@ -65,7 +65,7 @@ async function setup() {
     return;
   }
 
-  const { createClient } = require('@supabase/supabase-js');
+  const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -118,7 +118,7 @@ async function teardown() {
     return;
   }
 
-  const { createClient } = require('@supabase/supabase-js');
+  const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -235,7 +235,7 @@ async function testStopOnUpgrade() {
     return;
   }
 
-  const { createClient } = require('@supabase/supabase-js');
+  const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -271,7 +271,7 @@ async function testEmailLogging() {
     return;
   }
 
-  const { createClient } = require('@supabase/supabase-js');
+  const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -326,7 +326,7 @@ async function testIdempotency() {
 
   // One should succeed, one should be handled (either skipped or both succeed with same id)
   // The exact behavior depends on timing, but we shouldn't have duplicate log entries
-  const { createClient } = require('@supabase/supabase-js');
+  const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -369,7 +369,7 @@ async function testSchemaExists() {
     return;
   }
 
-  const { createClient } = require('@supabase/supabase-js');
+  const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY

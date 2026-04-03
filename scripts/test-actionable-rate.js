@@ -11,7 +11,7 @@
  * - Actionable rate >= 30% threshold
  */
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 async function testActionableRate() {
   const url = process.env.SUPABASE_URL;
@@ -41,7 +41,14 @@ async function testActionableRate() {
       process.exit(1);
     }
 
-    const completedReviews = (reviews || []).filter(r => r.status === 'completed');
+    // Ensure findings is always an array (defensive programming)
+    const normalizedReviews = (reviews || []).map(r => ({
+      ...r,
+      findings: Array.isArray(r.findings) ? r.findings : [],
+      resulting_uc_ids: Array.isArray(r.resulting_uc_ids) ? r.resulting_uc_ids : []
+    }));
+
+    const completedReviews = normalizedReviews.filter(r => r.status === 'completed');
     const reviewsWithUCs = completedReviews.filter(r =>
       Array.isArray(r.resulting_uc_ids) && r.resulting_uc_ids.length > 0
     );

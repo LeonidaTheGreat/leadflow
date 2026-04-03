@@ -14,7 +14,7 @@
 'use strict';
 
 const path = require('path');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 const assert = require('assert');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });

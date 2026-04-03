@@ -6,7 +6,7 @@
  */
 
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('./lib/db-client');
 
 async function testOnboardingFix() {
   const SUPABASE_URL = process.env.SUPABASE_URL;

@@ -17,7 +17,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') })
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('../lib/db-client')
 
 const DASHBOARD = path.join(__dirname, '..', 'product', 'lead-response', 'dashboard')
 const WEBHOOK_ROUTE = path.join(DASHBOARD, 'app/api/webhooks/stripe/route.ts')

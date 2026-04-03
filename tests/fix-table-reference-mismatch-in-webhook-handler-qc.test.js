@@ -13,7 +13,7 @@
 'use strict';
 
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;

@@ -6,7 +6,7 @@
  */
 
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../../lib/db-client');
 const axios = require('axios');
 
 // Configuration

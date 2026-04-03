@@ -12,7 +12,7 @@
 
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 const sb = createClient(
   process.env.SUPABASE_URL,

@@ -180,7 +180,7 @@ test('script requires dotenv', () => {
 
 test('script requires supabase', () => {
   const content = fs.readFileSync(scriptPath, 'utf-8')
-  assert.ok(content.includes('@supabase/supabase-js'), 'Should require supabase')
+  assert.ok(content.includes('db-client') || content.includes('@supabase/supabase-js'), 'Should require db client')
 })
 
 test('script has STUCK_STATUSES defined', () => {

@@ -13,21 +13,12 @@ if (fs.existsSync(envPath)) {
 
 let sb = null
 try {
-  const genomeDir = path.join(process.env.HOME, '.openclaw', 'genome')
-  const { createClient } = require(path.join(genomeDir, 'node_modules', '@supabase/supabase-js'))
-  
-  const supabaseUrl = process.env.SUPABASE_URL
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
-    process.exit(1)
-  }
-  
-  sb = createClient(supabaseUrl, supabaseKey)
-  console.log('✅ Connected to Supabase')
+  const { createClient } = require(path.join(__dirname, '..', 'lib', 'db-client'))
+
+  sb = createClient()
+  console.log('✅ Connected via PostgREST')
 } catch (err) {
-  console.error('Failed to load Supabase client:', err.message)
+  console.error('Failed to load PostgREST client:', err.message)
   process.exit(1)
 }
 

@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 const dotenv = require('dotenv');
 const assert = require('assert');
 

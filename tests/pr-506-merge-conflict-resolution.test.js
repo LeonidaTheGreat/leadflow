@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 /**
  * E2E Test for PR #506 - Merge conflict resolution in trial-signup and onboarding

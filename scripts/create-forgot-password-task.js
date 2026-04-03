@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 const description = `## Task: Implement Forgot Password Flow

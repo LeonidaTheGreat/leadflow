@@ -3,7 +3,7 @@
  * Add Stripe Billing work to completed_work table
  */
 
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
 const supabase = createClient(

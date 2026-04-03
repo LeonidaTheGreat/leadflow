@@ -5,7 +5,7 @@
  * Verifies:
  * 1. lead_sequences table exists in Supabase DB
  * 2. SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set in Vercel (fub-inbound-webhook)
- * 3. @supabase/supabase-js is installed (it was missing from package.json)
+ * 3. lib/db-client.js (PostgREST client) exists
  * 4. Production cron endpoint (/api/cron/follow-up) returns 200 (not an error)
  * 5. Table has expected columns
  */
@@ -56,13 +56,12 @@ describe('verify-lead-sequences-table-exists', () => {
     }
   })
 
-  test('@supabase/supabase-js is in package.json dependencies', () => {
-    const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'))
-    expect(pkg.dependencies['@supabase/supabase-js']).toBeDefined()
+  test('lib/db-client.js exists as PostgREST replacement', () => {
+    expect(fs.existsSync(path.join(__dirname, '../lib/db-client.js'))).toBe(true)
   })
 
-  test('@supabase/supabase-js can be loaded (installed)', () => {
-    expect(() => require('@supabase/supabase-js')).not.toThrow()
+  test('PostgREST db-client can be loaded', () => {
+    expect(() => require('../lib/db-client')).not.toThrow()
   })
 
   test('sequence-service.js loads without error', () => {

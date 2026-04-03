@@ -3,7 +3,7 @@ dotenv.config({ path: '.env' });
 dotenv.config({ path: '~/.env' });
 
 // Use the task store to get Supabase client
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;

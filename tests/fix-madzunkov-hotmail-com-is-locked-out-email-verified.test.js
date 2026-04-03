@@ -9,7 +9,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
 // Load env vars
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
