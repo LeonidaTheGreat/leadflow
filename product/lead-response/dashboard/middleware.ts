@@ -30,30 +30,12 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
   '/logout',
 ]
 
-// Get the Supabase REST endpoint URL for session validation
-// Try NEXT_PUBLIC_API_URL first (already has /rest/v1), fall back to constructing from NEXT_PUBLIC_SUPABASE_URL
-function getSupabaseRestUrl(): string {
-  // Prefer NEXT_PUBLIC_API_URL if it looks like a Supabase REST endpoint
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
-  if (apiUrl && apiUrl.includes('supabase') && apiUrl.includes('/rest/v1')) {
-    return apiUrl
-  }
-  
-  // Fall back to constructing from NEXT_PUBLIC_SUPABASE_URL
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  if (baseUrl && baseUrl.includes('supabase.co')) {
-    return `${baseUrl}/rest/v1`
-  }
-  
-  return 'https://placeholder.supabase.co/rest/v1'
-}
-
-const SUPABASE_URL = getSupabaseRestUrl()
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
+const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
+const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  return createClient(POSTGREST_URL, POSTGREST_KEY)
 }
 
 /**
