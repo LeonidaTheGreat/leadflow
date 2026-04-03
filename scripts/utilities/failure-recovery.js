@@ -77,7 +77,7 @@ async function escalateToHuman(config, reason, recoveryState) {
   console.log(`   Reason: ${reason}`)
   console.log(`   Attempts: ${recoveryState.attempt}/${MAX_RETRIES}`)
   
-  const escalationPath = path.join(process.cwd(), 'escalation-pending.json')
+  const escalationPath = path.join(process.cwd(), 'state/escalation-pending.json')
   const escalation = {
     timestamp: new Date().toISOString(),
     type: 'max_retries_exceeded',

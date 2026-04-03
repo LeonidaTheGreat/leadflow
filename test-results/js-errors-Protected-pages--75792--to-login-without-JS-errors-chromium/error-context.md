@@ -1,0 +1,55 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - link "▶ LeadFlow AI" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: ▶
+        - heading "LeadFlow AI" [level=1] [ref=e8]
+      - paragraph [ref=e9]: Welcome back! Sign in to your account.
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Sign In
+        - generic [ref=e13]: Enter your email and password to access your dashboard
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - generic [ref=e16]:
+            - text: Email Address
+            - generic [ref=e17]:
+              - img [ref=e18]
+              - textbox "Email Address" [ref=e21]:
+                - /placeholder: you@example.com
+          - generic [ref=e22]:
+            - text: Password
+            - generic [ref=e23]:
+              - img [ref=e24]
+              - textbox "Password" [ref=e27]:
+                - /placeholder: ••••••••
+              - button [ref=e28]:
+                - img [ref=e29]
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - checkbox "Remember me" [ref=e34]
+              - checkbox
+              - generic [ref=e35] [cursor=pointer]: Remember me
+            - link "Forgot password?" [ref=e36] [cursor=pointer]:
+              - /url: /forgot-password
+          - button "Sign In" [ref=e37]:
+            - text: Sign In
+            - img
+        - generic [ref=e42]: Or
+        - paragraph [ref=e44]:
+          - text: Don't have an account?
+          - link "Start your free trial" [ref=e45] [cursor=pointer]:
+            - /url: /onboarding
+    - paragraph [ref=e46]:
+      - text: By signing in, you agree to our
+      - link "Terms of Service" [ref=e47] [cursor=pointer]:
+        - /url: /terms
+      - text: and
+      - link "Privacy Policy" [ref=e48] [cursor=pointer]:
+        - /url: /privacy
+  - alert [ref=e49]
+```

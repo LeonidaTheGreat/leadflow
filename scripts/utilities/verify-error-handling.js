@@ -196,8 +196,8 @@ const results = {
   allPassed: CHECKS.failed === 0,
 }
 
-fs.writeFileSync('error-handling-verification.json', JSON.stringify(results, null, 2))
-console.log('📁 Results saved to: error-handling-verification.json\n')
+fs.writeFileSync('state/error-handling-verification.json', JSON.stringify(results, null, 2))
+console.log('📁 Results saved to: state/error-handling-verification.json\n')
 
 // Exit code
 process.exit(CHECKS.failed === 0 ? 0 : 1)

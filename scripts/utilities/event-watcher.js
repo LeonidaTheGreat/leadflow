@@ -19,7 +19,7 @@ const { spawn, execSync } = require('child_process')
 const WATCHED_FILES = [
   '.spawn-config.json',      // New spawn request
   'test-results.json',       // Test completed
-  'escalation-resolved.json', // Human resolved escalation
+  'state/escalation-resolved.json', // Human resolved escalation
   'config/budget-tracker.json'      // Budget updated
 ]
 
@@ -117,11 +117,11 @@ function signalTaskComplete(results) {
 }
 
 function handleEscalationResolved() {
-  logEvent('✅ escalation-resolved.json detected → Human approved, resuming')
+  logEvent('✅ state/escalation-resolved.json detected → Human approved, resuming')
   
   // Read the resolution
   try {
-    const resolution = JSON.parse(fs.readFileSync('escalation-resolved.json', 'utf-8'))
+    const resolution = JSON.parse(fs.readFileSync('state/escalation-resolved.json', 'utf-8'))
     logEvent(`   Resolution: ${resolution.action}`)
     
     if (resolution.action === 'retry') {
@@ -132,7 +132,7 @@ function handleEscalationResolved() {
     }
     
     // Clean up resolution file
-    fs.unlinkSync('escalation-resolved.json')
+    fs.unlinkSync('state/escalation-resolved.json')
     
   } catch (error) {
     logEvent(`⚠️  Could not parse escalation resolution: ${error.message}`)
@@ -205,7 +205,7 @@ function startWatching() {
             case 'test-results.json':
               handleTestResultsChange()
               break
-            case 'escalation-resolved.json':
+            case 'state/escalation-resolved.json':
               handleEscalationResolved()
               break
             case 'config/budget-tracker.json':
