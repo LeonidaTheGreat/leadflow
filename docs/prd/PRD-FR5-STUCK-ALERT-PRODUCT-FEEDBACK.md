@@ -57,8 +57,10 @@ createStuckAlerts() → Promise<{ inserted: number, skipped: number }>
 
 When a stuck agent is detected, insert EXACTLY this row structure:
 
+> Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead of `supabase`.
+
 ```javascript
-await supabase.from('product_feedback').insert({
+await postgrestAdmin.from('product_feedback').insert({
   project_id: 'leadflow',
   feedback_type: 'ux_issue',
   source: 'telemetry_alert',

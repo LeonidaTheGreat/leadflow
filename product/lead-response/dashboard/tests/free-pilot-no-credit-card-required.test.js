@@ -1,7 +1,7 @@
 const assert = require('assert');
 const path = require('path');
 const dotenv = require('dotenv');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db');
 
 dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });

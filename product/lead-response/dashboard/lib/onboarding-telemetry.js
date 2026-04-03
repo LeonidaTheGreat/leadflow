@@ -2,7 +2,7 @@
  * Onboarding Telemetry Library
  */
 
-const { createClient } = require('@supabase/supabase-js')
+// DB client is passed as parameter to all functions — no direct import needed
 
 const STEP_INDEX = {
   email_verified: 1,

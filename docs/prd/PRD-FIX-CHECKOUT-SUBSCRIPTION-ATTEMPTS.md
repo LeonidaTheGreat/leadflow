@@ -22,9 +22,11 @@ Previous tasks attempted to create a `subscription_attempts` table via SQL migra
 **One file change.** In `app/api/billing/create-checkout/route.ts`, replace the failing insert at the bottom of the `POST` handler:
 
 ### Remove (lines ~188–194):
+> Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead of `supabase`.
+
 ```typescript
 // Log subscription attempt
-await supabase.from('subscription_attempts').insert({
+await postgrestAdmin.from('subscription_attempts').insert({
   agent_id: agentId,
   tier,
   stripe_session_id: session.id,
@@ -36,7 +38,7 @@ await supabase.from('subscription_attempts').insert({
 ### Replace with:
 ```typescript
 // Log checkout session using existing checkout_sessions table
-await supabase.from('checkout_sessions').insert({
+await postgrestAdmin.from('checkout_sessions').insert({
   user_id: agentId,
   stripe_session_id: session.id,
   tier: tier.split('_')[0],  // 'starter' | 'professional' | 'enterprise'

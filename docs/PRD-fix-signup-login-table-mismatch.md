@@ -35,7 +35,9 @@ Previous fixes (UC `fix-agents-table-mismatch-auth-routes`, `fix-remaining-agent
 
 ## Solution
 
-Replace all `supabase.from('agents')` with `supabase.from('real_estate_agents')` in the affected product routes. No schema changes needed — `real_estate_agents` already has the required columns (`satisfaction_ping_enabled`, `updated_at`, etc.).
+Replace all `postgrestAdmin.from('agents')` with `postgrestAdmin.from('real_estate_agents')` in the affected product routes. No schema changes needed — `real_estate_agents` already has the required columns (`satisfaction_ping_enabled`, `updated_at`, etc.).
+
+> Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead of `supabase`.
 
 ---
 

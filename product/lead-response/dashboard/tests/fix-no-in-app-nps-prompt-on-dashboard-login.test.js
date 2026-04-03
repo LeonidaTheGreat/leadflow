@@ -4,7 +4,7 @@
  */
 
 const assert = require('assert')
-const { createClient } = require('@supabase/supabase-js')
+const { createClient } = require('../lib/db')
 
 // Test configuration
 const TEST_CONFIG = {

@@ -13,7 +13,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db');
 
 // Load environment variables
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/.env.local' });

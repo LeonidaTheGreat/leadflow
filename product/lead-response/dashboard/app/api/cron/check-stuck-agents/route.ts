@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { postgrestAdmin } from '@/lib/db'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -25,12 +25,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-    )
-
-    const result = await onboardingTelemetry.checkAndAlertStuckAgents(supabase)
+    const result = await onboardingTelemetry.checkAndAlertStuckAgents(postgrestAdmin)
 
     if (!result.success) {
       console.error('[/api/cron/check-stuck-agents] Error:', result.error)

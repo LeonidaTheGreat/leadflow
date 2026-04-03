@@ -196,6 +196,6 @@ The `trial-signup` and `login` endpoints must:
 1. **Do NOT modify AGENTS.md, agents.json, or any agent configs**
 2. **genome files live in `~/.openclaw/genome/`** — not in the leadflow repo
 3. The `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are available as env vars in the genome environment (`.env` at genome root or `~/.env`)
-4. The cleanup call should use the Supabase REST API or `@supabase/supabase-js` — whichever is already used in smoke-tests.js
+4. The cleanup call should use `postgrestAdmin` from `@/lib/db` (Note: Supabase SDK has been replaced with PostgREST client. Do not import from `@supabase/supabase-js`.)
 5. The smoke state file path is available via `smokeTests.STATE_PATH`
 6. **Test the fix by running:** `node -e "require('/path/to/smoke-tests').runAll().then(r => console.log(JSON.stringify(r.failed.map(f=>f.id))))"` — auth should NOT appear in failed list

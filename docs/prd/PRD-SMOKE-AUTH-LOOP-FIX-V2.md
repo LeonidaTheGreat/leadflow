@@ -168,13 +168,10 @@ async signup_login_flow(response, body, testDef) {
     detail = `Network error: ${err.message}`
   } finally {
     // Step 3: Cleanup — always attempt to delete test user
+    // Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead.
     try {
-      const { createClient } = require('@supabase/supabase-js')
-      const sb = createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-      )
-      await sb.from('real_estate_agents').delete().eq('email', testEmail)
+      const { postgrestAdmin } = require('@/lib/db')
+      await postgrestAdmin.from('real_estate_agents').delete().eq('email', testEmail)
     } catch (cleanupErr) {
       console.warn(`[smoke] Cleanup failed for ${testEmail}: ${cleanupErr.message}`)
     }

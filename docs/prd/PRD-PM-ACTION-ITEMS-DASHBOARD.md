@@ -43,14 +43,11 @@ Currently, PM heartbeat reports and triage outcomes are narrative text posted to
 Add instructions to PM SOUL.md for writing to `action_items` table:
 
 ```javascript
-const { createClient } = require('@supabase/supabase-js');
-const sb = createClient(
-  process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead.
+const { postgrestAdmin } = require('@/lib/db');
 
 // Insert action item for human decision
-await sb.from('action_items').insert({
+await postgrestAdmin.from('action_items').insert({
   project_id: 'leadflow',
   title: 'Short title of decision needed',
   type: 'DECISION',  // or 'REVIEW', 'APPROVAL'

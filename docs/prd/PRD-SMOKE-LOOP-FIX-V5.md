@@ -212,11 +212,11 @@ git log --oneline -1  # paste this hash in completion report
 cat ~/.openclaw/genome/state/leadflow/.smoke-test-state.json
 
 # 5. Cancel any lingering open smoke tasks
+# Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead.
 node -e "
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
-const { createClient } = require('@supabase/supabase-js');
-const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-sb.from('tasks')
+const { postgrestAdmin } = require('/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/lib/db');
+postgrestAdmin.from('tasks')
   .update({ status: 'cancelled' })
   .eq('project_id', 'leadflow')
   .ilike('title', 'Smoke: Vercel dashboard health%')

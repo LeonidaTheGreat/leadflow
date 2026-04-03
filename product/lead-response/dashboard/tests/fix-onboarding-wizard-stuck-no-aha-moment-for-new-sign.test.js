@@ -9,7 +9,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db');
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';

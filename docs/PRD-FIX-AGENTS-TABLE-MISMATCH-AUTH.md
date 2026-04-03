@@ -83,7 +83,9 @@ All changes are inside: `product/lead-response/dashboard/app/api/`
 ## Functional Requirements
 
 ### FR-1: Systematic Table Reference Fix
-Replace all `supabase.from('agents')` calls in product API routes with `supabase.from('real_estate_agents')`.
+> Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead of `supabase`.
+
+Replace all `postgrestAdmin.from('agents')` calls in product API routes with `postgrestAdmin.from('real_estate_agents')`.
 
 **Exception:** Any route that intentionally queries the orchestrator's agents table (if such a route exists) must add a clear comment explaining the intent.
 

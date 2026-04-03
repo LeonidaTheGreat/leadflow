@@ -7,13 +7,10 @@
  * CRITICAL: session logging failures must NEVER break the authentication flow.
  * All DB errors are caught and logged; the function returns null on failure.
  */
-import { createClient } from '@supabase/supabase-js'
+import { postgrestAdmin } from '@/lib/db'
 import { NextRequest } from 'next/server'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
+const supabase = postgrestAdmin
 
 export interface AgentSessionRecord {
   id: string

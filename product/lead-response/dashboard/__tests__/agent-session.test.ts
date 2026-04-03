@@ -27,12 +27,13 @@ mockInsertChain.single.mockResolvedValue({
   error: null,
 })
 
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
+jest.mock('@/lib/db', () => ({
+  postgrestAdmin: {
     from: jest.fn(() => ({
       insert: mockInsert,
+      update: jest.fn(() => ({ eq: jest.fn().mockResolvedValue({ error: null }) })),
     })),
-  })),
+  },
 }))
 
 // ---- Helpers ----
