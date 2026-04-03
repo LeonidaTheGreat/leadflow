@@ -365,17 +365,14 @@ async function rpcCall(name: string, params?: any): Promise<{ data: any; error: 
 }
 
 export function channel(name: string): any {
-  return {
-    on: (event: string, config?: any, callback?: any) => {
-      // Support both on() with no args and on(event, config, callback)
-      return {
-        subscribe: () => Promise.resolve(),
-        unsubscribe: () => Promise.resolve(),
-      }
-    },
-    subscribe: () => Promise.resolve(),
-    unsubscribe: () => Promise.resolve(),
+  // Stub that mimics Supabase Realtime channel API.
+  // Methods return the channel itself (for chaining), not promises.
+  const ch: any = {
+    on: (event: string, config?: any, callback?: any) => ch,
+    subscribe: () => ch,
+    unsubscribe: () => {},
   }
+  return ch
 }
 
 /**
