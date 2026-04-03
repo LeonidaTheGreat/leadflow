@@ -497,13 +497,15 @@ class CronFollowUpTestSuite {
         });
     }
 
-    if (this.results.findings.filter(f => f.severity === 'medium').length > 0) {
+    const mediumFindings = Array.isArray(this.results.findings) 
+      ? this.results.findings.filter(f => f.severity === 'medium')
+      : [];
+    
+    if (mediumFindings.length > 0) {
       console.log(`\n⚠️  MEDIUM FINDINGS:`);
-      this.results.findings
-        .filter(f => f.severity === 'medium')
-        .forEach(f => {
-          console.log(`   • ${f.type}: ${f.message}`);
-        });
+      mediumFindings.forEach(f => {
+        console.log(`   • ${f.type}: ${f.message}`);
+      });
     }
 
     const passRate = ((this.results.passed / (this.results.passed + this.results.failed)) * 100).toFixed(1);
