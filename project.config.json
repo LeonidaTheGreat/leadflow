@@ -515,6 +515,42 @@
       ],
       "severity": "high",
       "description": "All auth routes must use lib/auth.ts getAuthUserId() which checks both cookies"
+    },
+    {
+      "id": "no-root-scripts",
+      "name": "No scripts in repo root",
+      "description": "Scripts (.js files that aren't entry points) must not be in the repo root. Put them in scripts/diagnostics/, scripts/db/, scripts/utilities/, etc.",
+      "pattern": "^[^/]+\\.js$",
+      "scan_dirs": ["."],
+      "exclude_patterns": [
+        "server.js",
+        "playwright.config.js",
+        "jest.config.js",
+        "project-config-loader.js",
+        "task-store.js",
+        "subagent-completion-report.js"
+      ],
+      "severity": "warning"
+    },
+    {
+      "id": "no-duplicate-tests",
+      "name": "No duplicate test files across test directories",
+      "description": "Test files must exist in exactly one location (unit/, integration/, e2e/, or browser/). Do not copy tests between directories.",
+      "scan_dirs": [
+        "tests/unit/",
+        "tests/integration/",
+        "tests/e2e/",
+        "tests/browser/"
+      ],
+      "severity": "warning"
+    },
+    {
+      "id": "correct-test-directory",
+      "name": "No test files in tests/ root",
+      "description": "New test files must go in tests/unit/, tests/integration/, tests/e2e/, tests/browser/, or tests/genome/ — not the tests/ root directory.",
+      "pattern": "^tests/[^/]+\\.test\\.js$|^tests/[^/]+\\.spec\\.js$",
+      "scan_dirs": ["tests/"],
+      "severity": "warning"
     }
   ]
 }
