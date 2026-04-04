@@ -128,70 +128,76 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
-  // Get userId from either JWT or session token
-  const userId = await getUserIdFromRequest(request)
-  const isAuthenticated = !!userId
-  
-  // Check if current path is protected
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
-  )
-  
-  // Check if current path is an auth route
-  const isAuthRoute = AUTH_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
-  )
-  
-  // Redirect unauthenticated users from protected routes to login
-  if (isProtectedRoute && !isAuthenticated) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
-  
-  // Redirect authenticated users from auth routes to dashboard
-  if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
+  try {
+    const { pathname } = request.nextUrl
+    
+    // Get userId from either JWT or session token
+    const userId = await getUserIdFromRequest(request)
+    const isAuthenticated = !!userId
+    
+    // Check if current path is protected
+    const isProtectedRoute = PROTECTED_ROUTES.some(route => 
+      pathname === route || pathname.startsWith(`${route}/`)
+    )
+    
+    // Check if current path is an auth route
+    const isAuthRoute = AUTH_ROUTES.some(route => 
+      pathname === route || pathname.startsWith(`${route}/`)
+    )
+    
+    // Redirect unauthenticated users from protected routes to login
+    if (isProtectedRoute && !isAuthenticated) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+    
+    // Redirect authenticated users from auth routes to dashboard
+    if (isAuthRoute && isAuthenticated) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
 
-  // Check if onboarding is required and redirect to setup (AC-3)
-  // Skip this check for /setup and /onboarding routes
-  if (userId && isProtectedRoute) {
-    const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
-    if (!isSetupRoute) {
-      const onboardingCompleted = await isOnboardingCompleted(userId)
-      if (!onboardingCompleted) {
-        return NextResponse.redirect(new URL('/setup', request.url))
+    // Check if onboarding is required and redirect to setup (AC-3)
+    // Skip this check for /setup and /onboarding routes
+    if (userId && isProtectedRoute) {
+      const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
+      if (!isSetupRoute) {
+        const onboardingCompleted = await isOnboardingCompleted(userId)
+        if (!onboardingCompleted) {
+          return NextResponse.redirect(new URL('/setup', request.url))
+        }
       }
     }
-  }
 
-  // Check for expired trial and redirect to upgrade if needed (AC-8)
-  if (userId && isProtectedRoute) {
-    const isExpired = await isTrialExpired(userId)
-    if (isExpired) {
-      // Check if current route is allowed for expired trials
-      const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some(route =>
-        pathname === route || pathname.startsWith(`${route}/`)
-      )
+    // Check for expired trial and redirect to upgrade if needed (AC-8)
+    if (userId && isProtectedRoute) {
+      const isExpired = await isTrialExpired(userId)
+      if (isExpired) {
+        // Check if current route is allowed for expired trials
+        const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some(route =>
+          pathname === route || pathname.startsWith(`${route}/`)
+        )
 
-      if (!isAllowedRoute) {
-        // Redirect to upgrade page
-        return NextResponse.redirect(new URL('/upgrade', request.url))
+        if (!isAllowedRoute) {
+          // Redirect to upgrade page
+          return NextResponse.redirect(new URL('/upgrade', request.url))
+        }
       }
     }
-  }
 
-  // Add security headers
-  const response = NextResponse.next()
-  
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  
-  return response
+    // Add security headers
+    const response = NextResponse.next()
+    
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    
+    return response
+  } catch (error) {
+    // Middleware error: log and continue (fail open for public routes)
+    console.error('Middleware error:', error)
+    return NextResponse.next()
+  }
 }
 
 export const config = {
