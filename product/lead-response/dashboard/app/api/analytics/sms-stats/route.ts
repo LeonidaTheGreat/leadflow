@@ -62,16 +62,16 @@ export async function GET(request: NextRequest) {
     // DELIVERY RATE
     // delivery_rate = delivered / total_outbound
     //
-    // Uses sms_messages table which has a direct agent_id column.
+    // sms_messages has NO agent_id column — join through leads table.
     // Twilio stores direction as 'outbound-api' or 'outbound-reply', not 'outbound'.
     // Use .in() to capture all outbound Twilio direction variants.
     // ============================================================
 
     let outboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('id, status, lead_id')
+      .select('id, status, lead_id, leads!inner(agent_id)')
       .in('direction', ['outbound-api', 'outbound-reply'])
-      .eq('agent_id', agentId)
+      .eq('leads.agent_id', agentId)
 
     if (windowStart) {
       outboundQuery = outboundQuery.gte('created_at', windowStart.toISOString())
@@ -114,12 +114,13 @@ export async function GET(request: NextRequest) {
     // ============================================================
 
     // Fix: query sms_messages; Twilio stores inbound direction as 'inbound'.
+    // sms_messages has NO agent_id — join through leads table.
     // Use message_body column (sms_messages column name vs 'body' in messages table).
     let inboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('lead_id, message_body')
+      .select('lead_id, message_body, leads!inner(agent_id)')
       .eq('direction', 'inbound')
-      .eq('agent_id', agentId)
+      .eq('leads.agent_id', agentId)
 
     if (windowStart) {
       inboundQuery = inboundQuery.gte('created_at', windowStart.toISOString())
