@@ -122,7 +122,7 @@
       "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
       "severity": "warning",
       "check_type": "http_200"
-    },
+    }
   ],
   "products": [
     {
