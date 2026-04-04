@@ -51,7 +51,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
 
     // 2. Parse and validate request body
     const body: InviteRequest = await request.json()
-    const { email, name, message } = body
+    let { email, name, message } = body
 
     if (!email || !name) {
       return NextResponse.json(
@@ -59,6 +59,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
         { status: 400 }
       )
     }
+
+    // Trim and normalize email
+    email = email.toLowerCase().trim()
 
     // Basic email validation
     if (!email.includes('@') || email.length < 5) {

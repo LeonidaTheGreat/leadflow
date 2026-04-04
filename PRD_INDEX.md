@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # PRD Index
 
-> Generated: 2026-04-04T04:32:08.919Z | Source: `prds` table
+> Generated: 2026-04-04T05:17:35.992Z | Source: `prds` table
 
 | PRD ID | Title | Status | Version | File Path |
 |--------|-------|--------|---------|----------|
@@ -82,6 +82,7 @@
 | prd-repository-structure-convention | Repository Structure Convention for LeadFlow | approved | 1.1 | [docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md](docs/prd/PRD-REPOSITORY-STRUCTURE-CONVENTION-LEADFLOW.md) |
 | prd-revenue-alert-action-plan | Revenue Alert — Critical Action Plan | approved | 1.0 | [docs/prd/PRD-REVENUE-ALERT-CRITICAL-ACTION-PLAN.md](docs/prd/PRD-REVENUE-ALERT-CRITICAL-ACTION-PLAN.md) |
 | prd-revenue-alert-analysis-2026-03-31 | Revenue Alert Analysis & Recovery Plan | approved | 1.0 | [docs/prd/PRD-REVENUE-ALERT-ANALYSIS-2026-03-31.md](docs/prd/PRD-REVENUE-ALERT-ANALYSIS-2026-03-31.md) |
+| prd-revenue-alert-critical-2026-04-04 | Revenue Alert — Critical MRR Recovery Action Plan | draft | - | [docs/prd/PRD-REVENUE-ALERT-CRITICAL-2026-04-04.md](docs/prd/PRD-REVENUE-ALERT-CRITICAL-2026-04-04.md) |
 | prd-revenue-alert-critical-mrr | PRD: Revenue Alert — Critical MRR Gap Analysis & Recovery Plan | approved | - | [docs/prd/PRD-REVENUE-ALERT-CRITICAL-MRR.md](docs/prd/PRD-REVENUE-ALERT-CRITICAL-MRR.md) |
 | prd-revenue-alert-critical-mrr-2026-04-02 | Revenue Alert — Critical (MRR) | draft | 1 | [docs/prd/PRD-REVENUE-ALERT-CRITICAL-MRR-2026-04-02.md](docs/prd/PRD-REVENUE-ALERT-CRITICAL-MRR-2026-04-02.md) |
 | PRD-REVENUE-ALERT-CRITICAL-ROOT-CAUSE | Revenue Alert — Critical Root Cause & Recovery Plan | approved | 1.0 | [docs/prd/PRD-REVENUE-ALERT-CRITICAL-ROOT-CAUSE-AND-RECOVERY.md](docs/prd/PRD-REVENUE-ALERT-CRITICAL-ROOT-CAUSE-AND-RECOVERY.md) |
@@ -129,5 +130,6 @@
 | PRD-UTM-CAPTURE-ATTRIBUTION | UTM Parameter Capture & Marketing Attribution | approved | 1.0 | [docs/PRD-UTM-CAPTURE-ATTRIBUTION.md](docs/PRD-UTM-CAPTURE-ATTRIBUTION.md) |
 | PRD-UTM-SESSIONSTORAGE-WRITE-FIX | UTM sessionStorage Write Fix — First-Touch Attribution for Multi-Page Journeys | approved | 1.0 | [docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md](docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md) |
 | revenue-alert-dedup | Revenue Alert Task Deduplication | approved | 1.0 | [docs/prd/PRD-REVENUE-ALERT-DEDUP.md](docs/prd/PRD-REVENUE-ALERT-DEDUP.md) |
+| test-1775277276912-draft | Test | draft | - | - |
 
 > Full PRD documents (PRD-*.md) are agent-authored. Update the `prds` table when creating or modifying them.
