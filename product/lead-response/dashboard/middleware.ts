@@ -24,6 +24,7 @@ const AUTH_ROUTES = [
 // Routes that are always allowed even for expired trials
 const EXPIRED_TRIAL_ALLOWED_ROUTES = [
   '/upgrade',
+  '/dashboard/upgrade',
   '/pricing',
   '/settings/billing',
   '/login',
