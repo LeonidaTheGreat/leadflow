@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { randomUUID } from 'crypto'
+import { randomUUID, randomBytes } from 'crypto'
 
 /**
  * POST /api/onboarding/simulator
@@ -21,6 +21,21 @@ const LEAD_SCRIPTS = [
   () => `Yes, I'd like to see some listings. My budget is around $600,000.`,
   () => `That sounds great! When can we schedule a call to discuss?`,
 ]
+
+// Helper function to generate a random number between 0 and max using crypto.randomBytes
+function getSecureRandom(max: number): number {
+  const randomBuffer = randomBytes(4)
+  const randomValue = randomBuffer.readUInt32BE(0)
+  return randomValue % max
+}
+
+// Helper function to generate a random number in a range (min to max) using crypto.randomBytes
+function getSecureRandomInRange(min: number, max: number): number {
+  const range = max - min
+  const randomBuffer = randomBytes(4)
+  const randomValue = randomBuffer.readUInt32BE(0)
+  return min + (randomValue % range)
+}
 
 // Scripted AI responses
 function generateAiResponse(turn: number, leadName: string, propertyInterest: string | null): string {
@@ -120,9 +135,9 @@ async function startSimulation(agentId: string, sessionId: string) {
   
   // Generate a realistic lead
   const leadNames = ['Sarah Johnson', 'Michael Chen', 'Emily Rodriguez', 'David Thompson', 'Lisa Park']
-  const leadName = leadNames[Math.floor(Math.random() * leadNames.length)]
+  const leadName = leadNames[getSecureRandom(leadNames.length)]
   const propertyInterests = ['a 3-bedroom home', 'a downtown condo', 'a family house', 'investment property', 'a new construction']
-  const propertyInterest = propertyInterests[Math.floor(Math.random() * propertyInterests.length)]
+  const propertyInterest = propertyInterests[getSecureRandom(propertyInterests.length)]
 
   // Initialize simulation in memory
   simulationProgress.set(sessionId, {
@@ -184,7 +199,7 @@ async function simulateConversation(sessionId: string, leadName: string, propert
   // Simulate 3 turns with realistic timing
   for (let turn = 0; turn < 3; turn++) {
     // Simulate network/processing delay (1-2 seconds per turn)
-    await delay(1000 + Math.random() * 1000)
+    await delay(getSecureRandomInRange(1000, 2000))
     
     const now = Date.now()
     const leadTimestamp = new Date(now).toISOString()
@@ -220,7 +235,7 @@ async function simulateConversation(sessionId: string, leadName: string, propert
     }
 
     // Simulate AI "thinking" time (500ms - 1.5s)
-    await delay(500 + Math.random() * 1000)
+    await delay(getSecureRandomInRange(500, 1500))
     
     const aiNow = Date.now()
     const aiTimestamp = new Date(aiNow).toISOString()
