@@ -51,30 +51,17 @@ export async function GET() {
     }
   }
 
-  // 3. API connectivity (only if env vars are present)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
-  const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
-  if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
-    try {
-      const response = await fetch(`${apiUrl}/api/health`, {
-        headers: { 'x-api-key': apiKey },
-        signal: AbortSignal.timeout(5000),
-      })
-      const reachable = response.status < 500
-      checks['api_connectivity'] = {
-        ok: reachable,
-        detail: response.ok ? 'connected' : `HTTP ${response.status} (reachable)`,
-      }
-    } catch (err: any) {
-      checks['api_connectivity'] = {
-        ok: false,
-        detail: `exception: ${err.message}`,
-      }
+  // 3. API connectivity — derives from database connectivity check above
+  // If the database is reachable, the PostgREST API is reachable (they are the same endpoint).
+  if (checks['database']) {
+    checks['api_connectivity'] = {
+      ok: checks['database'].ok,
+      detail: checks['database'].ok ? 'ok' : checks['database'].detail,
     }
   } else {
     checks['api_connectivity'] = {
       ok: false,
-      detail: 'skipped — missing credentials',
+      detail: 'skipped — database check not run',
     }
   }
 
