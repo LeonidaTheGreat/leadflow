@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /**
- * E2E Test: sms-stats endpoint queries sms_messages (not messages)
+ * E2E Test: sms-stats endpoint queries sms_messages correctly
  *
- * Bug fix: /api/analytics/sms-stats was querying the 'messages' table,
- * which lacks agent_id, causing 500 errors. Fixed to use 'sms_messages'.
+ * Bug fixes verified:
+ * 1. /api/analytics/sms-stats uses sms_messages table (not plain messages)
+ * 2. sms_messages has no agent_id — filter via leads!inner(agent_id) join
+ * 3. Body column is 'body' (not 'message_body')
  *
  * Test ID: fix-api-queries-wrong-table-sms-stats-endpoint-returns
- * Task:    139b3d9e-07e5-4be8-bea0-5b04108009e7
+ * Task:    42327d6d-b98c-48b9-9f5f-579638f2b5b3
  */
 
 const fs = require('fs')
@@ -69,48 +71,55 @@ test('Inbound direction uses inbound value', () => {
   assert(routeSource.includes("'inbound'"), "Expected direction 'inbound' for reply detection")
 })
 
+// ── Agent scoping via leads join (agent_id not on sms_messages) ──────────────
+test('Route does NOT filter sms_messages directly by agent_id column', () => {
+  // sms_messages has no agent_id column — direct eq would cause HTTP 400
+  const hasDirect = /\.eq\(['"]agent_id['"],\s*agentId\)/.test(routeSource)
+  assert(!hasDirect, "Route must not use .eq('agent_id', agentId) on sms_messages — column does not exist")
+})
+
+test('Route joins sms_messages through leads to filter by agent', () => {
+  // Must use leads!inner(agent_id) join for agent scoping
+  assert(
+    routeSource.includes("leads!inner(agent_id)"),
+    "Expected leads!inner(agent_id) join to filter sms_messages by agent"
+  )
+})
+
+test('Route filters by leads.agent_id (not sms_messages.agent_id)', () => {
+  assert(
+    routeSource.includes("eq('leads.agent_id', agentId)"),
+    "Expected .eq('leads.agent_id', agentId) for tenant isolation via join"
+  )
+})
+
 // ── Column name check ────────────────────────────────────────────────────────
-test('Inbound select uses message_body column (not body)', () => {
-  // Check for select('lead_id, message_body') — the correct column
+test('Inbound select uses body column (actual sms_messages column name)', () => {
+  // sms_messages schema: id, lead_id, direction, body, twilio_sid, status, created_at
   assert(
-    routeSource.includes('message_body'),
-    "Expected 'message_body' column in select — not 'body'"
+    routeSource.includes("'body'") || routeSource.includes(', body,') || routeSource.includes(', body)') || routeSource.includes("'lead_id, body"),
+    "Expected 'body' column in select — that is the actual sms_messages column name"
   )
 })
 
-test('Inbound select does NOT use standalone body column', () => {
-  // The old bug used .select('lead_id, body') — check it is gone
-  const hasBodyColumn = /select\(['"][^'"]*(?<![_a-z])body(?![_a-z])[^'"]*['"]\)/.test(routeSource)
-  assert(!hasBodyColumn, "Route must not select plain 'body' column — use message_body")
-})
-
-// ── Auth via session (not query param) ─────────────────────────────────────────
-test('Route imports and calls validateSession for auth', () => {
-  assert(routeSource.includes('validateSession'), 'Route must import and call validateSession')
-})
-
-test('Route reads session from cookie (not agent_id query param)', () => {
+test('Opt-out detection uses body field (not message_body)', () => {
   assert(
-    routeSource.includes('leadflow_session'),
-    "Route must read auth from 'leadflow_session' cookie"
+    routeSource.includes('m.body') || routeSource.includes('isOptOut(m.body)'),
+    "Opt-out detection must use m.body (actual column name)"
   )
 })
 
-test('Session validation occurs before any DB query in GET handler', () => {
-  // Within the GET function body, validateSession call comes before .from(
+// ── Auth via getAuthUserId (checks both session types) ────────────────────────
+test('Route imports getAuthUserId for auth', () => {
+  assert(routeSource.includes('getAuthUserId'), 'Route must import and call getAuthUserId')
+})
+
+test('Auth check occurs before any DB query in GET handler', () => {
   const getHandlerBody = routeSource.slice(routeSource.indexOf('export async function GET'))
-  const validateIdx = getHandlerBody.indexOf('validateSession(')
+  const authIdx = getHandlerBody.indexOf('getAuthUserId(')
   const fromIdx = getHandlerBody.indexOf('.from(')
-  assert(validateIdx > -1, 'validateSession must be called in GET handler')
-  assert(validateIdx < fromIdx, 'validateSession must be called before any supabaseAdmin.from()')
-})
-
-// ── Agent scoping ─────────────────────────────────────────────────────────────
-test('Scopes queries to agent_id from session', () => {
-  assert(
-    routeSource.includes("eq('agent_id', agentId)"),
-    "Expected .eq('agent_id', agentId) for tenant isolation"
-  )
+  assert(authIdx > -1, 'getAuthUserId must be called in GET handler')
+  assert(authIdx < fromIdx, 'getAuthUserId must be called before any supabaseAdmin.from()')
 })
 
 // ── Response shape ────────────────────────────────────────────────────────────
@@ -131,8 +140,11 @@ test('OPT_OUT_KEYWORDS constant is defined', () => {
   assert(routeSource.includes('OPT_OUT_KEYWORDS'), 'Must define OPT_OUT_KEYWORDS array')
 })
 
-test('STOP keyword is in opt-out list', () => {
-  assert(routeSource.includes("'STOP'"), 'Must handle STOP opt-out keyword')
+test('stop keyword is in opt-out list (case-insensitive)', () => {
+  assert(
+    routeSource.includes("'stop'") || routeSource.includes('"stop"'),
+    "Must handle 'stop' opt-out keyword"
+  )
 })
 
 // ── Cache headers ─────────────────────────────────────────────────────────────
@@ -155,5 +167,5 @@ console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`)
 if (failed > 0) {
   process.exit(1)
 } else {
-  console.log('✅ All checks passed — sms-stats route correctly targets sms_messages table\n')
+  console.log('✅ All checks passed — sms-stats route correctly uses leads join for agent scoping\n')
 }

@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic'
 //
 // Security: agent_id is read exclusively from the authenticated session.
 // Query parameter agent_id is NOT accepted — prevents cross-agent data access.
+// sms_messages has no agent_id column; agent filtering uses leads!inner(agent_id) join.
 // ============================================
 
 /**
@@ -62,16 +63,17 @@ export async function GET(request: NextRequest) {
     // DELIVERY RATE
     // delivery_rate = delivered / total_outbound
     //
-    // Uses sms_messages table which has a direct agent_id column.
+    // sms_messages has no agent_id column — must join through leads table.
+    // Schema: id, lead_id, direction, body, twilio_sid, status, created_at
     // Twilio stores direction as 'outbound-api' or 'outbound-reply', not 'outbound'.
     // Use .in() to capture all outbound Twilio direction variants.
     // ============================================================
 
     let outboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('id, status, lead_id')
+      .select('id, status, lead_id, leads!inner(agent_id)')
       .in('direction', ['outbound-api', 'outbound-reply'])
-      .eq('agent_id', agentId)
+      .eq('leads.agent_id', agentId)
 
     if (windowStart) {
       outboundQuery = outboundQuery.gte('created_at', windowStart.toISOString())
@@ -113,13 +115,13 @@ export async function GET(request: NextRequest) {
     // Uses message_body column for opt-out detection.
     // ============================================================
 
-    // Fix: query sms_messages; Twilio stores inbound direction as 'inbound'.
-    // Use message_body column (sms_messages column name vs 'body' in messages table).
+    // sms_messages has no agent_id column — must join through leads table.
+    // Schema uses 'body' (not 'message_body'). Filter by leads.agent_id via join.
     let inboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('lead_id, message_body')
+      .select('lead_id, body, leads!inner(agent_id)')
       .eq('direction', 'inbound')
-      .eq('agent_id', agentId)
+      .eq('leads.agent_id', agentId)
 
     if (windowStart) {
       inboundQuery = inboundQuery.gte('created_at', windowStart.toISOString())
@@ -133,10 +135,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Unique leads who replied (excluding opt-outs)
-    // Use message_body — the column name in sms_messages (not 'body')
+    // Use 'body' — the actual column name in sms_messages
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.message_body))
+        .filter((m: any) => !isOptOut(m.body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
