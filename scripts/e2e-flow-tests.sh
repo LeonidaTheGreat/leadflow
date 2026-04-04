@@ -10,19 +10,26 @@ set -euo pipefail
 
 BASE_URL="${LEADFLOW_APP_URL:-https://leadflow-ai-five.vercel.app}"
 
-# Load Supabase credentials from project .env — each var loaded independently
-# if not already set via environment. The .env file is the canonical source.
+# Load API credentials from dashboard .env and .env.local
+# .env.local takes priority (Next.js convention) — it holds production overrides
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _ENV_FILE="$_SCRIPT_DIR/../product/lead-response/dashboard/.env"
+_ENV_LOCAL_FILE="$_SCRIPT_DIR/../product/lead-response/dashboard/.env.local"
 if [ -f "$_ENV_FILE" ]; then
   _ENV_API_URL=$(grep '^NEXT_PUBLIC_API_URL=' "$_ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")
   _ENV_API_KEY=$(grep '^API_SECRET_KEY=' "$_ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")
-  # Always use .env values — they are authoritative for Supabase connectivity
   LEADFLOW_API_URL="${_ENV_API_URL:-${LEADFLOW_API_URL:-}}"
   LEADFLOW_API_KEY="${_ENV_API_KEY:-${LEADFLOW_API_KEY:-}}"
 fi
+# .env.local overrides .env (matches Next.js precedence)
+if [ -f "$_ENV_LOCAL_FILE" ]; then
+  _ENV_LOCAL_API_URL=$(grep '^NEXT_PUBLIC_API_URL=' "$_ENV_LOCAL_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")
+  _ENV_LOCAL_API_KEY=$(grep '^API_SECRET_KEY=' "$_ENV_LOCAL_FILE" | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")
+  [ -n "$_ENV_LOCAL_API_URL" ] && LEADFLOW_API_URL="$_ENV_LOCAL_API_URL"
+  [ -n "$_ENV_LOCAL_API_KEY" ] && LEADFLOW_API_KEY="$_ENV_LOCAL_API_KEY"
+fi
 
-API_URL="${LEADFLOW_API_URL:-https://fptrokacdwzlmflyczdz.supabase.co/rest/v1}"
+API_URL="${LEADFLOW_API_URL:-https://api.imagineapi.org/rest/v1}"
 API_KEY="${LEADFLOW_API_KEY:-}"
 VERBOSE=false
 JSON_OUTPUT=false
