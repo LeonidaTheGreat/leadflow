@@ -51,17 +51,60 @@ export async function GET() {
     }
   }
 
-  // Overall status
-  const allOk = Object.values(checks).every((c) => c.ok)
-  const failedChecks = Object.entries(checks)
-    .filter(([, c]) => !c.ok)
+  // 3. API connectivity (only if env vars are present)
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
+  const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
+  if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
+    try {
+      const response = await fetch(`${apiUrl}/api/health`, {
+        headers: { 'x-api-key': apiKey },
+        signal: AbortSignal.timeout(5000),
+      })
+      const reachable = response.status < 500
+      checks['api_connectivity'] = {
+        ok: reachable,
+        detail: response.ok ? 'connected' : `HTTP ${response.status} (reachable)`,
+      }
+    } catch (err: any) {
+      checks['api_connectivity'] = {
+        ok: false,
+        detail: `exception: ${err.message}`,
+      }
+    }
+  } else {
+    checks['api_connectivity'] = {
+      ok: false,
+      detail: 'skipped — missing credentials',
+    }
+  }
+
+  // Critical checks determine overall status (env vars + supabase connectivity).
+  // api_connectivity is informational — external API issues don't make the app unhealthy.
+  const criticalKeys = [
+    'NEXT_PUBLIC_API_URL',
+    'NEXT_PUBLIC_API_KEY',
+    'API_SECRET_KEY',
+    'RESEND_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'supabase_connectivity',
+  ]
+  const criticalFailed = Object.entries(checks)
+    .filter(([name, c]) => criticalKeys.includes(name) && !c.ok)
     .map(([name, c]) => `${name}: ${c.detail}`)
+  const warningFailed = Object.entries(checks)
+    .filter(([name, c]) => !criticalKeys.includes(name) && !c.ok)
+    .map(([name, c]) => `${name}: ${c.detail}`)
+
+  const allOk = criticalFailed.length === 0
 
   return NextResponse.json(
     {
       status: allOk ? 'ok' : 'degraded',
       checks,
-      ...(failedChecks.length > 0 && { errors: failedChecks }),
+      ...(criticalFailed.length > 0 && { errors: criticalFailed }),
+      ...(warningFailed.length > 0 && { warnings: warningFailed }),
     },
     { status: allOk ? 200 : 503 }
   )
