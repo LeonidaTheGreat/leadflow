@@ -190,7 +190,7 @@ function PaidSignupFlow() {
       // FR-2: Read UTM params from sessionStorage (first-touch attribution)
       let utm: Record<string, string | null> = {}
       try {
-        const utmRaw = sessionStorage.getItem('lf_utm')
+        const utmRaw = sessionStorage.getItem('leadflow_utm')
         if (utmRaw) {
           utm = JSON.parse(utmRaw)
         }
