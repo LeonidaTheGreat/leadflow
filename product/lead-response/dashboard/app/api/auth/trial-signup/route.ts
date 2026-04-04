@@ -70,7 +70,7 @@ const SAMPLE_AI_RESPONSES = [
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name, utm_source, utm_medium, utm_campaign } = await request.json()
+    const { email, password, name, firstName: firstNameParam, lastName: lastNameParam, utm_source, utm_medium, utm_campaign } = await request.json()
 
     // Validate required fields (only email + password required for frictionless trial)
     if (!email || !password) {
@@ -114,10 +114,19 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10)
 
-    // Parse optional name
-    const nameParts = (name || '').trim().split(' ')
-    const firstName = nameParts[0] || ''
-    const lastName = nameParts.slice(1).join(' ') || ''
+    // Parse optional name — support both name (string) and firstName/lastName params
+    let firstName: string
+    let lastName: string
+    if (firstNameParam || lastNameParam) {
+      firstName = (firstNameParam || '').trim()
+      lastName = (lastNameParam || '').trim()
+    } else {
+      const nameParts = (name || '').trim().split(' ')
+      firstName = nameParts[0] || ''
+      lastName = nameParts.slice(1).join(' ') || ''
+    }
+    // Ensure first_name is non-empty (DB NOT NULL constraint)
+    if (!firstName) firstName = email.split('@')[0]
 
     // Calculate trial end date (14 days from now)
     const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
@@ -133,15 +142,14 @@ export async function POST(request: NextRequest) {
         password_hash: passwordHash,
         email_verified: true, // No email verification gate for trial (per PRD)
         plan_tier: 'trial',
-        trial_started_at: now,
         trial_ends_at: trialEndsAt,
         mrr: 0,
         source: 'trial_cta',
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
-        onboarding_completed: false,
-        onboarding_step: 'welcome', // Track wizard progress
+        onboarding_completed: true, // Trial users see dashboard with sample data immediately
+        onboarding_step: 0,
         created_at: now,
         updated_at: now
       })
