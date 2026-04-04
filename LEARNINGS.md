@@ -440,6 +440,41 @@ const prompt = fillTemplate(promptTemplate, task);
 **Next Review:** Weekly (every 7 days)  
 **Next Update:** After every task completion/failure
 
+### Deep Assessment — Apr 4, 2026 09:26 AM
+
+**Status:** Day 49/90 | MRR critically behind ($0/$20k goal, -81% gap, 11d remaining)
+
+**Genome Breaches Detected:**
+
+1. **PR merge automation fails silently on protected branches**
+   - Issue: PR #830, #831 blocked by base branch policy
+   - Current: `gh pr merge --squash` (no --auto)
+   - Fix: Patch `heartbeat-executor.js` step 6c to use `--auto` flag when merge blocked
+   - Impact: Fixes cannot deploy, blockers stall
+   
+2. **Human intervention count trending up (13, +3 vs week)**
+   - Root: Traffic generation stalled (0 visitors last 3d)
+   - Root: MRR goal critically off-track, need strategy reset
+   - Action: Escalate to PM — requires new distribution strategy
+   
+3. **Distribution health detection working but no action generated**
+   - Detection found: "Zero visitors in 3 days" (correct)
+   - Expected action: Auto-create marketing/distribution task
+   - Missing: Link between detection and task creation
+   - Fix: Wire `checkDistributionHealth` step to `action_items` when threshold breached
+
+4. **Stuck task re-trigger working**
+   - ✅ Re-triggered: "Production domain serves FUB webhook, not dashboard" (31m stuck)
+   - ✅ Re-triggered: "Next.js customer dashboard not deployed — no signups" (31m stuck)
+   - Status: Both in ready queue, awaiting spawn
+
+**Action Items (for next heartbeat):**
+- Fix: PR merge automation — add --auto flag
+- Fix: Wire distribution detection to task creation
+- Feature: Strategic review task for MRR recovery plan (PM scope)
+
+**Genome Score:** 62/100 (↓ from 68, detection working but action gap widening)
+
 ---
 
 *LEARNINGS.md - Living document for continuous improvement*
