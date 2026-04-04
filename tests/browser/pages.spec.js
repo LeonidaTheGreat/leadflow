@@ -87,6 +87,42 @@ test.describe('Error Handling', () => {
   })
 })
 
+test.describe('Signup Form Interaction', () => {
+  test('signup form elements are interactive', async ({ page }) => {
+    await page.goto('/signup')
+    await page.waitForLoadState('networkidle')
+
+    // Click on a plan to proceed to form
+    const proButton = page.getByRole('button', { name: /Get Started/i }).first()
+    await expect(proButton).toBeVisible({ timeout: 10000 })
+
+    await proButton.click()
+
+    // Form fields should become visible
+    await expect(page.locator('[data-testid="signup-email-input"]')).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('[data-testid="signup-password-input"]')).toBeVisible()
+  })
+
+  test('signup form validation works', async ({ page }) => {
+    await page.goto('/signup')
+    await page.waitForLoadState('networkidle')
+
+    // Click on first plan
+    const getStartedBtn = page.getByRole('button', { name: /Get Started/i }).first()
+    await getStartedBtn.click()
+
+    // Wait for form to appear
+    await page.waitForSelector('[data-testid="signup-form"]', { timeout: 5000 })
+
+    // Try submitting empty form (should show validation error)
+    const submitBtn = page.getByRole('button', { name: /Continue to Payment/i })
+    await submitBtn.click()
+
+    // Validation error should appear
+    await expect(page.getByText(/required/i)).toBeVisible({ timeout: 3000 })
+  })
+})
+
 test.describe('Responsive Layout', () => {
   test('login page works on mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
