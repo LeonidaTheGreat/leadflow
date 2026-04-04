@@ -1,13 +1,13 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->
 # User Journeys
 
-> Generated: 2026-04-02T18:23:15.914Z | Source: `project.config.json` journeys + `product_reviews` table
+> Generated: 2026-04-04T03:26:49.291Z | Source: `project.config.json` journeys + `product_reviews` table
 
 Review interval: every 14 days
 
 | Journey | Persona | Steps | Products | Last Review | Score |
 |---------|---------|-------|----------|-------------|-------|
-| new-agent-signup | Real estate agent, first visit, not tech | 6 | landing-page, customer-dashboard, billing-flow | pending (-) | - |
+| new-agent-signup | Real estate agent, first visit, not tech | 6 | landing-page, customer-dashboard, billing-flow | FAIL (4/1/2026) | 2/100 |
 | lead-response | Inbound lead submitting info via FUB web | 3 | fub-webhook, customer-dashboard | pending (-) | - |
 
 ---
@@ -31,9 +31,9 @@ Review interval: every 14 days
 
 ### Latest Review
 
-- **Verdict:** pending
-- **Score:** pending
-- **Date:** in progress
+- **Verdict:** fail
+- **Score:** 2/100
+- **Date:** 4/1/2026
 
 ---
 
