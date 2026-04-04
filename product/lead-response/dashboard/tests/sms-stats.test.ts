@@ -5,18 +5,17 @@
 /**
  * Tests for /api/analytics/sms-stats endpoint
  *
- * Bug fix: route was querying 'messages' table which lacks agent_id.
- * Correct table: sms_messages (has id, direction, status, agent_id, lead_id, message_body)
+ * Bug fix: sms_messages has NO agent_id column — must join through leads table.
+ * Correct table: sms_messages (has id, direction, status, lead_id, message_body)
+ * Agent scoping: via leads!inner(agent_id) join + .eq('leads.agent_id', agentId)
  * Direction values: 'outbound-api' / 'inbound' (Twilio canonical values)
  * Opt-out detection: message_body column (not 'body')
  */
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-const mockSession = { id: 'sess-1', userId: 'agent-123' }
-
-jest.mock('@/lib/session', () => ({
-  validateSession: jest.fn(),
+jest.mock('@/lib/auth', () => ({
+  getAuthUserId: jest.fn(),
 }))
 
 // We'll swap implementations per test using this ref
@@ -28,7 +27,7 @@ jest.mock('@/lib/supabase', () => ({
   },
 }))
 
-import { validateSession } from '@/lib/session'
+import { getAuthUserId } from '@/lib/auth'
 import { GET } from '../app/api/analytics/sms-stats/route'
 import { NextRequest } from 'next/server'
 
@@ -68,13 +67,14 @@ function mockChain(resolveValue: { data: any; error: any }) {
 describe('GET /api/analytics/sms-stats', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(validateSession as jest.Mock).mockResolvedValue(mockSession)
+    ;(getAuthUserId as jest.Mock).mockResolvedValue('agent-123')
   })
 
   // ── Auth ──────────────────────────────────────────────────────────────────
 
   describe('Authentication', () => {
     it('returns 401 when no session cookie is present', async () => {
+      ;(getAuthUserId as jest.Mock).mockResolvedValue(null)
       const req = makeRequest({}, {})
       const res = await GET(req)
       expect(res.status).toBe(401)
@@ -83,7 +83,7 @@ describe('GET /api/analytics/sms-stats', () => {
     })
 
     it('returns 401 when session token is invalid', async () => {
-      ;(validateSession as jest.Mock).mockResolvedValue(null)
+      ;(getAuthUserId as jest.Mock).mockResolvedValue(null)
       const req = makeRequest()
       const res = await GET(req)
       expect(res.status).toBe(401)
@@ -109,17 +109,17 @@ describe('GET /api/analytics/sms-stats', () => {
     })
 
     it('filters outbound direction using outbound-api (Twilio value)', async () => {
-      const directionValues: string[] = []
+      const inFilterValues: string[][] = []
 
       fromImpl = (_table: string) => {
         const chain: any = {}
         chain.select = jest.fn(() => chain)
-        chain.eq = jest.fn((col: string, val: string) => {
-          if (col === 'direction') directionValues.push(val)
+        chain.eq = jest.fn(() => chain)
+        chain.gte = jest.fn(() => chain)
+        chain.in = jest.fn((col: string, vals: string[]) => {
+          if (col === 'direction') inFilterValues.push(vals)
           return chain
         })
-        chain.gte = jest.fn(() => chain)
-        chain.in = jest.fn(() => chain)
         chain.then = jest.fn((cb: any) => Promise.resolve(cb({ data: [], error: null })))
         return chain
       }
@@ -127,8 +127,10 @@ describe('GET /api/analytics/sms-stats', () => {
       const req = makeRequest()
       await GET(req)
 
-      expect(directionValues).toContain('outbound-api')
-      expect(directionValues).not.toContain('outbound')
+      // Outbound query uses .in('direction', [...]) with Twilio values
+      expect(inFilterValues.length).toBeGreaterThan(0)
+      expect(inFilterValues[0]).toContain('outbound-api')
+      expect(inFilterValues[0]).not.toContain('outbound')
     })
 
     it('uses message_body column for opt-out detection — NOT body', async () => {
@@ -348,14 +350,17 @@ describe('GET /api/analytics/sms-stats', () => {
   // ── Error handling ────────────────────────────────────────────────────────
 
   describe('Error handling', () => {
-    it('returns 500 if sms_messages query fails', async () => {
+    it('returns graceful fallback if outbound sms_messages query fails', async () => {
       fromImpl = (_table: string) =>
         mockChain({ data: null, error: { message: 'relation sms_messages does not exist' } })
 
       const res = await GET(makeRequest())
-      expect(res.status).toBe(500)
+      // Route returns 200 with null rates and error message (graceful degradation)
+      expect(res.status).toBe(200)
       const body = await res.json()
       expect(body.error).toBeDefined()
+      expect(body.deliveryRate).toBeNull()
+      expect(body.totalOutbound).toBe(0)
     })
 
     it('returns partial data (null bookingConversion) if bookings query fails', async () => {
@@ -397,14 +402,16 @@ describe('GET /api/analytics/sms-stats', () => {
   // ── Agent scoping ─────────────────────────────────────────────────────────
 
   describe('Agent scoping', () => {
-    it('scopes all queries to the authenticated agent_id — no cross-agent data', async () => {
-      const agentIdValues: string[] = []
+    it('scopes all queries to the authenticated agent_id via leads join — no cross-agent data', async () => {
+      const agentIdFilters: { col: string; val: string }[] = []
 
       fromImpl = (_table: string) => {
         const chain: any = {}
         chain.select = jest.fn(() => chain)
         chain.eq = jest.fn((col: string, val: string) => {
-          if (col === 'agent_id') agentIdValues.push(val)
+          if (col === 'leads.agent_id' || col === 'agent_id') {
+            agentIdFilters.push({ col, val })
+          }
           return chain
         })
         chain.gte = jest.fn(() => chain)
@@ -415,8 +422,12 @@ describe('GET /api/analytics/sms-stats', () => {
 
       await GET(makeRequest())
 
-      expect(agentIdValues.length).toBeGreaterThan(0)
-      agentIdValues.forEach((id) => expect(id).toBe('agent-123'))
+      // All sms_messages queries must use leads.agent_id (joined through leads table)
+      expect(agentIdFilters.length).toBeGreaterThan(0)
+      agentIdFilters.forEach((f) => {
+        expect(f.val).toBe('agent-123')
+        expect(f.col).toBe('leads.agent_id')
+      })
     })
   })
 })
