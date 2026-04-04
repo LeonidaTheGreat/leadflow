@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { validateSession } from '@/lib/session'
-import { createClient } from '@/lib/db'
-import jwt from 'jsonwebtoken'
+import { jwtVerify } from 'jose'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -31,39 +29,52 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
   '/logout',
 ]
 
-const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
-const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
-function getSupabase() {
-  return createClient(POSTGREST_URL, POSTGREST_KEY)
-}
+// PostgREST config for DB queries in middleware
+const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
+const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 
 /**
  * Extract userId from either JWT (auth-token) or session token (leadflow_session)
- * Returns userId if authenticated, null otherwise
+ * Uses Edge-compatible jose library for JWT verification.
+ * For session tokens, queries the sessions table via PostgREST (pure fetch, Edge-safe).
  */
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   // Try JWT token first (from trial-signup)
   const jwtToken = request.cookies.get('auth-token')?.value
   if (jwtToken) {
     try {
-      const payload = jwt.verify(jwtToken, JWT_SECRET) as any
+      const secret = new TextEncoder().encode(JWT_SECRET)
+      const { payload } = await jwtVerify(jwtToken, secret)
       if (payload.userId) {
-        return payload.userId
+        return payload.userId as string
       }
     } catch {
       // JWT validation failed, try session token
     }
   }
 
-  // Try session token (from login)
+  // Try session token (from login) — validate via PostgREST fetch (Edge-safe)
   const sessionToken = request.cookies.get('leadflow_session')?.value
-  if (sessionToken) {
+  if (sessionToken && POSTGREST_URL) {
     try {
-      const session = await validateSession(sessionToken)
-      if (session) {
-        return session.userId
+      const url = `${POSTGREST_URL}/sessions?token=eq.${sessionToken}&select=user_id,expires_at&limit=1`
+      const headers: Record<string, string> = {
+        'Accept': 'application/json',
+        ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
+        ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
+      }
+      const res = await fetch(url, { headers })
+      if (res.ok) {
+        const rows = await res.json()
+        if (rows.length > 0) {
+          const session = rows[0]
+          // Check expiration
+          if (new Date(session.expires_at) > new Date()) {
+            return session.user_id
+          }
+        }
       }
     } catch {
       // Session validation failed
@@ -74,54 +85,47 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
 }
 
 /**
- * Check if user's onboarding is completed
- * Returns true if onboarding is completed, false if incomplete or error
+ * Check if user's onboarding is completed (via PostgREST fetch, Edge-safe)
  */
 async function isOnboardingCompleted(userId: string): Promise<boolean> {
+  if (!POSTGREST_URL) return true
   try {
-    const supabase = getSupabase()
-    const { data: agent, error } = await supabase
-      .from('real_estate_agents')
-      .select('onboarding_completed')
-      .eq('id', userId)
-      .single()
-
-    if (error || !agent) {
-      // On error, allow access (fail open)
-      return true
+    const url = `${POSTGREST_URL}/real_estate_agents?id=eq.${userId}&select=onboarding_completed&limit=1`
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+      ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
+      ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
     }
-
-    return agent.onboarding_completed ?? false
+    const res = await fetch(url, { headers })
+    if (!res.ok) return true
+    const rows = await res.json()
+    if (rows.length === 0) return true
+    return rows[0].onboarding_completed ?? false
   } catch {
-    // On error, allow access (fail open)
     return true
   }
 }
 
 /**
- * Check if user's trial has expired
- * Returns true if user is on trial and trial has expired
+ * Check if user's trial has expired (via PostgREST fetch, Edge-safe)
  */
 async function isTrialExpired(userId: string): Promise<boolean> {
+  if (!POSTGREST_URL) return false
   try {
-    const supabase = getSupabase()
-    const { data: agent, error } = await supabase
-      .from('real_estate_agents')
-      .select('plan_tier, trial_ends_at')
-      .eq('id', userId)
-      .single()
-
-    if (error || !agent) return false
-
-    // Only check expiration for trial users
+    const url = `${POSTGREST_URL}/real_estate_agents?id=eq.${userId}&select=plan_tier,trial_ends_at&limit=1`
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+      ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
+      ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
+    }
+    const res = await fetch(url, { headers })
+    if (!res.ok) return false
+    const rows = await res.json()
+    if (rows.length === 0) return false
+    const agent = rows[0]
     if (agent.plan_tier !== 'trial') return false
-
-    // Check if trial has expired
     if (!agent.trial_ends_at) return false
-
-    const now = new Date()
-    const trialEndsAt = new Date(agent.trial_ends_at)
-    return now > trialEndsAt
+    return new Date() > new Date(agent.trial_ends_at)
   } catch {
     return false
   }
