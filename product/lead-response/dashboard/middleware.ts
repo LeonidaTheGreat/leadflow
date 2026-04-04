@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { validateSession } from '@/lib/session'
 import { createClient } from '@/lib/db'
-import jwt from 'jsonwebtoken'
+import { jwtVerify } from 'jose'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -34,6 +34,7 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
 const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
 const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+const JWT_SECRET_BYTES = new TextEncoder().encode(JWT_SECRET)
 
 function getSupabase() {
   return createClient(POSTGREST_URL, POSTGREST_KEY)
@@ -48,9 +49,9 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
   const jwtToken = request.cookies.get('auth-token')?.value
   if (jwtToken) {
     try {
-      const payload = jwt.verify(jwtToken, JWT_SECRET) as any
+      const { payload } = await jwtVerify(jwtToken, JWT_SECRET_BYTES)
       if (payload.userId) {
-        return payload.userId
+        return payload.userId as string
       }
     } catch {
       // JWT validation failed, try session token
