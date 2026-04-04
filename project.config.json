@@ -123,14 +123,6 @@
       "severity": "warning",
       "check_type": "http_200"
     },
-    {
-      "id": "auth-signup-login-flow",
-      "name": "Auth: login page reachable",
-      "url": "https://leadflow-ai-five.vercel.app/login",
-      "severity": "critical",
-      "check_type": "http_200",
-      "note": "Downgraded from signup_login_flow (unimplemented check_type) — PRD-SMOKE-AUTH-LOOP-FIX-V5"
-    }
   ],
   "products": [
     {
