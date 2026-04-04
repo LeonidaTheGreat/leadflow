@@ -477,7 +477,7 @@ class CronFollowUpTestSuite {
     console.log('║                    TEST SUMMARY                         ║');
     console.log('╚════════════════════════════════════════════════════════╝');
 
-    // Ensure findings is always an array (defensive programming)
+    // Ensure findings is always an array (defensive programming) - MUST be first!
     if (!Array.isArray(this.results.findings)) {
       this.results.findings = [];
     }
