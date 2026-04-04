@@ -19,9 +19,8 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let lastInsertedData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
-// Shared mock implementation for database operations
-function createMockDbClient() {
-  return {
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
     from: (table: string) => {
       if (table === 'real_estate_agents') {
         return {
@@ -38,34 +37,19 @@ function createMockDbClient() {
           }),
           insert: (data: any) => {
             lastInsertedData = data
-            // Store in mock DB for login tests - MUST include password_hash for bcrypt verification
+            // Store in mock DB for login tests
             if (data.email) {
-              const storedAgent = {
+              mockAgentsDb.set(data.email.toLowerCase(), {
                 ...data,
-                id: data.id || 'agent-' + Math.random().toString(36).substr(2, 9),
-                email: data.email,
-                password_hash: data.password_hash, // CRITICAL: preserve hashed password
-                email_verified: data.email_verified !== undefined ? data.email_verified : true,
-                onboarding_completed: data.onboarding_completed || false,
-                first_name: data.first_name || '',
-                last_name: data.last_name || '',
-              }
-              mockAgentsDb.set(data.email.toLowerCase(), storedAgent)
-              
-              // Return chainable select/single for post-insert queries
-              return {
-                select: (columns?: string) => ({
-                  single: () => Promise.resolve({
-                    data: storedAgent,
-                    error: null,
-                  }),
-                }),
-              }
+                id: data.id || 'agent-123',
+                email_verified: true,
+                onboarding_completed: false,
+              })
             }
             return {
-              select: (columns?: string) => ({
+              select: () => ({
                 single: () => Promise.resolve({
-                  data: data,
+                  data: { ...mockAgent, email: data.email },
                   error: null,
                 }),
               }),
@@ -85,17 +69,7 @@ function createMockDbClient() {
         }),
       }
     },
-  }
-}
-
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => createMockDbClient()),
-}))
-
-jest.mock('@/lib/db', () => ({
-  createClient: jest.fn(() => createMockDbClient()),
-  supabaseAdmin: createMockDbClient(),
-  postgrestAdmin: createMockDbClient(),
+  })),
 }))
 
 jest.mock('jsonwebtoken', () => ({
@@ -109,28 +83,6 @@ global.fetch = jest.fn(() =>
     text: () => Promise.resolve(''),
   })
 ) as jest.Mock
-
-// Mock session management
-jest.mock('@/lib/session', () => ({
-  createSession: jest.fn(async (data: any) => ({
-    token: 'mock_session_token_' + Math.random().toString(36),
-    userId: data.userId,
-    createdAt: new Date().toISOString(),
-  })),
-  validateSession: jest.fn(async (token: string) => ({
-    userId: 'agent-123',
-    email: 'test@example.com',
-  })),
-}))
-
-// Mock session analytics
-jest.mock('@/lib/session-analytics', () => ({
-  logSessionStart: jest.fn(async (userId: string, ip: string, userAgent: string) => ({
-    id: 'analytics-session-' + Math.random().toString(36).substr(2, 9),
-    userId,
-    timestamp: new Date().toISOString(),
-  })),
-}))
 
 // Mock agent-session
 jest.mock('@/lib/agent-session', () => ({
