@@ -40,6 +40,7 @@ export function DashboardNav() {
               <a href="/dashboard/history" data-testid="nav-link-history" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">History</a>
               <a href="/dashboard/analytics" data-testid="nav-link-analytics" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Analytics</a>
               <a href="/admin/simulator" data-testid="nav-link-simulator" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Simulator</a>
+              <a href="/settings" data-testid="nav-link-settings" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Settings</a>
             </div>
           </div>
           <div className="flex items-center gap-4">

@@ -71,17 +71,19 @@ export default function TrialExpiredPage() {
 
         <div className="space-y-3">
           <a
-            href="/dashboard/upgrade?plan=pro"
+            href="/settings/billing"
+            data-testid="trial-expired-upgrade-pro"
             className="block w-full px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors text-center"
           >
             Upgrade to Pro ($149/month)
           </a>
 
           <a
-            href="/dashboard/upgrade?plan=team"
+            href="/pricing"
+            data-testid="trial-expired-explore-plans"
             className="block w-full px-4 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors text-center"
           >
-            Explore Team Plan
+            Compare All Plans
           </a>
 
           <a
