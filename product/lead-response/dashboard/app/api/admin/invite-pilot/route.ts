@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
+import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 
@@ -80,10 +81,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
       .single()
 
     if (existingInvite) {
-      // Check if token is still valid
+      // Check if token is still valid — re-issue a new raw token (raw token is never stored, only hash)
       if (new Date(existingInvite.token_expires_at) > new Date()) {
+        const rawToken = crypto.randomBytes(32).toString('hex')
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+        await supabaseServer
+          .from('pilot_invites')
+          .update({ token: tokenHash })
+          .eq('id', existingInvite.id)
         const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
-        const inviteUrl = `${appUrl}/accept-invite?token=${existingInvite.token}`
+        const inviteUrl = `${appUrl}/accept-invite?token=${rawToken}`
         return NextResponse.json(
           {
             success: true,
@@ -137,8 +144,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
       }
     }
 
-    // 5. Create pilot invite record
-    const token = uuidv4()
+    // 5. Create pilot invite record — store SHA-256 hash of token, never the raw token
+    const rawToken = crypto.randomBytes(32).toString('hex')
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
     const now = new Date()
     const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
@@ -148,7 +156,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
         email,
         name,
         message: message || null,
-        token,
+        token: tokenHash,
         token_expires_at: expiresAt.toISOString(),
         agent_id: agentId,
         status: 'pending'
@@ -162,9 +170,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
       )
     }
 
-    // 6. Send email
+    // 6. Send email — use raw token in URL (only hash is stored in DB)
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
-    const inviteUrl = `${appUrl}/accept-invite?token=${token}`
+    const inviteUrl = `${appUrl}/accept-invite?token=${rawToken}`
 
     const emailSent = await sendPilotInviteEmail(email, agentId, {
       agentName: name,

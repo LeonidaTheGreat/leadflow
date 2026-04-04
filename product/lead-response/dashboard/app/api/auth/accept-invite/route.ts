@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 
 interface AcceptInviteRequest {
@@ -35,11 +36,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    // 1. Look up the invite token
+    // 1. Look up the invite token — hash incoming token before DB lookup (raw token never stored)
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
     const { data: invite, error: inviteError } = await supabaseServer
       .from('pilot_invites')
       .select('*')
-      .eq('token', token)
+      .eq('token', tokenHash)
       .single()
 
     if (inviteError || !invite) {
