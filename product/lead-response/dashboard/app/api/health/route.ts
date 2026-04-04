@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/db'
+import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
 
 /**
  * GET /api/health — Server-side health check for smoke tests
  *
- * Checks that all required env vars are set and critical services are reachable.
+ * Checks that all required env vars are set and the database is reachable.
  * Returns structured JSON so the orchestrator's smoke test can parse it.
- *
- * This runs server-side, catching config issues that only manifest as
- * client-side JS crashes (e.g. missing NEXT_PUBLIC_API_URL).
  */
 export async function GET() {
   const checks: Record<string, { ok: boolean; detail: string }> = {}
@@ -19,70 +16,38 @@ export async function GET() {
     'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
   ]
 
   for (const key of requiredEnvVars) {
     const value = process.env[key]
-    const isPlaceholder = !value || value === 'placeholder' || value === 'https://placeholder.supabase.co'
+    const isPlaceholder = !value || value === 'placeholder'
     checks[key] = {
       ok: !!value && !isPlaceholder,
       detail: !value ? 'missing' : isPlaceholder ? 'placeholder' : 'set',
     }
   }
 
-  // 2. Supabase connectivity
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (supabaseUrl && supabaseKey && supabaseUrl !== 'https://placeholder.supabase.co' && supabaseKey !== 'placeholder') {
+  // 2. Database connectivity via PostgREST
+  if (isPostgrestConfigured()) {
     try {
-      // Query real_estate_agents (the product customer table) to verify connectivity
-      const { error } = await supabaseAdmin.from('real_estate_agents').select('id').limit(1)
-      checks['supabase_connectivity'] = {
+      const { error } = await postgrestAdmin
+        .from('real_estate_agents')
+        .select('id')
+        .limit(1)
+      checks['database'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected',
       }
     } catch (err: any) {
-      checks['supabase_connectivity'] = {
+      checks['database'] = {
         ok: false,
         detail: `exception: ${err.message}`,
       }
     }
   } else {
-    checks['supabase_connectivity'] = {
+    checks['database'] = {
       ok: false,
-      detail: 'skipped — missing credentials',
-    }
-  }
-
-  // 3. API connectivity (only if env vars are present)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
-  const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
-  if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
-    try {
-      // Verify API connectivity with a simple health check
-      const response = await fetch(`${apiUrl}/api/health`, {
-        headers: {
-          'x-api-key': apiKey,
-        },
-        signal: AbortSignal.timeout(5000),
-      })
-      checks['api_connectivity'] = {
-        ok: response.ok,
-        detail: response.ok ? 'connected' : `HTTP ${response.status}`,
-      }
-    } catch (err: any) {
-      checks['api_connectivity'] = {
-        ok: false,
-        detail: `exception: ${err.message}`,
-      }
-    }
-  } else {
-    checks['api_connectivity'] = {
-      ok: false,
-      detail: 'skipped — missing credentials',
+      detail: 'skipped — PostgREST not configured',
     }
   }
 
