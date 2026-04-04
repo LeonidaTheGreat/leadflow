@@ -2,7 +2,12 @@ import { supabaseAdmin } from '@/lib/db'
 import { Resend } from 'resend'
 
 const supabase = supabaseAdmin
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy init — Resend throws if API key is missing at import time, which crashes Next.js build in CI
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
+  return _resend
+}
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
 interface TrialAgent {
@@ -136,7 +141,7 @@ async function sendDay6Email(agent: TrialAgent): Promise<{ success: boolean; err
     const agentName = agent.first_name || 'there'
     const daysRemaining = getDaysRemaining(agent.trial_ends_at)
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: 'LeadFlow AI <onboarding@leadflow.ai>',
       to: agent.email,
       subject: `Your LeadFlow AI trial expires in ${daysRemaining} days`,
@@ -209,7 +214,7 @@ async function sendDay3Email(agent: TrialAgent): Promise<{ success: boolean; err
     const agentName = agent.first_name || 'there'
     const daysRemaining = getDaysRemaining(agent.trial_ends_at)
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: 'LeadFlow AI <onboarding@leadflow.ai>',
       to: agent.email,
       subject: `${agentName}, your trial ends in ${daysRemaining} days — upgrade now`,
@@ -285,7 +290,7 @@ async function sendDay1Email(agent: TrialAgent): Promise<{ success: boolean; err
   try {
     const agentName = agent.first_name || 'there'
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: 'LeadFlow AI <onboarding@leadflow.ai>',
       to: agent.email,
       subject: `Last day to upgrade, ${agentName}`,
@@ -360,7 +365,7 @@ async function sendExpiredEmail(agent: TrialAgent): Promise<{ success: boolean; 
   try {
     const agentName = agent.first_name || 'there'
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: 'LeadFlow AI <onboarding@leadflow.ai>',
       to: agent.email,
       subject: `Your LeadFlow trial has expired`,
