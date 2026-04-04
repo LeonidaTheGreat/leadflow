@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
         onboarding_completed: false,
-        onboarding_step: 'welcome', // Track wizard progress
+        onboarding_step: 0, // Track wizard progress (integer column: 0=welcome)
         created_at: now,
         updated_at: now
       })

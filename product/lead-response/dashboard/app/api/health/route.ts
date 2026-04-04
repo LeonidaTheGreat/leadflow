@@ -57,21 +57,23 @@ export async function GET() {
     }
   }
 
-  // 3. API connectivity (only if env vars are present)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
+  // 3. API connectivity — verify PostgREST endpoint is reachable with service key
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
   const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY
   if (apiUrl && apiKey && apiUrl !== 'https://placeholder.supabase.co' && apiKey !== 'placeholder') {
     try {
-      // Verify API connectivity with a simple health check
-      const response = await fetch(`${apiUrl}/api/health`, {
+      // PostgREST uses 'apikey' header (not 'x-api-key').
+      // A limit=0 query on a known table is the canonical connectivity probe.
+      const response = await fetch(`${apiUrl}/real_estate_agents?limit=0`, {
         headers: {
-          'x-api-key': apiKey,
+          'apikey': apiKey,
+          'Authorization': `Bearer ${apiKey}`,
         },
         signal: AbortSignal.timeout(5000),
       })
       checks['api_connectivity'] = {
         ok: response.ok,
-        detail: response.ok ? 'connected' : `HTTP ${response.status}`,
+        detail: response.ok ? 'ok' : `HTTP ${response.status}`,
       }
     } catch (err: any) {
       checks['api_connectivity'] = {
