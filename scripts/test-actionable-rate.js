@@ -53,10 +53,15 @@ async function testActionableRate() {
       Array.isArray(r.resulting_uc_ids) && r.resulting_uc_ids.length > 0
     );
 
-    const actionableRate = completedReviews.length > 0
-      ? reviewsWithUCs.length / completedReviews.length
-      : 1;
+    // If no completed reviews in 7 days, metric cannot be assessed — fail the check
+    if (completedReviews.length === 0) {
+      console.log('❌ No completed reviews in 7 days — cannot assess actionable_rate metric');
+      console.log('─'.repeat(50));
+      console.log('❌ TEST FAILED: Insufficient data (0 completed reviews in 7 days)');
+      process.exit(1);
+    }
 
+    const actionableRate = reviewsWithUCs.length / completedReviews.length;
     const threshold = 0.3;
     const passThreshold = actionableRate >= threshold;
 
