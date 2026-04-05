@@ -3,7 +3,7 @@
 
 const { Client } = require('pg');
 
-// Load environment variables quietly
+// Load environment variables quietly - suppress dotenv banner
 require('dotenv').config({ path: '.env.local', quiet: true });
 
 const requiredColumns = [
@@ -17,12 +17,7 @@ const requiredColumns = [
 
 async function checkColumns() {
   const client = new Client({
-    host: 'db.fptrokacdwzlmflyczdz.supabase.co',
-    port: 5432,
-    database: 'postgres',
-    user: 'postgres',
-    password: process.env.SUPABASE_DB_PASSWORD,
-    ssl: { rejectUnauthorized: false }
+    connectionString: process.env.LOCAL_PG_URL
   });
 
   try {
