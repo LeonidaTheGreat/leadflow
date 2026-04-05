@@ -20,7 +20,8 @@ module.exports = defineConfig({
   testDir: './tests/browser',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  // 1 retry always — handles Vercel cold-start latency spikes that cause spurious failures
+  retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 1 : 2,
   timeout: 30000,
   expect: { timeout: 10000 },

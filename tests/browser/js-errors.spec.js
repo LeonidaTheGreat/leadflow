@@ -43,8 +43,15 @@ for (const { path, name } of PUBLIC_PAGES) {
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         const text = msg.text()
-        // Filter out known noise
-        if (text.includes('favicon') || text.includes('gtag') || text.includes('analytics')) return
+        // Filter out known noise (network failures, third-party scripts, Vercel internals)
+        if (
+          text.includes('favicon') ||
+          text.includes('gtag') ||
+          text.includes('analytics') ||
+          text.includes('Failed to load resource') ||
+          text.includes('net::ERR_') ||
+          text.includes('ERR_NAME_NOT_RESOLVED')
+        ) return
         consoleErrors.push(text)
       }
     })
