@@ -134,10 +134,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Unique leads who replied (excluding opt-outs)
-    // Use message_body — the column name in sms_messages (not 'body')
+    // Use body — the column name in sms_messages
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.message_body))
+        .filter((m: any) => !isOptOut(m.body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
