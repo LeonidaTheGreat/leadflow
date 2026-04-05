@@ -29,6 +29,10 @@
     {
       "path": "/api/cron/send-trial-emails",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-performance-emails",
+      "schedule": "0 9 * * 1"
     }
   ]
 }

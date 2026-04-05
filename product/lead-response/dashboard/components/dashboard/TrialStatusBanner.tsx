@@ -155,12 +155,12 @@ export function TrialStatusBanner() {
               : 'text-emerald-800 dark:text-emerald-200'
           }`}>
             {isEndingSoon
-              ? `Your ${isTrial ? 'trial' : 'pilot'} ends in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}. Upgrade to keep your AI lead response running.`
-              : `Enjoy ${isTrial ? '14 days' : '60 days'} of free AI lead response. No credit card required.`
+              ? `Your ${isTrial ? 'trial' : 'pilot'} ends in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}. Upgrade to keep your AI lead response running. Plans start at $149/mo.`
+              : `Enjoy ${isTrial ? '14 days' : '60 days'} of free AI lead response. No credit card required. Plans start at $149/mo.`
             }
           </p>
-          {isEndingSoon && (
-            <div className="mt-3">
+          <div className="mt-3 flex items-center gap-3 flex-wrap">
+            {isEndingSoon && (
               <button
                 onClick={handleUpgrade}
                 disabled={checkoutLoading}
@@ -172,10 +172,20 @@ export function TrialStatusBanner() {
                   'Upgrade Now →'
                 )}
               </button>
-              {checkoutError && (
-                <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
-              )}
-            </div>
+            )}
+            <a
+              href="/pricing"
+              className={`text-sm font-medium underline underline-offset-2 ${
+                isEndingSoon
+                  ? 'text-amber-700 dark:text-amber-300 hover:text-amber-600 dark:hover:text-amber-200'
+                  : 'text-emerald-700 dark:text-emerald-300 hover:text-emerald-600 dark:hover:text-emerald-200'
+              }`}
+            >
+              See all plans
+            </a>
+          </div>
+          {checkoutError && (
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
           )}
         </div>
       </div>

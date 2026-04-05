@@ -239,6 +239,10 @@ function DashboardOnboardingInner() {
             </div>
             <div className="text-sm text-slate-400">
               Step {currentStepIndex + 1} of {steps.length}
+              {' · '}
+              <a href="/pricing" className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+                plans start at $49/mo
+              </a>
             </div>
           </div>
         </header>
