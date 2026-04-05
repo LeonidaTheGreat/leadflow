@@ -17,7 +17,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const DASHBOARD_DIR = path.join(__dirname, '../product/lead-response/dashboard')
+const DASHBOARD_DIR = path.join(__dirname, '../../product/lead-response/dashboard')
 const SETUP_DIR = path.join(DASHBOARD_DIR, 'app/setup')
 const MIGRATION_FILE = path.join(DASHBOARD_DIR, 'supabase/migrations/010_agent_onboarding_wizard.sql')
 
