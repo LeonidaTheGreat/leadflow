@@ -11,6 +11,22 @@ export default function SettingsPage() {
   const router = useRouter()
   const { track } = useAnalytics()
   const [activeTab, setActiveTab] = useState('general')
+  const [agentId, setAgentId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Read authenticated agent ID from localStorage
+    try {
+      const userRaw = localStorage.getItem('leadflow_user') || sessionStorage.getItem('leadflow_user')
+      if (userRaw) {
+        const user = JSON.parse(userRaw)
+        if (user.id) {
+          setAgentId(user.id)
+        }
+      }
+    } catch (error) {
+      console.error('Error reading agent ID from storage:', error)
+    }
+  }, [])
 
   useEffect(() => {
     track(PostHogEvents.SETTINGS_PAGE_VIEWED, {
@@ -31,9 +47,6 @@ export default function SettingsPage() {
       enabled,
     })
   }
-
-  // TODO: Get actual agent ID from auth context/session
-  const agentId = 'test-agent-id'
 
   const settingsSections = [
     {
@@ -113,7 +126,7 @@ export default function SettingsPage() {
 
       {/* Billing Section (inline) */}
       <div id="billing">
-        <BillingCard agentId={agentId} />
+        {agentId && <BillingCard agentId={agentId} />}
       </div>
 
       {/* Notifications Section (inline) */}
@@ -164,8 +177,7 @@ export default function SettingsPage() {
           </p>
         </div>
         <div className="p-6">
-          {/* TODO: replace 'test-agent-id' with real agentId from session once auth is wired up */}
-          <SatisfactionPingToggle agentId={agentId} />
+          {agentId && <SatisfactionPingToggle agentId={agentId} />}
         </div>
       </div>
 
