@@ -168,7 +168,7 @@ function DashboardOnboardingInner() {
     setIsLoading(true)
     try {
       const token = getFromStorage('leadflow_token')
-      const response = await fetch('/api/agents/onboard', {
+      const response = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,9 +176,11 @@ function DashboardOnboardingInner() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          ...agentData,
-          aha_moment_completed: agentData.ahaCompleted,
-          aha_response_time_ms: agentData.ahaResponseTimeMs,
+          completionPayload: {
+            ahaCompleted: agentData.ahaCompleted,
+            ahaResponseTimeMs: agentData.ahaResponseTimeMs,
+            stepsCompleted: ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation'],
+          },
         }),
       })
 

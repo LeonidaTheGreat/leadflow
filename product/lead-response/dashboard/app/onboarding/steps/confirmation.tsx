@@ -1,6 +1,12 @@
 'use client'
 
-import { CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
+
+function formatResponseTime(ms: number | null): string {
+  if (!ms) return '--'
+  if (ms < 1000) return `${ms}ms`
+  return `${(ms / 1000).toFixed(1)}s`
+}
 
 export default function OnboardingConfirm({
   onBack,
@@ -11,6 +17,14 @@ export default function OnboardingConfirm({
   onNext: () => void
   agentData: any
 }) {
+  const completionTimestamp = new Date().toLocaleString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
   return (
     <div className="animate-in fade-in-up duration-500">
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
@@ -22,6 +36,7 @@ export default function OnboardingConfirm({
           <p className="text-slate-300">
             Review your information before starting your free 60-day pilot
           </p>
+          <p className="text-xs text-slate-500 mt-2">Completed on {completionTimestamp}</p>
         </div>
 
         {/* Summary */}
@@ -86,6 +101,20 @@ export default function OnboardingConfirm({
                   agentData.smsPhoneNumber ? 'text-emerald-400' : 'text-slate-500'
                 }`}>
                   {agentData.smsPhoneNumber ? '✓ Connected' : '○ Skipped'}
+                </span>
+              </div>
+              {/* Aha Moment status */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚡</span>
+                  <span className="text-slate-300">AI Demo Response</span>
+                </div>
+                <span className={`text-sm font-medium ${
+                  agentData.ahaCompleted ? 'text-emerald-400' : 'text-slate-500'
+                }`}>
+                  {agentData.ahaCompleted
+                    ? `✓ Saw AI respond in ${formatResponseTime(agentData.ahaResponseTimeMs)}`
+                    : '⊘ Skipped for now'}
                 </span>
               </div>
             </div>
