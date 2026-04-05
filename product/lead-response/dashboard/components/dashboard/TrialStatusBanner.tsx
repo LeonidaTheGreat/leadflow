@@ -207,7 +207,7 @@ export function TrialStatusBanner() {
               {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
             </span>
           </div>
-          <p className={`text-sm mt-1 ${colorScheme.body}`}>
+          <p data-testid="pricing-banner-has-price" className={`text-sm mt-1 ${colorScheme.body}`}>
             {isAmberUrgency || isRedUrgency
               ? `Your ${isTrial ? 'trial' : 'pilot'} ends in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}. Upgrade to keep your AI lead response running. Pro plan — $149/mo.`
               : `Enjoy ${isTrial ? '14 days' : '60 days'} of free AI lead response. Plans start at $49/mo. Pro plan recommended — $149/mo.`
@@ -228,6 +228,7 @@ export function TrialStatusBanner() {
               </button>
             )}
             <a
+              data-testid="banner-has-see-plans"
               href="/dashboard/pricing"
               className={`text-sm ${colorScheme.link} hover:underline flex items-center gap-1`}
             >
