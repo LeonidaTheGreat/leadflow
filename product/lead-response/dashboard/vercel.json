@@ -25,6 +25,10 @@
     {
       "path": "/api/cron/nps-surveys",
       "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/send-trial-emails",
+      "schedule": "0 10 * * *"
     }
   ]
 }
