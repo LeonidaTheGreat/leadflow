@@ -326,8 +326,14 @@ export function LeadFeed() {
         {/* Empty state — no real leads and not eligible for samples */}
         {!hasRealLeads && !showSamples && (
           <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-            <p>No leads found</p>
-            <p className="text-sm mt-1">New leads will appear here when they come in</p>
+            <p className="font-medium text-slate-700 dark:text-slate-300">No leads yet</p>
+            <p className="text-sm mt-1 mb-4">New leads will appear here when they come in</p>
+            <a
+              href="/dashboard/demo"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              ✨ No leads yet? See the AI in action →
+            </a>
           </div>
         )}
       </div>
