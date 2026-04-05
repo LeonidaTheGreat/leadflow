@@ -155,28 +155,40 @@ export function TrialStatusBanner() {
               : 'text-emerald-800 dark:text-emerald-200'
           }`}>
             {isEndingSoon
-              ? `Your ${isTrial ? 'trial' : 'pilot'} ends in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}. Upgrade to keep your AI lead response running.`
-              : `Enjoy ${isTrial ? '14 days' : '60 days'} of free AI lead response. No credit card required.`
+              ? `Your ${isTrial ? 'trial' : 'pilot'} ends in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}. Upgrade to keep your AI lead response running. Plans start at $149/mo.`
+              : `Enjoy ${isTrial ? '14 days' : '60 days'} of free AI lead response. No credit card required. Plans start at $149/mo.`
             }
           </p>
-          {isEndingSoon && (
-            <div className="mt-3">
-              <button
-                onClick={handleUpgrade}
-                disabled={checkoutLoading}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                {checkoutLoading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
-                ) : (
-                  'Upgrade Now →'
+          <div className="mt-3 flex items-center flex-wrap gap-3">
+            {isEndingSoon && (
+              <>
+                <button
+                  onClick={handleUpgrade}
+                  disabled={checkoutLoading}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {checkoutLoading ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                  ) : (
+                    'Upgrade Now →'
+                  )}
+                </button>
+                {checkoutError && (
+                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
                 )}
-              </button>
-              {checkoutError && (
-                <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
-              )}
-            </div>
-          )}
+              </>
+            )}
+            <a
+              href="/pricing"
+              className={`text-sm font-medium underline underline-offset-2 transition-colors ${
+                isEndingSoon
+                  ? 'text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100'
+                  : 'text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100'
+              }`}
+            >
+              See all plans
+            </a>
+          </div>
         </div>
       </div>
     </div>

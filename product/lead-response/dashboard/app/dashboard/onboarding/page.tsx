@@ -237,8 +237,13 @@ function DashboardOnboardingInner() {
               </div>
               <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
             </div>
-            <div className="text-sm text-slate-400">
-              Step {currentStepIndex + 1} of {steps.length}
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-slate-500 hidden sm:inline">
+                Free trial · plans start at $149/mo
+              </span>
+              <span className="text-sm text-slate-400">
+                Step {currentStepIndex + 1} of {steps.length}
+              </span>
             </div>
           </div>
         </header>
