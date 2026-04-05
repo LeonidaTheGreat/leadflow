@@ -43,8 +43,8 @@ const OPT_OUT_PATTERNS = [
  */
 const SATISFACTION_PATTERNS = {
   positive: /^(yes|y|yep|yeah|good|great|perfect|awesome|helpful|thanks|thank you)\b/i,
-  negative: /^(no|nope|not helpful|bad|terrible|not good|unhelpful)\b/i,
-  neutral: /^(ok|okay|sure|fine|whatever)\b/i,
+  negative: /^(no|nope|not helpful|bad|terrible|not good|unhelpful|annoying|quit)\b/i,
+  neutral: /^(ok|okay|sure|fine|whatever|meh)\b/i,
 };
 
 // ===== WEBHOOK VERIFICATION =====
