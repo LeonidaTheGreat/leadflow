@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Clock, AlertTriangle, Sparkles } from 'lucide-react'
+import { Clock, AlertTriangle, Sparkles, Loader2 } from 'lucide-react'
 
 interface TrialStatus {
   isTrial: boolean
@@ -14,9 +14,29 @@ interface TrialStatus {
   onboardingStep: string | null
 }
 
+async function initiateUpgradeCheckout(): Promise<{ url?: string; error?: string }> {
+  try {
+    const res = await fetch('/api/stripe/upgrade-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: 'pro' }),
+    })
+    if (!res.ok) {
+      const data = await res.json()
+      return { error: data.error || 'Something went wrong. Please try again.' }
+    }
+    const { url } = await res.json()
+    return { url }
+  } catch {
+    return { error: 'Network error. Please try again.' }
+  }
+}
+
 export function TrialStatusBanner() {
   const [status, setStatus] = useState<TrialStatus | null>(null)
   const [loading, setLoading] = useState(true)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchTrialStatus() {
@@ -35,6 +55,21 @@ export function TrialStatusBanner() {
 
     fetchTrialStatus()
   }, [])
+
+  async function handleUpgrade() {
+    setCheckoutLoading(true)
+    setCheckoutError(null)
+    const result = await initiateUpgradeCheckout()
+    if (result.error) {
+      setCheckoutError(result.error)
+      setCheckoutLoading(false)
+      return
+    }
+    if (result.url) {
+      window.location.href = result.url
+    }
+    // Keep loading state active while browser navigates to Stripe
+  }
 
   if (loading || !status) {
     return null
@@ -59,12 +94,20 @@ export function TrialStatusBanner() {
               Your {status.isTrial ? '14-day trial' : '60-day pilot'} has ended. Upgrade now to keep your AI lead response active.
             </p>
             <div className="mt-3">
-              <a
-                href="/settings/billing"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors"
+              <button
+                onClick={handleUpgrade}
+                disabled={checkoutLoading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
               >
-                Upgrade Now →
-              </a>
+                {checkoutLoading ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                ) : (
+                  'Upgrade Now →'
+                )}
+              </button>
+              {checkoutError && (
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
+              )}
             </div>
           </div>
         </div>
@@ -79,8 +122,8 @@ export function TrialStatusBanner() {
 
   return (
     <div className={`rounded-lg p-4 mb-6 ${
-      isEndingSoon 
-        ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800' 
+      isEndingSoon
+        ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'
         : 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
     }`}>
       <div className="flex items-start gap-3">
@@ -92,38 +135,46 @@ export function TrialStatusBanner() {
         <div className="flex-1">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className={`font-semibold ${
-              isEndingSoon 
-                ? 'text-amber-900 dark:text-amber-100' 
+              isEndingSoon
+                ? 'text-amber-900 dark:text-amber-100'
                 : 'text-emerald-900 dark:text-emerald-100'
             }`}>
               {isTrial ? '🎉 You\'re on a free trial' : '🎉 You\'re on a free pilot'}
             </h3>
             <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-              isEndingSoon 
-                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300' 
+              isEndingSoon
+                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
                 : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
             }`}>
               {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
             </span>
           </div>
           <p className={`text-sm mt-1 ${
-            isEndingSoon 
-              ? 'text-amber-800 dark:text-amber-200' 
+            isEndingSoon
+              ? 'text-amber-800 dark:text-amber-200'
               : 'text-emerald-800 dark:text-emerald-200'
           }`}>
-            {isEndingSoon 
+            {isEndingSoon
               ? `Your ${isTrial ? 'trial' : 'pilot'} ends in ${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}. Upgrade to keep your AI lead response running.`
               : `Enjoy ${isTrial ? '14 days' : '60 days'} of free AI lead response. No credit card required.`
             }
           </p>
           {isEndingSoon && (
             <div className="mt-3">
-              <a
-                href="/settings/billing"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors"
+              <button
+                onClick={handleUpgrade}
+                disabled={checkoutLoading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
               >
-                Upgrade Now →
-              </a>
+                {checkoutLoading ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                ) : (
+                  'Upgrade Now →'
+                )}
+              </button>
+              {checkoutError && (
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
+              )}
             </div>
           )}
         </div>

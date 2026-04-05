@@ -8,6 +8,7 @@ import { UpgradeBanner } from '@/components/dashboard/UpgradeBanner'
 import { TrialStatusBanner } from '@/components/dashboard/TrialStatusBanner'
 import { SampleDataBanner } from '@/components/dashboard/SampleDataBanner'
 import { OnboardingWizardLauncher } from '@/components/dashboard/OnboardingWizardLauncher'
+import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
@@ -16,6 +17,11 @@ export const metadata = {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
+      {/* Success toast — shown after returning from Stripe checkout (?upgrade=success) */}
+      <Suspense fallback={null}>
+        <UpgradeSuccessToast />
+      </Suspense>
+
       {/* Upgrade Banner — shows for paid tier agents */}
       <UpgradeBanner />
 
