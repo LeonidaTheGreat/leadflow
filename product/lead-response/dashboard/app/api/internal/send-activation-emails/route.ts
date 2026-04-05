@@ -17,7 +17,7 @@ import { postgrestAdmin as db } from '@/lib/db'
 import { sendActivationEmail } from '@/lib/verification-email'
 
 function isAuthorized(req: NextRequest): boolean {
-  const secret = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
+  const secret = (process.env.API_SECRET_KEY || '').trim()
   if (!secret) return false
   const auth = req.headers.get('authorization') || ''
   return auth === `Bearer ${secret}`
