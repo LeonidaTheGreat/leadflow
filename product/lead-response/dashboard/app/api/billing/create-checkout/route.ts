@@ -59,6 +59,17 @@ function checkRateLimit(ip: string): boolean {
   return true
 }
 
+/**
+ * Wrapper to add timeout to async operations.
+ * Rejects with error if operation doesn't complete in time.
+ */
+async function withTimeout<T>(promise: Promise<T> | PromiseLike<T>, timeoutMs: number): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
+  )
+  return Promise.race([Promise.resolve(promise), timeoutPromise])
+}
+
 export async function POST(request: NextRequest) {
   try {
     // --- Rate limiting (before any processing) ---
@@ -148,14 +159,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // --- Validate agent exists in database ---
-    const { data: agent, error: agentError } = await supabase
-      .from('real_estate_agents')
-      .select('id, email')
-      .eq('id', agentId)
-      .single()
+    // --- Validate agent exists in database (with 5s timeout) ---
+    let agent
+    try {
+      const result = await withTimeout(
+        supabase
+          .from('real_estate_agents')
+          .select('id, email')
+          .eq('id', agentId)
+          .single(),
+        5000
+      )
+      agent = result.data
+    } catch (err: any) {
+      console.error('Agent lookup timeout/error:', err)
+      if (err.message.includes('timed out')) {
+        return NextResponse.json(
+          { error: 'Service temporarily unavailable. Please try again.', code: 'SERVICE_UNAVAILABLE' },
+          { status: 503 }
+        )
+      }
+      return NextResponse.json(
+        { error: 'Failed to verify account', code: 'AGENT_LOOKUP_FAILED' },
+        { status: 500 }
+      )
+    }
 
-    if (agentError || !agent) {
+    if (!agent) {
       return NextResponse.json(
         { error: 'Agent not found', code: 'AGENT_NOT_FOUND' },
         { status: 404 }
@@ -196,18 +226,26 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
     })
 
-    // Log checkout session to checkout_sessions table
+    // Log checkout session to checkout_sessions table (with 5s timeout)
     const tierInterval = tier.endsWith('_annual') ? 'year' : 'month'
     const tierBase = tier.split('_')[0]
-    await supabase.from('checkout_sessions').insert({
-      user_id: agentId,
-      tier: tierBase,
-      interval: tierInterval,
-      stripe_session_id: session.id,
-      status: 'pending',
-      url: session.url,
-      created_at: new Date().toISOString(),
-    })
+    try {
+      await withTimeout(
+        supabase.from('checkout_sessions').insert({
+          user_id: agentId,
+          tier: tierBase,
+          interval: tierInterval,
+          stripe_session_id: session.id,
+          status: 'pending',
+          url: session.url,
+          created_at: new Date().toISOString(),
+        }),
+        5000
+      )
+    } catch (err: any) {
+      console.warn('Failed to log checkout session (non-critical):', err)
+      // Don't fail the checkout if logging fails — Stripe session is already created
+    }
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error: any) {
