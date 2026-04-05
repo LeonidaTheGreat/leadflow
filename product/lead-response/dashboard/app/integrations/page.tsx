@@ -64,6 +64,8 @@ export default function IntegrationsPage() {
   ])
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [twilioMode, setTwilioMode] = useState<'system' | 'existing'>('system')
+  const [isProvisioning, setIsProvisioning] = useState(false)
 
   useEffect(() => {
     loadIntegrationStatus()
@@ -90,6 +92,45 @@ export default function IntegrationsPage() {
     }
   }
 
+  const handleProvisionTwilio = async () => {
+    setIsProvisioning(true)
+    try {
+      const response = await fetch('/api/agents/onboarding/provision-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setIntegrations((prev) =>
+          prev.map((int) =>
+            int.id === 'twilio'
+              ? { ...int, connected: true, config: { ...int.config, phoneNumber: data.phoneNumberClean } }
+              : int
+          )
+        )
+        track(PostHogEvents.SETTINGS_INTEGRATION_CONNECTED, {
+          integration_name: 'twilio',
+          provisioned: true,
+        })
+        setExpandedId(null)
+      } else {
+        throw new Error(data.error || 'Failed to provision phone number')
+      }
+    } catch (error: any) {
+      setIntegrations((prev) =>
+        prev.map((int) =>
+          int.id === 'twilio'
+            ? { ...int, error: error.message }
+            : int
+        )
+      )
+    } finally {
+      setIsProvisioning(false)
+    }
+  }
+
   const handleConnect = async (integrationId: string) => {
     setIntegrations((prev) =>
       prev.map((int) =>
@@ -112,6 +153,12 @@ export default function IntegrationsPage() {
           })
           break
         case 'twilio':
+          // If using system provisioning, call the provision endpoint
+          if (twilioMode === 'system') {
+            await handleProvisionTwilio()
+            return
+          }
+          // Otherwise use existing bring-your-own flow
           response = await fetch('/api/integrations/twilio/connect', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -283,6 +330,10 @@ export default function IntegrationsPage() {
                     config={integration.config}
                     onChange={(key, value) => updateConfig(integration.id, key, value)}
                     error={integration.error}
+                    onProvision={handleProvisionTwilio}
+                    isProvisioning={isProvisioning}
+                    mode={twilioMode}
+                    onModeChange={setTwilioMode}
                   />
                 )}
                 {integration.id === 'calcom' && (
@@ -337,18 +388,20 @@ export default function IntegrationsPage() {
                   ) : (
                     <button
                       onClick={() => handleConnect(integration.id)}
-                      disabled={integration.loading}
+                      disabled={integration.loading || (integration.id === 'twilio' && isProvisioning)}
                       className="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {integration.loading ? (
+                      {integration.loading || (integration.id === 'twilio' && isProvisioning) ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          Connecting...
+                          {integration.id === 'twilio' && twilioMode === 'system' ? 'Provisioning...' : 'Connecting...'}
                         </>
                       ) : (
                         <>
                           <Plug className="w-4 h-4" />
-                          Connect {integration.name}
+                          {integration.id === 'twilio' && twilioMode === 'system'
+                            ? 'Get LeadFlow Number'
+                            : `Connect ${integration.name}`}
                         </>
                       )}
                     </button>
@@ -437,11 +490,25 @@ function TwilioConfig({
   config,
   onChange,
   error,
+  onProvision,
+  isProvisioning = false,
+  mode: externalMode,
+  onModeChange,
 }: {
   config: Record<string, any>
   onChange: (key: string, value: string) => void
   error: string
+  onProvision?: () => Promise<void>
+  isProvisioning?: boolean
+  mode?: 'system' | 'existing'
+  onModeChange?: (mode: 'system' | 'existing') => void
 }) {
+  const [internalMode, setInternalMode] = useState<'system' | 'existing'>(config.phoneNumber ? 'existing' : 'system')
+  const mode = externalMode ?? internalMode
+  const setMode = (newMode: 'system' | 'existing') => {
+    setInternalMode(newMode)
+    onModeChange?.(newMode)
+  }
   const formatPhone = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '')
     if (cleaned.length <= 3) return cleaned
@@ -451,60 +518,123 @@ function TwilioConfig({
 
   return (
     <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          <Phone className="w-4 h-4 inline mr-2" />
-          Twilio Phone Number
-        </label>
-        <div className="relative">
-          <Phone className="absolute left-3 top-3 text-slate-400 w-5 h-5" />
-          <input
-            type="tel"
-            value={config.phoneNumber || ''}
-            onChange={(e) => onChange('phoneNumber', formatPhone(e.target.value))}
-            placeholder="555-123-4567"
-            maxLength={12}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-          />
+      {/* Mode selector */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          onClick={() => setMode('system')}
+          className={`rounded-lg p-4 border-2 text-left transition-all ${
+            mode === 'system'
+              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+          }`}
+        >
+          <div className="text-2xl mb-2">📱</div>
+          <div className="font-medium text-slate-900 dark:text-white text-sm">Use LeadFlow Number</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Instant setup — we provide the number
+          </div>
+          {mode === 'system' && (
+            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-2 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3" /> Selected
+            </div>
+          )}
+        </button>
+
+        <button
+          onClick={() => setMode('existing')}
+          className={`rounded-lg p-4 border-2 text-left transition-all ${
+            mode === 'existing'
+              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+          }`}
+        >
+          <div className="text-2xl mb-2">🔧</div>
+          <div className="font-medium text-slate-900 dark:text-white text-sm">Bring Your Own</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Use your existing Twilio account
+          </div>
+          {mode === 'existing' && (
+            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-2 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3" /> Selected
+            </div>
+          )}
+        </button>
+      </div>
+
+      {/* System mode: Provision button */}
+      {mode === 'system' && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
+            <span className="font-medium">Get a dedicated US phone number instantly.</span>
+            {' '}No Twilio account needed — we handle everything.
+          </p>
+          {config.phoneNumber && (
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+              Current number: <span className="font-mono font-medium">{config.phoneNumber}</span>
+            </p>
+          )}
         </div>
-      </div>
+      )}
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Account SID
-        </label>
-        <input
-          type="text"
-          value={config.accountSid || ''}
-          onChange={(e) => onChange('accountSid', e.target.value)}
-          placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-          className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-        />
-      </div>
+      {/* Existing mode: Credentials form */}
+      {mode === 'existing' && (
+        <div className="space-y-4 pt-2">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <Phone className="w-4 h-4 inline mr-2" />
+              Twilio Phone Number
+            </label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-3 text-slate-400 w-5 h-5" />
+              <input
+                type="tel"
+                value={config.phoneNumber || ''}
+                onChange={(e) => onChange('phoneNumber', formatPhone(e.target.value))}
+                placeholder="555-123-4567"
+                maxLength={12}
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+              />
+            </div>
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Auth Token
-        </label>
-        <input
-          type="password"
-          value={config.authToken || ''}
-          onChange={(e) => onChange('authToken', e.target.value)}
-          placeholder="Your Twilio auth token"
-          className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-        />
-        <p className="mt-1 text-xs text-slate-500">
-          Find these credentials in your{' '}
-          <a
-            href="https://console.twilio.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
-          >
-            Twilio Console <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-      </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Account SID
+            </label>
+            <input
+              type="text"
+              value={config.accountSid || ''}
+              onChange={(e) => onChange('accountSid', e.target.value)}
+              placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Auth Token
+            </label>
+            <input
+              type="password"
+              value={config.authToken || ''}
+              onChange={(e) => onChange('authToken', e.target.value)}
+              placeholder="Your Twilio auth token"
+              className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              Find these credentials in your{' '}
+              <a
+                href="https://console.twilio.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
+              >
+                Twilio Console <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
