@@ -17,6 +17,10 @@ const VALID_EVENTS = new Set([
   'aha_simulation_started',
   'aha_simulation_completed',
   'onboarding_completed',
+  // Pricing clarity conversion events (PRD-PRICING-CLARITY-TRIAL-USERS)
+  'trial_pricing_viewed',
+  'trial_upgrade_clicked',
+  'trial_checkout_started',
 ])
 
 function getSupabase() {
