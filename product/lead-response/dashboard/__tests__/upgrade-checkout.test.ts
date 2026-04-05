@@ -78,8 +78,11 @@ const mockFrom = jest.fn().mockReturnValue({
   insert: mockInsert,
 })
 
+const mockDb = { from: (...args: unknown[]) => mockFrom(...args) }
+
 jest.mock('@/lib/db', () => ({
-  createClient: jest.fn().mockReturnValue({ from: (...args: unknown[]) => mockFrom(...args) }),
+  createClient: jest.fn().mockReturnValue(mockDb),
+  supabaseAdmin: mockDb,
 }))
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -149,8 +152,9 @@ describe('POST /api/stripe/upgrade-checkout', () => {
     mockJwtVerify.mockImplementation(() => { throw new Error('invalid token') })
     const req = makeRequest({ plan: 'pro' })
     await POST(req)
+    // Route swallows JWT errors and returns generic 401 for security (no token leak)
     expect(NextResponse.json).toHaveBeenCalledWith(
-      expect.objectContaining({ error: expect.stringMatching(/invalid token/i) }),
+      expect.objectContaining({ error: expect.stringMatching(/not authenticated/i) }),
       expect.objectContaining({ status: 401 })
     )
   })
@@ -234,12 +238,22 @@ describe('POST /api/stripe/upgrade-checkout', () => {
     )
   })
 
-  it('points success_url to /settings/billing?upgrade=success', async () => {
+  it('points success_url to /dashboard?upgrade=success', async () => {
     const req = makeRequest({ plan: 'pro' })
     await POST(req)
     expect(mockCheckoutCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        success_url: expect.stringContaining('/settings/billing?upgrade=success'),
+        success_url: expect.stringContaining('/dashboard?upgrade=success'),
+      })
+    )
+  })
+
+  it('points cancel_url to /dashboard', async () => {
+    const req = makeRequest({ plan: 'pro' })
+    await POST(req)
+    expect(mockCheckoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cancel_url: expect.stringContaining('/dashboard'),
       })
     )
   })

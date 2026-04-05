@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
           upgraded_from: 'pilot',
         },
       },
-      // Pilot agents have already been using the product — no extra trial
-      success_url: `${baseUrl}/settings/billing?upgrade=success&plan=${plan}`,
-      cancel_url: `${baseUrl}/settings/billing?upgrade=cancelled`,
+      // After payment, return to dashboard. Banner disappears because plan_tier is no longer 'trial'.
+      success_url: `${baseUrl}/dashboard?upgrade=success`,
+      cancel_url: `${baseUrl}/dashboard`,
       automatic_tax: { enabled: true },
       allow_promotion_codes: true,
     })
