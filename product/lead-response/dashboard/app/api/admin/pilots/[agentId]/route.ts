@@ -15,10 +15,10 @@ import crypto from 'crypto'
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { agentId: string } }
+  { params }: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    const { agentId } = params
+    const { agentId } = await params
     const body = await request.json()
     const { contactType, notes, stageAdvanced } = body
 
@@ -75,10 +75,10 @@ export async function POST(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { agentId: string } }
+  { params }: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    const { agentId } = params
+    const { agentId } = await params
     const body = await request.json()
     const { newStage } = body
 
