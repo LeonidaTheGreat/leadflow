@@ -59,13 +59,20 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
   const sessionToken = request.cookies.get('leadflow_session')?.value
   if (sessionToken && POSTGREST_URL) {
     try {
-      const url = `${POSTGREST_URL}/sessions?token=eq.${sessionToken}&select=user_id,expires_at&limit=1`
+      // Encode session token to prevent URL injection
+      const encodedToken = encodeURIComponent(sessionToken)
+      const url = `${POSTGREST_URL}/sessions?token=eq.${encodedToken}&select=user_id,expires_at&limit=1`
       const headers: Record<string, string> = {
         'Accept': 'application/json',
         ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
         ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
       }
-      const res = await fetch(url, { headers })
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s timeout
+
+      const res = await fetch(url, { headers, signal: controller.signal })
+      clearTimeout(timeoutId)
+
       if (res.ok) {
         const rows = await res.json()
         if (rows.length > 0) {
@@ -76,8 +83,11 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
           }
         }
       }
-    } catch {
-      // Session validation failed
+    } catch (err) {
+      // Session validation failed (including timeout)
+      if (err instanceof Error && err.name === 'AbortError') {
+        console.error('Session validation timeout')
+      }
     }
   }
 
@@ -96,12 +106,21 @@ async function isOnboardingCompleted(userId: string): Promise<boolean> {
       ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
       ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
     }
-    const res = await fetch(url, { headers })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s timeout
+
+    const res = await fetch(url, { headers, signal: controller.signal })
+    clearTimeout(timeoutId)
+
     if (!res.ok) return true
     const rows = await res.json()
     if (rows.length === 0) return true
     return rows[0].onboarding_completed ?? false
-  } catch {
+  } catch (err) {
+    // On error or timeout, fail open (allow access)
+    if (err instanceof Error && err.name === 'AbortError') {
+      console.error('Onboarding check timeout')
+    }
     return true
   }
 }
@@ -118,7 +137,12 @@ async function isTrialExpired(userId: string): Promise<boolean> {
       ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
       ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
     }
-    const res = await fetch(url, { headers })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s timeout
+
+    const res = await fetch(url, { headers, signal: controller.signal })
+    clearTimeout(timeoutId)
+
     if (!res.ok) return false
     const rows = await res.json()
     if (rows.length === 0) return false
@@ -126,7 +150,11 @@ async function isTrialExpired(userId: string): Promise<boolean> {
     if (agent.plan_tier !== 'trial') return false
     if (!agent.trial_ends_at) return false
     return new Date() > new Date(agent.trial_ends_at)
-  } catch {
+  } catch (err) {
+    // On error or timeout, fail safe (assume trial not expired)
+    if (err instanceof Error && err.name === 'AbortError') {
+      console.error('Trial expiration check timeout')
+    }
     return false
   }
 }
