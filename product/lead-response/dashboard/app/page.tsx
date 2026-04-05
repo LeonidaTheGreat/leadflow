@@ -90,13 +90,20 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-slate-300 mb-10">
               Instantly qualify and respond to real estate leads using AI.
-              Never miss another opportunity. Start free — no credit card required.
+              Never miss another opportunity. Start your 14-day free trial — no credit card required.
             </p>
 
             {/* Hero Trial CTA */}
             <Suspense fallback={<div className="h-24" />}>
               <TrialSignupForm compact />
             </Suspense>
+
+            {/* Trust bar */}
+            <div className="mt-4 flex items-center justify-center gap-6 text-sm text-slate-400" data-testid="hero-trust-bar">
+              <span className="flex items-center gap-1"><span className="text-emerald-400">✓</span> 14-day free trial</span>
+              <span className="flex items-center gap-1"><span className="text-emerald-400">✓</span> No credit card</span>
+              <span className="flex items-center gap-1"><span className="text-emerald-400">✓</span> Cancel anytime</span>
+            </div>
 
             <div className="mt-6 flex items-center justify-center gap-4 text-sm">
               {/* CTA: see_how_it_works (FR-2) */}
@@ -203,7 +210,7 @@ export default function HomePage() {
             Ready to Respond Faster?
           </h4>
           <p className="text-slate-500 dark:text-slate-400 mb-6">
-            Join agents who are converting more leads with AI-powered responses.
+            Join agents converting more leads with a 14-day free trial — no credit card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {/* CTA: start_trial_features */}
@@ -261,20 +268,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials — Social Proof Section */}
+      {/* Social Proof — What Early Agents Experience */}
       <section data-testid="testimonials-section" className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            What Agents Are Saying
+            What Early Agents Experience
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Join hundreds of agents who have transformed their lead response.
+            Built for real estate agents. Launching pilot program — limited spots.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard key={index} quote={testimonial.quote} name={testimonial.name} title={testimonial.title} />
-            ))}
+            <OutcomeCard
+              stat="<30 seconds"
+              label="Response Time"
+              detail="vs. industry average of 2+ hours"
+              icon="⚡"
+            />
+            <OutcomeCard
+              stat="<10 minutes"
+              label="Setup Time"
+              detail="Connect FUB + Cal.com and deploy AI"
+              icon="🚀"
+            />
+            <OutcomeCard
+              stat="100%"
+              label="After-Hours Coverage"
+              detail="Leads handled while you sleep — included"
+              icon="🌙"
+            />
           </div>
 
           <div className="mt-12 text-center">
@@ -288,10 +310,6 @@ export default function HomePage() {
               Get Started Today →
             </Link>
           </div>
-
-          <p className="mt-8 text-center text-sm text-slate-400 dark:text-slate-500 italic">
-            Results may vary. Testimonials represent expected outcomes based on typical usage.
-          </p>
         </div>
       </section>
 
@@ -496,46 +514,13 @@ const faqItems = [
   },
 ]
 
-const testimonials = [
-  {
-    quote: "I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight.",
-    name: "Sarah M.",
-    title: "Solo Agent, Austin TX",
-  },
-  {
-    quote: "My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month.",
-    name: "Mike R.",
-    title: "Team Lead, Denver CO",
-  },
-  {
-    quote: "Setup took 5 minutes. The AI sounds like me, not a robot.",
-    name: "Jennifer K.",
-    title: "Realtor, Miami FL",
-  },
-]
-
-function TestimonialCard({
-  quote,
-  name,
-  title,
-}: {
-  quote: string
-  name: string
-  title: string
-}) {
+function OutcomeCard({ stat, label, detail, icon }: { stat: string; label: string; detail: string; icon: string }) {
   return (
-    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col">
-      <div className="text-emerald-500 text-4xl mb-4">&ldquo;</div>
-      <p className="text-slate-700 dark:text-slate-300 mb-6 flex-grow">{quote}</p>
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold">
-          {name.charAt(0)}
-        </div>
-        <div>
-          <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
-        </div>
-      </div>
+    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 text-center">
+      <div className="text-4xl mb-4">{icon}</div>
+      <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{stat}</div>
+      <h4 className="font-semibold text-slate-900 dark:text-white mb-2">{label}</h4>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{detail}</p>
     </div>
   )
 }
@@ -596,7 +581,7 @@ function PricingCard({
   description,
   features,
   popular = false,
-  cta = 'Get Started',
+  cta = 'Start 14-Day Free Trial',
   testId
 }: {
   name: string
@@ -635,7 +620,7 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${planSlug}`}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup/trial?plan=${planSlug}`}
         onClick={() => trackCTAClick(`pricing_${planSlug}`, `${cta} ${name}`, 'pricing')}
         data-cta-id={`pricing_${planSlug}`}
         data-testid={testId}
@@ -647,16 +632,6 @@ function PricingCard({
       >
         {cta}
       </Link>
-      {!isBrokerage && (
-        <Link
-          href="/signup/trial"
-          onClick={() => trackCTAClick('start_trial_pricing', 'or start free trial', 'pricing')}
-          data-cta-id="start_trial_pricing"
-          className="mt-3 block text-center text-sm text-emerald-500 hover:text-emerald-600 font-medium"
-        >
-          or start free trial →
-        </Link>
-      )}
     </div>
   )
 }
