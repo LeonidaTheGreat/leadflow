@@ -6,7 +6,7 @@
 import * as https from 'https'
 
 interface TelegramMessage {
-  chat_id: number | string
+  chat_id?: number | string
   text: string
   message_thread_id?: number // For topic-based chats
   parse_mode?: 'HTML' | 'Markdown'
