@@ -792,3 +792,269 @@ export async function sendPilotInviteEmail(
     inviteUrl: data.inviteUrl,
   })
 }
+
+// Pilot Lifecycle Emails (White-Glove Onboarding)
+
+export async function sendPilotWelcomeEmail(
+  agentEmail: string,
+  agentName: string,
+  dashboardUrl: string
+): Promise<boolean> {
+  const subject = `You're in! Here's how to set up your AI (takes 10 min)`
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #f5f5f5; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: white; border-radius: 8px; max-width: 600px; width: 100%;">
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <h2 style="color: #1a202c; font-size: 24px; margin: 0 0 16px;">Welcome, ${agentName}! 🎉</h2>
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    You're now part of the LeadFlow AI pilot program. Your AI is ready to respond to leads in under 30 seconds.
+                  </p>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    <strong>Here's what's next (takes 10 minutes):</strong>
+                  </p>
+
+                  <ol style="color: #4a5568; font-size: 16px; line-height: 2;">
+                    <li><strong>Connect your Follow Up Boss account</strong> — this is where your leads come from</li>
+                    <li><strong>Configure your AI's personality</strong> — we'll ask about your market, approach, and goals</li>
+                    <li><strong>Send a test lead</strong> — see the AI respond in real-time</li>
+                  </ol>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 24px 0;">
+                    <a href="${dashboardUrl}" style="display: inline-block; padding: 12px 32px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">Get Started</a>
+                  </p>
+
+                  <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
+                    Questions? Reply to this email or reach me directly at stojan@leadflow.ai<br />
+                    <strong>I'm here to make sure this works perfectly for you.</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                  <p style="color: #718096; font-size: 12px; margin: 0;">
+                    &copy; ${new Date().getFullYear()} LeadFlow AI. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, '', 'pilot_welcome', {
+    agentName,
+  })
+}
+
+export async function sendPilotSetupCompleteEmail(
+  agentEmail: string,
+  agentName: string,
+  dashboardUrl: string
+): Promise<boolean> {
+  const subject = `Your AI is live — here's how to test it right now`
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #f5f5f5; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: white; border-radius: 8px; max-width: 600px; width: 100%;">
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <h2 style="color: #1a202c; font-size: 24px; margin: 0 0 16px;">Your AI is Live! 🚀</h2>
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    Great news, ${agentName} — your setup is complete. Your AI is now connected to Follow Up Boss and ready to respond to leads.
+                  </p>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    <strong>Test it right now:</strong>
+                  </p>
+
+                  <ol style="color: #4a5568; font-size: 16px; line-height: 2;">
+                    <li>Go to your Follow Up Boss dashboard</li>
+                    <li>Create a test lead (or forward a real one)</li>
+                    <li>Watch as the AI responds in under 30 seconds</li>
+                  </ol>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 24px 0;">
+                    <a href="${dashboardUrl}" style="display: inline-block; padding: 12px 32px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">View Your Dashboard</a>
+                  </p>
+
+                  <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
+                    Let me know how it goes! Email stojan@leadflow.ai or reply to this message.<br />
+                    <strong>Excited to see your AI at work.</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                  <p style="color: #718096; font-size: 12px; margin: 0;">
+                    &copy; ${new Date().getFullYear()} LeadFlow AI. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, '', 'pilot_setup_complete', {
+    agentName,
+  })
+}
+
+export async function sendPilotAhaMomentEmail(
+  agentEmail: string,
+  agentName: string,
+  dashboardUrl: string
+): Promise<boolean> {
+  const subject = `Your AI just responded to a real lead in 18 seconds 🎯`
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #f5f5f5; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: white; border-radius: 8px; max-width: 600px; width: 100%;">
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <h2 style="color: #1a202c; font-size: 28px; margin: 0 0 16px;">It Works! 🎉</h2>
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    ${agentName}, your AI just responded to a real lead in 18 seconds. No delays. No waiting. Just instant, personalized outreach.
+                  </p>
+
+                  <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 4px; padding: 16px; margin: 24px 0;">
+                    <p style="color: #1a202c; font-size: 16px; margin: 0;">
+                      <strong>This is exactly what your customers need.</strong> And it's working right now for you.
+                    </p>
+                  </div>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 24px 0;">
+                    <a href="${dashboardUrl}" style="display: inline-block; padding: 12px 32px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">See Your Responses</a>
+                  </p>
+
+                  <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
+                    Ready to go live with paying leads? Let's talk about moving to a paid plan.<br />
+                    Reply to this email or email stojan@leadflow.ai anytime.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                  <p style="color: #718096; font-size: 12px; margin: 0;">
+                    &copy; ${new Date().getFullYear()} LeadFlow AI. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, '', 'pilot_aha_moment', {
+    agentName,
+  })
+}
+
+export async function sendPilotTrialCTAEmail(
+  agentEmail: string,
+  agentName: string,
+  dashboardUrl: string,
+  upgradeUrl: string
+): Promise<boolean> {
+  const subject = `Your AI is working. Ready to keep it running?`
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: #f5f5f5; padding: 40px 0;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background: white; border-radius: 8px; max-width: 600px; width: 100%;">
+              <tr>
+                <td style="padding: 40px 32px;">
+                  <h2 style="color: #1a202c; font-size: 24px; margin: 0 0 16px;">Ready for the Next Step?</h2>
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    Hi ${agentName},
+                  </p>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    You've seen it work. Your AI is responding to leads instantly, generating follow-ups your competition is sleeping on.
+                  </p>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                    <strong>It's time to make it permanent.</strong>
+                  </p>
+
+                  <div style="background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px; padding: 16px; margin: 24px 0;">
+                    <p style="color: #1a202c; font-size: 16px; margin: 0;">
+                      <strong>Pricing starts at $49/mo</strong> for the Starter plan (100 SMS) and scales up from there. <a href="${upgradeUrl}" style="color: #d97706; font-weight: 600;">See all plans</a>.
+                    </p>
+                  </div>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 24px 0;">
+                    <a href="${upgradeUrl}" style="display: inline-block; padding: 12px 32px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">Upgrade Now</a>
+                  </p>
+
+                  <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 24px 0 0;">
+                    Questions about plans or features? <a href="mailto:stojan@leadflow.ai" style="color: #0891b2;">Email me</a> directly.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                  <p style="color: #718096; font-size: 12px; margin: 0;">
+                    &copy; ${new Date().getFullYear()} LeadFlow AI. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `
+
+  return sendEmail(agentEmail, subject, html, '', 'pilot_trial_cta', {
+    agentName,
+  })
+}
