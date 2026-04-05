@@ -387,6 +387,8 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
                 onBack={() => setState((prev) => ({ ...prev, currentStep: 'simulator' }))}
                 setupData={{
                   fubConnected: state.fubConnected,
+                  twilioConnected: state.twilioConnected,
+                  smsVerified: false,
                   smsConnected: state.twilioConnected,
                   simulatorCompleted: state.simulatorCompleted,
                 }}

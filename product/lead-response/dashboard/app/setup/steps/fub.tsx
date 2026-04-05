@@ -5,6 +5,7 @@ import { Key, AlertCircle, CheckCircle2, ExternalLink, Shield, Building2 } from 
 
 interface SetupFUBProps {
   onNext: () => void
+  onSkip?: () => void
   setupData: {
     fubConnected: boolean
     fubApiKey: string
@@ -12,7 +13,7 @@ interface SetupFUBProps {
   setSetupData: (data: any) => void
 }
 
-export default function SetupFUB({ onNext, setupData, setSetupData }: SetupFUBProps) {
+export default function SetupFUB({ onNext, onSkip, setupData, setSetupData }: SetupFUBProps) {
   const [apiKey, setApiKey] = useState(setupData.fubApiKey || '')
   const [isVerifying, setIsVerifying] = useState(false)
   const [verified, setVerified] = useState(setupData.fubConnected || false)
@@ -78,8 +79,9 @@ export default function SetupFUB({ onNext, setupData, setSetupData }: SetupFUBPr
   }
 
   const handleSkip = () => {
-    // Allow skipping this step
-    onNext()
+    // Allow skipping this step — call onSkip if provided, otherwise advance
+    if (onSkip) onSkip()
+    else onNext()
   }
 
   return (
@@ -118,6 +120,7 @@ export default function SetupFUB({ onNext, setupData, setSetupData }: SetupFUBPr
               <Key className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
               <input
                 type={showKey ? 'text' : 'password'}
+                data-testid="fub-api-key-input"
                 value={apiKey}
                 onChange={(e) => {
                   setApiKey(e.target.value)
@@ -152,6 +155,7 @@ export default function SetupFUB({ onNext, setupData, setSetupData }: SetupFUBPr
             <button
               onClick={handleVerifyKey}
               disabled={isVerifying}
+              data-testid="fub-verify-button"
               className="w-full py-3 px-4 bg-orange-500/20 border border-orange-500/50 text-orange-300 hover:bg-orange-500/30 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isVerifying ? (
@@ -211,12 +215,14 @@ export default function SetupFUB({ onNext, setupData, setSetupData }: SetupFUBPr
         <div className="flex gap-3">
           <button
             onClick={handleSkip}
+            data-testid="fub-skip-button"
             className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
           >
             Skip for now
           </button>
           <button
             onClick={handleContinue}
+            data-testid="fub-continue-button"
             className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
             Continue →
