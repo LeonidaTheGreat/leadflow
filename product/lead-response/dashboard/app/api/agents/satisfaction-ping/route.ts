@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const { data, error } = await supabaseAdmin
-      .from('agents')
+      .from('real_estate_agents')
       .update({
         satisfaction_ping_enabled: enabled,
         updated_at: new Date().toISOString(),
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { data, error } = await supabaseAdmin
-      .from('agents')
+      .from('real_estate_agents')
       .select('id, satisfaction_ping_enabled')
       .eq('id', agentId)
       .single()
