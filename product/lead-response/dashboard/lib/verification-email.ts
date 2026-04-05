@@ -335,6 +335,93 @@ export async function verifyEmailToken(token: string): Promise<{
 }
 
 /**
+ * Send post-verification activation email with CTA to /onboarding
+ * Called after a successful email verification to guide the agent into onboarding.
+ */
+export async function sendActivationEmail(
+  agentEmail: string,
+  agentId: string,
+  firstName: string
+): Promise<boolean> {
+  const onboardingUrl = `${APP_URL}/onboarding`
+  const subject = 'Your LeadFlow account is ready — start setup now'
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your LeadFlow account is ready</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9fafb;">
+  <div style="background: #ffffff; border-radius: 8px; padding: 48px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <span style="color: #10b981; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">&#9654; LeadFlow AI</span>
+    </div>
+
+    <p style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px;">Hi ${firstName || 'there'},</p>
+
+    <p style="font-size: 16px; color: #4b5563; margin-bottom: 16px;">
+      Your email is verified. Your LeadFlow AI account is ready to go.
+    </p>
+
+    <p style="font-size: 16px; color: #4b5563; margin-bottom: 32px;">
+      Complete your 5-minute setup and let AI respond to your leads in under 30 seconds — 24/7, automatically.
+    </p>
+
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${onboardingUrl}"
+         style="display: inline-block; background: #10b981; color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 18px;">
+        Start Setup &rarr;
+      </a>
+    </div>
+
+    <p style="font-size: 14px; color: #6b7280; text-align: center; margin-bottom: 0;">
+      Takes about 5 minutes. No credit card required to start.
+    </p>
+
+    <!-- Divider -->
+    <div style="border-top: 1px solid #e5e7eb; margin: 32px 0;"></div>
+
+    <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">
+      Need help? Contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #10b981;">${SUPPORT_EMAIL}</a>
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; padding: 24px 0;">
+    <p style="font-size: 14px; color: #6b7280; margin: 0 0 8px;">
+      &mdash; The LeadFlow Team
+    </p>
+  </div>
+</body>
+</html>
+  `
+
+  const sent = await sendEmail(agentEmail, subject, html, agentId, 'activation', {
+    firstName,
+    onboardingUrl
+  })
+
+  if (sent) {
+    // Mark activation email as sent so we don't send it again
+    try {
+      await supabase
+        .from('real_estate_agents')
+        .update({ activation_email_sent: true, updated_at: new Date().toISOString() })
+        .eq('id', agentId)
+    } catch (err) {
+      console.error('Error marking activation_email_sent:', err)
+    }
+  }
+
+  return sent
+}
+
+/**
  * Get agent by email
  */
 export async function getAgentByEmail(email: string): Promise<{ id: string; email_verified: boolean; first_name: string } | null> {
