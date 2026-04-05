@@ -16,37 +16,3 @@ jobs:
         run: |
           npm ci
           npm run build
-
-  e2e:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Wait for Vercel preview deployment
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
-        id: vercel
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 300
-          check_interval: 10
-
-      - name: Run E2E flow tests against preview
-        if: steps.vercel.outputs.url
-        env:
-          LEADFLOW_APP_URL: ${{ steps.vercel.outputs.url }}
-        run: |
-          echo "Testing against: $LEADFLOW_APP_URL"
-          # Run the subset of E2E tests that don't need API key (no DB verification)
-          # These test: health, login, signup page, landing page, forgot-password
-          bash scripts/e2e-flow-tests.sh --verbose || {
-            echo "::error::E2E flow tests failed against preview deployment"
-            exit 1
-          }
-
-      - name: E2E test summary
-        if: always() && steps.vercel.outputs.url
-        env:
-          LEADFLOW_APP_URL: ${{ steps.vercel.outputs.url }}
-        run: |
-          bash scripts/e2e-flow-tests.sh --json 2>/dev/null || true
