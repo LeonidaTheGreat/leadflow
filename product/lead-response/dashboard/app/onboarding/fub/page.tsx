@@ -619,10 +619,20 @@ export default function FubWizardPage() {
 
   // Check if wizard already completed — redirect to dashboard
   useEffect(() => {
-    fetch('/api/onboarding/fub/webhook-url')
+    fetch('/api/onboarding/fub/status')
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.push('/login')
+          return
+        }
+        const data = await res.json()
+        // If fub_onboarding_completed is true, agent has already set up FUB — go to dashboard
+        if (data.fub_onboarding_completed) {
+          router.push('/dashboard')
+        }
+      })
       .catch(() => {
-        // If we get a 401, user isn't logged in — redirect to login
-        router.push('/login')
+        // Network error — allow wizard to load, don't block the user
       })
   }, [router])
 
