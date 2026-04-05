@@ -151,10 +151,10 @@ export function TrialStatusBanner() {
   const daysRemaining = status.daysRemaining
   const isTrial = status.isTrial
 
-  // Urgency levels per PRD: red <=2 days, amber <=5 days, green otherwise
+  // Urgency levels per PRD: red <= 2 days, amber <= 5 days, green otherwise
   const isRedUrgency = daysRemaining <= 2
   const isAmberUrgency = daysRemaining <= 5
-  const showUpgradeCta = daysRemaining <= (14 - 8 + 1) || daysRemaining <= 6 // day 8+ means <=6 days left in 14-day trial
+  const showUpgradeCta = daysRemaining <= 6
 
   // Color scheme based on urgency
   const colorScheme = isRedUrgency
