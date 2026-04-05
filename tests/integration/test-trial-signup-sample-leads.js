@@ -1,16 +1,18 @@
 /**
- * Integration test: trial-signup sample lead DB insert
+ * Integration test: sample lead storage — in-memory approach
  * UC: fix-leads-table-missing-is-sample-column
- * Task: dccf671d-618a-43ae-bdfb-86e7ae6be63e
+ * Task: 8bc347df-c681-49f8-bf6d-d10a19b8573a
+ *
+ * Decision: sample leads are served in-memory via /api/sample-leads (not written to DB).
+ * The trial-signup route sets onboarding_completed=false so /api/sample-leads serves them.
  *
  * Verifies:
- * 1. is_sample column exists on leads table (NOT NULL, DEFAULT FALSE)
- * 2. is_sample column exists on messages table (NOT NULL, DEFAULT FALSE)
- * 3. sample_type, property_interest, budget columns exist on leads
- * 4. trial-signup route uses correct messages schema (message_body, direction, channel, ai_generated)
- * 5. trial-signup route uses is_sample: true in SAMPLE_LEADS definitions
- * 6. sample-status route queries is_sample column (not hardcoded false)
- * 7. Migration 007_add_is_sample_columns.sql was applied and tracked
+ * 1. trial-signup route does NOT insert sample leads to DB
+ * 2. trial-signup sets onboarding_completed=false (eligibility for /api/sample-leads)
+ * 3. /api/sample-leads returns is_sample=true leads in-memory
+ * 4. sample-status route queries is_sample column (not hardcoded false)
+ * 5. DB schema columns still exist (migration 007 applied)
+ * 6. Migration 007_add_is_sample_columns.sql was applied and tracked
  */
 
 const assert = require('assert');
@@ -58,40 +60,52 @@ const sampleStatusFile = path.join(
 const routeContent = fs.readFileSync(routeFile, 'utf8');
 const sampleStatusContent = fs.readFileSync(sampleStatusFile, 'utf8');
 
-test('SAMPLE_LEADS entries include is_sample: true', () => {
-  const matches = routeContent.match(/is_sample:\s*true/g);
-  assert.ok(matches && matches.length >= 3, 'Expected at least 3 is_sample:true entries in SAMPLE_LEADS');
+test('trial-signup does NOT insert sample leads to DB (in-memory approach)', () => {
+  assert.ok(
+    !routeContent.includes('sampleLeadsWithAgent'),
+    'trial-signup must not build sampleLeadsWithAgent for DB insert'
+  );
+  assert.ok(
+    !routeContent.includes("from('leads').insert(sampleLeads"),
+    'trial-signup must not insert sample leads into DB'
+  );
+  assert.ok(
+    !routeContent.includes("from('messages').insert(sampleMessages"),
+    'trial-signup must not insert sample messages into DB'
+  );
 });
 
-test('SAMPLE_LEADS entries include sample_type field', () => {
-  assert.ok(routeContent.includes("sample_type: 'demo'"), 'sample_type: demo must be present in SAMPLE_LEADS');
+test('trial-signup sets onboarding_completed=false (enables /api/sample-leads eligibility)', () => {
+  assert.ok(
+    routeContent.includes('onboarding_completed: false'),
+    'onboarding_completed must be false so /api/sample-leads serves sample data'
+  );
+  assert.ok(
+    !routeContent.includes('onboarding_completed: true'),
+    'onboarding_completed must NOT be true (would block /api/sample-leads)'
+  );
 });
 
-test('messages insert uses message_body (not content or text)', () => {
-  // The fixed code uses message_body, not the old content field
-  const msgInsertBlock = routeContent.match(/sampleMessages\s*=\s*createdLeads\.map[\s\S]*?\}\)/)?.[0] || '';
-  assert.ok(msgInsertBlock.includes('message_body'), 'messages insert must use message_body column');
+const sampleLeadsRouteFile = path.join(
+  __dirname,
+  '../../product/lead-response/dashboard/app/api/sample-leads/route.ts'
+);
+const sampleLeadsRouteContent = fs.readFileSync(sampleLeadsRouteFile, 'utf8');
+
+test('/api/sample-leads returns in-memory leads with is_sample=true', () => {
+  const matches = sampleLeadsRouteContent.match(/is_sample:\s*true/g);
+  assert.ok(matches && matches.length >= 3, 'Expected at least 3 is_sample:true entries in sample-leads route');
 });
 
-test('messages insert uses direction: outbound (not agent_id)', () => {
-  const msgInsertBlock = routeContent.match(/sampleMessages\s*=\s*createdLeads\.map[\s\S]*?\}\)/)?.[0] || '';
-  assert.ok(msgInsertBlock.includes("direction: 'outbound'"), 'messages insert must use direction column');
-  assert.ok(!msgInsertBlock.includes('agent_id'), 'messages insert must NOT include agent_id (column does not exist on messages table)');
-});
-
-test('messages insert uses channel: sms', () => {
-  const msgInsertBlock = routeContent.match(/sampleMessages\s*=\s*createdLeads\.map[\s\S]*?\}\)/)?.[0] || '';
-  assert.ok(msgInsertBlock.includes("channel: 'sms'"), 'messages insert must use channel: sms');
-});
-
-test('messages insert uses ai_generated: true', () => {
-  const msgInsertBlock = routeContent.match(/sampleMessages\s*=\s*createdLeads\.map[\s\S]*?\}\)/)?.[0] || '';
-  assert.ok(msgInsertBlock.includes('ai_generated: true'), 'messages insert must use ai_generated: true');
-});
-
-test('leadsError is handled (not silent)', () => {
-  assert.ok(routeContent.includes('leadsError'), 'leadsError must be checked');
-  assert.ok(routeContent.includes('Error creating sample leads'), 'leadsError must be logged');
+test('/api/sample-leads eligibility checks onboarding_completed=false', () => {
+  assert.ok(
+    sampleLeadsRouteContent.includes('onboarding_completed'),
+    'sample-leads route must check onboarding_completed'
+  );
+  assert.ok(
+    sampleLeadsRouteContent.includes('!agent.onboarding_completed'),
+    'sample-leads eligibility must be: onboarding_completed is false'
+  );
 });
 
 test('sample-status route queries is_sample column in DB (not hardcoded false)', () => {
