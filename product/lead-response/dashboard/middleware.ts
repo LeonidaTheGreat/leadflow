@@ -162,28 +162,34 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
-    
-    // Get userId from either JWT or session token
-    const userId = await getUserIdFromRequest(request)
-    const isAuthenticated = !!userId
-    
+
     // Check if current path is protected
-    const isProtectedRoute = PROTECTED_ROUTES.some(route => 
+    const isProtectedRoute = PROTECTED_ROUTES.some(route =>
       pathname === route || pathname.startsWith(`${route}/`)
     )
-    
+
     // Check if current path is an auth route
-    const isAuthRoute = AUTH_ROUTES.some(route => 
+    const isAuthRoute = AUTH_ROUTES.some(route =>
       pathname === route || pathname.startsWith(`${route}/`)
     )
-    
+
+    // For auth routes, only check auth if user has cookies (to avoid unnecessary PostgREST calls)
+    // For protected routes, always check auth
+    let userId: string | null = null
+    let isAuthenticated = false
+
+    if (isProtectedRoute || (isAuthRoute && (request.cookies.has('auth-token') || request.cookies.has('leadflow_session')))) {
+      userId = await getUserIdFromRequest(request)
+      isAuthenticated = !!userId
+    }
+
     // Redirect unauthenticated users from protected routes to login
     if (isProtectedRoute && !isAuthenticated) {
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(loginUrl)
     }
-    
+
     // Redirect authenticated users from auth routes to dashboard
     if (isAuthRoute && isAuthenticated) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
@@ -219,11 +225,11 @@ export async function middleware(request: NextRequest) {
 
     // Add security headers
     const response = NextResponse.next()
-    
+
     response.headers.set('X-Frame-Options', 'DENY')
     response.headers.set('X-Content-Type-Options', 'nosniff')
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-    
+
     return response
   } catch (error) {
     // Middleware error: log and continue (fail open for public routes)
