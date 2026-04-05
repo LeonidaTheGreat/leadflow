@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/auth' // reads 'auth-token' cookie (hyphen)
 
 const supabase = supabaseAdmin
 
