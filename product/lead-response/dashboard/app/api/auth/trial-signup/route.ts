@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
+import { createSession } from '@/lib/session'
 
 const supabase = postgrestAdmin
 
@@ -238,7 +239,18 @@ export async function POST(request: NextRequest) {
     // Log dashboard_first_paint will be tracked on client-side
     // Log sample_data_rendered will be tracked when dashboard loads
 
-    // Generate JWT token for immediate login
+    // Create server-side session for session revocation capability
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip')
+      ?? undefined
+    const session = await createSession({
+      userId: agent.id,
+      userAgent: request.headers.get('user-agent') || undefined,
+      ipAddress,
+      rememberMe: true, // Trial users get 30-day session
+    })
+
+    // Generate JWT token for immediate login (kept for backward compatibility)
     const token = jwt.sign(
       {
         userId: agent.id,
@@ -265,12 +277,24 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Set JWT auth cookie (backward compatibility)
     response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 14 * 24 * 60 * 60, // 14 days
       path: '/'
+    })
+
+    // Set server-side session cookie for session revocation capability
+    response.cookies.set({
+      name: 'leadflow_session',
+      value: session.token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60, // 30 days (remember me)
+      path: '/',
     })
 
     return response
