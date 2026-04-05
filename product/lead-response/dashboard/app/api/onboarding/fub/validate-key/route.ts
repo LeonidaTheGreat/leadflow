@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       .upsert(
         {
           agent_id: agentId,
-          fub_api_key: apiKey, // raw key needed for webhook registration
+          fub_api_key: hashedKey, // store only SHA-256 hash, never the raw key
           fub_connected: true,
           current_step: 'webhook',
           updated_at: now,
