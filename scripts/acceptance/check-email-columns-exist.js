@@ -7,8 +7,20 @@
  * Outputs only the count (expected: 6) for machine verification.
  */
 
-// Suppress dotenv debug output by setting DEBUG env var before requiring dotenv
+// Suppress ALL debug output before any modules load
 process.env.DEBUG = '';
+process.env.DOTENV_CONFIG_DEBUG = 'false';
+
+// Store original stderr to filter dotenv noise
+const originalStderrWrite = process.stderr.write;
+process.stderr.write = function(chunk, encoding, callback) {
+  const str = chunk.toString();
+  // Filter out dotenv debug messages
+  if (str.includes('dotenv') || str.includes('injecting env')) {
+    return true;
+  }
+  return originalStderrWrite.call(process.stderr, chunk, encoding, callback);
+};
 
 const { Client } = require('pg');
 
