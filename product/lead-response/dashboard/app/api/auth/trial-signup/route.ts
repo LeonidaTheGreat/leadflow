@@ -185,9 +185,10 @@ export async function POST(request: NextRequest) {
       // Create sample AI responses for each lead
       const sampleMessages = createdLeads.map((lead, index) => ({
         lead_id: lead.id,
-        agent_id: agent.id,
-        content: SAMPLE_AI_RESPONSES[index]?.content || SAMPLE_AI_RESPONSES[0].content,
-        sender_type: 'ai',
+        message_body: SAMPLE_AI_RESPONSES[index]?.content || SAMPLE_AI_RESPONSES[0].content,
+        direction: 'outbound',
+        channel: 'sms',
+        ai_generated: true,
         status: 'sent',
         is_sample: true,
         created_at: new Date(Date.now() - index * 3600000 + 60000).toISOString() // 1 min after lead
