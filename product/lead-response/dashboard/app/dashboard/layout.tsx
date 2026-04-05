@@ -6,6 +6,7 @@ import { PageViewTracker } from '@/components/page-view-tracker'
 import { OnboardingGuard } from '@/components/onboarding-guard'
 import { FeedbackButton } from '@/components/dashboard/FeedbackButton'
 import { NPSPromptContainer } from '@/components/nps-prompt-container'
+import { TrialNudgeBanner } from '@/components/trial-nudge-banner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,6 +26,7 @@ export default function DashboardLayout({
       <OnboardingGuard />
       <PageViewTracker />
       <NPSPromptContainer />
+      <TrialNudgeBanner />
       <DashboardNav />
       <main className="container mx-auto px-4 py-6">
         {children}
