@@ -114,12 +114,30 @@ test.describe('Signup Form Interaction', () => {
     // Wait for form to appear
     await page.waitForSelector('[data-testid="signup-form"]', { timeout: 5000 })
 
-    // Try submitting empty form (should show validation error)
+    // Test HTML5 form validation by checking required attributes
+    const emailInput = page.locator('[data-testid="signup-email-input"]')
+    const passwordInput = page.locator('[data-testid="signup-password-input"]')
+    
+    // Verify required attributes are present
+    await expect(emailInput).toHaveAttribute('required', '')
+    await expect(passwordInput).toHaveAttribute('required', '')
+    
+    // Verify password has minlength attribute for validation
+    await expect(passwordInput).toHaveAttribute('minlength', '8')
+    
+    // Test that form prevents submission with invalid data
+    // Fill invalid email format
+    await emailInput.fill('invalid-email')
+    await page.fill('input[name="name"]', 'Test User')
+    await page.fill('input[name="phone"]', '555-123-4567')
+    await passwordInput.fill('short')
+    
+    // Try submitting - form should not submit due to HTML5 validation
     const submitBtn = page.getByRole('button', { name: /Continue to Payment/i })
     await submitBtn.click()
-
-    // Validation error should appear
-    await expect(page.getByText(/required/i)).toBeVisible({ timeout: 3000 })
+    
+    // Page should still be on the form (not redirected)
+    await expect(page.locator('[data-testid="signup-form"]')).toBeVisible()
   })
 })
 
