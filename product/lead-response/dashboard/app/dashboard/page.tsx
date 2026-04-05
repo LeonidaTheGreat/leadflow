@@ -5,7 +5,7 @@ import { LeadFeed } from '@/components/dashboard/LeadFeed'
 import { LeadSatisfactionCard } from '@/components/dashboard/LeadSatisfactionCard'
 import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
 import { UpgradeBanner } from '@/components/dashboard/UpgradeBanner'
-import { TrialStatusBanner } from '@/components/dashboard/TrialStatusBanner'
+import { TrialCountdownWidget } from '@/components/dashboard/TrialCountdownWidget'
 import { SampleDataBanner } from '@/components/dashboard/SampleDataBanner'
 import { OnboardingWizardLauncher } from '@/components/dashboard/OnboardingWizardLauncher'
 import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
@@ -26,8 +26,8 @@ export default function DashboardPage() {
       {/* Upgrade Banner — shows for paid tier agents */}
       <UpgradeBanner />
 
-      {/* Trial Status Banner — shows for trial agents */}
-      <TrialStatusBanner />
+      {/* Trial Countdown Widget — shows for trial agents with countdown and 3-tier urgency */}
+      <TrialCountdownWidget />
 
       {/* Pilot Status Banner — shows for pilot agents */}
       <PilotStatusBanner />
