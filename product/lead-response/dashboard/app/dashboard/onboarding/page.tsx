@@ -246,6 +246,18 @@ function DashboardOnboardingInner() {
         {/* Progress */}
         <OnboardingProgress currentStep={currentStepIndex} totalSteps={steps.length} />
 
+        {/* Pricing nudge — visible throughout onboarding */}
+        <div className="border-b border-slate-700/30 bg-slate-900/40 py-2 text-center">
+          <p className="text-xs text-slate-400">
+            After your free 60-day pilot,{' '}
+            <span className="text-slate-300">plans start at <strong className="text-white">$49/mo</strong></span>.{' '}
+            No credit card needed to get started.{' '}
+            <a href="/pricing" className="text-emerald-400 hover:text-emerald-300 underline">
+              See plans
+            </a>
+          </p>
+        </div>
+
         {/* Content */}
         <main className="flex-1 flex items-center justify-center px-4 py-8">
           <div className="w-full max-w-2xl">
