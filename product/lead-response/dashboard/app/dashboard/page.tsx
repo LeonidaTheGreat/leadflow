@@ -10,6 +10,7 @@ import { SampleDataBanner } from '@/components/dashboard/SampleDataBanner'
 import { OnboardingWizardLauncher } from '@/components/dashboard/OnboardingWizardLauncher'
 import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
 import { AhaMomentBanner } from '@/components/dashboard/AhaMomentBanner'
+import { TrialCountdownWidget } from '@/components/dashboard/TrialCountdownWidget'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
@@ -40,6 +41,9 @@ export default function DashboardPage() {
 
       {/* Aha Moment Banner — shows for trial users who haven't completed simulator */}
       <AhaMomentBanner />
+
+      {/* Trial Countdown Widget — urgency indicator with green/yellow/red tiers and Upgrade CTA */}
+      <TrialCountdownWidget />
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Lead Feed</h1>
