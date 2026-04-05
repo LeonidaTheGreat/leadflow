@@ -165,7 +165,7 @@ export default function OnboardingConfirm({
           </div>
 
           {/* Pricing teaser — soft nudge, does not gate onboarding */}
-          <div className="bg-slate-700/20 border border-slate-600/30 rounded-lg p-4">
+          <div data-testid="onboarding-shows-price" className="bg-slate-700/20 border border-slate-600/30 rounded-lg p-4">
             <p className="text-sm text-slate-300">
               Plans start at <strong className="text-white">$49/mo</strong>. Upgrade any time during your trial —
               no credit card needed to get started.{' '}
