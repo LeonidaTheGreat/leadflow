@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
     // Use message_body column (sms_messages column name vs 'body' in messages table).
     let inboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('lead_id, message_body, leads!inner(agent_id)')
+      .select('lead_id, body, leads!inner(agent_id)')
       .eq('direction', 'inbound')
       .eq('leads.agent_id', agentId)
 

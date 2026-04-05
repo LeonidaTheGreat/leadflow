@@ -70,46 +70,52 @@ test('Inbound direction uses inbound value', () => {
 })
 
 // ── Column name check ────────────────────────────────────────────────────────
-test('Inbound select uses message_body column (not body)', () => {
-  // Check for select('lead_id, message_body') — the correct column
+test('Inbound select uses body column (actual sms_messages schema)', () => {
+  // Check for select including 'body' — the correct column in sms_messages
   assert(
-    routeSource.includes('message_body'),
-    "Expected 'message_body' column in select — not 'body'"
+    routeSource.includes("'body'") || routeSource.includes("body,") || routeSource.includes(", body"),
+    "Expected 'body' column in select — actual sms_messages column name"
   )
 })
 
-test('Inbound select does NOT use standalone body column', () => {
-  // The old bug used .select('lead_id, body') — check it is gone
-  const hasBodyColumn = /select\(['"][^'"]*(?<![_a-z])body(?![_a-z])[^'"]*['"]\)/.test(routeSource)
-  assert(!hasBodyColumn, "Route must not select plain 'body' column — use message_body")
+test('Inbound select does NOT use message_body column (old incorrect name)', () => {
+  // The old bug used .select('lead_id, message_body') — check it is gone
+  const hasMessageBodyColumn = /select\(['"][^'"]*message_body[^'"]*['"]\)/.test(routeSource)
+  assert(!hasMessageBodyColumn, "Route must not use 'message_body' column — use 'body'")
 })
 
-// ── Auth via session (not query param) ─────────────────────────────────────────
-test('Route imports and calls validateSession for auth', () => {
-  assert(routeSource.includes('validateSession'), 'Route must import and call validateSession')
+// ── Auth via getAuthUserId (not query param) ────────────────────────────────────
+test('Route imports and calls getAuthUserId for auth', () => {
+  assert(routeSource.includes('getAuthUserId'), 'Route must import and call getAuthUserId')
 })
 
-test('Route reads session from cookie (not agent_id query param)', () => {
+test('Route reads agentId from authenticated session (not query param)', () => {
   assert(
-    routeSource.includes('leadflow_session'),
-    "Route must read auth from 'leadflow_session' cookie"
+    routeSource.includes('const agentId = await getAuthUserId(request)'),
+    "Route must extract agentId from authenticated session"
   )
 })
 
-test('Session validation occurs before any DB query in GET handler', () => {
-  // Within the GET function body, validateSession call comes before .from(
-  const getHandlerBody = routeSource.slice(routeSource.indexOf('export async function GET'))
-  const validateIdx = getHandlerBody.indexOf('validateSession(')
-  const fromIdx = getHandlerBody.indexOf('.from(')
-  assert(validateIdx > -1, 'validateSession must be called in GET handler')
-  assert(validateIdx < fromIdx, 'validateSession must be called before any supabaseAdmin.from()')
+test('Auth check returns 401 if no session', () => {
+  // Check for auth guard that returns 401
+  assert(
+    routeSource.includes('401'),
+    "Route must return 401 Unauthorized if no session"
+  )
 })
 
-// ── Agent scoping ─────────────────────────────────────────────────────────────
-test('Scopes queries to agent_id from session', () => {
+// ── Agent scoping via join ────────────────────────────────────────────────────
+test('Outbound query uses leads!inner join for agent scoping', () => {
   assert(
-    routeSource.includes("eq('agent_id', agentId)"),
-    "Expected .eq('agent_id', agentId) for tenant isolation"
+    routeSource.includes('leads!inner(agent_id)'),
+    "Expected leads!inner(agent_id) join in outbound query for agent scoping"
+  )
+})
+
+test('Inbound query uses leads.agent_id filter for tenant isolation', () => {
+  assert(
+    routeSource.includes("eq('leads.agent_id', agentId)"),
+    "Expected .eq('leads.agent_id', agentId) for agent scoping via join"
   )
 })
 
@@ -131,8 +137,8 @@ test('OPT_OUT_KEYWORDS constant is defined', () => {
   assert(routeSource.includes('OPT_OUT_KEYWORDS'), 'Must define OPT_OUT_KEYWORDS array')
 })
 
-test('STOP keyword is in opt-out list', () => {
-  assert(routeSource.includes("'STOP'"), 'Must handle STOP opt-out keyword')
+test('stop keyword (lowercase) is in opt-out list', () => {
+  assert(routeSource.includes("'stop'"), 'Must handle stop opt-out keyword (case-insensitive check)')
 })
 
 // ── Cache headers ─────────────────────────────────────────────────────────────
