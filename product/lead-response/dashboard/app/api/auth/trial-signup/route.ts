@@ -224,18 +224,28 @@ export async function POST(request: NextRequest) {
       }
     })()
 
-    // Send welcome email (non-blocking)
-    void sendWelcomeEmail(
-      agent.email,
-      agent.id,
-      {
-        agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
-        planTier: 'trial',
-        dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
+    // Send welcome email (non-blocking) and mark as sent
+    void (async () => {
+      try {
+        await sendWelcomeEmail(
+          agent.email,
+          agent.id,
+          {
+            agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
+            planTier: 'trial',
+            dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
+          }
+        )
+        // Mark welcome email as sent in the agent record
+        await supabase
+          .from('real_estate_agents')
+          .update({ trial_email_welcome_sent: true })
+          .eq('id', agent.id)
+      } catch (err: unknown) {
+        console.error('[trial-signup] Welcome email error:', err)
+        // Email failure should not block signup - just log and continue
       }
-    ).catch((err: unknown) => {
-      console.error('[trial-signup] Welcome email error:', err)
-    })
+    })()
 
     // Log dashboard_first_paint will be tracked on client-side
     // Log sample_data_rendered will be tracked when dashboard loads

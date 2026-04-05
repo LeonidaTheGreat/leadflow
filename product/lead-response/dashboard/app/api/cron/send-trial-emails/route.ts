@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/db'
-import { sendTrialReminderEmails } from '@/lib/trial-emails'
-
-const supabase = supabaseAdmin
+import { sendActiveTrialSequence } from '@/lib/trial-emails'
 
 /**
  * POST /api/cron/send-trial-emails
- * Sends trial countdown reminder emails to agents at key milestones:
- * - 6 days remaining (trial_day6)
- * - 3 days remaining (trial_day3)
- * - 1 day remaining (trial_day1)
- * - 0 days (trial_expired)
+ * Sends active trial conversion email sequence to agents at key milestones:
+ * - Day 0: Welcome (also sent immediately at signup)
+ * - Day 1: AI Aha moment
+ * - Day 3: Upgrade nudge
+ * - Day 7: Warning (halfway through trial)
+ * - Day 14: Expired notification
+ * - Day 15: Final chance recovery
  * 
- * Should be called daily via Vercel Cron or heartbeat
+ * Should be called daily via Vercel Cron at 10:00 UTC
  */
 export async function POST(request: NextRequest) {
   try {
@@ -28,13 +27,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('📧 Running trial email sequence...')
+    console.log('📧 Running active trial email sequence...')
 
-    const results = await sendTrialReminderEmails()
+    const results = await sendActiveTrialSequence()
 
     return NextResponse.json({
       success: true,
-      message: 'Trial email sequence processed',
+      message: 'Active trial email sequence processed',
       results
     })
 
@@ -56,6 +55,6 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     message: 'Trial email cron endpoint',
     method: 'POST',
-    description: 'Sends trial reminder emails at key milestones (day 6, 3, 1, and expired)'
+    description: 'Sends active trial conversion email sequence (Day 0, 1, 3, 7, 14, 15)'
   })
 }
