@@ -294,11 +294,19 @@ function DashboardOnboardingInner() {
             )}
 
             {currentStep === 'confirmation' && (
-              <OnboardingConfirm
-                onBack={prevStep}
-                onNext={completeOnboarding}
-                agentData={agentData}
-              />
+              <>
+                <OnboardingConfirm
+                  onBack={prevStep}
+                  onNext={completeOnboarding}
+                  agentData={agentData}
+                />
+                <p className="text-center text-sm text-slate-400 mt-4">
+                  After your free trial, paid plans start at $49/mo.{' '}
+                  <a href="/pricing" className="text-emerald-400 hover:text-emerald-300 underline">
+                    See all plans
+                  </a>
+                </p>
+              </>
             )}
           </div>
         </main>

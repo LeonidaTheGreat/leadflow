@@ -160,7 +160,7 @@ export function TrialStatusBanner() {
             }
           </p>
           {isEndingSoon && (
-            <div className="mt-3">
+            <div className="mt-3 flex items-center gap-4 flex-wrap">
               <button
                 onClick={handleUpgrade}
                 disabled={checkoutLoading}
@@ -169,11 +169,17 @@ export function TrialStatusBanner() {
                 {checkoutLoading ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
                 ) : (
-                  'Upgrade Now →'
+                  'Upgrade Now — Pro at $149/mo →'
                 )}
               </button>
+              <a
+                href="/pricing"
+                className="text-sm text-amber-700 dark:text-amber-300 underline hover:no-underline"
+              >
+                See all plans
+              </a>
               {checkoutError && (
-                <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">{checkoutError}</p>
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-2 w-full">{checkoutError}</p>
               )}
             </div>
           )}
