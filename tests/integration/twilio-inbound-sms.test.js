@@ -147,12 +147,25 @@ test('UC-5: Lead Opt-Out (Twilio Inbound SMS)', async (suite) => {
   });
 
   await suite.test('Satisfaction Feedback - Negative classification', () => {
-    const negativeResponses = ['NO', 'no', 'Nope', 'Not helpful', 'Bad'];
-    const negativePattern = /^(no|nope|not helpful|bad|terrible)\b/i;
+    const negativeResponses = ['NO', 'no', 'Nope', 'Not helpful', 'Bad', 'Annoying', 'Quit'];
+    const negativePattern = /^(no|nope|not helpful|bad|terrible|not good|unhelpful|annoying|quit)\b/i;
 
     negativeResponses.forEach(response => {
       assert.strictEqual(
         negativePattern.test(response),
+        true,
+        `Failed for: ${response}`
+      );
+    });
+  });
+
+  await suite.test('Satisfaction Feedback - Neutral classification', () => {
+    const neutralResponses = ['OK', 'ok', 'Okay', 'Fine', 'Meh', 'Whatever'];
+    const neutralPattern = /^(ok|okay|sure|fine|whatever|meh)\b/i;
+
+    neutralResponses.forEach(response => {
+      assert.strictEqual(
+        neutralPattern.test(response),
         true,
         `Failed for: ${response}`
       );
