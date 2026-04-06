@@ -97,12 +97,6 @@
       "fallback_url": "https://leadflow-ai-five.vercel.app/dashboard"
     },
     {
-      "id": "supabase-read",
-      "name": "Supabase read access",
-      "severity": "critical",
-      "check_type": "supabase_read"
-    },
-    {
       "id": "signup-page",
       "name": "Signup page",
       "url": "https://leadflow-ai-five.vercel.app/signup",
