@@ -127,9 +127,9 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     await supabase.from('subscription_events').insert({
       user_id: userId,
       event_type: 'subscription_created',
-      tier: tier,
-      mrr: mrr,
-      stripe_subscription_id: subscriptionId,
+      plan_tier: tier,
+      mrr: Math.round(mrr * 100), // store as cents
+      stripe_event_data: { subscription_id: subscriptionId, tier, mrr },
       created_at: new Date().toISOString(),
     })
 
@@ -230,15 +230,15 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const amount = invoice.amount_paid / 100
   const mrr = calculateMRR(subscription)
 
-  // Record payment
+  // Record payment (status: 'succeeded' matches payments_status_check constraint)
   await supabase.from('payments').insert({
     user_id: agentId,
     stripe_invoice_id: invoice.id,
     amount: amount,
     currency: invoice.currency,
-    period_start: new Date(invoice.period_start * 1000),
-    period_end: new Date(invoice.period_end * 1000),
-    status: 'paid',
+    period_start: new Date(invoice.period_start * 1000).toISOString(),
+    period_end: new Date(invoice.period_end * 1000).toISOString(),
+    status: 'succeeded',
     created_at: new Date().toISOString(),
   })
 
@@ -252,9 +252,8 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   await supabase.from('subscription_events').insert({
     user_id: agentId,
     event_type: 'payment_received',
-    amount: amount,
-    mrr: mrr,
-    stripe_invoice_id: invoice.id,
+    mrr: Math.round(mrr * 100),
+    stripe_event_data: { invoice_id: invoice.id, amount, mrr },
     created_at: new Date().toISOString(),
   })
 
@@ -283,7 +282,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     user_id: agentId,
     event_type: 'payment_failed',
     attempt_count: invoice.attempt_count || 1,
-    stripe_invoice_id: invoice.id,
+    stripe_event_data: { invoice_id: invoice.id, attempt_count: invoice.attempt_count || 1 },
     created_at: new Date().toISOString(),
   })
 
@@ -309,9 +308,12 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   await supabase.from('subscription_events').insert({
     user_id: agentId,
     event_type: 'subscription_cancelled',
-    mrr_lost: mrr,
-    reason: subscription.cancellation_details?.reason || 'unknown',
-    stripe_subscription_id: subscription.id,
+    mrr_change: -Math.round(mrr * 100), // negative = churn, in cents
+    stripe_event_data: {
+      subscription_id: subscription.id,
+      mrr_lost: mrr,
+      reason: subscription.cancellation_details?.reason || 'unknown',
+    },
     created_at: new Date().toISOString(),
   })
 

@@ -227,6 +227,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create pilot_progress record for admin white-glove tracking (non-blocking)
+    void Promise.resolve(supabase.from('pilot_progress').insert({
+      agent_id: agent.id,
+      stage: 'signed_up',
+      stage_entered_at: new Date().toISOString(),
+      pilot_cohort: 'cohort-1',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })).catch((err: unknown) => {
+      console.error('[pilot-signup] Failed to create pilot_progress record:', err)
+    })
+
     // Create agent integrations record if FUB API key provided
     if (fub_api_key) {
       try {
