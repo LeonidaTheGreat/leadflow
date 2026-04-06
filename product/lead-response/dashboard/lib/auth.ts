@@ -51,3 +51,31 @@ export async function getAuthUserId(request: NextRequest): Promise<string | null
 
   return null
 }
+
+/**
+ * Check if the authenticated user is an admin.
+ * Compares the user's email against ADMIN_EMAIL env var.
+ * Returns false if not authenticated or not an admin.
+ */
+export async function isAdminUser(request: NextRequest): Promise<boolean> {
+  const adminEmail = process.env.ADMIN_EMAIL
+  if (!adminEmail) {
+    console.warn('ADMIN_EMAIL not configured in environment')
+    return false
+  }
+
+  const userId = await getAuthUserId(request)
+  if (!userId) return false
+
+  try {
+    const { data: agent } = await supabaseAdmin
+      .from('real_estate_agents')
+      .select('email')
+      .eq('id', userId)
+      .single()
+
+    return agent?.email?.toLowerCase() === adminEmail.toLowerCase()
+  } catch {
+    return false
+  }
+}

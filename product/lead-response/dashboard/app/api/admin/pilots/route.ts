@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
+import { isAdminUser } from '@/lib/auth'
 
 /**
  * GET /api/admin/pilots
@@ -8,6 +9,10 @@ import { postgrestAdmin } from '@/lib/db'
  */
 export async function GET(request: NextRequest) {
   try {
+    if (!await isAdminUser(request)) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = parseInt(searchParams.get('pageSize') || '50')
