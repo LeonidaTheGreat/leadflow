@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
+const TEST_EMAIL_PATTERNS = [/@test\.local$/i, /@test\.com$/i, /@example\.com$/i, /@qc\.local$/i]
+
+function isTestAccount(email: string): boolean {
+  return TEST_EMAIL_PATTERNS.some(p => p.test(email))
+}
+
 interface Pilot {
   id: string
   agent_id: string
@@ -28,6 +34,7 @@ export default function PilotsAdminPage() {
   const [logContactType, setLogContactType] = useState('email')
   const [newStage, setNewStage] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+  const [showTestAccounts, setShowTestAccounts] = useState(false)
 
   const stageLabels: Record<string, string> = {
     signed_up: '📝 Signed Up',
@@ -160,13 +167,43 @@ export default function PilotsAdminPage() {
     )
   }
 
+  const realPilots = pilots.filter(p => !isTestAccount(p.email))
+  const testPilots = pilots.filter(p => isTestAccount(p.email))
+  const visiblePilots = showTestAccounts ? pilots : realPilots
+
   return (
     <div className="p-8 bg-white min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Pilot White-Glove Onboarding</h1>
-        <p className="text-gray-600 mt-2">
-          {pilots.length} pilot{pilots.length !== 1 ? 's' : ''} enrolled
-        </p>
+        <div className="flex items-center gap-4 mt-2 flex-wrap">
+          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            realPilots.length === 0
+              ? 'bg-red-100 text-red-700'
+              : 'bg-green-100 text-green-700'
+          }`}>
+            {realPilots.length} real pilot{realPilots.length !== 1 ? 's' : ''}
+          </div>
+          {testPilots.length > 0 && (
+            <div className="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-500">
+              {testPilots.length} test account{testPilots.length !== 1 ? 's' : ''}
+            </div>
+          )}
+          {realPilots.length === 0 && (
+            <p className="text-red-600 text-sm font-medium">
+              No real pilots recruited yet — go to{' '}
+              <a href="/admin/pilot-campaigns" className="underline">Recruitment Campaigns</a>
+              {' '}to send invites.
+            </p>
+          )}
+        </div>
+        {testPilots.length > 0 && (
+          <button
+            onClick={() => setShowTestAccounts(v => !v)}
+            className="mt-3 text-xs text-gray-400 underline"
+          >
+            {showTestAccounts ? 'Hide test accounts' : `Show ${testPilots.length} test account${testPilots.length !== 1 ? 's' : ''}`}
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -185,7 +222,14 @@ export default function PilotsAdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pilots.map((pilot) => (
+                  {visiblePilots.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-gray-400">
+                        No real pilots yet. <a href="/admin/pilot-campaigns" className="text-blue-500 underline">Start recruiting →</a>
+                      </td>
+                    </tr>
+                  )}
+                  {visiblePilots.map((pilot) => (
                     <tr
                       key={pilot.agent_id}
                       className={`border-b border-gray-200 hover:bg-gray-100 cursor-pointer ${
@@ -199,6 +243,9 @@ export default function PilotsAdminPage() {
                             {pilot.first_name} {pilot.last_name}
                           </p>
                           <p className="text-gray-500 text-xs">{pilot.email}</p>
+                          {isTestAccount(pilot.email) && (
+                            <span className="text-xs bg-gray-200 text-gray-500 px-1 rounded">test</span>
+                          )}
                         </div>
                       </td>
                       <td className="p-4">
