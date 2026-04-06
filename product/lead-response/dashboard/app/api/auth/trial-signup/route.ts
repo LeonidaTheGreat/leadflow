@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
+        trial_start_date: now,
         onboarding_completed: false, // Sample data is served in-memory via /api/sample-leads
         onboarding_step: 0,
         created_at: now,
