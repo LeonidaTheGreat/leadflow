@@ -31,10 +31,11 @@ export async function GET(request: NextRequest) {
     // ============================================================
     // 1. LEADS RESPONDED COUNT
     // Query all leads for this agent with status = 'responded'
+    // Include created_at for response time calculation
     // ============================================================
     const { data: respondedLeads, error: respondedError } = await supabaseAdmin
       .from('leads')
-      .select('id', { count: 'exact' })
+      .select('id,created_at')
       .eq('agent_id', agentId)
       .eq('status', 'responded')
 
@@ -47,40 +48,43 @@ export async function GET(request: NextRequest) {
 
     // ============================================================
     // 2. AVERAGE RESPONSE TIME
-    // Calculate time between lead created_at and first outbound message
-    // For each responded lead, find the first outbound message
+    // For each responded lead, find the earliest outbound SMS.
+    // Response time = firstOutboundMessage.created_at - lead.created_at
     // ============================================================
     let avgResponseTimeSeconds = 0
     if (leadsResponded > 0 && respondedLeads) {
-      const leadIds = respondedLeads.map(l => l.id)
+      const leadIds = respondedLeads.map((l: any) => l.id)
 
-      // Get all leads with their created_at and the first message time
-      const { data: leadsWithMessages, error: messagesError } = await supabaseAdmin
-        .from('leads')
-        .select(`
-          id,
-          created_at,
-          sms_messages!inner(created_at)
-        `)
-        .eq('agent_id', agentId)
-        .in('id', leadIds)
-        .in('sms_messages.direction', ['outbound-api', 'outbound-reply'])
-        .order('sms_messages(created_at)', { ascending: true })
+      // Query sms_messages directly — avoids complex join syntax
+      const { data: outboundMessages } = await supabaseAdmin
+        .from('sms_messages')
+        .select('lead_id,created_at')
+        .in('lead_id', leadIds)
+        .in('direction', ['outbound-api', 'outbound-reply'])
+        .order('created_at', { ascending: true })
 
-      if (!messagesError && leadsWithMessages && leadsWithMessages.length > 0) {
+      if (outboundMessages && outboundMessages.length > 0) {
+        // Build map: lead_id → earliest outbound message timestamp
+        const firstMessageByLead = new Map<string, string>()
+        for (const msg of outboundMessages as Array<{ lead_id: string; created_at: string }>) {
+          if (!firstMessageByLead.has(msg.lead_id)) {
+            firstMessageByLead.set(msg.lead_id, msg.created_at)
+          }
+        }
+
         let totalResponseTimeSeconds = 0
         let leadsWithResponses = 0
 
-        leadsWithMessages.forEach((lead: any) => {
-          if (lead.sms_messages && lead.sms_messages.length > 0) {
+        for (const lead of respondedLeads as Array<{ id: string; created_at: string }>) {
+          const firstMessageAt = firstMessageByLead.get(lead.id)
+          if (firstMessageAt) {
             const leadCreatedAt = new Date(lead.created_at).getTime()
-            const firstMessageAt = new Date(lead.sms_messages[0].created_at).getTime()
-            const responseTimeMs = firstMessageAt - leadCreatedAt
+            const responseTimeMs = new Date(firstMessageAt).getTime() - leadCreatedAt
             const responseTimeSeconds = Math.max(0, Math.round(responseTimeMs / 1000))
             totalResponseTimeSeconds += responseTimeSeconds
             leadsWithResponses++
           }
-        })
+        }
 
         if (leadsWithResponses > 0) {
           avgResponseTimeSeconds = Math.round(totalResponseTimeSeconds / leadsWithResponses)
@@ -97,8 +101,8 @@ export async function GET(request: NextRequest) {
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).toISOString()
 
     const { data: monthlyBookings, error: bookingsError } = await supabaseAdmin
-      .from('calcom_bookings')
-      .select('id', { count: 'exact' })
+      .from('bookings')
+      .select('id')
       .eq('agent_id', agentId)
       .gte('created_at', monthStart)
       .lte('created_at', monthEnd)
@@ -111,12 +115,28 @@ export async function GET(request: NextRequest) {
     const appointmentsBookedThisMonth = monthlyBookings?.length || 0
 
     // ============================================================
+    // 3b. ALL-TIME APPOINTMENTS BOOKED (for booking rate calculation)
+    // Count all bookings for this agent (no date filter)
+    // ============================================================
+    const { data: allTimeBookings, error: allTimeBookingsError } = await supabaseAdmin
+      .from('bookings')
+      .select('id')
+      .eq('agent_id', agentId)
+
+    if (allTimeBookingsError) {
+      console.error('Error fetching all-time bookings:', allTimeBookingsError)
+      return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 })
+    }
+
+    const appointmentsBookedAllTime = allTimeBookings?.length || 0
+
+    // ============================================================
     // 4. ESTIMATED REVENUE PROTECTED
     // Formula: leadsResponded × avgCommission × bookingRate
     //
     // avgCommission: Typical real estate commission (assume 5%)
     // bookingRate: Conversion from lead to booking
-    //   - If leadsResponded > 0: bookingRate = appointmentsBookedThisMonth / leadsResponded
+    //   - If leadsResponded > 0: bookingRate = appointmentsBookedAllTime / leadsResponded
     //   - Default: 5% (0.05) if no data
     // ============================================================
     const AVG_COMMISSION = 0.05 // 5% typical real estate commission
@@ -124,7 +144,7 @@ export async function GET(request: NextRequest) {
 
     let bookingRate = DEFAULT_BOOKING_RATE
     if (leadsResponded > 0) {
-      bookingRate = appointmentsBookedThisMonth / leadsResponded
+      bookingRate = appointmentsBookedAllTime / leadsResponded
     }
 
     // Average property value assumption: $350,000 USD

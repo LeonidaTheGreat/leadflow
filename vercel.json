@@ -16,6 +16,10 @@
     {
       "path": "/api/cron/weekly-performance",
       "schedule": "0 13 * * 1"
+    },
+    {
+      "path": "/api/cron/check-stuck-pilots",
+      "schedule": "0 8 * * *"
     }
   ]
 }
