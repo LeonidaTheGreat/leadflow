@@ -173,7 +173,7 @@ function LoginPageContent() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="you@example.com"
-                    className="pl-10 bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
+                    className="h-12 w-full pl-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
                     required
                     disabled={loading}
                     autoComplete="email"
@@ -193,7 +193,7 @@ function LoginPageContent() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="pl-10 pr-10 bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
+                    className="h-12 w-full pl-10 pr-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
                     required
                     disabled={loading}
                     autoComplete="current-password"
