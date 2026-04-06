@@ -4,6 +4,7 @@ import { jwtVerify } from 'jose'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
+  '/admin',
   '/dashboard',
   '/settings',
   '/profile',
