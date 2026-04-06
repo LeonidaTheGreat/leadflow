@@ -6,7 +6,6 @@
 require('dotenv').config();
 const express = require('express');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
-const twilioInboundRouter = require('./integration/twilio-inbound-sms');
 const weeklyPerformanceRouter = require('./routes/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/check-stuck-pilots');
 
@@ -20,7 +19,6 @@ app.get('/', (req, res) => {
     service: 'FUB AI Lead Response System',
     webhooks: {
       fub: '/webhook/fub',
-      twilio_inbound: '/webhook/twilio/inbound'
     },
     health: '/health'
   });
@@ -37,9 +35,6 @@ app.get('/health', (req, res) => {
 
 // FUB webhook routes
 app.use('/', fubRouter);
-
-// Twilio inbound SMS routes (UC-5: Lead Opt-Out)
-app.use('/', twilioInboundRouter);
 
 // Weekly performance email routes
 app.use('/', weeklyPerformanceRouter);

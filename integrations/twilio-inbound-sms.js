@@ -1,13 +1,29 @@
 /**
- * Twilio Inbound SMS Handler
- * 
+ * @deprecated LEGACY — DO NOT USE IN PRODUCTION
+ *
+ * This handler has been superseded by the production Next.js webhook:
+ *   product/lead-response/dashboard/app/api/webhook/twilio/route.ts
+ *
+ * The production handler:
+ * - Is deployed to Vercel (leadflow-ai project)
+ * - Correctly sends TCPA opt-out confirmation via TwiML
+ * - Handles opt-in, DNC, satisfaction pings, and AI responses
+ *
+ * This legacy file does NOT send the opt-out confirmation SMS (TCPA violation
+ * risk) and is no longer registered in server.js.
+ *
+ * Twilio webhook URL must point exclusively to the Next.js Vercel endpoint:
+ *   https://leadflow-ai-five.vercel.app/api/webhook/twilio
+ *
+ * This file is retained for reference only. Do not re-register it.
+ *
+ * ---
+ * Original description: Twilio Inbound SMS Handler
  * Receives and processes inbound SMS messages from leads
  * Handles opt-out (STOP) messages and updates CRM
  *
- * Endpoint: POST /webhook/twilio/inbound
- * 
+ * Endpoint (legacy, local only): POST /webhook/twilio/inbound
  * UC-5: Lead Opt-Out
- * Process STOP/opt-out messages and update CRM
  */
 
 const express = require('express');
