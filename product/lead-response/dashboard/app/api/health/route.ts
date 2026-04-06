@@ -65,17 +65,14 @@ export async function GET() {
     }
   }
 
-  // Critical checks determine overall status (env vars + supabase connectivity).
+  // Critical checks determine overall status (env vars + database connectivity).
   // api_connectivity is informational — external API issues don't make the app unhealthy.
   const criticalKeys = [
     'NEXT_PUBLIC_API_URL',
     'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'supabase_connectivity',
+    'database',
   ]
   const criticalFailed = Object.entries(checks)
     .filter(([name, c]) => criticalKeys.includes(name) && !c.ok)
