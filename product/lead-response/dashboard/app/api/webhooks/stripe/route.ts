@@ -83,7 +83,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         })
       : 'unknown'
 
-    // Update agent with subscription info
+    // Update agent with subscription info (non-blocking — subscription upsert is more important)
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
@@ -99,18 +99,18 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
     if (updateError) {
       console.error('Failed to update agent:', updateError)
-      return
+      // Continue — still persist the subscription record
     }
 
     // Upsert subscription record (idempotent — safe to replay webhooks)
-    await supabase.from('subscriptions').upsert({
+    const { error: subError } = await supabase.from('subscriptions').upsert({
       user_id: userId,
       stripe_customer_id: stripeCustomerId,
       stripe_subscription_id: subscription.id,
       status: subscription.status,
       tier: tier,
       price_id: priceId,
-      interval: lineItem.price?.recurring?.interval || null,
+      interval: lineItem.price?.recurring?.interval || 'month',
       current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
       current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
       trial_start: (subscription as any).trial_start ? new Date((subscription as any).trial_start * 1000).toISOString() : null,
@@ -123,13 +123,19 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'stripe_subscription_id' })
 
-    // Log subscription creation
+    if (subError) {
+      console.error('CRITICAL: Failed to upsert subscription record:', subError)
+    } else {
+      console.log(`✅ Subscription persisted: ${subscription.id} for user ${userId}, tier=${tier}`)
+    }
+
+    // Log subscription creation event
     await supabase.from('subscription_events').insert({
       user_id: userId,
       event_type: 'subscription_created',
-      tier: tier,
+      plan_tier: tier,
       mrr: mrr,
-      stripe_subscription_id: subscriptionId,
+      stripe_event_data: { subscription_id: subscriptionId, tier, mrr, stripe_customer_id: stripeCustomerId },
       created_at: new Date().toISOString(),
     })
 
