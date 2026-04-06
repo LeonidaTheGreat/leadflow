@@ -89,14 +89,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
           .from('pilot_invites')
           .update({ token: tokenHash })
           .eq('id', existingInvite.id)
-        const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
-        const inviteUrl = `${appUrl}/accept-invite?token=${rawToken}`
+        // Do NOT return raw token in response — it should never be logged
         return NextResponse.json(
           {
             success: true,
-            inviteUrl,
             agentId: existingInvite.agent_id,
-            expiresAt: existingInvite.token_expires_at
+            expiresAt: existingInvite.token_expires_at,
+            message: 'Existing invite found and token refreshed. Invitation email will be sent.'
           },
           { status: 200 }
         )
@@ -182,16 +181,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     })
 
     if (!emailSent) {
-      console.warn(`Email sending failed for ${email}, but invite record created. URL: ${inviteUrl}`)
+      console.warn(`Email sending failed for ${email}, but invite record created. Agent ID: ${agentId}`)
     }
 
-    // 7. Return success response
+    // 7. Return success response (do NOT return raw token in response — it should never be logged)
     return NextResponse.json(
       {
         success: true,
-        inviteUrl,
         agentId,
-        expiresAt: expiresAt.toISOString()
+        expiresAt: expiresAt.toISOString(),
+        emailSent
       },
       { status: 200 }
     )
