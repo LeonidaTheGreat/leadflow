@@ -35,8 +35,12 @@ const REQUIRED = envValidation.required || [
   'API_SECRET_KEY',
   'RESEND_API_KEY'
 ]
+const REQUIRED_IN_PRODUCTION = envValidation.required_in_production || [
+  'NEXT_PUBLIC_GA4_MEASUREMENT_ID'
+]
 const NO_PLACEHOLDERS = envValidation.no_placeholders !== false
 const TRIM_WHITESPACE = envValidation.trim_whitespace !== false
+const isProductionBuild = process.env.NODE_ENV === 'production' || process.env.VERCEL
 
 const errors = []
 
@@ -44,11 +48,35 @@ for (const key of REQUIRED) {
   const val = process.env[key]
 
   if (!val) {
-    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+    if (isProductionBuild) {
       errors.push(`MISSING: ${key} is not set`)
     } else {
       console.warn(`⚠️  ${key} not set (ok in development)`)
     }
+    continue
+  }
+
+  if (TRIM_WHITESPACE && val !== val.trim()) {
+    errors.push(`WHITESPACE: ${key} has leading/trailing whitespace or newlines — will break interpolation`)
+  }
+
+  if (NO_PLACEHOLDERS) {
+    const lower = val.toLowerCase()
+    if (lower.includes('placeholder') || lower.includes('your-') || lower === 'test' || lower === 'undefined') {
+      errors.push(`PLACEHOLDER: ${key} contains a placeholder value: "${val.slice(0, 20)}..."`)
+    }
+  }
+}
+
+for (const key of REQUIRED_IN_PRODUCTION) {
+  const val = process.env[key]
+
+  if (!isProductionBuild && !val) {
+    continue
+  }
+
+  if (!val) {
+    errors.push(`MISSING: ${key} is required for production builds`)
     continue
   }
 
