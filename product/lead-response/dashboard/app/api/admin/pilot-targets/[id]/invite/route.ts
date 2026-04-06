@@ -4,6 +4,13 @@ import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 
+function generateInviteToken(): { rawToken: string; tokenHash: string } {
+  const rawToken = crypto.randomBytes(32).toString('hex')
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+
+  return { rawToken, tokenHash }
+}
+
 function checkAdminAuth(request: NextRequest): boolean {
   const adminToken = request.headers.get('x-admin-token')
   const expectedToken = process.env.ADMIN_SECRET
@@ -61,8 +68,7 @@ export async function POST(
 
     if (existingInvite && new Date((existingInvite as any).token_expires_at) > new Date()) {
       // Refresh the token and resend
-      const rawToken = crypto.randomBytes(32).toString('hex')
-      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+      const { rawToken, tokenHash } = generateInviteToken()
       await postgrestAdmin
         .from('pilot_invites')
         .update({ token: tokenHash })
@@ -71,7 +77,7 @@ export async function POST(
       const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
       const inviteUrl = `${appUrl}/accept-invite?token=${rawToken}`
 
-      await sendPilotInviteEmail(email, (existingInvite as any).agent_id, {
+      const emailSent = await sendPilotInviteEmail(email, (existingInvite as any).agent_id, {
         agentName: name,
         inviteUrl,
         expiresAt: (existingInvite as any).token_expires_at,
@@ -85,9 +91,9 @@ export async function POST(
 
       return NextResponse.json({
         success: true,
-        inviteUrl,
         agentId: (existingInvite as any).agent_id,
         expiresAt: (existingInvite as any).token_expires_at,
+        emailSent,
         note: 'Existing invite refreshed and resent',
       })
     }
@@ -130,8 +136,7 @@ export async function POST(
     }
 
     // 4. Create invite record
-    const rawToken = crypto.randomBytes(32).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+    const { rawToken, tokenHash } = generateInviteToken()
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
     const { error: inviteError } = await postgrestAdmin
@@ -172,7 +177,6 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      inviteUrl,
       agentId,
       expiresAt: expiresAt.toISOString(),
       emailSent,
