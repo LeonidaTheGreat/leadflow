@@ -4,6 +4,13 @@ import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 
+function generateInviteToken(): { rawToken: string; tokenHash: string } {
+  const rawToken = crypto.randomBytes(32).toString('hex')
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+
+  return { rawToken, tokenHash }
+}
+
 // Admin auth check - verify X-Admin-Token header
 function checkAdminAuth(request: NextRequest): boolean {
   const adminToken = request.headers.get('x-admin-token')
@@ -25,9 +32,10 @@ interface InviteRequest {
 
 interface InviteResponse {
   success: boolean
-  inviteUrl?: string
   agentId?: string
   expiresAt?: string
+  emailSent?: boolean
+  message?: string
   error?: string
 }
 
@@ -36,7 +44,7 @@ interface InviteResponse {
  *
  * Direct recruitment endpoint for Stojan.
  * Accepts: email (required), name (required), message (optional)
- * Returns: magic-link invite URL + agent ID
+ * Returns: invite metadata + agent ID
  *
  * Auth: X-Admin-Token header (must match ADMIN_SECRET)
  */
@@ -83,8 +91,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     if (existingInvite) {
       // Check if token is still valid — re-issue a new raw token (raw token is never stored, only hash)
       if (new Date(existingInvite.token_expires_at) > new Date()) {
-        const rawToken = crypto.randomBytes(32).toString('hex')
-        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+        const { rawToken, tokenHash } = generateInviteToken()
         await supabaseServer
           .from('pilot_invites')
           .update({ token: tokenHash })
@@ -144,8 +151,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     }
 
     // 5. Create pilot invite record — store SHA-256 hash of token, never the raw token
-    const rawToken = crypto.randomBytes(32).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+    const { rawToken, tokenHash } = generateInviteToken()
     const now = new Date()
     const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
