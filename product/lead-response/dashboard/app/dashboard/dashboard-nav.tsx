@@ -32,15 +32,15 @@ export function DashboardNav() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <a href="/dashboard" className="text-xl font-bold text-slate-900 dark:text-white">
+            <a href="/dashboard" aria-label="Go to dashboard home" className="text-xl font-bold text-slate-900 dark:text-white">
               LeadFlow AI
             </a>
             <div className="hidden md:flex items-center gap-4">
-              <a href="/dashboard" data-testid="nav-link-feed" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Lead Feed</a>
-              <a href="/dashboard/history" data-testid="nav-link-history" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">History</a>
-              <a href="/dashboard/analytics" data-testid="nav-link-analytics" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Analytics</a>
-              <a href="/admin/simulator" data-testid="nav-link-simulator" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Simulator</a>
-              <a href="/settings" data-testid="nav-link-settings" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Settings</a>
+              <a href="/dashboard" aria-label="Go to lead feed" data-testid="nav-link-feed" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Lead Feed</a>
+              <a href="/dashboard/history" aria-label="Go to lead history" data-testid="nav-link-history" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">History</a>
+              <a href="/dashboard/analytics" aria-label="Go to dashboard analytics" data-testid="nav-link-analytics" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Analytics</a>
+              <a href="/admin/simulator" aria-label="Go to lead response simulator" data-testid="nav-link-simulator" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Simulator</a>
+              <a href="/settings" aria-label="Go to settings" data-testid="nav-link-settings" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Settings</a>
             </div>
           </div>
           <div className="flex items-center gap-4">
