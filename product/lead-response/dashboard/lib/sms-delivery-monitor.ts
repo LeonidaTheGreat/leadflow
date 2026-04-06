@@ -10,6 +10,9 @@
 
 import { createClient } from '@/lib/db'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
+const API_SERVICE_KEY = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
+
 // Thresholds
 const DEGRADED_THRESHOLD = 0.70  // <70% delivery rate = degraded
 const CRITICAL_THRESHOLD = 0.50  // <50% delivery rate = critical
@@ -41,7 +44,7 @@ export async function checkSmsDeliveryHealth(): Promise<SmsDeliveryHealth> {
   const checkedAt = new Date().toISOString()
   const since = new Date(Date.now() - WINDOW_HOURS * 60 * 60 * 1000).toISOString()
 
-  const db = createClient()
+  const db = createClient(API_URL, API_SERVICE_KEY)
 
   // Fetch outbound SMS in the monitoring window
   const { data: messages, error } = await db
