@@ -111,12 +111,28 @@ export async function GET(request: NextRequest) {
     const appointmentsBookedThisMonth = monthlyBookings?.length || 0
 
     // ============================================================
+    // 3b. ALL-TIME APPOINTMENTS BOOKED (for booking rate calculation)
+    // Count all bookings for this agent (no date filter)
+    // ============================================================
+    const { data: allTimeBookings, error: allTimeBookingsError } = await supabaseAdmin
+      .from('bookings')
+      .select('id')
+      .eq('agent_id', agentId)
+
+    if (allTimeBookingsError) {
+      console.error('Error fetching all-time bookings:', allTimeBookingsError)
+      return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 })
+    }
+
+    const appointmentsBookedAllTime = allTimeBookings?.length || 0
+
+    // ============================================================
     // 4. ESTIMATED REVENUE PROTECTED
     // Formula: leadsResponded × avgCommission × bookingRate
     //
     // avgCommission: Typical real estate commission (assume 5%)
     // bookingRate: Conversion from lead to booking
-    //   - If leadsResponded > 0: bookingRate = appointmentsBookedThisMonth / leadsResponded
+    //   - If leadsResponded > 0: bookingRate = appointmentsBookedAllTime / leadsResponded
     //   - Default: 5% (0.05) if no data
     // ============================================================
     const AVG_COMMISSION = 0.05 // 5% typical real estate commission
@@ -124,7 +140,7 @@ export async function GET(request: NextRequest) {
 
     let bookingRate = DEFAULT_BOOKING_RATE
     if (leadsResponded > 0) {
-      bookingRate = appointmentsBookedThisMonth / leadsResponded
+      bookingRate = appointmentsBookedAllTime / leadsResponded
     }
 
     // Average property value assumption: $350,000 USD
