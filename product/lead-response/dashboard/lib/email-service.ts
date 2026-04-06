@@ -263,18 +263,10 @@ async function sendEmail(
 ): Promise<boolean> {
   try {
     const resend = await getResend()
-    // If Resend not configured, log and return success (for testing)
+    // If Resend not configured, return error — AC7 requires 500 with clear error, not silent success
     if (!resend) {
-      console.log(`📧 Email queued (Resend not configured): ${emailType} to ${to}`)
-      await logEmailEvent({
-        customer_id: customerId,
-        email_type: emailType,
-        recipient: to,
-        subject: subject,
-        status: 'queued',
-        metadata: metadata
-      })
-      return true
+      console.error(`❌ Email send failed: RESEND_API_KEY not configured (${emailType} to ${to})`)
+      return false
     }
 
     // Send email via Resend
