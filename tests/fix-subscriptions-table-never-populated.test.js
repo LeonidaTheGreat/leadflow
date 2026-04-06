@@ -8,6 +8,7 @@ const assert = require('assert');
 const fs = require('fs');
 
 const webhookPath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/webhooks/stripe/route.ts';
+const legacyWebhookAliasPath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/webhook/stripe/route.ts';
 
 function mustContain(content, needle, label) {
   assert(content.includes(needle), `Missing: ${label}\n  Expected to find: ${needle}`);
@@ -19,6 +20,7 @@ function mustNotContain(content, needle, label) {
 
 function run() {
   const webhook = fs.readFileSync(webhookPath, 'utf8');
+  const legacyWebhookAlias = fs.readFileSync(legacyWebhookAliasPath, 'utf8');
 
   // AC1: handleCheckoutComplete must insert into subscriptions table
   mustContain(webhook, ".from('subscriptions')", 'subscriptions table write in webhook');
@@ -39,7 +41,14 @@ function run() {
   // AC4: No legacy agent_id writes in webhook insert payloads
   mustNotContain(webhook, 'agent_id: agentId', 'legacy agent_id in insert payloads');
 
-  // AC5: subscription_events and payments still written
+  // AC5: legacy singular webhook path aliases to canonical Stripe webhook route
+  mustContain(
+    legacyWebhookAlias,
+    "export { POST } from '../../webhooks/stripe/route'",
+    'legacy /api/webhook/stripe alias to canonical /api/webhooks/stripe route'
+  );
+
+  // AC6: subscription_events and payments still written
   mustContain(webhook, ".from('subscription_events')", 'subscription_events write');
   mustContain(webhook, ".from('payments')", 'payments write');
 
