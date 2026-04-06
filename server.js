@@ -7,6 +7,7 @@ require('dotenv').config();
 const express = require('express');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const twilioInboundRouter = require('./integration/twilio-inbound-sms');
+const weeklyPerformanceRouter = require('./routes/weekly-performance');
 
 const app = express();
 app.use(express.json());
@@ -38,6 +39,9 @@ app.use('/', fubRouter);
 
 // Twilio inbound SMS routes (UC-5: Lead Opt-Out)
 app.use('/', twilioInboundRouter);
+
+// Weekly performance email routes
+app.use('/', weeklyPerformanceRouter);
 
 // Local development
 if (process.env.NODE_ENV !== 'production') {
