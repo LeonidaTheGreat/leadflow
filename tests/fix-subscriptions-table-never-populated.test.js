@@ -52,6 +52,15 @@ function run() {
   mustContain(webhook, ".from('subscription_events')", 'subscription_events write');
   mustContain(webhook, ".from('payments')", 'payments write');
 
+  // AC7: subscription_events uses correct column names (plan_tier not tier, stripe_event_data present)
+  mustContain(webhook, 'plan_tier:', 'plan_tier column in subscription_events');
+  mustContain(webhook, 'stripe_event_data:', 'stripe_event_data column in subscription_events');
+  mustNotContain(webhook, "event_type: 'subscription_created',\n      tier:", 'bare tier column in subscription_events (should be plan_tier)');
+
+  // AC8: payments uses 'succeeded' status (not 'paid' — matches payments_status_check constraint)
+  mustContain(webhook, "status: 'succeeded'", 'payments status uses succeeded (matches CHECK constraint)');
+  mustNotContain(webhook, "status: 'paid'", 'payments should not use paid (violates CHECK constraint)');
+
   console.log('PASS fix-subscriptions-table-never-populated: all acceptance criteria met');
 }
 
