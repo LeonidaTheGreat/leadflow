@@ -31,6 +31,10 @@ jest.mock('@/lib/supabase-server', () => ({
   }
 }));
 
+jest.mock('@/lib/auth', () => ({
+  getAuthUserId: jest.fn().mockResolvedValue(null)
+}));
+
 // Mock next/server
 const mockJson = jest.fn();
 const mockNextResponse = {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { getAuthUserId } from '@/lib/auth'
 import { randomUUID, randomBytes } from 'crypto'
 
 /**
@@ -224,8 +225,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action, agentId, sessionId, reason } = body
+    const authenticatedId = await getAuthUserId(request)
+    const effectiveAgentId = authenticatedId || agentId
 
-    if (!action || !agentId) {
+    if (!action || !effectiveAgentId) {
       return NextResponse.json(
         { error: 'Missing required fields: action, agentId' },
         { status: 400 }
@@ -243,11 +246,11 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'start':
-        return await startSimulation(agentId, finalSessionId!)
+        return await startSimulation(effectiveAgentId, finalSessionId!)
       case 'status':
-        return await getSimulationStatus(agentId, sessionId!)
+        return await getSimulationStatus(effectiveAgentId, sessionId!)
       case 'skip':
-        return await skipSimulation(agentId, sessionId!, reason)
+        return await skipSimulation(effectiveAgentId, sessionId!, reason)
       default:
         return NextResponse.json(
           { error: 'Invalid action. Must be start, status, or skip' },
