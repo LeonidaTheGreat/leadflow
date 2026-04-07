@@ -8,6 +8,7 @@ const express = require('express');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const weeklyPerformanceRouter = require('./routes/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/check-stuck-pilots');
+const activationOutreachRouter = require('./routes/admin/activation-outreach');
 
 const app = express();
 app.use(express.json());
@@ -41,6 +42,9 @@ app.use('/', weeklyPerformanceRouter);
 
 // Stuck pilots cron route (checks pilot_progress, not onboarding_events)
 app.use('/', checkStuckPilotsRouter);
+
+// Admin: activation outreach (personal email to verified but unactivated signups)
+app.use('/', activationOutreachRouter);
 
 // Local development
 if (process.env.NODE_ENV !== 'production') {
