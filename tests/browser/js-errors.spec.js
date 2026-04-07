@@ -17,12 +17,10 @@ const { test, expect } = require('@playwright/test')
 
 const AUTH_EMAIL =
   process.env.PLAYWRIGHT_TEST_EMAIL ||
-  process.env.SMOKE_TEST_AGENT_EMAIL ||
   process.env.TEST_USER_EMAIL ||
   process.env.E2E_TEST_EMAIL
 const AUTH_PASSWORD =
   process.env.PLAYWRIGHT_TEST_PASSWORD ||
-  process.env.SMOKE_TEST_AGENT_PASSWORD ||
   process.env.TEST_USER_PASSWORD ||
   process.env.E2E_TEST_PASSWORD
 
@@ -37,14 +35,16 @@ const PUBLIC_PAGES = [
 ]
 
 async function loginAsTestUser(page) {
-  const response = await page.request.post('/api/auth/login', {
-    data: {
-      email: AUTH_EMAIL,
-      password: AUTH_PASSWORD,
-    },
-  })
+  await page.goto('/login', { waitUntil: 'domcontentloaded' })
+  await page.waitForSelector('#email', { timeout: 15000 })
 
-  expect(response.status(), 'Expected /api/auth/login to return 200').toBe(200)
+  await page.fill('#email', AUTH_EMAIL)
+  await page.fill('#password', AUTH_PASSWORD)
+
+  await Promise.all([
+    page.waitForURL('**/dashboard**', { timeout: 30000 }),
+    page.getByRole('button', { name: /sign in/i }).click(),
+  ])
 }
 
 for (const { path, name } of PUBLIC_PAGES) {
