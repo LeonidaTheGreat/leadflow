@@ -9,8 +9,8 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const { createClient } = require('../lib/db-client')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
 
 let supabase
 
@@ -39,12 +39,12 @@ async function cleanup(email) {
 async function runTests() {
   console.log('\n=== pilot_signups table tests ===\n')
 
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+  if (!apiUrl || !apiKey) {
+    console.error('Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
     process.exit(1)
   }
 
-  supabase = createClient(supabaseUrl, supabaseKey)
+  supabase = createClient(apiUrl, apiKey)
 
   // Test 1: Table exists and is queryable (no PGRST205)
   await test('pilot_signups table exists and is queryable', async () => {

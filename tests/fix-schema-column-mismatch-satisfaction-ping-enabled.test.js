@@ -16,14 +16,14 @@ const SUPABASE_DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 
 if (!SUPABASE_DB_PASSWORD || !SUPABASE_URL) {
-  console.error('FAIL: Missing SUPABASE_DB_PASSWORD or SUPABASE_URL');
-  process.exit(1);
+  console.warn('SKIP: Missing SUPABASE_DB_PASSWORD or SUPABASE_URL (Supabase removed from stack)');
+  process.exit(0);
 }
 
 const match = SUPABASE_URL.match(/https:\/\/(\w+)\.supabase\.co/);
 if (!match) {
-  console.error('FAIL: Could not extract database reference from SUPABASE_URL');
-  process.exit(1);
+  console.warn('SKIP: Could not extract database reference from SUPABASE_URL (Supabase removed from stack)');
+  process.exit(0);
 }
 
 const dbRef = match[1];

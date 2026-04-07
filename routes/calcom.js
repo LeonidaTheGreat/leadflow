@@ -382,16 +382,16 @@ router.post('/store-booking-url', async (req, res) => {
         }
 
         const { createClient } = require('../lib/postgrest-client');
-        const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL;
-        const supabaseKey = process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
 
-        if (!supabaseUrl || !supabaseKey) {
+        if (!apiUrl || !apiKey) {
             return res.status(500).json({
                 error: 'Database not configured'
             });
         }
 
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        const supabase = createClient(apiUrl, apiKey);
 
         // Update or create agent booking config
         const { data, error } = await supabase

@@ -5,7 +5,7 @@
 ```
 Supabase (tasks table)  ← Single Source of Truth
        ↓
-orchestrator-supabase.js  ← My task lifecycle manager
+orchestrator.js  ← My task lifecycle manager
        ↓
 DASHBOARD.md  ← Generated snapshot
        ↓
@@ -56,22 +56,22 @@ await orch.taskCompleted(taskId, {
 
 ```bash
 # Check queue status
-node orchestrator-supabase.js status
+node orchestrator.js status
 
 # Get Telegram report
-node orchestrator-supabase.js report
+node orchestrator.js report
 
 # View full queue
-node orchestrator-supabase.js queue
+node orchestrator.js queue
 
 # See critical (P0) tasks
-node orchestrator-supabase.js critical
+node orchestrator.js critical
 
 # Regenerate DASHBOARD.md
-node orchestrator-supabase.js dashboard
+node orchestrator.js dashboard
 
 # Watch queue live (updates every 5s)
-node supabase-client.js watch
+node orchestrator.js watch
 ```
 
 ## Supabase Integration Points

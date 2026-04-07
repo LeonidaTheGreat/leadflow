@@ -158,8 +158,8 @@ Required environment variables:
 
 ```bash
 # Supabase
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+NEXT_PUBLIC_API_URL=https://api.imagineapi.org/rest/v1
+API_SECRET_KEY=your-api-secret-key
 
 # Resend (for email sending)
 RESEND_API_KEY=re_xxx
@@ -289,11 +289,11 @@ console.log(result); // { success: true, messageId: 'xxx' }
 ```bash
 # Get all pilot agents and sequence progress
 curl -X GET http://localhost:3000/api/pilot-conversion/status \
-  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"
+  -H "Authorization: Bearer $API_SECRET_KEY"
 
 # Get specific agent status
 curl -X GET http://localhost:3000/api/pilot-conversion/status/<agent-id> \
-  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"
+  -H "Authorization: Bearer $API_SECRET_KEY"
 ```
 
 ---

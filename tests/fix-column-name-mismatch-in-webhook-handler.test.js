@@ -207,13 +207,13 @@ test('Migration schema defines user_id on payments (not agent_id)', () => {
 })
 
 // ── Section 4: Live DB runtime check (if env vars available) ──────────────────
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+const API_KEY = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
 
-if (SUPABASE_URL && SUPABASE_KEY) {
+if (API_URL && API_KEY) {
   console.log('\n[4] Live DB column verification')
 
-  const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+  const sb = createClient(API_URL, API_KEY)
 
   async function runDbTests() {
     await asyncTest('subscription_events.user_id column exists (no query error)', async () => {
@@ -263,7 +263,7 @@ if (SUPABASE_URL && SUPABASE_KEY) {
     process.exit(1)
   })
 } else {
-  console.log('\n[4] DB runtime check: SKIPPED (no Supabase env vars)')
+  console.log('\n[4] DB runtime check: SKIPPED (no DB env vars)')
   printSummary()
 }
 

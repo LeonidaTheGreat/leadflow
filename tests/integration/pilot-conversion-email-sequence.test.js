@@ -67,8 +67,8 @@ async function setup() {
 
   const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
   );
 
   // Clean up any existing test data
@@ -120,8 +120,8 @@ async function teardown() {
 
   const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
   );
 
   // Clean up email logs
@@ -237,8 +237,8 @@ async function testStopOnUpgrade() {
 
   const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
   );
 
   // Initially should not be upgraded
@@ -273,8 +273,8 @@ async function testEmailLogging() {
 
   const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
   );
 
   // Send a test email (will be mocked if Resend not configured)
@@ -328,8 +328,8 @@ async function testIdempotency() {
   // The exact behavior depends on timing, but we shouldn't have duplicate log entries
   const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
   );
 
   const { data: logs, error } = await supabase
@@ -371,8 +371,8 @@ async function testSchemaExists() {
 
   const { createClient } = require('../../lib/db-client');
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
   );
 
   // Check if table exists by querying it

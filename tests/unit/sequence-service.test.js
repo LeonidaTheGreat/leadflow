@@ -65,8 +65,8 @@ const mockSupabase = {
 };
 
 // Inject mock before requiring the module
-process.env.SUPABASE_URL = 'http://mock';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock-key';
+process.env.NEXT_PUBLIC_API_URL = 'http://mock';
+process.env.API_SECRET_KEY = 'mock-key';
 
 // Patch createClient
 const { createClient: origCreateClient } = require('../../lib/db-client');

@@ -16,8 +16,8 @@ const fs = require('fs')
 require('dotenv').config({ path: path.join(__dirname, '../.env') })
 
 const DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co'
-const projectRef = SUPABASE_URL.match(/https:\/\/([^.]+)/)?.[1]
+const DB_REF_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co'
+const projectRef = DB_REF_URL.match(/https:\/\/([^.]+)/)?.[1]
 
 const dbConfig = {
   host: `db.${projectRef}.supabase.co`,
@@ -68,14 +68,14 @@ describe('verify-lead-sequences-table-exists', () => {
     expect(() => require('../lib/sequence-service')).not.toThrow()
   })
 
-  test('SUPABASE_URL env var is set', () => {
-    expect(process.env.SUPABASE_URL).toBeTruthy()
-    expect(process.env.SUPABASE_URL).toContain('supabase.co')
+  test('NEXT_PUBLIC_API_URL env var is set', () => {
+    expect(process.env.NEXT_PUBLIC_API_URL).toBeTruthy()
   })
 
-  test('SUPABASE_SERVICE_ROLE_KEY env var is set', () => {
-    expect(process.env.SUPABASE_SERVICE_ROLE_KEY).toBeTruthy()
-    expect(process.env.SUPABASE_SERVICE_ROLE_KEY.length).toBeGreaterThan(50)
+  test('API_SECRET_KEY env var is set', () => {
+    const key = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
+    expect(key).toBeTruthy()
+    expect(key.length).toBeGreaterThan(20)
   })
 
   test('production cron endpoint returns 200 (not an error)', async () => {

@@ -193,11 +193,11 @@ $$ LANGUAGE plpgsql;
 -- 4. ENABLE REAL-TIME FOR KEY TABLES (if not already enabled)
 -- ============================================================================
 
--- Add tables to realtime publication
-ALTER PUBLICATION supabase_realtime ADD TABLE tasks;
-ALTER PUBLICATION supabase_realtime ADD TABLE agents;
-ALTER PUBLICATION supabase_realtime ADD TABLE completed_work;
-ALTER PUBLICATION supabase_realtime ADD TABLE system_components;
+-- Supabase realtime not used (removed from stack) — these lines are no-ops
+-- ALTER PUBLICATION supabase_realtime ADD TABLE tasks;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE agents;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE completed_work;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE system_components;
 
 -- ============================================================================
 -- 5. ANALYZE TABLES FOR QUERY PLANNER

@@ -5,14 +5,14 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/db-client');
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'http://localhost:54321';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'test-key';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/rest/v1';
+const API_KEY = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY || 'test-key';
 const CRON_SECRET = process.env.CRON_SECRET || 'test-cron-secret';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const supabase = createClient(API_URL, API_KEY);
 
 // Test agent data
 const testAgent = {

@@ -200,8 +200,8 @@ import requests
 # Configuration
 POSTHOG_API_KEY = os.environ['POSTHOG_API_KEY']
 POSTHOG_PROJECT_ID = os.environ['POSTHOG_PROJECT_ID']
-SUPABASE_URL = os.environ['SUPABASE_URL']
-SUPABASE_KEY = os.environ['SUPABASE_KEY']
+API_URL = os.environ['NEXT_PUBLIC_API_URL']
+API_KEY = os.environ['API_SECRET_KEY']
 
 def get_date_ranges():
     """Get current and previous week date ranges"""
@@ -346,8 +346,8 @@ jobs:
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |

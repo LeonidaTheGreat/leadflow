@@ -21,8 +21,8 @@ export async function GET(request) {
   const isCronRequest = authHeader === `Bearer ${process.env.CRON_SECRET}` ||
                        request.headers.get('x-vercel-cron') === '1';
   
-  // Also allow service role key for manual triggers
-  const isServiceRole = authHeader === `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`;
+  // Also allow API secret key for manual triggers
+  const isServiceRole = authHeader === `Bearer ${process.env.API_SECRET_KEY}`;
   
   if (!isCronRequest && !isServiceRole) {
     return Response.json(

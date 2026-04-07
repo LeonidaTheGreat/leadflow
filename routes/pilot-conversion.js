@@ -19,9 +19,9 @@ const {
 const { createClient } = require('../lib/postgrest-client');
 
 // Initialize PostgREST client
-const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL;
-const supabaseKey = process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY;
-const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
+const supabase = (apiUrl && apiKey) ? createClient(apiUrl, apiKey) : null;
 
 /**
  * Verify admin/service authentication
@@ -30,7 +30,7 @@ function verifyAuth(req) {
   const authHeader = req.headers.authorization;
   
   // Check for service role key
-  if (authHeader === `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
+  if (authHeader === `Bearer ${process.env.API_SECRET_KEY}`) {
     return { authorized: true, role: 'service' };
   }
   

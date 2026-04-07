@@ -10,8 +10,8 @@ const Stripe = require('stripe');
 
 // Initialize PostgREST client
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL,
-  process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
 );
 
 // Initialize Stripe

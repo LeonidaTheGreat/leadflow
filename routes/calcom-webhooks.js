@@ -366,10 +366,10 @@ router.post('/logs', async (req, res) => {
 router.get('/health/summary', async (req, res) => {
     try {
         const { createClient } = require('../lib/postgrest-client');
-        const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL;
-        const supabaseKey = process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.LEADFLOW_API_KEY;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
 
-        if (!supabaseUrl || !supabaseKey) {
+        if (!apiUrl || !apiKey) {
             return res.json({
                 success: true,
                 mock: true,
@@ -385,7 +385,7 @@ router.get('/health/summary', async (req, res) => {
             });
         }
 
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        const supabase = createClient(apiUrl, apiKey);
 
         const { data, error } = await supabase
             .from('webhook_health_summary')

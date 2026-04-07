@@ -9,8 +9,8 @@
 const assert = require('assert');
 
 // Mock environment variables
-process.env.SUPABASE_URL = 'https://mock.supabase.co';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock_key';
+process.env.NEXT_PUBLIC_API_URL = 'https://mock.api.url';
+process.env.API_SECRET_KEY = 'mock_key';
 
 // Import the module
 const {

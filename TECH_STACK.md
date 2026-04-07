@@ -73,8 +73,8 @@ const { createClient } = require('./postgrest-client')
 // or: const { createClient } = require('./db-client')  // re-exports from postgrest-client
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || process.env.SUPABASE_URL,
-  process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
 )
 
 // Same chainable API as dashboard
@@ -137,13 +137,13 @@ Returns `{ data, error }` when awaited (implements `PromiseLike`).
 | `JWT_SECRET` | JWT signing key |
 | `RESEND_API_KEY` | Email service |
 
-### Legacy (still in Vercel, being phased out)
+### Removed (Supabase fully removed)
 
-| Variable | Status |
-|----------|--------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Legacy — not used by code |
-| `SUPABASE_SERVICE_ROLE_KEY` | Legacy — some env fallbacks still read this |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Legacy — not used |
+The following variables have been removed from the codebase and .env files:
+- `SUPABASE_URL` — removed
+- `SUPABASE_SERVICE_ROLE_KEY` — removed
+- `NEXT_PUBLIC_SUPABASE_URL` — removed
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — removed
 
 ## Testing
 

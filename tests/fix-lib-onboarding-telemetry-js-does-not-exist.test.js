@@ -19,8 +19,8 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const { createClient } = require('../lib/db-client');
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
 
 const LIB_PATH = path.join(__dirname, '../lib/onboarding-telemetry.js');
 
@@ -90,7 +90,7 @@ async function runTests() {
     console.log('  ✓ Invalid step rejected with correct error');
     passed++;
   } else {
-    console.log('  ⚠ Skipped (no Supabase credentials)');
+    console.log('  ⚠ Skipped (no DB credentials)');
     total--;
   }
 
