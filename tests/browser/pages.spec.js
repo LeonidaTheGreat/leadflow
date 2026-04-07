@@ -1,6 +1,28 @@
 // @ts-check
 const { test, expect } = require('@playwright/test')
 
+const AUTH_EMAIL =
+  process.env.PLAYWRIGHT_TEST_EMAIL ||
+  process.env.TEST_USER_EMAIL ||
+  process.env.E2E_TEST_EMAIL
+const AUTH_PASSWORD =
+  process.env.PLAYWRIGHT_TEST_PASSWORD ||
+  process.env.TEST_USER_PASSWORD ||
+  process.env.E2E_TEST_PASSWORD
+
+async function loginAsTestUser(page) {
+  await page.goto('/login', { waitUntil: 'domcontentloaded' })
+  await page.waitForSelector('#email', { timeout: 15000 })
+
+  await page.fill('#email', AUTH_EMAIL)
+  await page.fill('#password', AUTH_PASSWORD)
+
+  await Promise.all([
+    page.waitForURL('**/dashboard**', { timeout: 30000 }),
+    page.getByRole('button', { name: /sign in/i }).click(),
+  ])
+}
+
 /**
  * Page Load & Navigation Browser Tests
  *
@@ -117,25 +139,25 @@ test.describe('Signup Form Interaction', () => {
     // Test HTML5 form validation by checking required attributes
     const emailInput = page.locator('[data-testid="signup-email-input"]')
     const passwordInput = page.locator('[data-testid="signup-password-input"]')
-    
+
     // Verify required attributes are present
     await expect(emailInput).toHaveAttribute('required', '')
     await expect(passwordInput).toHaveAttribute('required', '')
-    
+
     // Verify password has minlength attribute for validation
     await expect(passwordInput).toHaveAttribute('minlength', '8')
-    
+
     // Test that form prevents submission with invalid data
     // Fill invalid email format
     await emailInput.fill('invalid-email')
     await page.fill('input[name="name"]', 'Test User')
     await page.fill('input[name="phone"]', '555-123-4567')
     await passwordInput.fill('short')
-    
+
     // Try submitting - form should not submit due to HTML5 validation
     const submitBtn = page.getByRole('button', { name: /Continue to Payment/i })
     await submitBtn.click()
-    
+
     // Page should still be on the form (not redirected)
     await expect(page.locator('[data-testid="signup-form"]')).toBeVisible()
   })
@@ -158,5 +180,56 @@ test.describe('Responsive Layout', () => {
 
     // Plan cards should still be visible (stacked vertically)
     await expect(page.getByText('$149')).toBeVisible({ timeout: 10000 })
+  })
+})
+
+test.describe('Dashboard Authenticated Pages', () => {
+  test.skip(!AUTH_EMAIL || !AUTH_PASSWORD, 'Missing test auth credentials in env')
+
+  const DASHBOARD_PAGES = [
+    '/dashboard',
+    '/dashboard/leads',
+    '/dashboard/settings',
+    '/dashboard/pricing',
+    '/dashboard/simulator',
+  ]
+
+  test.beforeEach(async ({ page }) => {
+    await loginAsTestUser(page)
+  })
+
+  for (const path of DASHBOARD_PAGES) {
+    test(`${path} renders authenticated content`, async ({ page }) => {
+      const response = await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30000 })
+      expect(response?.status()).toBeLessThan(500)
+
+      await expect(page.locator('main')).toBeVisible({ timeout: 15000 })
+
+      const body = await page.textContent('body')
+      expect(body).not.toContain('Application error')
+      expect(body).not.toContain('Something went wrong')
+      expect(body).not.toContain('Error boundary')
+    })
+  }
+
+  test('dashboard nav links point to distinct routes', async ({ page }) => {
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+
+    const navTargets = [
+      '/dashboard',
+      '/dashboard/leads',
+      '/dashboard/settings',
+      '/dashboard/pricing',
+      '/dashboard/simulator',
+    ]
+
+    const hrefs = []
+    for (const target of navTargets) {
+      const link = page.locator(`a[href="${target}"]`).first()
+      await expect(link).toBeVisible({ timeout: 10000 })
+      hrefs.push(await link.getAttribute('href'))
+    }
+
+    expect(new Set(hrefs).size).toBe(navTargets.length)
   })
 })
