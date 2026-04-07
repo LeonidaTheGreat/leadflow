@@ -112,8 +112,8 @@ describe('Password Verification Fix', () => {
     lastInsertedData = null
     mockAgentsDb.clear()
     process.env.JWT_SECRET = 'test-secret'
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost'
-    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-key'
+    process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
+    process.env.API_SECRET_KEY = 'test-key'
   })
 
   describe('AC-1: Signup hashes password exactly once', () => {

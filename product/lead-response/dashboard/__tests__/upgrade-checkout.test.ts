@@ -11,8 +11,8 @@
 
 // ── Set env vars BEFORE mocks and require so module-level initialisation works ─
 process.env.STRIPE_SECRET_KEY = 'sk_test_fake'
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
+process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
+process.env.API_SECRET_KEY = 'test-service-role-key'
 process.env.JWT_SECRET = 'test-secret'
 process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_starter_monthly_test'
 process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY = 'price_pro_monthly_test'
