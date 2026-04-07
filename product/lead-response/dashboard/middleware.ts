@@ -34,7 +34,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 
 // PostgREST config for DB queries in middleware
 const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
-const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
+const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 
 /**
  * Extract userId from either JWT (auth-token) or session token (leadflow_session)

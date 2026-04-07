@@ -21,15 +21,11 @@ function cleanEnv(value?: string): string | undefined {
 }
 
 function getDB() {
-  const dbUrl =
-    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL) ||
-    cleanEnv(process.env.NEXT_PUBLIC_API_URL)
-  const dbKey =
-    cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) ||
-    cleanEnv(process.env.API_SECRET_KEY)
+  const dbUrl = cleanEnv(process.env.NEXT_PUBLIC_API_URL)
+  const dbKey = cleanEnv(process.env.API_SECRET_KEY)
 
   if (!dbUrl || !dbKey) {
-    throw new Error('Missing Supabase configuration for demo link route')
+    throw new Error('Missing API configuration for demo link route')
   }
 
   return createClient(dbUrl, dbKey)

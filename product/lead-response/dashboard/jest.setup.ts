@@ -9,7 +9,6 @@ process.env.STRIPE_SECRET_KEY = 'sk_test_placeholder'
 process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_placeholder'
 process.env.JWT_SECRET = 'test-jwt-secret'
 process.env.RESEND_API_KEY = 'test-resend-key'
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
 
 // Polyfill TextEncoder/TextDecoder for Node environment (used by postal-mime in Resend)
 if (typeof global.TextEncoder === 'undefined') {

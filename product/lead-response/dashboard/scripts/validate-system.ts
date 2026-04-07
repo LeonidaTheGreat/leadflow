@@ -113,27 +113,27 @@ async function validateSystem(): Promise<SystemState> {
     })
   }
 
-  // 3. Validate Supabase
+  // 3. Validate local API (PostgREST)
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    
-    if (!supabaseUrl || !supabaseKey) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL
+    const apiKey = process.env.API_SECRET_KEY
+
+    if (!apiUrl || !apiKey) {
       results.push({
-        component: 'Supabase',
+        component: 'Database',
         expected: 'Configured',
         actual: 'Missing',
         status: 'error',
-        message: 'Supabase credentials not found'
+        message: 'NEXT_PUBLIC_API_URL or API_SECRET_KEY not found'
       })
     } else {
-      const supabase = createClient(supabaseUrl, supabaseKey)
-      const { data, error } = await supabase.from('real_estate_agents').select('count')
-      
+      const db = createClient(apiUrl, apiKey)
+      const { data, error } = await db.from('real_estate_agents').select('count')
+
       if (error) throw error
-      
+
       results.push({
-        component: 'Supabase',
+        component: 'Database',
         expected: 'Connected',
         actual: `Connected (${data?.length || 0} agents)`,
         status: 'ok',
@@ -142,11 +142,11 @@ async function validateSystem(): Promise<SystemState> {
     }
   } catch (error: any) {
     results.push({
-      component: 'Supabase',
+      component: 'Database',
       expected: 'Connected',
       actual: 'Error',
       status: 'error',
-      message: error.message || 'Failed to connect to Supabase'
+      message: error.message || 'Failed to connect to database'
     })
   }
 
@@ -178,7 +178,7 @@ async function validateSystem(): Promise<SystemState> {
     'app/api/webhook/twilio/route.ts',
     'lib/ai.ts',
     'lib/twilio.ts',
-    'lib/supabase.ts'
+    'lib/db.ts'
   ]
   
   const fs = await import('fs')
