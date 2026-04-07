@@ -91,7 +91,45 @@ describe('dashboard API routes', () => {
         responded_leads: 2,
         leads_today: 3,
         leads_this_week: 9,
-        avg_urgency: 120,
+        avg_urgency: 60,
+        total_leads: 18,
+      },
+    })
+  })
+
+  it('supports the alternate dashboard_stats view shape used in production', async () => {
+    mockStatsSelect.mockResolvedValue({
+      data: [
+        {
+          agent_id: 'agent-1',
+          new_today: 2,
+          qualified_leads: 1,
+          responses_today: 1,
+          total_leads: 10,
+        },
+        {
+          agent_id: 'agent-2',
+          new_today: 3,
+          qualified_leads: 2,
+          responses_today: 4,
+          total_leads: 8,
+        },
+      ],
+      error: null,
+    })
+
+    const response = await getStats()
+
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual({
+      stats: {
+        agent_id: 'all',
+        new_leads: 5,
+        qualified_leads: 3,
+        responded_leads: 5,
+        leads_today: 5,
+        leads_this_week: 0,
+        avg_urgency: 0,
         total_leads: 18,
       },
     })
@@ -99,6 +137,29 @@ describe('dashboard API routes', () => {
 
   it('returns empty stats when PostgREST is not configured', async () => {
     mockIsPostgrestConfigured.mockReturnValue(false)
+
+    const response = await getStats()
+
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual({
+      stats: {
+        agent_id: 'all',
+        new_leads: 0,
+        qualified_leads: 0,
+        responded_leads: 0,
+        leads_today: 0,
+        leads_this_week: 0,
+        avg_urgency: 0,
+        total_leads: 0,
+      },
+    })
+  })
+
+  it('returns empty stats instead of 500 when dashboard_stats query fails', async () => {
+    mockStatsSelect.mockResolvedValue({
+      data: null,
+      error: { message: 'relation "dashboard_stats" does not exist' },
+    })
 
     const response = await getStats()
 
