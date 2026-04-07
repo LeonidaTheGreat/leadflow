@@ -10,9 +10,9 @@ require('dotenv').config({ path: path.join(__dirname, '../product/lead-response/
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // Supabase connection details from environment
-const SUPABASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.localhost';
+const API_KEY = process.env.API_SECRET_KEY;
+const DB_PASSWORD = process.env.LOCAL_PG_PASSWORD;
 
 if (!SUPABASE_KEY) {
   console.error('❌ SUPABASE_SERVICE_ROLE_KEY not found in environment');
@@ -20,7 +20,7 @@ if (!SUPABASE_KEY) {
 }
 
 if (!DB_PASSWORD) {
-  console.error('❌ SUPABASE_DB_PASSWORD not found in environment');
+  console.error('❌ LOCAL_PG_PASSWORD not found in environment');
   process.exit(1);
 }
 
@@ -32,7 +32,7 @@ if (!projectRef) {
 }
 
 const dbConfig = {
-  host: `db.${projectRef}.supabase.co`,
+  host: `db.${projectRef}.localhost`,
   port: 5432,
   database: 'postgres',
   user: 'postgres',

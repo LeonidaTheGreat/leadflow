@@ -7,8 +7,8 @@ dotenv.config();
 // Test: Verify madzunkov@hotmail.com account has proper plan_tier and trial_ends_at
 describe('Account Status: madzunkov@hotmail.com', () => {
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY
   );
 
   it('should have plan_tier set to "trial" (not null)', async () => {
@@ -83,8 +83,8 @@ describe('Account Status: madzunkov@hotmail.com', () => {
 // Regression test: Ensure no other critical accounts have null plan_tier
 describe('Account Status: Regression Check', () => {
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.API_SECRET_KEY
   );
 
   it('should not have non-test accounts with null plan_tier', async () => {

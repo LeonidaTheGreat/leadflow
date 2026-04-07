@@ -3,7 +3,7 @@
  * Run migration 012 against Supabase.
  * Creates the pilot_signups table with unique constraint on email.
  *
- * Uses direct PostgreSQL if SUPABASE_DB_PASSWORD is set, otherwise
+ * Uses direct PostgreSQL if LOCAL_PG_PASSWORD is set, otherwise
  * falls back to Supabase REST API with service_role key.
  *
  * Usage: node scripts/run-migration-012.js
@@ -13,14 +13,6 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const fs = require('fs')
 const path = require('path')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-const dbPassword = process.env.SUPABASE_DB_PASSWORD
-
-if (!supabaseUrl) {
-  console.error('Missing SUPABASE_URL in .env')
-  process.exit(1)
-}
 
 const MIGRATION_FILE = '012_pilot_signups.sql'
 
@@ -69,13 +61,10 @@ function splitStatements(sql) {
 
 async function runViaPg() {
   const { Client } = require('pg')
-  const ref = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]
-  if (!ref) throw new Error('Could not extract project ref from SUPABASE_URL')
+  const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
+  console.log('Connecting to local database...')
 
-  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.supabase.co:5432/postgres`
-  console.log(`Connecting to database via PostgreSQL (project: ${ref})...`)
-
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })
+  const client = new Client({ connectionString })
   await client.connect()
   console.log('Connected.\n')
 
@@ -120,82 +109,10 @@ async function runViaPg() {
   }
 }
 
-async function runViaRest() {
-  console.log('Using Supabase REST API (no DB password available)...\n')
-
-  const sqlPath = path.join(__dirname, '..', 'supabase', 'migrations', MIGRATION_FILE)
-  if (!fs.existsSync(sqlPath)) {
-    console.error(`Migration file not found: ${sqlPath}`)
-    process.exit(1)
-  }
-
-  const sql = fs.readFileSync(sqlPath, 'utf-8')
-  const statements = splitStatements(sql)
-
-  console.log(`--- Running ${MIGRATION_FILE} (${statements.length} statements) ---`)
-
-  let success = 0
-  for (const stmt of statements) {
-    const preview = stmt.replace(/--.*$/gm, '').trim().split('\n')[0].slice(0, 80)
-    process.stdout.write(`  ${preview}... `)
-    try {
-      const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ sql_text: stmt })
-      })
-
-      if (response.ok) {
-        console.log('OK')
-        success++
-      } else {
-        const body = await response.text()
-        if (body.includes('already exists') || body.includes('does not exist')) {
-          console.log('OK (idempotent)')
-          success++
-        } else if (response.status === 404) {
-          throw new Error('exec_sql RPC not available')
-        } else {
-          console.log(`WARN: ${body.slice(0, 120)}`)
-          success++
-        }
-      }
-    } catch (err) {
-      if (err.message === 'exec_sql RPC not available') throw err
-      console.log(`WARN: ${err.message}`)
-      success++
-    }
-  }
-
-  console.log(`  ${MIGRATION_FILE}: ${success}/${statements.length} OK\n`)
-  console.log('Migration 012 complete. pilot_signups table is ready.')
-}
+// Note: Supabase REST API code path removed — project uses local PostgreSQL.
 
 async function run() {
-  if (dbPassword) {
-    return runViaPg()
-  }
-
-  if (supabaseKey) {
-    try {
-      return await runViaRest()
-    } catch (err) {
-      if (err.message.includes('exec_sql RPC not available')) {
-        console.log('\nexec_sql RPC not available. Set SUPABASE_DB_PASSWORD for direct PostgreSQL.')
-      } else {
-        throw err
-      }
-    }
-  }
-
-  console.error('No method available to run migrations.')
-  console.error('Set one of: SUPABASE_DB_PASSWORD or SUPABASE_SERVICE_ROLE_KEY')
-  process.exit(1)
+  return runViaPg()
 }
 
 run().catch(err => {

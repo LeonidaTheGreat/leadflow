@@ -1,10 +1,10 @@
 const { createClient } = require('../lib/db-client');
 require('dotenv').config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 async function runSmokeTest() {
   console.log('=== Email Verification Smoke Test ===\n');
@@ -15,7 +15,7 @@ async function runSmokeTest() {
   // Test 1: Table exists
   testsTotal++;
   console.log('Test 1: email_verification_tokens table exists');
-  const { data: tableData, error: tableError } = await supabase
+  const { data: tableData, error: tableError } = await db
     .from('email_verification_tokens')
     .select('*', { count: 'exact', head: true });
   
@@ -31,7 +31,7 @@ async function runSmokeTest() {
   console.log('\nTest 2: Can insert a verification token');
   
   // First get a valid agent_id
-  const { data: agent } = await supabase
+  const { data: agent } = await db
     .from('real_estate_agents')
     .select('id')
     .eq('email', 'madzunkov@hotmail.com')
@@ -46,7 +46,7 @@ async function runSmokeTest() {
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     };
 
-    const { data: insertData, error: insertError } = await supabase
+    const { data: insertData, error: insertError } = await db
       .from('email_verification_tokens')
       .insert(testToken)
       .select()
@@ -60,7 +60,7 @@ async function runSmokeTest() {
       testsPassed++;
 
       // Clean up test token
-      await supabase
+      await db
         .from('email_verification_tokens')
         .delete()
         .eq('id', insertData.id);
@@ -70,7 +70,7 @@ async function runSmokeTest() {
   // Test 3: madzunkov@hotmail.com is verified
   testsTotal++;
   console.log('\nTest 3: madzunkov@hotmail.com is verified');
-  const { data: userData, error: userError } = await supabase
+  const { data: userData, error: userError } = await db
     .from('real_estate_agents')
     .select('email_verified')
     .eq('email', 'madzunkov@hotmail.com')
@@ -89,7 +89,7 @@ async function runSmokeTest() {
   testsTotal++;
   console.log('\nTest 4: Token uniqueness constraint');
   const duplicateToken = 'duplicate-test-token';
-  const { data: agent2 } = await supabase
+  const { data: agent2 } = await db
     .from('real_estate_agents')
     .select('id')
     .eq('email', 'madzunkov@hotmail.com')
@@ -97,7 +97,7 @@ async function runSmokeTest() {
 
   if (agent2) {
     // Insert first token
-    const { data: firstInsert } = await supabase
+    const { data: firstInsert } = await db
       .from('email_verification_tokens')
       .insert({
         agent_id: agent2.id,
@@ -108,7 +108,7 @@ async function runSmokeTest() {
       .single();
 
     // Try to insert duplicate
-    const { error: dupError } = await supabase
+    const { error: dupError } = await db
       .from('email_verification_tokens')
       .insert({
         agent_id: agent2.id,
@@ -118,7 +118,7 @@ async function runSmokeTest() {
 
     // Clean up
     if (firstInsert) {
-      await supabase.from('email_verification_tokens').delete().eq('id', firstInsert.id);
+      await db.from('email_verification_tokens').delete().eq('id', firstInsert.id);
     }
 
     if (dupError && dupError.code === '23505') {

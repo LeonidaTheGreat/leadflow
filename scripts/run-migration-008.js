@@ -8,18 +8,11 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const fs = require('fs')
 const path = require('path')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env')
-  process.exit(1)
-}
 
 const SQL_FILE = path.join(__dirname, '..', 'product', 'lead-response', 'dashboard', 'supabase', 'migrations', '008_lead_satisfaction_feedback.sql')
 const sql = fs.readFileSync(SQL_FILE, 'utf-8')
 
-// Split into individual statements
+// Split SQL into individual statements
 function splitStatements(sql) {
   const statements = []
   let current = ''
@@ -46,51 +39,14 @@ function splitStatements(sql) {
   return statements
 }
 
-async function runStatement(stmt) {
-  const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
-    method: 'POST',
-    headers: {
-      'apikey': supabaseKey,
-      'Authorization': `Bearer ${supabaseKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query: stmt })
-  })
-
-  if (!response.ok) {
-    // Try direct query endpoint
-    const qResponse = await fetch(`${supabaseUrl}/rest/v1/`, {
-      method: 'POST',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
-      },
-      body: JSON.stringify({ query: stmt })
-    })
-    return qResponse
-  }
-  return response
-}
-
 async function runViaPg(statements) {
   const { Client } = require('pg')
-  const dbPassword = process.env.SUPABASE_DB_PASSWORD
-  const projectRef = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1]
-  if (!projectRef || !dbPassword) throw new Error('Missing DB credentials for direct PG connection')
+  const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
 
-  const client = new Client({
-    host: `db.${projectRef}.supabase.co`,
-    port: 5432,
-    database: 'postgres',
-    user: 'postgres',
-    password: dbPassword,
-    ssl: { rejectUnauthorized: false }
-  })
+  const client = new Client({ connectionString })
 
   await client.connect()
-  console.log('✅ Connected via direct PostgreSQL')
+  console.log('✅ Connected via local PostgreSQL')
 
   for (const stmt of statements) {
     if (!stmt.trim() || stmt.trim().startsWith('--')) continue
@@ -110,15 +66,15 @@ async function runViaPg(statements) {
 }
 
 async function main() {
-  console.log('🗃️  Running migration 008: Lead Satisfaction Feedback...')
+  console.log('Running migration 008: Lead Satisfaction Feedback...')
   const statements = splitStatements(sql).filter(s => s.trim() && !s.trim().startsWith('--'))
-  console.log(`📋 ${statements.length} statements to execute`)
+  console.log(`${statements.length} statements to execute`)
 
   try {
     await runViaPg(statements)
-    console.log('\n✅ Migration 008 complete!')
+    console.log('\nMigration 008 complete!')
   } catch (err) {
-    console.error('\n❌ Migration failed:', err.message)
+    console.error('\nMigration failed:', err.message)
     process.exit(1)
   }
 }

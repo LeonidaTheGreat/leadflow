@@ -12,8 +12,8 @@ const assert = require('assert');
 const { createClient } = require('../lib/db');
 
 // Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'test-key';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:54321';
+const apiKey = process.env.API_SECRET_KEY || 'test-key';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Test configuration

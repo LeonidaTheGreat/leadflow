@@ -13,13 +13,13 @@ const assert = require('assert');
 const { createClient } = require('../../lib/db-client');
 
 // ==================== CONFIGURATION ====================
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.localhost';
+const API_KEY = process.env.API_SECRET_KEY || '';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const STRIPE_PRICE_ID_PRO = process.env.STRIPE_PRICE_ID_PRO || process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 const Stripe = require('stripe');
 const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
 
@@ -62,7 +62,7 @@ async function runTest(name, testFn) {
 async function createTestUser(email) {
   console.log(`  📝 Creating test user: ${email}`);
   
-  const { data: agent, error } = await supabase
+  const { data: agent, error } = await db
     .from('real_estate_agents')
     .insert([
       {
@@ -97,7 +97,7 @@ async function createStripeCustomer(email, agentId) {
   console.log(`  ✓ Stripe customer created: ${customer.id}`);
   
   // Update agent with Stripe customer ID
-  const { error } = await supabase
+  const { error } = await db
     .from('real_estate_agents')
     .update({ stripe_customer_id: customer.id })
     .eq('id', agentId);
@@ -199,7 +199,7 @@ async function simulateWebhook(eventType, data) {
 async function verifySubscriptionInDatabase(agentId) {
   console.log(`  📋 Verifying subscription in database`);
   
-  const { data: agent, error } = await supabase
+  const { data: agent, error } = await db
     .from('real_estate_agents')
     .select('id, stripe_customer_id, stripe_subscription_id, status, plan_tier, mrr, trial_ends_at')
     .eq('id', agentId)
@@ -224,7 +224,7 @@ async function createPortalSession(agentId, customerId) {
   console.log(`  🛡️  Creating customer portal session`);
   
   // Retrieve the agent first to get stripe_customer_id
-  const { data: agent, error: fetchError } = await supabase
+  const { data: agent, error: fetchError } = await db
     .from('real_estate_agents')
     .select('id, email, stripe_customer_id')
     .eq('id', agentId)
@@ -291,7 +291,7 @@ async function cancelSubscription(subscriptionId) {
 async function verifySubscriptionCancellation(agentId) {
   console.log(`  📋 Verifying cancellation in database`);
   
-  const { data: agent, error } = await supabase
+  const { data: agent, error } = await db
     .from('real_estate_agents')
     .select('id, status, plan_tier, mrr, cancelled_at')
     .eq('id', agentId)
@@ -316,7 +316,7 @@ async function cleanupTestData(agentId, customerId) {
   
   try {
     // Delete agent from database
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await db
       .from('real_estate_agents')
       .delete()
       .eq('id', agentId);

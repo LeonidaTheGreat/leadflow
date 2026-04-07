@@ -15,8 +15,8 @@
 const assert = require('assert');
 const { createClient } = require('../lib/db-client');
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
+const API_KEY = process.env.API_SECRET_KEY;
 
 if (!SUPABASE_KEY) {
   console.error('SUPABASE_SERVICE_ROLE_KEY not set');

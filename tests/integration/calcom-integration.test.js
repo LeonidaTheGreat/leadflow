@@ -9,8 +9,8 @@ const assert = require('assert');
 
 // Mock environment variables before imports
 process.env.CAL_API_KEY = 'cal_test_mock_key';
-process.env.SUPABASE_URL = 'https://mock.supabase.co';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'mock_key';
+process.env.NEXT_PUBLIC_API_URL = 'https://mock.supabase.co';
+process.env.API_SECRET_KEY = 'mock_key';
 process.env.CAL_USERNAME = 'testagent';
 process.env.CAL_WEBHOOK_SECRET = 'test_webhook_secret';
 

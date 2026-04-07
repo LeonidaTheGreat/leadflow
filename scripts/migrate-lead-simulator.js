@@ -7,20 +7,12 @@
 const { Client } = require('pg')
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 
-const DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD
-const DB_REF = 'fptrokacdwzlmflyczdz'
-
-if (!DB_PASSWORD) {
-  console.error('Missing SUPABASE_DB_PASSWORD')
-  process.exit(1)
-}
-
-const connectionString = `postgresql://postgres:${encodeURIComponent(DB_PASSWORD)}@db.${DB_REF}.supabase.co:5432/postgres`
+const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
 
 async function run() {
   const client = new Client({ connectionString })
   await client.connect()
-  console.log('✅ Connected to Supabase DB')
+  console.log('✅ Connected to local DB')
 
   try {
     // Create lead_simulations table

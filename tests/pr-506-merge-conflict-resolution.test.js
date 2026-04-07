@@ -11,8 +11,8 @@ const { createClient } = require('../lib/db-client');
  * 4. Event logging works correctly with Promise.resolve wrapper
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
+const SUPABASE_SERVICE_KEY = process.env.API_SECRET_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 

@@ -31,8 +31,8 @@ const assert = require('assert');
 const CONFIG = {
   // API Endpoints
   fubApiBase: process.env.FUB_API_BASE_URL || 'https://api.followupboss.com/v1',
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  supabaseUrl: process.env.NEXT_PUBLIC_API_URL,
+  supabaseKey: process.env.API_SECRET_KEY,
   calcomApiBase: process.env.CALCOM_API_BASE_URL || 'https://api.cal.com/v1',
   calcomApiKey: process.env.CALCOM_API_KEY,
   posthogHost: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',

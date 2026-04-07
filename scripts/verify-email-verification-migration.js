@@ -1,17 +1,17 @@
 const { createClient } = require('../lib/db-client');
 require('dotenv').config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 async function verifyAndFix() {
   console.log('=== Email Verification Migration Verification ===\n');
 
   // 1. Check if table exists
   console.log('1. Checking email_verification_tokens table...');
-  const { data: tableCheck, error: tableError } = await supabase
+  const { data: tableCheck, error: tableError } = await db
     .from('email_verification_tokens')
     .select('*', { count: 'exact', head: true });
 
@@ -23,7 +23,7 @@ async function verifyAndFix() {
 
   // 2. Check indexes
   console.log('\n2. Checking indexes...');
-  const { data: indexes, error: indexError } = await supabase
+  const { data: indexes, error: indexError } = await db
     .rpc('get_indexes_for_table', { table_name: 'email_verification_tokens' });
   
   if (indexError) {
@@ -34,7 +34,7 @@ async function verifyAndFix() {
 
   // 3. Check madzunkov@hotmail.com status
   console.log('\n3. Checking madzunkov@hotmail.com status...');
-  const { data: userData, error: userError } = await supabase
+  const { data: userData, error: userError } = await db
     .from('real_estate_agents')
     .select('id, email, email_verified, created_at')
     .eq('email', 'madzunkov@hotmail.com')
@@ -46,7 +46,7 @@ async function verifyAndFix() {
     console.log('   User found:', userData);
     if (!userData.email_verified) {
       console.log('   User is NOT verified - will fix...');
-      const { error: updateError } = await supabase
+      const { error: updateError } = await db
         .from('real_estate_agents')
         .update({ email_verified: true })
         .eq('id', userData.id);
@@ -63,7 +63,7 @@ async function verifyAndFix() {
 
   // 4. Backfill pre-feature accounts
   console.log('\n4. Backfilling pre-feature accounts (created before 2026-03-09)...');
-  const { data: backfillData, error: backfillError } = await supabase
+  const { data: backfillData, error: backfillError } = await db
     .from('real_estate_agents')
     .select('id, email, email_verified, created_at')
     .eq('email_verified', false)
@@ -76,7 +76,7 @@ async function verifyAndFix() {
     if (backfillData && backfillData.length > 0) {
       for (const account of backfillData) {
         console.log(`   - ${account.email} (created: ${account.created_at})`);
-        const { error: updateErr } = await supabase
+        const { error: updateErr } = await db
           .from('real_estate_agents')
           .update({ email_verified: true })
           .eq('id', account.id);
@@ -92,7 +92,7 @@ async function verifyAndFix() {
 
   // 5. Final verification
   console.log('\n5. Final verification...');
-  const { data: finalCheck, error: finalError } = await supabase
+  const { data: finalCheck, error: finalError } = await db
     .from('real_estate_agents')
     .select('email, email_verified')
     .eq('email', 'madzunkov@hotmail.com')

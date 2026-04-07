@@ -16,8 +16,8 @@ const { createClient } = require('../lib/db-client');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY
 );
 
 let passed = 0;

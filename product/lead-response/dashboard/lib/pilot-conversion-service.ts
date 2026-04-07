@@ -16,8 +16,8 @@
 import { createClient } from '@/lib/db';
 
 // Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org';
-const supabaseKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org';
+const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '';
 const supabase: ReturnType<typeof createClient> | null = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Resend configuration

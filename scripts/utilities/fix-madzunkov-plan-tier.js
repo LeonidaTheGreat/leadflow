@@ -15,16 +15,16 @@ dotenv.config();
 
 const EMAIL = 'madzunkov@hotmail.com';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY
 );
 
 async function main() {
   console.log(`\n🔍 Checking account: ${EMAIL}\n`);
 
   // Step 1: Fetch current account state
-  const { data: accounts, error: fetchError } = await supabase
+  const { data: accounts, error: fetchError } = await db
     .from('real_estate_agents')
     .select('*')
     .eq('email', EMAIL);
@@ -67,7 +67,7 @@ async function main() {
   const createdAt = new Date(account.created_at);
   const trialEndsAt = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  const { error: updateError } = await supabase
+  const { error: updateError } = await db
     .from('real_estate_agents')
     .update({
       plan_tier: 'trial',
@@ -87,7 +87,7 @@ async function main() {
   console.log(`   - subscription_status set to: inactive`);
 
   // Step 4: Verify the fix
-  const { data: updated, error: verifyError } = await supabase
+  const { data: updated, error: verifyError } = await db
     .from('real_estate_agents')
     .select('plan_tier, trial_ends_at')
     .eq('id', account.id);

@@ -5,17 +5,17 @@
  * Returns count of email columns found
  */
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('../lib/postgrest-client');
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.localhost';
+const API_KEY = process.env.API_SECRET_KEY;
 
-if (!SUPABASE_SERVICE_ROLE_KEY) {
+if (!API_KEY) {
   console.error('6'); // Return expected count even if env not set
   process.exit(0);
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const db = createClient(API_URL, API_KEY);
 
 const COLUMNS = [
   'trial_email_welcome_sent',
@@ -29,7 +29,7 @@ const COLUMNS = [
 async function checkColumns() {
   try {
     // Try to select all columns - if they exist, no error
-    const { error } = await supabase
+    const { error } = await db
       .from('real_estate_agents')
       .select(COLUMNS.join(', '))
       .limit(1);

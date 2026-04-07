@@ -5,8 +5,8 @@ const { Client } = require('pg');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const SUPABASE_DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
-const SUPABASE_URL = process.env.SUPABASE_URL;
+const LOCAL_PG_PASSWORD = process.env.LOCAL_PG_PASSWORD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 if (!SUPABASE_DB_PASSWORD || !SUPABASE_URL) {
   console.error('FAIL: Missing SUPABASE_DB_PASSWORD or SUPABASE_URL');

@@ -9,8 +9,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 const BASE_URL = 'https://leadflow-ai-five.vercel.app';
 
 async function run() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const serviceRoleKey = process.env.API_SECRET_KEY;
 
   assert(supabaseUrl, 'Missing NEXT_PUBLIC_SUPABASE_URL');
   assert(serviceRoleKey, 'Missing SUPABASE_SERVICE_ROLE_KEY');

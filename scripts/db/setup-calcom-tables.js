@@ -18,19 +18,19 @@ const path = require('path');
 require('dotenv').config();
 
 // Check environment variables
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
+if (!apiUrl || !apiKey) {
     console.error('❌ Missing required environment variables:');
-    if (!supabaseUrl) console.error('   - SUPABASE_URL');
-    if (!supabaseKey) console.error('   - SUPABASE_SERVICE_ROLE_KEY');
+    if (!apiUrl) console.error('   - SUPABASE_URL');
+    if (!apiKey) console.error('   - SUPABASE_SERVICE_ROLE_KEY');
     console.error('\nPlease set these in your .env file');
     process.exit(1);
 }
 
 // Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const db = createClient(apiUrl, apiKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
@@ -106,13 +106,13 @@ async function setupTables() {
         process.stdout.write(`[${i + 1}/${statements.length}] ${statementPreview}... `);
         
         try {
-            const { error } = await supabase.rpc('exec_sql', { 
+            const { error } = await db.rpc('exec_sql', { 
                 sql: statement 
             });
             
             if (error) {
                 // Try alternative: run as raw query
-                const { error: queryError } = await supabase.from('_temp_query')
+                const { error: queryError } = await db.from('_temp_query')
                     .select('*')
                     .limit(0);
                     
@@ -182,7 +182,7 @@ async function setupTables() {
     
     for (const table of tables) {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await db
                 .from(table)
                 .select('id')
                 .limit(1);

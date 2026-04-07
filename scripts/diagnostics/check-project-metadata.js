@@ -6,9 +6,9 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
@@ -16,7 +16,7 @@ async function checkProjectMetadata() {
   console.log('🔍 Checking project_metadata table...\n')
   
   // Query project_metadata
-  const { data: metadata, error } = await supabase
+  const { data: metadata, error } = await db
     .from('project_metadata')
     .select('*')
     .eq('project_id', 'bo2026')
@@ -31,7 +31,7 @@ async function checkProjectMetadata() {
     console.log('⚠️ No project_metadata found for bo2026')
     console.log('📝 Inserting default data...')
     
-    const { error: insertError } = await supabase
+    const { error: insertError } = await db
       .from('project_metadata')
       .insert({
         project_id: 'bo2026',

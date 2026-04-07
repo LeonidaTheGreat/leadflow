@@ -18,8 +18,8 @@ const { createClient } = require('../lib/db');
 // Load environment variables
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/.env.local' });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_KEY = process.env.API_SECRET_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error('❌ Missing Supabase credentials in environment');

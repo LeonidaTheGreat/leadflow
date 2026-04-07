@@ -21,28 +21,13 @@ try {
 } catch (e) { /* ignore */ }
 
 async function runMigration() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const dbPassword = process.env.SUPABASE_DB_PASSWORD;
+  const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw';
 
-  if (!supabaseUrl || !dbPassword) {
-    console.error('Missing SUPABASE_URL or SUPABASE_DB_PASSWORD');
-    process.exit(1);
-  }
-
-  // Extract host from supabase URL
-  const refMatch = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
-  if (!refMatch) {
-    console.error('Cannot parse Supabase ref from URL:', supabaseUrl);
-    process.exit(1);
-  }
-  const ref = refMatch[1];
-  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.supabase.co:5432/postgres`;
-
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
+  const client = new Client({ connectionString });
 
   try {
     await client.connect();
-    console.log('Connected to database');
+    console.log('Connected to local database');
 
     // Add plan_tier column if it doesn't exist
     await client.query(`

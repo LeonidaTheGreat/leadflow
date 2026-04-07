@@ -15,15 +15,15 @@
 const { createClient } = require('../lib/db-client');
 
 async function ensureActionableRateHealth() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_API_URL;
+  const key = process.env.API_SECRET_KEY;
 
   if (!url || !key) {
     console.error('❌ Missing Supabase credentials');
     process.exit(1);
   }
 
-  const supabase = createClient(url, key);
+  const db = createClient(url, key);
   const sevenDaysAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   try {
@@ -32,7 +32,7 @@ async function ensureActionableRateHealth() {
 
     // ─── STEP 1: Validate findings are properly typed ───
     console.log('\nStep 1: Validating findings type correctness...');
-    const { data: reviewsWithFindings } = await supabase
+    const { data: reviewsWithFindings } = await db
       .from('product_reviews')
       .select('id, findings')
       .eq('project_id', 'leadflow')
@@ -53,7 +53,7 @@ async function ensureActionableRateHealth() {
 
     // ─── STEP 2: Check actionable findings distribution ───
     console.log('\nStep 2: Checking actionable findings distribution...');
-    const { data: allReviews } = await supabase
+    const { data: allReviews } = await db
       .from('product_reviews')
       .select('id, status, findings, resulting_uc_ids')
       .eq('project_id', 'leadflow')

@@ -131,8 +131,8 @@ describe('Free Pilot Onboarding — Core Implementation', () => {
     insertedEvents.length = 0
     insertedIntegrations.length = 0
     process.env.JWT_SECRET = 'test-secret'
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost'
-    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-key'
+    process.env.NEXT_PUBLIC_API_URL = 'http://localhost'
+    process.env.API_SECRET_KEY = 'test-key'
     // No Telegram/Resend keys — tests should not depend on them
     delete process.env.TELEGRAM_BOT_TOKEN
     delete process.env.TELEGRAM_CHAT_ID

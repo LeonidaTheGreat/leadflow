@@ -14,15 +14,15 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const { createClient } = require('../lib/db-client')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiKey = process.env.API_SECRET_KEY
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+if (!apiUrl || !apiKey) {
+  console.error('Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const db = createClient(apiUrl, apiKey, {
   auth: { autoRefreshToken: false, persistSession: false }
 })
 
@@ -30,7 +30,7 @@ const PROJECT_ID = 'leadflow'
 
 async function collectE2EFailures() {
   console.log('Checking E2E test failures...')
-  const { data: failingTests, error } = await supabase
+  const { data: failingTests, error } = await db
     .from('e2e_test_specs')
     .select('*')
     .eq('last_result', 'fail')
@@ -43,7 +43,7 @@ async function collectE2EFailures() {
   let inserted = 0
   for (const test of failingTests || []) {
     // Avoid duplicate feedback for same test
-    const { data: existing } = await supabase
+    const { data: existing } = await db
       .from('product_feedback')
       .select('id')
       .eq('project_id', PROJECT_ID)
@@ -55,7 +55,7 @@ async function collectE2EFailures() {
 
     if (existing && existing.length > 0) continue
 
-    await supabase.from('product_feedback').insert({
+    await db.from('product_feedback').insert({
       project_id: PROJECT_ID,
       source: 'analytics',
       feedback_type: 'bug_report',

@@ -13,15 +13,15 @@ const { createClient } = require('../../lib/db-client')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '.env') })
 
-const SUPABASE_URL = process.env.SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+const API_KEY = process.env.API_SECRET_KEY
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+  console.error('❌ Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
   process.exit(1)
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+const db = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }
 })
 
@@ -30,7 +30,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
  */
 async function tableExists(tableName) {
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from(tableName)
       .select('count(*)', { count: 'exact' })
       .limit(1)
@@ -57,7 +57,7 @@ async function createTablesAndData() {
   console.log('You must run the schema creation manually via SQL Editor.\n')
 
   console.log('📋 To Complete Migration:')
-  console.log('1. Open: https://app.supabase.com')
+  console.log('1. Open: https://app.localhostm')
   console.log('2. Select your project (fptrokacdwzlmflyczdz)')
   console.log('3. Go to: SQL Editor')
   console.log('4. Click: Create new query')
@@ -102,7 +102,7 @@ async function createTablesAndData() {
   // 1. Project Metadata
   console.log('📊 Inserting project metadata...')
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('project_metadata')
       .upsert({
         project_id: 'bo2026',
@@ -137,7 +137,7 @@ async function createTablesAndData() {
 
   for (const comp of components) {
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from('system_components')
         .upsert({
           project_id: 'bo2026',
@@ -165,7 +165,7 @@ async function createTablesAndData() {
 
   for (const agent of agents) {
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from('real_estate_agents')
         .upsert({
           project_id: 'bo2026',
@@ -193,7 +193,7 @@ async function createTablesAndData() {
 
   for (const w of work) {
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from('completed_work')
         .insert({
           project_id: 'bo2026',
@@ -220,7 +220,7 @@ async function createTablesAndData() {
 
   for (const item of items) {
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from('action_items')
         .insert({
           project_id: 'bo2026',
@@ -241,7 +241,7 @@ async function createTablesAndData() {
   // 6. Cost Tracking
   console.log('💰 Inserting cost tracking...')
   try {
-    const { error } = await supabase
+    const { error } = await db
       .from('cost_tracking')
       .upsert({
         project_id: 'bo2026',

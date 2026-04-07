@@ -8,8 +8,8 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const { createClient } = require('../../lib/db-client')
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY
 )
 
 async function run() {
@@ -96,8 +96,8 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const assert = require('assert');
 const { createClient } = require('../../lib/db-client');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_API_URL;
+const supabaseKey = process.env.API_SECRET_KEY;
 
 const testResults = { passed: 0, failed: 0, tests: [] };
 
@@ -120,7 +120,7 @@ async function main() {
   console.log('\n=== pilot_signups Table Integration Tests ===\n');
 
   if (!supabaseUrl || !supabaseKey) {
-    console.error('FATAL: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+    console.error('FATAL: Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY');
     process.exit(1);
   }
 

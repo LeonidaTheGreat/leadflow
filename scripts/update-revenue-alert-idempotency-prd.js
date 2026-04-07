@@ -9,15 +9,15 @@ require('dotenv').config({ path: `${__dirname}/../.env` });
 
 const { createClient } = require('../lib/db-client');
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Error: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
+if (!apiUrl || !apiKey) {
+  console.error('❌ Error: NEXT_PUBLIC_API_URL and API_SECRET_KEY must be set');
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 async function main() {
   try {
@@ -25,7 +25,7 @@ async function main() {
 
     // 1. Insert or update PRD entry
     console.log('📝 Inserting PRD entry...');
-    const { data: prdData, error: prdError } = await supabase
+    const { data: prdData, error: prdError } = await db
       .from('prds')
       .upsert({
         id: 'prd-revenue-alert-idempotency',
@@ -48,7 +48,7 @@ async function main() {
 
     // 2. Update use_case to link to PRD
     console.log('\n📋 Updating use_case entry...');
-    const { data: ucData, error: ucError } = await supabase
+    const { data: ucData, error: ucError } = await db
       .from('use_cases')
       .update({
         prd_id: 'prd-revenue-alert-idempotency'
@@ -65,7 +65,7 @@ async function main() {
 
     // 3. Verify the link
     console.log('\n✅ Verification:');
-    const { data: verification, error: verifyError } = await supabase
+    const { data: verification, error: verifyError } = await db
       .from('use_cases')
       .select('id, prd_id')
       .eq('id', 'uc-revenue-alert-idempotency')

@@ -11,22 +11,22 @@
  *   node scripts/migrate-pilot-conversion-schema.js
  * 
  * Or via Supabase CLI:
- *   supabase db push
+ *   local db push
  */
 
 require('dotenv').config();
 const fs = require('fs');
 const { createClient } = require('../lib/db-client');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+if (!apiUrl || !apiKey) {
+  console.error('❌ Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY');
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 /**
  * Migration statements (broken into smaller chunks for reliability)
@@ -145,7 +145,7 @@ async function runMigrations() {
       console.log(`[${i + 1}/${migrations.length}] Running migration...`);
       
       // Use postgres directly via RPC if available, otherwise use supabase
-      const { error } = await supabase.rpc('exec', {
+      const { error } = await db.rpc('exec', {
         sql
       }).catch(() => {
         // If exec doesn't exist, return error so we can handle it
@@ -158,7 +158,7 @@ async function runMigrations() {
         // In production, you would use pg module directly
         // For now, just log that it should be run via Supabase dashboard
         console.log('   ℹ️  Please run this migration via Supabase dashboard or CLI');
-        console.log('   Command: supabase db push');
+        console.log('   Command: local db push');
         failed++;
       } else {
         console.log('   ✅ Migration applied');

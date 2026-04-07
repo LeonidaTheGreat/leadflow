@@ -1,13 +1,13 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY
 )
 
 async function queryTaskState() {
-  const { data: tasks, error } = await supabase
+  const { data: tasks, error } = await db
     .from('tasks')
     .select('*')
     .order('updated_at', { ascending: false })

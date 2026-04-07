@@ -20,14 +20,14 @@ require('dotenv').config({ path: path.join(__dirname, '.env') })
 
 class ProjectQuery {
   constructor(projectId = 'leadflow') {
-    const supabaseUrl = process.env.SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL
+    const apiKey = process.env.API_SECRET_KEY
 
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+    if (!apiUrl || !apiKey) {
+      throw new Error('Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey, {
+    this.db = createClient(apiUrl, apiKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     })
 
@@ -71,7 +71,7 @@ class ProjectQuery {
   // ============== Individual Queries ==============
 
   async getProjectMetadata() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('project_metadata')
       .select('*')
       .eq('project_id', this.projectId)
@@ -82,7 +82,7 @@ class ProjectQuery {
   }
 
   async getSystemComponents() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('system_components')
       .select('*')
       .eq('project_id', this.projectId)
@@ -102,7 +102,7 @@ class ProjectQuery {
   }
 
   async getAgents() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('agents')
       .select('*')
       .eq('project_id', this.projectId)
@@ -113,7 +113,7 @@ class ProjectQuery {
   }
 
   async getCompletedWork() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('completed_work')
       .select('*')
       .eq('project_id', this.projectId)
@@ -125,7 +125,7 @@ class ProjectQuery {
   }
 
   async getActionItems() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('action_items')
       .select('*')
       .eq('project_id', this.projectId)
@@ -143,7 +143,7 @@ class ProjectQuery {
   }
 
   async getCostTracking() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('cost_tracking')
       .select('*')
       .eq('project_id', this.projectId)
@@ -154,7 +154,7 @@ class ProjectQuery {
   }
 
   async getTaskQueue() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('tasks')
       .select('*')
       .eq('project_id', this.projectId)
@@ -177,7 +177,7 @@ class ProjectQuery {
    * Update project metadata
    */
   async updateProjectMetadata(updates) {
-    const { error } = await this.supabase
+    const { error } = await this.db
       .from('project_metadata')
       .update({ ...updates, last_updated: new Date().toISOString() })
       .eq('project_id', this.projectId)
@@ -190,7 +190,7 @@ class ProjectQuery {
    * Update system component status
    */
   async updateComponent(componentName, status, details = null) {
-    const { error } = await this.supabase
+    const { error } = await this.db
       .from('system_components')
       .update({
         status,
@@ -209,7 +209,7 @@ class ProjectQuery {
    * Update agent status
    */
   async updateAgent(agentName, updates) {
-    const { error } = await this.supabase
+    const { error } = await this.db
       .from('agents')
       .update({ ...updates, last_activity: new Date().toISOString() })
       .eq('project_id', this.projectId)
@@ -223,7 +223,7 @@ class ProjectQuery {
    * Resolve action item
    */
   async resolveActionItem(itemId) {
-    const { error } = await this.supabase
+    const { error } = await this.db
       .from('action_items')
       .update({
         status: 'RESOLVED',
@@ -239,7 +239,7 @@ class ProjectQuery {
    * Add action item
    */
   async addActionItem(title, type, description, awaitingInput, impact = null) {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('action_items')
       .insert({
         project_id: this.projectId,

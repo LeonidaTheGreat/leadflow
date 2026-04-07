@@ -6,8 +6,8 @@
 const assert = require('assert');
 
 // ==================== CONFIGURATION ====================
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.localhost';
+const API_KEY = process.env.API_SECRET_KEY || '';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const STRIPE_PRICE_ID_PRO = process.env.STRIPE_PRICE_ID_PRO || 'price_professional_monthly';
@@ -281,7 +281,7 @@ async function createTestUser(email) {
 
   if (DB_AVAILABLE) {
     try {
-      const { data, error } = await supabase.from('real_estate_agents').insert([
+      const { data, error } = await db.from('real_estate_agents').insert([
         {
           name: `Test Agent ${Date.now()}`,
           email: email,

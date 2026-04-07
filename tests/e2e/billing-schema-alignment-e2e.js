@@ -12,8 +12,8 @@ const axios = require('axios');
 // Configuration
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY
 );
 
 // Test data

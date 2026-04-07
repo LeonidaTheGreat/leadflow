@@ -23,15 +23,15 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '..', '.e
 const { createClient } = require('../../lib/db-client')
 const { checkAndAlertStuckAgents } = require('../../lib/onboarding-telemetry')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiKey = process.env.API_SECRET_KEY
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('[check-stuck-agents] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+if (!apiUrl || !apiKey) {
+  console.error('[check-stuck-agents] Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const db = createClient(apiUrl, apiKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
 
@@ -43,7 +43,7 @@ async function run() {
   console.log('[check-stuck-agents] Starting stuck agent check...')
   const startedAt = Date.now()
 
-  const result = await checkAndAlertStuckAgents(supabase)
+  const result = await checkAndAlertStuckAgents(db)
 
   const elapsed = Date.now() - startedAt
 

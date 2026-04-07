@@ -1,30 +1,30 @@
 const { createClient } = require('../lib/db-client');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
+if (!apiUrl || !apiKey) {
   console.error('FAIL: Missing required environment variables:');
-  if (!supabaseUrl) console.error('  - SUPABASE_URL');
-  if (!supabaseKey) console.error('  - SUPABASE_SERVICE_ROLE_KEY');
+  if (!apiUrl) console.error('  - NEXT_PUBLIC_API_URL');
+  if (!apiKey) console.error('  - API_SECRET_KEY');
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 async function runMigration() {
   console.log('Running migration: Add Aha Moment fields to real_estate_agents...');
   
   try {
     // Add aha_moment_completed column
-    const { error: error1 } = await supabase.rpc('exec_sql', {
+    const { error: error1 } = await db.rpc('exec_sql', {
       sql: `ALTER TABLE real_estate_agents ADD COLUMN IF NOT EXISTS aha_moment_completed BOOLEAN DEFAULT FALSE;`
     });
     
     if (error1) {
       console.log('Note: aha_moment_completed column may already exist or RPC not available:', error1.message);
       // Try direct SQL via REST
-      const { error: directError1 } = await supabase.from('real_estate_agents').select('aha_moment_completed').limit(1);
+      const { error: directError1 } = await db.from('real_estate_agents').select('aha_moment_completed').limit(1);
       if (directError1 && directError1.message.includes('column')) {
         console.log('Column aha_moment_completed does not exist, attempting to create via REST...');
       } else {
@@ -35,13 +35,13 @@ async function runMigration() {
     }
     
     // Add aha_response_time_ms column
-    const { error: error2 } = await supabase.rpc('exec_sql', {
+    const { error: error2 } = await db.rpc('exec_sql', {
       sql: `ALTER TABLE real_estate_agents ADD COLUMN IF NOT EXISTS aha_response_time_ms INTEGER;`
     });
     
     if (error2) {
       console.log('Note: aha_response_time_ms column may already exist or RPC not available:', error2.message);
-      const { error: directError2 } = await supabase.from('real_estate_agents').select('aha_response_time_ms').limit(1);
+      const { error: directError2 } = await db.from('real_estate_agents').select('aha_response_time_ms').limit(1);
       if (directError2 && directError2.message.includes('column')) {
         console.log('Column aha_response_time_ms does not exist, will be handled by API');
       } else {

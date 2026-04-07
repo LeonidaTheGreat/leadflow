@@ -2,7 +2,7 @@ const { createClient } = require('../../lib/db-client')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '.env') })
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+const db = createClient(process.env.NEXT_PUBLIC_API_URL, process.env.API_SECRET_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }
 })
 
@@ -21,7 +21,7 @@ async function checkTables() {
 
   for (const table of tables) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from(table)
         .select('*')
         .limit(1)

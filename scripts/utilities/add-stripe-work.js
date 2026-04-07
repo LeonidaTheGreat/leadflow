@@ -6,9 +6,9 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
@@ -52,7 +52,7 @@ async function addWork() {
   console.log('📝 Adding Stripe work to completed_work...\n')
   
   // Check for existing
-  const { data: existing } = await supabase
+  const { data: existing } = await db
     .from('completed_work')
     .select('work_name')
     .eq('project_id', 'bo2026')
@@ -66,7 +66,7 @@ async function addWork() {
       continue
     }
     
-    const { error } = await supabase.from('completed_work').insert(work)
+    const { error } = await db.from('completed_work').insert(work)
     
     if (error) {
       console.log(`❌ ${work.work_name}: ${error.message}`)
@@ -78,7 +78,7 @@ async function addWork() {
   console.log('\n🔄 Regenerating dashboard...')
   const { execSync } = require('child_process')
   try {
-    execSync('node generate-dashboard-from-supabase.js', { stdio: 'inherit' })
+    execSync('node generate-dashboard-complete.js', { stdio: 'inherit' })
     console.log('\n✅ Dashboard updated with Stripe work')
   } catch (e) {
     console.log('⚠️ Dashboard generation failed:', e.message)

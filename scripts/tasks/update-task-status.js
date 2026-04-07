@@ -1,21 +1,21 @@
 const { createClient } = require('../../lib/db-client');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
+if (!apiUrl || !apiKey) {
   console.error('FAIL: Missing required environment variables:');
-  if (!supabaseUrl) console.error('  - SUPABASE_URL');
-  if (!supabaseKey) console.error('  - SUPABASE_SERVICE_ROLE_KEY');
+  if (!apiUrl) console.error('  - NEXT_PUBLIC_API_URL');
+  if (!apiKey) console.error('  - API_SECRET_KEY');
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 async function updateTaskStatus() {
   try {
     // Try to find and update the task
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('tasks')
       .update({
         status: 'done',
@@ -35,7 +35,7 @@ async function updateTaskStatus() {
       console.error('Error updating task:', error);
       
       // If table doesn't exist, try completed_work table
-      const { data: workData, error: workError } = await supabase
+      const { data: workData, error: workError } = await db
         .from('completed_work')
         .insert({
           project_id: 'bo2026',

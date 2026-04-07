@@ -2,8 +2,8 @@
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
 const { createClient } = require('../lib/db-client');
 const sb = createClient(
-  process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY
 );
 
 const TASK_ID = '43e51aa4-b911-44c0-be14-31f1d421815e';

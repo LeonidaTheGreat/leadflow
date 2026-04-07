@@ -6,9 +6,9 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
@@ -117,7 +117,7 @@ async function run() {
     const cleanStmt = stmt.trim();
     if (!cleanStmt || cleanStmt.startsWith('--')) continue;
     
-    const { error } = await supabase.rpc('exec_sql', { sql: cleanStmt + ';' });
+    const { error } = await db.rpc('exec_sql', { sql: cleanStmt + ';' });
     if (error && !error.message.includes('already exists')) {
       console.log(`⚠️ ${error.message.substring(0, 80)}`);
     }
@@ -135,7 +135,7 @@ async function run() {
   ];
   
   for (const m of models) {
-    const { error } = await supabase.from('model_performance').upsert({
+    const { error } = await db.from('model_performance').upsert({
       project_id: 'bo2026',
       ...m
     }, { onConflict: 'project_id,model_name' });

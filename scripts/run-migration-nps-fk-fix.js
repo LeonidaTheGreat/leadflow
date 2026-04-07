@@ -7,21 +7,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const { Client } = require('pg')
 
-const dbPassword = process.env.SUPABASE_DB_PASSWORD
-const supabaseUrl = process.env.SUPABASE_URL
-
-if (!dbPassword || !supabaseUrl) {
-  console.error('Missing SUPABASE_DB_PASSWORD or SUPABASE_URL in .env')
-  process.exit(1)
-}
-
-const projectRef = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1]
-if (!projectRef) {
-  console.error('Could not extract project ref from SUPABASE_URL')
-  process.exit(1)
-}
-
-const connectionString = `postgresql://postgres:${dbPassword}@db.${projectRef}.supabase.co:5432/postgres`
+const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
 
 const TABLES = [
   'agent_nps_responses',
@@ -36,7 +22,7 @@ async function runMigration() {
 
   try {
     await client.connect()
-    console.log('✅ Connected to Supabase PostgreSQL')
+    console.log('✅ Connected to local PostgreSQL')
     console.log('🔧 Fixing NPS table foreign keys...\n')
 
     for (const table of TABLES) {

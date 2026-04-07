@@ -20,15 +20,15 @@ const { createClient } = require('../../lib/db-client')
 const fs = require('fs')
 const path = require('path')
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL
+const apiKey = process.env.API_SECRET_KEY
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('[triage-stuck-use-cases] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+if (!apiUrl || !apiKey) {
+  console.error('[triage-stuck-use-cases] Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const db = createClient(apiUrl, apiKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
 
@@ -51,7 +51,7 @@ const PRIORITY_WEIGHTS = {
  * Fetch all use cases from Supabase
  */
 async function fetchUseCases() {
-  const { data: useCases, error } = await supabase
+  const { data: useCases, error } = await db
     .from('use_cases')
     .select('*')
     .order('priority', { ascending: false })

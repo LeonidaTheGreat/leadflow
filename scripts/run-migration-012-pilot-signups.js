@@ -3,7 +3,7 @@
  * Run migration 012 against Supabase.
  * Creates the pilot_signups table with unique constraint on email.
  *
- * Uses direct PostgreSQL if SUPABASE_DB_PASSWORD is set, otherwise
+ * Uses direct PostgreSQL if LOCAL_PG_PASSWORD is set, otherwise
  * falls back to Supabase REST API with service_role key.
  *
  * Usage: node scripts/run-migration-012.js
@@ -13,14 +13,6 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const fs = require('fs')
 const path = require('path')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-const dbPassword = process.env.SUPABASE_DB_PASSWORD
-
-if (!supabaseUrl) {
-  console.error('Missing SUPABASE_URL in .env')
-  process.exit(1)
-}
 
 const MIGRATION_FILE = '012_pilot_signups.sql'
 
@@ -69,13 +61,10 @@ function splitStatements(sql) {
 
 async function runViaPg() {
   const { Client } = require('pg')
-  const ref = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]
-  if (!ref) throw new Error('Could not extract project ref from SUPABASE_URL')
+  const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
+  console.log('Connecting to local database...')
 
-  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.supabase.co:5432/postgres`
-  console.log(`Connecting to database via PostgreSQL (project: ${ref})...`)
-
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })
+  const client = new Client({ connectionString })
   await client.connect()
   console.log('Connected.\n')
 
@@ -121,13 +110,7 @@ async function runViaPg() {
 }
 
 async function run() {
-  if (dbPassword) {
-    return runViaPg()
-  }
-
-  console.error('No SUPABASE_DB_PASSWORD available. Cannot run DDL migration.')
-  console.error('Set SUPABASE_DB_PASSWORD in .env for direct PostgreSQL access.')
-  process.exit(1)
+  return runViaPg()
 }
 
 run().catch(err => {

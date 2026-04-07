@@ -10,22 +10,7 @@ const fs = require('fs')
 const path = require('path')
 const { Client } = require('pg')
 
-const dbPassword = process.env.SUPABASE_DB_PASSWORD
-const supabaseUrl = process.env.SUPABASE_URL
-
-if (!dbPassword || !supabaseUrl) {
-  console.error('Missing SUPABASE_DB_PASSWORD or SUPABASE_URL in .env')
-  process.exit(1)
-}
-
-// Extract project ref from URL
-const projectRef = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1]
-if (!projectRef) {
-  console.error('Could not extract project ref from SUPABASE_URL')
-  process.exit(1)
-}
-
-const connectionString = `postgresql://postgres:${dbPassword}@db.${projectRef}.supabase.co:5432/postgres`
+const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
 
 // Split SQL into statements respecting $$ blocks
 function splitStatements(sql) {
@@ -59,7 +44,7 @@ async function runMigration() {
 
   try {
     await client.connect()
-    console.log('✅ Connected to Supabase PostgreSQL')
+    console.log('✅ Connected to local PostgreSQL')
 
     const migrationPath = path.join(__dirname, '..', 'supabase', 'migrations', '008_nps_feedback_tables.sql')
     const sql = fs.readFileSync(migrationPath, 'utf-8')

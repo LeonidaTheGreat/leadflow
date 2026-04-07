@@ -7,7 +7,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const { createClient } = require('../lib/db-client')
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+const db = createClient(process.env.NEXT_PUBLIC_API_URL, process.env.API_SECRET_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }
 })
 
@@ -284,7 +284,7 @@ async function seed() {
 
   let success = 0
   for (const spec of specs) {
-    const { error } = await supabase
+    const { error } = await db
       .from('e2e_test_specs')
       .upsert({
         use_case_id: spec.use_case_id,
@@ -298,7 +298,7 @@ async function seed() {
 
     if (error) {
       // upsert on test_name might not work (no unique constraint) — try insert
-      const { error: insertErr } = await supabase.from('e2e_test_specs').insert({
+      const { error: insertErr } = await db.from('e2e_test_specs').insert({
         use_case_id: spec.use_case_id,
         test_name: spec.test_name,
         test_file: spec.test_file,
@@ -318,7 +318,7 @@ async function seed() {
   console.log(`\nSeeded ${success}/${specs.length} test specs.`)
 
   // Verify
-  const { data, error } = await supabase.from('e2e_test_specs').select('use_case_id, test_name, last_result').order('use_case_id')
+  const { data, error } = await db.from('e2e_test_specs').select('use_case_id, test_name, last_result').order('use_case_id')
   if (data) {
     console.log(`\nVerification (${data.length} rows in e2e_test_specs):`)
     for (const row of data) {

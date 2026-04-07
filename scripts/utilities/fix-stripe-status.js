@@ -6,9 +6,9 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
@@ -16,7 +16,7 @@ async function fixStatus() {
   console.log('🔧 Fixing Stripe work status...\n')
   
   // Update status from 'done' to 'COMPLETE'
-  const { error } = await supabase
+  const { error } = await db
     .from('completed_work')
     .update({ status: 'COMPLETE' })
     .eq('project_id', 'bo2026')
@@ -30,7 +30,7 @@ async function fixStatus() {
   }
   
   // Also delete the superseded one since it's not relevant
-  await supabase
+  await db
     .from('completed_work')
     .delete()
     .eq('project_id', 'bo2026')

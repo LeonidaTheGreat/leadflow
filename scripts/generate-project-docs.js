@@ -20,9 +20,9 @@ const PROJECT_DIR = path.join(__dirname, '..')
 const HEADER = '<!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from Supabase. -->'
 
 function getSupabase() {
-  const url = process.env.SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+  const url = process.env.NEXT_PUBLIC_API_URL
+  const key = process.env.API_SECRET_KEY
+  if (!url || !key) throw new Error('Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
   return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
 }
 

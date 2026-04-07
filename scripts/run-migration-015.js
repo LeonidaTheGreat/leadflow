@@ -7,13 +7,6 @@ const fs = require('fs')
 const path = require('path')
 const { Client } = require('pg')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const dbPassword = process.env.SUPABASE_DB_PASSWORD
-
-if (!supabaseUrl || !dbPassword) {
-  console.error('Missing SUPABASE_URL or SUPABASE_DB_PASSWORD')
-  process.exit(1)
-}
 
 function splitStatements(sql) {
   const statements = []
@@ -44,10 +37,9 @@ function splitStatements(sql) {
 }
 
 async function run() {
-  const ref = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]
-  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.supabase.co:5432/postgres`
+  const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw'
 
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })
+  const client = new Client({ connectionString })
   await client.connect()
   console.log('Connected to database.\n')
 

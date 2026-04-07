@@ -15,8 +15,8 @@ const path = require('path')
 const fs = require('fs')
 require('dotenv').config({ path: path.join(__dirname, '../.env') })
 
-const DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD
-const DB_REF_URL = process.env.SUPABASE_URL || 'https://fptrokacdwzlmflyczdz.supabase.co'
+const DB_PASSWORD = process.env.LOCAL_PG_PASSWORD
+const DB_REF_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.supabase.co'
 const projectRef = DB_REF_URL.match(/https:\/\/([^.]+)/)?.[1]
 
 const dbConfig = {

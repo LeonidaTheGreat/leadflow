@@ -23,12 +23,12 @@ assert(
   'Expected cleanEnv to strip escaped newlines and trim whitespace'
 )
 assert(
-  source.includes('cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL)') &&
+  source.includes('cleanEnv(process.env.NEXT_PUBLIC_API_URL)') &&
     source.includes('cleanEnv(process.env.NEXT_PUBLIC_API_URL)'),
   'Expected URL fallback: NEXT_PUBLIC_SUPABASE_URL -> NEXT_PUBLIC_API_URL'
 )
 assert(
-  source.includes('cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY)') &&
+  source.includes('cleanEnv(process.env.API_SECRET_KEY)') &&
     source.includes('cleanEnv(process.env.API_SECRET_KEY)'),
   'Expected key fallback: SUPABASE_SERVICE_ROLE_KEY -> API_SECRET_KEY'
 )

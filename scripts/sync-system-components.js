@@ -29,9 +29,9 @@ function loadConfig() {
 class SystemComponentsSync {
   constructor() {
     this.config = loadConfig()
-    this.supabase = createClient(
-      process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+    this.db = createClient(
+      process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL,
+      process.env.API_SECRET_KEY
     )
   }
 
@@ -92,7 +92,7 @@ class SystemComponentsSync {
       deprecated: '⚪'
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('system_components')
       .upsert({
         project_id: this.config.project_id || 'leadflow',
@@ -117,7 +117,7 @@ class SystemComponentsSync {
    * Get all registered components from the database
    */
   async getRegisteredComponents() {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.db
       .from('system_components')
       .select('*')
       .order('updated_at', { ascending: false })

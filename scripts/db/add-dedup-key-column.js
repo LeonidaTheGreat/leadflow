@@ -10,15 +10,15 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 async function addDedupKeyColumn() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiKey = process.env.API_SECRET_KEY;
 
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env');
+  if (!apiUrl || !apiKey) {
+    console.error('❌ Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY in .env');
     process.exit(1);
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey, {
+  const db = createClient(apiUrl, apiKey, {
     auth: { autoRefreshToken: false, persistSession: false }
   });
 
@@ -26,7 +26,7 @@ async function addDedupKeyColumn() {
 
   try {
     // Check if dedup_key column exists
-    const { data: columns, error: columnError } = await supabase
+    const { data: columns, error: columnError } = await db
       .rpc('get_table_columns', { table_name: 'tasks' });
 
     if (columnError) {
@@ -39,7 +39,7 @@ async function addDedupKeyColumn() {
     // Execute the migration
     console.log('📝 Adding dedup_key column to tasks table...');
 
-    const { error: alterError } = await supabase.rpc('exec_sql', {
+    const { error: alterError } = await db.rpc('exec_sql', {
       sql: `
         ALTER TABLE tasks
         ADD COLUMN IF NOT EXISTS dedup_key VARCHAR(255) DEFAULT NULL;
@@ -51,7 +51,7 @@ async function addDedupKeyColumn() {
       console.log('⚠️  RPC failed, trying direct SQL approach...');
       
       // Use the raw PostgreSQL connection if available
-      const { error: directError } = await supabase
+      const { error: directError } = await db
         .from('tasks')
         .select('id')
         .limit(1);
@@ -67,7 +67,7 @@ async function addDedupKeyColumn() {
     // Create index
     console.log('📈 Creating index on dedup_key...');
 
-    const { error: indexError } = await supabase.rpc('exec_sql', {
+    const { error: indexError } = await db.rpc('exec_sql', {
       sql: `
         CREATE INDEX IF NOT EXISTS idx_tasks_project_dedup
         ON tasks (project_id, dedup_key)

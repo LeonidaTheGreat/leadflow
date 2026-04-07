@@ -14,15 +14,15 @@
 const { createClient } = require('../lib/db-client');
 
 async function testActionableRate() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_API_URL;
+  const key = process.env.API_SECRET_KEY;
 
   if (!url || !key) {
     console.error('❌ Missing Supabase credentials (SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)');
     process.exit(1);
   }
 
-  const supabase = createClient(url, key);
+  const db = createClient(url, key);
   const sevenDaysAgo = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   try {
@@ -30,7 +30,7 @@ async function testActionableRate() {
     console.log('─'.repeat(50));
 
     // Query completed reviews from last 7 days
-    const { data: reviews, error } = await supabase
+    const { data: reviews, error } = await db
       .from('product_reviews')
       .select('id, status, findings, resulting_uc_ids, review_type, created_at')
       .eq('project_id', 'leadflow')

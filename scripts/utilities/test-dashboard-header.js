@@ -7,9 +7,9 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
@@ -20,7 +20,7 @@ async function testDashboardHeader() {
   
   // Test 1: Query project_metadata table
   console.log('Test 1: Query project_metadata from Supabase')
-  const { data: metadata, error } = await supabase
+  const { data: metadata, error } = await db
     .from('project_metadata')
     .select('*')
     .eq('project_id', 'bo2026')

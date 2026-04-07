@@ -28,11 +28,11 @@ const { createClient } = require('../lib/db-client')
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const BASE_URL = process.env.E2E_BASE_URL || 'https://leadflow-ai-five.vercel.app'
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL
+const API_KEY = process.env.API_SECRET_KEY
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment')
+  console.error('❌ Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY in environment')
   process.exit(1)
 }
 

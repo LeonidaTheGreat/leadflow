@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Run pilot conversion email sequence schema migration
- * Uses direct PostgreSQL if SUPABASE_DB_PASSWORD is set
+ * Uses direct PostgreSQL if LOCAL_PG_PASSWORD is set
  *
  * Usage: node scripts/run-pilot-conversion-migration.js
  */
@@ -10,10 +10,10 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 const fs = require('fs')
 const path = require('path')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const dbPassword = process.env.SUPABASE_DB_PASSWORD
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const dbPassword = process.env.LOCAL_PG_PASSWORD
 
-if (!supabaseUrl) {
+if (!apiUrl) {
   console.error('Missing SUPABASE_URL in .env')
   process.exit(1)
 }
@@ -68,7 +68,7 @@ async function runMigration() {
   const ref = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]
   if (!ref) throw new Error('Could not extract project ref from SUPABASE_URL')
 
-  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.supabase.co:5432/postgres`
+  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.localhost:5432/postgres`
   console.log(`Connecting to database via PostgreSQL (project: ${ref})...`)
 
   const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })

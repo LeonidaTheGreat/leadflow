@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Validate environment variables
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+if (!process.env.NEXT_PUBLIC_API_URL || !process.env.API_SECRET_KEY) {
   console.error('❌ Missing required environment variables:');
   console.error('   - SUPABASE_URL');
   console.error('   - SUPABASE_SERVICE_KEY');
@@ -19,9 +19,9 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
 }
 
 // Initialize Supabase client with service role key (bypasses RLS)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   {
     auth: {
       autoRefreshToken: false,
@@ -44,7 +44,7 @@ async function runMigration() {
     // Execute migration
     console.log('⚙️  Executing migration...');
     
-    const { data, error } = await supabase.rpc('exec_sql', {
+    const { data, error } = await db.rpc('exec_sql', {
       sql: migrationSQL
     });
 
@@ -68,7 +68,7 @@ async function runMigration() {
         if (stmt.length === 0) continue;
 
         try {
-          const { error: stmtError } = await supabase.rpc('exec_sql', {
+          const { error: stmtError } = await db.rpc('exec_sql', {
             sql: stmt + ';'
           });
 
@@ -98,7 +98,7 @@ async function runMigration() {
 
     // Verify customers table was created
     console.log('🔍 Verifying customers table...');
-    const { data: tableInfo, error: verifyError } = await supabase
+    const { data: tableInfo, error: verifyError } = await db
       .from('customers')
       .select('*')
       .limit(1);
@@ -114,7 +114,7 @@ async function runMigration() {
 
     // Show table structure
     console.log('📋 Table structure:');
-    const { data: columns } = await supabase.rpc('exec_sql', {
+    const { data: columns } = await db.rpc('exec_sql', {
       sql: `
         SELECT column_name, data_type, is_nullable, column_default
         FROM information_schema.columns

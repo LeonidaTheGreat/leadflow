@@ -1,10 +1,10 @@
 const { createClient } = require('../lib/db-client');
 require('dotenv').config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiKey = process.env.API_SECRET_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = createClient(apiUrl, apiKey);
 
 async function runMigration() {
   console.log('Running email_verification_tokens migration...\n');
@@ -21,12 +21,12 @@ async function runMigration() {
     );
   `;
 
-  const { error: tableError } = await supabase.rpc('exec_sql', { sql: createTableSQL });
+  const { error: tableError } = await db.rpc('exec_sql', { sql: createTableSQL });
   
   if (tableError) {
     // Try direct SQL via REST API
     console.log('RPC failed, trying direct SQL...');
-    const { error: directError } = await supabase.from('_exec_sql').select('*').eq('query', createTableSQL);
+    const { error: directError } = await db.from('_exec_sql').select('*').eq('query', createTableSQL);
     if (directError) {
       console.log('Direct SQL failed, will try raw REST...');
     }
@@ -44,7 +44,7 @@ async function runMigration() {
       AND table_name = 'email_verification_tokens'
   `;
 
-  const { data: verifyData, error: verifyError } = await supabase
+  const { data: verifyData, error: verifyError } = await db
     .from('email_verification_tokens')
     .select('*', { count: 'exact', head: true });
 

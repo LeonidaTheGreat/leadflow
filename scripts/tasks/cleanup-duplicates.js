@@ -33,11 +33,11 @@ async function fullCleanup() {
       
       for (const t of toDelete) {
         // First delete any dependencies referencing this task
-        await query.supabase.from('task_dependencies').delete().eq('task_id', t.id)
-        await query.supabase.from('task_dependencies').delete().eq('depends_on_task_id', t.id)
+        await query.db.from('task_dependencies').delete().eq('task_id', t.id)
+        await query.db.from('task_dependencies').delete().eq('depends_on_task_id', t.id)
         
         // Then delete the task
-        const { error } = await query.supabase.from('tasks').delete().eq('id', t.id)
+        const { error } = await query.db.from('tasks').delete().eq('id', t.id)
         if (error) {
           console.error(`   ❌ Failed to delete ${t.id}: ${error.message}`)
         } else {

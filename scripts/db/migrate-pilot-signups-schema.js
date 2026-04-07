@@ -18,17 +18,17 @@
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '../../.env') })
 
-const SUPABASE_URL = process.env.SUPABASE_URL
-const SUPABASE_DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+const LOCAL_PG_PASSWORD = process.env.LOCAL_PG_PASSWORD
 
-if (!SUPABASE_URL || !SUPABASE_DB_PASSWORD) {
-  console.error('Missing SUPABASE_URL or SUPABASE_DB_PASSWORD in .env')
+if (!SUPABASE_URL || !LOCAL_PG_PASSWORD) {
+  console.error('Missing SUPABASE_URL or LOCAL_PG_PASSWORD in .env')
   process.exit(1)
 }
 
 // Extract project ref from URL (e.g. fptrokacdwzlmflyczdz)
 const ref = SUPABASE_URL.replace('https://', '').split('.')[0]
-const connectionString = `postgresql://postgres:${encodeURIComponent(SUPABASE_DB_PASSWORD)}@db.${ref}.supabase.co:5432/postgres`
+const connectionString = `postgresql://postgres:${encodeURIComponent(LOCAL_PG_PASSWORD)}@db.${ref}.localhost:5432/postgres`
 
 const { Client } = require('pg')
 

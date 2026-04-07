@@ -12,14 +12,14 @@ const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '.env') })
 
 async function executeMigration() {
-  const supabaseUrl = process.env.SUPABASE_URL
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const apiKey = process.env.API_SECRET_KEY
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env')
+  if (!apiUrl || !apiKey) {
+    throw new Error('Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY in .env')
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey, {
+  const db = createClient(apiUrl, apiKey, {
     auth: { autoRefreshToken: false, persistSession: false }
   })
 
@@ -71,7 +71,7 @@ async function executeMigration() {
   console.log('📦 Creating tables...')
   for (const stmt of createTableStatements) {
     try {
-      const { error } = await supabase.from('project_metadata').select('count(*)', { count: 'exact' })
+      const { error } = await db.from('project_metadata').select('count(*)', { count: 'exact' })
       
       // If we got here, connection works - now execute DDL
       // Supabase doesn't support direct DDL execution, so we check if it's likely to work
@@ -90,7 +90,7 @@ async function executeMigration() {
   // Sample data that we CAN insert via client
   const insertData = async () => {
     console.log('📊 Inserting project metadata...')
-    const { error: metaError, data: metaData } = await supabase
+    const { error: metaError, data: metaData } = await db
       .from('project_metadata')
       .insert({
         project_id: 'bo2026',
@@ -125,7 +125,7 @@ async function executeMigration() {
     ]
 
     for (const comp of components) {
-      const { error } = await supabase
+      const { error } = await db
         .from('system_components')
         .insert({
           project_id: 'bo2026',
@@ -150,7 +150,7 @@ async function executeMigration() {
     ]
 
     for (const agent of agents) {
-      const { error } = await supabase
+      const { error } = await db
         .from('real_estate_agents')
         .insert({
           project_id: 'bo2026',
@@ -175,7 +175,7 @@ async function executeMigration() {
     ]
 
     for (const w of work) {
-      const { error } = await supabase
+      const { error } = await db
         .from('completed_work')
         .insert({
           project_id: 'bo2026',
@@ -197,7 +197,7 @@ async function executeMigration() {
     ]
 
     for (const item of items) {
-      const { error } = await supabase
+      const { error } = await db
         .from('action_items')
         .insert({
           project_id: 'bo2026',
@@ -213,7 +213,7 @@ async function executeMigration() {
 
     // Insert cost tracking
     console.log('\n💰 Inserting cost tracking...')
-    const { error: costError } = await supabase
+    const { error: costError } = await db
       .from('cost_tracking')
       .insert({
         project_id: 'bo2026',

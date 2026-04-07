@@ -12,9 +12,15 @@ const projectDir = '/Users/clawdbot/projects/leadflow';
 const rule = {
   id: 'no-supabase-env-vars',
   name: 'No Supabase env var references in production code',
-  pattern: 'NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_URL|SUPABASE_SERVICE_ROLE_KEY',
-  scan_dirs: ['product/lead-response/dashboard/app/', 'product/lead-response/dashboard/lib/'],
-  exclude_patterns: ['*.test.*', '*.spec.*', '__tests__/'],
+  pattern: 'NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_URL|SUPABASE_SERVICE_ROLE_KEY|SUPABASE_DB_PASSWORD',
+  scan_dirs: [
+    'product/lead-response/dashboard/app/',
+    'product/lead-response/dashboard/lib/',
+    'product/lead-response/dashboard/scripts/',
+    'scripts/',
+    'docs/prd/',
+  ],
+  exclude_patterns: ['*.test.*', '*.spec.*', '__tests__/', 'verify-no-supabase-env-vars.js'],
 };
 
 console.log(`\n✓ Verifying rule: ${rule.id}`);

@@ -15,22 +15,7 @@ const path = require('path');
 
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const SUPABASE_DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
-const SUPABASE_URL = process.env.SUPABASE_URL;
-
-if (!SUPABASE_DB_PASSWORD || !SUPABASE_URL) {
-  console.error('❌ Missing SUPABASE_DB_PASSWORD or SUPABASE_URL in .env');
-  process.exit(1);
-}
-
-const match = SUPABASE_URL.match(/https:\/\/(\w+)\.supabase\.co/);
-if (!match) {
-  console.error('❌ Could not extract database reference from SUPABASE_URL:', SUPABASE_URL);
-  process.exit(1);
-}
-
-const dbRef = match[1];
-const connectionString = `postgresql://postgres:${encodeURIComponent(SUPABASE_DB_PASSWORD)}@db.${dbRef}.supabase.co:5432/postgres`;
+const connectionString = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw';
 
 const migrationPath = path.join(
   __dirname,
@@ -42,7 +27,7 @@ async function runMigration() {
   const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
 
   try {
-    console.log('🔌 Connecting to Supabase database...');
+    console.log('🔌 Connecting to local database...');
     await client.connect();
     console.log('✅ Connected\n');
 

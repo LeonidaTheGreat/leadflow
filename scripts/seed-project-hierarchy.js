@@ -9,15 +9,15 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const { createClient } = require('../lib/db-client')
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiKey = process.env.API_SECRET_KEY
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+if (!apiUrl || !apiKey) {
+  console.error('Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const db = createClient(apiUrl, apiKey, {
   auth: { autoRefreshToken: false, persistSession: false }
 })
 
@@ -45,7 +45,7 @@ const useCases = [
 async function seed() {
   console.log('Seeding PRDs...')
   for (const prd of prds) {
-    const { error } = await supabase
+    const { error } = await db
       .from('prds')
       .upsert(prd, { onConflict: 'id' })
     if (error) {
@@ -57,7 +57,7 @@ async function seed() {
 
   console.log('\nSeeding Use Cases...')
   for (const uc of useCases) {
-    const { error } = await supabase
+    const { error } = await db
       .from('use_cases')
       .upsert(uc, { onConflict: 'id' })
     if (error) {

@@ -24,7 +24,7 @@ process.stderr.write = function(chunk, encoding, callback) {
 
 const { Client } = require('pg');
 
-const DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
+const DB_PASSWORD = process.env.LOCAL_PG_PASSWORD;
 
 const COLUMNS = [
   'trial_email_welcome_sent',
@@ -39,22 +39,22 @@ async function checkColumns() {
   if (!DB_PASSWORD) {
     // Fallback: try Supabase JS client
     const { createClient } = require('@supabase/supabase-js');
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    const API_KEY = process.env.API_SECRET_KEY;
     
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!SUPABASE_URL || !API_KEY) {
       console.error('0');
       process.exit(1);
     }
     
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const db = createClient(API_URL, API_KEY);
     
     // Try to select each column to verify existence
     let foundCount = 0;
     
     for (const col of COLUMNS) {
       try {
-        const { error } = await supabase
+        const { error } = await db
           .from('real_estate_agents')
           .select(col)
           .limit(1);
@@ -73,7 +73,7 @@ async function checkColumns() {
   }
   
   // Use direct Postgres connection
-  const connectionString = `postgresql://postgres:${DB_PASSWORD}@db.fptrokacdwzlmflyczdz.supabase.co:5432/postgres`;
+  const connectionString = `postgresql://postgres:${DB_PASSWORD}@db.fptrokacdwzlmflyczdz.localhost:5432/postgres`;
   const client = new Client({ connectionString });
   
   try {

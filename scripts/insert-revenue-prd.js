@@ -5,8 +5,8 @@ dotenv.config({ path: '~/.env' });
 // Use the task store to get Supabase client
 const { createClient } = require('../lib/db-client');
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_KEY = process.env.API_SECRET_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error('Error: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY not set');

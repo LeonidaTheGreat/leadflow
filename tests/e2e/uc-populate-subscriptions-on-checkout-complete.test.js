@@ -18,8 +18,8 @@ const assert = require('assert');
 // Test configuration
 const TEST_BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_KEY = process.env.API_SECRET_KEY;
 
 // Colors for output
 const colors = {

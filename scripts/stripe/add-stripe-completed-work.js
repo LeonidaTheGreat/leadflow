@@ -6,9 +6,9 @@
 const { createClient } = require('../../lib/db-client')
 require('dotenv').config()
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+const db = createClient(
+  process.env.NEXT_PUBLIC_API_URL,
+  process.env.API_SECRET_KEY,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
@@ -59,7 +59,7 @@ async function addCompletedWork() {
   console.log('📝 Adding Stripe work to completed_work table...\n')
   
   for (const work of stripeWork) {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('completed_work')
       .upsert({
         ...work,
@@ -76,7 +76,7 @@ async function addCompletedWork() {
   }
   
   // Also update the Stripe Billing Integration action item to resolved
-  const { error: updateError } = await supabase
+  const { error: updateError } = await db
     .from('action_items')
     .update({
       status: 'resolved',
