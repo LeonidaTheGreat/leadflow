@@ -1,9 +1,14 @@
 import { createClient } from '@/lib/db'
+import crypto from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
   process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
 )
+
+function hashToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex')
+}
 
 export interface Session {
   id: string
@@ -27,19 +32,19 @@ export interface SessionCreateInput {
  * Generate a cryptographically secure session token
  */
 export function generateSessionToken(): string {
-  const { randomBytes } = require('crypto')
-  return randomBytes(32).toString('hex')
+  return crypto.randomBytes(32).toString('hex')
 }
 
 /**
  * Create a new session for a user
  */
 export async function createSession(input: SessionCreateInput): Promise<Session> {
-  const token = generateSessionToken()
+  const rawToken = generateSessionToken()
+  const tokenHash = hashToken(rawToken)
   const now = new Date()
-  
+
   // Default to 24 hours, or 30 days if remember me
-  const expiresAt = input.rememberMe 
+  const expiresAt = input.rememberMe
     ? new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
     : new Date(now.getTime() + 24 * 60 * 60 * 1000)
 
@@ -47,7 +52,7 @@ export async function createSession(input: SessionCreateInput): Promise<Session>
     .from('sessions')
     .insert({
       user_id: input.userId,
-      token,
+      token: tokenHash,
       expires_at: expiresAt.toISOString(),
       created_at: now.toISOString(),
       last_used_at: now.toISOString(),
@@ -65,7 +70,7 @@ export async function createSession(input: SessionCreateInput): Promise<Session>
   return {
     id: data.id,
     userId: data.user_id,
-    token: data.token,
+    token: rawToken, // return raw token for cookie — DB stores only the hash
     expiresAt: new Date(data.expires_at),
     createdAt: new Date(data.created_at),
     lastUsedAt: new Date(data.last_used_at),
@@ -81,7 +86,7 @@ export async function validateSession(token: string): Promise<Session | null> {
   const { data, error } = await supabase
     .from('sessions')
     .select('*')
-    .eq('token', token)
+    .eq('token', hashToken(token))
     .single()
 
   if (error || !data) {
@@ -105,7 +110,7 @@ export async function validateSession(token: string): Promise<Session | null> {
   return {
     id: data.id,
     userId: data.user_id,
-    token: data.token,
+    token, // return the raw token (caller already has it from the cookie)
     expiresAt: new Date(data.expires_at),
     createdAt: new Date(data.created_at),
     lastUsedAt: new Date(),
@@ -129,7 +134,7 @@ export async function deleteSession(token: string): Promise<void> {
   await supabase
     .from('sessions')
     .delete()
-    .eq('token', token)
+    .eq('token', hashToken(token))
 }
 
 /**
@@ -191,11 +196,11 @@ export async function cleanupExpiredSessions(): Promise<number> {
  */
 export async function extendSession(token: string, days: number = 30): Promise<boolean> {
   const newExpiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000)
-  
+
   const { error } = await supabase
     .from('sessions')
     .update({ expires_at: newExpiresAt.toISOString() })
-    .eq('token', token)
+    .eq('token', hashToken(token))
 
   return !error
 }
