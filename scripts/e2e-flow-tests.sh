@@ -186,20 +186,35 @@ test_dashboard_no_errors() {
   user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
   [ -z "$user_id" ] && return 1
 
-  # Get their most recent non-expired session
-  local now session token
+  # Create a fresh session: generate raw token, store SHA-256 hash in DB.
+  # The DB stores only the hash (since PR #1026). The cookie must hold the raw token —
+  # middleware calls hashToken(cookie) and looks up that hash in sessions.token.
+  local raw_token token_hash now expires session_resp session_id
+  raw_token=$(openssl rand -hex 32)
+  token_hash=$(printf '%s' "$raw_token" | openssl dgst -sha256 | awk '{print $2}')
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  session=$(curl -s --max-time 10 \
-    "$API_URL/sessions?select=token&user_id=eq.${user_id}&expires_at=gte.${now}&order=expires_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+  expires=$(date -u -v+1H +"%Y-%m-%dT%H:%M:%SZ")
 
-  token=$(echo "$session" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['token'] if d else '')" 2>/dev/null) || true
-  [ -z "$token" ] && return 1
+  session_resp=$(curl -s --max-time 10 -X POST "$API_URL/sessions" \
+    -H "apikey: $API_KEY" \
+    -H "Content-Type: application/json" \
+    -H "Prefer: return=representation" \
+    -d "{\"user_id\":\"$user_id\",\"token\":\"$token_hash\",\"expires_at\":\"$expires\",\"created_at\":\"$now\",\"last_used_at\":\"$now\",\"user_agent\":\"e2e-test\"}" 2>/dev/null) || return 1
 
-  # Load dashboard with session token, check for error strings
+  session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
+  [ -z "$session_id" ] && return 1
+
+  # Load dashboard with raw token in cookie — server hashes it to validate
   local html
   html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
-    -H "Cookie: leadflow_session=$token" 2>/dev/null) || return 1
+    -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
+  local exit_code=$?
+
+  # Clean up test session regardless of outcome
+  curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
+    -H "apikey: $API_KEY" >/dev/null 2>&1 || true
+
+  [ $exit_code -ne 0 ] && return 1
 
   # Should not contain PostgREST error patterns
   echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error' && return 1
