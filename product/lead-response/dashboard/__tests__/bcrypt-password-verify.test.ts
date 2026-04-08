@@ -112,11 +112,7 @@ describe('Password Verification Fix', () => {
     lastInsertedData = null
     mockAgentsDb.clear()
     process.env.JWT_SECRET = 'test-secret'
-<<<<<<< HEAD
     process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
-=======
-    process.env.NEXT_PUBLIC_API_URL = 'http://localhost'
->>>>>>> b13c8175 (fix: remove all legacy Supabase env var references from codebase)
     process.env.API_SECRET_KEY = 'test-key'
   })
 
