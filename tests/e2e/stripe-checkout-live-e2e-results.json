@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-04-08T00:17:00.555Z",
+  "passed": 0,
+  "failed": 7,
+  "tests": [
+    {
+      "name": "1. Create Stripe test customer",
+      "status": "FAILED",
+      "error": "Stripe test key not configured",
+      "duration_ms": 1
+    },
+    {
+      "name": "2. Create checkout session",
+      "status": "FAILED",
+      "error": "Prerequisites not met",
+      "duration_ms": 0
+    },
+    {
+      "name": "3. Create subscription with test card (simulates payment)",
+      "status": "FAILED",
+      "error": "Prerequisites not met",
+      "duration_ms": 0
+    },
+    {
+      "name": "4. Simulate webhook: write agent + subscription to DB",
+      "status": "FAILED",
+      "error": "Database not configured",
+      "duration_ms": 0
+    },
+    {
+      "name": "5. Verify subscriptions table has row",
+      "status": "FAILED",
+      "error": "Prerequisites not met",
+      "duration_ms": 0
+    },
+    {
+      "name": "6. Verify real_estate_agents.subscription_status = active",
+      "status": "FAILED",
+      "error": "Database not configured",
+      "duration_ms": 0
+    },
+    {
+      "name": "7. Verify Stripe subscription is retrievable and active",
+      "status": "FAILED",
+      "error": "Prerequisites not met",
+      "duration_ms": 0
+    }
+  ],
+  "environment": {
+    "stripe_mode": "unavailable",
+    "database_mode": "unavailable"
+  }
+}
