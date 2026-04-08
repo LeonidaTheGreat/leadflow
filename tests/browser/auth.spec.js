@@ -35,12 +35,22 @@ test.describe('Login Page', () => {
   })
 
   test('shows error on invalid credentials', async ({ page }) => {
+    // Bump timeout — Vercel cold starts can take 30-60s when running alongside other tests
+    test.setTimeout(90000)
+
     await input(page, 'login-email-input', 'email').fill('invalid@test.com')
     await input(page, 'login-password-input', 'password').fill('wrongpassword')
-    await page.getByRole('button', { name: /sign in/i }).click()
 
-    // Should show error message (not redirect) — generous timeout for Vercel cold starts
-    await expect(page.getByTestId('login-error-message')).toBeVisible({ timeout: 25000 })
+    // Explicitly wait for the API response — handles cold-start latency
+    const responsePromise = page.waitForResponse(
+      r => r.url().includes('/api/auth/login') && r.request().method() === 'POST',
+      { timeout: 60000 }
+    )
+    await page.getByRole('button', { name: /sign in/i }).click()
+    await responsePromise
+
+    // API responded — error message should appear immediately
+    await expect(page.getByTestId('login-error-message')).toBeVisible()
     // Should still be on login page
     await expect(page).toHaveURL(/login/)
   })
@@ -98,14 +108,21 @@ test.describe('Forgot Password Page', () => {
   })
 
   test('submits and shows success message', async ({ page }) => {
-    await page.locator('#email').fill('test@example.com')
-    await page.getByRole('button', { name: /send reset link/i }).click()
+    // Bump timeout — Vercel cold starts can take 30-60s when running alongside other tests
+    test.setTimeout(90000)
 
-    // Should show success state (button disabled while sending, or success message appears)
-    // Wait for the request to complete
-    await page.waitForResponse(resp => resp.url().includes('/api/auth/forgot-password'))
-    // After submission, should show success message with "Check your email"
-    await expect(page.getByText(/check your email/i)).toBeVisible({ timeout: 10000 })
+    await page.locator('#email').fill('test@example.com')
+
+    // Explicitly wait for the API response — handles cold-start latency
+    const responsePromise = page.waitForResponse(
+      resp => resp.url().includes('/api/auth/forgot-password'),
+      { timeout: 60000 }
+    )
+    await page.getByRole('button', { name: /send reset link/i }).click()
+    await responsePromise
+
+    // API responded — success message should appear immediately
+    await expect(page.getByText(/check your email/i)).toBeVisible()
   })
 
   test('back link returns to login', async ({ page }) => {
