@@ -5,7 +5,11 @@
  */
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { randomUUID } from 'crypto'
+import { randomUUID, createHash } from 'crypto'
+
+function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex')
+}
 
 // Lazy-load Resend to avoid build error when package isn't installed
 let _resend: any = null
@@ -136,14 +140,15 @@ async function sendEmail(
  */
 export async function createVerificationToken(agentId: string): Promise<string | null> {
   try {
-    const token = randomUUID()
+    const rawToken = randomUUID()
+    const tokenHash = hashToken(rawToken)
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
 
     const { error } = await supabase
       .from('email_verification_tokens')
       .insert({
         agent_id: agentId,
-        token,
+        token: tokenHash,
         expires_at: expiresAt,
         created_at: new Date().toISOString()
       })
@@ -153,7 +158,7 @@ export async function createVerificationToken(agentId: string): Promise<string |
       return null
     }
 
-    return token
+    return rawToken // return raw token for the verification URL — DB stores only the hash
   } catch (error) {
     console.error('Error creating verification token:', error)
     return null
@@ -284,11 +289,11 @@ export async function verifyEmailToken(token: string): Promise<{
   agentId?: string;
 }> {
   try {
-    // Look up token
+    // Look up token by hash — raw token is never stored
     const { data: tokenData, error: tokenError } = await supabase
       .from('email_verification_tokens')
       .select('id, agent_id, expires_at, used_at')
-      .eq('token', token)
+      .eq('token', hashToken(token))
       .single()
 
     if (tokenError || !tokenData) {
