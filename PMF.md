@@ -2,10 +2,11 @@
 
 **Product:** LeadFlow AI (formerly InstantLead AI)  
 **Domain:** Real Estate — AI Lead Response  
-**Minimum Target:** $20,000 MRR  
+**Near-Term Milestone:** First paying customer by Day 90 (2026-05-15)  
+**Minimum Target:** $20,000 MRR by Day 180 (2026-08-13)  
 **Stretch Target:** $50,000 MRR  
-**Last Updated:** 2026-02-26  
-**Status:** MVP Complete → Pilot Phase
+**Last Updated:** 2026-04-08  
+**Status:** MVP Complete → Pilot Phase → Conversion Push
 
 ---
 
@@ -64,7 +65,15 @@
 | **Team** | $399/mo | 5 agents, team dashboard, lead routing | Small teams |
 | **Brokerage** | $999+/mo | White-label, admin, compliance reporting | Future |
 
-### Path to $20K MRR (Minimum)
+### Path to First Paying Customer (Day 90 Milestone)
+
+| Action | Target | Deadline |
+|--------|--------|----------|
+| Convert 1 pilot agent to paid | 1 subscriber | 2026-05-15 |
+| Offer first-month discount to top engaged pilot | Pro at $99 first month | Immediately |
+| Personal outreach by Stojan to top 3 active pilots | Conversion call | Within 1 week |
+
+### Path to $20K MRR (Day 180 Target — 2026-08-13)
 
 | Scenario | Mix | MRR |
 |----------|-----|-----|
@@ -84,27 +93,31 @@
 
 ## 4. Go-to-Market Strategy
 
-### Phase 1: Pilot (Weeks 1-4) — CURRENT
-**Goal:** 10 paying agents, validate product
+### Phase 1: Pilot (Days 1-90) — ACTIVE (Day 79 of 90)
+**Goal:** First paying customer by Day 90
 
-| Activity | Owner | Output |
+With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in this window. Goal reset: prove the payment pipeline works with at least 1 real transaction.
+
+| Activity | Owner | Status |
 |----------|-------|--------|
-| 3-agent free pilot | Orchestrator/Marketing | Testimonials, case studies |
-| Landing page live | Design/Marketing | Conversion tracking |
-| Agent onboarding | PM + Orchestrator | Smooth activation flow |
+| Wire Stripe checkout E2E (trial-to-paid path) | Dev | In progress |
+| Activate 208 verified-but-stuck agents | Marketing/Dev | Ready |
+| White-glove pilot recruitment (5-10 agents) | Stojan | Pending approval |
+| Trial-to-paid upgrade UI in dashboard | Dev | In progress |
 
-### Phase 2: Scale (Weeks 5-8)
-**Goal:** 50 paying agents ($7,450 MRR)
+### Phase 2: Revenue Foundation (Days 91-120)
+**Goal:** $2K-5K MRR — 10-30 paying agents
 
 | Channel | Tactic | CAC Target |
 |---------|--------|------------|
+| Direct outreach to verified agents (208 warm leads) | Email sequence | $0 |
 | Facebook Groups | "AI for realtors" content | $50-100 |
 | Reddit (r/realtors) | Value posts, AMAs | $30-50 |
 | FUB Marketplace | Integration listing | $0 (organic) |
 | Referrals | $100/agent referral bonus | $100 |
 
-### Phase 3: Growth (Weeks 9-12)
-**Goal:** 150 paying agents ($22,350 MRR) — HIT MINIMUM TARGET
+### Phase 3: Scale (Days 121-180)
+**Goal:** $20K MRR (original target, extended to Day 180) — 134 Pro agents
 
 | Channel | Tactic |
 |---------|--------|
@@ -168,16 +181,21 @@
 
 ---
 
-## 8. Current Status (Day 43 of 90)
+## 8. Current Status (Day 79 of 90 — 2026-04-08)
 
-| Component | Status | Blocker |
-|-----------|--------|---------|
+| Component | Status | Note |
+|-----------|--------|------|
 | MVP Features | ✅ Complete | None |
-| Pilot Agents | ⏳ Recruiting | User approval |
-| Landing Page | ⏳ Copy ready, needs design | Copy handoff |
-| First Revenue | ⏳ Waiting for pilot results | Pilot completion |
+| Registered Agents | ✅ 363 agents | 344 trial, 11 pilot, 0 paying |
+| Paying Subscribers | ❌ 0 | Critical — 11 days to Day 90 |
+| $20K MRR Goal | ⚠️ Deferred to Day 180 | Mathematically unreachable by Day 90 |
+| **Near-term Milestone** | **First paying customer by Day 90** | **Priority #1** |
 
-**Next PM Review:** After first 3 pilot agents onboarded
+**Reality check (Day 79):** 363 agents registered, $0 MRR. Reaching $20K MRR (requires ~134 Pro
+subscribers) in 11 days is not achievable. Goal redefined: convert 1 pilot agent to a paying
+customer before Day 90 (2026-05-15). $20K MRR target moved to Day 180 (2026-08-13).
+
+**Next action:** Personal outreach to top 3 most active pilot agents this week.
 
 ---
 
