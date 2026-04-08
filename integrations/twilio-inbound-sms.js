@@ -451,8 +451,8 @@ async function handleSatisfactionFeedback(lead, sentiment, { MessageSid, Body, m
   try {
     // Convert sentiment to rating
     const ratingMap = {
-      positive: 'satisfied',
-      negative: 'dissatisfied',
+      positive: 'positive',
+      negative: 'negative',
       neutral: 'neutral',
     };
 
