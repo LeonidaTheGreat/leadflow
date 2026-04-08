@@ -18,6 +18,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import OnboardingWelcome from '@/app/onboarding/steps/welcome'
+import OnboardingTryAi from '@/app/onboarding/steps/try-ai'
 import OnboardingAgentInfo from '@/app/onboarding/steps/agent-info'
 import OnboardingCalendar from '@/app/onboarding/steps/calendar'
 import OnboardingSMS from '@/app/onboarding/steps/sms-config'
@@ -31,7 +32,7 @@ const SetupTwilio = OnboardingSMS
 const SetupSimulator = OnboardingSimulator
 const SetupComplete = OnboardingConfirm
 
-type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
+type OnboardingStep = 'welcome' | 'try-ai' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
 function getFromStorage(key: string): string | null {
   try {
@@ -149,7 +150,7 @@ function DashboardOnboardingInner() {
     checkAuth()
   }, [router])
 
-  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
+  const steps: OnboardingStep[] = ['welcome', 'try-ai', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const nextStep = () => {
@@ -179,7 +180,7 @@ function DashboardOnboardingInner() {
           completionPayload: {
             ahaCompleted: agentData.ahaCompleted,
             ahaResponseTimeMs: agentData.ahaResponseTimeMs,
-            stepsCompleted: ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation'],
+            stepsCompleted: ['welcome', 'try-ai', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation'],
           },
         }),
       })
@@ -264,6 +265,15 @@ function DashboardOnboardingInner() {
             {currentStep === 'welcome' && (
               <OnboardingWelcome
                 onNext={nextStep}
+                agentData={agentData}
+                setAgentData={setAgentData}
+              />
+            )}
+
+            {currentStep === 'try-ai' && (
+              <OnboardingTryAi
+                onNext={nextStep}
+                onBack={prevStep}
                 agentData={agentData}
                 setAgentData={setAgentData}
               />
