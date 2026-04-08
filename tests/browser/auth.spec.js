@@ -39,8 +39,8 @@ test.describe('Login Page', () => {
     await input(page, 'login-password-input', 'password').fill('wrongpassword')
     await page.getByRole('button', { name: /sign in/i }).click()
 
-    // Should show error message (not redirect)
-    await expect(page.locator('[class*="red"]').first()).toBeVisible({ timeout: 10000 })
+    // Should show error message (not redirect) — generous timeout for Vercel cold starts
+    await expect(page.getByTestId('login-error-message')).toBeVisible({ timeout: 25000 })
     // Should still be on login page
     await expect(page).toHaveURL(/login/)
   })
