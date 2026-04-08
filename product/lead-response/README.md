@@ -101,7 +101,8 @@ See `.env.example` for full template. Required:
 **Twilio:**
 - `TWILIO_ACCOUNT_SID`
 - `TWILIO_AUTH_TOKEN`
-- `TWILIO_PHONE_NUMBER`
+- `TWILIO_PHONE_NUMBER_US`
+- `TWILIO_PHONE_NUMBER_CA`
 
 **Follow Up Boss:**
 - `FUB_API_KEY`
