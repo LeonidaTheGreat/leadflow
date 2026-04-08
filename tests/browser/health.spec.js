@@ -10,7 +10,11 @@ const { test, expect } = require('@playwright/test')
  */
 
 test.describe('API Health', () => {
+  // Vercel cold starts can take 20-30s — override navigation and test timeouts for this block
+  test.use({ navigationTimeout: 35000 })
+
   test('health endpoint returns ok', async ({ page }) => {
+    test.setTimeout(75000)
     const response = await page.goto('/api/health')
     expect(response?.status()).toBe(200)
 
@@ -20,6 +24,7 @@ test.describe('API Health', () => {
   })
 
   test('health endpoint reports checks', async ({ page }) => {
+    test.setTimeout(75000)
     const response = await page.goto('/api/health')
     const text = await page.textContent('body')
     const body = JSON.parse(text || '{}')
