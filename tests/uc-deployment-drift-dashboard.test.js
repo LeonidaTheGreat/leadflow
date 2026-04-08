@@ -84,7 +84,7 @@ function testDuplicateSimulatorStatusRoutes() {
   const route2 = path.join(DASHBOARD_DIR, 'app/api/onboarding/simulator/status/route.ts')
   const both = fs.existsSync(route1) && fs.existsSync(route2)
   if (both) {
-    fail('no duplicate simulator status routes', 
+    fail('no duplicate simulator status routes',
       'Both /api/onboarding/simulator-status AND /api/onboarding/simulator/status exist — spaghetti. One route should handle all callers.')
     return
   }
