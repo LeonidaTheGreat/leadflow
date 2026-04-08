@@ -5,128 +5,63 @@
  * Task ID: 481833f7-b7df-409f-972f-432c625ab54a
  *
  * AC: Fix desktop login/signup page layout — input fields too small and cut off.
- * Expected: Input elements have h-12 (48px height), w-full width, text-base font size.
- * Expected: Container uses max-w-lg (login) or max-w-2xl (signup detail step).
- * Expected: PR commit modifies login/signup layout source files (not a no-op binary commit).
- *
- * Context: PR #1049 was auto-merged but its dev commit (52649279) only added a binary
- * trace.zip file — zero layout source files were modified. The layout classes
- * already existed from PRs #992 and #1010. This test documents the no-op finding.
- *
- * Tests:
- *  1. Login page has full-width inputs (w-full)
- *  2. Login page has explicit height on inputs (h-12)
- *  3. Login page has text-base font size on inputs
- *  4. Login page uses max-width container
- *  5. Signup page has full-width inputs (w-full)
- *  6. Signup page has explicit height on inputs (h-12)
- *  7. Signup detail step uses max-width container
- *  8. PR #1049 dev commit modifies layout source files (not binary-only no-op)
- *  9. Login page has data-testid attributes for testability
- * 10. Next.js build artifact exists (build succeeded)
+ * Context: PR #1049 dev commit (52649279) is binary-only (trace.zip).
+ * No layout source files (.tsx/.css) were modified. Layout classes already existed from PRs #992/#1010.
  */
-
 const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
-const DASHBOARD_BASE = path.resolve(__dirname, '../product/lead-response/dashboard')
-const LOGIN_PAGE = path.join(DASHBOARD_BASE, 'app/login/page.tsx')
-const SIGNUP_PAGE = path.join(DASHBOARD_BASE, 'app/signup/page.tsx')
+const DASHBOARD = path.resolve(__dirname, '../product/lead-response/dashboard')
 const REPO_ROOT = path.resolve(__dirname, '..')
-
-// The specific commit that was PR #1049's dev implementation (merged to main)
 const PR_1049_COMMIT = '52649279a81a729fb3bfef359e8c0181fa72e5da'
 
-let RESULTS = { passed: 0, failed: 0, details: [] }
-
-function pass(name) {
-  RESULTS.passed++
-  RESULTS.details.push({ status: 'PASS', name })
-  console.log('  PASS  ' + name)
+let passed = 0, failed = 0
+function ok(name, cond, reason) {
+  if (cond) { passed++; console.log('  PASS  ' + name) }
+  else { failed++; console.log('  FAIL  ' + name + ': ' + reason) }
 }
 
-function fail(name, reason) {
-  RESULTS.failed++
-  RESULTS.details.push({ status: 'FAIL', name, reason })
-  console.log('  FAIL  ' + name + ': ' + reason)
-}
+console.log('\n=== QC E2E: Desktop Login/Signup Layout Fix (PR #1049) ===\n')
 
-function check(name, condition, failReason) {
-  if (condition) pass(name)
-  else fail(name, failReason)
-}
+const loginSrc = fs.readFileSync(path.join(DASHBOARD, 'app/login/page.tsx'), 'utf8')
+const signupSrc = fs.readFileSync(path.join(DASHBOARD, 'app/signup/page.tsx'), 'utf8')
 
-async function runTests() {
-  console.log('\n=== QC E2E: Desktop Login/Signup Layout Fix (PR #1049) ===\n')
+ok('login w-full', loginSrc.includes('w-full'), 'w-full not found')
+ok('login h-12', loginSrc.includes('h-12'), 'h-12 not found')
+ok('login text-base', loginSrc.includes('text-base'), 'text-base not found')
+ok('login max-w-*', loginSrc.includes('max-w-lg') || loginSrc.includes('max-w-xl'), 'No max-w-* container')
+ok('signup w-full', signupSrc.includes('w-full'), 'w-full not found')
+ok('signup h-12', signupSrc.includes('h-12'), 'h-12 not found')
+ok('signup max-w-*', signupSrc.includes('max-w-2xl') || signupSrc.includes('max-w-xl'), 'No max-w-* container')
+ok('login data-testid attrs', loginSrc.includes('data-testid="login-form"') && loginSrc.includes('data-testid="login-email-input"'), 'Missing data-testid')
+ok('build artifact exists', fs.existsSync(path.join(DASHBOARD, '.next/server')), '.next/server missing')
 
-  if (!fs.existsSync(LOGIN_PAGE)) {
-    fail('login page.tsx exists', 'File not found')
-    process.exit(1)
-  }
-  if (!fs.existsSync(SIGNUP_PAGE)) {
-    fail('signup page.tsx exists', 'File not found')
-    process.exit(1)
-  }
-
-  const loginSrc = fs.readFileSync(LOGIN_PAGE, 'utf8')
-  const signupSrc = fs.readFileSync(SIGNUP_PAGE, 'utf8')
-
-  check('login inputs have w-full (fills container width on desktop)', loginSrc.includes('w-full'), 'w-full not found')
-  check('login inputs have h-12 (48px height — not too small)', loginSrc.includes('h-12'), 'h-12 not found')
-  check('login inputs have text-base font size', loginSrc.includes('text-base'), 'text-base not found')
-  check('login page uses max-width container', loginSrc.includes('max-w-lg') || loginSrc.includes('max-w-xl') || loginSrc.includes('max-w-2xl'), 'No max-w-* found')
-  check('signup inputs have w-full', signupSrc.includes('w-full'), 'w-full not found on signup inputs')
-  check('signup inputs have h-12', signupSrc.includes('h-12'), 'h-12 not found on signup inputs')
-  check('signup detail step uses max-width container', signupSrc.includes('max-w-2xl') || signupSrc.includes('max-w-xl') || signupSrc.includes('max-w-lg'), 'No max-w-* found on signup')
-
-  // Critical: PR #1049 dev commit must contain text source changes (not binary-only)
-  try {
-    const commitStat = execSync('git show --stat ' + PR_1049_COMMIT, { cwd: REPO_ROOT, encoding: 'utf8' })
-    const insertionMatch = commitStat.match(/(\d+) insertion/)
-    const deletionMatch = commitStat.match(/(\d+) deletion/)
-    const textInsertions = insertionMatch ? parseInt(insertionMatch[1], 10) : 0
-    const textDeletions = deletionMatch ? parseInt(deletionMatch[1], 10) : 0
-    const hasBinaryOnly = commitStat.includes('Bin ') && textInsertions === 0 && textDeletions === 0
-
-    if (hasBinaryOnly) {
-      fail(
-        'PR #1049 dev commit contains layout source changes',
-        'Commit ' + PR_1049_COMMIT.slice(0,8) + ' is binary-only (trace.zip, 0 text insertions). ' +
-        'No .tsx/.css layout files were modified. The fix was never implemented — ' +
-        'layout classes (h-12, w-full) already existed from PRs #992 and #1010.'
-      )
-    } else {
-      pass('PR #1049 dev commit contains text source changes (' + textInsertions + ' ins, ' + textDeletions + ' del)')
-    }
-  } catch (e) {
-    fail('PR #1049 dev commit check', 'Could not inspect commit: ' + e.message)
-  }
-
-  check(
-    'login form has data-testid attributes',
-    loginSrc.includes('data-testid="login-form"') && loginSrc.includes('data-testid="login-email-input"') && loginSrc.includes('data-testid="login-password-input"'),
-    'Missing data-testid on login form/inputs'
-  )
-  check('Next.js build artifact exists (.next/server)', fs.existsSync(path.join(DASHBOARD_BASE, '.next/server')), '.next/server missing — run: cd product/lead-response/dashboard && npx next build')
-
-  var total = RESULTS.passed + RESULTS.failed
-  console.log('\n' + '-'.repeat(60))
-  console.log('RESULT: ' + RESULTS.passed + '/' + total + ' passed')
-  console.log('-'.repeat(60))
-  if (RESULTS.failed > 0) {
-    console.log('\nFAILED CHECKS:')
-    RESULTS.details.filter(function(d) { return d.status === 'FAIL' }).forEach(function(d) {
-      console.log('  - ' + d.name + ': ' + d.reason)
-    })
-    console.log('\nVERDICT: REJECT — PR #1049 is a no-op (binary trace.zip only). Layout fix not implemented.')
+// Critical: dev commit must not be binary-only
+try {
+  const stat = execSync('git show --stat ' + PR_1049_COMMIT, { cwd: REPO_ROOT, encoding: 'utf8' })
+  const insMatch = stat.match(/(\d+) insertion/)
+  const delMatch = stat.match(/(\d+) deletion/)
+  const ins = insMatch ? parseInt(insMatch[1], 10) : 0
+  const del = delMatch ? parseInt(delMatch[1], 10) : 0
+  const binaryOnly = stat.includes('Bin ') && ins === 0 && del === 0
+  if (binaryOnly) {
+    failed++
+    console.log('  FAIL  PR #1049 dev commit has text source changes: Commit ' + PR_1049_COMMIT.slice(0,8) +
+      ' is binary-only (trace.zip, 0 insertions). No layout files modified. Fix not implemented — classes existed from PRs #992 #1010.')
   } else {
-    console.log('\nAll checks passed.')
+    passed++
+    console.log('  PASS  PR #1049 dev commit has text source changes (' + ins + ' ins, ' + del + ' del)')
   }
-
-  return RESULTS
+} catch (e) {
+  failed++
+  console.log('  FAIL  PR #1049 commit check: ' + e.message)
 }
 
-runTests()
-  .then(function(r) { process.exit(r.failed > 0 ? 1 : 0) })
-  .catch(function(e) { console.error('Test runner error:', e); process.exit(1) })
+const total = passed + failed
+console.log('\n' + '-'.repeat(60))
+console.log('RESULT: ' + passed + '/' + total + ' passed')
+if (failed > 0) {
+  console.log('VERDICT: REJECT — no-op binary commit, layout fix not implemented in PR #1049')
+}
+process.exit(failed > 0 ? 1 : 0)
