@@ -32,6 +32,18 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
+/**
+ * Hash a session token using SHA-256 (Web Crypto API — Edge-compatible).
+ * Must match the hashToken() in lib/session.ts which uses Node crypto.
+ */
+async function hashSessionToken(token: string): Promise<string> {
+  const data = new TextEncoder().encode(token)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 // PostgREST config for DB queries in middleware
 const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
 const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
@@ -60,8 +72,9 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
   const sessionToken = request.cookies.get('leadflow_session')?.value
   if (sessionToken && POSTGREST_URL) {
     try {
-      // Encode session token to prevent URL injection
-      const encodedToken = encodeURIComponent(sessionToken)
+      // Hash the raw token before querying — DB stores SHA-256 hashes (see lib/session.ts)
+      const tokenHash = await hashSessionToken(sessionToken)
+      const encodedToken = encodeURIComponent(tokenHash)
       const url = `${POSTGREST_URL}/sessions?token=eq.${encodedToken}&select=user_id,expires_at&limit=1`
       const headers: Record<string, string> = {
         'Accept': 'application/json',
