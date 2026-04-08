@@ -449,20 +449,14 @@ async function handleSatisfactionFeedback(lead, sentiment, { MessageSid, Body, m
   console.log(`\n📊 Processing satisfaction feedback (${sentiment}) for lead ${lead.id}...`);
 
   try {
-    // Convert sentiment to rating
-    const ratingMap = {
-      positive: 'satisfied',
-      negative: 'dissatisfied',
-      neutral: 'neutral',
-    };
+    const validRatings = ['positive', 'negative', 'neutral'];
+    const rating = validRatings.includes(sentiment) ? sentiment : 'unclassified';
 
     const { error } = await supabase
       .from('lead_satisfaction_events')
       .update({
-        rating: ratingMap[sentiment] || 'unclassified',
-        feedback_text: Body,
-        feedback_received_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        rating,
+        raw_reply: Body,
       })
       .eq('lead_id', lead.id)
       .is('rating', null); // Only update if no rating yet
