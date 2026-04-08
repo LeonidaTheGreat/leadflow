@@ -246,13 +246,34 @@ test_sms_stats_no_crash() {
   return 0
 }
 
-# Cleanup test accounts
+# Cleanup test accounts created by this script
 cleanup_test_accounts() {
-  [ -z "${API_KEY:-}" ] && return 0
-  curl -s --max-time 10 -X DELETE \
-    "$API_URL/real_estate_agents?email=like.e2e-flow-*@leadflow-test.com" \
-    -H "apikey: $API_KEY" \
-    -H "Authorization: Bearer $API_KEY" >/dev/null 2>&1 || true
+  local pg_url="${LOCAL_PG_URL:-}"
+  if [ -z "$pg_url" ]; then
+    # Try loading from project .env
+    local _proj_env="$_SCRIPT_DIR/../.env"
+    [ -f "$_proj_env" ] && pg_url=$(grep '^LOCAL_PG_URL=' "$_proj_env" | head -1 | cut -d'=' -f2-)
+  fi
+  if [ -z "$pg_url" ]; then
+    # Fallback: try ~/.env
+    [ -f "$HOME/.env" ] && pg_url=$(grep '^LOCAL_PG_URL=' "$HOME/.env" | head -1 | cut -d'=' -f2-)
+  fi
+  if [ -n "$pg_url" ]; then
+    # Delete leads belonging to e2e-flow test agents, then delete the agents
+    psql -q "$pg_url" <<'SQL' 2>/dev/null || true
+DELETE FROM messages WHERE lead_id IN (
+  SELECT l.id FROM leads l JOIN real_estate_agents a ON l.agent_id = a.id
+  WHERE a.email LIKE 'e2e-flow-%@leadflow-test.com'
+);
+DELETE FROM leads WHERE agent_id IN (
+  SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
+);
+DELETE FROM pilot_progress WHERE agent_id IN (
+  SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
+);
+DELETE FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com';
+SQL
+  fi
   return 0
 }
 
