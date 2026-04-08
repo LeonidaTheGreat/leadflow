@@ -25,10 +25,17 @@ npm test               # Run E2E tests
 npm start              # Start local server
 ```
 
+## Twilio Local Debugging
+If Twilio works in Vercel but is missing locally, sync Twilio credentials into `.env.local`:
+
+```bash
+bash scripts/shell/sync-twilio-env-local.sh
+node scripts/utilities/verify-twilio-env.js
+```
+
 ## Success Target
 $20,000/month recurring revenue within 90 days of pilot start.
 
 ---
 
 *Owner: Leonida with oversight from Stojan*
-
