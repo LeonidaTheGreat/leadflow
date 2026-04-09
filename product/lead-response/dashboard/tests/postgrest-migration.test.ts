@@ -4,16 +4,10 @@
  */
 
 import { createClient } from '@/lib/db'
-import { 
-  getLeadById, 
-  getLeadByPhone, 
-  createLead,
-  updateLead,
-  getLeadsByAgent,
-  getAgentById,
-  getQualificationsByLead,
-  getMessagesByLead
-} from '@/lib/supabase'
+import { supabaseAdmin, supabase } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
+import { messageService } from '@/lib/services/MessageService'
+import { agentService } from '@/lib/services/AgentService'
 
 describe('PostgREST Migration', () => {
   // These tests verify that the client can be created and has the expected methods
@@ -91,20 +85,20 @@ describe('PostgREST Migration', () => {
     expect(query).toBeDefined()
   })
 
-  test('lib/supabase exports should be available', () => {
-    expect(typeof getLeadById).toBe('function')
-    expect(typeof getLeadByPhone).toBe('function')
-    expect(typeof createLead).toBe('function')
-    expect(typeof updateLead).toBe('function')
-    expect(typeof getLeadsByAgent).toBe('function')
-    expect(typeof getAgentById).toBe('function')
-    expect(typeof getQualificationsByLead).toBe('function')
-    expect(typeof getMessagesByLead).toBe('function')
+  test('service class instances should expose domain methods', () => {
+    expect(typeof leadService.getLeadById).toBe('function')
+    expect(typeof leadService.getLeadByPhone).toBe('function')
+    expect(typeof leadService.createLead).toBe('function')
+    expect(typeof leadService.updateLead).toBe('function')
+    expect(typeof leadService.getLeadsByAgent).toBe('function')
+    expect(typeof messageService.getMessagesByLead).toBe('function')
+    expect(typeof messageService.createMessage).toBe('function')
+    expect(typeof messageService.updateMessageStatus).toBe('function')
+    expect(typeof agentService.getAgentById).toBe('function')
   })
 
   test('supabaseAdmin and supabase should be available', () => {
-    // These are imported from lib/supabase
-    // Just verify they can be imported without errors
-    expect(true).toBe(true)
+    expect(supabaseAdmin).toBeDefined()
+    expect(supabase).toBeDefined()
   })
 })

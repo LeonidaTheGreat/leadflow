@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendSms, SendSmsResult } from '@/lib/twilio'
-import { createMessage, getLeadById } from '@/lib/supabase'
+import { messageService } from '@/lib/services/MessageService'
+import { leadService } from '@/lib/services/LeadService'
 import { generateAiSmsResponse } from '@/lib/ai'
-import { getAgentById } from '@/lib/supabase'
+import { agentService } from '@/lib/services/AgentService'
 import { checkSmsRateLimit } from '@/lib/rate-limit'
 import { getErrorInfo, classifyTwilioError, createErrorResponse, logError } from '@/lib/error-handler'
 
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Get lead with agent
-    const { data: lead, error: leadError } = await getLeadById(lead_id)
+    const { data: lead, error: leadError } = await leadService.getLeadById(lead_id)
     
     if (leadError || !lead) {
       logError('LEAD_NOT_FOUND', { lead_id });
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(err.response, { status: err.statusCode })
     }
 
-    const { data: agent } = await getAgentById(lead.agent_id)
+    const { data: agent } = await agentService.getAgentById(lead.agent_id)
     
     if (!agent) {
       logError('AGENT_NOT_FOUND', { lead_id, agent_id: lead.agent_id });
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Save failed message to database for debugging
-      await createMessage({
+      await messageService.createMessage({
         lead_id: lead.id,
         direction: 'outbound',
         channel: 'sms',
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 8. Save successful message to database
-    await createMessage({
+    await messageService.createMessage({
       lead_id: lead.id,
       direction: 'outbound',
       channel: 'sms',

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendSms } from '@/lib/twilio'
-import { createMessage, getLeadById, getAgentById } from '@/lib/supabase'
+import { messageService } from '@/lib/services/MessageService'
+import { leadService } from '@/lib/services/LeadService'
+import { agentService } from '@/lib/services/AgentService'
 import { generateAiSmsResponse } from '@/lib/ai'
 
 /**
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get lead with agent
-    const { data: lead, error: leadError } = await getLeadById(lead_id)
+    const { data: lead, error: leadError } = await leadService.getLeadById(lead_id)
     
     if (leadError || !lead) {
       return NextResponse.json(
@@ -56,7 +58,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data: agent } = await getAgentById(lead.agent_id)
+    const { data: agent } = await agentService.getAgentById(lead.agent_id)
     
     if (!agent) {
       return NextResponse.json(
@@ -104,7 +106,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Store message in Supabase
-    const { data: messageRecord, error: messageError } = await createMessage({
+    const { data: messageRecord, error: messageError } = await messageService.createMessage({
       lead_id: lead.id,
       direction: 'outbound',
       channel: 'sms',

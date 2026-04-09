@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAgentById, getLeadById } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
+import { agentService } from '@/lib/services/AgentService'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
 import { validateSession } from '@/lib/session'
 
@@ -35,11 +36,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const leadId = searchParams.get('lead_id')
 
-    let agentUsername: string | null = null
+    let agentUsername = ''
     let lead: any = null
 
     // Get the authenticated agent's info
-    const { data: agent } = await getAgentById(agentId)
+    const { data: agent } = await agentService.getAgentById(agentId)
     if (!agent?.calcom_username) {
       return NextResponse.json(
         { error: 'Agent does not have Cal.com configured' },
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     // If a lead_id is provided, validate it belongs to this agent
     if (leadId) {
-      const { data: leadData } = await getLeadById(leadId)
+      const { data: leadData } = await leadService.getLeadById(leadId)
       if (!leadData) {
         return NextResponse.json(
           { error: 'Lead not found' },
@@ -124,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get lead with agent
-    const { data: lead } = await getLeadById(lead_id)
+    const { data: lead } = await leadService.getLeadById(lead_id)
     
     if (!lead) {
       return NextResponse.json(
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data: agent } = await getAgentById(sessionAgentId)
+    const { data: agent } = await agentService.getAgentById(sessionAgentId)
     
     if (!agent) {
       return NextResponse.json(
