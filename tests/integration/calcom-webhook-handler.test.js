@@ -15,19 +15,18 @@ process.env.API_SECRET_KEY = 'mock_key';
 process.env.CAL_USERNAME = 'testagent';
 process.env.CAL_WEBHOOK_SECRET = 'test_webhook_secret_12345';
 
-// Import the webhook handler
-const {
-    handleCalWebhook,
-    verifyWebhookSignature,
-    handleBookingCreated,
-    handleBookingRescheduled,
-    handleBookingCancelled,
-    handleMeetingEnded,
-    withRetry,
-    sleep,
-    calculateBackoffDelay,
-    RETRY_CONFIG
-} = require('../../lib/services/CalcomService');
+// Import the webhook handler (CalcomService singleton - bind for correct this)
+const _cs = require('../../lib/services/CalcomService');
+const RETRY_CONFIG = require('../../lib/services/CalcomService').RETRY_CONFIG;
+const handleCalWebhook = _cs.handleCalWebhook.bind(_cs);
+const verifyWebhookSignature = _cs.verifyWebhookSignature.bind(_cs);
+const handleBookingCreated = _cs.handleBookingCreated.bind(_cs);
+const handleBookingRescheduled = _cs.handleBookingRescheduled.bind(_cs);
+const handleBookingCancelled = _cs.handleBookingCancelled.bind(_cs);
+const handleMeetingEnded = _cs.handleMeetingEnded.bind(_cs);
+const withRetry = _cs.withRetry.bind(_cs);
+const sleep = _cs.sleep.bind(_cs);
+const calculateBackoffDelay = _cs.calculateBackoffDelay.bind(_cs);
 
 // Test results tracker
 const results = {

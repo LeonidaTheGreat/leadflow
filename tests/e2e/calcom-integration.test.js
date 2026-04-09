@@ -16,7 +16,7 @@ process.env.CAL_WEBHOOK_SECRET = 'test_webhook_secret';
 
 // Import modules after setting env vars
 const calcom = require('../../lib/services/CalcomService');
-const bookingService = require('../lib/booking-link-service');
+const bookingService = require('../../lib/booking-link-service');
 const { 
     handleBookingCreated, 
     handleBookingRescheduled, 
