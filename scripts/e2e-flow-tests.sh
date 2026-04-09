@@ -191,7 +191,7 @@ test_dashboard_no_errors() {
   # middleware calls hashToken(cookie) and looks up that hash in sessions.token.
   local raw_token token_hash now expires session_resp session_id
   raw_token=$(openssl rand -hex 32)
-  token_hash=$(printf '%s' "$raw_token" | openssl dgst -sha256 | awk '{print $2}')
+  token_hash=$(printf '%s' "$raw_token" | openssl dgst -sha256 | awk '{print $NF}')
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   expires=$(date -u -v+1H +"%Y-%m-%dT%H:%M:%SZ")
 
@@ -204,11 +204,16 @@ test_dashboard_no_errors() {
   session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
   [ -z "$session_id" ] && return 1
 
-  # Load dashboard with raw token in cookie — server hashes it to validate
-  local html
-  html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
-    -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
-  local exit_code=$?
+  # Load dashboard with raw token in cookie — server hashes it to validate.
+  # Retry once on transient failures (Vercel cold starts can return Application error).
+  local html exit_code attempt
+  for attempt in 1 2; do
+    html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
+      -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
+    exit_code=$?
+    [ $exit_code -eq 0 ] && ! echo "$html" | grep -qi 'Application error' && break
+    [ $attempt -lt 2 ] && sleep 5
+  done
 
   # Clean up test session regardless of outcome
   curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
