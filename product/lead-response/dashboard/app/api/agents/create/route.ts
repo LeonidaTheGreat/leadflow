@@ -1,23 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 
-const supabase = supabaseAdmin
-
-/**
- * Wrapper to add timeout to async operations.
- * Rejects with TimeoutError if operation doesn't complete in time.
- */
-async function withTimeout<T>(promise: Promise<T> | PromiseLike<T>, timeoutMs: number): Promise<T> {
-  const timeoutPromise = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
-  )
-  return Promise.race([Promise.resolve(promise), timeoutPromise])
-}
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, phone, password, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = await request.json()
+    const { email, name, phone, password } = await request.json()
 
     // Validate required fields
     if (!email || !name || !phone || !password) {
@@ -44,27 +36,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if agent already exists (with 5s timeout)
-    let existingAgent
-    try {
-      const result = await withTimeout(
-        supabase
-          .from('real_estate_agents')
-          .select('id')
-          .eq('email', email.toLowerCase())
-          .single(),
-        5000
-      )
-      existingAgent = result.data
-    } catch (err: any) {
-      // On timeout or error, continue (fail open for deduplication)
-      if (err.message.includes('timed out')) {
-        console.warn('Duplicate check timeout for email:', email)
-      } else {
-        console.error('Duplicate check error:', err)
-      }
-      existingAgent = null
-    }
+    // Check if agent already exists
+    const { data: existingAgent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single()
 
     if (existingAgent) {
       return NextResponse.json(
@@ -81,47 +58,24 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0]
     const lastName = nameParts.slice(1).join(' ') || ''
 
-    // Sanitize UTM params — strip to alphanumeric + common safe chars only
-    const sanitizeUtm = (val: string | undefined | null): string | null => {
-      if (!val) return null
-      return String(val).replace(/[^a-zA-Z0-9_\-. /]/g, '').slice(0, 255)
-    }
+    // Create agent record
+    const { data: agent, error: createError } = await supabase
+      .from('agents')
+      .insert({
+        email: email.toLowerCase(),
+        first_name: firstName,
+        last_name: lastName,
+        phone: phone,
+        password_hash: passwordHash,
+        email_verified: false, // Will be verified after Stripe checkout
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('id')
+      .single()
 
-    // Create agent record (with UTM attribution data and 5s timeout)
-    let agent
-    try {
-      const result = await withTimeout(
-        supabase
-          .from('real_estate_agents')
-          .insert({
-            email: email.toLowerCase(),
-            first_name: firstName,
-            last_name: lastName,
-            phone_number: phone,
-            password_hash: passwordHash,
-            email_verified: false, // Will be verified after Stripe checkout
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            // FR-4: Store UTM attribution (null if not present — first-touch, no overwrite)
-            utm_source: sanitizeUtm(utm_source),
-            utm_medium: sanitizeUtm(utm_medium),
-            utm_campaign: sanitizeUtm(utm_campaign),
-            utm_content: sanitizeUtm(utm_content),
-            utm_term: sanitizeUtm(utm_term),
-          })
-          .select('id')
-          .single(),
-        5000
-      )
-      agent = result.data
-    } catch (err: any) {
-      console.error('Error creating agent:', err)
-      if (err.message.includes('timed out')) {
-        return NextResponse.json(
-          { error: 'Service temporarily unavailable. Please try again.' },
-          { status: 503 }
-        )
-      }
+    if (createError) {
+      console.error('Error creating agent:', createError)
       return NextResponse.json(
         { error: 'Failed to create account' },
         { status: 500 }

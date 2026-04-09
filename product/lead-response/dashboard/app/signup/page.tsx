@@ -1,43 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
+import { useState } from 'react'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Suspense } from 'react'
-import TrialSignupForm from '@/components/trial-signup-form'
-import { trackFormEvent } from '@/lib/analytics/ga4'
 
 // Pricing tiers as per UC-9 spec
-// HARDCODED: No env var dependency to ensure plans always render.
-// NOTE: priceId is NOT stored here — price IDs are server-side secrets loaded
-// from env vars. The client sends a `tier` string; the server resolves it to
-// a real Stripe price ID via STRIPE_PRICE_<TIER>_MONTHLY env vars.
-interface Plan {
-  id: string
-  name: string
-  price: number
-  popular?: boolean
-  features: string[]
-}
-
-// Maps plan.id → checkout API `tier` value (matches PRICE_ID_ENV_MAP in create-checkout/route.ts)
-// Canonical tier names: starter, pro, team — all using _monthly suffix for the signup flow
-const PLAN_CHECKOUT_TIER: Record<string, string> = {
-  starter: 'starter_monthly',
-  pro:     'pro_monthly',
-  team:    'team_monthly',
-}
-
-const PLANS: Plan[] = [
+const PLANS = [
   {
     id: 'starter',
     name: 'Starter',
     price: 49,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_49',
     features: [
       'Up to 50 leads/month',
       'AI SMS responses',
@@ -50,6 +26,7 @@ const PLANS: Plan[] = [
     id: 'pro',
     name: 'Pro',
     price: 149,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY || 'price_pro_149',
     popular: true,
     features: [
       'Up to 200 leads/month',
@@ -64,6 +41,7 @@ const PLANS: Plan[] = [
     id: 'team',
     name: 'Team',
     price: 399,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY || 'price_team_399',
     features: [
       'Up to 500 leads/month',
       'Multi-channel AI',
@@ -76,46 +54,6 @@ const PLANS: Plan[] = [
 ]
 
 export default function SignupPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />}>
-      <SignupPageInner />
-    </Suspense>
-  )
-}
-
-function SignupPageInner() {
-  const searchParams = useSearchParams()
-  const isTrialMode = searchParams.get('mode') === 'trial'
-
-  // If trial mode, render the frictionless trial form
-  if (isTrialMode) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
-        <header className="border-b border-slate-700/50">
-          <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
-                <span className="text-emerald-400 font-bold text-sm">▶</span>
-              </div>
-              <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
-            </a>
-            <a href="/login" className="text-sm text-slate-400 hover:text-white">
-              Already have an account? Sign in
-            </a>
-          </div>
-        </header>
-        <main className="flex-1 flex items-center justify-center px-4 py-16">
-          <TrialSignupForm />
-        </main>
-      </div>
-    )
-  }
-
-  // Default: existing paid signup flow
-  return <PaidSignupFlow />
-}
-
-function PaidSignupFlow() {
   const [step, setStep] = useState<'select-plan' | 'enter-details' | 'checkout'>('select-plan')
   const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null)
   const [loading, setLoading] = useState(false)
@@ -127,11 +65,6 @@ function PaidSignupFlow() {
     phone: '',
     password: ''
   })
-
-  // FR-3: Track form open on page mount
-  useEffect(() => {
-    trackFormEvent('form_view', 'pilot_signup')
-  }, [])
 
   const handlePlanSelect = (plan: typeof PLANS[0]) => {
     setSelectedPlan(plan)
@@ -180,25 +113,11 @@ function PaidSignupFlow() {
     if (!validateForm()) return
     if (!selectedPlan) return
 
-    // FR-3: Track form submit (no PII)
-    trackFormEvent('form_submit_attempt', 'pilot_signup', { plan: selectedPlan.id })
-
     setLoading(true)
     setError(null)
 
     try {
-      // FR-2: Read UTM params from sessionStorage (first-touch attribution)
-      let utm: Record<string, string | null> = {}
-      try {
-        const utmRaw = sessionStorage.getItem('leadflow_utm')
-        if (utmRaw) {
-          utm = JSON.parse(utmRaw)
-        }
-      } catch {
-        // sessionStorage unavailable — silent fail
-      }
-
-      // Step 1: Create agent record with password (+ UTM attribution)
+      // Step 1: Create agent record with password
       const agentResponse = await fetch('/api/agents/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -206,8 +125,7 @@ function PaidSignupFlow() {
           email: formData.email,
           name: formData.name,
           phone: formData.phone,
-          password: formData.password,
-          ...utm
+          password: formData.password
         })
       })
 
@@ -219,19 +137,14 @@ function PaidSignupFlow() {
       const { agentId } = await agentResponse.json()
 
       // Step 2: Create Stripe checkout session
-      // Send `tier` (not priceId) — the server resolves the Stripe price ID
-      // from STRIPE_PRICE_<TIER>_MONTHLY env vars to keep secrets server-side.
-      const checkoutTier = PLAN_CHECKOUT_TIER[selectedPlan.id]
-      if (!checkoutTier) {
-        throw new Error(`Unknown plan: ${selectedPlan.id}`)
-      }
       const checkoutResponse = await fetch('/api/billing/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          tier: checkoutTier,
           agentId,
           email: formData.email,
+          plan: selectedPlan.id,
+          priceId: selectedPlan.priceId
         })
       })
 
@@ -244,16 +157,12 @@ function PaidSignupFlow() {
 
       // Step 3: Redirect to Stripe Checkout
       if (url) {
-        // FR-3: Track form success before redirecting
-        trackFormEvent('pilot_signup_complete', 'pilot_signup', { plan: selectedPlan.id })
         window.location.href = url
       } else {
         throw new Error('No checkout URL received')
       }
     } catch (err: any) {
       console.error('Signup error:', err)
-      // FR-3: Track form error (no PII)
-      trackFormEvent('form_submit_error', 'pilot_signup')
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }
@@ -326,9 +235,8 @@ function PaidSignupFlow() {
 
               <div className="grid md:grid-cols-3 gap-6">
                 {PLANS.map((plan) => (
-                  <Card
+                  <Card 
                     key={plan.id}
-                    data-testid={`signup-plan-card-${plan.id}`}
                     className={`relative border-2 transition-all cursor-pointer ${
                       plan.popular 
                         ? 'border-emerald-500 bg-gradient-to-br from-slate-800 to-slate-900 ring-2 ring-emerald-500/20' 
@@ -388,11 +296,9 @@ function PaidSignupFlow() {
 
               <Card className="border-slate-700 bg-slate-800/50">
                 <CardContent className="p-8">
-                  {/* space-y-4 matches login page field spacing */}
-                  <form onSubmit={handleSubmit} className="space-y-4" data-testid="signup-form">
-                    {/* Email — full-width vertical stack matching login layout */}
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-slate-200">Email Address *</Label>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <Label htmlFor="email" className="text-white mb-2 block">Email Address *</Label>
                       <Input
                         id="email"
                         name="email"
@@ -400,16 +306,14 @@ function PaidSignupFlow() {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="you@example.com"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white"
                         required
                         disabled={loading}
-                        data-testid="signup-email-input"
                       />
                     </div>
 
-                    {/* Full Name — full-width vertical stack */}
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-slate-200">Full Name *</Label>
+                    <div>
+                      <Label htmlFor="name" className="text-white mb-2 block">Full Name *</Label>
                       <Input
                         id="name"
                         name="name"
@@ -417,15 +321,14 @@ function PaidSignupFlow() {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="John Smith"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white"
                         required
                         disabled={loading}
                       />
                     </div>
 
-                    {/* Phone — full-width vertical stack */}
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-slate-200">Phone Number *</Label>
+                    <div>
+                      <Label htmlFor="phone" className="text-white mb-2 block">Phone Number *</Label>
                       <Input
                         id="phone"
                         name="phone"
@@ -433,15 +336,14 @@ function PaidSignupFlow() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+1 (555) 123-4567"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white"
                         required
                         disabled={loading}
                       />
                     </div>
 
-                    {/* Password — full-width vertical stack matching login layout */}
-                    <div className="space-y-2">
-                      <Label htmlFor="password" className="text-slate-200">Password *</Label>
+                    <div>
+                      <Label htmlFor="password" className="text-white mb-2 block">Password *</Label>
                       <Input
                         id="password"
                         name="password"
@@ -449,11 +351,10 @@ function PaidSignupFlow() {
                         value={formData.password}
                         onChange={handleInputChange}
                         placeholder="Create a strong password (min 8 characters)"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white"
                         required
                         disabled={loading}
                         minLength={8}
-                        data-testid="signup-password-input"
                       />
                     </div>
 
@@ -493,14 +394,8 @@ function PaidSignupFlow() {
                   </form>
 
                   <div className="mt-6 pt-6 border-t border-slate-700">
-                    <p className="text-sm text-slate-400 text-center mb-2">
-                      Already have an account?{' '}
-                      <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-semibold">
-                        Sign in
-                      </Link>
-                    </p>
                     <p className="text-xs text-slate-400 text-center">
-                      By continuing, you agree to our Terms of Service and Privacy Policy.
+                      By continuing, you agree to our Terms of Service and Privacy Policy. 
                       Your 14-day free trial starts today. No charge until {new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString()}.
                     </p>
                   </div>

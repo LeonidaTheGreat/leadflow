@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
-import { AuthService } from '@/lib/services/AuthService'
-import {
-  DEFAULT_SESSION_COOKIE_MAX_AGE_SECONDS,
-  REMEMBER_ME_SESSION_COOKIE_MAX_AGE_SECONDS,
-} from '@/lib/config/auth'
-import { logSessionStart } from '@/lib/session-analytics'
+import jwt from 'jsonwebtoken'
 
-const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')
-const authService = new AuthService(supabase)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,10 +22,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find user by email (include onboarding state for post-login redirect)
+    // Find user by email
     const { data: user, error: userError } = await supabase
-      .from('real_estate_agents')
-      .select('id, email, password_hash, first_name, last_name, email_verified, onboarding_completed')
+      .from('agents')
+      .select('id, email, password_hash, first_name, last_name, email_verified')
       .eq('email', email.toLowerCase())
       .single()
 
@@ -40,11 +39,7 @@ export async function POST(request: NextRequest) {
     // Check if email is verified
     if (!user.email_verified) {
       return NextResponse.json(
-        { 
-          error: 'EMAIL_NOT_VERIFIED', 
-          message: 'Please confirm your email address.',
-          resendUrl: '/api/auth/resend-verification'
-        },
+        { error: 'Please verify your email before signing in' },
         { status: 403 }
       )
     }
@@ -59,56 +54,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create server-side session
-    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      ?? request.headers.get('x-real-ip') 
-      ?? undefined
-    const session = await authService.createSession({
-      userId: user.id,
-      userAgent: request.headers.get('user-agent') || undefined,
-      ipAddress,
-      rememberMe,
-    })
+    // Generate JWT token
+    const tokenExpiry = rememberMe ? '30d' : '24h'
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+      },
+      JWT_SECRET,
+      { expiresIn: tokenExpiry }
+    )
 
     // Update last login timestamp
     await supabase
-      .from('real_estate_agents')
+      .from('agents')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
-    // Log session analytics (fail silently — must not break login)
-    const analyticsSessionId = await logSessionStart(user.id, ipAddress, request.headers.get('user-agent') || null)
-
-    // Create response with user data and onboarding status
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
-      token: session.token,
-      analyticsSessionId,
+      token,
       user: {
         id: user.id,
         email: user.email,
         firstName: user.first_name,
         lastName: user.last_name,
-        // onboardingCompleted drives the post-login wizard redirect
-        onboardingCompleted: user.onboarding_completed ?? false,
       }
     })
 
-    // Set HTTP-only cookie with session token
-    const cookieMaxAge = rememberMe
-      ? REMEMBER_ME_SESSION_COOKIE_MAX_AGE_SECONDS
-      : DEFAULT_SESSION_COOKIE_MAX_AGE_SECONDS
-    response.cookies.set({
-      name: 'leadflow_session',
-      value: session.token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: cookieMaxAge,
-      path: '/',
-    })
-
-    return response
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(

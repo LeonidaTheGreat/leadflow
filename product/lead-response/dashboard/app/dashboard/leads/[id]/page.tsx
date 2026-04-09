@@ -3,8 +3,6 @@ import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { ConversationView } from '@/components/dashboard/ConversationView'
 import { LeadDetailHeader } from '@/components/dashboard/LeadDetailHeader'
 import { LeadQualificationCard } from '@/components/dashboard/LeadQualificationCard'
-import { SequenceStatusCard } from '@/components/dashboard/SequenceStatusCard'
-import { getLeadSequences } from '@/lib/sequences'
 
 interface LeadDetailPageProps {
   params: Promise<{
@@ -15,7 +13,7 @@ interface LeadDetailPageProps {
 async function getLead(id: string) {
   const { data: lead } = await supabase
     .from('leads')
-    .select('*, agent:real_estate_agents(*)')
+    .select('*, agent:agents(*)')
     .eq('id', id)
     .single()
 
@@ -37,10 +35,6 @@ async function getQualifications(leadId: string) {
   return []
 }
 
-async function getSequences(leadId: string) {
-  return getLeadSequences(leadId)
-}
-
 export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const { id } = await params
   const lead = await getLead(id)
@@ -49,10 +43,9 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
     notFound()
   }
 
-  const [messages, qualifications, sequences] = await Promise.all([
+  const [messages, qualifications] = await Promise.all([
     getMessages(id),
     getQualifications(id),
-    getSequences(id),
   ])
 
   return (
@@ -71,11 +64,6 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <SequenceStatusCard
-            sequences={sequences}
-            leadId={id}
-          />
-
           <LeadQualificationCard 
             lead={lead} 
             qualifications={qualifications}

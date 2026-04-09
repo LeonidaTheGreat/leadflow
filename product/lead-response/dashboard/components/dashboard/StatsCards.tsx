@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 import type { DashboardStats } from '@/lib/types'
 
 export function StatsCards() {
@@ -13,13 +14,21 @@ export function StatsCards() {
 
   async function fetchStats() {
     try {
-      const response = await fetch('/api/dashboard/stats', { credentials: 'include' })
-      if (!response.ok) {
-        throw new Error(`Failed to fetch stats: ${response.status}`)
-      }
+      // Get all stats (no auth filter for MVP)
+      const { data: allStats } = await supabase
+        .from('dashboard_stats')
+        .select('*')
 
-      const json = await response.json()
-      setStats(json.stats || null)
+      // Sum up stats across all agents
+      const totals = allStats?.reduce((acc, curr) => ({
+        new_leads: (acc.new_leads || 0) + (curr.new_leads || 0),
+        qualified_leads: (acc.qualified_leads || 0) + (curr.qualified_leads || 0),
+        responded_leads: (acc.responded_leads || 0) + (curr.responded_leads || 0),
+        leads_today: (acc.leads_today || 0) + (curr.leads_today || 0),
+        total_leads: (acc.total_leads || 0) + (curr.total_leads || 0),
+      }), { new_leads: 0, qualified_leads: 0, responded_leads: 0, leads_today: 0, total_leads: 0 })
+
+      setStats(totals || null)
     } catch (error) {
       console.error('Error fetching stats:', error)
     } finally {

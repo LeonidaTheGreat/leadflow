@@ -6,217 +6,112 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
-// Valid pricing tiers — canonical names match the pricing page: starter, pro, team, brokerage
-// price IDs MUST come from env vars (no fallback to invalid strings)
-const PRICING_TIERS: Record<string, { name: string; amount: number }> = {
-  starter_monthly:  { name: 'Starter - Monthly',  amount: 4900  },  // $49/mo
-  starter_annual:   { name: 'Starter - Annual',    amount: 49000 },  // $490/yr
-  pro_monthly:      { name: 'Pro - Monthly',       amount: 14900 },  // $149/mo
-  pro_annual:       { name: 'Pro - Annual',         amount: 149000 }, // $1,490/yr
-  team_monthly:     { name: 'Team - Monthly',      amount: 39900 },  // $399/mo
-  team_annual:      { name: 'Team - Annual',        amount: 399000 }, // $3,990/yr
-}
-
-const PRICE_ID_ENV_MAP: Record<string, string> = {
-  starter_monthly: 'STRIPE_PRICE_STARTER_MONTHLY',
-  starter_annual:  'STRIPE_PRICE_STARTER_ANNUAL',
-  pro_monthly:     'STRIPE_PRICE_PRO_MONTHLY',
-  pro_annual:      'STRIPE_PRICE_PRO_ANNUAL',
-  team_monthly:    'STRIPE_PRICE_TEAM_MONTHLY',
-  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL',
-}
-
-/**
- * Validate a Stripe Price ID looks correct.
- * Real Stripe price IDs look like: price_1QvIEf2eZvKYlo2CkuDLQABG
- * - Prefix: price_
- * - Followed by 14+ alphanumeric chars (NO underscores, no words like "starter")
- * This rejects placeholder values like price_starter_49, price_pro_149, price_team_399.
- */
-function isValidPriceId(id: string | undefined): id is string {
-  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,}$/.test(id)
-}
-
-/** Validate a UUID v4 format */
-function isValidUUID(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
-}
-
-// Simple in-memory rate limiter: max 5 checkout requests per IP per minute
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT_WINDOW_MS = 60_000
-const RATE_LIMIT_MAX = 5
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(ip)
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
-    return true
-  }
-  record.count++
-  if (record.count > RATE_LIMIT_MAX) return false
-  return true
-}
-
-/**
- * Wrapper to add timeout to async operations.
- * Rejects with error if operation doesn't complete in time.
- */
-async function withTimeout<T>(promise: Promise<T> | PromiseLike<T>, timeoutMs: number): Promise<T> {
-  const timeoutPromise = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
-  )
-  return Promise.race([Promise.resolve(promise), timeoutPromise])
+// Pricing tiers (from product spec)
+const PRICING_TIERS: Record<string, { priceId: string; name: string; amount: number }> = {
+  starter_monthly: {
+    priceId: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
+    name: 'Starter - Monthly',
+    amount: 49700, // $497 in cents
+  },
+  starter_annual: {
+    priceId: process.env.STRIPE_PRICE_STARTER_ANNUAL || 'price_starter_annual',
+    name: 'Starter - Annual',
+    amount: 497000,
+  },
+  professional_monthly: {
+    priceId: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
+    name: 'Professional - Monthly',
+    amount: 99700, // $997 in cents
+  },
+  professional_annual: {
+    priceId: process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL || 'price_professional_annual',
+    name: 'Professional - Annual',
+    amount: 997000,
+  },
+  enterprise_monthly: {
+    priceId: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly',
+    name: 'Enterprise - Monthly',
+    amount: 199700, // $1997 in cents
+  },
+  enterprise_annual: {
+    priceId: process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL || 'price_enterprise_annual',
+    name: 'Enterprise - Annual',
+    amount: 1997000,
+  },
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // --- Rate limiting (before any processing) ---
-    const ip =
-      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      request.headers.get('x-real-ip') ||
-      'unknown'
-    if (!checkRateLimit(ip)) {
+    if (!stripe) {
       return NextResponse.json(
-        { error: 'Too many requests. Please wait a minute and try again.' },
-        { status: 429 }
+        { error: 'Stripe not configured' },
+        { status: 503 }
       )
     }
 
-    // --- Parse & validate request body (before checking Stripe) ---
-    let body: { tier?: string; agentId?: string; email?: string }
-    try {
-      body = await request.json()
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid JSON body', code: 'INVALID_BODY' },
-        { status: 400 }
-      )
-    }
-
-    const { tier, agentId, email } = body
+    const { tier, agentId, email } = await request.json()
 
     if (!tier || !agentId || !email) {
       return NextResponse.json(
-        { error: 'Missing required fields: tier, agentId, email', code: 'MISSING_FIELDS' },
+        { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Validate tier is a known enum value
     if (!PRICING_TIERS[tier]) {
       return NextResponse.json(
-        {
-          error: `Invalid pricing tier: ${tier}. Must be one of: ${Object.keys(PRICING_TIERS).join(', ')}`,
-          code: 'INVALID_TIER',
-        },
+        { error: 'Invalid pricing tier' },
         { status: 400 }
       )
     }
 
-    // Validate agentId is a valid UUID
-    if (!isValidUUID(agentId)) {
-      return NextResponse.json(
-        { error: 'Invalid agentId format. Must be a UUID.', code: 'INVALID_AGENT_ID' },
-        { status: 400 }
-      )
-    }
+    // Validate agent exists in database
+    const { data: agent, error: agentError } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('id', agentId)
+      .single()
 
-    // --- IDOR protection: caller must provide their own agent ID via header ---
-    // The authenticated agent's ID is forwarded in x-agent-id by middleware/client
-    const callerAgentId = request.headers.get('x-agent-id')
-    if (callerAgentId && callerAgentId !== agentId) {
+    if (agentError || !agent) {
       return NextResponse.json(
-        { error: 'Unauthorized: agentId does not match authenticated user', code: 'UNAUTHORIZED' },
-        { status: 403 }
-      )
-    }
-
-    // --- Stripe availability (after input validation) ---
-    if (!stripe) {
-      return NextResponse.json(
-        { error: 'Stripe not configured', code: 'STRIPE_NOT_CONFIGURED' },
-        { status: 503 }
-      )
-    }
-
-    // --- Resolve Price ID from env vars (no fallback to placeholder strings) ---
-    const envVarName = PRICE_ID_ENV_MAP[tier]
-    const priceId = process.env[envVarName]
-    if (!isValidPriceId(priceId)) {
-      console.error(
-        `Missing or invalid Stripe Price ID for tier "${tier}". ` +
-        `Set ${envVarName} in Vercel environment variables to a valid price_... ID.`
-      )
-      return NextResponse.json(
-        {
-          error: `Billing is not configured for the "${tier}" plan. Contact support.`,
-          code: 'PRICE_NOT_CONFIGURED',
-          envVar: envVarName,
-        },
-        { status: 503 }
-      )
-    }
-
-    // --- Validate agent exists in database (with 5s timeout) ---
-    let agent
-    try {
-      const result = await withTimeout(
-        supabase
-          .from('real_estate_agents')
-          .select('id, email')
-          .eq('id', agentId)
-          .single(),
-        5000
-      )
-      agent = result.data
-    } catch (err: any) {
-      console.error('Agent lookup timeout/error:', err)
-      if (err.message.includes('timed out')) {
-        return NextResponse.json(
-          { error: 'Service temporarily unavailable. Please try again.', code: 'SERVICE_UNAVAILABLE' },
-          { status: 503 }
-        )
-      }
-      return NextResponse.json(
-        { error: 'Failed to verify account', code: 'AGENT_LOOKUP_FAILED' },
-        { status: 500 }
-      )
-    }
-
-    if (!agent) {
-      return NextResponse.json(
-        { error: 'Agent not found', code: 'AGENT_NOT_FOUND' },
+        { error: 'Agent not found' },
         { status: 404 }
       )
     }
 
-    // --- Create or retrieve Stripe customer ---
+    // Create or get Stripe customer
     let customerId: string
-    const existingCustomers = await stripe.customers.list({ email, limit: 1 })
+    const existingCustomer = await stripe!.customers.list({
+      email: email,
+      limit: 1,
+    })
 
-    if (existingCustomers.data.length > 0) {
-      customerId = existingCustomers.data[0].id
+    if (existingCustomer.data.length > 0) {
+      customerId = existingCustomer.data[0].id
     } else {
-      const customer = await stripe.customers.create({
-        email,
+      const customer = await stripe!.customers.create({
+        email: email,
         metadata: { agent_id: agentId },
       })
       customerId = customer.id
     }
 
-    // --- Create checkout session ---
-    const session = await stripe.checkout.sessions.create({
+    // Create checkout session
+    const session = await stripe!.checkout.sessions.create({
       customer: customerId,
       client_reference_id: agentId,
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        {
+          price: PRICING_TIERS[tier].priceId,
+          quantity: 1,
+        },
+      ],
       mode: 'subscription',
       subscription_data: {
-        trial_period_days: 14,
+        trial_period_days: 14, // 14-day free trial
         metadata: {
           agent_id: agentId,
-          tier: tier.split('_')[0], // 'starter' | 'professional' | 'enterprise'
+          tier: tier.split('_')[0], // Extract 'starter', 'professional', 'enterprise'
           source: 'onboarding_flow',
         },
       },
@@ -226,40 +121,31 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
     })
 
-    // Log checkout session to checkout_sessions table (with 5s timeout)
-    const tierInterval = tier.endsWith('_annual') ? 'year' : 'month'
-    const tierBase = tier.split('_')[0]
-    try {
-      await withTimeout(
-        supabase.from('checkout_sessions').insert({
-          user_id: agentId,
-          tier: tierBase,
-          interval: tierInterval,
-          stripe_session_id: session.id,
-          status: 'pending',
-          url: session.url,
-          created_at: new Date().toISOString(),
-        }),
-        5000
-      )
-    } catch (err: any) {
-      console.warn('Failed to log checkout session (non-critical):', err)
-      // Don't fail the checkout if logging fails — Stripe session is already created
-    }
+    // Log subscription attempt
+    await supabase.from('subscription_attempts').insert({
+      agent_id: agentId,
+      tier: tier,
+      stripe_session_id: session.id,
+      status: 'session_created',
+      created_at: new Date().toISOString(),
+    })
 
-    return NextResponse.json({ sessionId: session.id, url: session.url })
+    return NextResponse.json({
+      sessionId: session.id,
+      url: session.url,
+    })
   } catch (error: any) {
     console.error('Checkout error:', error)
 
     if (error.type === 'StripeInvalidRequestError') {
       return NextResponse.json(
-        { error: `Stripe error: ${error.message}`, code: 'STRIPE_INVALID_REQUEST' },
+        { error: `Stripe error: ${error.message}` },
         { status: 400 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Failed to create checkout session', code: 'INTERNAL_ERROR' },
+      { error: 'Failed to create checkout session' },
       { status: 500 }
     )
   }

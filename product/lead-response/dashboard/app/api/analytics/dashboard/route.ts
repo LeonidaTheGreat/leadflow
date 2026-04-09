@@ -1,28 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSession } from '@/lib/session'
-import { supabaseAdmin } from '@/lib/supabase'
-import { AnalyticsService } from '@/lib/services/AnalyticsService'
-
-const analyticsService = new AnalyticsService(supabaseAdmin)
+import {
+  getMessagesPerDay,
+  getDeliveryStats,
+  getResponseRate,
+  getSequenceCompletion,
+  getLeadConversion,
+  getAvgResponseTime,
+} from '@/lib/analytics-queries'
 
 export async function GET(request: NextRequest) {
   try {
-    // ── Auth ─────────────────────────────────────────────────────────────
-    // API routes are excluded from the Next.js middleware matcher so we
-    // must validate the session manually here.
-    const sessionToken = request.cookies.get('leadflow_session')?.value
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const session = await validateSession(sessionToken)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // session.userId is the authenticated agent's ID — used for scoped queries
-    const agentId = session.userId
-
     const searchParams = request.nextUrl.searchParams
     const daysBack = parseInt(searchParams.get('days') || '30', 10)
 
@@ -36,12 +23,12 @@ export async function GET(request: NextRequest) {
 
     // Fetch all metrics in parallel
     const [msgPerDay, delivery, response, sequence, conversion, respTime] = await Promise.all([
-      analyticsService.getMessagesPerDay(daysBack),
-      analyticsService.getDeliveryStats(daysBack),
-      analyticsService.getResponseRate(daysBack),
-      analyticsService.getSequenceCompletion(daysBack),
-      analyticsService.getLeadConversion(daysBack),
-      analyticsService.getAvgResponseTime(daysBack),
+      getMessagesPerDay(daysBack),
+      getDeliveryStats(daysBack),
+      getResponseRate(daysBack),
+      getSequenceCompletion(daysBack),
+      getLeadConversion(daysBack),
+      getAvgResponseTime(daysBack),
     ])
 
     // Check for any errors
@@ -93,7 +80,7 @@ export async function GET(request: NextRequest) {
       },
       {
         headers: {
-          'Cache-Control': 'private, no-store',
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
         },
       }
     )

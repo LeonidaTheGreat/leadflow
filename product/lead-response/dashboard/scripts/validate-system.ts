@@ -9,7 +9,7 @@
  */
 
 import { config } from 'dotenv'
-import { createClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 import axios from 'axios'
 
 config()
@@ -113,27 +113,27 @@ async function validateSystem(): Promise<SystemState> {
     })
   }
 
-  // 3. Validate local API (PostgREST)
+  // 3. Validate Supabase
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    const apiKey = process.env.API_SECRET_KEY
-
-    if (!apiUrl || !apiKey) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    
+    if (!supabaseUrl || !supabaseKey) {
       results.push({
-        component: 'Database',
+        component: 'Supabase',
         expected: 'Configured',
         actual: 'Missing',
         status: 'error',
-        message: 'NEXT_PUBLIC_API_URL or API_SECRET_KEY not found'
+        message: 'Supabase credentials not found'
       })
     } else {
-      const db = createClient(apiUrl, apiKey)
-      const { data, error } = await db.from('real_estate_agents').select('count')
-
+      const supabase = createClient(supabaseUrl, supabaseKey)
+      const { data, error } = await supabase.from('agents').select('count')
+      
       if (error) throw error
-
+      
       results.push({
-        component: 'Database',
+        component: 'Supabase',
         expected: 'Connected',
         actual: `Connected (${data?.length || 0} agents)`,
         status: 'ok',
@@ -142,11 +142,11 @@ async function validateSystem(): Promise<SystemState> {
     }
   } catch (error: any) {
     results.push({
-      component: 'Database',
+      component: 'Supabase',
       expected: 'Connected',
       actual: 'Error',
       status: 'error',
-      message: error.message || 'Failed to connect to database'
+      message: error.message || 'Failed to connect to Supabase'
     })
   }
 
@@ -178,7 +178,7 @@ async function validateSystem(): Promise<SystemState> {
     'app/api/webhook/twilio/route.ts',
     'lib/ai.ts',
     'lib/twilio.ts',
-    'lib/db.ts'
+    'lib/supabase.ts'
   ]
   
   const fs = await import('fs')

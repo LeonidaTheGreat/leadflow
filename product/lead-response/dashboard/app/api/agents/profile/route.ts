@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/auth'
 
 // GET /api/agents/profile - Get current agent profile
 export async function GET(request: NextRequest) {
-  // Unified auth: checks auth-token (JWT from signup) and leadflow_session (from login)
-  const agentId = await getAuthUserId(request)
-  if (!agentId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
   try {
+    // In a real implementation, get agent ID from session/JWT
+    // For now, we'll use a query parameter or header
+    const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
+
     const { data: agent, error } = await supabase
-      .from('real_estate_agents')
-      .select('id, email, first_name, last_name, phone_number, state, timezone, plan_tier, trial_ends_at, pilot_expires_at, created_at, onboarding_completed')
+      .from('agents')
+      .select('id, email, first_name, last_name, phone_number, state, timezone, created_at')
       .eq('id', agentId)
       .single()
 
@@ -33,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Get additional profile data if available
     const { data: profile } = await supabase
       .from('agent_profiles')
-      .select('bio, photo_url')
+      .select('bio, company_name, website, profile_image')
       .eq('agent_id', agentId)
       .single()
 
@@ -46,15 +45,11 @@ export async function GET(request: NextRequest) {
         phoneNumber: agent.phone_number,
         state: agent.state,
         timezone: agent.timezone,
-        plan_tier: agent.plan_tier,
-        trial_ends_at: agent.trial_ends_at,
-        pilot_expires_at: agent.pilot_expires_at,
         bio: profile?.bio || '',
-        companyName: '',
-        website: '',
-        profileImage: profile?.photo_url || '',
+        companyName: profile?.company_name || '',
+        website: profile?.website || '',
+        profileImage: profile?.profile_image || '',
         createdAt: agent.created_at,
-        onboardingCompleted: agent.onboarding_completed ?? false,
       },
     })
   } catch (error) {
@@ -68,10 +63,6 @@ export async function GET(request: NextRequest) {
 
 // PUT /api/agents/profile - Update agent profile
 export async function PUT(request: NextRequest) {
-  // Unified auth: checks auth-token (JWT from signup) and leadflow_session (from login)
-  const agentId = await getAuthUserId(request)
-  if (!agentId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
   try {
     const body = await request.json()
     const {
@@ -86,6 +77,9 @@ export async function PUT(request: NextRequest) {
       website,
       profileImage,
     } = body
+
+    // In a real implementation, get agent ID from session/JWT
+    const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
 
     // Validate required fields
     if (!firstName || !lastName || !email || !phoneNumber || !state || !timezone) {
@@ -105,7 +99,7 @@ export async function PUT(request: NextRequest) {
 
     // Update agent record
     const { error: agentError } = await supabase
-      .from('real_estate_agents')
+      .from('agents')
       .update({
         first_name: firstName,
         last_name: lastName,
@@ -131,7 +125,9 @@ export async function PUT(request: NextRequest) {
       .upsert({
         agent_id: agentId,
         bio: bio || null,
-        photo_url: profileImage || null,
+        company_name: companyName || null,
+        website: website || null,
+        profile_image: profileImage || null,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'agent_id',

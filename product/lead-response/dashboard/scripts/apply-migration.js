@@ -1,16 +1,16 @@
-const { createClient } = require('../lib/db');
+const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-const dbUrl = process.env.NEXT_PUBLIC_API_URL;
-const dbKey = process.env.API_SECRET_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!dbUrl || !dbKey) {
-  console.error('❌ Missing API environment variables');
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('❌ Missing SUPABASE environment variables');
   process.exit(1);
 }
 
-const db = createClient(dbUrl, dbKey);
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function applyMigration() {
   try {
@@ -38,7 +38,7 @@ async function applyMigration() {
       // Execute raw SQL via RPC (postgres function)
       let result;
       try {
-        result = await db.rpc('exec_sql', { sql: stmt + ';' });
+        result = await supabase.rpc('exec_sql', { sql: stmt + ';' });
       } catch (e) {
         result = { error: null };
       }

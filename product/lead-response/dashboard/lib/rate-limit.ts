@@ -146,39 +146,6 @@ export function cleanupExpiredEntries() {
   }
 }
 
-/**
- * Check if rate limit exceeded for demo aha SMS (IP-based, 3 per day)
- */
-export function checkDemoSmsRateLimit(ipAddress: string): {
-  allowed: boolean;
-  remaining: number;
-  resetInSeconds: number;
-} {
-  const key = `demo-sms:${ipAddress}`;
-  const now = Date.now();
-  const limit = 3;
-  const windowMs = 24 * 60 * 60 * 1000; // 24 hours
-
-  let entry = rateLimitStore.get(key);
-
-  // Reset if window expired
-  if (!entry || entry.resetAt < now) {
-    entry = { count: 0, resetAt: now + windowMs };
-    rateLimitStore.set(key, entry);
-  }
-
-  const allowed = entry.count < limit;
-  const remaining = Math.max(0, limit - entry.count - (allowed ? 1 : 0));
-  const resetInSeconds = Math.ceil((entry.resetAt - now) / 1000);
-
-  if (!allowed) {
-    return { allowed: false, remaining: 0, resetInSeconds };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining, resetInSeconds };
-}
-
 // Cleanup every 5 minutes
 if (typeof setInterval !== 'undefined') {
   setInterval(cleanupExpiredEntries, 5 * 60 * 1000);

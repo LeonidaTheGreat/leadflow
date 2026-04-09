@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import twilio from 'twilio'
 
-const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_PHONE_NUMBER_US || ''
+const fromNumber = process.env.TWILIO_PHONE_NUMBER || ''
 
 // Lazy initialization of Twilio client
 function getTwilioClient() {
@@ -40,9 +40,8 @@ export async function POST(request: NextRequest) {
 
     // Send test SMS
     const twilioClient = getTwilioClient()
-    const displayName = agentName || 'there'
     const message = await twilioClient.messages.create({
-      body: `Hi ${displayName}! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI`,
+      body: `Hi! This is a test message from LeadFlow AI. Your SMS integration is working. Test sent by: ${agentName || 'Agent'}`,
       from: fromNumber,
       to: formattedPhone,
     })

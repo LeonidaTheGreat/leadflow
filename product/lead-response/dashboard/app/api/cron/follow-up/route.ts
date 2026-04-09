@@ -16,64 +16,13 @@ import { createMessage } from '@/lib/supabase'
  * - nurture: 7d general nurture sequence
  *
  * Runs every hour via Vercel Cron
- * 
- * COMPLIANCE NOTES:
- * - All SMS messages include TCPA-required opt-out footer
- * - Frequency capping: max 3 messages per lead per 24h period
- * - Message length validated to fit single SMS (160 chars) after footer
- * - Respects quiet hours: 9 PM - 9 AM (no sends outside business hours)
- * - DNC and SMS consent required before sending
- *
- * FIX (2026-03-25): Replaced nested PostgREST join with separate queries
- * to avoid FK relationship requirement that was missing in the DB schema.
  */
-
-// TCPA Compliance: Standard opt-out footer for SMS
-const SMS_COMPLIANCE_FOOTER = '\nReply STOP to opt out.'
-
-// Frequency cap: Maximum messages per lead per 24-hour period
-const MAX_MESSAGES_PER_LEAD_PER_DAY = 3
-
-// SMS single message character limit (MMS threshold is 160 for single SMS, 306+ for MMS)
-const SMS_CHAR_LIMIT = 160
 
 // Quiet hours: 9 PM - 9 AM local time (Toronto timezone)
 function isQuietHours(): boolean {
   const now = new Date()
   const hour = now.getHours()
   return hour >= 21 || hour < 9
-}
-
-// Check if lead has reached frequency cap (max messages per 24h)
-async function hasReachedFrequencyCap(leadId: string): Promise<boolean> {
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-  
-  const { data: recentMessages, error } = await supabase
-    .from('messages')
-    .select('id')
-    .eq('lead_id', leadId)
-    .eq('direction', 'outbound')
-    .gte('created_at', oneDayAgo)
-  
-  if (error) {
-    console.error('Error checking frequency cap:', error)
-    return false // Don't block send on error
-  }
-  
-  return (recentMessages?.length || 0) >= MAX_MESSAGES_PER_LEAD_PER_DAY
-}
-
-// Ensure message fits in single SMS after compliance footer is added
-function ensureSmsFitWithFooter(message: string): string {
-  const totalLength = message.length + SMS_COMPLIANCE_FOOTER.length
-  
-  if (totalLength > SMS_CHAR_LIMIT) {
-    // Trim message to fit footer (accounting for ellipsis)
-    const availableChars = SMS_CHAR_LIMIT - SMS_COMPLIANCE_FOOTER.length - 3 // 3 for "..."
-    return message.substring(0, availableChars) + '...' + SMS_COMPLIANCE_FOOTER
-  }
-  
-  return message + SMS_COMPLIANCE_FOOTER
 }
 
 // Calculate next send time based on sequence type
@@ -134,10 +83,31 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Step 1: Query active sequences due for sending (no nested joins to avoid FK requirement)
-    const { data: rawSequences, error: sequencesError } = await supabase
+    // Query active sequences due for sending
+    const { data: sequences, error: sequencesError } = await supabase
       .from('lead_sequences')
-      .select('*')
+      .select(`
+        *,
+        leads:lead_id (
+          id,
+          name,
+          phone,
+          email,
+          status,
+          dnc,
+          consent_sms,
+          agent_id,
+          agents:agent_id (
+            id,
+            name,
+            email,
+            phone,
+            calcom_username,
+            market,
+            settings
+          )
+        )
+      `)
       .eq('status', 'active')
       .lte('next_send_at', new Date().toISOString())
       .lt('total_messages_sent', 3) // Max 3 messages per sequence
@@ -145,101 +115,29 @@ export async function GET(request: NextRequest) {
     if (sequencesError) {
       console.error('❌ Error fetching sequences:', sequencesError)
       return NextResponse.json(
-        {
-          success: false,
-          error: 'Failed to fetch sequences',
-          details: sequencesError.message,
-          processed: 0,
-          sent: 0,
-          skipped: 0,
-          failed: 0,
-          dry_run: isDryRun,
-        },
+        { error: 'Failed to fetch sequences' },
         { status: 500 }
       )
     }
 
-    if (!rawSequences || rawSequences.length === 0) {
+    if (!sequences || sequences.length === 0) {
       return NextResponse.json({
         success: true,
         message: 'No sequences due',
         processed: 0,
-        sent: 0,
-        skipped: 0,
-        failed: 0,
-        dry_run: isDryRun,
       })
     }
 
-    // Step 2: Collect unique lead IDs and fetch leads separately
-    const leadIds = [...new Set(rawSequences.map((s: any) => s.lead_id).filter(Boolean))]
-    
-    const { data: leadsData, error: leadsError } = await supabase
-      .from('leads')
-      .select('id, name, phone, email, status, dnc, consent_sms, agent_id')
-      .in('id', leadIds)
-
-    if (leadsError) {
-      console.error('❌ Error fetching leads:', leadsError)
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Failed to fetch leads',
-          details: leadsError.message,
-          processed: rawSequences.length,
-          sent: 0,
-          skipped: 0,
-          failed: 0,
-          dry_run: isDryRun,
-        },
-        { status: 500 }
-      )
-    }
-
-    // Step 3: Collect unique agent IDs and fetch agents separately
-    const agentIds = [...new Set((leadsData || []).map((l: any) => l.agent_id).filter(Boolean))]
-
-    let agentsMap: Record<string, any> = {}
-    if (agentIds.length > 0) {
-      const { data: agentsData, error: agentsError } = await supabase
-        .from('real_estate_agents')
-        .select('id, name, email, phone, calcom_username, market, settings')
-        .in('id', agentIds)
-
-      if (agentsError) {
-        console.warn('⚠️ Error fetching agents (continuing without agent data):', agentsError)
-      } else {
-        for (const agent of agentsData || []) {
-          agentsMap[agent.id] = agent
-        }
-      }
-    }
-
-    // Build lookup maps
-    const leadsMap: Record<string, any> = {}
-    for (const lead of leadsData || []) {
-      leadsMap[lead.id] = {
-        ...lead,
-        agents: agentsMap[lead.agent_id] || null,
-      }
-    }
-
-    // Assemble sequences with enriched lead/agent data
-    const sequences = rawSequences.map((s: any) => ({
-      ...s,
-      leads: leadsMap[s.lead_id] || null,
-    }))
-
     console.log(`📋 Found ${sequences.length} sequences to process`)
 
-    const results: any[] = []
+    const results = []
     let sent = 0
     let skipped = 0
     let failed = 0
 
     for (const sequence of sequences) {
       const lead = sequence.leads
-      const agent = lead?.agents
+      const agent = lead.agents
 
       // Safety checks
       if (!lead || !agent) {
@@ -262,40 +160,26 @@ export async function GET(request: NextRequest) {
       }
 
       try {
-        // Check frequency cap: max 3 messages per lead per 24h
-        const atFrequencyCap = await hasReachedFrequencyCap(lead.id)
-        if (atFrequencyCap) {
-          console.warn(`⚠️ Lead ${lead.id} at frequency cap (3 messages in 24h) - skipping`)
-          skipped++
-          continue
-        }
-
         // Generate contextual AI message
         const aiResponse = await generateAiSmsResponse(lead, agent, {
           trigger: 'followup',
         })
 
-        // Add TCPA-compliant footer and validate message length
-        const complianceMessage = ensureSmsFitWithFooter(aiResponse.message)
-        
-        console.log(`📝 Message length: ${aiResponse.message.length} → ${complianceMessage.length} (with footer)`)
-
         if (isDryRun) {
-          console.log(`🧪 [DRY-RUN] Would send to ${lead.name}: "${complianceMessage}"`)
+          console.log(`🧪 [DRY-RUN] Would send to ${lead.name}: "${aiResponse.message}"`)
           results.push({
             sequence_id: sequence.id,
             lead_name: lead.name,
-            message: complianceMessage,
-            message_length: complianceMessage.length,
+            message: aiResponse.message,
             dry_run: true,
           })
           continue
         }
 
-        // Send SMS with compliance footer
+        // Send SMS
         const smsResult = await sendSms({
           to: lead.phone,
-          body: complianceMessage,
+          body: aiResponse.message,
           statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status`,
         })
 
@@ -305,24 +189,19 @@ export async function GET(request: NextRequest) {
           continue
         }
 
-        // Save message to database (store original message for context, note compliance footer was added)
-        try {
-          await createMessage({
-            lead_id: lead.id,
-            direction: 'outbound',
-            channel: 'sms',
-            message_body: complianceMessage,
-            ai_generated: true,
-            ai_confidence: aiResponse.confidence,
-            twilio_sid: smsResult.messageSid,
-            twilio_status: smsResult.status,
-            status: 'sent',
-            sent_at: new Date().toISOString(),
-          })
-        } catch (msgErr: any) {
-          console.error(`❌ Failed to save message record for ${lead.name}:`, msgErr.message)
-          // Continue anyway - SMS was sent, just not logged. Log to error tracking.
-        }
+        // Save message to database
+        await createMessage({
+          lead_id: lead.id,
+          direction: 'outbound',
+          channel: 'sms',
+          message_body: aiResponse.message,
+          ai_generated: true,
+          ai_confidence: aiResponse.confidence,
+          twilio_sid: smsResult.messageSid,
+          twilio_status: smsResult.status,
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+        })
 
         // Update sequence
         const nextStep = sequence.step + 1
@@ -332,29 +211,17 @@ export async function GET(request: NextRequest) {
           ? getNextSendTime(sequence.sequence_type, nextStep)
           : null
 
-        try {
-          const { error: updateErr } = await supabase
-            .from('lead_sequences')
-            .update({
-              step: nextStep,
-              total_messages_sent: totalSent,
-              last_sent_at: new Date().toISOString(),
-              next_send_at: nextSendAt,
-              status: newStatus,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', sequence.id)
-          
-          if (updateErr) {
-            console.error(`❌ Failed to update sequence ${sequence.id}:`, updateErr)
-            failed++
-            continue
-          }
-        } catch (updateErr: any) {
-          console.error(`❌ Exception updating sequence ${sequence.id}:`, updateErr.message)
-          failed++
-          continue
-        }
+        await supabase
+          .from('lead_sequences')
+          .update({
+            step: nextStep,
+            total_messages_sent: totalSent,
+            last_sent_at: new Date().toISOString(),
+            next_send_at: nextSendAt,
+            status: newStatus,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', sequence.id)
 
         console.log(`✅ Sent follow-up to ${lead.name} (sequence ${sequence.sequence_type}, step ${nextStep})`)
         
@@ -387,16 +254,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('❌ Cron follow-up error:', error)
     return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error',
-        details: error.message,
-        processed: 0,
-        sent: 0,
-        skipped: 0,
-        failed: 0,
-        dry_run: false,
-      },
+      { error: 'Internal server error', details: error.message },
       { status: 500 }
     )
   }

@@ -1,94 +1,69 @@
 import { NextResponse } from 'next/server'
-import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 
 /**
  * GET /api/health — Server-side health check for smoke tests
  *
- * Checks that all required env vars are set and the database is reachable.
+ * Checks that all required env vars are set and critical services are reachable.
  * Returns structured JSON so the orchestrator's smoke test can parse it.
+ *
+ * This runs server-side, catching config issues that only manifest as
+ * client-side JS crashes (e.g. missing NEXT_PUBLIC_SUPABASE_URL).
  */
 export async function GET() {
   const checks: Record<string, { ok: boolean; detail: string }> = {}
 
   // 1. Required env vars (existence only, never expose values)
   const requiredEnvVars = [
-    'NEXT_PUBLIC_API_URL',
-    'NEXT_PUBLIC_API_KEY',
-    'API_SECRET_KEY',
-    'RESEND_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY',
   ]
 
   for (const key of requiredEnvVars) {
     const value = process.env[key]
-    const isPlaceholder = !value || value === 'placeholder'
+    const isPlaceholder = !value || value === 'placeholder' || value === 'https://placeholder.supabase.co'
     checks[key] = {
       ok: !!value && !isPlaceholder,
       detail: !value ? 'missing' : isPlaceholder ? 'placeholder' : 'set',
     }
   }
 
-  // 2. Database connectivity via PostgREST
-  if (isPostgrestConfigured()) {
+  // 2. Supabase connectivity (only if env vars are present)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (supabaseUrl && supabaseKey && supabaseUrl !== 'https://placeholder.supabase.co' && supabaseKey !== 'placeholder') {
     try {
-      const { error } = await postgrestAdmin
-        .from('real_estate_agents')
-        .select('id')
-        .limit(1)
-      checks['database'] = {
+      const client = createClient(supabaseUrl, supabaseKey)
+      const { error } = await client.from('agents').select('id').limit(1)
+      checks['supabase_connectivity'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected',
       }
     } catch (err: any) {
-      checks['database'] = {
+      checks['supabase_connectivity'] = {
         ok: false,
         detail: `exception: ${err.message}`,
       }
     }
   } else {
-    checks['database'] = {
+    checks['supabase_connectivity'] = {
       ok: false,
-      detail: 'skipped — PostgREST not configured',
+      detail: 'skipped — missing credentials',
     }
   }
 
-  // 3. API connectivity — derives from database connectivity check above
-  // If the database is reachable, the PostgREST API is reachable (they are the same endpoint).
-  if (checks['database']) {
-    checks['api_connectivity'] = {
-      ok: checks['database'].ok,
-      detail: checks['database'].ok ? 'ok' : checks['database'].detail,
-    }
-  } else {
-    checks['api_connectivity'] = {
-      ok: false,
-      detail: 'skipped — database check not run',
-    }
-  }
-
-  // Critical checks determine overall status (env vars + database connectivity).
-  // api_connectivity is informational — external API issues don't make the app unhealthy.
-  const criticalKeys = [
-    'NEXT_PUBLIC_API_URL',
-    'NEXT_PUBLIC_API_KEY',
-    'API_SECRET_KEY',
-    'RESEND_API_KEY',
-    'database',
-  ]
-  const criticalFailed = Object.entries(checks)
-    .filter(([name, c]) => criticalKeys.includes(name) && !c.ok)
+  // Overall status
+  const allOk = Object.values(checks).every((c) => c.ok)
+  const failedChecks = Object.entries(checks)
+    .filter(([, c]) => !c.ok)
     .map(([name, c]) => `${name}: ${c.detail}`)
-  const warningFailed = Object.entries(checks)
-    .filter(([name, c]) => !criticalKeys.includes(name) && !c.ok)
-    .map(([name, c]) => `${name}: ${c.detail}`)
-
-  const allOk = criticalFailed.length === 0
 
   return NextResponse.json(
     {
       status: allOk ? 'ok' : 'degraded',
       checks,
-      ...(criticalFailed.length > 0 && { errors: criticalFailed }),
-      ...(warningFailed.length > 0 && { warnings: warningFailed }),
+      ...(failedChecks.length > 0 && { errors: failedChecks }),
     },
     { status: allOk ? 200 : 503 }
   )

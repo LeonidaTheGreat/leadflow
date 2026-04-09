@@ -1,16 +1,6 @@
 import { Suspense } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
-import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
-import { LeadSatisfactionCardWrapper } from '@/components/dashboard/LeadSatisfactionCardWrapper'
-import { PilotStatusBanner } from '@/components/dashboard/PilotStatusBanner'
-import { UpgradeBanner } from '@/components/dashboard/UpgradeBanner'
-import { TrialCountdownWidget } from '@/components/dashboard/TrialCountdownWidget'
-import { SampleDataBanner } from '@/components/dashboard/SampleDataBanner'
-import { OnboardingWizardLauncher } from '@/components/dashboard/OnboardingWizardLauncher'
-import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
-import { AhaMomentBanner } from '@/components/dashboard/AhaMomentBanner'
-import { RoiMetricsWidget } from '@/components/dashboard/RoiMetricsWidget'
 
 export const metadata = {
   title: 'Lead Feed - AI Lead Response',
@@ -19,34 +9,6 @@ export const metadata = {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      {/* Success toast — shown after returning from Stripe checkout (?upgrade=success) */}
-      <Suspense fallback={null}>
-        <UpgradeSuccessToast />
-      </Suspense>
-
-      {/* Upgrade Banner — shows for paid tier agents */}
-      <UpgradeBanner />
-
-      {/* Trial Countdown Widget — shows for trial agents with countdown and 3-tier urgency */}
-      <TrialCountdownWidget />
-
-      {/* Pilot Status Banner — shows for pilot agents */}
-      <PilotStatusBanner />
-
-      {/* Sample Data Banner — shows for first-time users with sample leads */}
-      <SampleDataBanner />
-
-      {/* Onboarding Wizard Launcher — shows if onboarding not completed */}
-      <OnboardingWizardLauncher />
-
-      {/* Aha Moment Banner — shows for trial users who haven't completed simulator */}
-      <AhaMomentBanner />
-
-      {/* ROI Metrics Widget — shows value LeadFlow delivers */}
-      <Suspense fallback={<RoiMetricsWidgetSkeleton />}>
-        <RoiMetricsWidget />
-      </Suspense>
-
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Lead Feed</h1>
         <div className="flex gap-2">
@@ -68,16 +30,6 @@ export default function DashboardPage() {
         <StatsCards />
       </Suspense>
 
-      {/* SMS Analytics Cards — displays SMS delivery, reply, and booking conversion rates */}
-      <Suspense fallback={<SmsAnalyticsCardsSkeleton />}>
-        <SmsAnalyticsCards />
-      </Suspense>
-
-      {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
-      <Suspense fallback={null}>
-        <LeadSatisfactionCardWrapper />
-      </Suspense>
-
       <Suspense fallback={<LeadFeedSkeleton />}>
         <LeadFeed />
       </Suspense>
@@ -89,7 +41,7 @@ export default function DashboardPage() {
           <li>Connect FUB webhook to auto-import leads (URL in Settings)</li>
           <li>Add real Anthropic API key for AI qualification</li>
           <li>Configure Twilio for live SMS sending</li>
-          <li>Complete the onboarding wizard to activate all features</li>
+          <li>Recruit 3-5 pilot agents for Week 2 testing</li>
         </ul>
       </div>
     </div>
@@ -105,39 +57,6 @@ function StatsCardsSkeleton() {
           <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
         </div>
       ))}
-    </div>
-  )
-}
-
-function SmsAnalyticsCardsSkeleton() {
-  return (
-    <div className="space-y-3">
-      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-32 animate-pulse"></div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-800 animate-pulse">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24 mb-2"></div>
-            <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16 mb-2"></div>
-            <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-28"></div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function RoiMetricsWidgetSkeleton() {
-  return (
-    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-lg p-6 border border-emerald-200 dark:border-emerald-800 animate-pulse">
-      <div className="h-6 bg-emerald-200 dark:bg-emerald-800 rounded w-48 mb-4"></div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white dark:bg-slate-900 rounded p-4">
-            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24 mb-2"></div>
-            <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }

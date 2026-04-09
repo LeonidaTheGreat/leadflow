@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { data } = await supabase
-      .from('real_estate_agents')
+      .from('agents')
       .select('id')
       .eq('email', email.toLowerCase())
       .single()

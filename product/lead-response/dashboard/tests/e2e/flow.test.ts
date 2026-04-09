@@ -1,6 +1,4 @@
 /**
- * @jest-environment node
- * 
  * End-to-End Test Suite
  * Tests complete flow: Lead Created → AI Qualification → SMS Response
  * Run with: npm test
@@ -9,7 +7,7 @@
 import { describe, it, expect, beforeAll } from '@jest/globals'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendSms, normalizePhone, isValidPhoneNumber } from '@/lib/twilio'
-import { createClient } from '@/lib/db'
+import { createClient } from '@supabase/supabase-js'
 
 // Test configuration
 const TEST_PHONE = '+14165551234'
@@ -17,17 +15,11 @@ const TEST_AGENT_ID = 'test-agent-id'
 
 // Initialize test Supabase client
 const supabaseTest = createClient(
-  process.env.NEXT_PUBLIC_API_URL!,
-  process.env.API_SECRET_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-describe.skip('AI Lead Response System - E2E Tests', () => {
-  // NOTE: Skipped - These tests require:
-  // 1. Valid AI API credentials (QWEN/OpenAI)
-  // 2. Network access to AI services
-  // 3. AI SDK v5 compatible model versions (current Qwen setup uses v1)
-  // 4. Database access to Supabase
-  // Run these tests manually against staging/prod with: npm test -- --testNamePattern="E2E"
+describe('AI Lead Response System - E2E Tests', () => {
   
   // ============================================
   // TEST 1: Lead Qualification

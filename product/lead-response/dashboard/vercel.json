@@ -1,42 +1,8 @@
 {
-  "git": {
-    "deploymentEnabled": {
-      "main": true,
-      "preview": false
-    }
-  },
   "crons": [
     {
       "path": "/api/cron/follow-up",
       "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/cron/inactivity-alerts",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/inactivity-check",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/check-stuck-agents",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/nps-surveys",
-      "schedule": "0 11 * * *"
-    },
-    {
-      "path": "/api/cron/send-trial-emails",
-      "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/cron/pilot-trial-cta",
-      "schedule": "0 11 * * *"
-    },
-    {
-      "path": "/api/cron/pilot-stuck-check",
-      "schedule": "0 8 * * *"
     }
   ]
 }

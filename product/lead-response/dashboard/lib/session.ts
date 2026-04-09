@@ -1,11 +1,9 @@
-import { createClient } from '@/lib/db'
-import { AuthService } from '@/lib/services/AuthService'
+import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
-  process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-const authService = new AuthService(supabase)
 
 export interface Session {
   id: string
@@ -25,75 +23,82 @@ export interface SessionCreateInput {
   rememberMe?: boolean
 }
 
-/**
- * Generate a cryptographically secure session token
- */
 export function generateSessionToken(): string {
-  return authService.generateToken()
+  // Use Web Crypto API instead of Node.js crypto for Edge Runtime compatibility
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
-export async function hashToken(token: string): Promise<string> {
-  return authService.hashToken(token)
-}
-
-/**
- * Create a new session for a user
- */
 export async function createSession(input: SessionCreateInput): Promise<Session> {
-  return authService.createSession(input)
+  const token = generateSessionToken()
+  const now = new Date()
+  const expiresAt = input.rememberMe 
+    ? new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+    : new Date(now.getTime() + 24 * 60 * 60 * 1000)
+
+  const { data, error } = await supabase
+    .from('sessions')
+    .insert({
+      user_id: input.userId,
+      token,
+      expires_at: expiresAt.toISOString(),
+      created_at: now.toISOString(),
+      last_used_at: now.toISOString(),
+      user_agent: input.userAgent,
+      ip_address: input.ipAddress,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error('Failed to create session')
+  }
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    token: data.token,
+    expiresAt: new Date(data.expires_at),
+    createdAt: new Date(data.created_at),
+    lastUsedAt: new Date(data.last_used_at),
+    userAgent: data.user_agent,
+    ipAddress: data.ip_address,
+  }
 }
 
-/**
- * Validate a session token and return the session if valid
- */
 export async function validateSession(token: string): Promise<Session | null> {
-  return authService.validateSession(token)
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('token', token)
+    .single()
+
+  if (error || !data) return null
+
+  const expiresAt = new Date(data.expires_at)
+  if (expiresAt < new Date()) {
+    await deleteSession(token)
+    return null
+  }
+
+  await supabase
+    .from('sessions')
+    .update({ last_used_at: new Date().toISOString() })
+    .eq('id', data.id)
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    token: data.token,
+    expiresAt: new Date(data.expires_at),
+    createdAt: new Date(data.created_at),
+    lastUsedAt: new Date(),
+    userAgent: data.user_agent,
+    ipAddress: data.ip_address,
+  }
 }
 
-/**
- * Get user ID from a valid session token
- */
-export async function getUserIdFromSession(token: string): Promise<string | null> {
-  return authService.getUserIdFromSession(token)
-}
-
-/**
- * Delete a session by token (logout)
- */
 export async function deleteSession(token: string): Promise<void> {
-  await authService.destroySession(token)
+  await supabase.from('sessions').delete().eq('token', token)
 }
-
-export async function destroySession(token: string): Promise<void> {
-  await authService.destroySession(token)
-}
-
-/**
- * Delete all sessions for a user (logout all devices)
- */
-export async function deleteAllUserSessions(userId: string): Promise<void> {
-  await authService.deleteAllUserSessions(userId)
-}
-
-/**
- * Get all active sessions for a user
- */
-export async function getUserSessions(userId: string): Promise<Session[]> {
-  return authService.getUserSessions(userId)
-}
-
-/**
- * Clean up expired sessions (can be run periodically)
- */
-export async function cleanupExpiredSessions(): Promise<number> {
-  return authService.cleanupExpiredSessions()
-}
-
-/**
- * Extend session expiration (for "remember me" sessions)
- */
-export async function extendSession(token: string, days: number = 30): Promise<boolean> {
-  return authService.extendSession(token, days)
-}
-
-export { authService }

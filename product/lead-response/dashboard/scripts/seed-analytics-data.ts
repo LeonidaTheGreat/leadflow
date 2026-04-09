@@ -7,7 +7,7 @@
  * Usage: npx ts-node scripts/seed-analytics-data.ts
  */
 
-import { supabaseAdmin } from '../lib/db'
+import { supabaseAdmin } from '../lib/supabase'
 
 interface SeedOptions {
   daysBack: number

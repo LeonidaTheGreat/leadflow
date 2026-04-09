@@ -1,21 +1,10 @@
 import '@testing-library/jest-dom'
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_API_URL = 'http://localhost:54321'
-process.env.NEXT_PUBLIC_API_KEY = 'test-api-key'
-process.env.API_SECRET_KEY = 'test-secret-key'
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321'
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
+process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-key'
 process.env.ANTHROPIC_API_KEY = 'test-anthropic-key'
-process.env.STRIPE_SECRET_KEY = 'sk_test_placeholder'
-process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_placeholder'
-process.env.JWT_SECRET = 'test-jwt-secret'
-process.env.RESEND_API_KEY = 'test-resend-key'
-
-// Polyfill TextEncoder/TextDecoder for Node environment (used by postal-mime in Resend)
-if (typeof global.TextEncoder === 'undefined') {
-  const { TextEncoder, TextDecoder } = require('util')
-  global.TextEncoder = TextEncoder
-  global.TextDecoder = TextDecoder
-}
 
 // Mock fetch globally
 global.fetch = jest.fn()

@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CreditCard, CheckCircle, AlertCircle, Loader2, Package, DollarSign, ArrowRight } from 'lucide-react'
+import { CreditCard, CheckCircle, AlertCircle, Loader2, Package, DollarSign } from 'lucide-react'
 import { StripePortalButton } from './StripePortalButton'
-import Link from 'next/link'
 
 interface BillingCardProps {
   agentId: string
@@ -131,9 +130,9 @@ export function BillingCard({ agentId, className = '' }: BillingCardProps) {
               </p>
               {billingInfo?.planTier && (
                 <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
-                  {billingInfo.planTier === 'starter' && '$49/month'}
-                  {billingInfo.planTier === 'professional' && '$149/month'}
-                  {billingInfo.planTier === 'enterprise' && '$399/month'}
+                  {billingInfo.planTier === 'starter' && '$497/month'}
+                  {billingInfo.planTier === 'professional' && '$997/month'}
+                  {billingInfo.planTier === 'enterprise' && '$1,997/month'}
                 </p>
               )}
             </div>
@@ -193,34 +192,17 @@ export function BillingCard({ agentId, className = '' }: BillingCardProps) {
           )}
         </div>
 
-        {/* Actions */}
+        {/* Portal Button */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
-          {hasSubscription ? (
-            <>
-              <StripePortalButton
-                agentId={agentId}
-                variant="primary"
-                size="md"
-                returnUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/settings`}
-              />
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Manage payment methods, update billing info, view invoices
-              </p>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/settings/billing"
-                data-testid="billing-card-upgrade-btn"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors text-sm"
-              >
-                Upgrade Now <ArrowRight className="w-4 h-4" />
-              </Link>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Choose a plan and check out securely via Stripe
-              </p>
-            </>
-          )}
+          <StripePortalButton
+            agentId={agentId}
+            variant="primary"
+            size="md"
+            returnUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/settings`}
+          />
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Manage payment methods, update billing info, view invoices
+          </p>
         </div>
       </div>
     </div>

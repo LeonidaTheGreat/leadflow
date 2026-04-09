@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { postgrestAdmin as db } from '@/lib/db';
+import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server';
 
 // Simple in-memory rate limiting (per-IP)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -128,39 +128,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const VALID_SOURCES = ['facebook', 'reddit', 'linkedin', 'google', 'other', 'pilot_application', 'landing_page', 'direct'];
-    const sourceValue = (body.source as string) || 'landing_page';
-    const source = VALID_SOURCES.includes(sourceValue) ? sourceValue : 'other';
+    // Check Supabase configuration
+    if (!isSupabaseConfigured()) {
+      console.error('Missing Supabase configuration');
+      return NextResponse.json(
+        { success: false, error: 'Server configuration error' },
+        { status: 500, headers: corsHeaders }
+      );
+    }
 
     // Prepare data for insertion
     const signupData: PilotSignupRequest = {
-      name: (body.name as string).trim(),
+      name: body.name as string,
       email: (body.email as string).toLowerCase().trim(),
-      phone: (body.phone as string | undefined) || undefined,
-      brokerage_name: (body.brokerage_name as string | undefined) || undefined,
-      team_name: (body.team_name as string | undefined) || undefined,
-      monthly_leads: (body.monthly_leads as string | undefined) || undefined,
-      current_crm: (body.current_crm as string | undefined) || undefined,
-      source,
-      utm_campaign: (body.utm_campaign as string | undefined) || undefined,
+      phone: body.phone as string | undefined,
+      brokerage_name: body.brokerage_name as string | undefined,
+      team_name: body.team_name as string | undefined,
+      monthly_leads: body.monthly_leads as string | undefined,
+      current_crm: body.current_crm as string | undefined,
+      source: (body.source as string) || 'landing_page',
+      utm_campaign: body.utm_campaign as string | undefined,
     };
 
     // Insert into database
-    const { data, error } = await db
+    const { data, error } = await supabase
       .from('pilot_signups')
       .insert(signupData)
       .select()
       .single();
 
     if (error) {
-      console.error('DB insert error:', error);
-
-      // Handle duplicate email (unique constraint violation)
-      if (error.code === '23505' || (typeof error.message === 'string' && error.message.includes('unique'))) {
+      console.error('Supabase insert error:', error);
+      
+      // Handle duplicate email
+      if (error.code === '23505') {
         return NextResponse.json(
-          {
-            success: false,
-            error: 'This email has already been registered for the pilot program.',
+          { 
+            success: false, 
+            error: 'This email has already been registered for the pilot program.' 
           },
           { status: 409, headers: corsHeaders }
         );
@@ -172,11 +177,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Success response
     return NextResponse.json(
-      {
-        success: true,
-        message: "Thank you for signing up! We'll be in touch within 24 hours.",
-        data: { id: data?.id },
+      { 
+        success: true, 
+        message: 'Thank you for signing up! We\'ll be in touch within 24 hours.',
+        data: { id: data.id }
       },
       { status: 201, headers: corsHeaders }
     );

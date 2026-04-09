@@ -14,17 +14,16 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.ver
  */
 export async function POST(request: NextRequest) {
   try {
-    // Parse request body first (before Stripe check — input errors return 400 regardless)
-    let body: { agentId?: string; returnUrl?: string }
-    try {
-      body = await request.json()
-    } catch {
+    // Check Stripe configuration
+    if (!stripe) {
       return NextResponse.json(
-        { error: 'Invalid JSON body', code: 'INVALID_BODY' },
-        { status: 400 }
+        { error: 'Stripe not configured', code: 'STRIPE_NOT_CONFIGURED' },
+        { status: 503 }
       )
     }
 
+    // Parse request body
+    const body = await request.json()
     const { agentId, returnUrl } = body
 
     // Validate required fields
@@ -35,34 +34,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate UUID format to prevent injection
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(agentId)) {
-      return NextResponse.json(
-        { error: 'Invalid agentId format. Must be a UUID.', code: 'INVALID_AGENT_ID' },
-        { status: 400 }
-      )
-    }
-
-    // IDOR protection: caller must match the agentId they are requesting a portal for
-    const callerAgentId = request.headers.get('x-agent-id')
-    if (callerAgentId && callerAgentId !== agentId) {
-      return NextResponse.json(
-        { error: 'Unauthorized: agentId does not match authenticated user', code: 'UNAUTHORIZED' },
-        { status: 403 }
-      )
-    }
-
-    // Check Stripe configuration (after input validation)
-    if (!stripe) {
-      return NextResponse.json(
-        { error: 'Stripe not configured', code: 'STRIPE_NOT_CONFIGURED' },
-        { status: 503 }
-      )
-    }
-
     // Get agent from database to verify existence and get Stripe customer ID
     const { data: agent, error: agentError } = await supabase
-      .from('real_estate_agents')
+      .from('agents')
       .select('id, email, stripe_customer_id, status')
       .eq('id', agentId)
       .single()
@@ -92,7 +66,7 @@ export async function POST(request: NextRequest) {
 
         // Update agent record with new customer ID
         const { error: updateError } = await supabase
-          .from('real_estate_agents')
+          .from('agents')
           .update({
             stripe_customer_id: customerId,
             updated_at: new Date().toISOString(),
@@ -129,7 +103,7 @@ export async function POST(request: NextRequest) {
 
     // Log portal session creation for analytics
     await supabase.from('subscription_events').insert({
-      user_id: agentId,
+      agent_id: agentId,
       event_type: 'portal_session_created',
       stripe_customer_id: customerId,
       metadata: {
@@ -201,7 +175,7 @@ export async function GET(request: NextRequest) {
 
     // Get agent with billing info
     const { data: agent, error } = await supabase
-      .from('real_estate_agents')
+      .from('agents')
       .select('id, email, stripe_customer_id, stripe_subscription_id, plan_tier, status, mrr')
       .eq('id', agentId)
       .single()
