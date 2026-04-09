@@ -11,6 +11,7 @@
  */
 
 import { describe, it, expect } from '@jest/globals'
+import crypto from 'crypto'
 
 // ─── simulate-lead ────────────────────────────────────────────────────────────
 
@@ -182,12 +183,20 @@ describe('POST /api/admin/demo-link', () => {
     const actualColumns = ['id', 'token', 'created_at', 'expires_at', 'used_at', 'created_by', 'label']
     expect(actualColumns).toEqual(expect.arrayContaining(expectedColumns))
   })
+
+  it('stores only hashed token values at rest', () => {
+    const rawToken = 'abc123def456abc123def456abc123def456abc123def456'
+    const storedValue = crypto.createHash('sha256').update(rawToken).digest('hex')
+
+    expect(storedValue).not.toBe(rawToken)
+    expect(storedValue).toHaveLength(64)
+  })
 })
 
 describe('GET /api/admin/demo-link (token validation)', () => {
   it('returns valid:true for an unexpired token', () => {
     const mockTokenData = {
-      token: 'validtoken',
+      token: crypto.createHash('sha256').update('validtoken').digest('hex'),
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     }
     const isExpired = new Date() > new Date(mockTokenData.expires_at)
@@ -196,7 +205,7 @@ describe('GET /api/admin/demo-link (token validation)', () => {
 
   it('returns valid:false for an expired token', () => {
     const mockTokenData = {
-      token: 'expiredtoken',
+      token: crypto.createHash('sha256').update('expiredtoken').digest('hex'),
       expires_at: new Date(Date.now() - 1000).toISOString(), // already expired
     }
     const isExpired = new Date() > new Date(mockTokenData.expires_at)
