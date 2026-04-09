@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getLeadById, getAgentById } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
+import { agentService } from '@/lib/services/AgentService'
 import { generateAiSmsResponse } from '@/lib/ai'
 import { checkAiRateLimit } from '@/lib/rate-limit'
 import { createErrorResponse, logError, classifyAiError } from '@/lib/error-handler'
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Get lead with agent
-    const { data: lead, error: leadError } = await getLeadById(lead_id)
+    const { data: lead, error: leadError } = await leadService.getLeadById(lead_id)
     
     if (leadError || !lead) {
       logError('LEAD_NOT_FOUND', { lead_id });
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(err.response, { status: err.statusCode })
     }
 
-    const { data: agent } = await getAgentById(lead.agent_id)
+    const { data: agent } = await agentService.getAgentById(lead.agent_id)
     
     if (!agent) {
       logError('AGENT_NOT_FOUND', { lead_id, agent_id: lead.agent_id });

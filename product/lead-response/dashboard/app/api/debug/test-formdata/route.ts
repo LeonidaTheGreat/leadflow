@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin, createLead } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 import { normalizePhone } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
 import type { Lead, Agent } from '@/lib/types'
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
     const agent = await getDefaultAgent()
     log(`Agent: ${agent?.id || 'none'}`)
     
-    const { data: newLead, error: createError } = await createLead({
+    const { data: newLead, error: createError } = await leadService.createLead({
       fub_id: String(newFubLead.id),
       agent_id: agent?.id || null,
       name: 'FormData Test',

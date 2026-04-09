@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { handleStatusCallback, parseInboundMessage, isOptOut, isPositiveResponse } from '@/lib/twilio'
-import { updateMessageStatus, createMessage, getLeadByPhone, updateLead, logEvent } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
+import { messageService } from '@/lib/services/MessageService'
+import { agentService } from '@/lib/services/AgentService'
+import { eventService } from '@/lib/services/EventService'
 import { classifyIntent, generateAiSmsResponse } from '@/lib/ai'
 import { sendAiSmsResponse } from '@/lib/twilio'
-import { getAgentById } from '@/lib/supabase'
 
 // ============================================
 // TWILIO STATUS CALLBACK & INBOUND WEBHOOK
@@ -51,7 +53,7 @@ async function handleStatusUpdate(body: Record<string, string>) {
   // Update message status in database
   const deliveredAt = MessageStatus === 'delivered' ? new Date().toISOString() : undefined
   
-  const { error } = await updateMessageStatus(
+  const { error } = await messageService.updateMessageStatus(
     MessageSid,
     MessageStatus,
     deliveredAt
@@ -65,7 +67,7 @@ async function handleStatusUpdate(body: Record<string, string>) {
 
   // Log delivery failures
   if (MessageStatus === 'failed' || MessageStatus === 'undelivered') {
-    await logEvent({
+    await eventService.logEvent({
       event_type: 'sms_delivery_failed',
       event_data: {
         twilio_sid: MessageSid,
@@ -90,13 +92,13 @@ async function handleInboundMessage(body: Record<string, string>) {
   console.log('📥 Inbound SMS from:', message.From)
 
   // Find lead by phone
-  const { data: lead } = await getLeadByPhone(message.From)
+  const { data: lead } = await leadService.getLeadByPhone(message.From)
 
   if (!lead) {
     console.log('⚠️  No lead found for phone:', message.From)
     
     // Log unmatched message
-    await logEvent({
+    await eventService.logEvent({
       event_type: 'inbound_sms_unmatched',
       event_data: {
         from: message.From,
@@ -110,7 +112,7 @@ async function handleInboundMessage(body: Record<string, string>) {
   }
 
   // Save inbound message
-  await createMessage({
+  await messageService.createMessage({
     lead_id: lead.id,
     direction: 'inbound',
     channel: 'sms',
@@ -126,12 +128,12 @@ async function handleInboundMessage(body: Record<string, string>) {
   })
 
   // Update lead last contact
-  await updateLead(lead.id, {
+  await leadService.updateLead(lead.id, {
     last_contact_at: new Date().toISOString(),
   })
 
   // Log event
-  await logEvent({
+  await eventService.logEvent({
     event_type: 'inbound_sms_received',
     lead_id: lead.id,
     event_data: {
@@ -152,7 +154,7 @@ async function handleInboundMessage(body: Record<string, string>) {
     return NextResponse.json({ received: true, action: 'no_agent' })
   }
 
-  const { data: agent } = await getAgentById(lead.agent_id)
+  const { data: agent } = await agentService.getAgentById(lead.agent_id)
   
   if (!agent || !agent.settings.auto_respond) {
     return NextResponse.json({ received: true, action: 'auto_respond_disabled' })
@@ -195,7 +197,7 @@ async function handleInboundMessage(body: Record<string, string>) {
   const smsResult = await sendAiSmsResponse(lead, agent, aiResponse.message)
 
   if (smsResult.success) {
-    await createMessage({
+    await messageService.createMessage({
       lead_id: lead.id,
       direction: 'outbound',
       channel: 'sms',
@@ -208,7 +210,7 @@ async function handleInboundMessage(body: Record<string, string>) {
       sent_at: new Date().toISOString(),
     })
 
-    await updateLead(lead.id, {
+    await leadService.updateLead(lead.id, {
       responded_at: new Date().toISOString(),
     })
 
@@ -231,14 +233,14 @@ async function handleOptOut(lead: any) {
   console.log('🚫 Processing opt-out for lead:', lead.id)
 
   // Update lead DNC status
-  await updateLead(lead.id, {
+  await leadService.updateLead(lead.id, {
     dnc: true,
     status: 'dnc',
     consent_sms: false,
   })
 
   // Log event
-  await logEvent({
+  await eventService.logEvent({
     event_type: 'lead_opt_out',
     lead_id: lead.id,
     event_data: { source: 'sms_reply' },

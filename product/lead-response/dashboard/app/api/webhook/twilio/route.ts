@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin, createLead, createMessage } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 import { generateAgentResponse, checkOptOut, extractInfo } from '@/agents/sms-agent/agent'
 import { sendSms, normalizePhone } from '@/lib/twilio'
 import { syncLeadToFub, searchLeadByPhone, createLeadInFub } from '@/lib/fub'
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
         console.log('✅ Found lead in FUB:', fubLead.id)
         // Sync FUB lead to local DB
         const agent = await getDefaultAgent()
-        const { data: newLead } = await createLead({
+        const { data: newLead } = await leadService.createLead({
           fub_id: String(fubLead.id),
           agent_id: agent?.id || null,
           name: `${fubLead.firstName || ''} ${fubLead.lastName || ''}`.trim() || null,
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
         }
         console.log('📝 Lead data:', JSON.stringify(leadData))
         
-        const { data: newLead, error: createError } = await createLead(leadData)
+        const { data: newLead, error: createError } = await leadService.createLead(leadData)
         
         if (createError) {
           console.error('❌ createLead error:', createError)

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createLead, getLeadByPhone, updateLead, createMessage, logEvent, getAgentById, supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
+import { messageService } from '@/lib/services/MessageService'
+import { eventService } from '@/lib/services/EventService'
+import { agentService } from '@/lib/services/AgentService'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone } from '@/lib/twilio'
 import type { Lead, Agent } from '@/lib/types'
@@ -28,7 +32,7 @@ export async function POST(request: NextRequest) {
     const normalizedPhone = normalizePhone(phone)
 
     // Check for duplicate lead
-    const { data: existingLead } = await getLeadByPhone(normalizedPhone)
+    const { data: existingLead } = await leadService.getLeadByPhone(normalizedPhone)
     if (existingLead) {
       console.log('📋 Lead already exists:', existingLead.id)
       return NextResponse.json({
@@ -42,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Get agent (specified or default)
     let agent: Agent | null = null
     if (agent_id) {
-      const { data } = await getAgentById(agent_id)
+      const { data } = await agentService.getAgentById(agent_id)
       agent = data
     }
     
@@ -63,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create lead record
-    const { data: lead, error: leadError } = await createLead({
+    const { data: lead, error: leadError } = await leadService.createLead({
       agent_id: agent.id,
       name: name || null,
       email: email || null,
@@ -112,7 +116,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Update lead with qualification data
-    await updateLead(lead.id, {
+    await leadService.updateLead(lead.id, {
       budget_min: qualification.budget_min,
       budget_max: qualification.budget_max,
       timeline: qualification.timeline,
@@ -123,7 +127,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Log event
-    await logEvent({
+    await eventService.logEvent({
       lead_id: lead.id,
       event_type: 'lead_received',
       event_data: { source, qualification },
@@ -141,7 +145,7 @@ export async function POST(request: NextRequest) {
       smsResult = await sendAiSmsResponse(enrichedLead, agent, aiResponse.message)
 
       if (smsResult.success) {
-        await createMessage({
+        await messageService.createMessage({
           lead_id: lead.id,
           direction: 'outbound',
           channel: 'sms',
@@ -154,7 +158,7 @@ export async function POST(request: NextRequest) {
           sent_at: new Date().toISOString(),
         })
 
-        await updateLead(lead.id, {
+        await leadService.updateLead(lead.id, {
           responded_at: new Date().toISOString(),
         })
 

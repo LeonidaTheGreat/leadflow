@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { generateAiSmsResponse } from '@/lib/ai'
 import { sendSms } from '@/lib/twilio'
-import { createMessage } from '@/lib/supabase'
+import { messageService } from '@/lib/services/MessageService'
 
 /**
  * GET /api/cron/follow-up
@@ -307,7 +307,7 @@ export async function GET(request: NextRequest) {
 
         // Save message to database (store original message for context, note compliance footer was added)
         try {
-          await createMessage({
+          await messageService.createMessage({
             lead_id: lead.id,
             direction: 'outbound',
             channel: 'sms',
