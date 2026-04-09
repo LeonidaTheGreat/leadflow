@@ -4,8 +4,7 @@
  */
 
 const billingService = require('../lib/services/BillingService');
-const SubscriptionService = require('../lib/services/SubscriptionService');
-const subscriptionService = new SubscriptionService();
+const subscriptionService = require('../lib/subscription-service');
 const billingCycleManager = require('../lib/billing-cycle-manager');
 const webhookProcessor = require('../lib/webhook-processor');
 const stripePortal = require('../lib/stripe-portal');
