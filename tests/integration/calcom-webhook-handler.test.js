@@ -27,7 +27,7 @@ const {
     sleep,
     calculateBackoffDelay,
     RETRY_CONFIG
-} = require('../lib/calcom-webhook-handler');
+} = require('../../lib/calcom-webhook-handler');
 
 // Test results tracker
 const results = {
