@@ -24,7 +24,7 @@ const {
     testWebhook,
     logWebhookDelivery,
     generateWebhookSecret
-} = require('../../lib/services/CalcomService');
+} = require('../../../../lib/calcom-webhook-management');
 
 // Test results tracker
 const results = {
