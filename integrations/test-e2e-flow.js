@@ -8,6 +8,8 @@
 require('dotenv').config();
 const assert = require('assert');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 // ===== TEST CONFIGURATION =====
 const TEST_CONFIG = {
@@ -19,6 +21,7 @@ const TEST_CONFIG = {
   twilioPhoneCa: process.env.TWILIO_PHONE_NUMBER_CA,
   market: process.env.MARKET_CONFIG || 'ca-ontario',
 };
+const PROJECT_CONFIG_PATH = path.join(__dirname, '..', 'project.config.json');
 
 // ===== TEST SUITE =====
 class E2ETestSuite {
@@ -28,6 +31,30 @@ class E2ETestSuite {
       failed: 0,
       tests: [],
     };
+  }
+
+  /**
+   * Test 0: Verify smoke config does not use deprecated supabase_read check
+   */
+  async testSmokeConfigHasNoLegacySupabaseRead() {
+    console.log('\n🧪 TEST 0: Smoke config has no legacy supabase_read');
+
+    try {
+      const config = JSON.parse(fs.readFileSync(PROJECT_CONFIG_PATH, 'utf8'));
+      const smokeTests = Array.isArray(config.smoke_tests) ? config.smoke_tests : [];
+      const legacyEntry = smokeTests.find((test) => test.id === 'supabase-read' || test.check_type === 'supabase_read');
+
+      assert(
+        !legacyEntry,
+        `Deprecated supabase smoke check found (${legacyEntry?.id || legacyEntry?.check_type}). Use dashboard health checks instead.`
+      );
+
+      console.log('✅ PASS: No legacy supabase_read smoke check in project config');
+      this.recordResult('Smoke config has no legacy supabase_read', true);
+    } catch (error) {
+      console.error('❌ FAIL: Smoke config validation error:', error.message);
+      this.recordResult('Smoke config has no legacy supabase_read', false, error.message);
+    }
   }
 
   /**
@@ -433,6 +460,9 @@ async function runAllTests() {
 
   const suite = new E2ETestSuite();
 
+  // Validate smoke configuration before external API checks
+  await suite.testSmokeConfigHasNoLegacySupabaseRead();
+
   // Test connectivity first
   await suite.testFubApiConnectivity();
   await suite.testTwilioApiConnectivity();
@@ -498,5 +528,21 @@ async function runAllTests() {
 module.exports = { E2ETestSuite };
 
 if (require.main === module) {
-  runAllTests().catch(console.error);
+  runAllTests()
+    .then((results) => {
+      const nonBlockingEnvFailures = new Set([
+        'FUB API Connectivity',
+        'Twilio API Connectivity',
+      ]);
+      const blockingFailures = (results.tests || []).filter((test) => {
+        if (test.passed) return false;
+        const isEnvMissing = typeof test.details === 'string' && test.details.includes('not set in .env');
+        return !(nonBlockingEnvFailures.has(test.name) && isEnvMissing);
+      });
+      if (blockingFailures.length > 0) process.exit(1);
+    })
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
 }
