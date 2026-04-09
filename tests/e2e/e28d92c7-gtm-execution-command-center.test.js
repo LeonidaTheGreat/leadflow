@@ -11,7 +11,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const DASHBOARD_ROOT = path.resolve(__dirname, '../product/lead-response/dashboard')
+const DASHBOARD_ROOT = path.resolve(__dirname, '../../product/lead-response/dashboard')
 const API_ROUTE = path.join(DASHBOARD_ROOT, 'app/api/admin/gtm-status/route.ts')
 const ADMIN_PAGE = path.join(DASHBOARD_ROOT, 'app/admin/page.tsx')
 

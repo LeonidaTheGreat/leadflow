@@ -14,7 +14,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const DASHBOARD_TESTS = path.join(__dirname, '../product/lead-response/dashboard/__tests__')
+const DASHBOARD_TESTS = path.join(__dirname, '../../product/lead-response/dashboard/__tests__')
 const BCRYPT_TEST = path.join(DASHBOARD_TESTS, 'bcrypt-password-verify.test.ts')
 const UPGRADE_TEST = path.join(DASHBOARD_TESTS, 'upgrade-checkout.test.ts')
 
