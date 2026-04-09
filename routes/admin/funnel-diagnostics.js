@@ -17,21 +17,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { Pool } = require('pg');
-
-// Lazy-initialised pool — avoids connecting at module load time (Vercel cold start)
-let _pool = null;
-
-function getPool() {
-  if (!_pool) {
-    const connString = process.env.LOCAL_PG_URL;
-    if (!connString) {
-      throw new Error('LOCAL_PG_URL is not set');
-    }
-    _pool = new Pool({ connectionString: connString });
-  }
-  return _pool;
-}
+const { getPool } = require('../../lib/pg-pool');
 
 /**
  * Verify admin bearer token.
