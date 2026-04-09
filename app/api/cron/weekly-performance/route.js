@@ -6,10 +6,10 @@
  * 
  * Cron Schedule: 0 9 * * 1 (Mondays at 9 AM UTC)
  * 
- * @see lib/weekly-performance-service.js
+ * @see lib/services/WeeklyPerformanceService.js
  */
 
-import { runWeeklyReportSequence } from '@/lib/weekly-performance-service';
+import { createDefaultWeeklyPerformanceService } from '@/lib/services/WeeklyPerformanceService';
 
 /**
  * GET handler for Vercel Cron
@@ -20,10 +20,10 @@ export async function GET(request) {
   const authHeader = request.headers.get('authorization');
   const isCronRequest = authHeader === `Bearer ${process.env.CRON_SECRET}` ||
                        request.headers.get('x-vercel-cron') === '1';
-  
+
   // Also allow API secret key for manual triggers
   const isServiceRole = authHeader === `Bearer ${process.env.API_SECRET_KEY}`;
-  
+
   if (!isCronRequest && !isServiceRole) {
     return Response.json(
       { error: 'Unauthorized' },
@@ -34,7 +34,8 @@ export async function GET(request) {
   console.log('[Cron] Starting weekly performance email sequence...');
 
   try {
-    const results = await runWeeklyReportSequence();
+    const weeklyService = createDefaultWeeklyPerformanceService();
+    const results = await weeklyService.runWeeklyReportSequence();
 
     const summary = {
       success: true,

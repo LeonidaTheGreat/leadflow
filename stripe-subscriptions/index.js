@@ -4,7 +4,8 @@
  */
 
 const billingService = require('../lib/services/BillingService');
-const subscriptionService = require('../lib/subscription-service');
+const SubscriptionService = require('../lib/services/SubscriptionService');
+const subscriptionService = new SubscriptionService();
 const billingCycleManager = require('../lib/billing-cycle-manager');
 const webhookProcessor = require('../lib/webhook-processor');
 const stripePortal = require('../lib/stripe-portal');
@@ -13,16 +14,16 @@ const billingRoutes = require('../routes/billing');
 module.exports = {
   // Main billing service
   billing: billingService,
-  
+
   // Sub-modules for advanced use
   subscriptionService,
   billingCycleManager,
   webhookProcessor,
   stripePortal,
-  
+
   // Routes
   routes: billingRoutes,
-  
+
   // Convenience exports
   initialize: (...args) => billingService.initializeBilling(...args),
   createSubscription: (...args) => billingService.createCompleteSubscription(...args),
