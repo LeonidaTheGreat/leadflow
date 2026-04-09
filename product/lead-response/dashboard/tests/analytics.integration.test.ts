@@ -1,323 +1,250 @@
-/**
- * ANALYTICS KPI DASHBOARD - INTEGRATION TESTS
- */
+import { AnalyticsService } from '../lib/services/AnalyticsService'
 
-import {
-  getMessagesPerDay,
-  getDeliveryStats,
-  getResponseRate,
-  getSequenceCompletion,
-  getLeadConversion,
-  getAvgResponseTime,
-  getAnalyticsDashboard,
-} from '../lib/analytics-queries'
+type Row = Record<string, any>
 
-describe('Analytics KPI Dashboard - Integration Tests', () => {
-  beforeAll(() => {
-    // Setup: ensure test data exists
-    // In real tests, this would populate test database
-  })
+class MockQueryBuilder implements PromiseLike<any> {
+  private filters: Array<{ type: 'eq' | 'gte' | 'in'; key: string; value: any }> = []
+  private sort: { key: string; ascending: boolean } | null = null
 
-  describe('Message Metrics', () => {
-    test('getMessagesPerDay returns array of dates with counts', async () => {
-      const result = await getMessagesPerDay(30)
+  constructor(
+    private readonly table: string,
+    private readonly dataset: Record<string, Row[]>,
+    private readonly errors: Record<string, Error | null>
+  ) {}
 
-      expect(result.error).toBeNull()
-      expect(Array.isArray(result.data)).toBe(true)
+  select() {
+    return this
+  }
 
-      // If data exists, verify structure
-      if (result.data.length > 0) {
-        const sample = result.data[0]
-        expect(sample).toHaveProperty('date')
-        expect(sample).toHaveProperty('count')
-        expect(typeof sample.count).toBe('number')
-      }
-    })
+  eq(key: string, value: any) {
+    this.filters.push({ type: 'eq', key, value })
+    return this
+  }
 
-    test('getMessagesPerDay respects time range', async () => {
-      const result7 = await getMessagesPerDay(7)
-      const result30 = await getMessagesPerDay(30)
+  gte(key: string, value: any) {
+    this.filters.push({ type: 'gte', key, value })
+    return this
+  }
 
-      expect(result7.error).toBeNull()
-      expect(result30.error).toBeNull()
+  in(key: string, value: any[]) {
+    this.filters.push({ type: 'in', key, value })
+    return this
+  }
 
-      // 30 days should have >= 7 days data
-      expect(result30.data.length).toBeGreaterThanOrEqual(result7.data.length)
-    })
-  })
+  order(key: string, options?: { ascending?: boolean }) {
+    this.sort = { key, ascending: options?.ascending ?? true }
+    return this
+  }
 
-  describe('Delivery Stats', () => {
-    test('getDeliveryStats returns message status breakdown', async () => {
-      const result = await getDeliveryStats(30)
-
-      expect(result.error).toBeNull()
-      expect(result).toHaveProperty('sent')
-      expect(result).toHaveProperty('delivered')
-      expect(result).toHaveProperty('failed')
-      expect(result).toHaveProperty('pending')
-
-      // All values should be non-negative integers
-      expect(result.sent).toBeGreaterThanOrEqual(0)
-      expect(result.delivered).toBeGreaterThanOrEqual(0)
-      expect(result.failed).toBeGreaterThanOrEqual(0)
-      expect(result.pending).toBeGreaterThanOrEqual(0)
-    })
-
-    test('delivery count should not exceed sent', async () => {
-      const result = await getDeliveryStats(30)
-
-      expect(result.delivered + result.failed + result.pending).toBeLessThanOrEqual(result.sent)
-    })
-  })
-
-  describe('Response Rate', () => {
-    test('getResponseRate returns valid percentage', async () => {
-      const result = await getResponseRate(30)
-
-      expect(result.error).toBeNull()
-      expect(result).toHaveProperty('totalSent')
-      expect(result).toHaveProperty('totalResponded')
-      expect(result).toHaveProperty('responseRate')
-
-      expect(result.responseRate).toBeGreaterThanOrEqual(0)
-      expect(result.responseRate).toBeLessThanOrEqual(100)
-    })
-
-    test('totalResponded should not exceed totalSent', async () => {
-      const result = await getResponseRate(30)
-
-      expect(result.totalResponded).toBeLessThanOrEqual(result.totalSent)
-    })
-
-    test('responseRate calculation is correct', async () => {
-      const result = await getResponseRate(30)
-
-      if (result.totalSent > 0) {
-        const expectedRate = (result.totalResponded / result.totalSent) * 100
-        expect(Math.abs(result.responseRate - expectedRate)).toBeLessThan(0.1)
-      }
-    })
-  })
-
-  describe('Sequence Completion', () => {
-    test('getSequenceCompletion returns valid metrics', async () => {
-      const result = await getSequenceCompletion(30)
-
-      expect(result.error).toBeNull()
-      expect(result).toHaveProperty('started')
-      expect(result).toHaveProperty('completed')
-      expect(result).toHaveProperty('completionRate')
-
-      expect(result.started).toBeGreaterThanOrEqual(0)
-      expect(result.completed).toBeGreaterThanOrEqual(0)
-      expect(result.completionRate).toBeGreaterThanOrEqual(0)
-    })
-
-    test('completed should not exceed started', async () => {
-      const result = await getSequenceCompletion(30)
-
-      expect(result.completed).toBeLessThanOrEqual(result.started)
-    })
-  })
-
-  describe('Lead Conversion', () => {
-    test('getLeadConversion returns valid metrics', async () => {
-      const result = await getLeadConversion(30)
-
-      expect(result.error).toBeNull()
-      expect(result).toHaveProperty('totalLeads')
-      expect(result).toHaveProperty('convertedLeads')
-      expect(result).toHaveProperty('conversionRate')
-
-      expect(result.conversionRate).toBeGreaterThanOrEqual(0)
-      expect(result.conversionRate).toBeLessThanOrEqual(100)
-    })
-
-    test('convertedLeads should not exceed totalLeads', async () => {
-      const result = await getLeadConversion(30)
-
-      expect(result.convertedLeads).toBeLessThanOrEqual(result.totalLeads)
-    })
-  })
-
-  describe('Response Time', () => {
-    test('getAvgResponseTime returns valid metrics', async () => {
-      const result = await getAvgResponseTime(30)
-
-      expect(result.error).toBeNull()
-      expect(result).toHaveProperty('avgResponseTime')
-      expect(result).toHaveProperty('medianResponseTime')
-
-      expect(result.avgResponseTime).toBeGreaterThanOrEqual(0)
-      expect(result.medianResponseTime).toBeGreaterThanOrEqual(0)
-    })
-
-    test('response times should be in reasonable range', async () => {
-      const result = await getAvgResponseTime(30)
-
-      // Response time should be less than 24 hours (in minutes)
-      expect(result.avgResponseTime).toBeLessThan(24 * 60)
-      expect(result.medianResponseTime).toBeLessThan(24 * 60)
-    })
-  })
-
-  describe('Aggregated Dashboard Data', () => {
-    test('getAnalyticsDashboard returns all metrics', async () => {
-      const result = await getAnalyticsDashboard(30)
-
-      expect(result).toHaveProperty('messagesPerDay')
-      expect(result).toHaveProperty('deliveryStats')
-      expect(result).toHaveProperty('responseRate')
-      expect(result).toHaveProperty('sequenceCompletion')
-      expect(result).toHaveProperty('leadConversion')
-      expect(result).toHaveProperty('responseTime')
-
-      // Verify each metric set
-      expect(Array.isArray(result.messagesPerDay.data)).toBe(true)
-      expect(result.deliveryStats).toHaveProperty('sent')
-      expect(result.responseRate).toHaveProperty('responseRate')
-      expect(result.sequenceCompletion).toHaveProperty('completionRate')
-      expect(result.leadConversion).toHaveProperty('conversionRate')
-      expect(result.responseTime).toHaveProperty('avgResponseTime')
-    })
-  })
-
-  describe('Edge Cases', () => {
-    test('handles empty data gracefully', async () => {
-      // All queries should return default values if no data exists
-      const result = await getAnalyticsDashboard(30)
-
-      expect(result.messagesPerDay).toBeDefined()
-      expect(result.deliveryStats).toBeDefined()
-      expect(result.responseRate).toBeDefined()
-    })
-
-    test('validates time range parameter', async () => {
-      // These should work without errors
-      await getMessagesPerDay(7)
-      await getMessagesPerDay(30)
-      await getMessagesPerDay(365)
-    })
-
-    test('large time ranges work correctly', async () => {
-      const result = await getAnalyticsDashboard(365)
-
-      expect(result).toBeDefined()
-      expect(result.messagesPerDay).toBeDefined()
-    })
-  })
-
-  describe('Data Consistency', () => {
-    test('message counts add up correctly', async () => {
-      const delivery = await getDeliveryStats(30)
-
-      // Total sent should equal sum of all states
-      const total = delivery.sent
-      expect(total).toBeGreaterThanOrEqual(0)
-    })
-
-    test('response rate metrics align with message data', async () => {
-      const response = await getResponseRate(30)
-      const msgs = await getMessagesPerDay(30)
-
-      const totalMsgs = msgs.data.reduce((sum, d) => sum + d.count, 0)
-
-      // Response calculation should be based on message data
-      expect(response.totalSent).toBeGreaterThanOrEqual(0)
-    })
-  })
-
-  describe('Performance', () => {
-    test('queries complete within timeout', async () => {
-      const start = Date.now()
-      await getAnalyticsDashboard(30)
-      const elapsed = Date.now() - start
-
-      // Should complete within 5 seconds
-      expect(elapsed).toBeLessThan(5000)
-    })
-
-    test('handles concurrent requests', async () => {
-      const promises = Array(5)
-        .fill(null)
-        .map(() => getAnalyticsDashboard(30))
-
-      const results = await Promise.all(promises)
-
-      expect(results).toHaveLength(5)
-      results.forEach((result) => {
-        expect(result).toHaveProperty('messagesPerDay')
-      })
-    })
-  })
-})
-
-// ============================================
-// COMPONENT RENDERING TESTS
-// ============================================
-
-describe('AnalyticsKpiDashboard Component', () => {
-  test('component renders without errors', () => {
-    // Mock test - actual rendering would use React Testing Library
-    expect(true).toBe(true)
-  })
-
-  test('dashboard shows loading state initially', () => {
-    // Component should show skeleton while fetching
-    expect(true).toBe(true)
-  })
-
-  test('dashboard displays all 6 KPI cards', () => {
-    // Expected cards: Messages, Delivery, Response, Sequence, Conversion, Response Time
-    expect(true).toBe(true)
-  })
-
-  test('charts render with data', () => {
-    // LineChart, PieChart, FunnelChart should render
-    expect(true).toBe(true)
-  })
-
-  test('time range selector updates data', () => {
-    // Clicking 7d/30d/90d should refresh queries
-    expect(true).toBe(true)
-  })
-})
-
-// ============================================
-// API ROUTE TESTS
-// ============================================
-
-describe('Analytics API Route', () => {
-  test('GET /api/analytics/dashboard returns correct format', () => {
-    // Expected response structure
-    const expectedStructure = {
-      success: true,
-      data: {
-        messagesPerDay: [],
-        deliveryStats: {},
-        responseRate: {},
-        sequenceCompletion: {},
-        leadConversion: {},
-        responseTime: {},
-      },
-      timestamp: '',
+  private execute() {
+    const error = this.errors[this.table]
+    if (error) {
+      return Promise.resolve({ data: null, error })
     }
 
-    expect(expectedStructure).toBeDefined()
+    let rows = [...(this.dataset[this.table] || [])]
+
+    for (const filter of this.filters) {
+      if (filter.type === 'eq') {
+        rows = rows.filter((row) => row[filter.key] === filter.value)
+      }
+
+      if (filter.type === 'gte') {
+        rows = rows.filter((row) => row[filter.key] >= filter.value)
+      }
+
+      if (filter.type === 'in') {
+        rows = rows.filter((row) => filter.value.includes(row[filter.key]))
+      }
+    }
+
+    if (this.sort) {
+      rows.sort((left, right) => {
+        const leftValue = left[this.sort!.key]
+        const rightValue = right[this.sort!.key]
+        if (leftValue === rightValue) {
+          return 0
+        }
+
+        const result = leftValue > rightValue ? 1 : -1
+        return this.sort!.ascending ? result : result * -1
+      })
+    }
+
+    return Promise.resolve({ data: rows, error: null })
+  }
+
+  then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+  ): Promise<TResult1 | TResult2> {
+    return this.execute().then(onfulfilled, onrejected)
+  }
+}
+
+function createMockDb(dataset: Record<string, Row[]>, errors: Record<string, Error | null> = {}) {
+  return {
+    from(table: string) {
+      return new MockQueryBuilder(table, dataset, errors)
+    },
+  }
+}
+
+describe('AnalyticsService', () => {
+  const messages = [
+    { id: 'm1', lead_id: 'lead-1', direction: 'outbound', status: 'sent', created_at: '2026-04-07T10:00:00.000Z' },
+    { id: 'm2', lead_id: 'lead-1', direction: 'inbound', status: 'delivered', created_at: '2026-04-07T10:05:00.000Z' },
+    { id: 'm3', lead_id: 'lead-2', direction: 'outbound', status: 'delivered', created_at: '2026-04-08T11:00:00.000Z' },
+    { id: 'm4', lead_id: 'lead-2', direction: 'outbound', status: 'failed', created_at: '2026-04-08T12:00:00.000Z' },
+    { id: 'm5', lead_id: 'lead-2', direction: 'outbound', status: null, created_at: '2026-04-08T13:00:00.000Z' },
+    { id: 'm6', lead_id: 'lead-3', direction: 'outbound', status: 'sent', created_at: '2026-04-09T09:00:00.000Z' },
+  ]
+
+  const leads = [
+    { id: 'lead-1', created_at: '2026-04-07T09:00:00.000Z' },
+    { id: 'lead-2', created_at: '2026-04-08T09:00:00.000Z' },
+    { id: 'lead-3', created_at: '2026-04-09T09:00:00.000Z' },
+  ]
+
+  const bookings = [
+    { lead_id: 'lead-1', created_at: '2026-04-08T10:00:00.000Z' },
+    { lead_id: 'lead-1', created_at: '2026-04-08T11:00:00.000Z' },
+    { lead_id: 'lead-3', created_at: '2026-04-09T10:00:00.000Z' },
+  ]
+
+  const events = [
+    { lead_id: 'lead-1', event_type: 'sequence_started', created_at: '2026-04-07T10:00:00.000Z', event_data: {} },
+    { lead_id: 'lead-2', event_type: 'sequence_started', created_at: '2026-04-08T10:00:00.000Z', event_data: {} },
+    { lead_id: 'lead-1', event_type: 'sequence_completed', created_at: '2026-04-08T10:30:00.000Z', event_data: {} },
+  ]
+
+  const dataset = { messages, leads, bookings, events }
+
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2026-04-09T12:00:00.000Z').getTime())
   })
 
-  test('API accepts days parameter', () => {
-    // Should accept ?days=7, ?days=30, ?days=90
-    expect(true).toBe(true)
+  afterEach(() => {
+    jest.restoreAllMocks()
   })
 
-  test('API validates days parameter', () => {
-    // Should reject days < 1 or > 365
-    expect(true).toBe(true)
+  it('groups outbound messages by day', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getMessagesPerDay(30)
+
+    expect(result.error).toBeNull()
+    expect(result.data).toEqual([
+      { date: '2026-04-07', count: 1 },
+      { date: '2026-04-08', count: 3 },
+      { date: '2026-04-09', count: 1 },
+    ])
   })
 
-  test('API returns caching headers', () => {
-    // Should include Cache-Control: public, s-maxage=300
-    expect(true).toBe(true)
+  it('calculates delivery stats with pending fallback', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getDeliveryStats(30)
+
+    expect(result).toMatchObject({
+      sent: 2,
+      delivered: 1,
+      failed: 1,
+      pending: 1,
+      error: null,
+    })
+  })
+
+  it('calculates unique lead response rate', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getResponseRate(30)
+
+    expect(result).toEqual({
+      totalSent: 3,
+      totalResponded: 1,
+      responseRate: 33.3,
+      error: null,
+    })
+  })
+
+  it('uses sequence events when present', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getSequenceCompletion(30)
+
+    expect(result).toEqual({
+      started: 2,
+      completed: 1,
+      completionRate: 50,
+      error: null,
+    })
+  })
+
+  it('falls back to outbound message counts when sequence events are unavailable', async () => {
+    const service = new AnalyticsService(
+      createMockDb({ ...dataset, events: [] })
+    )
+
+    const result = await service.getSequenceCompletion(30)
+
+    expect(result).toEqual({
+      started: 3,
+      completed: 1,
+      completionRate: 33.3,
+      error: null,
+    })
+  })
+
+  it('computes lead conversion from bookings', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getLeadConversion(30)
+
+    expect(result).toEqual({
+      totalLeads: 3,
+      convertedLeads: 2,
+      conversionRate: 66.7,
+      error: null,
+    })
+  })
+
+  it('computes average and median response time in minutes', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getAvgResponseTime(30)
+
+    expect(result).toEqual({
+      avgResponseTime: 5,
+      medianResponseTime: 5,
+      error: null,
+    })
+  })
+
+  it('aggregates all dashboard metrics through the service class', async () => {
+    const service = new AnalyticsService(createMockDb(dataset))
+
+    const result = await service.getAnalyticsDashboard(30)
+
+    expect(result.messagesPerDay.data).toHaveLength(3)
+    expect(result.deliveryStats.delivered).toBe(1)
+    expect(result.responseRate.responseRate).toBe(33.3)
+    expect(result.sequenceCompletion.completionRate).toBe(50)
+    expect(result.leadConversion.conversionRate).toBe(66.7)
+    expect(result.responseTime.avgResponseTime).toBe(5)
+  })
+
+  it('returns safe defaults when bookings lookup fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
+    const service = new AnalyticsService(
+      createMockDb(dataset, { bookings: new Error('bookings unavailable') })
+    )
+
+    const result = await service.getLeadConversion(30)
+
+    expect(result.totalLeads).toBe(3)
+    expect(result.convertedLeads).toBe(0)
+    expect(result.conversionRate).toBe(0)
+    expect(result.error).toEqual(new Error('bookings unavailable'))
   })
 })
