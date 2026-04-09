@@ -9,19 +9,7 @@
  * Authentication: Requires service role key or admin token
  */
 
-const { 
-  runConversionSequence, 
-  processMilestone,
-  getEligibleAgents,
-  getAgentStats 
-} = require('../../lib/pilot-conversion-service');
-
-const { createClient } = require('../lib/postgrest-client');
-
-// Initialize PostgREST client
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
-const supabase = (apiUrl && apiKey) ? createClient(apiUrl, apiKey) : null;
+const pilotConversionService = require('../lib/pilot-conversion-service');
 
 /**
  * Verify admin/service authentication
@@ -108,7 +96,7 @@ async function handleTrigger(req, res) {
     let results;
 
     if (milestone === 'all') {
-      results = await runConversionSequence();
+      results = await pilotConversionService.runConversionSequence();
     } else {
       const validMilestones = ['day_30', 'day_45', 'day_55'];
       if (!validMilestones.includes(milestone)) {
@@ -117,7 +105,7 @@ async function handleTrigger(req, res) {
           validMilestones 
         });
       }
-      results = await processMilestone(milestone);
+      results = await pilotConversionService.processMilestone(milestone);
     }
 
     return res.status(200).json({
@@ -139,34 +127,17 @@ async function handleTrigger(req, res) {
  * GET /status - Get sequence status for all agents
  */
 async function handleGetStatus(req, res) {
-  if (!supabase) {
+  if (!pilotConversionService.isSupabaseConfigured()) {
     return res.status(503).json({ error: 'Database not configured' });
   }
 
   try {
-    // Get all pilot agents with their sequence status
-    const { data: agents, error } = await supabase
-      .from('pilot_conversion_sequence_status')
-      .select('*')
-      .order('days_since_pilot_start', { ascending: false });
-
-    if (error) {
-      throw error;
-    }
-
-    // Calculate summary stats
-    const summary = {
-      totalPilotAgents: agents?.length || 0,
-      day30Sent: agents?.filter(a => a.day_30_status === 'sent').length || 0,
-      day45Sent: agents?.filter(a => a.day_45_status === 'sent').length || 0,
-      day55Sent: agents?.filter(a => a.day_55_status === 'sent').length || 0,
-      upgraded: agents?.filter(a => a.plan_tier !== 'pilot').length || 0
-    };
+    const { summary, agents } = await pilotConversionService.getSequenceStatus();
 
     return res.status(200).json({
       success: true,
       summary,
-      agents: agents || []
+      agents
     });
 
   } catch (error) {
@@ -179,52 +150,24 @@ async function handleGetStatus(req, res) {
  * GET /status/:agentId - Get status for specific agent
  */
 async function handleGetAgentStatus(req, res, agentId) {
-  if (!supabase) {
+  if (!pilotConversionService.isSupabaseConfigured()) {
     return res.status(503).json({ error: 'Database not configured' });
   }
 
   try {
-    // Get agent info
-    const { data: agent, error: agentError } = await supabase
-      .from('agents')
-      .select('id, email, name, plan_tier, pilot_started_at')
-      .eq('id', agentId)
-      .single();
-
-    if (agentError) {
-      return res.status(404).json({ error: 'Agent not found' });
-    }
-
-    // Get email logs
-    const { data: logs, error: logsError } = await supabase
-      .from('pilot_conversion_email_logs')
-      .select('*')
-      .eq('agent_id', agentId)
-      .order('created_at', { ascending: false });
-
-    if (logsError) {
-      throw logsError;
-    }
-
-    // Get current stats
-    const stats = await getAgentStats(agentId);
-
-    // Calculate days since pilot start
-    const daysSinceStart = agent.pilot_started_at 
-      ? Math.floor((Date.now() - new Date(agent.pilot_started_at).getTime()) / (1000 * 60 * 60 * 24))
-      : null;
+    const { agent, stats, email_logs } = await pilotConversionService.getAgentStatus(agentId);
 
     return res.status(200).json({
       success: true,
-      agent: {
-        ...agent,
-        days_since_start: daysSinceStart
-      },
+      agent,
       stats,
-      email_logs: logs || []
+      email_logs
     });
 
   } catch (error) {
+    if (error.statusCode === 404) {
+      return res.status(404).json({ error: error.message });
+    }
     console.error('Error getting agent status:', error);
     return res.status(500).json({ error: error.message });
   }
@@ -244,7 +187,7 @@ async function handleGetEligible(req, res, milestone) {
   }
 
   try {
-    const agents = await getEligibleAgents(milestone);
+    const agents = await pilotConversionService.getEligibleAgents(milestone);
     
     return res.status(200).json({
       success: true,

@@ -6,10 +6,13 @@
  * 
  * Cron Schedule: 0 9 * * * (Daily at 9 AM)
  * 
- * @see lib/pilot-conversion-service.js
+ * @see lib/services/PilotConversionService.js
  */
 
-import { runConversionSequence } from '@/lib/pilot-conversion-service';
+import pilotConversionModule from '@/lib/pilot-conversion-service';
+
+const { createDefaultPilotConversionService } = pilotConversionModule;
+const pilotConversionService = createDefaultPilotConversionService();
 
 /**
  * GET handler for Vercel Cron
@@ -34,7 +37,7 @@ export async function GET(request) {
   console.log('[Cron] Starting pilot conversion email sequence...');
 
   try {
-    const results = await runConversionSequence();
+    const results = await pilotConversionService.runConversionSequence();
 
     // Calculate totals
     let totalSent = 0;

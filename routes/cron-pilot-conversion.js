@@ -26,11 +26,17 @@ async function handler(req, res) {
     console.log('[Cron] Starting pilot conversion email sequence');
     
     const results = await pilotConversionService.runDailyConversionSequence();
+    const totals = Object.values(results.milestones || {}).reduce((acc, milestone) => {
+      acc.totalEligible += milestone.processed || 0;
+      acc.totalSent += milestone.sent || 0;
+      acc.totalFailed += milestone.failed || 0;
+      return acc;
+    }, { totalEligible: 0, totalSent: 0, totalFailed: 0 });
 
     console.log('[Cron] Sequence completed:', {
-      totalEligible: results.totalEligible,
-      totalSent: results.totalSent,
-      totalFailed: results.totalFailed
+      totalEligible: totals.totalEligible,
+      totalSent: totals.totalSent,
+      totalFailed: totals.totalFailed
     });
 
     return res.status(200).json({
