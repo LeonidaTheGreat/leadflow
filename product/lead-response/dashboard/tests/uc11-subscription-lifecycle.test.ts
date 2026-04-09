@@ -18,7 +18,7 @@ import { createClient } from '@/lib/db'
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test_placeholder'
-const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
+const SUPABASE_URL = process.env.NEXT_PUBLIC_API_URL || ''
 const SUPABASE_KEY = process.env.API_SECRET_KEY || ''
 const WEBHOOK_URL = process.env.WEBHOOK_URL || 'http://localhost:3000/api/webhooks/stripe'
 

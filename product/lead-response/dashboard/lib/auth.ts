@@ -9,8 +9,10 @@
 import { NextRequest } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { supabaseAdmin } from '@/lib/db'
+import { AuthService } from '@/lib/services/AuthService'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+const authService = AuthService.createDefaultService()
 
 interface JWTPayload {
   userId: string
@@ -37,14 +39,9 @@ export async function getAuthUserId(request: NextRequest): Promise<string | null
   const sessionToken = request.cookies.get('leadflow_session')?.value
   if (sessionToken) {
     try {
-      const { data: session } = await supabaseAdmin
-        .from('sessions')
-        .select('user_id, expires_at')
-        .eq('token', sessionToken)
-        .single()
-
-      if (session && new Date(session.expires_at) > new Date()) {
-        return session.user_id
+      const session = await authService.validateSession(sessionToken)
+      if (session) {
+        return session.userId
       }
     } catch {}
   }

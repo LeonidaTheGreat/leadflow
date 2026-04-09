@@ -5,8 +5,7 @@ import { auth } from '@/lib/api-auth'
 /**
  * GET /api/admin/outreach-candidates
  *
- * Returns all email-verified agents ranked by engagement for direct outreach.
- * Includes contacted status from pilot_invites table.
+ * Returns trial/pilot agents ranked by engagement for direct outreach.
  * Scoring: onboarding_step (40%) + page views (30%) + recency (30%)
  */
 export async function GET(request: NextRequest) {
@@ -16,13 +15,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch all email-verified agents
+    // Fetch trial + pilot agents
     const { data: agents, error: agentsError } = await supabase
       .from('real_estate_agents')
       .select(
-        'id,first_name,last_name,email,phone_number,plan_tier,onboarding_step,onboarding_completed,last_login_at,created_at,source,utm_source,utm_medium,utm_campaign,email_verified'
+        'id,first_name,last_name,email,phone_number,plan_tier,onboarding_step,onboarding_completed,last_login_at,created_at,source,utm_source,utm_medium,utm_campaign'
       )
-      .eq('email_verified', true)
+      .in('plan_tier', ['trial', 'pilot'])
       .order('created_at', { ascending: false })
 
     if (agentsError) {
@@ -58,20 +57,6 @@ export async function GET(request: NextRequest) {
       sessionCounts[s.agent_id] = (sessionCounts[s.agent_id] ?? 0) + 1
     }
 
-    // Fetch pilot_invites to determine which agents have been personally contacted
-    const { data: invites } = await supabase
-      .from('pilot_invites')
-      .select('agent_id,status,invited_at')
-      .in('agent_id', agentIds)
-
-    const inviteMap: Record<string, { status: string; invited_at: string }> = {}
-    for (const inv of invites ?? []) {
-      // Keep most recent invite per agent
-      if (!inviteMap[inv.agent_id] || inv.invited_at > inviteMap[inv.agent_id].invited_at) {
-        inviteMap[inv.agent_id] = { status: inv.status, invited_at: inv.invited_at }
-      }
-    }
-
     const now = Date.now()
 
     const candidates = agentList.map((agent: any) => {
@@ -96,8 +81,6 @@ export async function GET(request: NextRequest) {
         (onboardingScore * 0.4 + pvScore * 0.3 + recencyScore * 0.3) * 100
       )
 
-      const invite = inviteMap[agent.id] ?? null
-
       return {
         id: agent.id,
         name: `${agent.first_name} ${agent.last_name}`.trim(),
@@ -113,9 +96,6 @@ export async function GET(request: NextRequest) {
         source: agent.source ?? null,
         utm_source: agent.utm_source ?? null,
         engagement_score: engagementScore,
-        contacted: invite !== null,
-        contacted_at: invite?.invited_at ?? null,
-        invite_status: invite?.status ?? null,
       }
     })
 
@@ -125,16 +105,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') ?? '50', 10)
 
-    const uncontacted = candidates.filter((c: any) => !c.contacted)
-    const contacted = candidates.filter((c: any) => c.contacted)
-
     return NextResponse.json({
       candidates: candidates.slice(0, limit),
       total: candidates.length,
       summary: {
-        total_verified: candidates.length,
-        contacted: contacted.length,
-        uncontacted: uncontacted.length,
         trial: candidates.filter((c: any) => c.plan_tier === 'trial').length,
         pilot: candidates.filter((c: any) => c.plan_tier === 'pilot').length,
         completed_onboarding: candidates.filter((c: any) => c.onboarding_completed).length,

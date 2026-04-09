@@ -94,7 +94,6 @@ export async function POST(request: NextRequest) {
         password_hash: passwordHash,
         plan_tier: 'trial',
         trial_ends_at: trialEndsAt.toISOString(),
-        trial_start_date: new Date().toISOString(),
         source: 'trial_cta',
         email_verified: true,       // No email gate per PRD
         is_active: true,

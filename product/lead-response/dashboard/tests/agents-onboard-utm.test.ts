@@ -5,7 +5,7 @@
 
 import { createClient } from '@/lib/db';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL || '';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL || '';
 const SUPABASE_KEY = process.env.API_SECRET_KEY || '';
 
 // We test the route handler directly by importing it and simulating a request

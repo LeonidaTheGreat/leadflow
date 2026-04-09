@@ -142,7 +142,7 @@ function LoginPageContent() {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-lg">
+      <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
@@ -153,7 +153,7 @@ function LoginPageContent() {
           <p className="mt-2 text-slate-400">Welcome back! Sign in to your account.</p>
         </div>
 
-        <Card className="w-full border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+        <Card className="border-slate-700 bg-slate-800/50 backdrop-blur-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-white text-center">Sign In</CardTitle>
             <CardDescription className="text-slate-400 text-center">
@@ -173,7 +173,7 @@ function LoginPageContent() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="you@example.com"
-                    className="h-12 w-full pl-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                    className="pl-10 bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                     required
                     disabled={loading}
                     autoComplete="email"
@@ -193,7 +193,7 @@ function LoginPageContent() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="h-12 w-full pl-10 pr-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                    className="pl-10 pr-10 bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                     required
                     disabled={loading}
                     autoComplete="current-password"

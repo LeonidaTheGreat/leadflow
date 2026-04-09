@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { deleteSession } from '@/lib/session'
+import { AuthService } from '@/lib/services/AuthService'
+
+const authService = AuthService.createDefaultService()
 
 export async function POST(request: NextRequest) {
   const sessionToken = request.cookies.get('leadflow_session')?.value
   
   // Delete session from database if it exists
   if (sessionToken) {
-    await deleteSession(sessionToken)
+    await authService.destroySession(sessionToken)
   }
   
   const response = NextResponse.json({ success: true })

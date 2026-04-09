@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase-server'
-import { isAdminUser } from '@/lib/auth'
 import {
   sendPilotWelcomeEmail,
   sendPilotSetupCompleteEmail,
@@ -19,10 +18,6 @@ export async function POST(
   { params }: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    if (!await isAdminUser(request)) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { agentId } = await params
     const body = await request.json()
     const { contactType, notes, stageAdvanced } = body
@@ -83,10 +78,6 @@ export async function PATCH(
   { params }: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    if (!await isAdminUser(request)) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { agentId } = await params
     const body = await request.json()
     const { newStage } = body

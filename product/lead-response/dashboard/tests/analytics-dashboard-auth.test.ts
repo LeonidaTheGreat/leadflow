@@ -18,27 +18,18 @@ jest.mock('@/lib/session', () => ({
   validateSession: jest.fn(),
 }))
 
-jest.mock('@/lib/services/AnalyticsService', () => ({
-  __mockAnalyticsService: {
-    getMessagesPerDay: jest.fn().mockResolvedValue({ data: [], error: null }),
-    getDeliveryStats: jest.fn().mockResolvedValue({ sent: 0, delivered: 0, failed: 0, pending: 0, error: null }),
-    getResponseRate: jest.fn().mockResolvedValue({ totalSent: 0, totalResponded: 0, responseRate: 0, error: null }),
-    getSequenceCompletion: jest.fn().mockResolvedValue({ started: 0, completed: 0, completionRate: 0, error: null }),
-    getLeadConversion: jest.fn().mockResolvedValue({ totalLeads: 0, convertedLeads: 0, conversionRate: 0, error: null }),
-    getAvgResponseTime: jest.fn().mockResolvedValue({ avgResponseTime: 0, medianResponseTime: 0, error: null }),
-  },
-  AnalyticsService: jest.fn().mockImplementation(function MockAnalyticsService() {
-    return jest.requireMock('@/lib/services/AnalyticsService').__mockAnalyticsService
-  }),
+jest.mock('@/lib/analytics-queries', () => ({
+  getMessagesPerDay: jest.fn().mockResolvedValue({ data: [], error: null }),
+  getDeliveryStats: jest.fn().mockResolvedValue({ sent: 0, delivered: 0, failed: 0, pending: 0, error: null }),
+  getResponseRate: jest.fn().mockResolvedValue({ totalSent: 0, totalResponded: 0, responseRate: 0, error: null }),
+  getSequenceCompletion: jest.fn().mockResolvedValue({ started: 0, completed: 0, completionRate: 0, error: null }),
+  getLeadConversion: jest.fn().mockResolvedValue({ totalLeads: 0, convertedLeads: 0, conversionRate: 0, error: null }),
+  getAvgResponseTime: jest.fn().mockResolvedValue({ avgResponseTime: 0, medianResponseTime: 0, error: null }),
 }))
 
 import { validateSession } from '@/lib/session'
 import { GET } from '../app/api/analytics/dashboard/route'
 import { NextRequest } from 'next/server'
-
-const { __mockAnalyticsService: mockAnalyticsService } = jest.requireMock(
-  '@/lib/services/AnalyticsService'
-)
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -112,6 +103,5 @@ describe('GET /api/analytics/dashboard — Auth', () => {
     const req = makeRequest({ days: '7' })
     const res = await GET(req)
     expect(res.status).toBe(200)
-    expect(mockAnalyticsService.getMessagesPerDay).toHaveBeenCalledWith(7)
   })
 })

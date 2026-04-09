@@ -53,15 +53,10 @@ export default function OnboardingSimulator({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
-  const [showSkipConfirm, setShowSkipConfirm] = useState(false)
 
-  // Generate a cryptographically secure session ID on mount
+  // Generate a session ID on mount
   useEffect(() => {
-    const randomSuffix = Array.from(crypto.getRandomValues(new Uint8Array(9)))
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('')
-
-    const newSessionId = `sim_${Date.now()}_${randomSuffix}`
+    const newSessionId = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     setSessionId(newSessionId)
   }, [])
 
@@ -358,7 +353,7 @@ export default function OnboardingSimulator({
                 )}
               </button>
               <button
-                onClick={() => setShowSkipConfirm(true)}
+                onClick={skipSimulation}
                 disabled={isLoading}
                 className="flex-1 sm:flex-initial px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -385,7 +380,7 @@ export default function OnboardingSimulator({
                 Try Again
               </button>
               <button
-                onClick={() => setShowSkipConfirm(true)}
+                onClick={skipSimulation}
                 disabled={isLoading}
                 className="flex-1 sm:flex-initial px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -403,7 +398,7 @@ export default function OnboardingSimulator({
                 Simulation in progress...
               </button>
               <button
-                onClick={() => setShowSkipConfirm(true)}
+                onClick={skipSimulation}
                 disabled={isLoading}
                 className="flex-1 sm:flex-initial px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -417,39 +412,12 @@ export default function OnboardingSimulator({
         {/* Info Box */}
         <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
           <p className="text-sm text-blue-200/80">
-            <strong className="text-blue-300">What you&apos;re seeing:</strong> This is a simulated conversation
-            between a potential home buyer and the LeadFlow AI. In a real scenario, this entire exchange
+            <strong className="text-blue-300">What you&apos;re seeing:</strong> This is a simulated conversation 
+            between a potential home buyer and the LeadFlow AI. In a real scenario, this entire exchange 
             happens automatically via SMS in under 30 seconds.
           </p>
         </div>
       </div>
-
-      {/* Skip confirmation dialog */}
-      {showSkipConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-2">Are you sure you want to skip?</h3>
-            <p className="text-slate-400 text-sm mb-6">
-              You&apos;ll miss seeing how LeadFlow AI responds to a real lead in under 30 seconds — the moment most agents realize this changes everything.
-            </p>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={skipSimulation}
-                disabled={isLoading}
-                className="w-full py-2.5 px-4 border border-slate-600/50 text-slate-300 font-medium rounded-lg hover:bg-slate-700/50 transition-all duration-200 disabled:opacity-50"
-              >
-                Skip this step
-              </button>
-              <button
-                onClick={() => setShowSkipConfirm(false)}
-                className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-all duration-200"
-              >
-                Go back
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -9,8 +9,8 @@ const assert = require('assert');
 const { createClient } = require('../lib/db');
 
 // Test configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:54321';
-const SUPABASE_SERVICE_KEY = process.env.API_SECRET_KEY || 'test-key';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'test-key';
 
 // Mock middleware logic (replicates the actual middleware behavior)
 const PROTECTED_ROUTES = [

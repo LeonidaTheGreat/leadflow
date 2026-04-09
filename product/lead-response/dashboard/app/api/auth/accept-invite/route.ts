@@ -96,18 +96,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    // 4b. Create pilot_progress record for admin tracking (upsert, non-blocking)
-    void Promise.resolve(supabaseServer.from('pilot_progress').upsert({
-      agent_id: agentId,
-      stage: 'signed_up',
-      stage_entered_at: new Date().toISOString(),
-      pilot_cohort: 'cohort-1',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'agent_id', ignoreDuplicates: true })).catch((err: unknown) => {
-      console.error('[accept-invite] Failed to create pilot_progress record:', err)
-    })
-
     // 5. Update the invite record
     const { error: updateInviteError } = await supabaseServer
       .from('pilot_invites')

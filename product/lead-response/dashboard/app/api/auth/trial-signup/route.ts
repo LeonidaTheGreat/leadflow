@@ -4,11 +4,71 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
-import { createSession } from '@/lib/session'
+import { AuthService } from '@/lib/services/AuthService'
 
 const supabase = postgrestAdmin
+const authService = AuthService.createDefaultService()
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+
+// Sample lead data for first-time users
+const SAMPLE_LEADS = [
+  {
+    name: 'Sarah Johnson',
+    phone: '+15551234567',
+    email: 'sarah.j@example.com',
+    source: 'Zillow',
+    status: 'new',
+    property_interest: '3-bedroom home in Austin',
+    budget: '$600,000 - $750,000',
+    timeline: '1-3 months',
+    is_sample: true,
+    sample_type: 'demo'
+  },
+  {
+    name: 'Michael Chen',
+    phone: '+15559876543',
+    email: 'mchen@example.com',
+    source: 'Realtor.com',
+    status: 'responded',
+    property_interest: 'Downtown condo',
+    budget: '$400,000 - $500,000',
+    timeline: '3-6 months',
+    is_sample: true,
+    sample_type: 'demo'
+  },
+  {
+    name: 'Emily Rodriguez',
+    phone: '+15555678901',
+    email: 'emily.r@example.com',
+    source: 'Facebook Ads',
+    status: 'qualified',
+    property_interest: 'Family home with pool',
+    budget: '$800,000+',
+    timeline: 'ASAP',
+    is_sample: true,
+    sample_type: 'demo'
+  }
+]
+
+// Sample AI responses for demo leads
+const SAMPLE_AI_RESPONSES = [
+  {
+    content: "Hi Sarah! 👋 I'm your AI assistant from LeadFlow. I'd love to help you find a 3-bedroom home in Austin. Are you looking in any specific neighborhoods?",
+    sender_type: 'ai',
+    is_sample: true
+  },
+  {
+    content: "Hi Michael! Thanks for reaching out about downtown condos. I can definitely help you find something in the $400-500K range. When would be a good time for a quick call to discuss your preferences?",
+    sender_type: 'ai',
+    is_sample: true
+  },
+  {
+    content: "Hi Emily! 🏊‍♀️ A family home with a pool sounds wonderful! I have several listings that might interest you. Would you like me to send you details on properties with pools in your area?",
+    sender_type: 'ai',
+    is_sample: true
+  }
+]
 
 export async function POST(request: NextRequest) {
   try {
@@ -90,8 +150,7 @@ export async function POST(request: NextRequest) {
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
-        trial_start_date: now,
-        onboarding_completed: false, // Sample data is served in-memory via /api/sample-leads
+        onboarding_completed: true, // Trial users see dashboard with sample data immediately
         onboarding_step: 0,
         created_at: now,
         updated_at: now
@@ -107,8 +166,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sample leads are served in-memory by GET /api/sample-leads (eligibility: onboarding_completed = false).
-    // No DB writes for sample data — avoids schema coupling and keeps the leads table clean.
+    // Create sample leads for the new agent (FR-4: First Session Seeded Data)
+    const sampleLeadsWithAgent = SAMPLE_LEADS.map((lead, index) => ({
+      ...lead,
+      agent_id: agent.id,
+      created_at: new Date(Date.now() - index * 3600000).toISOString(), // Stagger creation times
+      updated_at: new Date(Date.now() - index * 3600000).toISOString()
+    }))
+
+    const { data: createdLeads, error: leadsError } = await supabase
+      .from('leads')
+      .insert(sampleLeadsWithAgent)
+      .select('id')
+
+    if (leadsError) {
+      console.error('Error creating sample leads:', leadsError)
+      // Don't fail signup if sample leads fail - continue anyway
+    } else if (createdLeads) {
+      // Create sample AI responses for each lead
+      const sampleMessages = createdLeads.map((lead, index) => ({
+        lead_id: lead.id,
+        message_body: SAMPLE_AI_RESPONSES[index]?.content || SAMPLE_AI_RESPONSES[0].content,
+        direction: 'outbound',
+        channel: 'sms',
+        ai_generated: true,
+        status: 'sent',
+        is_sample: true,
+        created_at: new Date(Date.now() - index * 3600000 + 60000).toISOString() // 1 min after lead
+      }))
+
+      await supabase.from('messages').insert(sampleMessages)
+    }
 
     // Initialize NPS survey schedule for the new agent (non-blocking)
     void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
@@ -167,7 +255,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       ?? request.headers.get('x-real-ip')
       ?? undefined
-    const session = await createSession({
+    const session = await authService.createSession({
       userId: agent.id,
       userAgent: request.headers.get('user-agent') || undefined,
       ipAddress,
@@ -229,5 +317,24 @@ export async function POST(request: NextRequest) {
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     )
+  }
+}
+
+async function logAnalyticsEvent(
+  eventType: string,
+  agentId: string,
+  data: Record<string, any>
+) {
+  try {
+    await supabase.from('events').insert({
+      agent_id: agentId,
+      event_type: eventType,
+      event_data: data,
+      source: 'trial_signup',
+      created_at: new Date().toISOString()
+    })
+  } catch (err) {
+    // Non-blocking - log and continue
+    console.error('Failed to log analytics event:', err)
   }
 }

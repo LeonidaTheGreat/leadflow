@@ -400,7 +400,7 @@ function PaidSignupFlow() {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="you@example.com"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                         data-testid="signup-email-input"
@@ -417,7 +417,7 @@ function PaidSignupFlow() {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="John Smith"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                       />
@@ -433,7 +433,7 @@ function PaidSignupFlow() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+1 (555) 123-4567"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                       />
@@ -449,7 +449,7 @@ function PaidSignupFlow() {
                         value={formData.password}
                         onChange={handleInputChange}
                         placeholder="Create a strong password (min 8 characters)"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         required
                         disabled={loading}
                         minLength={8}

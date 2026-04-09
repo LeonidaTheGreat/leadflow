@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { createSession } from '@/lib/session'
+import { AuthService } from '@/lib/services/AuthService'
 import { logSessionStart } from '@/lib/session-analytics'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')
+const authService = new AuthService(supabase)
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       ?? request.headers.get('x-real-ip') 
       ?? undefined
-    const session = await createSession({
+    const session = await authService.createSession({
       userId: user.id,
       userAgent: request.headers.get('user-agent') || undefined,
       ipAddress,

@@ -16,9 +16,9 @@
 import { createClient } from '@/lib/db';
 
 // Initialize Supabase client
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org';
-const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '';
-const supabase: ReturnType<typeof createClient> | null = (apiUrl && apiKey) ? createClient(apiUrl, apiKey) : null;
+const supabaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org';
+const supabaseKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '';
+const supabase: ReturnType<typeof createClient> | null = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Resend configuration
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)

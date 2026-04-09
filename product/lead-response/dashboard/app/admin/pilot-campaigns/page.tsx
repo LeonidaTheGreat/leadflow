@@ -2,21 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import {
-  ArrowLeft,
-  Users,
-  Target,
-  Calendar,
-  TrendingUp,
+import { 
+  ArrowLeft, 
+  Users, 
+  Target, 
+  Calendar, 
+  TrendingUp, 
   MessageSquare,
   Facebook,
   Linkedin,
   Mail,
   Plus,
-  Filter,
-  Send,
-  Copy,
-  Check,
+  Filter
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -109,22 +106,6 @@ export default function PilotCampaignsPage() {
   const [error, setError] = useState<string | null>(null)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [inviteLoading, setInviteLoading] = useState<string | null>(null)
-  const [inviteResults, setInviteResults] = useState<Record<string, { url: string; copied: boolean }>>({})
-  const [adminToken, setAdminToken] = useState<string | null>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('admin_token')
-    if (stored) {
-      setAdminToken(stored)
-    } else {
-      const token = prompt('Enter admin token (ADMIN_SECRET):')
-      if (token) {
-        localStorage.setItem('admin_token', token)
-        setAdminToken(token)
-      }
-    }
-  }, [])
   const [newTarget, setNewTarget] = useState({
     name: '',
     email: '',
@@ -232,48 +213,6 @@ export default function PilotCampaignsPage() {
     } catch (err) {
       console.error('Error updating target:', err)
     }
-  }
-
-  async function handleSendInvite(targetId: string) {
-    if (!adminToken) {
-      alert('Admin token not set. Refresh the page.')
-      return
-    }
-
-    setInviteLoading(targetId)
-    try {
-      const res = await fetch(`/api/admin/pilot-targets/${targetId}/invite`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': adminToken,
-        },
-      })
-
-      const data = await res.json()
-      if (data.success) {
-        setInviteResults(prev => ({ ...prev, [targetId]: { url: data.inviteUrl, copied: false } }))
-        setTargets(targets.map(t => t.id === targetId ? { ...t, status: 'contacted' } : t))
-        fetchCampaignData()
-      } else {
-        alert(`Failed to send invite: ${data.error}`)
-      }
-    } catch (err) {
-      alert('Error sending invite — check console')
-      console.error(err)
-    } finally {
-      setInviteLoading(null)
-    }
-  }
-
-  function copyInviteUrl(targetId: string) {
-    const result = inviteResults[targetId]
-    if (!result) return
-    navigator.clipboard.writeText(result.url)
-    setInviteResults(prev => ({ ...prev, [targetId]: { ...prev[targetId], copied: true } }))
-    setTimeout(() => {
-      setInviteResults(prev => ({ ...prev, [targetId]: { ...prev[targetId], copied: false } }))
-    }, 2000)
   }
 
   if (loading) {
@@ -591,58 +530,28 @@ export default function PilotCampaignsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1 text-slate-400">
-                          {CHANNEL_ICONS[target.source_channel] || <MessageSquare className="w-4 h-4" />}
-                          <span className="text-sm capitalize">{target.source_channel}</span>
-                        </div>
-                        <Select
-                          value={target.status}
-                          onValueChange={(v) => handleUpdateStatus(target.id, v)}
-                        >
-                          <SelectTrigger className="w-32 bg-slate-800 border-slate-700 text-white text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            <SelectItem value="identified">Identified</SelectItem>
-                            <SelectItem value="contacted">Contacted</SelectItem>
-                            <SelectItem value="responded">Responded</SelectItem>
-                            <SelectItem value="scheduled">Scheduled</SelectItem>
-                            <SelectItem value="signed_up">Signed Up</SelectItem>
-                            <SelectItem value="declined">Declined</SelectItem>
-                            <SelectItem value="nurture">Nurture</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {target.email && (target.status === 'identified' || target.status === 'contacted') && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-emerald-600 text-emerald-400 hover:bg-emerald-900/30 text-xs"
-                            disabled={inviteLoading === target.id}
-                            onClick={() => handleSendInvite(target.id)}
-                          >
-                            <Send className="w-3 h-3 mr-1" />
-                            {inviteLoading === target.id ? 'Sending...' : 'Send Invite'}
-                          </Button>
-                        )}
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 text-slate-400">
+                        {CHANNEL_ICONS[target.source_channel] || <MessageSquare className="w-4 h-4" />}
+                        <span className="text-sm capitalize">{target.source_channel}</span>
                       </div>
-                      {inviteResults[target.id] && (
-                        <div className="flex items-center gap-1 bg-slate-800 rounded px-2 py-1 max-w-xs">
-                          <code className="text-xs text-emerald-400 truncate flex-1">
-                            {inviteResults[target.id].url}
-                          </code>
-                          <button
-                            onClick={() => copyInviteUrl(target.id)}
-                            className="flex-shrink-0 p-1 hover:bg-slate-700 rounded"
-                            title="Copy invite link"
-                          >
-                            {inviteResults[target.id].copied
-                              ? <Check className="w-3 h-3 text-emerald-400" />
-                              : <Copy className="w-3 h-3 text-slate-400" />}
-                          </button>
-                        </div>
-                      )}
+                      <Select 
+                        value={target.status}
+                        onValueChange={(v) => handleUpdateStatus(target.id, v)}
+                      >
+                        <SelectTrigger className="w-32 bg-slate-800 border-slate-700 text-white text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-800 border-slate-700">
+                          <SelectItem value="identified">Identified</SelectItem>
+                          <SelectItem value="contacted">Contacted</SelectItem>
+                          <SelectItem value="responded">Responded</SelectItem>
+                          <SelectItem value="scheduled">Scheduled</SelectItem>
+                          <SelectItem value="signed_up">Signed Up</SelectItem>
+                          <SelectItem value="declined">Declined</SelectItem>
+                          <SelectItem value="nurture">Nurture</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 ))

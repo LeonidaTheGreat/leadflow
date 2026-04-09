@@ -101,9 +101,9 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
 
   if (compact) {
     return (
-      <form onSubmit={handleSubmit} className={`w-full max-w-2xl mx-auto ${className}`}>
-        <div className="flex flex-col gap-3 sm:gap-4">
-          <div className="w-full">
+      <form onSubmit={handleSubmit} className={`w-full max-w-md mx-auto ${className}`}>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
             <label htmlFor="trial-email-compact" className="sr-only">Email address</label>
             <input
               id="trial-email-compact"
@@ -117,7 +117,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               aria-describedby={error ? 'trial-error-compact' : undefined}
             />
           </div>
-          <div className="w-full relative">
+          <div className="flex-1 relative">
             <label htmlFor="trial-password-compact" className="sr-only">Password</label>
             <input
               id="trial-password-compact"
@@ -143,7 +143,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center justify-center gap-2"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Start Free Trial <ArrowRight className="w-4 h-4" /></>}
           </button>
@@ -169,11 +169,11 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
 
   return (
     <form onSubmit={handleSubmit} className={`w-full max-w-[420px] mx-auto ${className}`}>
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-8 shadow-lg">
-        <h3 className="text-2xl font-bold text-white text-center mb-2">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8 shadow-lg">
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-2">
           Start Your Free Trial
         </h3>
-        <p className="text-slate-400 text-center text-sm mb-6">
+        <p className="text-slate-500 dark:text-slate-400 text-center text-sm mb-6">
           No credit card required · 14 days free
         </p>
 
@@ -190,7 +190,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               placeholder="you@example.com"
               required
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               aria-describedby={error ? 'trial-error' : undefined}
             />
           </div>
@@ -209,12 +209,12 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
                 required
                 minLength={8}
                 disabled={loading}
-                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 tabIndex={-1}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
@@ -234,18 +234,18 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>
 
         {error && (
-          <div id="trial-error" className="mt-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg" role="alert">
-            <p className="text-sm text-red-400">
+          <div id="trial-error" className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg" role="alert">
+            <p className="text-sm text-red-600 dark:text-red-400">
               {isDuplicateEmailError ? (
                 <>
                   An account with this email already exists.{" "}
-                  <Link href="/login" className="font-medium underline hover:text-red-300">
+                  <Link href="/login" className="font-medium underline hover:text-red-500 dark:hover:text-red-300">
                     Sign in
                   </Link>
                 </>
@@ -272,9 +272,9 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           Free for 14 days · No credit card · Cancel anytime
         </p>
 
-        <p className="mt-4 text-sm text-center text-slate-400">
+        <p className="mt-4 text-sm text-center text-slate-500 dark:text-slate-400">
           Already have an account?{' '}
-          <a href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">Sign in</a>
+          <a href="/login" className="text-emerald-500 hover:text-emerald-600 font-medium">Sign in</a>
         </p>
       </div>
     </form>
