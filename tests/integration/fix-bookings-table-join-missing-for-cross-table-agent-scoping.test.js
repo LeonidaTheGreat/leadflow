@@ -78,7 +78,7 @@ async function testSMSStatsRouteCodeStructure() {
 async function testBookingLinkServiceStructure() {
   console.log('\n📋 Test Suite 2: Booking link service also uses proper joins');
 
-  const servicePath = path.join(__dirname, '..', 'lib', 'booking-link-service.js');
+  const servicePath = path.join(__dirname, '..', '..', 'lib', 'services', 'BookingLinkService.js');
 
   assert(fs.existsSync(servicePath), `Booking link service exists at ${servicePath}`);
 

@@ -55,7 +55,7 @@ const CRITICAL_FILES = [
   'lib/webhook-processor.js',
   'lib/billing-cycle-manager.js',
   'lib/calcom-webhook-handler.js',
-  'lib/booking-link-service.js',
+  'lib/services/BookingLinkService.js',
 ];
 
 // Scripts that should have been updated
@@ -166,9 +166,9 @@ function runTests() {
     'lib/webhook-processor.js',
     'lib/billing-cycle-manager.js',
     'lib/calcom-webhook-handler.js',
-    'lib/booking-link-service.js',
+    'lib/services/BookingLinkService.js',
   ];
-  
+
   for (const file of prMentionedFiles) {
     const fullPath = path.join(PROJECT_ROOT, file);
     if (!fs.existsSync(fullPath)) {
