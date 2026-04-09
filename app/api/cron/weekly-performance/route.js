@@ -6,10 +6,12 @@
  * 
  * Cron Schedule: 0 9 * * 1 (Mondays at 9 AM UTC)
  * 
- * @see lib/weekly-performance-service.js
+ * @see lib/services/WeeklyPerformanceService.js
  */
 
-import { runWeeklyReportSequence } from '@/lib/weekly-performance-service';
+import { createDefaultWeeklyPerformanceService } from '@/lib/services/WeeklyPerformanceService';
+
+const weeklyService = createDefaultWeeklyPerformanceService();
 
 /**
  * GET handler for Vercel Cron
@@ -34,7 +36,7 @@ export async function GET(request) {
   console.log('[Cron] Starting weekly performance email sequence...');
 
   try {
-    const results = await runWeeklyReportSequence();
+    const results = await weeklyService.runWeeklyReportSequence();
 
     const summary = {
       success: true,

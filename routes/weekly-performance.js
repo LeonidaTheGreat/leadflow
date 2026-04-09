@@ -8,7 +8,8 @@
 
 const express = require('express');
 const router = express.Router();
-const weeklyPerformanceService = require('../lib/weekly-performance-service');
+const { createDefaultWeeklyPerformanceService } = require('../lib/services/WeeklyPerformanceService');
+const weeklyPerformanceService = createDefaultWeeklyPerformanceService();
 
 /**
  * GET /api/cron/weekly-performance
