@@ -5,7 +5,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787/rest/v1';
 const API_KEY = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY || 'test-key';

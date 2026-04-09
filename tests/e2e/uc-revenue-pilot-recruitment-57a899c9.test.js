@@ -19,7 +19,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { getPool, endPool } = require('../lib/pg-pool');
+const { getPool, endPool } = require('../lib/db');
 
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 

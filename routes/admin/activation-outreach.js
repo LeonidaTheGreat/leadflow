@@ -13,7 +13,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { getPool } = require('../../lib/pg-pool');
+const { getPool } = require('../../lib/db');
 
 /**
  * Verify admin bearer token.

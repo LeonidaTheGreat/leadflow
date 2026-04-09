@@ -10,7 +10,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 
 // ==================== CONFIGURATION ====================
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.localhost';

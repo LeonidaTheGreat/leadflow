@@ -3,7 +3,7 @@
  * Execute dashboard schema updates
  */
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 require('dotenv').config()
 
 const db = createClient(

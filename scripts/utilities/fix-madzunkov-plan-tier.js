@@ -8,7 +8,7 @@
  * This script verifies and repairs the account as needed.
  */
 
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 const dotenv = require('dotenv');
 
 dotenv.config();

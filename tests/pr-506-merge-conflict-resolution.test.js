@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 /**
  * E2E Test for PR #506 - Merge conflict resolution in trial-signup and onboarding

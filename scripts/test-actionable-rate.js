@@ -11,7 +11,7 @@
  * - Actionable rate >= 30% threshold
  */
 
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 async function testActionableRate() {
   const url = process.env.NEXT_PUBLIC_API_URL;

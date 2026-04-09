@@ -69,8 +69,8 @@ process.env.NEXT_PUBLIC_API_URL = 'http://mock';
 process.env.API_SECRET_KEY = 'mock-key';
 
 // Patch createClient
-const { createClient: origCreateClient } = require('../../lib/db-client');
-const supabaseModule = require('../../lib/db-client');
+const { createClient: origCreateClient } = require('../../lib/db');
+const supabaseModule = require('../../lib/db');
 const origCreate = supabaseModule.createClient;
 supabaseModule.createClient = () => mockSupabase;
 

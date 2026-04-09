@@ -13,7 +13,7 @@
 const assert = require('assert');
 
 // ============================================================
-// Minimal stub for lib/db-client so we can require twilio-sms
+// Minimal stub for lib/db so we can require twilio-sms
 // without a real DB connection.
 // ============================================================
 const Module = require('module');
@@ -22,7 +22,7 @@ const originalLoad = Module._load;
 let _dbQueryResult = null; // set per test
 
 Module._load = function (request, parent, isMain) {
-  if (request === '../lib/db-client' || request.endsWith('/lib/db-client')) {
+  if (request === '../lib/db' || request.endsWith('/lib/db')) {
     return {
       createClient: () => ({
         from: () => ({
@@ -37,7 +37,7 @@ Module._load = function (request, parent, isMain) {
       }),
     };
   }
-  if (request === './db-client' || request.endsWith('/db-client')) {
+  if (request === './db' || request.endsWith('/db')) {
     return {
       createClient: () => ({
         from: () => ({

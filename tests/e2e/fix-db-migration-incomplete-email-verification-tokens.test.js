@@ -13,7 +13,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_KEY = process.env.API_SECRET_KEY;

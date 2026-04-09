@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 const sb = createClient(process.env.NEXT_PUBLIC_API_URL, process.env.API_SECRET_KEY)
 async function check() {
   const { data, error } = await sb.from('real_estate_agents').select('*').limit(5)

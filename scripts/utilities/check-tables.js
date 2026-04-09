@@ -1,4 +1,4 @@
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 const path = require('path')
 require('dotenv').config({ path: path.join(__dirname, '.env') })
 

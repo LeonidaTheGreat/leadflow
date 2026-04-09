@@ -12,7 +12,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 

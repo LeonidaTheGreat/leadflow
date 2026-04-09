@@ -34,7 +34,7 @@ try {
 // Try to initialize Supabase
 try {
   if (SUPABASE_URL && SUPABASE_KEY) {
-    const { createClient } = require('../../lib/db-client');
+    const { createClient } = require('../../lib/db');
     supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     DB_AVAILABLE = true;
     console.log('✅ Supabase client initialized');

@@ -65,7 +65,7 @@ async function setup() {
     return;
   }
 
-  const { createClient } = require('../../lib/db-client');
+  const { createClient } = require('../../lib/db');
   const supabase = createClient(
     process.env.NEXT_PUBLIC_API_URL,
     process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
@@ -118,7 +118,7 @@ async function teardown() {
     return;
   }
 
-  const { createClient } = require('../../lib/db-client');
+  const { createClient } = require('../../lib/db');
   const supabase = createClient(
     process.env.NEXT_PUBLIC_API_URL,
     process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
@@ -235,7 +235,7 @@ async function testStopOnUpgrade() {
     return;
   }
 
-  const { createClient } = require('../../lib/db-client');
+  const { createClient } = require('../../lib/db');
   const supabase = createClient(
     process.env.NEXT_PUBLIC_API_URL,
     process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
@@ -271,7 +271,7 @@ async function testEmailLogging() {
     return;
   }
 
-  const { createClient } = require('../../lib/db-client');
+  const { createClient } = require('../../lib/db');
   const supabase = createClient(
     process.env.NEXT_PUBLIC_API_URL,
     process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
@@ -326,7 +326,7 @@ async function testIdempotency() {
 
   // One should succeed, one should be handled (either skipped or both succeed with same id)
   // The exact behavior depends on timing, but we shouldn't have duplicate log entries
-  const { createClient } = require('../../lib/db-client');
+  const { createClient } = require('../../lib/db');
   const supabase = createClient(
     process.env.NEXT_PUBLIC_API_URL,
     process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY
@@ -369,7 +369,7 @@ async function testSchemaExists() {
     return;
   }
 
-  const { createClient } = require('../../lib/db-client');
+  const { createClient } = require('../../lib/db');
   const supabase = createClient(
     process.env.NEXT_PUBLIC_API_URL,
     process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY

@@ -5,7 +5,7 @@
  * Returns count of email columns found
  */
 
-const { createClient } = require('../lib/postgrest-client');
+const { createClient } = require('../lib/db');
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fptrokacdwzlmflyczdz.localhost';
 const API_KEY = process.env.API_SECRET_KEY;

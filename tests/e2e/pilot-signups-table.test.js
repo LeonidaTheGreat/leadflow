@@ -5,7 +5,7 @@
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_API_URL,
@@ -94,7 +94,7 @@ run().catch(err => {
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const assert = require('assert');
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 
 const supabaseUrl = process.env.NEXT_PUBLIC_API_URL;
 const supabaseKey = process.env.API_SECRET_KEY;

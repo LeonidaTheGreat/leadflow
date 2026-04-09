@@ -57,7 +57,7 @@ try {
 
 try {
   if (API_URL && API_KEY) {
-    const { createClient } = require(path.resolve(__dirname, '../../lib/postgrest-client'));
+    const { createClient } = require(path.resolve(__dirname, '../../lib/db'));
     db = createClient(API_URL, API_KEY);
     DB_OK = true;
   }

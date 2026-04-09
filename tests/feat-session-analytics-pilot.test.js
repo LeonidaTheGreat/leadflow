@@ -14,7 +14,7 @@
  */
 
 const assert = require('assert');
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 // Load env from project root
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });

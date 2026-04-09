@@ -6,7 +6,7 @@
  */
 
 require('dotenv').config();
-const { createClient } = require('./lib/db-client');
+const { createClient } = require('./lib/db');
 
 async function testOnboardingFix() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;

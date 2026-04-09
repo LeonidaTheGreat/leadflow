@@ -6,7 +6,7 @@
  */
 
 require('dotenv').config();
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 const axios = require('axios');
 
 // Configuration
