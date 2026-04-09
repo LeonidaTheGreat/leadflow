@@ -74,8 +74,9 @@ const supabaseModule = require('../../lib/db-client');
 const origCreate = supabaseModule.createClient;
 supabaseModule.createClient = () => mockSupabase;
 
-// Clear module cache so sequence-service picks up our mock
+// Clear module cache so sequence-service and SequenceService pick up our mock
 delete require.cache[require.resolve('../../lib/sequence-service')];
+delete require.cache[require.resolve('../../lib/services/SequenceService')];
 const {
   createLeadSequence,
   findLeadByFubId,
