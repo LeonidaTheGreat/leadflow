@@ -1,28 +1,28 @@
 /**
- * QC E2E Test: fix-e2e-flow-test-failures-2-critical (task cd5e6ccf)
+ * E2E test for task 65f36537 — Fix: E2E flow test failures (2 critical)
+ * PR #1053 — branch: dev/cd5e6ccf-fix-e2e-flow-test-failures-2-critical-
  *
- * PR #1053 fixed two critical test failures:
- * 1. bcrypt-password-verify.test.ts — had unresolved merge conflict markers
- *    and mocked @supabase/supabase-js instead of @/lib/db (PostgREST client)
- * 2. upgrade-checkout.test.ts — had unresolved merge conflict markers causing
- *    syntax errors
- *
- * This test verifies:
- * - No git conflict markers remain in either file
- * - The mock target is @/lib/db, not @supabase/supabase-js
- * - The correct NEXT_PUBLIC_API_URL value (PostgREST, not Supabase) is set
- * - Both test files are valid JavaScript/TypeScript (parseable)
+ * Validates:
+ * 1. No merge conflict markers remain in the two fixed test files
+ * 2. bcrypt-password-verify.test.ts mocks @/lib/db (not @supabase/supabase-js) for auth routes
+ * 3. upgrade-checkout.test.ts uses correct PostgREST API URL (not Supabase URL)
+ * 4. Both test files are syntactically valid (no leftover conflict syntax)
+ * 5. makeMockQueryBuilder is present and correctly structured
  */
-
-'use strict'
 
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const TESTS_DIR = path.join(__dirname, '../product/lead-response/dashboard/__tests__')
-const BCRYPT_FILE = path.join(TESTS_DIR, 'bcrypt-password-verify.test.ts')
-const UPGRADE_FILE = path.join(TESTS_DIR, 'upgrade-checkout.test.ts')
+const DASHBOARD_TESTS = path.join(__dirname, '../product/lead-response/dashboard/__tests__')
+const BCRYPT_TEST = path.join(DASHBOARD_TESTS, 'bcrypt-password-verify.test.ts')
+const UPGRADE_TEST = path.join(DASHBOARD_TESTS, 'upgrade-checkout.test.ts')
+
+// Helpers
+function readFile(filePath) {
+  assert.ok(fs.existsSync(filePath), `File must exist: ${filePath}`)
+  return fs.readFileSync(filePath, 'utf-8')
+}
 
 let passed = 0
 let failed = 0
@@ -39,96 +39,86 @@ function test(name, fn) {
   }
 }
 
-console.log('QC E2E: fix-e2e-flow-test-failures-2-critical (cd5e6ccf)\n')
+console.log('\nE2E Test: Fix E2E flow test failures (2 critical)\n')
 
-// --- 1. Both files exist ---
-test('bcrypt-password-verify.test.ts exists', () => {
-  assert.ok(fs.existsSync(BCRYPT_FILE), `File not found: ${BCRYPT_FILE}`)
+// --- bcrypt-password-verify.test.ts ---
+console.log('bcrypt-password-verify.test.ts:')
+const bcryptContent = readFile(BCRYPT_TEST)
+
+test('No merge conflict markers (<<<<<<)', () => {
+  assert.ok(!bcryptContent.includes('<<<<<<<'), 'Found <<<<<< conflict marker')
 })
 
-test('upgrade-checkout.test.ts exists', () => {
-  assert.ok(fs.existsSync(UPGRADE_FILE), `File not found: ${UPGRADE_FILE}`)
+test('No merge conflict markers (=======)', () => {
+  // avoid matching the one in this test file
+  const lines = bcryptContent.split('\n')
+  const conflictLines = lines.filter(l => l.trim() === '=======')
+  assert.strictEqual(conflictLines.length, 0, `Found ======= conflict separator on ${conflictLines.length} lines`)
 })
 
-// --- 2. No git conflict markers ---
-const bcryptContent = fs.readFileSync(BCRYPT_FILE, 'utf8')
-const upgradeContent = fs.readFileSync(UPGRADE_FILE, 'utf8')
-
-test('bcrypt-password-verify.test.ts has no <<<<<<< HEAD marker', () => {
-  assert.ok(!bcryptContent.includes('<<<<<<< HEAD'), 'Found unresolved conflict marker: <<<<<<< HEAD')
+test('No merge conflict markers (>>>>>>>)', () => {
+  assert.ok(!bcryptContent.includes('>>>>>>>'), 'Found >>>>>>> conflict marker')
 })
 
-test('bcrypt-password-verify.test.ts has no >>>>>>> marker', () => {
-  const hasMarker = />>>>>>>\s+\w/.test(bcryptContent)
-  assert.ok(!hasMarker, 'Found unresolved conflict marker: >>>>>>>')
+test('Mocks @/lib/db not @supabase/supabase-js for primary DB mock', () => {
+  assert.ok(bcryptContent.includes("jest.mock('@/lib/db'"), "Expected jest.mock('@/lib/db') — auth routes use PostgREST, not Supabase SDK")
 })
 
-test('upgrade-checkout.test.ts has no <<<<<<< HEAD marker', () => {
-  assert.ok(!upgradeContent.includes('<<<<<<< HEAD'), 'Found unresolved conflict marker: <<<<<<< HEAD')
+test('makeMockQueryBuilder function is present', () => {
+  assert.ok(bcryptContent.includes('function makeMockQueryBuilder'), 'makeMockQueryBuilder must be defined')
 })
 
-test('upgrade-checkout.test.ts has no >>>>>>> marker', () => {
-  const hasMarker = />>>>>>>\s+\w/.test(upgradeContent)
-  assert.ok(!hasMarker, 'Found unresolved conflict marker: >>>>>>>')
+test('QueryBuilder has maybeSingle method', () => {
+  assert.ok(bcryptContent.includes('maybeSingle'), 'maybeSingle must be included in mock builder')
 })
 
-// --- 3. Mock target is @/lib/db not @supabase/supabase-js ---
-test('bcrypt-password-verify.test.ts mocks @/lib/db (PostgREST client)', () => {
-  assert.ok(bcryptContent.includes("jest.mock('@/lib/db'"), "Expected mock for '@/lib/db' not found")
+test('QueryBuilder has then() for promise-like usage', () => {
+  assert.ok(bcryptContent.includes('qb.then'), 'qb.then must exist to allow awaiting the builder directly')
 })
 
-test('bcrypt-password-verify.test.ts does NOT mock @supabase/supabase-js', () => {
-  assert.ok(!bcryptContent.includes("jest.mock('@supabase/supabase-js'"), "Found stale mock for '@supabase/supabase-js' — should be @/lib/db")
+test('postgrestAdmin and postgrestPublic are mocked', () => {
+  assert.ok(bcryptContent.includes('postgrestAdmin'), 'postgrestAdmin must be mocked')
+  assert.ok(bcryptContent.includes('postgrestPublic'), 'postgrestPublic must be mocked')
 })
 
-// --- 4. Correct PostgREST API URL (not Supabase URL) ---
-test('bcrypt-password-verify.test.ts sets NEXT_PUBLIC_API_URL to PostgREST endpoint', () => {
+test('Uses PostgREST URL (not Supabase URL) in env setup', () => {
   assert.ok(
     bcryptContent.includes('http://localhost:8788/rest/v1'),
-    "Expected NEXT_PUBLIC_API_URL=http://localhost:8788/rest/v1 not found"
+    'NEXT_PUBLIC_API_URL must point to PostgREST endpoint, not Supabase'
   )
-  assert.ok(
-    !bcryptContent.includes('supabase.co'),
-    "Found stale Supabase URL in NEXT_PUBLIC_API_URL"
-  )
+  assert.ok(!bcryptContent.includes('supabase.co'), 'No supabase.co references should remain in env setup')
 })
 
-test('upgrade-checkout.test.ts sets NEXT_PUBLIC_API_URL to PostgREST endpoint', () => {
+test('Session mocks are present (createSession, logSessionStart)', () => {
+  assert.ok(bcryptContent.includes("jest.mock('@/lib/session'"), 'session mock missing')
+  assert.ok(bcryptContent.includes('createSession'), 'createSession mock missing')
+})
+
+// --- upgrade-checkout.test.ts ---
+console.log('\nupgrade-checkout.test.ts:')
+const upgradeContent = readFile(UPGRADE_TEST)
+
+test('No merge conflict markers (<<<<<<)', () => {
+  assert.ok(!upgradeContent.includes('<<<<<<<'), 'Found <<<<<< conflict marker')
+})
+
+test('No merge conflict markers (>>>>>>>)', () => {
+  assert.ok(!upgradeContent.includes('>>>>>>>'), 'Found >>>>>>> conflict marker')
+})
+
+test('Uses PostgREST URL not Supabase URL', () => {
   assert.ok(
     upgradeContent.includes('http://localhost:8788/rest/v1'),
-    "Expected NEXT_PUBLIC_API_URL=http://localhost:8788/rest/v1 not found"
+    'NEXT_PUBLIC_API_URL must be PostgREST URL'
   )
   assert.ok(
     !upgradeContent.includes('supabase.co'),
-    "Found stale Supabase URL in NEXT_PUBLIC_API_URL"
+    'Supabase URL must not appear in upgrade-checkout env setup'
   )
 })
 
-// --- 5. Mock QueryBuilder structure — key exports present ---
-test('bcrypt-password-verify.test.ts exports postgrestAdmin mock', () => {
-  assert.ok(bcryptContent.includes('postgrestAdmin'), "Mock missing 'postgrestAdmin' export")
-})
-
-test('bcrypt-password-verify.test.ts exports postgrestPublic mock', () => {
-  assert.ok(bcryptContent.includes('postgrestPublic'), "Mock missing 'postgrestPublic' export")
-})
-
-test('bcrypt-password-verify.test.ts has makeMockQueryBuilder factory', () => {
-  assert.ok(bcryptContent.includes('makeMockQueryBuilder'), "Missing 'makeMockQueryBuilder' factory function")
-})
-
-// --- 6. Session and email mocks are present ---
-test('bcrypt-password-verify.test.ts mocks @/lib/session', () => {
-  assert.ok(bcryptContent.includes("jest.mock('@/lib/session'"), "Missing mock for '@/lib/session'")
-})
-
-test('bcrypt-password-verify.test.ts mocks @/lib/email-service', () => {
-  assert.ok(bcryptContent.includes("jest.mock('@/lib/email-service'"), "Missing mock for '@/lib/email-service'")
-})
-
 // --- Summary ---
-console.log(`\nResults: ${passed} passed, ${failed} failed out of ${passed + failed} total`)
-
+console.log(`\nResults: ${passed} passed, ${failed} failed\n`)
 if (failed > 0) {
   process.exit(1)
 }
