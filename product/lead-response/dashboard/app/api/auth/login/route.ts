@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { createSession } from '@/lib/session'
+import { AuthService } from '@/lib/services/AuthService'
+import {
+  DEFAULT_SESSION_COOKIE_MAX_AGE_SECONDS,
+  REMEMBER_ME_SESSION_COOKIE_MAX_AGE_SECONDS,
+} from '@/lib/config/auth'
 import { logSessionStart } from '@/lib/session-analytics'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')
+const authService = new AuthService(supabase)
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +63,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       ?? request.headers.get('x-real-ip') 
       ?? undefined
-    const session = await createSession({
+    const session = await authService.createSession({
       userId: user.id,
       userAgent: request.headers.get('user-agent') || undefined,
       ipAddress,
@@ -90,7 +95,9 @@ export async function POST(request: NextRequest) {
     })
 
     // Set HTTP-only cookie with session token
-    const cookieMaxAge = rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60 // 30 days or 24 hours
+    const cookieMaxAge = rememberMe
+      ? REMEMBER_ME_SESSION_COOKIE_MAX_AGE_SECONDS
+      : DEFAULT_SESSION_COOKIE_MAX_AGE_SECONDS
     response.cookies.set({
       name: 'leadflow_session',
       value: session.token,

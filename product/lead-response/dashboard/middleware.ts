@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
+import { createClient } from '@/lib/db'
+import { AuthService } from '@/lib/services/AuthService'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -32,26 +34,17 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
-/**
- * Hash a session token using SHA-256 (Web Crypto API — Edge-compatible).
- * Must match the hashToken() in lib/session.ts which uses Node crypto.
- */
-async function hashSessionToken(token: string): Promise<string> {
-  const data = new TextEncoder().encode(token)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 // PostgREST config for DB queries in middleware
 const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
 const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
+const authService = new AuthService(
+  createClient(POSTGREST_URL || 'https://api.imagineapi.org', POSTGREST_KEY)
+)
 
 /**
  * Extract userId from either JWT (auth-token) or session token (leadflow_session)
  * Uses Edge-compatible jose library for JWT verification.
- * For session tokens, queries the sessions table via PostgREST (pure fetch, Edge-safe).
+ * For session tokens, delegates to AuthService.
  */
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   // Try JWT token first (from trial-signup)
@@ -68,40 +61,16 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
     }
   }
 
-  // Try session token (from login) — validate via PostgREST fetch (Edge-safe)
+  // Try session token (from login)
   const sessionToken = request.cookies.get('leadflow_session')?.value
-  if (sessionToken && POSTGREST_URL) {
+  if (sessionToken) {
     try {
-      // Hash the raw token before querying — DB stores SHA-256 hashes (see lib/session.ts)
-      const tokenHash = await hashSessionToken(sessionToken)
-      const encodedToken = encodeURIComponent(tokenHash)
-      const url = `${POSTGREST_URL}/sessions?token=eq.${encodedToken}&select=user_id,expires_at&limit=1`
-      const headers: Record<string, string> = {
-        'Accept': 'application/json',
-        ...(POSTGREST_KEY && { 'apikey': POSTGREST_KEY }),
-        ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
-      }
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s timeout
-
-      const res = await fetch(url, { headers, signal: controller.signal })
-      clearTimeout(timeoutId)
-
-      if (res.ok) {
-        const rows = await res.json()
-        if (rows.length > 0) {
-          const session = rows[0]
-          // Check expiration
-          if (new Date(session.expires_at) > new Date()) {
-            return session.user_id
-          }
-        }
+      const session = await authService.validateSession(sessionToken)
+      if (session) {
+        return session.userId
       }
     } catch (err) {
-      // Session validation failed (including timeout)
-      if (err instanceof Error && err.name === 'AbortError') {
-        console.error('Session validation timeout')
-      }
+      // Session validation failed
     }
   }
 
