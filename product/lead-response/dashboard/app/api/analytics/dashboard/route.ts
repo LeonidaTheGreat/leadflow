@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  getMessagesPerDay,
-  getDeliveryStats,
-  getResponseRate,
-  getSequenceCompletion,
-  getLeadConversion,
-  getAvgResponseTime,
-} from '@/lib/analytics-queries'
 import { validateSession } from '@/lib/session'
+import { supabaseAdmin } from '@/lib/supabase'
+import { AnalyticsService } from '@/lib/services/AnalyticsService'
+
+const analyticsService = new AnalyticsService(supabaseAdmin)
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,12 +36,12 @@ export async function GET(request: NextRequest) {
 
     // Fetch all metrics in parallel
     const [msgPerDay, delivery, response, sequence, conversion, respTime] = await Promise.all([
-      getMessagesPerDay(daysBack),
-      getDeliveryStats(daysBack),
-      getResponseRate(daysBack),
-      getSequenceCompletion(daysBack),
-      getLeadConversion(daysBack),
-      getAvgResponseTime(daysBack),
+      analyticsService.getMessagesPerDay(daysBack),
+      analyticsService.getDeliveryStats(daysBack),
+      analyticsService.getResponseRate(daysBack),
+      analyticsService.getSequenceCompletion(daysBack),
+      analyticsService.getLeadConversion(daysBack),
+      analyticsService.getAvgResponseTime(daysBack),
     ])
 
     // Check for any errors
