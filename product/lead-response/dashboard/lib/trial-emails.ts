@@ -22,7 +22,6 @@ interface TrialAgent {
   trial_email_day7_warning_sent: boolean
   trial_email_day14_expired_sent: boolean
   trial_email_day15_final_sent: boolean
-  aha_completed?: boolean
 }
 
 interface EmailResult {
@@ -49,7 +48,7 @@ function getDaysSinceSignup(createdAt: string): number {
 async function getTrialAgents(): Promise<TrialAgent[]> {
   const { data, error } = await supabase
     .from('real_estate_agents')
-    .select('id, email, first_name, last_name, created_at, trial_email_welcome_sent, trial_email_day1_aha_sent, trial_email_day3_upgrade_sent, trial_email_day7_warning_sent, trial_email_day14_expired_sent, trial_email_day15_final_sent, aha_completed')
+    .select('id, email, first_name, last_name, created_at, trial_email_welcome_sent, trial_email_day1_aha_sent, trial_email_day3_upgrade_sent, trial_email_day7_warning_sent, trial_email_day14_expired_sent, trial_email_day15_final_sent')
     .eq('subscription_status', 'trial')
     .eq('email_verified', true)
 
@@ -560,8 +559,7 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         day1AhaAgents.push(agent)
       }
       // Day 3: Upgrade Nudge
-      // Only send day-3 email to agents without completed onboarding_simulation (aha_completed = false)
-      else if (daysSinceSignup === 3 && !agent.trial_email_day3_upgrade_sent && !agent.aha_completed) {
+      else if (daysSinceSignup === 3 && !agent.trial_email_day3_upgrade_sent) {
         day3UpgradeAgents.push(agent)
       }
       // Day 7: Warning

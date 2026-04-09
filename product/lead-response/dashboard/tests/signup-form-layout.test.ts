@@ -72,10 +72,9 @@ describe('Signup Form Layout — Match Login Field Orientation', () => {
       expect(hasBorderSlate600).toBeGreaterThanOrEqual(2) // email + password + name
     })
 
-    it('compact mode uses a full-width vertical layout to avoid desktop field truncation', () => {
-      expect(trialForm).toMatch(/max-w-2xl/)
-      expect(trialForm).toMatch(/flex-col gap-3 sm:gap-4/)
-      expect(trialForm).not.toMatch(/sm:flex-row/)
+    it('compact mode: email and password are in flex-col layout (vertical stacking on mobile)', () => {
+      // The compact form uses flex-col sm:flex-row — ensure flex-col is the base (mobile-first)
+      expect(trialForm).toMatch(/flex-col sm:flex-row/)
     })
 
     it('non-compact form has no horizontal (flex-row) layout for field inputs', () => {

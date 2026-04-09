@@ -89,6 +89,14 @@ export function checkAiRateLimit(leadId: string): {
 }
 
 /**
+ * Dedicated limiter for public demo SMS endpoint.
+ * Uses the same underlying SMS bucket logic with a namespaced key.
+ */
+export function checkDemoSmsRateLimit(identifier: string) {
+  return checkSmsRateLimit(`demo:${identifier}`)
+}
+
+/**
  * Reset rate limit for a lead (admin use)
  */
 export function resetRateLimit(leadId: string, type: 'sms' | 'ai' | 'all') {
@@ -144,39 +152,6 @@ export function cleanupExpiredEntries() {
   if (cleaned > 0) {
     console.log(`🧹 Cleaned up ${cleaned} expired rate limit entries`);
   }
-}
-
-/**
- * Check if rate limit exceeded for demo aha SMS (IP-based, 3 per day)
- */
-export function checkDemoSmsRateLimit(ipAddress: string): {
-  allowed: boolean;
-  remaining: number;
-  resetInSeconds: number;
-} {
-  const key = `demo-sms:${ipAddress}`;
-  const now = Date.now();
-  const limit = 3;
-  const windowMs = 24 * 60 * 60 * 1000; // 24 hours
-
-  let entry = rateLimitStore.get(key);
-
-  // Reset if window expired
-  if (!entry || entry.resetAt < now) {
-    entry = { count: 0, resetAt: now + windowMs };
-    rateLimitStore.set(key, entry);
-  }
-
-  const allowed = entry.count < limit;
-  const remaining = Math.max(0, limit - entry.count - (allowed ? 1 : 0));
-  const resetInSeconds = Math.ceil((entry.resetAt - now) / 1000);
-
-  if (!allowed) {
-    return { allowed: false, remaining: 0, resetInSeconds };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining, resetInSeconds };
 }
 
 // Cleanup every 5 minutes

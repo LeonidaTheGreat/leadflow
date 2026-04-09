@@ -18,7 +18,6 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import OnboardingWelcome from '@/app/onboarding/steps/welcome'
-import OnboardingTryAi from '@/app/onboarding/steps/try-ai'
 import OnboardingAgentInfo from '@/app/onboarding/steps/agent-info'
 import OnboardingCalendar from '@/app/onboarding/steps/calendar'
 import OnboardingSMS from '@/app/onboarding/steps/sms-config'
@@ -32,7 +31,7 @@ const SetupTwilio = OnboardingSMS
 const SetupSimulator = OnboardingSimulator
 const SetupComplete = OnboardingConfirm
 
-type OnboardingStep = 'welcome' | 'try-ai' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
 function getFromStorage(key: string): string | null {
   try {
@@ -150,7 +149,7 @@ function DashboardOnboardingInner() {
     checkAuth()
   }, [router])
 
-  const steps: OnboardingStep[] = ['welcome', 'try-ai', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStepIndex = steps.indexOf(currentStep)
 
   const nextStep = () => {
@@ -180,7 +179,7 @@ function DashboardOnboardingInner() {
           completionPayload: {
             ahaCompleted: agentData.ahaCompleted,
             ahaResponseTimeMs: agentData.ahaResponseTimeMs,
-            stepsCompleted: ['welcome', 'try-ai', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation'],
+            stepsCompleted: ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation'],
           },
         }),
       })
@@ -247,33 +246,12 @@ function DashboardOnboardingInner() {
         {/* Progress */}
         <OnboardingProgress currentStep={currentStepIndex} totalSteps={steps.length} />
 
-        {/* Pricing nudge — visible throughout onboarding */}
-        <div className="border-b border-slate-700/30 bg-slate-900/40 py-2 text-center">
-          <p className="text-xs text-slate-400">
-            After your free 60-day pilot,{' '}
-            <span className="text-slate-300">plans start at <strong className="text-white">$49/mo</strong></span>.{' '}
-            No credit card needed to get started.{' '}
-            <a href="/pricing" className="text-emerald-400 hover:text-emerald-300 underline">
-              See plans
-            </a>
-          </p>
-        </div>
-
         {/* Content */}
         <main className="flex-1 flex items-center justify-center px-4 py-8">
           <div className="w-full max-w-2xl">
             {currentStep === 'welcome' && (
               <OnboardingWelcome
                 onNext={nextStep}
-                agentData={agentData}
-                setAgentData={setAgentData}
-              />
-            )}
-
-            {currentStep === 'try-ai' && (
-              <OnboardingTryAi
-                onNext={nextStep}
-                onBack={prevStep}
                 agentData={agentData}
                 setAgentData={setAgentData}
               />

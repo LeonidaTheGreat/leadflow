@@ -56,7 +56,6 @@ export default function ProfileSetupPage() {
   const [successMessage, setSuccessMessage] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeTab, setActiveTab] = useState('personal')
-  const [agentId, setAgentId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<ProfileFormData>({
     firstName: '',
@@ -70,21 +69,6 @@ export default function ProfileSetupPage() {
     website: '',
     profileImage: '',
   })
-
-  // Read authenticated agent ID from localStorage
-  useEffect(() => {
-    try {
-      const userRaw = localStorage.getItem('leadflow_user') || sessionStorage.getItem('leadflow_user')
-      if (userRaw) {
-        const user = JSON.parse(userRaw)
-        if (user.id) {
-          setAgentId(user.id)
-        }
-      }
-    } catch (error) {
-      console.error('Error reading agent ID from storage:', error)
-    }
-  }, [])
 
   // Load profile data on mount
   useEffect(() => {
@@ -528,7 +512,8 @@ export default function ProfileSetupPage() {
       {/* AI Preferences */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">AI Preferences</h2>
-        {agentId && <SatisfactionPingToggle agentId={agentId} />}
+        {/* TODO: replace 'test-agent-id' with real agentId from session once auth is wired up */}
+        <SatisfactionPingToggle agentId="test-agent-id" />
       </div>
     </div>
   )

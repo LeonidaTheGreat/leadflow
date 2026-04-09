@@ -4,13 +4,6 @@ import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 
-function generateInviteToken(): { rawToken: string; tokenHash: string } {
-  const rawToken = crypto.randomBytes(32).toString('hex')
-  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
-
-  return { rawToken, tokenHash }
-}
-
 // Admin auth check - verify X-Admin-Token header
 function checkAdminAuth(request: NextRequest): boolean {
   const adminToken = request.headers.get('x-admin-token')
@@ -32,10 +25,9 @@ interface InviteRequest {
 
 interface InviteResponse {
   success: boolean
+  inviteUrl?: string
   agentId?: string
   expiresAt?: string
-  emailSent?: boolean
-  message?: string
   error?: string
 }
 
@@ -44,7 +36,7 @@ interface InviteResponse {
  *
  * Direct recruitment endpoint for Stojan.
  * Accepts: email (required), name (required), message (optional)
- * Returns: invite metadata + agent ID
+ * Returns: magic-link invite URL + agent ID
  *
  * Auth: X-Admin-Token header (must match ADMIN_SECRET)
  */
@@ -91,18 +83,20 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     if (existingInvite) {
       // Check if token is still valid — re-issue a new raw token (raw token is never stored, only hash)
       if (new Date(existingInvite.token_expires_at) > new Date()) {
-        const { rawToken, tokenHash } = generateInviteToken()
+        const rawToken = crypto.randomBytes(32).toString('hex')
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
         await supabaseServer
           .from('pilot_invites')
           .update({ token: tokenHash })
           .eq('id', existingInvite.id)
-        // Do NOT return raw token in response — it should never be logged
+        const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
+        const inviteUrl = `${appUrl}/accept-invite?token=${rawToken}`
         return NextResponse.json(
           {
             success: true,
+            inviteUrl,
             agentId: existingInvite.agent_id,
-            expiresAt: existingInvite.token_expires_at,
-            message: 'Existing invite found and token refreshed. Invitation email will be sent.'
+            expiresAt: existingInvite.token_expires_at
           },
           { status: 200 }
         )
@@ -151,7 +145,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     }
 
     // 5. Create pilot invite record — store SHA-256 hash of token, never the raw token
-    const { rawToken, tokenHash } = generateInviteToken()
+    const rawToken = crypto.randomBytes(32).toString('hex')
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
     const now = new Date()
     const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
@@ -187,16 +182,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     })
 
     if (!emailSent) {
-      console.warn(`Email sending failed for ${email}, but invite record created. Agent ID: ${agentId}`)
+      console.warn(`Email sending failed for ${email}, but invite record created. URL: ${inviteUrl}`)
     }
 
-    // 7. Return success response (do NOT return raw token in response — it should never be logged)
+    // 7. Return success response
     return NextResponse.json(
       {
         success: true,
+        inviteUrl,
         agentId,
-        expiresAt: expiresAt.toISOString(),
-        emailSent
+        expiresAt: expiresAt.toISOString()
       },
       { status: 200 }
     )

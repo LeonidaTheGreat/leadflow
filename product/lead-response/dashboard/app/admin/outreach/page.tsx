@@ -17,15 +17,9 @@ interface Candidate {
   source: string | null
   utm_source: string | null
   engagement_score: number
-  contacted: boolean
-  contacted_at: string | null
-  invite_status: string | null
 }
 
 interface Summary {
-  total_verified: number
-  contacted: number
-  uncontacted: number
   trial: number
   pilot: number
   completed_onboarding: number
@@ -73,22 +67,13 @@ export default function OutreachPage() {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<'all' | 'uncontacted' | 'high' | 'pilot'>('uncontacted')
+  const [filter, setFilter] = useState<'all' | 'high' | 'pilot'>('all')
   const [copied, setCopied] = useState<string | null>(null)
-  const [adminToken, setAdminToken] = useState<string | null>(null)
-  const [sending, setSending] = useState<string | null>(null)
-  const [sendResult, setSendResult] = useState<Record<string, 'sent' | 'error'>>({})
-
-  // Load admin token from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('admin_token')
-    if (stored) setAdminToken(stored)
-  }, [])
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/admin/outreach-candidates?limit=250')
+        const res = await fetch('/api/admin/outreach-candidates?limit=100')
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data = await res.json()
         setCandidates(data.candidates ?? [])
@@ -103,8 +88,7 @@ export default function OutreachPage() {
   }, [])
 
   const filtered = candidates.filter((c) => {
-    if (filter === 'uncontacted') return !c.contacted
-    if (filter === 'high') return c.engagement_score >= 50 && !c.contacted
+    if (filter === 'high') return c.engagement_score >= 50
     if (filter === 'pilot') return c.plan_tier === 'pilot'
     return true
   })
@@ -116,59 +100,8 @@ export default function OutreachPage() {
     })
   }
 
-  async function sendInvite(candidate: Candidate) {
-    let token = adminToken
-    if (!token) {
-      const entered = prompt('Enter admin token (ADMIN_SECRET):')
-      if (!entered) return
-      token = entered
-      localStorage.setItem('admin_token', token)
-      setAdminToken(token)
-    }
-
-    setSending(candidate.id)
-    try {
-      const res = await fetch('/api/admin/invite-pilot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': token,
-        },
-        body: JSON.stringify({
-          email: candidate.email,
-          name: candidate.name || candidate.email,
-        }),
-      })
-      const data = await res.json()
-      if (data.success) {
-        setSendResult((prev) => ({ ...prev, [candidate.id]: 'sent' }))
-        // Update local state to reflect contacted status
-        setCandidates((prev) =>
-          prev.map((c) =>
-            c.id === candidate.id
-              ? { ...c, contacted: true, contacted_at: new Date().toISOString(), invite_status: 'pending' }
-              : c
-          )
-        )
-        setSummary((prev) =>
-          prev
-            ? { ...prev, contacted: prev.contacted + 1, uncontacted: prev.uncontacted - 1 }
-            : prev
-        )
-      } else {
-        setSendResult((prev) => ({ ...prev, [candidate.id]: 'error' }))
-        alert(`Failed to send invite: ${data.error}`)
-      }
-    } catch (e: any) {
-      setSendResult((prev) => ({ ...prev, [candidate.id]: 'error' }))
-      alert(`Error: ${e.message}`)
-    } finally {
-      setSending(null)
-    }
-  }
-
   function exportCSV() {
-    const header = 'Name,Email,Phone,Tier,Onboarding Step,Last Login,Page Views,Sessions,Engagement Score,Contacted,Contacted At\n'
+    const header = 'Name,Email,Phone,Tier,Onboarding Step,Last Login,Page Views,Sessions,Engagement Score\n'
     const rows = filtered
       .map((c) =>
         [
@@ -181,8 +114,6 @@ export default function OutreachPage() {
           c.page_views,
           c.sessions,
           c.engagement_score,
-          c.contacted ? 'Yes' : 'No',
-          c.contacted_at ?? '',
         ]
           .map((v) => `"${String(v).replace(/"/g, '""')}"`)
           .join(',')
@@ -215,10 +146,6 @@ export default function OutreachPage() {
     )
   }
 
-  const top10Uncontacted = candidates
-    .filter((c) => !c.contacted)
-    .slice(0, 10)
-
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -226,68 +153,36 @@ export default function OutreachPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Pilot Outreach Candidates</h1>
           <p className="text-gray-500 text-sm mt-1">
-            All email-verified signups ranked by engagement. Send personal invites to convert to pilots.
+            Trial + pilot agents ranked by engagement. Reach out to top scorers first.
           </p>
         </div>
-        <div className="flex gap-2">
-          {adminToken && (
-            <span className="inline-flex items-center px-2 py-1 text-xs bg-green-50 text-green-700 border border-green-200 rounded-md">
-              Token set
-            </span>
-          )}
-          <button
-            onClick={exportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            data-testid="export-csv-button"
-          >
-            Export CSV
-          </button>
-        </div>
+        <button
+          onClick={exportCSV}
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          data-testid="export-csv-button"
+        >
+          Export CSV
+        </button>
       </div>
 
       {/* Summary cards */}
       {summary && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Verified Signups</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{summary.total_verified}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Trial Agents</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">{summary.trial}</p>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Not Contacted</p>
-            <p className="text-2xl font-bold text-red-600 mt-1">{summary.uncontacted}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Pilot Agents</p>
+            <p className="text-2xl font-bold text-blue-600 mt-1">{summary.pilot}</p>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Contacted</p>
-            <p className="text-2xl font-bold text-green-600 mt-1">{summary.contacted}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Completed Onboarding</p>
+            <p className="text-2xl font-bold text-green-600 mt-1">{summary.completed_onboarding}</p>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">High Engagement</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">High Engagement (≥50)</p>
             <p className="text-2xl font-bold text-orange-600 mt-1">{summary.high_engagement}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Priority 10 — top uncontacted leads */}
-      {top10Uncontacted.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-          <p className="text-sm font-semibold text-amber-900 mb-2">
-            Priority 10 — Top uncontacted leads to reach out to now
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {top10Uncontacted.map((c) => (
-              <div key={c.id} className="flex items-center gap-1.5 bg-white border border-amber-200 rounded-md px-2 py-1">
-                <span className="text-xs font-medium text-gray-900">{c.name || c.email}</span>
-                <span className="text-xs text-amber-700 font-semibold">{c.engagement_score}</span>
-                <button
-                  onClick={() => sendInvite(c)}
-                  disabled={sending === c.id || sendResult[c.id] === 'sent'}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium disabled:opacity-50"
-                  data-testid={`priority-invite-${c.id}`}
-                >
-                  {sending === c.id ? '…' : sendResult[c.id] === 'sent' ? '✓' : 'Invite'}
-                </button>
-              </div>
-            ))}
           </div>
         </div>
       )}
@@ -299,29 +194,24 @@ export default function OutreachPage() {
           <li>Start with <strong>high-engagement</strong> (score ≥ 70) — they already care</li>
           <li>Offer a <strong>15-min Zoom call</strong> + white-glove setup assistance</li>
           <li>Prioritize agents who completed onboarding or are on step 3+</li>
-          <li>Click <strong>Send Invite</strong> to send a personal pilot invite email (requires admin token)</li>
+          <li>Use personal email from Stojan, not automated — reference their specific activity</li>
         </ul>
       </div>
 
       {/* Filter tabs */}
       <div className="flex gap-2 mb-4">
-        {([
-          { key: 'uncontacted', label: `Uncontacted (${candidates.filter(c => !c.contacted).length})` },
-          { key: 'high', label: `High + Uncontacted (${candidates.filter(c => c.engagement_score >= 50 && !c.contacted).length})` },
-          { key: 'pilot', label: `Pilot (${candidates.filter(c => c.plan_tier === 'pilot').length})` },
-          { key: 'all', label: `All (${candidates.length})` },
-        ] as const).map((f) => (
+        {(['all', 'high', 'pilot'] as const).map((f) => (
           <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
+            key={f}
+            onClick={() => setFilter(f)}
             className={`px-3 py-1.5 text-sm rounded-md font-medium ${
-              filter === f.key
+              filter === f
                 ? 'bg-gray-900 text-white'
                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
-            data-testid={`filter-${f.key}`}
+            data-testid={`filter-${f}`}
           >
-            {f.label}
+            {f === 'all' ? `All (${candidates.length})` : f === 'high' ? `High Engagement (${candidates.filter(c => c.engagement_score >= 50).length})` : `Pilot (${candidates.filter(c => c.plan_tier === 'pilot').length})`}
           </button>
         ))}
       </div>
@@ -340,13 +230,13 @@ export default function OutreachPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Onboarding</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Login</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Views</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Source</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filtered.map((c) => (
-                <tr key={c.id} className={`hover:bg-gray-50 ${c.contacted ? 'opacity-60' : ''}`}>
+                <tr key={c.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <ScoreBadge score={c.engagement_score} />
                   </td>
@@ -369,37 +259,18 @@ export default function OutreachPage() {
                     {daysSince(c.last_login_at)}
                   </td>
                   <td className="px-4 py-3 text-gray-700">{c.page_views}</td>
-                  <td className="px-4 py-3">
-                    {c.contacted ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-700 font-medium">
-                        <span>✓</span>
-                        <span>Invited {formatDate(c.contacted_at)}</span>
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray-400">Not contacted</span>
-                    )}
+                  <td className="px-4 py-3 text-gray-500 text-xs">
+                    {c.utm_source ?? c.source ?? '—'}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      {!c.contacted && (
-                        <button
-                          onClick={() => sendInvite(c)}
-                          disabled={sending === c.id || sendResult[c.id] === 'sent'}
-                          className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 font-medium disabled:opacity-50"
-                          data-testid={`send-invite-${c.id}`}
-                        >
-                          {sending === c.id ? '…' : sendResult[c.id] === 'sent' ? '✓ Sent' : 'Send Invite'}
-                        </button>
-                      )}
-                      <button
-                        onClick={() => copyEmail(c.email)}
-                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                        data-testid={`copy-email-${c.id}`}
-                        title="Copy email"
-                      >
-                        {copied === c.email ? 'Copied!' : 'Copy'}
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => copyEmail(c.email)}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                      data-testid={`copy-email-${c.id}`}
+                      title="Copy email"
+                    >
+                      {copied === c.email ? 'Copied!' : 'Copy email'}
+                    </button>
                   </td>
                 </tr>
               ))}

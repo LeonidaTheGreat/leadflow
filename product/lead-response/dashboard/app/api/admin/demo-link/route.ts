@@ -15,20 +15,11 @@ import { createClient } from '@/lib/db'
  * Validates a demo token. Returns { valid: boolean, expiresAt?: string }
  */
 
-function cleanEnv(value?: string): string | undefined {
-  if (!value) return undefined
-  return value.replace(/\\n/g, '').trim()
-}
+const DB_URL = (process.env.NEXT_PUBLIC_API_URL)!
+const DB_KEY = (process.env.API_SECRET_KEY)!
 
 function getDB() {
-  const dbUrl = cleanEnv(process.env.NEXT_PUBLIC_API_URL)
-  const dbKey = cleanEnv(process.env.API_SECRET_KEY)
-
-  if (!dbUrl || !dbKey) {
-    throw new Error('Missing API configuration for demo link route')
-  }
-
-  return createClient(dbUrl, dbKey)
+  return createClient(DB_URL, DB_KEY)
 }
 
 function generateToken(): string {

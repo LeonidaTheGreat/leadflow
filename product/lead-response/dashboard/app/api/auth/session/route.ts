@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSession, getUserSessions } from '@/lib/session'
+import { AuthService } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/db'
 
 const supabase = supabaseAdmin
+const authService = AuthService.createDefaultService()
 
 export async function GET(request: NextRequest) {
   const sessionToken = request.cookies.get('leadflow_session')?.value
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     )
   }
   
-  const session = await validateSession(sessionToken)
+  const session = await authService.validateSession(sessionToken)
   
   if (!session) {
     return NextResponse.json(
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
   }
   
   // Get all active sessions for the user
-  const sessions = await getUserSessions(session.userId)
+  const sessions = await authService.getUserSessions(session.userId)
   
   return NextResponse.json({
     user: {

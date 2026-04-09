@@ -83,7 +83,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         })
       : 'unknown'
 
-    // Update agent with subscription info (non-blocking — subscription upsert is more important)
+    // Update agent with subscription info
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
@@ -99,18 +99,18 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
     if (updateError) {
       console.error('Failed to update agent:', updateError)
-      // Continue — still persist the subscription record
+      return
     }
 
     // Upsert subscription record (idempotent — safe to replay webhooks)
-    const { error: subError } = await supabase.from('subscriptions').upsert({
+    await supabase.from('subscriptions').upsert({
       user_id: userId,
       stripe_customer_id: stripeCustomerId,
       stripe_subscription_id: subscription.id,
       status: subscription.status,
       tier: tier,
       price_id: priceId,
-      interval: lineItem.price?.recurring?.interval || 'month',
+      interval: lineItem.price?.recurring?.interval || null,
       current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
       current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
       trial_start: (subscription as any).trial_start ? new Date((subscription as any).trial_start * 1000).toISOString() : null,
@@ -123,24 +123,13 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       updated_at: new Date().toISOString(),
     }, { onConflict: 'stripe_subscription_id' })
 
-    if (subError) {
-      console.error('CRITICAL: Failed to upsert subscription record:', subError)
-    } else {
-      console.log(`✅ Subscription persisted: ${subscription.id} for user ${userId}, tier=${tier}`)
-    }
-
-    // Log subscription creation event
+    // Log subscription creation
     await supabase.from('subscription_events').insert({
       user_id: userId,
       event_type: 'subscription_created',
-      plan_tier: tier,
-      mrr: Math.round(mrr * 100), // store as cents
-      stripe_event_data: {
-        subscription_id: subscriptionId,
-        tier,
-        mrr,
-        stripe_customer_id: stripeCustomerId,
-      },
+      tier: tier,
+      mrr: mrr,
+      stripe_subscription_id: subscriptionId,
       created_at: new Date().toISOString(),
     })
 
@@ -241,15 +230,15 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const amount = invoice.amount_paid / 100
   const mrr = calculateMRR(subscription)
 
-  // Record payment (status: 'succeeded' matches payments_status_check constraint)
+  // Record payment
   await supabase.from('payments').insert({
     user_id: agentId,
     stripe_invoice_id: invoice.id,
     amount: amount,
     currency: invoice.currency,
-    period_start: new Date(invoice.period_start * 1000).toISOString(),
-    period_end: new Date(invoice.period_end * 1000).toISOString(),
-    status: 'succeeded',
+    period_start: new Date(invoice.period_start * 1000),
+    period_end: new Date(invoice.period_end * 1000),
+    status: 'paid',
     created_at: new Date().toISOString(),
   })
 
@@ -263,8 +252,9 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   await supabase.from('subscription_events').insert({
     user_id: agentId,
     event_type: 'payment_received',
-    mrr: Math.round(mrr * 100),
-    stripe_event_data: { invoice_id: invoice.id, amount, mrr },
+    amount: amount,
+    mrr: mrr,
+    stripe_invoice_id: invoice.id,
     created_at: new Date().toISOString(),
   })
 
@@ -293,7 +283,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     user_id: agentId,
     event_type: 'payment_failed',
     attempt_count: invoice.attempt_count || 1,
-    stripe_event_data: { invoice_id: invoice.id, attempt_count: invoice.attempt_count || 1 },
+    stripe_invoice_id: invoice.id,
     created_at: new Date().toISOString(),
   })
 
@@ -319,12 +309,9 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   await supabase.from('subscription_events').insert({
     user_id: agentId,
     event_type: 'subscription_cancelled',
-    mrr_change: -Math.round(mrr * 100), // negative = churn, in cents
-    stripe_event_data: {
-      subscription_id: subscription.id,
-      mrr_lost: mrr,
-      reason: subscription.cancellation_details?.reason || 'unknown',
-    },
+    mrr_lost: mrr,
+    reason: subscription.cancellation_details?.reason || 'unknown',
+    stripe_subscription_id: subscription.id,
     created_at: new Date().toISOString(),
   })
 

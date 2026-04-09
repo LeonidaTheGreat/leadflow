@@ -2,10 +2,10 @@ import { createClient } from '@/lib/db'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL!
-const apiKey = process.env.API_SECRET_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-const supabase = createClient(apiUrl, apiKey)
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function applyMigration() {
   console.log('🔧 Applying migration 003_lead_sequences.sql...')

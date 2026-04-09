@@ -55,14 +55,14 @@ async function loadSystemState(): Promise<SystemState | null> {
 
 async function getDatabaseStats() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    const apiKey = process.env.API_SECRET_KEY
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    if (!apiUrl || !apiKey) {
+    if (!supabaseUrl || !supabaseKey) {
       return null
     }
 
-    const supabase = createClient(apiUrl, apiKey)
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     // Get counts
     const [{ count: leadCount }, { count: agentCount }, { count: messageCount }] = await Promise.all([
@@ -107,7 +107,7 @@ function determineTaskStatuses(state: SystemState): TaskStatus[] {
         })
         break
 
-      case 'Database':
+      case 'Supabase':
         statuses.push({
           task: 'Database Setup',
           status: result.status === 'ok' ? 'done' : 'blocked',

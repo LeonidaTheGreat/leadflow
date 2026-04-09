@@ -173,7 +173,7 @@ export function LeadFeed() {
     fetchLeads()
     checkSampleLeads()
 
-    // Keep the existing refresh subscription behavior; data now loads via API routes.
+    // Subscribe to real-time updates
     const subscription = supabase
       .channel('leads')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
@@ -191,21 +191,20 @@ export function LeadFeed() {
     try {
       setLoading(true)
 
-      const params = new URLSearchParams()
+      let query = supabase
+        .from('lead_summary')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50)
+
       if (filter !== 'all') {
-        params.set('status', filter)
+        query = query.eq('status', filter)
       }
 
-      const url = params.size > 0
-        ? `/api/dashboard/leads?${params.toString()}`
-        : '/api/dashboard/leads'
-      const response = await fetch(url, { credentials: 'include' })
-      if (!response.ok) {
-        throw new Error(`Failed to fetch leads: ${response.status}`)
-      }
+      const { data, error } = await query
 
-      const json = await response.json()
-      setLeads(json.leads || [])
+      if (error) throw error
+      setLeads(data || [])
     } catch (error) {
       console.error('Error fetching leads:', error)
     } finally {

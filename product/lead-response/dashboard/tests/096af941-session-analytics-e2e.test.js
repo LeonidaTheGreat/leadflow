@@ -256,7 +256,7 @@ async function runTests() {
       // Verify service key is sourced from env
       if (content.includes('SUPABASE_SERVICE_ROLE_KEY')) {
         assert(
-          content.includes('process.env.API_SECRET_KEY'),
+          content.includes('process.env.SUPABASE_SERVICE_ROLE_KEY'),
           'Service key not sourced from env'
         );
       }

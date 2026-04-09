@@ -19,79 +19,57 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let lastInsertedData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
-// Build a mock QueryBuilder that intercepts calls
-function makeMockQueryBuilder(table: string): any {
-  const qb: any = {}
-
-  qb.select = () => qb
-  qb.eq = (field: string, value: string) => {
-    qb._eqField = field
-    qb._eqValue = value
-    return qb
-  }
-  qb.single = () => {
-    if (table === 'real_estate_agents') {
-      const agent = mockAgentsDb.get((qb._eqValue || '').toLowerCase())
-      if (agent) return Promise.resolve({ data: agent, error: null })
-      return Promise.resolve({ data: null, error: { code: 'PGRST116', message: 'No rows found' } })
-    }
-    return Promise.resolve({ data: null, error: null })
-  }
-  qb.maybeSingle = qb.single
-  qb.insert = (data: any) => {
-    if (table === 'real_estate_agents') {
-      lastInsertedData = data
-      if (data.email) {
-        mockAgentsDb.set(data.email.toLowerCase(), {
-          ...data,
-          id: data.id || 'agent-123',
-          email_verified: true,
-          onboarding_completed: false,
-        })
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    from: (table: string) => {
+      if (table === 'real_estate_agents') {
+        return {
+          select: (columns?: string) => ({
+            eq: (field: string, value: string) => ({
+              single: () => {
+                const agent = mockAgentsDb.get(value.toLowerCase())
+                if (agent) {
+                  return Promise.resolve({ data: agent, error: null })
+                }
+                return Promise.resolve({ data: null, error: { code: 'PGRST116', message: 'No rows found' } })
+              },
+            }),
+          }),
+          insert: (data: any) => {
+            lastInsertedData = data
+            // Store in mock DB for login tests
+            if (data.email) {
+              mockAgentsDb.set(data.email.toLowerCase(), {
+                ...data,
+                id: data.id || 'agent-123',
+                email_verified: true,
+                onboarding_completed: false,
+              })
+            }
+            return {
+              select: () => ({
+                single: () => Promise.resolve({
+                  data: { ...mockAgent, email: data.email },
+                  error: null,
+                }),
+              }),
+            }
+          },
+          update: () => ({
+            eq: () => Promise.resolve({ error: null }),
+          }),
+        }
       }
+      // Default: support insert().select() chaining for all other tables
       return {
-        select: () => ({
-          single: () => Promise.resolve({
-            data: { id: 'agent-123', ...data },
-            error: null,
+        insert: (data: any) => ({
+          select: (columns?: string) => ({
+            single: () => Promise.resolve({ data: { id: '1' }, error: null }),
           }),
         }),
       }
-    }
-    // Other tables: generic success (do NOT overwrite lastInsertedData)
-    return {
-      select: () => ({
-        single: () => Promise.resolve({ data: { id: '1' }, error: null }),
-      }),
-    }
-  }
-  qb.update = () => ({ eq: () => Promise.resolve({ error: null }) })
-  qb.delete = () => ({ eq: () => Promise.resolve({ error: null }) })
-  // Allow promise-like usage (for tables that await the builder directly)
-  qb.then = (resolve: any) => resolve({ data: null, error: null })
-
-  return qb
-}
-
-// Mock @/lib/db — the PostgREST client used by all auth routes
-jest.mock('@/lib/db', () => ({
-  postgrestAdmin: {
-    from: (table: string) => makeMockQueryBuilder(table),
-  },
-  postgrestPublic: {
-    from: (table: string) => makeMockQueryBuilder(table),
-  },
-  supabase: {
-    from: (table: string) => makeMockQueryBuilder(table),
-  },
-  supabaseAdmin: {
-    from: (table: string) => makeMockQueryBuilder(table),
-  },
-  createClient: jest.fn(() => ({
-    from: (table: string) => makeMockQueryBuilder(table),
+    },
   })),
-  from: (table: string) => makeMockQueryBuilder(table),
-  isPostgrestConfigured: () => true,
 }))
 
 jest.mock('jsonwebtoken', () => ({
@@ -99,35 +77,16 @@ jest.mock('jsonwebtoken', () => ({
   verify: jest.fn(() => ({ userId: 'agent-123', email: 'test@example.com' })),
 }))
 
-// Mock @/lib/session — used by login and trial-signup to create sessions
-jest.mock('@/lib/session', () => ({
-  createSession: jest.fn(() => Promise.resolve({ id: 'session-123', token: 'raw_session_token' })),
-  invalidateSession: jest.fn(() => Promise.resolve()),
-  getSession: jest.fn(() => Promise.resolve(null)),
-}))
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    text: () => Promise.resolve(''),
+  })
+) as jest.Mock
 
-// Mock @/lib/session-analytics — used by login route
-jest.mock('@/lib/session-analytics', () => ({
-  logSessionStart: jest.fn(() => Promise.resolve('analytics-session-123')),
-  touchSession: jest.fn(() => Promise.resolve()),
-  logPageView: jest.fn(() => Promise.resolve()),
-}))
-
-// Mock @/lib/email-service — used by trial-signup to send welcome email
-jest.mock('@/lib/email-service', () => ({
-  sendWelcomeEmail: jest.fn(() => Promise.resolve()),
-  sendSubscriptionConfirmation: jest.fn(() => Promise.resolve()),
-}))
-
-// Mock @/lib/nps-service — used by trial-signup to initialize survey schedule
-jest.mock('@/lib/nps-service', () => ({
-  initializeSurveySchedule: jest.fn(() => Promise.resolve()),
-}))
-
-// Mock @/lib/verification-email — used by pilot-signup
-jest.mock('@/lib/verification-email', () => ({
-  createVerificationToken: jest.fn(() => Promise.resolve('mock_verification_token')),
-  sendVerificationEmail: jest.fn(() => Promise.resolve()),
+// Mock agent-session
+jest.mock('@/lib/agent-session', () => ({
+  logSessionStart: jest.fn(() => Promise.resolve({ id: 'session-123' })),
 }))
 
 // ---- Helpers ----
@@ -153,8 +112,8 @@ describe('Password Verification Fix', () => {
     lastInsertedData = null
     mockAgentsDb.clear()
     process.env.JWT_SECRET = 'test-secret'
-    process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
-    process.env.API_SECRET_KEY = 'test-key'
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost'
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-key'
   })
 
   describe('AC-1: Signup hashes password exactly once', () => {

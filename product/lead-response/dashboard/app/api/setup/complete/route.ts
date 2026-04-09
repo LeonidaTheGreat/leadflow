@@ -18,20 +18,14 @@ export async function POST(request: NextRequest) {
 
     const { fubConnected, smsConnected, simulatorCompleted } = await request.json()
 
-    const updateData: Record<string, any> = {
-      onboarding_completed: true,
-      onboarding_completed_at: new Date().toISOString(),
-      onboarding_step: 99 // 99 = complete
-    }
-
-    if (typeof simulatorCompleted === 'boolean') {
-      updateData.aha_completed = simulatorCompleted
-    }
-
     // Update agent's onboarding status
     const { error } = await supabase
       .from('real_estate_agents')
-      .update(updateData)
+      .update({
+        onboarding_completed: true,
+        onboarding_completed_at: new Date().toISOString(),
+        onboarding_step: 99 // 99 = complete
+      })
       .eq('id', userId)
 
     if (error) {

@@ -154,35 +154,13 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
   }
 }
 
-// A2P 10DLC carrier filtering error codes — permanent until registration completes
-// Retrying these wastes money and can worsen carrier reputation scores.
-export const A2P_ERROR_CODES = [
-  '30034', // Message blocked — account in violation of A2P carrier guidelines
-  '30007', // Message filtered by carrier (A2P compliance)
-  '30008', // Message filtered — unknown reason (carrier filtering)
-  '30003', // Unreachable destination handset (often carrier A2P filtering)
-  '30006', // Landline or unreachable carrier — permanent
-] as const;
-
 /**
- * Returns true when the error code indicates A2P 10DLC carrier filtering.
- * These messages will not deliver until A2P registration is approved.
- */
-export function isA2pBlockedError(errorCode?: string | number): boolean {
-  if (!errorCode) return false;
-  return (A2P_ERROR_CODES as readonly string[]).includes(String(errorCode));
-}
-
-/**
- * Check if error is retryable (network/timeout) or permanent (validation/auth/A2P)
+ * Check if error is retryable (network/timeout) or permanent (validation/auth)
  */
 function isRetryableError(errorCode?: string | number): boolean {
   if (!errorCode) return true; // Unknown errors are retryable
 
   const code = String(errorCode);
-
-  // A2P carrier filtering — not retryable, registration required
-  if (isA2pBlockedError(code)) return false;
 
   // Permanent errors (not retryable)
   const permanentErrors = [

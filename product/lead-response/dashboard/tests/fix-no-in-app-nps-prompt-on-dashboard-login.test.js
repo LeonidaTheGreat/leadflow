@@ -8,8 +8,8 @@ const { createClient } = require('../lib/db')
 
 // Test configuration
 const TEST_CONFIG = {
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:54321',
-  apiKey: process.env.API_SECRET_KEY || 'test-key',
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321',
+  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || 'test-key',
   baseUrl: process.env.TEST_BASE_URL || 'http://localhost:3000',
 }
 
