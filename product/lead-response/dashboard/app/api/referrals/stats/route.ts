@@ -28,9 +28,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate stats
-    const conversions = (referrals || []).filter(r => r.conversion_status === 'converted')
-    const pending = (referrals || []).filter(r => r.conversion_status === 'pending')
-    const totalEarned = conversions.reduce((sum, ref) => sum + (ref.free_months_earned || 0), 0)
+    const conversions = (referrals || []).filter((r: any) => r.conversion_status === 'converted')
+    const pending = (referrals || []).filter((r: any) => r.conversion_status === 'pending')
+    const totalEarned = conversions.reduce((sum: number, ref: any) => sum + (ref.free_months_earned || 0), 0)
 
     // Get agent's data
     const { data: agent } = await supabaseAdmin

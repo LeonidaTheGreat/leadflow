@@ -33,18 +33,18 @@ export async function GET(
 
     // Calculate stats
     const totalTargets = targets?.length || 0
-    const signedUp = targets?.filter(t => t.status === 'signed_up').length || 0
+    const signedUp = targets?.filter((t: any) => t.status === 'signed_up').length || 0
     const progress = campaign.goal_count > 0 ? (signedUp / campaign.goal_count) * 100 : 0
 
     // Status breakdown
     const statusCounts: Record<string, number> = {}
-    targets?.forEach(t => {
+    targets?.forEach((t: any) => {
       statusCounts[t.status] = (statusCounts[t.status] || 0) + 1
     })
 
     // Channel breakdown
     const channelCounts: Record<string, number> = {}
-    targets?.forEach(t => {
+    targets?.forEach((t: any) => {
       channelCounts[t.source_channel] = (channelCounts[t.source_channel] || 0) + 1
     })
 

@@ -398,8 +398,94 @@ export async function sendSubscriptionDowngradedEmail(
 ): Promise<boolean> {
   const { removed } = getFeatureDifference(data.oldPlanTier || '', data.newPlanTier || '')
   data.featureLoss = removed
-  
+
   const template = TEMPLATES.subscription_downgraded
   const html = template.html(data)
   return sendEmail(customerEmail, template.subject, html, customerId, 'subscription_downgraded', data)
+}
+
+// ---------------------------------------------------------------------------
+// Stubs for functions removed in refactor — restored as no-ops until
+// full re-implementation. Callers depend on these exports to compile.
+// ---------------------------------------------------------------------------
+
+export async function sendWelcomeEmail(
+  email: string,
+  agentId: string,
+  opts?: { agentName?: string; planTier?: string; dashboardUrl?: string }
+): Promise<void> {
+  console.log(`[email-service] sendWelcomeEmail stub: ${email} (agentId=${agentId})`)
+}
+
+export async function sendPasswordResetEmail(
+  email: string,
+  agentId: string,
+  opts?: { agentName?: string; resetUrl?: string }
+): Promise<boolean> {
+  console.log(`[email-service] sendPasswordResetEmail stub: ${email} (agentId=${agentId})`)
+  return true
+}
+
+export async function sendAhaMomentDay1Email(
+  email: string,
+  agentId: string,
+  opts?: { agentName?: string; simulatorUrl?: string }
+): Promise<boolean> {
+  console.log(`[email-service] sendAhaMomentDay1Email stub: ${email} (agentId=${agentId})`)
+  return true
+}
+
+export async function sendAhaMomentDay3Email(
+  email: string,
+  agentId: string,
+  opts?: { agentName?: string; simulatorUrl?: string }
+): Promise<boolean> {
+  console.log(`[email-service] sendAhaMomentDay3Email stub: ${email} (agentId=${agentId})`)
+  return true
+}
+
+export async function sendPilotWelcomeEmail(
+  email: string,
+  firstName: string,
+  dashboardUrl: string
+): Promise<boolean> {
+  console.log(`[email-service] sendPilotWelcomeEmail stub: ${email}`)
+  return true
+}
+
+export async function sendPilotInviteEmail(
+  email: string,
+  agentId: string,
+  opts?: { agentName?: string; inviteUrl?: string; expiresAt?: string; message?: string }
+): Promise<boolean> {
+  console.log(`[email-service] sendPilotInviteEmail stub: ${email} (agentId=${agentId})`)
+  return true
+}
+
+export async function sendPilotAhaMomentEmail(
+  email: string,
+  firstName: string,
+  dashboardUrl: string
+): Promise<boolean> {
+  console.log(`[email-service] sendPilotAhaMomentEmail stub: ${email}`)
+  return true
+}
+
+export async function sendPilotSetupCompleteEmail(
+  email: string,
+  firstName: string,
+  dashboardUrl: string
+): Promise<boolean> {
+  console.log(`[email-service] sendPilotSetupCompleteEmail stub: ${email}`)
+  return true
+}
+
+export async function sendPilotTrialCTAEmail(
+  email: string,
+  firstName: string,
+  dashboardUrl: string,
+  upgradeUrl: string
+): Promise<boolean> {
+  console.log(`[email-service] sendPilotTrialCTAEmail stub: ${email}`)
+  return true
 }
