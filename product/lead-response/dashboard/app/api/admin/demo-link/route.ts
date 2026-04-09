@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
 import { createClient } from '@/lib/db'
 
 /**
@@ -24,8 +25,12 @@ function getDB() {
 
 function generateToken(): string {
   const array = new Uint8Array(24)
-  crypto.getRandomValues(array)
+  globalThis.crypto.getRandomValues(array)
   return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+function hashToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex')
 }
 
 export async function POST(request: Request) {
@@ -34,18 +39,19 @@ export async function POST(request: Request) {
     const label = body?.label || null
 
     const token = generateToken()
+    const tokenHash = hashToken(token)
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
     const supabase = getDB()
     const { data, error } = await supabase
       .from('demo_tokens')
       .insert({
-        token,
+        token: tokenHash,
         expires_at: expiresAt,
         label,
         created_by: 'stojan',
       })
-      .select('token, expires_at')
+      .select('expires_at')
       .single()
 
     if (error) {
@@ -56,10 +62,10 @@ export async function POST(request: Request) {
     // Build the full demo URL
     const host = request.headers.get('host') || 'localhost:3000'
     const protocol = host.includes('localhost') ? 'http' : 'https'
-    const url = `${protocol}://${host}/admin/simulator?demo=${data.token}`
+    const url = `${protocol}://${host}/admin/simulator?demo=${token}`
 
     return NextResponse.json({
-      token: data.token,
+      token,
       url,
       expiresAt: data.expires_at,
     })
@@ -78,11 +84,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ valid: false, error: 'No token provided' }, { status: 400 })
     }
 
+    const tokenHash = hashToken(token)
     const supabase = getDB()
     const { data, error } = await supabase
       .from('demo_tokens')
-      .select('token, expires_at, used_at')
-      .eq('token', token)
+      .select('expires_at, used_at')
+      .eq('token', tokenHash)
       .single()
 
     if (error || !data) {
