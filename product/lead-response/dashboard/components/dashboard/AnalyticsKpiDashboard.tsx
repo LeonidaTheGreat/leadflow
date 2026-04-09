@@ -3,15 +3,6 @@
 import { useEffect, useState } from 'react'
 import { TrendingUp, TrendingDown, Users, Send, CheckCircle, BarChart3, Clock } from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { supabase } from '@/lib/supabase'
-import {
-  getMessagesPerDay,
-  getDeliveryStats,
-  getResponseRate,
-  getSequenceCompletion,
-  getLeadConversion,
-  getAvgResponseTime,
-} from '@/lib/analytics-queries'
 
 // ============================================
 // TYPES
@@ -58,27 +49,18 @@ export function AnalyticsKpiDashboard() {
   async function fetchDashboardData() {
     try {
       setLoading(true)
-
-      const [msgPerDay, delivery, response, sequence, conversion, respTime] = await Promise.all([
-        getMessagesPerDay(timeRange),
-        getDeliveryStats(timeRange),
-        getResponseRate(timeRange),
-        getSequenceCompletion(timeRange),
-        getLeadConversion(timeRange),
-        getAvgResponseTime(timeRange),
-      ])
-
-      setData({
-        messagesPerDay: (msgPerDay.data || []).map((item: any) => ({
-          date: item.date,
-          count: Number(item.count) || 0,
-        })),
-        deliveryStats: delivery,
-        responseRate: response,
-        sequenceCompletion: sequence,
-        leadConversion: conversion,
-        responseTime: respTime,
+      const response = await fetch(`/api/analytics/dashboard?days=${timeRange}`, {
+        method: 'GET',
+        cache: 'no-store',
+        credentials: 'same-origin',
       })
+
+      if (!response.ok) {
+        throw new Error(`Analytics request failed with status ${response.status}`)
+      }
+
+      const payload = await response.json()
+      setData(payload.data)
     } catch (error) {
       console.error('Error fetching analytics data:', error)
     } finally {
