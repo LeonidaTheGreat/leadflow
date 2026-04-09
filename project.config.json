@@ -542,6 +542,36 @@
       "pattern": "^tests/[^/]+\\.test\\.js$|^tests/[^/]+\\.spec\\.js$",
       "scan_dirs": ["tests/"],
       "severity": "warning"
+    },
+    {
+      "id": "no-db-queries-in-routes",
+      "name": "No database queries in route handlers",
+      "description": "Routes must be thin — DB queries go in service classes (lib/services/). Routes should only import services, not pg/Pool directly.",
+      "pattern": "pool\\.query|new Pool|require.*pg.*Pool",
+      "scan_dirs": ["routes/", "product/lead-response/dashboard/app/api/"],
+      "exclude_patterns": ["*.test.*"],
+      "severity": "critical",
+      "auto_fix_priority": 2
+    },
+    {
+      "id": "no-inline-api-calls-in-routes",
+      "name": "No external API calls in route handlers",
+      "description": "External API calls (Stripe, Twilio, Resend, FUB, Cal.com) must go through service classes, not inline in routes.",
+      "pattern": "stripe\\.customers|stripe\\.subscriptions|stripe\\.checkout|twilio\\.messages|resend\\.emails\\.send|fetch\\('https://api\\.followupboss|fetch\\('https://api\\.cal\\.com",
+      "scan_dirs": ["routes/", "product/lead-response/dashboard/app/api/"],
+      "exclude_patterns": ["*.test.*"],
+      "severity": "critical",
+      "auto_fix_priority": 2
+    },
+    {
+      "id": "no-duplicate-pool-instances",
+      "name": "No duplicate pg Pool instances",
+      "description": "All code must use the shared pool from lib/pg-pool.js. No creating new Pool() instances.",
+      "pattern": "new Pool\\(",
+      "scan_dirs": ["lib/", "routes/", "integration/"],
+      "exclude_patterns": ["lib/pg-pool.js"],
+      "severity": "critical",
+      "auto_fix_priority": 2
     }
   ]
 }
