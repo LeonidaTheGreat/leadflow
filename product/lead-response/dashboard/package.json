@@ -5,6 +5,7 @@
   "description": "AI-powered real estate lead response system",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "rm -f tsconfig.tsbuildinfo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
