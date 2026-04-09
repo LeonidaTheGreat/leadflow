@@ -352,6 +352,29 @@ class E2ETestSuite {
   }
 
   /**
+   * Guard: Verify project.config.json has no legacy supabase_read smoke entries
+   */
+  async testSmokeConfigHasNoLegacySupabaseRead() {
+    const fs = require('fs');
+    const path = require('path');
+    const configPath = path.join(__dirname, '..', 'project.config.json');
+    try {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const smokeTests = Array.isArray(config.smoke_tests) ? config.smoke_tests : [];
+      const legacyEntry = smokeTests.find(
+        (t) => t.id === 'supabase-read' || t.check_type === 'supabase_read'
+      );
+      if (legacyEntry) {
+        this.recordResult('Smoke config has no legacy supabase_read', false, `Legacy entry found: ${JSON.stringify(legacyEntry)}`);
+      } else {
+        this.recordResult('Smoke config has no legacy supabase_read', true);
+      }
+    } catch (e) {
+      this.recordResult('Smoke config has no legacy supabase_read', false, e.message);
+    }
+  }
+
+  /**
    * Helper: Record test result
    */
   recordResult(testName, passed, details = null) {
