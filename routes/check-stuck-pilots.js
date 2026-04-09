@@ -10,7 +10,9 @@
 
 const express = require('express');
 const router = express.Router();
-const { checkAndAlertStuckPilots } = require('../lib/stuck-pilots-service');
+const { createDefaultStuckPilotsService } = require('../lib/services/StuckPilotsService');
+
+const stuckPilotsService = createDefaultStuckPilotsService();
 
 /**
  * GET /api/cron/check-stuck-pilots
@@ -22,7 +24,7 @@ router.get('/api/cron/check-stuck-pilots', async (req, res) => {
   console.log('[check-stuck-pilots] Cron triggered');
 
   try {
-    const result = await checkAndAlertStuckPilots();
+    const result = await stuckPilotsService.checkAndAlertStuckPilots();
 
     console.log('[check-stuck-pilots] Done:', result);
     return res.status(200).json({
