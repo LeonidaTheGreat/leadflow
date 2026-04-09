@@ -16,8 +16,8 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const { Pool } = require('pg');
-const pool = new Pool({ connectionString: process.env.LOCAL_PG_URL });
+const { getPool, endPool } = require('../lib/pg-pool');
+const pool = getPool();
 
 async function run() {
   let passed = 0;
@@ -132,7 +132,7 @@ async function run() {
     }
   }
 
-  await pool.end();
+  await endPool();
 
   console.log(`\n📊 Results: ${passed} passed, ${failed} failed out of ${passed + failed} tests`);
   if (failed > 0) process.exit(1);

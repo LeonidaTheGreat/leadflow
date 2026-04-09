@@ -19,11 +19,11 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { Pool } = require('pg');
+const { getPool, endPool } = require('../lib/pg-pool');
 
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const pool = new Pool({ connectionString: process.env.LOCAL_PG_URL });
+const pool = getPool();
 
 let passed = 0;
 let failed = 0;
@@ -205,7 +205,7 @@ async function run() {
     assert.ok(threw, 'Should reject invalid status value');
   });
 
-  await pool.end();
+  await endPool();
 
   console.log(`\n=== Results: ${passed} passed, ${failed} failed ===\n`);
   if (failed > 0) process.exit(1);

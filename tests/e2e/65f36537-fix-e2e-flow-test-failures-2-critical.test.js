@@ -14,7 +14,7 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
-const DASHBOARD_DIR = path.resolve(__dirname, '../product/lead-response/dashboard')
+const DASHBOARD_DIR = path.resolve(__dirname, '../../product/lead-response/dashboard')
 const BCRYPT_TEST = path.join(DASHBOARD_DIR, '__tests__/bcrypt-password-verify.test.ts')
 const UPGRADE_TEST = path.join(DASHBOARD_DIR, '__tests__/upgrade-checkout.test.ts')
 
