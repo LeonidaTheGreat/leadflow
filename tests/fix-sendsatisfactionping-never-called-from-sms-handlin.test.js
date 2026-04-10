@@ -168,8 +168,8 @@ async function run() {
 
   const smsSrc = fs.readFileSync(smsServiceFile, 'utf-8');
 
-  await test('sendSmsViatwilio function is exported', async () => {
-    assert.ok(smsSrc.includes('sendSmsViatwilio'), 'Missing sendSmsViatwilio export');
+  await test('sendSms method defined in TwilioService', async () => {
+    assert.ok(smsSrc.includes('sendSms'), 'Missing sendSms method');
   });
 
   // Final summary

@@ -1,6 +1,6 @@
 // E2E test for task: fix-twilio-credentials-not-in-local-env
 // Task ID: 1f5dfb5d-3d02-4e46-8cb3-3c860682beae
-// Validates: Twilio credential keys exist in local env, twilio-sms.js cleanEnvValue logic
+// Validates: Twilio credential keys exist in local env, TwilioService.js cleanEnvValue logic
 
 const assert = require('assert');
 const fs = require('fs');
@@ -100,7 +100,7 @@ function fail(msg) { console.log(`FAIL: ${msg}`); failed++; }
   }
 }
 
-// Test 7: cleanEnvValue function in twilio-sms.js strips quotes/whitespace
+// Test 7: cleanEnvValue function in TwilioService.js strips quotes/whitespace
 {
   const twilioPath = path.join(projectDir, 'lib/services/TwilioService.js');
   const content = fs.readFileSync(twilioPath, 'utf8');
@@ -123,16 +123,16 @@ function fail(msg) { console.log(`FAIL: ${msg}`); failed++; }
   }
 }
 
-// Test 8: Legacy TWILIO_PHONE_NUMBER fallback in twilio-sms.js
+// Test 8: Legacy TWILIO_PHONE_NUMBER fallback in TwilioService.js
 {
   const twilioPath = path.join(projectDir, 'lib/services/TwilioService.js');
   const content = fs.readFileSync(twilioPath, 'utf8');
   if (content.includes('TWILIO_PHONE_NUMBER)') || content.includes('TWILIO_PHONE_NUMBER\)')) {
-    pass('Legacy TWILIO_PHONE_NUMBER fallback present in twilio-sms.js');
+    pass('Legacy TWILIO_PHONE_NUMBER fallback present in TwilioService.js');
   } else if (content.includes('twilioPhoneNumberLegacy')) {
     pass('Legacy TWILIO_PHONE_NUMBER fallback present (via twilioPhoneNumberLegacy)');
   } else {
-    fail('Legacy TWILIO_PHONE_NUMBER fallback missing from twilio-sms.js');
+    fail('Legacy TWILIO_PHONE_NUMBER fallback missing from TwilioService.js');
   }
 }
 

@@ -32,7 +32,7 @@ const projectDir = '/Users/clawdbot/projects/leadflow';
   console.log('PASS: .env.example documents all required Twilio vars');
 }
 
-// ── Test 2: cleanEnvValue helper exists in twilio-sms.js ────────────────────
+// ── Test 2: cleanEnvValue helper exists in TwilioService.js ────────────────────
 {
   const smsPath = path.join(projectDir, 'lib/services/TwilioService.js');
   const smsCode = fs.readFileSync(smsPath, 'utf8');
