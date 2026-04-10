@@ -185,7 +185,7 @@ class PlatformTwilioProvisioningTestSuite {
       }
 
       // Check for STOP language in SMS handling
-      const twilioLib = path.join(__dirname, '../../lib/twilio-sms.js');
+      const twilioLib = path.join(__dirname, '../../lib/services/TwilioService.js');
       if (fs.existsSync(twilioLib)) {
         const content = fs.readFileSync(twilioLib, 'utf8');
         assert(content.includes('STOP'), 'SMS lib should mention STOP compliance');

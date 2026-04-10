@@ -102,7 +102,7 @@ function fail(msg) { console.log(`FAIL: ${msg}`); failed++; }
 
 // Test 7: cleanEnvValue function in twilio-sms.js strips quotes/whitespace
 {
-  const twilioPath = path.join(projectDir, 'lib/twilio-sms.js');
+  const twilioPath = path.join(projectDir, 'lib/services/TwilioService.js');
   const content = fs.readFileSync(twilioPath, 'utf8');
   if (content.includes('cleanEnvValue')) {
     // Extract and test the function logic inline
@@ -119,13 +119,13 @@ function fail(msg) { console.log(`FAIL: ${msg}`); failed++; }
     assert.strictEqual(fn(undefined), undefined);
     pass('cleanEnvValue strips quotes and whitespace correctly');
   } else {
-    fail('cleanEnvValue function not found in lib/twilio-sms.js');
+    fail('cleanEnvValue function not found in lib/services/TwilioService.js');
   }
 }
 
 // Test 8: Legacy TWILIO_PHONE_NUMBER fallback in twilio-sms.js
 {
-  const twilioPath = path.join(projectDir, 'lib/twilio-sms.js');
+  const twilioPath = path.join(projectDir, 'lib/services/TwilioService.js');
   const content = fs.readFileSync(twilioPath, 'utf8');
   if (content.includes('TWILIO_PHONE_NUMBER)') || content.includes('TWILIO_PHONE_NUMBER\)')) {
     pass('Legacy TWILIO_PHONE_NUMBER fallback present in twilio-sms.js');

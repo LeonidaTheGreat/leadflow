@@ -147,8 +147,8 @@ runTest('7. CRITICAL: Local .env or .env.local has TWILIO_PHONE_NUMBER_US', () =
 });
 
 // ── 4. twilio-sms.js handles env var loading robustly ───────────
-runTest('8. lib/twilio-sms.js has fallback for TWILIO_PHONE_NUMBER (backward compat)', () => {
-  const src = fs.readFileSync(path.join(PROJECT_DIR, 'lib/twilio-sms.js'), 'utf8');
+runTest('8. lib/services/TwilioService.js has fallback for TWILIO_PHONE_NUMBER (backward compat)', () => {
+  const src = fs.readFileSync(path.join(PROJECT_DIR, 'lib/services/TwilioService.js'), 'utf8');
   // Either uses cleanEnvValue with fallback, or has a direct fallback
   const hasFallback = src.includes('TWILIO_PHONE_NUMBER_US') &&
     (src.includes('TWILIO_PHONE_NUMBER') || src.includes('twilioPhoneNumberLegacy'));
