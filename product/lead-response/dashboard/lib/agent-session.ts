@@ -1,16 +1,14 @@
 /**
- * Agent Session Logging
+ * Agent Session Logging — thin wrapper over AuthService
  *
- * Provides logSessionStart() to insert a row into agent_sessions on successful login.
- * Per FR-1 of PRD-SESSION-ANALYTICS-PILOT.
+ * All session management logic lives in AuthService.
+ * This module delegates to authService and handles error logging
+ * with the [agent-session] prefix so callers are never broken.
  *
  * CRITICAL: session logging failures must NEVER break the authentication flow.
- * All DB errors are caught and logged; the function returns null on failure.
  */
-import { postgrestAdmin } from '@/lib/db'
 import { NextRequest } from 'next/server'
-
-const supabase = postgrestAdmin
+import { authService, AuthService } from '@/lib/services/AuthService'
 
 export interface AgentSessionRecord {
   id: string
@@ -26,68 +24,33 @@ export interface AgentSessionRecord {
  * Handles proxies (Vercel sets x-forwarded-for).
  */
 export function getClientIp(req: NextRequest): string | null {
-  const xff = req.headers.get('x-forwarded-for')
-  if (xff) {
-    // x-forwarded-for can be comma-separated; first value is the originating client
-    return xff.split(',')[0].trim() || null
-  }
-  return req.headers.get('x-real-ip') || null
+  return AuthService.getClientIp(req)
 }
 
 /**
  * Log the start of an authenticated agent session.
  *
- * Inserts a row into agent_sessions with:
- *   - agent_id: the authenticated agent's UUID
- *   - session_start: now()
- *   - last_active_at: now()
- *   - ip_address: extracted from request headers
- *   - user_agent: from User-Agent header
- *
- * Returns the session record (including its UUID) on success, or null if the
- * insert fails. Failures are logged but never thrown — auth must not break.
+ * Returns the session record on success, or null if the insert fails.
+ * Failures are logged but never thrown — auth must not break.
  */
 export async function logSessionStart(
   agentId: string,
   req: NextRequest
 ): Promise<AgentSessionRecord | null> {
   try {
-    const now = new Date().toISOString()
     const ipAddress = getClientIp(req)
     const userAgent = req.headers.get('user-agent') || null
-
-    const { data, error } = await supabase
-      .from('agent_sessions')
-      .insert({
-        agent_id: agentId,
-        session_start: now,
-        last_active_at: now,
-        ip_address: ipAddress,
-        user_agent: userAgent,
-      })
-      .select('id, agent_id, session_start, last_active_at, ip_address, user_agent')
-      .single()
-
-    if (error) {
-      // Log the error but do NOT throw — login must succeed even if session logging fails
-      console.error('[agent-session] logSessionStart failed:', error.message, {
+    return await authService.logAgentSessionStart(agentId, ipAddress, userAgent) as AgentSessionRecord
+  } catch (err: any) {
+    if (err?.message !== undefined && err?.code !== undefined) {
+      // DB-returned error with message + code
+      console.error('[agent-session] logSessionStart failed:', err.message, {
         agentId,
-        code: error.code,
+        code: err.code,
       })
-      return null
+    } else {
+      console.error('[agent-session] logSessionStart unexpected error:', err)
     }
-
-    return {
-      id: data.id,
-      agentId: data.agent_id,
-      sessionStart: data.session_start,
-      lastActiveAt: data.last_active_at,
-      ipAddress: data.ip_address,
-      userAgent: data.user_agent,
-    }
-  } catch (err) {
-    // Catch unexpected errors (network, env vars missing, etc.)
-    console.error('[agent-session] logSessionStart unexpected error:', err)
     return null
   }
 }
@@ -100,18 +63,13 @@ export async function logSessionStart(
  */
 export async function touchSession(sessionId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('agent_sessions')
-      .update({ last_active_at: new Date().toISOString() })
-      .eq('id', sessionId)
-
-    if (error) {
-      console.error('[agent-session] touchSession failed:', error.message, { sessionId })
-      return false
+    return await authService.touchAgentSession(sessionId)
+  } catch (err: any) {
+    if (err?.message !== undefined) {
+      console.error('[agent-session] touchSession failed:', err.message, { sessionId })
+    } else {
+      console.error('[agent-session] touchSession unexpected error:', err)
     }
-    return true
-  } catch (err) {
-    console.error('[agent-session] touchSession unexpected error:', err)
     return false
   }
 }
@@ -126,18 +84,13 @@ export async function touchSession(sessionId: string): Promise<boolean> {
  */
 export async function touchSessionByAgentId(agentId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('agent_sessions')
-      .update({ last_active_at: new Date().toISOString() })
-      .eq('agent_id', agentId)
-
-    if (error) {
-      console.error('[agent-session] touchSessionByAgentId failed:', error.message, { agentId })
-      return false
+    return await authService.touchAgentSessionByAgentId(agentId)
+  } catch (err: any) {
+    if (err?.message !== undefined) {
+      console.error('[agent-session] touchSessionByAgentId failed:', err.message, { agentId })
+    } else {
+      console.error('[agent-session] touchSessionByAgentId unexpected error:', err)
     }
-    return true
-  } catch (err) {
-    console.error('[agent-session] touchSessionByAgentId unexpected error:', err)
     return false
   }
 }

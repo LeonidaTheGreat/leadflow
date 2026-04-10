@@ -14,8 +14,10 @@
 
 const mockSession = { id: 'sess-1', userId: 'agent-456' }
 
-jest.mock('@/lib/session', () => ({
-  validateSession: jest.fn(),
+jest.mock('@/lib/services/AuthService', () => ({
+  authService: {
+    validateSession: jest.fn(),
+  },
 }))
 
 jest.mock('@/lib/analytics-queries', () => ({
@@ -27,7 +29,7 @@ jest.mock('@/lib/analytics-queries', () => ({
   getAvgResponseTime: jest.fn().mockResolvedValue({ avgResponseTime: 0, medianResponseTime: 0, error: null }),
 }))
 
-import { validateSession } from '@/lib/session'
+import { authService } from '@/lib/services/AuthService'
 import { GET } from '../app/api/analytics/dashboard/route'
 import { NextRequest } from 'next/server'
 
@@ -56,7 +58,7 @@ function makeRequest(
 describe('GET /api/analytics/dashboard — Auth', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(validateSession as jest.Mock).mockResolvedValue(mockSession)
+    ;(authService.validateSession as jest.Mock).mockResolvedValue(mockSession)
   })
 
   it('returns 401 when no session cookie is present', async () => {
@@ -68,7 +70,7 @@ describe('GET /api/analytics/dashboard — Auth', () => {
   })
 
   it('returns 401 when session token is invalid', async () => {
-    ;(validateSession as jest.Mock).mockResolvedValue(null)
+    ;(authService.validateSession as jest.Mock).mockResolvedValue(null)
     const req = makeRequest()
     const res = await GET(req)
     expect(res.status).toBe(401)

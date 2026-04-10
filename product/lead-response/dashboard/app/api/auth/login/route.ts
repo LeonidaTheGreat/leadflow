@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { AuthService } from '@/lib/services/AuthService'
-import { logSessionStart } from '@/lib/session-analytics'
-
-const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')
-const authService = new AuthService(supabase)
+import { authService, AuthService } from '@/lib/services/AuthService'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email (include onboarding state for post-login redirect)
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('real_estate_agents')
       .select('id, email, password_hash, first_name, last_name, email_verified, onboarding_completed')
       .eq('email', email.toLowerCase())
@@ -36,8 +32,8 @@ export async function POST(request: NextRequest) {
     // Check if email is verified
     if (!user.email_verified) {
       return NextResponse.json(
-        { 
-          error: 'EMAIL_NOT_VERIFIED', 
+        {
+          error: 'EMAIL_NOT_VERIFIED',
           message: 'Please confirm your email address.',
           resendUrl: '/api/auth/resend-verification'
         },
@@ -56,9 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create server-side session
-    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      ?? request.headers.get('x-real-ip') 
-      ?? undefined
+    const ipAddress = AuthService.getClientIp(request) ?? undefined
     const session = await authService.createSession({
       userId: user.id,
       userAgent: request.headers.get('user-agent') || undefined,
@@ -67,13 +61,23 @@ export async function POST(request: NextRequest) {
     })
 
     // Update last login timestamp
-    await supabase
+    await supabaseAdmin
       .from('real_estate_agents')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', user.id)
 
-    // Log session analytics (fail silently — must not break login)
-    const analyticsSessionId = await logSessionStart(user.id, ipAddress, request.headers.get('user-agent') || null)
+    // Log agent session analytics (fail silently — must not break login)
+    let analyticsSessionId: string | null = null
+    try {
+      const record = await authService.logAgentSessionStart(
+        user.id,
+        ipAddress ?? null,
+        request.headers.get('user-agent') || null
+      )
+      analyticsSessionId = record?.id ?? null
+    } catch {
+      // Session analytics failure must never break login
+    }
 
     // Create response with user data and onboarding status
     const response = NextResponse.json({

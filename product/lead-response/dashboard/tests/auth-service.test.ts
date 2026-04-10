@@ -2,7 +2,8 @@
  * @jest-environment node
  */
 
-import { AuthService } from '@/lib/services/AuthService'
+import { AuthService, TRACKED_PAGES } from '@/lib/services/AuthService'
+import { NextRequest } from 'next/server'
 
 type QueryResult = { data: any; error: any; count?: number | null }
 
@@ -193,5 +194,258 @@ describe('AuthService', () => {
     expect(session?.userAgent).toEqual('test-agent')
     expect(session?.ipAddress).toEqual('10.0.0.2')
     expect(session?.lastUsedAt instanceof Date).toBe(true)
+  })
+})
+
+// ─── Agent Session Methods ────────────────────────────────────────────────────
+
+describe('AuthService.getClientIp (static)', () => {
+  function makeReq(headers: Record<string, string>) {
+    return new NextRequest('http://localhost/', { headers })
+  }
+
+  it('returns first IP from x-forwarded-for', () => {
+    const req = makeReq({ 'x-forwarded-for': '1.2.3.4, 5.6.7.8' })
+    expect(AuthService.getClientIp(req)).toBe('1.2.3.4')
+  })
+
+  it('returns x-real-ip when x-forwarded-for is absent', () => {
+    const req = makeReq({ 'x-real-ip': '9.9.9.9' })
+    expect(AuthService.getClientIp(req)).toBe('9.9.9.9')
+  })
+
+  it('returns null when no IP headers present', () => {
+    const req = makeReq({})
+    expect(AuthService.getClientIp(req)).toBeNull()
+  })
+})
+
+describe('AuthService.logAgentSessionStart', () => {
+  it('inserts into agent_sessions and returns the session record', async () => {
+    const now = new Date().toISOString()
+    const mockRow = {
+      id: 'asess-1',
+      agent_id: 'agent-abc',
+      session_start: now,
+      last_active_at: now,
+      ip_address: '1.2.3.4',
+      user_agent: 'TestAgent/1.0',
+    }
+
+    let capturedPayload: any = null
+    const db = {
+      from: jest.fn(() => ({
+        insert: (payload: any) => {
+          capturedPayload = payload
+          return { select: () => ({ single: async () => ({ data: mockRow, error: null }) }) }
+        },
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    const record = await service.logAgentSessionStart('agent-abc', '1.2.3.4', 'TestAgent/1.0')
+
+    expect(db.from).toHaveBeenCalledWith('agent_sessions')
+    expect(capturedPayload.agent_id).toBe('agent-abc')
+    expect(capturedPayload.ip_address).toBe('1.2.3.4')
+    expect(capturedPayload.user_agent).toBe('TestAgent/1.0')
+    expect(capturedPayload.session_start).toBeDefined()
+    expect(capturedPayload.last_active_at).toBeDefined()
+
+    expect(record).toMatchObject({
+      id: 'asess-1',
+      agentId: 'agent-abc',
+      ipAddress: '1.2.3.4',
+      userAgent: 'TestAgent/1.0',
+    })
+  })
+
+  it('throws when DB returns an error', async () => {
+    const dbError = { message: 'insert failed', code: '23503' }
+    const db = {
+      from: jest.fn(() => ({
+        insert: () => ({
+          select: () => ({ single: async () => ({ data: null, error: dbError }) }),
+        }),
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    await expect(service.logAgentSessionStart('agent-abc', null, null)).rejects.toMatchObject({
+      message: 'insert failed',
+    })
+  })
+
+  it('sets ip_address and user_agent to null when not provided', async () => {
+    const now = new Date().toISOString()
+    let capturedPayload: any = null
+    const db = {
+      from: jest.fn(() => ({
+        insert: (payload: any) => {
+          capturedPayload = payload
+          return {
+            select: () => ({
+              single: async () => ({
+                data: { id: 'x', agent_id: 'agent-abc', session_start: now, last_active_at: now, ip_address: null, user_agent: null },
+                error: null,
+              }),
+            }),
+          }
+        },
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    await service.logAgentSessionStart('agent-abc', null, null)
+
+    expect(capturedPayload.ip_address).toBeNull()
+    expect(capturedPayload.user_agent).toBeNull()
+  })
+})
+
+describe('AuthService.touchAgentSession', () => {
+  it('updates last_active_at by session id and returns true', async () => {
+    const updateEq = jest.fn(async () => ({ error: null }))
+    const db = {
+      from: jest.fn(() => ({
+        update: jest.fn(() => ({ eq: updateEq })),
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    const result = await service.touchAgentSession('sess-id-1')
+
+    expect(result).toBe(true)
+    expect(updateEq).toHaveBeenCalledWith('id', 'sess-id-1')
+  })
+
+  it('throws when DB returns an error', async () => {
+    const dbError = { message: 'update failed', code: '42P01' }
+    const db = {
+      from: jest.fn(() => ({
+        update: jest.fn(() => ({ eq: jest.fn(async () => ({ error: dbError })) })),
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    await expect(service.touchAgentSession('sess-id-1')).rejects.toMatchObject({ message: 'update failed' })
+  })
+})
+
+describe('AuthService.touchAgentSessionByAgentId', () => {
+  it('updates last_active_at by agent_id and returns true', async () => {
+    const updateEq = jest.fn(async () => ({ error: null }))
+    const db = {
+      from: jest.fn(() => ({
+        update: jest.fn(() => ({ eq: updateEq })),
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    const result = await service.touchAgentSessionByAgentId('agent-xyz')
+
+    expect(result).toBe(true)
+    expect(updateEq).toHaveBeenCalledWith('agent_id', 'agent-xyz')
+  })
+
+  it('throws when DB returns an error', async () => {
+    const dbError = { message: 'update failed', code: '42P01' }
+    const db = {
+      from: jest.fn(() => ({
+        update: jest.fn(() => ({ eq: jest.fn(async () => ({ error: dbError })) })),
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    await expect(service.touchAgentSessionByAgentId('agent-xyz')).rejects.toMatchObject({ message: 'update failed' })
+  })
+})
+
+describe('AuthService.logPageView', () => {
+  it('inserts a row for tracked pages', async () => {
+    const insertMock = jest.fn(async () => ({ data: null, error: null }))
+    const db = {
+      from: jest.fn(() => ({ insert: insertMock })),
+    }
+
+    const service = new AuthService(db as any)
+    await service.logPageView('agent-abc', 'sess-1', '/dashboard')
+
+    expect(insertMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        agent_id: 'agent-abc',
+        session_id: 'sess-1',
+        page: '/dashboard',
+      })
+    )
+  })
+
+  it('skips DB call for untracked pages', async () => {
+    let fromCalled = false
+    const db = {
+      from: jest.fn(() => { fromCalled = true; return { insert: jest.fn() } }),
+    }
+
+    const service = new AuthService(db as any)
+    await service.logPageView('agent-abc', 'sess-1', '/untracked/page')
+
+    expect(fromCalled).toBe(false)
+  })
+
+  it('strips query strings before checking page', async () => {
+    const insertMock = jest.fn(async () => ({ data: null, error: null }))
+    const db = {
+      from: jest.fn(() => ({ insert: insertMock })),
+    }
+
+    const service = new AuthService(db as any)
+    await service.logPageView('agent-abc', 'sess-1', '/dashboard/billing?tab=invoices')
+
+    expect(insertMock).toHaveBeenCalledWith(
+      expect.objectContaining({ page: '/dashboard/billing' })
+    )
+  })
+
+  it('fails silently on DB error', async () => {
+    const db = {
+      from: jest.fn(() => { throw new Error('DB down') }),
+    }
+
+    const service = new AuthService(db as any)
+    await expect(service.logPageView('agent-abc', 'sess-1', '/dashboard')).resolves.toBeUndefined()
+  })
+})
+
+describe('AuthService.endAgentSession', () => {
+  it('sets session_end timestamp', async () => {
+    const updateEq = jest.fn(async () => ({ error: null }))
+    const db = {
+      from: jest.fn(() => ({
+        update: jest.fn(() => ({ eq: updateEq })),
+      })),
+    }
+
+    const service = new AuthService(db as any)
+    await service.endAgentSession('sess-end-1')
+
+    expect(updateEq).toHaveBeenCalledWith('id', 'sess-end-1')
+  })
+
+  it('fails silently on DB error', async () => {
+    const db = {
+      from: jest.fn(() => { throw new Error('DB down') }),
+    }
+
+    const service = new AuthService(db as any)
+    await expect(service.endAgentSession('sess-end-1')).resolves.toBeUndefined()
+  })
+})
+
+describe('TRACKED_PAGES', () => {
+  it('includes required dashboard routes', () => {
+    expect(TRACKED_PAGES).toContain('/dashboard')
+    expect(TRACKED_PAGES).toContain('/dashboard/conversations')
+    expect(TRACKED_PAGES).toContain('/dashboard/settings')
+    expect(TRACKED_PAGES).toContain('/dashboard/billing')
   })
 })
