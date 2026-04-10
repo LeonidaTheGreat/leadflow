@@ -8,7 +8,7 @@ const SubscriptionService = require('../lib/services/SubscriptionService');
 const subscriptionService = new SubscriptionService();
 const billingCycleManager = require('../lib/billing-cycle-manager');
 const webhookProcessor = require('../lib/webhook-processor');
-const stripePortal = require('../lib/stripe-portal');
+const stripePortal = require('../lib/services/StripeService');
 const billingRoutes = require('../routes/billing');
 
 module.exports = {
