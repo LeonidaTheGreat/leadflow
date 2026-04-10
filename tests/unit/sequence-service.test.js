@@ -1,5 +1,5 @@
 /**
- * Unit Tests: lib/sequence-service.js
+ * Unit Tests: lib/services/SequenceService.js
  * Task: b54381ed-a14f-4887-9e23-7ab783d7ecb7
  * Bug: No automatic sequence creation on new lead / no-response
  */
@@ -7,6 +7,7 @@
 'use strict';
 
 const assert = require('assert');
+const SequenceService = require('../../lib/services/SequenceService');
 
 // ===== MOCK SUPABASE =====
 let mockInsertedRow = null;
@@ -64,28 +65,13 @@ const mockSupabase = {
   }
 };
 
-// Inject mock before requiring the module
-process.env.NEXT_PUBLIC_API_URL = 'http://mock';
-process.env.API_SECRET_KEY = 'mock-key';
-
-// Patch createClient
-const { createClient: origCreateClient } = require('../../lib/db-client');
-const supabaseModule = require('../../lib/db-client');
-const origCreate = supabaseModule.createClient;
-supabaseModule.createClient = () => mockSupabase;
-
-// Clear module cache so sequence-service picks up our mock
-delete require.cache[require.resolve('../../lib/sequence-service')];
-const {
-  createLeadSequence,
-  findLeadByFubId,
-  findLeadByPhone,
-  hasActiveSequence,
-  getInitialSendTime,
-} = require('../../lib/sequence-service');
-
-// Restore
-supabaseModule.createClient = origCreate;
+// Create SequenceService with injected mock DB
+const _svc = new SequenceService({ db: mockSupabase });
+const createLeadSequence = _svc.createLeadSequence.bind(_svc);
+const findLeadByFubId = _svc.findLeadByFubId.bind(_svc);
+const findLeadByPhone = _svc.findLeadByPhone.bind(_svc);
+const hasActiveSequence = _svc.hasActiveSequence.bind(_svc);
+const getInitialSendTime = _svc.getInitialSendTime.bind(_svc);
 
 // ===== TESTS =====
 

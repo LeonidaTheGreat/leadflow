@@ -2,7 +2,7 @@
 /**
  * check-stuck-agents.js — Onboarding Stuck Agent Alert Runner
  *
- * Calls OnboardingTelemetryService.checkAndAlertStuckAgents().
+ * Calls checkAndAlertStuckAgents() from lib/services/OnboardingTelemetryService.
  * Identifies real estate agents stuck in the onboarding funnel for >24 hours
  * and creates/updates rows in onboarding_stuck_alerts + product_feedback.
  *

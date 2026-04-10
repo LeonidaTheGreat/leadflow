@@ -16,12 +16,12 @@ const { createClient } = require('../lib/db-client');
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_KEY = process.env.API_SECRET_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+if (!API_URL || !API_KEY) {
   console.error('FAIL: Missing NEXT_PUBLIC_API_URL or API_SECRET_KEY');
   process.exit(1);
 }
 
-const { createStuckAlerts } = require(path.join(__dirname, '../lib/onboarding-telemetry'));
+const OnboardingTelemetryService = require(path.join(__dirname, '../lib/services/OnboardingTelemetryService'));
 
 async function cleanup(supabase, agentId) {
   await supabase.from('product_feedback').delete().eq('agent_id', agentId);
@@ -30,7 +30,7 @@ async function cleanup(supabase, agentId) {
 }
 
 async function runTests() {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(API_URL, API_KEY);
 
   // ─── Insert a synthetic stuck agent ──────────────────────────────────────
   const stuckSince = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString(); // 25 hours ago
@@ -69,7 +69,8 @@ async function runTests() {
       },
     ];
 
-    const result = await createStuckAlerts(supabase, stuckAgents);
+    const _telemetryService = new OnboardingTelemetryService(supabase);
+    const result = await _telemetryService.createStuckAlerts(stuckAgents);
     assert.strictEqual(result.success, true, `Expected success=true, got: ${JSON.stringify(result)}`);
     assert(result.alerts_created >= 1, `Expected at least 1 alert, got ${result.alerts_created}`);
     console.log(`✓ createStuckAlerts returned success, alerts_created=${result.alerts_created}`);
@@ -108,7 +109,7 @@ async function runTests() {
 
     // ─── Idempotency: second run should update alert, not create new feedback ─
     console.log('\n[Test 4] Second run — should update existing alert (idempotency)...');
-    const result2 = await createStuckAlerts(supabase, stuckAgents);
+    const result2 = await _telemetryService.createStuckAlerts(stuckAgents);
     assert.strictEqual(result2.success, true, 'Second run should succeed');
 
     // No additional product_feedback row should be inserted (alert already exists)

@@ -13,17 +13,23 @@
  */
 
 const assert = require('assert');
-const { 
-  runConversionSequence, 
-  processMilestone,
-  sendConversionEmail,
-  getEligibleAgents,
-  getAgentStats,
-  hasAgentUpgraded,
-  MILESTONES,
-  isSupabaseConfigured,
-  isResendConfigured
-} = require('../lib/pilot-conversion-service');
+const { createClient } = require('../lib/db');
+const PilotConversionService = require('../lib/services/PilotConversionService');
+
+const _apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const _apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
+const _db = (_apiUrl && _apiKey) ? createClient(_apiUrl, _apiKey) : null;
+const _service = new PilotConversionService({ db: _db });
+
+const MILESTONES = PilotConversionService.MILESTONES;
+const runConversionSequence = _service.runConversionSequence.bind(_service);
+const processMilestone = _service.processMilestone.bind(_service);
+const sendConversionEmail = _service.sendConversionEmail.bind(_service);
+const getEligibleAgents = _service.getEligibleAgents.bind(_service);
+const getAgentStats = _service.getAgentStats.bind(_service);
+const hasAgentUpgraded = _service.hasAgentUpgraded.bind(_service);
+const isSupabaseConfigured = () => _service.isDbConfigured();
+const isResendConfigured = () => _service.isResendConfigured();
 
 // Test configuration
 const TEST_AGENT_EMAIL = 'test-pilot-conversion@leadflow.test';

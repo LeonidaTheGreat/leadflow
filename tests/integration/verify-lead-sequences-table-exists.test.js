@@ -64,8 +64,8 @@ describe('verify-lead-sequences-table-exists', () => {
     expect(() => require('../lib/db-client')).not.toThrow()
   })
 
-  test('sequence-service.js loads without error', () => {
-    expect(() => require('../lib/sequence-service')).not.toThrow()
+  test('SequenceService loads without error', () => {
+    expect(() => require('../lib/services/SequenceService')).not.toThrow()
   })
 
   test('NEXT_PUBLIC_API_URL env var is set', () => {

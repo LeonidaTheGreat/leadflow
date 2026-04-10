@@ -38,7 +38,9 @@ console.log('\n=== check-stuck-agents wiring tests ===\n')
 // ── Test 1: lib/onboarding-telemetry.js exports the required functions ──────
 
 console.log('1. onboarding-telemetry.js exports')
-const telemetry = require(path.join(PROJECT_ROOT, 'lib/onboarding-telemetry'))
+const OnboardingTelemetryService = require(path.join(PROJECT_ROOT, 'lib/services/OnboardingTelemetryService'))
+const _telInstance = new OnboardingTelemetryService(null)
+const telemetry = { createStuckAlerts: _telInstance.createStuckAlerts.bind(_telInstance), checkAndAlertStuckAgents: _telInstance.checkAndAlertStuckAgents.bind(_telInstance) }
 
 test('exports createStuckAlerts', () => {
   assert.strictEqual(typeof telemetry.createStuckAlerts, 'function', 'createStuckAlerts must be a function')
@@ -63,8 +65,8 @@ test('route.ts file exists', () => {
 test('route.ts imports onboarding-telemetry', () => {
   const content = fs.readFileSync(cronRoutePath, 'utf-8')
   assert.ok(
-    content.includes('onboarding-telemetry'),
-    'route.ts must import onboarding-telemetry'
+    content.includes('onboarding-telemetry') || content.includes('OnboardingTelemetryService'),
+    'route.ts must import onboarding telemetry module'
   )
 })
 
@@ -120,11 +122,11 @@ test('check-stuck-agents.js exports run function', () => {
   assert.strictEqual(typeof script.run, 'function', 'check-stuck-agents.js must export run()')
 })
 
-test('check-stuck-agents.js requires onboarding-telemetry', () => {
+test('check-stuck-agents.js requires OnboardingTelemetryService', () => {
   const content = fs.readFileSync(scriptPath, 'utf-8')
   assert.ok(
-    content.includes('onboarding-telemetry'),
-    'check-stuck-agents.js must require lib/onboarding-telemetry'
+    content.includes('OnboardingTelemetryService'),
+    'check-stuck-agents.js must require OnboardingTelemetryService'
   )
 })
 
