@@ -13,7 +13,7 @@ if (fs.existsSync(envPath)) {
 
 let sb = null
 try {
-  const { createClient } = require(path.join(__dirname, '..', 'lib', 'db-client'))
+  const { createClient } = require(path.join(__dirname, '..', 'lib', 'db'))
 
   sb = createClient()
   console.log('✅ Connected via PostgREST')

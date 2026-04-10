@@ -2,7 +2,7 @@
 'use strict';
 
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 const sb = createClient(process.env.NEXT_PUBLIC_API_URL, process.env.API_SECRET_KEY);
 
 async function main() {

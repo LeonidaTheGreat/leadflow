@@ -12,7 +12,7 @@
  * 4. Samples findings structures for correctness
  */
 
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 async function ensureActionableRateHealth() {
   const url = process.env.NEXT_PUBLIC_API_URL;

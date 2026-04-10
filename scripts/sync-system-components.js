@@ -6,7 +6,7 @@
  * to the system_components table during heartbeat.
  */
 
-const { createClient } = require('../lib/db-client')
+const { createClient } = require('../lib/db')
 const crypto = require('crypto')
 const fs = require('fs')
 const path = require('path')

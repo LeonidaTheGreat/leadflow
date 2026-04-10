@@ -20,7 +20,7 @@
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '..', '.env') })
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 const { checkAndAlertStuckAgents } = require('../../lib/onboarding-telemetry')
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
