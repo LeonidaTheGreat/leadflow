@@ -23,7 +23,7 @@ const {
   MILESTONES,
   isSupabaseConfigured,
   isResendConfigured
-} = require('../lib/pilot-conversion-service');
+} = require('../lib/services/PilotConversionService');
 
 // Test configuration
 const TEST_AGENT_EMAIL = 'test-pilot-conversion@leadflow.test';

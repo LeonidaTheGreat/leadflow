@@ -6,10 +6,10 @@
  * 
  * Cron Schedule: 0 9 * * * (Daily at 9 AM)
  * 
- * @see lib/pilot-conversion-service.js
+ * @see lib/services/PilotConversionService.js
  */
 
-import { runConversionSequence } from '@/lib/pilot-conversion-service';
+import { runConversionSequence } from '@/lib/services/PilotConversionService';
 
 /**
  * GET handler for Vercel Cron

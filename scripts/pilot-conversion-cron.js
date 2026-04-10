@@ -21,7 +21,7 @@
 
 require('dotenv').config();
 
-const { runConversionSequence } = require('../lib/pilot-conversion-service');
+const { runConversionSequence } = require('../lib/services/PilotConversionService');
 
 async function main() {
   console.log('='.repeat(60));
