@@ -120,6 +120,7 @@ test_trial_signup_flow() {
   echo "$resp" | grep -q '"agentId"' || return 1
 
   E2E_TOKEN=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null) || true
+  E2E_AGENT_ID=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agentId',''))" 2>/dev/null) || true
   E2E_EMAIL="$email"
 }
 
@@ -172,19 +173,17 @@ test_lead_capture() {
   return 0
 }
 
-# Test 10: Dashboard loads without client-side errors (needs session or JWT)
+# Test 10: Dashboard loads without client-side errors (uses E2E user from test_trial_signup_flow)
 test_dashboard_no_errors() {
   [ -z "${API_KEY:-}" ] && return 1
+  [ -z "${E2E_AGENT_ID:-}" ] && return 1
 
-  # Use a real user who has completed onboarding (not trial-signup accounts — those have
-  # onboarding_completed=false and always redirect to /setup, not /dashboard)
-  local agent_resp user_id
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
-
-  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-  [ -z "$user_id" ] && return 1
+  # The E2E user from trial-signup has onboarding_completed=false and a non-expired trial.
+  # PATCH onboarding_completed=true so the middleware routes them to /dashboard (not /setup).
+  curl -s --max-time 10 -X PATCH "$API_URL/real_estate_agents?id=eq.$E2E_AGENT_ID" \
+    -H "apikey: $API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"onboarding_completed":true}' >/dev/null 2>&1 || return 1
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
   # The DB stores only the hash (since PR #1026). The cookie must hold the raw token —
@@ -199,14 +198,14 @@ test_dashboard_no_errors() {
     -H "apikey: $API_KEY" \
     -H "Content-Type: application/json" \
     -H "Prefer: return=representation" \
-    -d "{\"user_id\":\"$user_id\",\"token\":\"$token_hash\",\"expires_at\":\"$expires\",\"created_at\":\"$now\",\"last_used_at\":\"$now\",\"user_agent\":\"e2e-test\"}" 2>/dev/null) || return 1
+    -d "{\"user_id\":\"$E2E_AGENT_ID\",\"token\":\"$token_hash\",\"expires_at\":\"$expires\",\"created_at\":\"$now\",\"last_used_at\":\"$now\",\"user_agent\":\"e2e-test\"}" 2>/dev/null) || return 1
 
   session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
   [ -z "$session_id" ] && return 1
 
-  # Load dashboard with raw token in cookie — server hashes it to validate
+  # Load dashboard following redirects — server hashes the raw token to validate session
   local html
-  html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
+  html=$(curl -s --max-time 15 -L "$BASE_URL/dashboard" \
     -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
   local exit_code=$?
 
@@ -300,6 +299,7 @@ $VERBOSE && echo "E2E Flow Tests — $BASE_URL"
 $VERBOSE && echo "================================"
 
 E2E_TOKEN=""
+E2E_AGENT_ID=""
 E2E_EMAIL=""
 
 run_test "health-api-connectivity" "Health: API connectivity" "critical" "test_health_connectivity"
