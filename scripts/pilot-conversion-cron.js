@@ -21,7 +21,8 @@
 
 require('dotenv').config();
 
-const { runConversionSequence } = require('../lib/pilot-conversion-service');
+const { createClient } = require('../lib/db');
+const PilotConversionService = require('../lib/services/PilotConversionService');
 
 async function main() {
   console.log('='.repeat(60));
@@ -43,8 +44,14 @@ async function main() {
       console.warn('⚠️  RESEND_API_KEY not set - emails will be logged but not sent');
     }
 
+    // Initialize service with db client from env
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiKey = process.env.API_SECRET_KEY || process.env.LEADFLOW_API_KEY;
+    const db = (apiUrl && apiKey) ? createClient(apiUrl, apiKey) : null;
+    const service = new PilotConversionService({ db });
+
     // Run the conversion sequence
-    const results = await runConversionSequence();
+    const results = await service.runConversionSequence();
 
     // Output summary
     console.log('\n' + '='.repeat(60));
