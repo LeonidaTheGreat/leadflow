@@ -5,70 +5,12 @@ import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
 import { AuthService } from '@/lib/services/AuthService'
+import { leadService } from '@/lib/services/LeadService'
 
 const supabase = postgrestAdmin
 const authService = AuthService.createDefaultService()
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-// Sample lead data for first-time users
-const SAMPLE_LEADS = [
-  {
-    name: 'Sarah Johnson',
-    phone: '+15551234567',
-    email: 'sarah.j@example.com',
-    source: 'Zillow',
-    status: 'new',
-    property_interest: '3-bedroom home in Austin',
-    budget: '$600,000 - $750,000',
-    timeline: '1-3 months',
-    is_sample: true,
-    sample_type: 'demo'
-  },
-  {
-    name: 'Michael Chen',
-    phone: '+15559876543',
-    email: 'mchen@example.com',
-    source: 'Realtor.com',
-    status: 'responded',
-    property_interest: 'Downtown condo',
-    budget: '$400,000 - $500,000',
-    timeline: '3-6 months',
-    is_sample: true,
-    sample_type: 'demo'
-  },
-  {
-    name: 'Emily Rodriguez',
-    phone: '+15555678901',
-    email: 'emily.r@example.com',
-    source: 'Facebook Ads',
-    status: 'qualified',
-    property_interest: 'Family home with pool',
-    budget: '$800,000+',
-    timeline: 'ASAP',
-    is_sample: true,
-    sample_type: 'demo'
-  }
-]
-
-// Sample AI responses for demo leads
-const SAMPLE_AI_RESPONSES = [
-  {
-    content: "Hi Sarah! 👋 I'm your AI assistant from LeadFlow. I'd love to help you find a 3-bedroom home in Austin. Are you looking in any specific neighborhoods?",
-    sender_type: 'ai',
-    is_sample: true
-  },
-  {
-    content: "Hi Michael! Thanks for reaching out about downtown condos. I can definitely help you find something in the $400-500K range. When would be a good time for a quick call to discuss your preferences?",
-    sender_type: 'ai',
-    is_sample: true
-  },
-  {
-    content: "Hi Emily! 🏊‍♀️ A family home with a pool sounds wonderful! I have several listings that might interest you. Would you like me to send you details on properties with pools in your area?",
-    sender_type: 'ai',
-    is_sample: true
-  }
-]
 
 export async function POST(request: NextRequest) {
   try {
@@ -166,36 +108,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create sample leads for the new agent (FR-4: First Session Seeded Data)
-    const sampleLeadsWithAgent = SAMPLE_LEADS.map((lead, index) => ({
-      ...lead,
-      agent_id: agent.id,
-      created_at: new Date(Date.now() - index * 3600000).toISOString(), // Stagger creation times
-      updated_at: new Date(Date.now() - index * 3600000).toISOString()
-    }))
-
-    const { data: createdLeads, error: leadsError } = await supabase
-      .from('leads')
-      .insert(sampleLeadsWithAgent)
-      .select('id')
-
+    // Create sample leads/messages for first session (FR-4)
+    const { error: leadsError } = await leadService.seedDemoLeads(agent.id)
     if (leadsError) {
       console.error('Error creating sample leads:', leadsError)
       // Don't fail signup if sample leads fail - continue anyway
-    } else if (createdLeads) {
-      // Create sample AI responses for each lead
-      const sampleMessages = createdLeads.map((lead, index) => ({
-        lead_id: lead.id,
-        message_body: SAMPLE_AI_RESPONSES[index]?.content || SAMPLE_AI_RESPONSES[0].content,
-        direction: 'outbound',
-        channel: 'sms',
-        ai_generated: true,
-        status: 'sent',
-        is_sample: true,
-        created_at: new Date(Date.now() - index * 3600000 + 60000).toISOString() // 1 min after lead
-      }))
-
-      await supabase.from('messages').insert(sampleMessages)
     }
 
     // Initialize NPS survey schedule for the new agent (non-blocking)
