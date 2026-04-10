@@ -138,10 +138,12 @@ describe('AC-6/AC-7: /api/auth/me endpoint exists', () => {
     )
   })
 
-  it('/api/auth/me reads auth-token cookie', () => {
+  it('/api/auth/me reads auth-token cookie (via getAuthUserId helper or directly)', () => {
     const src = readFile('app/api/auth/me/route.ts')
+    // auth-token may be read directly or via getAuthUserId() in lib/auth which reads it
+    const readsAuthToken = src.includes("'auth-token'") || src.includes('getAuthUserId')
     assert.ok(
-      src.includes("'auth-token'"),
+      readsAuthToken,
       '/api/auth/me does not read auth-token cookie'
     )
   })
