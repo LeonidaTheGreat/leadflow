@@ -180,8 +180,6 @@ test_dashboard_no_errors() {
   # Must exclude agents on expired trials — the middleware redirects them to /upgrade
   # before the dashboard can render, causing the test to fail with no 'Lead Feed' content.
   # Strategy: prefer paid/pilot agents; fall back to trial agents with future trial_ends_at.
-  # NOTE: PostgREST or=(col.op.val,...) syntax breaks when values contain colons (ISO timestamps),
-  # so we use two separate queries with a fallback instead of a single OR query.
   local agent_resp user_id now_iso
   now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 

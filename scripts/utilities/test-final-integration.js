@@ -3,7 +3,7 @@
  * Final integration test - Simulates dashboard header display
  */
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 require('dotenv').config()
 
 const db = createClient(

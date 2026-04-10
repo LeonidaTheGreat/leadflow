@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const SubscriptionService = require('../../lib/services/SubscriptionService');
-const legacySubscriptionService = require('../../lib/subscription-service');
+const billingService = require('../../lib/services/BillingService');
 
 function createQueryBuilder(result) {
   return {
@@ -73,8 +73,8 @@ async function run() {
   assert.equal(listed.subscriptions.length, 1);
   assert.equal(listed.subscriptions[0].id, 'sub-1');
 
-  assert.equal(typeof legacySubscriptionService.createManagedSubscription, 'function');
-  assert.equal(typeof legacySubscriptionService.SubscriptionService, 'function');
+  assert.equal(typeof billingService.createCompleteSubscription, 'function');
+  assert.equal(typeof billingService.BillingService, 'function');
 
   console.log('PASS subscription service class refactor tests');
 }

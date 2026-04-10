@@ -5,7 +5,7 @@
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
-const { createClient } = require('../lib/db-client')
+const { createClient } = require('../lib/db')
 
 const db = createClient(process.env.NEXT_PUBLIC_API_URL, process.env.API_SECRET_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }

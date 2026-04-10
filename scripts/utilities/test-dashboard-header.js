@@ -4,7 +4,7 @@
  * Validates: project name, goal, current day, deadline, overall status
  */
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 require('dotenv').config()
 
 const db = createClient(

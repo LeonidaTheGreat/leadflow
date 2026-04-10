@@ -3,7 +3,7 @@
  * Fix Stripe work status to match dashboard filter
  */
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 require('dotenv').config()
 
 const db = createClient(

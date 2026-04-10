@@ -1,4 +1,4 @@
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 require('dotenv').config();
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
