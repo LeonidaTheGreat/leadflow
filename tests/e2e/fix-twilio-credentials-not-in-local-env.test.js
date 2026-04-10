@@ -4,8 +4,8 @@
  *
  * Verifies:
  * 1. .env.example documents all required Twilio vars
- * 2. lib/twilio-sms.js has cleanEnvValue helper (quote-stripping for Vercel CLI exports)
- * 3. lib/twilio-sms.js falls back TWILIO_PHONE_NUMBER_US -> TWILIO_PHONE_NUMBER
+ * 2. lib/services/TwilioService.js has cleanEnvValue helper (quote-stripping for Vercel CLI exports)
+ * 3. lib/services/TwilioService.js falls back TWILIO_PHONE_NUMBER_US -> TWILIO_PHONE_NUMBER
  * 4. Local env (from .env.template or .env.local) exposes Twilio vars at runtime
  */
 'use strict';
@@ -32,23 +32,23 @@ const projectDir = '/Users/clawdbot/projects/leadflow';
   console.log('PASS: .env.example documents all required Twilio vars');
 }
 
-// ── Test 2: cleanEnvValue helper exists in twilio-sms.js ────────────────────
+// ── Test 2: cleanEnvValue helper exists in TwilioService.js ────────────────────
 {
-  const smsPath = path.join(projectDir, 'lib/twilio-sms.js');
+  const smsPath = path.join(projectDir, 'lib/services/TwilioService.js');
   const smsCode = fs.readFileSync(smsPath, 'utf8');
-  assert(smsCode.includes('cleanEnvValue'), 'lib/twilio-sms.js missing cleanEnvValue helper');
-  console.log('PASS: cleanEnvValue helper present in lib/twilio-sms.js');
+  assert(smsCode.includes('cleanEnvValue'), 'lib/services/TwilioService.js missing cleanEnvValue helper');
+  console.log('PASS: cleanEnvValue helper present in lib/services/TwilioService.js');
 }
 
 // ── Test 3: fallback chain TWILIO_PHONE_NUMBER_US -> TWILIO_PHONE_NUMBER ────
 {
-  const smsCode = fs.readFileSync(path.join(projectDir, 'lib/twilio-sms.js'), 'utf8');
+  const smsCode = fs.readFileSync(path.join(projectDir, 'lib/services/TwilioService.js'), 'utf8');
   // The fix adds: twilioPhoneNumberUs || twilioPhoneNumberLegacy
   assert(
     smsCode.includes('twilioPhoneNumberLegacy') || smsCode.includes('TWILIO_PHONE_NUMBER'),
-    'lib/twilio-sms.js missing TWILIO_PHONE_NUMBER fallback'
+    'lib/services/TwilioService.js missing TWILIO_PHONE_NUMBER fallback'
   );
-  console.log('PASS: TWILIO_PHONE_NUMBER fallback present in lib/twilio-sms.js');
+  console.log('PASS: TWILIO_PHONE_NUMBER fallback present in lib/services/TwilioService.js');
 }
 
 // ── Test 4: Twilio vars are reachable at runtime via some env file ───────────
