@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitProductFeedback } from '@/lib/nps-service'
-import { validateSession } from '@/lib/session'
+import { authService } from '@/lib/services/AuthService'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const session = await validateSession(sessionToken)
+    const session = await authService.validateSession(sessionToken)
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

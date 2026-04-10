@@ -18,7 +18,9 @@ const AGENT_B = 'agent-attacker'
 const LEAD_OWN = 'lead-belongs-to-a'
 const LEAD_OTHER = 'lead-belongs-to-b'
 
-jest.mock('@/lib/session', () => ({ validateSession: jest.fn() }))
+jest.mock('@/lib/services/AuthService', () => ({
+  authService: { validateSession: jest.fn() },
+}))
 jest.mock('@/lib/services/AgentService', () => ({ agentService: { getAgentById: jest.fn() } }))
 jest.mock('@/lib/services/LeadService', () => ({ leadService: { getLeadById: jest.fn() } }))
 jest.mock('@/lib/calcom', () => ({
@@ -26,13 +28,13 @@ jest.mock('@/lib/calcom', () => ({
   getAgentBookingLink: jest.fn((a: any) => `https://cal.com/${a.calcom_username}`),
 }))
 
-import { validateSession } from '@/lib/session'
+import { authService } from '@/lib/services/AuthService'
 import { agentService } from '@/lib/services/AgentService'
 import { leadService } from '@/lib/services/LeadService'
 import { GET, POST } from '../app/api/booking/route'
 import { NextRequest } from 'next/server'
 
-const mockValidateSession = validateSession as jest.Mock
+const mockValidateSession = authService.validateSession as jest.Mock
 const mockGetAgentById = agentService.getAgentById as jest.Mock
 const mockGetLeadById = leadService.getLeadById as jest.Mock
 

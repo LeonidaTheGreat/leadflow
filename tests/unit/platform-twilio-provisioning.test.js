@@ -11,90 +11,24 @@
 'use strict';
 
 const assert = require('assert');
-
-// ============================================================
-// Minimal stub for lib/db so we can require twilio-sms
-// without a real DB connection.
-// ============================================================
-const Module = require('module');
-const originalLoad = Module._load;
-
-let _dbQueryResult = null; // set per test
-
-Module._load = function (request, parent, isMain) {
-  if (request === '../lib/db' || request.endsWith('/lib/db')) {
-    return {
-      createClient: () => ({
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              maybeSingle: async () => ({ data: _dbQueryResult, error: null }),
-            }),
-          }),
-          insert: () => ({ select: () => ({ single: async () => ({ data: {}, error: null }) }) }),
-          update: () => ({ eq: () => Promise.resolve({ data: null, error: null }) }),
-        }),
-      }),
-    };
-  }
-  if (request === './db' || request.endsWith('/db')) {
-    return {
-      createClient: () => ({
-        from: () => ({
-          select: () => ({
-            eq: () => ({
-              maybeSingle: async () => ({ data: _dbQueryResult, error: null }),
-            }),
-          }),
-          insert: () => ({ select: () => ({ single: async () => ({ data: {}, error: null }) }) }),
-          update: () => ({ eq: () => Promise.resolve({ data: null, error: null }) }),
-        }),
-      }),
-    };
-  }
-  return originalLoad.apply(this, arguments);
-};
-
-// Require AFTER hooking Module._load
-const {
-  resolveTwilioContext,
-  getPlatformTwilioClient,
-  selectFromNumber,
-  validateSmsInput,
-  SMS_CONFIG,
-} = require('../../lib/twilio-sms');
-
-// Restore Module._load after require
-Module._load = originalLoad;
+const TwilioService = require('../../lib/services/TwilioService');
 
 // ============================================================
 // Helpers
 // ============================================================
 
-function withEnv(overrides, fn) {
-  const saved = {};
-  for (const [k, v] of Object.entries(overrides)) {
-    saved[k] = process.env[k];
-    if (v === undefined) {
-      delete process.env[k];
-    } else {
-      process.env[k] = v;
-    }
-  }
-  try {
-    return fn();
-  } finally {
-    for (const [k, v] of Object.entries(saved)) {
-      if (v === undefined) {
-        delete process.env[k];
-      } else {
-        process.env[k] = v;
-      }
-    }
-    // Reset lazy platform client between tests
-    // (private var — reset by unsetting and re-requiring is complex; instead we
-    //  directly patch the module's internal via the exported getter check)
-  }
+function makeMockDb(queryResult) {
+  return {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          maybeSingle: async () => ({ data: queryResult, error: null }),
+        }),
+      }),
+      insert: () => ({ select: () => ({ single: async () => ({ data: {}, error: null }) }) }),
+      update: () => ({ eq: () => Promise.resolve({ data: null, error: null }) }),
+    }),
+  };
 }
 
 // ============================================================
@@ -125,25 +59,18 @@ class PlatformTwilioProvisioningUnitSuite {
   async testPlatformFallback() {
     console.log('\n--- TEST 1: Platform fallback (no agent creds) ---');
 
-    _dbQueryResult = null; // no agent_integrations row
-
-    // Set platform credentials
-    const platformSid = 'ACfakeplatformsid00000000000000000';
-    const platformToken = 'fakeplatformtoken';
     const platformPhone = '+15550001111';
-
     const origSid = process.env.TWILIO_ACCOUNT_SID;
     const origToken = process.env.TWILIO_AUTH_TOKEN;
     const origPhone = process.env.TWILIO_PHONE_NUMBER_US;
 
-    process.env.TWILIO_ACCOUNT_SID = platformSid;
-    process.env.TWILIO_AUTH_TOKEN = platformToken;
+    process.env.TWILIO_ACCOUNT_SID = 'ACfakeplatformsid00000000000000000';
+    process.env.TWILIO_AUTH_TOKEN = 'fakeplatformtoken';
     process.env.TWILIO_PHONE_NUMBER_US = platformPhone;
-    SMS_CONFIG.phoneNumbers.us = platformPhone;
-    SMS_CONFIG.defaultPhoneNumber = platformPhone;
 
     try {
-      const ctx = await resolveTwilioContext('agent-123', '+14165551234', 'us');
+      const service = new TwilioService({ db: makeMockDb(null) });
+      const ctx = await service.resolveTwilioContext('agent-123', '+14165551234', 'us');
       assert.strictEqual(ctx.mode, 'platform', 'mode should be platform');
       assert.strictEqual(ctx.fromNumber, platformPhone, 'fromNumber should be platform phone');
       assert.ok(ctx.client, 'client should be set');
@@ -151,9 +78,9 @@ class PlatformTwilioProvisioningUnitSuite {
     } catch (err) {
       this.record('Uses platform credentials when no agent creds', false, err.message);
     } finally {
-      process.env.TWILIO_ACCOUNT_SID = origSid !== undefined ? origSid : '';
-      process.env.TWILIO_AUTH_TOKEN = origToken !== undefined ? origToken : '';
-      process.env.TWILIO_PHONE_NUMBER_US = origPhone !== undefined ? origPhone : '';
+      if (origSid !== undefined) process.env.TWILIO_ACCOUNT_SID = origSid; else delete process.env.TWILIO_ACCOUNT_SID;
+      if (origToken !== undefined) process.env.TWILIO_AUTH_TOKEN = origToken; else delete process.env.TWILIO_AUTH_TOKEN;
+      if (origPhone !== undefined) process.env.TWILIO_PHONE_NUMBER_US = origPhone; else delete process.env.TWILIO_PHONE_NUMBER_US;
     }
   }
 
@@ -163,8 +90,7 @@ class PlatformTwilioProvisioningUnitSuite {
   async testCustomerCredentials() {
     console.log('\n--- TEST 2: Customer credentials (agent has own Twilio) ---');
 
-    // Simulate agent_integrations row with customer credentials
-    _dbQueryResult = {
+    const customerRow = {
       twilio_account_sid: 'ACfakecustomersid000000000000000000',
       twilio_auth_token: 'fakecustomertoken',
       twilio_phone_e164: '+15559998888',
@@ -172,15 +98,14 @@ class PlatformTwilioProvisioningUnitSuite {
     };
 
     try {
-      const ctx = await resolveTwilioContext('agent-456', '+14165551234', 'us');
+      const service = new TwilioService({ db: makeMockDb(customerRow) });
+      const ctx = await service.resolveTwilioContext('agent-456', '+14165551234', 'us');
       assert.strictEqual(ctx.mode, 'customer', 'mode should be customer');
       assert.strictEqual(ctx.fromNumber, '+15559998888', 'fromNumber should be customer phone');
       assert.ok(ctx.client, 'client should be set');
       this.record('Uses customer credentials when agent has own Twilio account', true);
     } catch (err) {
       this.record('Uses customer credentials when agent has own Twilio account', false, err.message);
-    } finally {
-      _dbQueryResult = null;
     }
   }
 
@@ -190,27 +115,22 @@ class PlatformTwilioProvisioningUnitSuite {
   async testNoCredentialsThrows() {
     console.log('\n--- TEST 3: No credentials → clear error ---');
 
-    _dbQueryResult = null;
-
     const origSid = process.env.TWILIO_ACCOUNT_SID;
     const origToken = process.env.TWILIO_AUTH_TOKEN;
-    const origPhone = process.env.TWILIO_PHONE_NUMBER_US;
+    const origPhoneUs = process.env.TWILIO_PHONE_NUMBER_US;
+    const origPhoneCa = process.env.TWILIO_PHONE_NUMBER_CA;
+    const origPhoneLegacy = process.env.TWILIO_PHONE_NUMBER;
 
     delete process.env.TWILIO_ACCOUNT_SID;
     delete process.env.TWILIO_AUTH_TOKEN;
     delete process.env.TWILIO_PHONE_NUMBER_US;
-    SMS_CONFIG.phoneNumbers.us = undefined;
-    SMS_CONFIG.defaultPhoneNumber = undefined;
-
-    // Reset cached platform client so it re-evaluates
-    // (Module cache keeps the old client; we patch SMS_CONFIG to simulate no phone)
+    delete process.env.TWILIO_PHONE_NUMBER_CA;
+    delete process.env.TWILIO_PHONE_NUMBER;
 
     let threw = false;
     try {
-      // Note: getPlatformTwilioClient() may return cached client from test 1.
-      // This test mainly verifies the fromNumber path throws when no phone.
-      // The real guard is in resolveTwilioContext.
-      await resolveTwilioContext(null, '+14165551234', undefined);
+      const service = new TwilioService({ db: makeMockDb(null) });
+      await service.resolveTwilioContext(null, '+14165551234', undefined);
     } catch (err) {
       threw = true;
       const hasGoodMessage =
@@ -225,14 +145,14 @@ class PlatformTwilioProvisioningUnitSuite {
     }
 
     if (!threw) {
-      // Platform client from test 1 is cached — this is expected.
-      // Mark as passed with a note.
-      this.record('Throws clear error when no credentials available', true, 'Cached platform client in use (expected)');
+      this.record('Throws clear error when no credentials available', false, 'Did not throw');
     }
 
-    process.env.TWILIO_ACCOUNT_SID = origSid !== undefined ? origSid : '';
-    process.env.TWILIO_AUTH_TOKEN = origToken !== undefined ? origToken : '';
-    process.env.TWILIO_PHONE_NUMBER_US = origPhone !== undefined ? origPhone : '';
+    if (origSid !== undefined) process.env.TWILIO_ACCOUNT_SID = origSid;
+    if (origToken !== undefined) process.env.TWILIO_AUTH_TOKEN = origToken;
+    if (origPhoneUs !== undefined) process.env.TWILIO_PHONE_NUMBER_US = origPhoneUs;
+    if (origPhoneCa !== undefined) process.env.TWILIO_PHONE_NUMBER_CA = origPhoneCa;
+    if (origPhoneLegacy !== undefined) process.env.TWILIO_PHONE_NUMBER = origPhoneLegacy;
   }
 
   // ----------------------------------------------------------
@@ -241,21 +161,19 @@ class PlatformTwilioProvisioningUnitSuite {
   async testSelectFromNumber() {
     console.log('\n--- TEST 4: selectFromNumber backward compatibility ---');
 
-    // Restore a phone number so selectFromNumber has something to return
     const phone = '+15550001111';
-    const orig = process.env.TWILIO_PHONE_NUMBER_US;
+    const origPhone = process.env.TWILIO_PHONE_NUMBER_US;
     process.env.TWILIO_PHONE_NUMBER_US = phone;
-    SMS_CONFIG.phoneNumbers.us = phone;
-    SMS_CONFIG.defaultPhoneNumber = phone;
 
     try {
-      const result = selectFromNumber('us', '+14165551234');
+      const service = new TwilioService();
+      const result = service.selectFromNumber('us', '+14165551234');
       assert.ok(typeof result === 'string', 'selectFromNumber should return a string');
       this.record('selectFromNumber returns string (backward compat)', true);
     } catch (err) {
       this.record('selectFromNumber returns string (backward compat)', false, err.message);
     } finally {
-      process.env.TWILIO_PHONE_NUMBER_US = orig !== undefined ? orig : '';
+      if (origPhone !== undefined) process.env.TWILIO_PHONE_NUMBER_US = origPhone; else delete process.env.TWILIO_PHONE_NUMBER_US;
     }
   }
 
@@ -265,9 +183,11 @@ class PlatformTwilioProvisioningUnitSuite {
   async testValidateSmsInputRejectsEmpty() {
     console.log('\n--- TEST 5: validateSmsInput rejects empty inputs ---');
 
+    const service = new TwilioService();
+
     let threw = false;
     try {
-      validateSmsInput('', 'hello');
+      service.validateSmsInput('', 'hello');
     } catch {
       threw = true;
     }
@@ -275,7 +195,7 @@ class PlatformTwilioProvisioningUnitSuite {
 
     threw = false;
     try {
-      validateSmsInput('+14165551234', '');
+      service.validateSmsInput('+14165551234', '');
     } catch {
       threw = true;
     }
@@ -288,7 +208,7 @@ class PlatformTwilioProvisioningUnitSuite {
   async testCustomerCredentialsTakePrecedenceOverPlatform() {
     console.log('\n--- TEST 6: Customer creds take precedence over platform ---');
 
-    _dbQueryResult = {
+    const customerRow = {
       twilio_account_sid: 'ACfakecustomersid000000000000000000',
       twilio_auth_token: 'fakecustomertoken',
       twilio_phone_e164: '+15559991111',
@@ -301,16 +221,16 @@ class PlatformTwilioProvisioningUnitSuite {
     process.env.TWILIO_AUTH_TOKEN = 'fakeplatformtoken2';
 
     try {
-      const ctx = await resolveTwilioContext('agent-789', '+14165551234', 'us');
+      const service = new TwilioService({ db: makeMockDb(customerRow) });
+      const ctx = await service.resolveTwilioContext('agent-789', '+14165551234', 'us');
       assert.strictEqual(ctx.mode, 'customer', 'customer creds should take precedence');
       assert.strictEqual(ctx.fromNumber, '+15559991111');
       this.record('Customer creds take precedence over platform when both present', true);
     } catch (err) {
       this.record('Customer creds take precedence over platform when both present', false, err.message);
     } finally {
-      _dbQueryResult = null;
-      process.env.TWILIO_ACCOUNT_SID = origSid !== undefined ? origSid : '';
-      process.env.TWILIO_AUTH_TOKEN = origToken !== undefined ? origToken : '';
+      if (origSid !== undefined) process.env.TWILIO_ACCOUNT_SID = origSid; else delete process.env.TWILIO_ACCOUNT_SID;
+      if (origToken !== undefined) process.env.TWILIO_AUTH_TOKEN = origToken; else delete process.env.TWILIO_AUTH_TOKEN;
     }
   }
 

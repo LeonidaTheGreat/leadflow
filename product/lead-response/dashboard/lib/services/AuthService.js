@@ -125,11 +125,6 @@ export class AuthService {
       .eq('token', token)
   }
 
-  async getUserIdFromSession(token) {
-    const session = await this.validateSession(token)
-    return session?.userId || null
-  }
-
   async destroyAllUserSessions(userId) {
     await this.db
       .from('sessions')
@@ -178,3 +173,44 @@ export class AuthService {
 }
 
 export const authService = AuthService.createDefaultService()
+
+// Named helpers keep callsites simple while centralizing behavior in AuthService.
+export async function createSession(input) {
+  return authService.createSession(input)
+}
+
+export async function validateSession(token) {
+  return authService.validateSession(token)
+}
+
+export async function getUserIdFromSession(token) {
+  return authService.getUserIdFromSession(token)
+}
+
+export async function deleteSession(token) {
+  await authService.destroySession(token)
+}
+
+export async function deleteAllUserSessions(userId) {
+  await authService.destroyAllUserSessions(userId)
+}
+
+export async function getUserSessions(userId) {
+  return authService.getUserSessions(userId)
+}
+
+export async function cleanupExpiredSessions() {
+  return authService.cleanupExpiredSessions()
+}
+
+export async function extendSession(token, days = 30) {
+  return authService.extendSession(token, days)
+}
+
+export function generateSessionToken() {
+  return authService.generateToken()
+}
+
+export async function hashToken(token) {
+  return authService.hashToken(token)
+}

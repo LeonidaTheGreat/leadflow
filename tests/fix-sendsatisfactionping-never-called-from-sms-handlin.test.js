@@ -160,7 +160,7 @@ async function run() {
   // Test 5: Verify sendSmsViatwilio accepts sendSmsFunction parameter
   console.log('\nTest Suite 5: Service Integration\n');
 
-  const smsServiceFile = path.resolve(__dirname, '../lib/twilio-sms.js');
+  const smsServiceFile = path.resolve(__dirname, '../lib/services/TwilioService.js');
   
   await test('Twilio SMS service exists', async () => {
     assert.ok(fs.existsSync(smsServiceFile), `Missing: ${smsServiceFile}`);
@@ -168,8 +168,8 @@ async function run() {
 
   const smsSrc = fs.readFileSync(smsServiceFile, 'utf-8');
 
-  await test('sendSmsViatwilio function is exported', async () => {
-    assert.ok(smsSrc.includes('sendSmsViatwilio'), 'Missing sendSmsViatwilio export');
+  await test('sendSms method defined in TwilioService', async () => {
+    assert.ok(smsSrc.includes('sendSms'), 'Missing sendSms method in TwilioService');
   });
 
   // Final summary

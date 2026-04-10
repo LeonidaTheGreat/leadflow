@@ -32,14 +32,14 @@ function test(name, fn) {
 }
 
 // ── Test 1: Dashboard route imports validateSession ──
-test('Dashboard route imports validateSession from session lib', () => {
+test('Dashboard route imports AuthService session helper', () => {
   const routeCode = fs.readFileSync(
     path.join(DASHBOARD_DIR, 'app', 'api', 'analytics', 'dashboard', 'route.ts'),
     'utf8'
   );
   assert.ok(
-    routeCode.includes("import { validateSession }") || routeCode.includes("from '@/lib/session'"),
-    'Dashboard route must import validateSession'
+    routeCode.includes("import { authService } from '@/lib/services/AuthService'"),
+    'Dashboard route must import authService from AuthService'
   );
 });
 
@@ -99,8 +99,8 @@ test('SMS stats route has session validation', () => {
     'utf8'
   );
   assert.ok(
-    routeCode.includes("validateSession"),
-    'SMS stats must call validateSession'
+    routeCode.includes("getAuthUserId"),
+    'SMS stats must resolve authenticated user via getAuthUserId'
   );
   assert.ok(
     routeCode.includes("leadflow_session"),
@@ -138,8 +138,8 @@ test('SMS stats derives agent_id from session, not query params', () => {
     'utf8'
   );
   assert.ok(
-    routeCode.includes('session.userId'),
-    'agent_id must come from session.userId'
+    routeCode.includes('const agentId = await getAuthUserId(request)'),
+    'agent_id must come from authenticated session helper'
   );
   assert.ok(
     !routeCode.includes("searchParams.get('agent_id')"),

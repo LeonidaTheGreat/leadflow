@@ -7,7 +7,7 @@ import {
   getLeadConversion,
   getAvgResponseTime,
 } from '@/lib/analytics-queries'
-import { validateSession } from '@/lib/session'
+import { authService } from '@/lib/services/AuthService'
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const session = await validateSession(sessionToken)
+    const session = await authService.validateSession(sessionToken)
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

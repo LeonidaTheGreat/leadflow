@@ -45,8 +45,10 @@ const mockLeadOtherAgent = {
   phone: '+15559999999',
 }
 
-jest.mock('@/lib/session', () => ({
-  validateSession: jest.fn(),
+jest.mock('@/lib/services/AuthService', () => ({
+  authService: {
+    validateSession: jest.fn(),
+  },
 }))
 
 jest.mock('@/lib/services/AgentService', () => ({
@@ -61,7 +63,7 @@ jest.mock('@/lib/calcom', () => ({
   getAgentBookingLink: jest.fn((agent: any) => `https://cal.com/${agent.calcom_username}`),
 }))
 
-import { validateSession } from '@/lib/session'
+import { authService } from '@/lib/services/AuthService'
 import { agentService } from '@/lib/services/AgentService'
 import { leadService } from '@/lib/services/LeadService'
 import { GET, POST } from '../app/api/booking/route'
@@ -106,7 +108,7 @@ function makePostRequest(
 describe('GET /api/booking — security: agent_id from session only', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(validateSession as jest.Mock).mockResolvedValue({ id: 'sess-1', userId: AGENT_ID })
+    ;(authService.validateSession as jest.Mock).mockResolvedValue({ id: 'sess-1', userId: AGENT_ID })
     ;(agentService.getAgentById as jest.Mock).mockResolvedValue({ data: mockAgent })
     ;(leadService.getLeadById as jest.Mock).mockResolvedValue({ data: mockLead })
   })
@@ -123,7 +125,7 @@ describe('GET /api/booking — security: agent_id from session only', () => {
     })
 
     it('returns 401 when session token is invalid', async () => {
-      ;(validateSession as jest.Mock).mockResolvedValue(null)
+      ;(authService.validateSession as jest.Mock).mockResolvedValue(null)
       const req = makeGetRequest()
       const res = await GET(req)
       expect(res.status).toBe(401)
@@ -209,7 +211,7 @@ describe('GET /api/booking — security: agent_id from session only', () => {
 describe('POST /api/booking — security: agent_id from session only', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(validateSession as jest.Mock).mockResolvedValue({ id: 'sess-1', userId: AGENT_ID })
+    ;(authService.validateSession as jest.Mock).mockResolvedValue({ id: 'sess-1', userId: AGENT_ID })
     ;(agentService.getAgentById as jest.Mock).mockResolvedValue({ data: mockAgent })
     ;(leadService.getLeadById as jest.Mock).mockResolvedValue({ data: mockLead })
   })

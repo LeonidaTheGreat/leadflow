@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { leadService } from '@/lib/services/LeadService'
 import { agentService } from '@/lib/services/AgentService'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
-import { validateSession } from '@/lib/session'
+import { authService } from '@/lib/services/AuthService'
 
 // Force dynamic rendering - API routes should never be static
 export const dynamic = 'force-dynamic'
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const session = await validateSession(sessionToken)
+  const session = await authService.validateSession(sessionToken)
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const session = await validateSession(sessionToken)
+  const session = await authService.validateSession(sessionToken)
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
