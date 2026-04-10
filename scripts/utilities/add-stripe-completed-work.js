@@ -3,7 +3,7 @@
  * Add Stripe Billing work to completed_work table
  */
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 require('dotenv').config()
 
 const db = createClient(

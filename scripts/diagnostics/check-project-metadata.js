@@ -3,7 +3,7 @@
  * Query project_metadata from Supabase and verify dashboard header data
  */
 
-const { createClient } = require('../../lib/db-client')
+const { createClient } = require('../../lib/db')
 require('dotenv').config()
 
 const db = createClient(

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 const sb = createClient(process.env.NEXT_PUBLIC_API_URL, process.env.API_SECRET_KEY);
 
 const description = `## Task: Implement Forgot Password Flow

@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '.env' });
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 const sb = createClient(
   process.env.NEXT_PUBLIC_API_URL,

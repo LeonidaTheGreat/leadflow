@@ -11,7 +11,7 @@
 
 const fs = require('fs')
 const path = require('path')
-const { createClient } = require('../lib/db-client')
+const { createClient } = require('../lib/db')
 
 // Load env from project root
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') })

@@ -16,7 +16,7 @@
 
 require('dotenv').config();
 const fs = require('fs');
-const { createClient } = require('../lib/db-client');
+const { createClient } = require('../lib/db');
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const apiKey = process.env.API_SECRET_KEY;
