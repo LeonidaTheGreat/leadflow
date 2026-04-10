@@ -176,14 +176,29 @@ test_lead_capture() {
 test_dashboard_no_errors() {
   [ -z "${API_KEY:-}" ] && return 1
 
-  # Use a real user who has completed onboarding (not trial-signup accounts — those have
-  # onboarding_completed=false and always redirect to /setup, not /dashboard)
-  local agent_resp user_id
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+  # Use a real user who has completed onboarding AND has an active (non-expired) plan.
+  # Must exclude agents on expired trials — the middleware redirects them to /upgrade
+  # before the dashboard can render, causing the test to fail with no 'Lead Feed' content.
+  # Strategy: prefer paid/pilot agents; fall back to trial agents with future trial_ends_at.
+  # NOTE: PostgREST or=(col.op.val,...) syntax breaks when values contain colons (ISO timestamps),
+  # so we use two separate queries with a fallback instead of a single OR query.
+  local agent_resp user_id now_iso
+  now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+  # First: try a paid or pilot agent (plan_tier != 'trial')
+  agent_resp=$(curl -s --max-time 10 \
+    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
+    -H "apikey: $API_KEY" 2>/dev/null) || return 1
   user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+
+  # Fallback: find a trial agent whose trial has NOT yet expired
+  if [ -z "$user_id" ]; then
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+  fi
+
   [ -z "$user_id" ] && return 1
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
