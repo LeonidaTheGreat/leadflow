@@ -176,19 +176,41 @@ test_lead_capture() {
 test_dashboard_no_errors() {
   [ -z "${API_KEY:-}" ] && return 1
 
-  # Use a real user who has completed onboarding (not trial-signup accounts — those have
-  # onboarding_completed=false and always redirect to /setup, not /dashboard)
-  local agent_resp user_id
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
+  # Prefer the E2E test user created in test 6 (trial-signup): mark their onboarding as
+  # complete so /dashboard is accessible instead of /setup. This is always a fresh account
+  # with a valid 90-day trial. Fall back to finding an existing user whose trial hasn't expired.
+  local user_id=""
 
-  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-  [ -z "$user_id" ] && return 1
+  if [ -n "${E2E_EMAIL:-}" ]; then
+    local e2e_resp
+    e2e_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&email=eq.${E2E_EMAIL}&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || true
+    user_id=$(echo "$e2e_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    if [ -n "$user_id" ]; then
+      # Mark onboarding complete so middleware allows /dashboard (not /setup redirect)
+      curl -s --max-time 10 -X PATCH \
+        "$API_URL/real_estate_agents?id=eq.$user_id" \
+        -H "apikey: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"onboarding_completed":true}' >/dev/null 2>&1 || true
+    fi
+  fi
+
+  if [ -z "$user_id" ]; then
+    # Fallback: find an existing user with completed onboarding and a non-expired trial
+    local now_iso agent_resp
+    now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&trial_ends_at=gte.${now_iso}&order=trial_ends_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    [ -z "$user_id" ] && return 1
+  fi
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
-  # The DB stores only the hash (since PR #1026). The cookie must hold the raw token —
-  # middleware calls hashToken(cookie) and looks up that hash in sessions.token.
+  # The deployed app stores only the hash in sessions.token; the cookie holds the raw token.
+  # Middleware hashes the cookie value before querying sessions.token.
   local raw_token token_hash now expires session_resp session_id
   raw_token=$(openssl rand -hex 32)
   token_hash=$(printf '%s' "$raw_token" | openssl dgst -sha256 | awk '{print $2}')
@@ -204,7 +226,7 @@ test_dashboard_no_errors() {
   session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
   [ -z "$session_id" ] && return 1
 
-  # Load dashboard with raw token in cookie — server hashes it to validate
+  # Load dashboard with raw token in cookie — middleware hashes it to validate
   local html
   html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
     -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
