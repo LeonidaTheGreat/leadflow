@@ -11,14 +11,14 @@
 
 require('dotenv').config();
 const assert = require('assert');
-const {
-  sendSmsViatwilio,
-  getSmsStatus,
-  updateSmsStatus,
-  selectFromNumber: selectSenderNumber,
-  validateSmsInput,
-  SMS_CONFIG,
-} = require('../lib/twilio-sms');
+const TwilioService = require('../lib/services/TwilioService');
+const _twilioService = new TwilioService();
+const sendSmsViatwilio = _twilioService.sendSms.bind(_twilioService);
+const getSmsStatus = _twilioService.getSmsStatus.bind(_twilioService);
+const updateSmsStatus = _twilioService.updateSmsStatus.bind(_twilioService);
+const selectSenderNumber = _twilioService.selectFromNumber.bind(_twilioService);
+const validateSmsInput = _twilioService.validateSmsInput.bind(_twilioService);
+const SMS_CONFIG = _twilioService.smsConfig;
 
 // Test configuration
 const TEST_CONFIG = {

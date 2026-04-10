@@ -13,14 +13,12 @@ const assert = require('assert')
 const path = require('path')
 const fs = require('fs')
 
-// Resolve twilio-sms.js from project root (tests/ is 4 levels deep from repo root)
-const twilioSmsPath = path.join(__dirname, '..', '..', '..', '..', 'lib', 'twilio-sms.js')
-const {
-  classifyTwilioError,
-  isA2pBlockedError,
-  TwilioErrorCodes,
-  A2P_ERROR_CODE_SET,
-} = require(twilioSmsPath)
+// Resolve TwilioService from project root (tests/ is 4 levels deep from repo root)
+const twilioServicePath = path.join(__dirname, '..', '..', '..', '..', 'lib', 'services', 'TwilioService.js')
+const TwilioService = require(twilioServicePath)
+const { TwilioErrorCodes, A2P_ERROR_CODE_SET } = TwilioService
+const classifyTwilioError = TwilioService.classifyTwilioError
+const isA2pBlockedError = TwilioService.isA2pBlockedError
 
 function test(name, fn) {
   try {
