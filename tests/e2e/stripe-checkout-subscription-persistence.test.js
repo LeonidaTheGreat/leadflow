@@ -9,7 +9,7 @@
 // Mock stripe — module not installed in root, only in dashboard/node_modules
 jest.mock('stripe', () => jest.fn(() => null), { virtual: true });
 
-const { processWebhookEvent } = require('../../lib/webhook-processor');
+const { processWebhookEvent } = require('../../lib/services/BillingService');
 
 // --- Mock Stripe subscription object ---
 function makeStripeSubscription(overrides = {}) {
@@ -114,7 +114,7 @@ describe('Stripe checkout → subscription persistence', () => {
   test('webhook processor exports handleCheckoutCompleted', () => {
     expect(typeof processWebhookEvent).toBe('function');
     // The handler should be registered for checkout.session.completed
-    const { EVENT_HANDLERS } = require('../../lib/webhook-processor');
+    const { EVENT_HANDLERS } = require('../../lib/services/BillingService');
     expect(EVENT_HANDLERS['checkout.session.completed']).toBeDefined();
   });
 
