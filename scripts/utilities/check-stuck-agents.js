@@ -2,7 +2,7 @@
 /**
  * check-stuck-agents.js — Onboarding Stuck Agent Alert Runner
  *
- * Calls checkAndAlertStuckAgents() from lib/onboarding-telemetry.js.
+ * Calls checkAndAlertStuckAgents() from lib/services/OnboardingTelemetryService.
  * Identifies real estate agents stuck in the onboarding funnel for >24 hours
  * and creates/updates rows in onboarding_stuck_alerts + product_feedback.
  *
@@ -21,7 +21,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '..', '.env') })
 
 const { createClient } = require('../../lib/db')
-const { checkAndAlertStuckAgents } = require('../../lib/onboarding-telemetry')
+const OnboardingTelemetryService = require('../../lib/services/OnboardingTelemetryService')
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
 const apiKey = process.env.API_SECRET_KEY
@@ -43,7 +43,8 @@ async function run() {
   console.log('[check-stuck-agents] Starting stuck agent check...')
   const startedAt = Date.now()
 
-  const result = await checkAndAlertStuckAgents(db)
+  const telemetryService = new OnboardingTelemetryService(db)
+  const result = await telemetryService.checkAndAlertStuckAgents()
 
   const elapsed = Date.now() - startedAt
 
