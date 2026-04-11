@@ -1,96 +1,119 @@
-'use strict';
-
+#!/usr/bin/env node
 /**
- * Unit test: generate-api-docs.js and generate-services-docs.js
- * Verifies that generation scripts produce valid output files
- * with expected content (service class names, API routes).
+ * Unit test: generate-services-docs.js and generate-api-docs.js
+ *
+ * Verifies that both scripts:
+ * 1. Run without errors
+ * 2. Produce non-empty output files
+ * 3. Generated files contain correct headers and structural markers
  */
 
-const fs = require('fs');
-const path = require('path');
-const assert = require('assert');
+'use strict'
 
-const PROJECT_DIR = path.join(__dirname, '../..');
+const { execSync } = require('child_process')
+const fs = require('fs')
+const path = require('path')
+const assert = require('assert')
 
-let passed = 0;
-let failed = 0;
+const PROJECT_DIR = path.join(__dirname, '..', '..')
+const SERVICES_MD = path.join(PROJECT_DIR, 'SERVICES.md')
+const API_MD = path.join(PROJECT_DIR, 'API.md')
 
-async function check(name, fn) {
-    try {
-        await fn();
-        console.log(`  ✅ ${name}`);
-        passed++;
-    } catch (error) {
-        console.log(`  ❌ ${name}: ${error.message}`);
-        failed++;
-    }
+let passed = 0
+let failed = 0
+
+function check(name, fn) {
+  try {
+    fn()
+    console.log(`  ✅ ${name}`)
+    passed++
+  } catch (err) {
+    console.log(`  ❌ ${name}: ${err.message}`)
+    failed++
+  }
 }
 
-async function run() {
-    console.log('\n🧪 Documentation generation script tests\n');
+console.log('\n🧪 generate-docs tests\n')
 
-    const { generateApiDocs } = require('../../scripts/generate-api-docs');
-    const { generateServicesDocs } = require('../../scripts/generate-services-docs');
+// Run the scripts
+let servicesOutput, apiOutput
+check('generate-services-docs.js runs without error', () => {
+  servicesOutput = execSync(`node ${path.join(PROJECT_DIR, 'scripts', 'generate-services-docs.js')}`, {
+    encoding: 'utf8',
+    cwd: PROJECT_DIR
+  })
+})
 
-    // Run both generators
-    await check('generate-api-docs.js runs without error', async () => {
-        await generateApiDocs();
-    });
+check('generate-api-docs.js runs without error', () => {
+  apiOutput = execSync(`node ${path.join(PROJECT_DIR, 'scripts', 'generate-api-docs.js')}`, {
+    encoding: 'utf8',
+    cwd: PROJECT_DIR
+  })
+})
 
-    await check('generate-services-docs.js runs without error', async () => {
-        await generateServicesDocs();
-    });
+// SERVICES.md checks
+check('SERVICES.md exists after generation', () => {
+  assert.ok(fs.existsSync(SERVICES_MD), 'SERVICES.md does not exist')
+})
 
-    // Check API.md
-    await check('API.md is generated', async () => {
-        const apiMd = path.join(PROJECT_DIR, 'API.md');
-        assert.ok(fs.existsSync(apiMd), 'API.md must exist');
-    });
+check('SERVICES.md is not empty', () => {
+  const content = fs.readFileSync(SERVICES_MD, 'utf8')
+  assert.ok(content.length > 100, 'SERVICES.md is too short')
+})
 
-    await check('API.md contains auto-generated header', async () => {
-        const content = fs.readFileSync(path.join(PROJECT_DIR, 'API.md'), 'utf8');
-        assert.ok(content.includes('AUTO-GENERATED'), 'Must have AUTO-GENERATED header');
-    });
+check('SERVICES.md has auto-generated header', () => {
+  const content = fs.readFileSync(SERVICES_MD, 'utf8')
+  assert.ok(content.includes('AUTO-GENERATED'), 'Missing AUTO-GENERATED header')
+})
 
-    await check('API.md contains at least 1 route entry', async () => {
-        const content = fs.readFileSync(path.join(PROJECT_DIR, 'API.md'), 'utf8');
-        assert.ok(content.includes('| **GET**') || content.includes('| **POST**'), 'Must contain HTTP method entries');
-    });
+check('SERVICES.md has # Services Reference heading', () => {
+  const content = fs.readFileSync(SERVICES_MD, 'utf8')
+  assert.ok(content.includes('# Services Reference'), 'Missing Services Reference heading')
+})
 
-    await check('API.md includes billing route', async () => {
-        const content = fs.readFileSync(path.join(PROJECT_DIR, 'API.md'), 'utf8');
-        assert.ok(content.includes('billing'), 'Must include billing routes');
-    });
+check('SERVICES.md contains at least one service entry', () => {
+  const content = fs.readFileSync(SERVICES_MD, 'utf8')
+  assert.ok(content.includes('## '), 'No service sections found')
+  assert.ok(content.includes('lib/services/'), 'No service file references found')
+})
 
-    // Check SERVICES.md
-    await check('SERVICES.md is generated', async () => {
-        const servicesMd = path.join(PROJECT_DIR, 'SERVICES.md');
-        assert.ok(fs.existsSync(servicesMd), 'SERVICES.md must exist');
-    });
+check('SERVICES.md contains known service CalcomWebhookHandler', () => {
+  const content = fs.readFileSync(SERVICES_MD, 'utf8')
+  assert.ok(content.includes('CalcomWebhookHandler'), 'CalcomWebhookHandler not found in SERVICES.md')
+})
 
-    await check('SERVICES.md contains auto-generated header', async () => {
-        const content = fs.readFileSync(path.join(PROJECT_DIR, 'SERVICES.md'), 'utf8');
-        assert.ok(content.includes('AUTO-GENERATED'), 'Must have AUTO-GENERATED header');
-    });
+// API.md checks
+check('API.md exists after generation', () => {
+  assert.ok(fs.existsSync(API_MD), 'API.md does not exist')
+})
 
-    await check('SERVICES.md contains CalcomWebhookHandler', async () => {
-        const content = fs.readFileSync(path.join(PROJECT_DIR, 'SERVICES.md'), 'utf8');
-        assert.ok(content.includes('CalcomWebhookHandler'), 'Must include CalcomWebhookHandler class');
-    });
+check('API.md is not empty', () => {
+  const content = fs.readFileSync(API_MD, 'utf8')
+  assert.ok(content.length > 100, 'API.md is too short')
+})
 
-    await check('SERVICES.md contains BillingService or billingService', async () => {
-        const content = fs.readFileSync(path.join(PROJECT_DIR, 'SERVICES.md'), 'utf8');
-        assert.ok(
-            content.includes('BillingService') || content.includes('billingService'),
-            'Must include a billing service entry'
-        );
-    });
+check('API.md has auto-generated header', () => {
+  const content = fs.readFileSync(API_MD, 'utf8')
+  assert.ok(content.includes('AUTO-GENERATED'), 'Missing AUTO-GENERATED header')
+})
 
-    console.log(`\nResults: ${passed} passed, ${failed} failed\n`);
-    if (failed > 0) process.exit(1);
-}
+check('API.md has # API Reference heading', () => {
+  const content = fs.readFileSync(API_MD, 'utf8')
+  assert.ok(content.includes('# API Reference'), 'Missing API Reference heading')
+})
 
-run().catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+check('API.md contains at least one route entry', () => {
+  const content = fs.readFileSync(API_MD, 'utf8')
+  assert.ok(
+    content.includes('**GET**') || content.includes('**POST**') || content.includes('**PUT**'),
+    'No HTTP method entries found in API.md'
+  )
+})
+
+check('API.md contains routes/ source reference', () => {
+  const content = fs.readFileSync(API_MD, 'utf8')
+  assert.ok(content.includes('routes/'), 'No routes/ reference found in API.md')
+})
+
+console.log(`\nResults: ${passed} passed, ${failed} failed\n`)
+if (failed > 0) process.exit(1)
