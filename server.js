@@ -6,6 +6,7 @@
 require('dotenv').config();
 const express = require('express');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
+const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/check-stuck-pilots');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
@@ -13,26 +14,8 @@ const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const app = express();
 app.use(express.json());
 
-// Health check
-app.get('/', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    service: 'FUB AI Lead Response System',
-    webhooks: {
-      fub: '/webhook/fub',
-    },
-    health: '/health'
-  });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    fub: process.env.FUB_API_KEY ? 'configured' : 'missing',
-    twilio: process.env.TWILIO_ACCOUNT_SID ? 'configured' : 'missing'
-  });
-});
+// System routes
+app.use('/', systemRouter);
 
 // FUB webhook routes
 app.use('/', fubRouter);

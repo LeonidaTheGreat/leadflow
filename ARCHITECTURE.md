@@ -49,27 +49,28 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 
 ### Existing Services (grep for these before creating new code)
 
-<!-- AUTO-GENERATED from lib/services/ — regenerate with: ls lib/services/*.js -->
+<!-- AUTO-GENERATED from lib/services/ — regenerate with: node scripts/generate-architecture-services.js -->
 | Service | Location | Responsibility |
 |---------|----------|---------------|
 | DB Client | `lib/db.js` | PostgreSQL connection pool |
-| BillingService | `lib/services/BillingService.js` | Stripe billing, subscriptions, webhooks |
-| BookingLinkService | `lib/services/BookingLinkService.js` | Cal.com booking link management |
-| CalcomClient | `lib/services/CalcomClient.js` | Cal.com API client |
-| CalcomWebhookHandler | `lib/services/CalcomWebhookHandler.js` | Cal.com webhook processing |
-| CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com webhook registration |
-| EmailService | `lib/services/EmailService.js` | Transactional email via Resend |
-| FUBService | `lib/services/FUBService.js` | Follow Up Boss CRM integration |
-| OnboardingTelemetryService | `lib/services/OnboardingTelemetryService.js` | Agent onboarding tracking |
-| PilotConversionService | `lib/services/PilotConversionService.js` | Pilot → paid email sequences |
-| PosthogService | `lib/services/PosthogService.js` | PostHog analytics events |
-| SatisfactionService | `lib/services/SatisfactionService.js` | Agent satisfaction pings |
-| SequenceService | `lib/services/SequenceService.js` | Email/SMS drip sequences |
-| StuckPilotsService | `lib/services/StuckPilotsService.js` | Stuck pilot detection and alerts |
-| SubscriptionService | `lib/services/SubscriptionService.js` | Subscription state management |
-| TwilioService | `lib/services/TwilioService.js` | Twilio SMS integration |
-| WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | Weekly agent performance reports |
-| ActivationService | `lib/services/ActivationService.js` | Activation outreach orchestration |
+| ActivationService | `lib/services/ActivationService.js` | ActivationService — Admin outreach to verified-but-unactivated agents |
+| BillingService | `lib/services/BillingService.js` | — |
+| BookingLinkService | `lib/services/BookingLinkService.js` | BookingLinkService |
+| CalcomClient | `lib/services/CalcomClient.js` | Cal.com API Client |
+| CalcomWebhookHandler | `lib/services/CalcomWebhookHandler.js` | Cal.com Webhook Handler |
+| CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
+| EmailService | `lib/services/EmailService.js` | — |
+| FUBService | `lib/services/FUBService.js` | — |
+| OnboardingTelemetryService | `lib/services/OnboardingTelemetryService.js` | OnboardingTelemetryService — Tracks agent onboarding funnel events and stuck-agent alerts |
+| PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
+| PosthogService | `lib/services/PosthogService.js` | PosthogService — Server-side PostHog analytics tracking |
+| SatisfactionService | `lib/services/SatisfactionService.js` | — |
+| SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
+| StuckPilotsService | `lib/services/StuckPilotsService.js` | — |
+| SubscriptionService | `lib/services/SubscriptionService.js` | — |
+| TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
+| WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
+<!-- /AUTO-GENERATED services -->
 
 > **If you're about to write a DB query or API call outside of lib/services/, STOP.** Find or create the right service first.
 
