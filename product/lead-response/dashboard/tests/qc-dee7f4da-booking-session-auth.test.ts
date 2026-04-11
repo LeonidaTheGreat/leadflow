@@ -18,14 +18,14 @@ const AGENT_B = 'agent-attacker'
 const LEAD_OWN = 'lead-belongs-to-a'
 const LEAD_OTHER = 'lead-belongs-to-b'
 
-jest.mock('@/lib/session', () => ({ validateSession: jest.fn() }))
+jest.mock('@/lib/services/AuthService', () => ({ validateSession: jest.fn() }))
 jest.mock('@/lib/supabase', () => ({ getAgentById: jest.fn(), getLeadById: jest.fn() }))
 jest.mock('@/lib/calcom', () => ({
   generateBookingLink: jest.fn(() => 'https://cal.com/link'),
   getAgentBookingLink: jest.fn((a: any) => `https://cal.com/${a.calcom_username}`),
 }))
 
-import { validateSession } from '@/lib/session'
+import { validateSession } from '@/lib/services/AuthService'
 import { getAgentById, getLeadById } from '@/lib/supabase'
 import { GET, POST } from '../app/api/booking/route'
 import { NextRequest } from 'next/server'

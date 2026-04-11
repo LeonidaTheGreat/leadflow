@@ -19,7 +19,7 @@ import type { NextRequest } from 'next/server'
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
-jest.mock('@/lib/auth', () => ({
+jest.mock('@/lib/services/AuthService', () => ({
   getAuthUserId: jest.fn(),
 }))
 
@@ -71,7 +71,7 @@ describe('Demo Mode — No FUB Required', () => {
 
   describe('POST /api/demo/run', () => {
     it('returns 401 when not authenticated', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue(null)
 
       const req = makeRequest({ lead: { name: 'Test', property_interest: '3BR house' } })
@@ -83,7 +83,7 @@ describe('Demo Mode — No FUB Required', () => {
     })
 
     it('returns 404 when agent not found', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue('unknown-id')
 
       mockSingle.mockResolvedValue({ data: null, error: new Error('Not found') })
@@ -96,7 +96,7 @@ describe('Demo Mode — No FUB Required', () => {
     })
 
     it('returns demo_limit_reached when limit is exceeded', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue('test-agent-id')
 
       mockSingle.mockResolvedValue({ data: { demo_runs_used: 3 }, error: null })
@@ -157,7 +157,7 @@ describe('Demo Mode — No FUB Required', () => {
 
   describe('POST /api/onboarding/complete', () => {
     it('returns 401 when not authenticated', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue(null)
 
       const req = makeRequest({ completionPayload: { ahaCompleted: true } })
@@ -169,7 +169,7 @@ describe('Demo Mode — No FUB Required', () => {
     })
 
     it('returns success when authenticated', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue('agent-uuid-123')
 
       mockEq.mockResolvedValue({ data: null, error: null })
@@ -191,7 +191,7 @@ describe('Demo Mode — No FUB Required', () => {
     })
 
     it('updates aha_completed and aha_response_time_ms', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue('agent-uuid-456')
 
       mockEq.mockResolvedValue({ data: null, error: null })
@@ -214,7 +214,7 @@ describe('Demo Mode — No FUB Required', () => {
     })
 
     it('handles missing completion payload gracefully', async () => {
-      const { getAuthUserId } = require('@/lib/auth')
+      const { getAuthUserId } = require('@/lib/services/AuthService')
       getAuthUserId.mockResolvedValue('agent-no-payload')
 
       mockEq.mockResolvedValue({ data: null, error: null })

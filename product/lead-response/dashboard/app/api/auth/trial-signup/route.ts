@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
-import { createSession } from '@/lib/session'
+import { createSession } from '@/lib/services/AuthService'
 
 const supabase = postgrestAdmin
 

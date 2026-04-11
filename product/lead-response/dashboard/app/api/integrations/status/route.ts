@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { auth } from '@/lib/api-auth'
+import { auth } from '@/lib/services/AuthService'
 
 export async function GET(request: NextRequest) {
   // Require an active authenticated session before returning any data

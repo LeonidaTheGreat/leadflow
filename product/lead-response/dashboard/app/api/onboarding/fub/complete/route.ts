@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
 /**
  * POST /api/onboarding/fub/complete

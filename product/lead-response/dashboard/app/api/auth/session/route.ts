@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSession, getUserSessions } from '@/lib/session'
+import { validateSession, getUserSessions } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/db'
 
 const supabase = supabaseAdmin

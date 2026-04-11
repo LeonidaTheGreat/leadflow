@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/db'
 import { sendSms, normalizePhone, isValidPhoneNumber } from '@/lib/twilio'
 import { checkDemoSmsRateLimit } from '@/lib/rate-limit'

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
 // GET /api/agents/profile - Get current agent profile
 export async function GET(request: NextRequest) {

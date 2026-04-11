@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
 /**
  * GET /api/onboarding/fub/webhook-url

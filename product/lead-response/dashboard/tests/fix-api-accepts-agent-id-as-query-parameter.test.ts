@@ -45,7 +45,7 @@ const mockLeadOtherAgent = {
   phone: '+15559999999',
 }
 
-jest.mock('@/lib/session', () => ({
+jest.mock('@/lib/services/AuthService', () => ({
   validateSession: jest.fn(),
 }))
 
@@ -59,7 +59,7 @@ jest.mock('@/lib/calcom', () => ({
   getAgentBookingLink: jest.fn((agent: any) => `https://cal.com/${agent.calcom_username}`),
 }))
 
-import { validateSession } from '@/lib/session'
+import { validateSession } from '@/lib/services/AuthService'
 import { getAgentById, getLeadById } from '@/lib/supabase'
 import { GET, POST } from '../app/api/booking/route'
 import { NextRequest } from 'next/server'

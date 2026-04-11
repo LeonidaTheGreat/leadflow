@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitProductFeedback } from '@/lib/nps-service'
-import { validateSession } from '@/lib/session'
+import { validateSession } from '@/lib/services/AuthService'
 
 export async function POST(request: NextRequest) {
   try {

@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {

@@ -99,8 +99,8 @@ jest.mock('jsonwebtoken', () => ({
   verify: jest.fn(() => ({ userId: 'agent-123', email: 'test@example.com' })),
 }))
 
-// Mock @/lib/session — used by login and trial-signup to create sessions
-jest.mock('@/lib/session', () => ({
+// Mock @/lib/services/AuthService — used by login and trial-signup to create sessions
+jest.mock('@/lib/services/AuthService', () => ({
   createSession: jest.fn(() => Promise.resolve({ id: 'session-123', token: 'raw_session_token' })),
   invalidateSession: jest.fn(() => Promise.resolve()),
   getSession: jest.fn(() => Promise.resolve(null)),

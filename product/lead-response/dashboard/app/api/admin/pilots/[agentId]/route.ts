@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase-server'
-import { isAdminUser } from '@/lib/auth'
+import { isAdminUser } from '@/lib/services/AuthService'
 import {
   sendPilotWelcomeEmail,
   sendPilotSetupCompleteEmail,

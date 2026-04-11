@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAgentById, getLeadById } from '@/lib/supabase'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
-import { validateSession } from '@/lib/session'
+import { validateSession } from '@/lib/services/AuthService'
 
 // Force dynamic rendering - API routes should never be static
 export const dynamic = 'force-dynamic'
