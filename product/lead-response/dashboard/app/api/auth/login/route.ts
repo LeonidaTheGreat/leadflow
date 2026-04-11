@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { createSession } from '@/lib/session'
+import { createSession } from '@/lib/services/AuthService'
 import { logSessionStart } from '@/lib/session-analytics'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')

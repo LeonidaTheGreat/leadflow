@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer, isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
 /**
  * Three sample leads with AI-drafted SMS responses.

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { isAdminUser } from '@/lib/auth'
+import { isAdminUser } from '@/lib/services/AuthService'
 import { postgrestAdmin } from '@/lib/db'
 import { checkSmsDeliveryHealth, getA2pRegistrationStatus } from '@/lib/sms-delivery-monitor'
 

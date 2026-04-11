@@ -14,7 +14,7 @@
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-jest.mock('@/lib/auth', () => ({
+jest.mock('@/lib/services/AuthService', () => ({
   getAuthUserId: jest.fn(),
 }))
 
@@ -27,7 +27,7 @@ jest.mock('@/lib/supabase', () => ({
   },
 }))
 
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 import { GET } from '../app/api/analytics/sms-stats/route'
 import { NextRequest } from 'next/server'
 

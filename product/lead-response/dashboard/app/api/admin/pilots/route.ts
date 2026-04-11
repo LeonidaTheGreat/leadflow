@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
-import { isAdminUser } from '@/lib/auth'
+import { isAdminUser } from '@/lib/services/AuthService'
 
 /**
  * GET /api/admin/pilots

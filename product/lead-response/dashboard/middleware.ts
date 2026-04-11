@@ -34,7 +34,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 
 /**
  * Hash a session token using SHA-256 (Web Crypto API — Edge-compatible).
- * Must match the hashToken() in lib/session.ts which uses Node crypto.
+ * Must match the hashToken() in lib/services/AuthService.ts which uses Node crypto.
  */
 async function hashSessionToken(token: string): Promise<string> {
   const data = new TextEncoder().encode(token)
@@ -72,7 +72,7 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
   const sessionToken = request.cookies.get('leadflow_session')?.value
   if (sessionToken && POSTGREST_URL) {
     try {
-      // Hash the raw token before querying — DB stores SHA-256 hashes (see lib/session.ts)
+      // Hash the raw token before querying — DB stores SHA-256 hashes (see AuthService)
       const tokenHash = await hashSessionToken(sessionToken)
       const encodedToken = encodeURIComponent(tokenHash)
       const url = `${POSTGREST_URL}/sessions?token=eq.${encodedToken}&select=user_id,expires_at&limit=1`

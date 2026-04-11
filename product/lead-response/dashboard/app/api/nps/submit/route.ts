@@ -8,7 +8,7 @@ import {
   submitNPSResponse,
 } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
 export async function POST(request: NextRequest) {
   try {

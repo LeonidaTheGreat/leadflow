@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { deleteSession } from '@/lib/session'
+import { deleteSession } from '@/lib/services/AuthService'
 
 export async function POST(request: NextRequest) {
   const sessionToken = request.cookies.get('leadflow_session')?.value

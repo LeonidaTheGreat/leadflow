@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/auth'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
 const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
 const DB_KEY = process.env.API_SECRET_KEY || ''

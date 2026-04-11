@@ -14,7 +14,7 @@
 
 const mockSession = { id: 'sess-1', userId: 'agent-456' }
 
-jest.mock('@/lib/session', () => ({
+jest.mock('@/lib/services/AuthService', () => ({
   validateSession: jest.fn(),
 }))
 
@@ -32,7 +32,7 @@ jest.mock('@/lib/services/AnalyticsService', () => ({
   }),
 }))
 
-import { validateSession } from '@/lib/session'
+import { validateSession } from '@/lib/services/AuthService'
 import { GET } from '../app/api/analytics/dashboard/route'
 import { NextRequest } from 'next/server'
 

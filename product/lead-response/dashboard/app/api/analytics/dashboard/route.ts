@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSession } from '@/lib/session'
+import { validateSession } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/supabase'
 import { AnalyticsService } from '@/lib/services/AnalyticsService'
 

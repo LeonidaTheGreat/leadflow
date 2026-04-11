@@ -4,7 +4,7 @@
  * 
  * Verifies that trial-status endpoint uses getAuthUserId() helper
  * instead of manually accessing auth-token cookie, per codebase rule:
- * "no-auth-token-only" — all auth routes must use lib/auth.ts getAuthUserId()
+ * "no-auth-token-only" — all auth routes must use AuthService.getAuthUserId()
  */
 
 import * as fs from 'fs'
@@ -21,14 +21,14 @@ function readFile(relPath: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// AC-1: trial-status imports getAuthUserId from @/lib/auth
+// AC-1: trial-status imports getAuthUserId from @/lib/services/AuthService
 // ---------------------------------------------------------------------------
 describe('trial-status-uses-auth-helper', () => {
-  it('AC-1: imports getAuthUserId from @/lib/auth', () => {
+  it('AC-1: imports getAuthUserId from @/lib/services/AuthService', () => {
     const src = readFile('app/api/auth/trial-status/route.ts')
     assert.ok(
-      src.includes("import { getAuthUserId } from '@/lib/auth'"),
-      'trial-status/route.ts missing getAuthUserId import from @/lib/auth'
+      src.includes("import { getAuthUserId } from '@/lib/services/AuthService'"),
+      'trial-status/route.ts missing getAuthUserId import from @/lib/services/AuthService'
     )
   })
 
@@ -91,28 +91,28 @@ describe('trial-status-uses-auth-helper', () => {
   })
 
   // ---------------------------------------------------------------------------
-  // AC-6: lib/auth.ts exports getAuthUserId
+  // AC-6: AuthService exports getAuthUserId
   // ---------------------------------------------------------------------------
-  it('AC-6: lib/auth.ts exports getAuthUserId', () => {
-    const src = readFile('lib/auth.ts')
+  it('AC-6: AuthService exports getAuthUserId', () => {
+    const src = readFile('lib/services/AuthService.ts')
     assert.ok(
       src.includes('export async function getAuthUserId'),
-      'lib/auth.ts missing getAuthUserId export'
+      'lib/services/AuthService.ts missing getAuthUserId export'
     )
   })
 
   // ---------------------------------------------------------------------------
-  // AC-7: lib/auth.ts handles both auth methods (JWT + session)
+  // AC-7: AuthService handles both auth methods (JWT + session)
   // ---------------------------------------------------------------------------
-  it('AC-7: lib/auth.ts handles both JWT and session auth', () => {
-    const src = readFile('lib/auth.ts')
+  it('AC-7: AuthService handles both JWT and session auth', () => {
+    const src = readFile('lib/services/AuthService.ts')
     assert.ok(
       src.includes("'auth-token'"),
-      'lib/auth.ts missing auth-token cookie handling'
+      'lib/services/AuthService.ts missing auth-token cookie handling'
     )
     assert.ok(
       src.includes("'leadflow_session'"),
-      'lib/auth.ts missing leadflow_session cookie handling'
+      'lib/services/AuthService.ts missing leadflow_session cookie handling'
     )
   })
 })
