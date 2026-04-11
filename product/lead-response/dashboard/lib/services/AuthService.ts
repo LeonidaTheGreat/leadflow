@@ -39,6 +39,16 @@ export interface Session {
   ipAddress?: string
 }
 
+export interface SessionSummary {
+  id: string
+  userId: string
+  expiresAt: Date
+  createdAt: Date
+  lastUsedAt: Date
+  userAgent?: string
+  ipAddress?: string
+}
+
 export interface SessionCreateInput {
   userId: string
   userAgent?: string
@@ -71,6 +81,9 @@ export class AuthService {
   async createSession(input: SessionCreateInput): Promise<Session> {
     const rawToken = this.generateSessionToken()
     const tokenHash = this.hashToken(rawToken)
+    if (tokenHash === rawToken) {
+      throw new Error('Session token hashing failed')
+    }
     const now = new Date()
     const expiresAt = this.getSessionExpiryDate(input.rememberMe)
 
@@ -158,7 +171,7 @@ export class AuthService {
       .eq('user_id', userId)
   }
 
-  async getUserSessions(userId: string): Promise<Session[]> {
+  async getUserSessions(userId: string): Promise<SessionSummary[]> {
     const { data, error } = await this.db
       .from('sessions')
       .select('*')
@@ -170,10 +183,10 @@ export class AuthService {
       return []
     }
 
+    // Never return token material from persisted session rows.
     return data.map((session: any) => ({
       id: session.id,
       userId: session.user_id,
-      token: session.token,
       expiresAt: new Date(session.expires_at),
       createdAt: new Date(session.created_at),
       lastUsedAt: new Date(session.last_used_at),
@@ -339,7 +352,7 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
   return authService.deleteAllUserSessions(userId)
 }
 
-export async function getUserSessions(userId: string): Promise<Session[]> {
+export async function getUserSessions(userId: string): Promise<SessionSummary[]> {
   return authService.getUserSessions(userId)
 }
 
