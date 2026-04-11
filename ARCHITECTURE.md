@@ -69,6 +69,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | SubscriptionService | `lib/services/SubscriptionService.js` | Subscription state management |
 | TwilioService | `lib/services/TwilioService.js` | Twilio SMS integration |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | Weekly agent performance reports |
+| ActivationService | `lib/services/ActivationService.js` | Activation outreach orchestration |
 
 > **If you're about to write a DB query or API call outside of lib/services/, STOP.** Find or create the right service first.
 
