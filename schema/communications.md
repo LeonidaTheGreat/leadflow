@@ -2,7 +2,7 @@
 # Schema: Communications
 
 > SMS messages, email logs, conversations, sequences, templates, webhooks
-> Generated: 2026-04-11T22:17:52.146Z | 6 tables
+> Generated: 2026-04-11T22:20:04.798Z | 6 tables
 
 [← Back to SCHEMA.md](../SCHEMA.md)
 

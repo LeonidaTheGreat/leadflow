@@ -2,7 +2,7 @@
 # Schema: Bookings
 
 > Cal.com bookings, appointment reminders, booking configs
-> Generated: 2026-04-11T22:17:52.146Z | 4 tables
+> Generated: 2026-04-11T22:20:04.798Z | 4 tables
 
 [← Back to SCHEMA.md](../SCHEMA.md)
 

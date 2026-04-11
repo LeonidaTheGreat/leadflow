@@ -2,7 +2,7 @@
 # Schema: Agents (Customers)
 
 > Real estate agents (paying customers), profiles, settings, onboarding, pilot, auth
-> Generated: 2026-04-11T22:17:52.146Z | 20 tables
+> Generated: 2026-04-11T22:20:04.798Z | 20 tables
 
 [← Back to SCHEMA.md](../SCHEMA.md)
 

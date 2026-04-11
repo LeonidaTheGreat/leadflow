@@ -2,7 +2,7 @@
 # Schema: Billing
 
 > Stripe subscriptions, payments, invoices, referrals, trials
-> Generated: 2026-04-11T22:17:52.146Z | 8 tables
+> Generated: 2026-04-11T22:20:04.798Z | 8 tables
 
 [← Back to SCHEMA.md](../SCHEMA.md)
 

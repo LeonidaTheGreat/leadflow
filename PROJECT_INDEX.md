@@ -12,6 +12,16 @@ leadflow/
 ├── project.config.json        ← Genome project identity card (agents, products, rules)
 ├── vercel.json                ← Vercel deployment config
 │
+├── schema/                    ← Domain-split schema docs (7 files, ~10 tables each)
+│   ├── agents.md              ← Real estate agents, onboarding, auth
+│   ├── billing.md             ← Subscriptions, payments, referrals
+│   ├── communications.md      ← Messages, SMS, templates, webhooks
+│   ├── crm.md                 ← Leads, conversations, FUB tables
+│   ├── analytics.md           ← Events, metrics, PostHog
+│   ├── bookings.md            ← Cal.com bookings
+│   └── orchestration.md       ← Tasks, use_cases, PRDs, code_reviews
+├── SCHEMA.md                  ← Slim index: domain list + Quick Table Lookup
+│
 ├── lib/                       ← Backend modules (Node.js/CommonJS)
 ├── routes/                    ← Express API route handlers
 ├── integrations/              ← Third-party integration code

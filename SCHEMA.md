@@ -2,7 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-04-11T22:17:52.146Z | 77 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-04-11T22:20:04.798Z | 77 tables in local PostgreSQL (openclaw DB).
 
 **Load only the domain file you need** — don't load this entire file when you only need 2-3 tables.
 

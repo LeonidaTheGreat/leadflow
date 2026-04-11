@@ -2,7 +2,7 @@
 # Schema: Analytics & Metrics
 
 > Events, page views, NPS, PostHog, revenue and distribution metrics
-> Generated: 2026-04-11T22:17:52.146Z | 18 tables
+> Generated: 2026-04-11T22:20:04.798Z | 18 tables
 
 [← Back to SCHEMA.md](../SCHEMA.md)
 
@@ -21,7 +21,7 @@
 | `nps_prompt_dismissals` | 0 | |
 | `agent_survey_schedule` | 337 | |
 | `inactivity_alerts` | 0 | |
-| `metrics` | 35714 | |
+| `metrics` | 35715 | |
 | `revenue_metrics` | 0 | |
 | `distribution_channels` | 1 | |
 | `distribution_metrics` | 250 | |
