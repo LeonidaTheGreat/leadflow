@@ -12,7 +12,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { createClient } = require('../../lib/db-client');
+const { createClient } = require('../../lib/db');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
@@ -221,7 +221,7 @@ async function testBookingsFileStructure() {
   assert(migrationContent.includes('meeting_link'), 'Migration has meeting_link column');
 
   // Check root handler uses correct column names
-  const handlerPath = path.join(__dirname, '..', 'lib', 'calcom-webhook-handler.js');
+  const handlerPath = path.join(__dirname, '..', '..', 'lib', 'services', 'CalcomWebhookHandler.js');
   const handlerContent = fs.readFileSync(handlerPath, 'utf-8');
   assert(handlerContent.includes('calcom_booking_id:'), 'Root handler uses calcom_booking_id (not cal_booking_id)');
   assert(handlerContent.includes('calcom_event_type_id:'), 'Root handler uses calcom_event_type_id (not cal_event_type_id)');
