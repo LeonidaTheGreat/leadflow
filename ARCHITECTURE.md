@@ -7,7 +7,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  ROUTES (routes/, app/api/)                     │
+│  ROUTES (routes/)                               │
 │  Thin HTTP handlers. Parse → delegate → respond │
 │  ZERO business logic. ZERO direct DB queries.   │
 ├─────────────────────────────────────────────────┤
@@ -15,7 +15,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 │  Business logic classes. One class per domain.  │
 │  ONLY layer that touches DB or external APIs.   │
 ├─────────────────────────────────────────────────┤
-│  DATA ACCESS (lib/db.ts, lib/supabase.ts)       │
+│  DATA ACCESS (lib/db.js)                        │
 │  Database client. Used ONLY by services.        │
 ├─────────────────────────────────────────────────┤
 │  TYPES (lib/types/)                             │
@@ -39,7 +39,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 
 | I need to... | Put it in... | NOT in... |
 |--------------|-------------|-----------|
-| Handle an HTTP request | `routes/` or `app/api/` | anywhere else |
+| Handle an HTTP request | `routes/` | anywhere else |
 | Query the database | A service class in `lib/services/` | routes, scripts, inline |
 | Call Twilio/Stripe/FUB | A service class in `lib/services/` | routes, scripts, inline |
 | Define a data shape | `lib/types/` | inline type annotations |
@@ -49,14 +49,26 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 
 ### Existing Services (grep for these before creating new code)
 
+<!-- AUTO-GENERATED from lib/services/ — regenerate with: ls lib/services/*.js -->
 | Service | Location | Responsibility |
 |---------|----------|---------------|
-| DB Client | `lib/db.ts`, `lib/supabase.ts` | Database access |
-| Email | `lib/email-service.ts` | Transactional email via Resend |
-| Session | `lib/session.ts` | Auth session management |
-| Pilot Conversion | `lib/pilot-conversion-service.ts` | Pilot → paid email sequences |
-| Verification Email | `lib/verification-email.ts` | Email verification flow |
-| Analytics | `lib/analytics-queries.ts` | Dashboard analytics queries |
+| DB Client | `lib/db.js` | PostgreSQL connection pool |
+| BillingService | `lib/services/BillingService.js` | Stripe billing, subscriptions, webhooks |
+| BookingLinkService | `lib/services/BookingLinkService.js` | Cal.com booking link management |
+| CalcomClient | `lib/services/CalcomClient.js` | Cal.com API client |
+| CalcomWebhookHandler | `lib/services/CalcomWebhookHandler.js` | Cal.com webhook processing |
+| CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com webhook registration |
+| EmailService | `lib/services/EmailService.js` | Transactional email via Resend |
+| FUBService | `lib/services/FUBService.js` | Follow Up Boss CRM integration |
+| OnboardingTelemetryService | `lib/services/OnboardingTelemetryService.js` | Agent onboarding tracking |
+| PilotConversionService | `lib/services/PilotConversionService.js` | Pilot → paid email sequences |
+| PosthogService | `lib/services/PosthogService.js` | PostHog analytics events |
+| SatisfactionService | `lib/services/SatisfactionService.js` | Agent satisfaction pings |
+| SequenceService | `lib/services/SequenceService.js` | Email/SMS drip sequences |
+| StuckPilotsService | `lib/services/StuckPilotsService.js` | Stuck pilot detection and alerts |
+| SubscriptionService | `lib/services/SubscriptionService.js` | Subscription state management |
+| TwilioService | `lib/services/TwilioService.js` | Twilio SMS integration |
+| WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | Weekly agent performance reports |
 
 > **If you're about to write a DB query or API call outside of lib/services/, STOP.** Find or create the right service first.
 
