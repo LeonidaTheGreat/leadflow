@@ -1,198 +1,209 @@
-<!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat by generate-api-docs.js. -->
-# LeadFlow API Reference
+<!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
+# API Reference
 
-> Generated: 2026-04-11T13:00:51.843Z | Source: `routes/` | 30 endpoints across 5 route files
+> Generated: 2026-04-11T13:05:12.574Z | Source: `routes/`, `integration/`
 
-Auto-generated from source. Edit source files, not this document.
+**29 endpoints across 5 files**
 
-## Endpoint Summary
+## Summary
 
-| Method | Path | Service Calls | File |
-|--------|------|--------------|------|
-| `GET` | `/` | — | `server.js` |
-| `GET` | `/admin/activation-outreach/api/admin/activation-list` | — | `admin/activation-outreach.js` |
-| `POST` | `/admin/activation-outreach/api/admin/send-activation-email` | — | `admin/activation-outreach.js` |
-| `GET` | `/billing/analytics/:userId` | `billingService.getSubscriptionAnalytics()` | `billing.js` |
-| `POST` | `/billing/cancel-subscription` | `billingService.cancelSubscription()` | `billing.js` |
-| `POST` | `/billing/create-customer` | `billingService.createCustomer()` | `billing.js` |
-| `POST` | `/billing/create-subscription` | `billingService.createSubscription()` | `billing.js` |
-| `GET` | `/billing/portal/config` | `billingService.getPortalConfig()` | `billing.js` |
-| `GET` | `/billing/portal/invoices/:customerId` | `billingService.getCustomerInvoices()` | `billing.js` |
-| `GET` | `/billing/portal/payment-methods/:customerId` | `billingService.getCustomerPaymentMethods()` | `billing.js` |
-| `POST` | `/billing/portal/session` | `billingService.createPortalSession()` | `billing.js` |
-| `GET` | `/billing/portal/subscriptions/:customerId` | `billingService.getCustomerSubscriptions()` | `billing.js` |
-| `POST` | `/billing/setup-intent` | `billingService.createSetupIntent()` | `billing.js` |
-| `GET` | `/billing/status` | `billingService.initializeBilling()` | `billing.js` |
-| `GET` | `/billing/subscription/:subscriptionId` | `billingService.getSubscriptionStatus()` | `billing.js` |
-| `POST` | `/billing/subscriptions` | `billingService.createCompleteSubscription()` | `billing.js` |
-| `POST` | `/billing/subscriptions/:subscriptionId/cancel` | `billingService.cancelManagedSubscription()` | `billing.js` |
-| `POST` | `/billing/subscriptions/:subscriptionId/change` | `billingService.changePlan()` | `billing.js` |
-| `GET` | `/billing/subscriptions/:subscriptionId/cycle` | `billingService.getBillingCycleInfo()` | `billing.js` |
-| `POST` | `/billing/subscriptions/:subscriptionId/preview-change` | `billingService.previewPlanChange()` | `billing.js` |
-| `POST` | `/billing/subscriptions/:subscriptionId/reactivate` | `billingService.reactivateSubscription()` | `billing.js` |
-| `GET` | `/billing/subscriptions/:subscriptionId/renewals` | `billingService.getRenewalHistory()` | `billing.js` |
-| `GET` | `/billing/subscriptions/:userId` | `billingService.getUserSubscriptionStatus()` | `billing.js` |
-| `POST` | `/billing/sync` | `billingService.syncAllSubscriptions()` | `billing.js` |
-| `GET` | `/billing/upcoming-renewals` | `billingService.getUpcomingRenewals()` | `billing.js` |
-| `POST` | `/billing/webhooks` | `billingService.verifyWebhookSignature()`, `billingService.handleWebhook()` | `billing.js` |
-| `GET` | `/check-stuck-pilots/api/cron/check-stuck-pilots` | `stuckPilotsService.checkAndAlertStuckPilots()` | `check-stuck-pilots.js` |
-| `GET` | `/health` | — | `server.js` |
-| `GET` | `/weekly-performance/api/cron/weekly-performance` | `weeklyPerformanceService.runWeeklyReportSequence()` | `weekly-performance.js` |
-| `GET` | `/weekly-performance/api/cron/weekly-performance/preview` | `weeklyPerformanceService.getPreviewData()` | `weekly-performance.js` |
+| Method | Path | Services | Auth | File |
+|--------|------|----------|------|------|
+| **GET** | `/api/admin/activation-list` | - | API key (admin) | `routes/admin/activation-outreach.js` |
+| **POST** | `/api/admin/send-activation-email` | - | API key (admin) | `routes/admin/activation-outreach.js` |
+| **POST** | `/create-customer` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/create-subscription` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/setup-intent` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/subscription/:subscriptionId` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/cancel-subscription` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/subscriptions` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/subscriptions/:userId` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/subscriptions/:subscriptionId/change` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/subscriptions/:subscriptionId/preview-change` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/subscriptions/:subscriptionId/cancel` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/subscriptions/:subscriptionId/reactivate` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/subscriptions/:subscriptionId/cycle` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/subscriptions/:subscriptionId/renewals` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/upcoming-renewals` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/portal/config` | `billingService` | Session | `routes/billing.js` |
+| **POST** | `/portal/session` | `billingService` | Session | `routes/billing.js` |
+| **GET** | `/portal/subscriptions/:customerId` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/portal/invoices/:customerId` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/portal/payment-methods/:customerId` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/webhooks` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/analytics/:userId` | `billingService` | None | `routes/billing.js` |
+| **POST** | `/sync` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/status` | `billingService` | None | `routes/billing.js` |
+| **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/check-stuck-pilots.js` |
+| **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
+| **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
+| **POST** | `/webhook/fub` | `fubService` | None | `integration/fub-webhook-listener.js` |
 
 ---
 
-## Routes by File
+## `routes/admin/activation-outreach.js`
 
-### `server.js`
+### GET `/api/admin/activation-list`
 
-#### `GET /`
+- **Auth:** API key (admin)
 
-Health check
+### POST `/api/admin/send-activation-email`
 
-#### `GET /health`
+- **Auth:** API key (admin)
 
-### `admin/activation-outreach.js`
+---
 
-#### `GET /admin/activation-outreach/api/admin/activation-list`
+## `routes/billing.js`
 
-─── GET /api/admin/activation-list ───────────────────────────────────────────
+### POST `/create-customer`
 
-#### `POST /admin/activation-outreach/api/admin/send-activation-email`
+- **Auth:** None
+- **Services:** `billingService`
 
-─── POST /api/admin/send-activation-email ────────────────────────────────────
+### POST `/create-subscription`
 
-### `billing.js`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `POST /billing/create-customer`
+### POST `/setup-intent`
 
-Returns: success, customerId, mock
+- **Auth:** None
+- **Services:** `billingService`
 
-**Calls:** `billingService.createCustomer()`
+### GET `/subscription/:subscriptionId`
 
-#### `POST /billing/create-subscription`
+- **Auth:** None
+- **Services:** `billingService`
 
-**Calls:** `billingService.createSubscription()`
+### POST `/cancel-subscription`
 
-#### `POST /billing/setup-intent`
+- **Auth:** None
+- **Services:** `billingService`
 
-Returns: success, clientSecret, mock
+### POST `/subscriptions`
 
-**Calls:** `billingService.createSetupIntent()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `GET /billing/subscription/:subscriptionId`
+### GET `/subscriptions/:userId`
 
-Returns: success
+- **Auth:** None
+- **Services:** `billingService`
 
-**Calls:** `billingService.getSubscriptionStatus()`
+### POST `/subscriptions/:subscriptionId/change`
 
-#### `POST /billing/cancel-subscription`
+- **Auth:** None
+- **Services:** `billingService`
 
-Returns: success, status, cancelAtPeriodEnd
+### POST `/subscriptions/:subscriptionId/preview-change`
 
-**Calls:** `billingService.cancelSubscription()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `POST /billing/subscriptions`
+### POST `/subscriptions/:subscriptionId/cancel`
 
-**Calls:** `billingService.createCompleteSubscription()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `GET /billing/subscriptions/:userId`
+### POST `/subscriptions/:subscriptionId/reactivate`
 
-**Calls:** `billingService.getUserSubscriptionStatus()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `POST /billing/subscriptions/:subscriptionId/change`
+### GET `/subscriptions/:subscriptionId/cycle`
 
-**Calls:** `billingService.changePlan()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `POST /billing/subscriptions/:subscriptionId/preview-change`
+### GET `/subscriptions/:subscriptionId/renewals`
 
-**Calls:** `billingService.previewPlanChange()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `POST /billing/subscriptions/:subscriptionId/cancel`
+### GET `/upcoming-renewals`
 
-**Calls:** `billingService.cancelManagedSubscription()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `POST /billing/subscriptions/:subscriptionId/reactivate`
+### GET `/portal/config`
 
-**Calls:** `billingService.reactivateSubscription()`
+- **Auth:** Session
+- **Services:** `billingService`
 
-#### `GET /billing/subscriptions/:subscriptionId/cycle`
+### POST `/portal/session`
 
-**Calls:** `billingService.getBillingCycleInfo()`
+- **Auth:** Session
+- **Services:** `billingService`
 
-#### `GET /billing/subscriptions/:subscriptionId/renewals`
+### GET `/portal/subscriptions/:customerId`
 
-**Calls:** `billingService.getRenewalHistory()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `GET /billing/upcoming-renewals`
+### GET `/portal/invoices/:customerId`
 
-**Calls:** `billingService.getUpcomingRenewals()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `GET /billing/portal/config`
+### GET `/portal/payment-methods/:customerId`
 
-Returns: success, config
+- **Auth:** None
+- **Services:** `billingService`
 
-**Calls:** `billingService.getPortalConfig()`
+### POST `/webhooks`
 
-#### `POST /billing/portal/session`
+- **Auth:** None
+- **Services:** `billingService`
 
-Returns: success
+### GET `/analytics/:userId`
 
-**Calls:** `billingService.createPortalSession()`
+- **Auth:** None
+- **Services:** `billingService`
 
-#### `GET /billing/portal/subscriptions/:customerId`
+### POST `/sync`
 
-Returns: success
+- **Auth:** None
+- **Services:** `billingService`
 
-**Calls:** `billingService.getCustomerSubscriptions()`
+### GET `/status`
 
-#### `GET /billing/portal/invoices/:customerId`
+- **Auth:** None
+- **Services:** `billingService`
 
-Returns: success
+---
 
-**Calls:** `billingService.getCustomerInvoices()`
+## `routes/check-stuck-pilots.js`
 
-#### `GET /billing/portal/payment-methods/:customerId`
+### GET `/api/cron/check-stuck-pilots`
 
-Returns: success
+Stuck Pilots Cron Route
 
-**Calls:** `billingService.getCustomerPaymentMethods()`
+- **Auth:** Vercel cron
 
-#### `POST /billing/webhooks`
+---
 
-**Calls:** `billingService.verifyWebhookSignature()`, `billingService.handleWebhook()`
+## `routes/weekly-performance.js`
 
-#### `GET /billing/analytics/:userId`
+### GET `/api/cron/weekly-performance`
 
-**Calls:** `billingService.getSubscriptionAnalytics()`
+Weekly Performance Email Routes
 
-#### `POST /billing/sync`
+- **Auth:** Vercel cron
+- **Services:** `WeeklyPerformanceService`
 
-**Calls:** `billingService.syncAllSubscriptions()`
-
-#### `GET /billing/status`
-
-**Calls:** `billingService.initializeBilling()`
-
-### `check-stuck-pilots.js`
-
-#### `GET /check-stuck-pilots/api/cron/check-stuck-pilots`
-
-GET /api/cron/check-stuck-pilots
-
-**Calls:** `stuckPilotsService.checkAndAlertStuckPilots()`
-
-### `weekly-performance.js`
-
-#### `GET /weekly-performance/api/cron/weekly-performance`
-
-GET /api/cron/weekly-performance
-
-**Calls:** `weeklyPerformanceService.runWeeklyReportSequence()`
-
-#### `GET /weekly-performance/api/cron/weekly-performance/preview`
+### GET `/api/cron/weekly-performance/preview`
 
 Preview endpoint: returns the email HTML for a given agent (or demo agent if agentId is omitted).
 
-**Calls:** `weeklyPerformanceService.getPreviewData()`
+- **Auth:** Vercel cron
+- **Services:** `weeklyPerformanceService`
+
+---
+
+## `integration/fub-webhook-listener.js`
+
+### POST `/webhook/fub`
+
+- **Auth:** None
+- **Services:** `fubService`
 
