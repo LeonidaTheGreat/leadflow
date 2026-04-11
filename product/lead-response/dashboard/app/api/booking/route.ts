@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAgentById, getLeadById } from '@/lib/supabase'
+import { getAgentById } from '@/lib/supabase'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
+import { leadService } from '@/lib/services/LeadService'
 
 // Force dynamic rendering - API routes should never be static
 export const dynamic = 'force-dynamic'
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     // Get lead and agent from lead
     if (leadId) {
-      const { data: leadData } = await getLeadById(leadId)
+      const { data: leadData } = await leadService.getLeadById(leadId)
       if (!leadData) {
         return NextResponse.json(
           { error: 'Lead not found' },
@@ -104,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get lead with agent
-    const { data: lead } = await getLeadById(lead_id)
+    const { data: lead } = await leadService.getLeadById(lead_id)
     
     if (!lead) {
       return NextResponse.json(

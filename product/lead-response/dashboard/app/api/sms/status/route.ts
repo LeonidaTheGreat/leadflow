@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { handleStatusCallback, parseInboundMessage, isOptOut, isPositiveResponse } from '@/lib/twilio'
-import { updateMessageStatus, createMessage, getLeadByPhone, updateLead, logEvent } from '@/lib/supabase'
+import { updateMessageStatus, createMessage, logEvent } from '@/lib/supabase'
 import { classifyIntent, generateAiSmsResponse } from '@/lib/ai'
 import { sendAiSmsResponse } from '@/lib/twilio'
 import { getAgentById } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 
 // ============================================
 // TWILIO STATUS CALLBACK & INBOUND WEBHOOK
@@ -90,7 +91,7 @@ async function handleInboundMessage(body: Record<string, string>) {
   console.log('📥 Inbound SMS from:', message.From)
 
   // Find lead by phone
-  const { data: lead } = await getLeadByPhone(message.From)
+  const { data: lead } = await leadService.getLeadByPhone(message.From)
 
   if (!lead) {
     console.log('⚠️  No lead found for phone:', message.From)
@@ -126,7 +127,7 @@ async function handleInboundMessage(body: Record<string, string>) {
   })
 
   // Update lead last contact
-  await updateLead(lead.id, {
+  await leadService.updateLead(lead.id, {
     last_contact_at: new Date().toISOString(),
   })
 
@@ -208,7 +209,7 @@ async function handleInboundMessage(body: Record<string, string>) {
       sent_at: new Date().toISOString(),
     })
 
-    await updateLead(lead.id, {
+    await leadService.updateLead(lead.id, {
       responded_at: new Date().toISOString(),
     })
 
@@ -231,7 +232,7 @@ async function handleOptOut(lead: any) {
   console.log('🚫 Processing opt-out for lead:', lead.id)
 
   // Update lead DNC status
-  await updateLead(lead.id, {
+  await leadService.updateLead(lead.id, {
     dnc: true,
     status: 'dnc',
     consent_sms: false,

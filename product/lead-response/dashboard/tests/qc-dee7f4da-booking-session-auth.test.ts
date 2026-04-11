@@ -19,20 +19,24 @@ const LEAD_OWN = 'lead-belongs-to-a'
 const LEAD_OTHER = 'lead-belongs-to-b'
 
 jest.mock('@/lib/session', () => ({ validateSession: jest.fn() }))
-jest.mock('@/lib/supabase', () => ({ getAgentById: jest.fn(), getLeadById: jest.fn() }))
+jest.mock('@/lib/supabase', () => ({ getAgentById: jest.fn() }))
+jest.mock('@/lib/services/LeadService', () => ({
+  leadService: { getLeadById: jest.fn() },
+}))
 jest.mock('@/lib/calcom', () => ({
   generateBookingLink: jest.fn(() => 'https://cal.com/link'),
   getAgentBookingLink: jest.fn((a: any) => `https://cal.com/${a.calcom_username}`),
 }))
 
 import { validateSession } from '@/lib/session'
-import { getAgentById, getLeadById } from '@/lib/supabase'
+import { getAgentById } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 import { GET, POST } from '../app/api/booking/route'
 import { NextRequest } from 'next/server'
 
 const mockValidateSession = validateSession as jest.Mock
 const mockGetAgentById = getAgentById as jest.Mock
-const mockGetLeadById = getLeadById as jest.Mock
+const mockGetLeadById = (leadService as any).getLeadById as jest.Mock
 
 function req(method: 'GET' | 'POST', params: Record<string, string> = {}, cookie = 'leadflow_session=tok', body?: any) {
   const url = new URL('http://localhost/api/booking')

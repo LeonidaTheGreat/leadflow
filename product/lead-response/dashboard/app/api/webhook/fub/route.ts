@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin, createLead, getLeadByPhone, updateLead, createMessage, logEvent } from '@/lib/supabase'
+import { supabaseAdmin, createMessage, logEvent } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone, isOptOut, sendSms } from '@/lib/twilio'
 import { syncLeadToFub, logSmsActivity, logQualification, handleWebhookEvent, verifyWebhookSignature } from '@/lib/fub'
@@ -140,13 +141,13 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
     return NextResponse.json({ error: 'Lead has no phone number' }, { status: 400 })
   }
 
-  const { data: existingLead } = await getLeadByPhone(phone)
+  const { data: existingLead } = await leadService.getLeadByPhone(phone)
   
   if (existingLead) {
     console.log('📋 Lead already exists:', existingLead.id)
     // Update FUB ID if not set
     if (!existingLead.fub_id) {
-      await updateLead(existingLead.id, { fub_id: fubLead.id })
+      await leadService.updateLead(existingLead.id, { fub_id: fubLead.id })
     }
     return NextResponse.json({ success: true, lead_id: existingLead.id, existing: true })
   }
@@ -158,7 +159,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
   }
 
   // Create lead in database
-  const { data: lead, error: leadError } = await createLead({
+  const { data: lead, error: leadError } = await leadService.createLead({
     fub_id: fubLead.id,
     agent_id: agent.id,
     name: `${fubLead.firstName || ''} ${fubLead.lastName || ''}`.trim() || null,
@@ -207,7 +208,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
   } as any)
 
   // Update lead with qualification data
-  await updateLead(lead.id, {
+  await leadService.updateLead(lead.id, {
     budget_min: qualification.budget_min,
     budget_max: qualification.budget_max,
     timeline: qualification.timeline,
@@ -266,7 +267,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
     })
 
     // Update lead responded_at
-    await updateLead(lead.id, { responded_at: new Date().toISOString() })
+    await leadService.updateLead(lead.id, { responded_at: new Date().toISOString() })
 
     // Log in FUB
     await logSmsActivity(fubLead.id, aiResponse.message, smsResult.messageSid!, smsResult.status!)
@@ -328,7 +329,7 @@ async function handleLeadUpdated(fubLead: any, resourceIds?: number[], uri?: str
   }
 
   // Update lead data
-  await updateLead(lead.id, {
+  await leadService.updateLead(lead.id, {
     name: `${fubLead.firstName || ''} ${fubLead.lastName || ''}`.trim() || lead.name,
     email: fubLead.email || lead.email,
     status: mapFubStatus(fubLead.status),
@@ -384,7 +385,7 @@ async function handleStatusChanged(fubLead: any, resourceIds?: number[], uri?: s
   const newStatus = mapFubStatus(fubLead.status)
 
   // Update lead status
-  await updateLead(lead.id, { status: newStatus })
+  await leadService.updateLead(lead.id, { status: newStatus })
 
   // Send status-specific SMS for certain transitions
   const statusTriggers: Record<string, string> = {

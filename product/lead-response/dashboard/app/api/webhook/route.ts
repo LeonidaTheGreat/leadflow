@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createLead, getLeadByPhone, updateLead, createMessage, logEvent, getAgentById, supabaseAdmin } from '@/lib/supabase'
+import { createMessage, logEvent, getAgentById, supabaseAdmin } from '@/lib/supabase'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone } from '@/lib/twilio'
 import type { Lead, Agent } from '@/lib/types'
+import { leadService } from '@/lib/services/LeadService'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     const normalizedPhone = normalizePhone(phone)
 
     // Check for duplicate lead
-    const { data: existingLead } = await getLeadByPhone(normalizedPhone)
+    const { data: existingLead } = await leadService.getLeadByPhone(normalizedPhone)
     if (existingLead) {
       console.log('📋 Lead already exists:', existingLead.id)
       return NextResponse.json({
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create lead record
-    const { data: lead, error: leadError } = await createLead({
+    const { data: lead, error: leadError } = await leadService.createLead({
       agent_id: agent.id,
       name: name || null,
       email: email || null,
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Update lead with qualification data
-    await updateLead(lead.id, {
+    await leadService.updateLead(lead.id, {
       budget_min: qualification.budget_min,
       budget_max: qualification.budget_max,
       timeline: qualification.timeline,
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
           sent_at: new Date().toISOString(),
         })
 
-        await updateLead(lead.id, {
+        await leadService.updateLead(lead.id, {
           responded_at: new Date().toISOString(),
         })
 

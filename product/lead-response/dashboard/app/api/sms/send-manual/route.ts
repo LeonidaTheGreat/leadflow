@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendSms } from '@/lib/twilio'
-import { createMessage, getLeadById, getAgentById } from '@/lib/supabase'
+import { createMessage, getAgentById } from '@/lib/supabase'
 import { generateAiSmsResponse } from '@/lib/ai'
+import { leadService } from '@/lib/services/LeadService'
 
 /**
  * POST /api/sms/send-manual
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get lead with agent
-    const { data: lead, error: leadError } = await getLeadById(lead_id)
+    const { data: lead, error: leadError } = await leadService.getLeadById(lead_id)
     
     if (leadError || !lead) {
       return NextResponse.json(

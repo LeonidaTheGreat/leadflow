@@ -51,7 +51,12 @@ jest.mock('@/lib/session', () => ({
 
 jest.mock('@/lib/supabase', () => ({
   getAgentById: jest.fn(),
-  getLeadById: jest.fn(),
+}))
+
+jest.mock('@/lib/services/LeadService', () => ({
+  leadService: {
+    getLeadById: jest.fn(),
+  },
 }))
 
 jest.mock('@/lib/calcom', () => ({
@@ -60,7 +65,8 @@ jest.mock('@/lib/calcom', () => ({
 }))
 
 import { validateSession } from '@/lib/session'
-import { getAgentById, getLeadById } from '@/lib/supabase'
+import { getAgentById } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 import { GET, POST } from '../app/api/booking/route'
 import { NextRequest } from 'next/server'
 
@@ -105,7 +111,7 @@ describe('GET /api/booking — security: agent_id from session only', () => {
     jest.clearAllMocks()
     ;(validateSession as jest.Mock).mockResolvedValue({ id: 'sess-1', userId: AGENT_ID })
     ;(getAgentById as jest.Mock).mockResolvedValue({ data: mockAgent })
-    ;(getLeadById as jest.Mock).mockResolvedValue({ data: mockLead })
+    ;((leadService as any).getLeadById as jest.Mock).mockResolvedValue({ data: mockLead })
   })
 
   // ── Authentication ─────────────────────────────────────────────────────────
@@ -156,7 +162,7 @@ describe('GET /api/booking — security: agent_id from session only', () => {
 
   describe('Cross-agent protection', () => {
     it("returns 403 when lead belongs to a different agent (not the session agent)", async () => {
-      ;(getLeadById as jest.Mock).mockResolvedValue({ data: mockLeadOtherAgent })
+      ;((leadService as any).getLeadById as jest.Mock).mockResolvedValue({ data: mockLeadOtherAgent })
 
       const req = makeGetRequest({ lead_id: mockLeadOtherAgent.id })
       const res = await GET(req)
@@ -187,7 +193,7 @@ describe('GET /api/booking — security: agent_id from session only', () => {
     })
 
     it('returns 404 when lead is not found', async () => {
-      ;(getLeadById as jest.Mock).mockResolvedValue({ data: null })
+      ;((leadService as any).getLeadById as jest.Mock).mockResolvedValue({ data: null })
       const req = makeGetRequest({ lead_id: 'nonexistent-lead' })
       const res = await GET(req)
       expect(res.status).toBe(404)
@@ -208,7 +214,7 @@ describe('POST /api/booking — security: agent_id from session only', () => {
     jest.clearAllMocks()
     ;(validateSession as jest.Mock).mockResolvedValue({ id: 'sess-1', userId: AGENT_ID })
     ;(getAgentById as jest.Mock).mockResolvedValue({ data: mockAgent })
-    ;(getLeadById as jest.Mock).mockResolvedValue({ data: mockLead })
+    ;((leadService as any).getLeadById as jest.Mock).mockResolvedValue({ data: mockLead })
   })
 
   it('returns 401 when no session cookie', async () => {
@@ -221,7 +227,7 @@ describe('POST /api/booking — security: agent_id from session only', () => {
   })
 
   it("returns 403 when lead belongs to a different agent", async () => {
-    ;(getLeadById as jest.Mock).mockResolvedValue({ data: mockLeadOtherAgent })
+    ;((leadService as any).getLeadById as jest.Mock).mockResolvedValue({ data: mockLeadOtherAgent })
 
     const req = makePostRequest({
       lead_id: mockLeadOtherAgent.id,

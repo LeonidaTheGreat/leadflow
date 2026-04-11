@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getLeadById, getAgentById } from '@/lib/supabase'
+import { getAgentById } from '@/lib/supabase'
 import { generateAiSmsResponse } from '@/lib/ai'
 import { checkAiRateLimit } from '@/lib/rate-limit'
 import { createErrorResponse, logError, classifyAiError } from '@/lib/error-handler'
+import { leadService } from '@/lib/services/LeadService'
 
 /**
  * POST /api/sms/ai-suggest
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Get lead with agent
-    const { data: lead, error: leadError } = await getLeadById(lead_id)
+    const { data: lead, error: leadError } = await leadService.getLeadById(lead_id)
     
     if (leadError || !lead) {
       logError('LEAD_NOT_FOUND', { lead_id });

@@ -5,15 +5,11 @@
 
 import { createClient } from '@/lib/db'
 import { 
-  getLeadById, 
-  getLeadByPhone, 
-  createLead,
-  updateLead,
-  getLeadsByAgent,
   getAgentById,
   getQualificationsByLead,
   getMessagesByLead
 } from '@/lib/supabase'
+import { leadService } from '@/lib/services/LeadService'
 
 describe('PostgREST Migration', () => {
   // These tests verify that the client can be created and has the expected methods
@@ -92,11 +88,11 @@ describe('PostgREST Migration', () => {
   })
 
   test('lib/supabase exports should be available', () => {
-    expect(typeof getLeadById).toBe('function')
-    expect(typeof getLeadByPhone).toBe('function')
-    expect(typeof createLead).toBe('function')
-    expect(typeof updateLead).toBe('function')
-    expect(typeof getLeadsByAgent).toBe('function')
+    expect(typeof leadService.getLeadById).toBe('function')
+    expect(typeof leadService.getLeadByPhone).toBe('function')
+    expect(typeof leadService.createLead).toBe('function')
+    expect(typeof leadService.updateLead).toBe('function')
+    expect(typeof leadService.getLeadsByAgent).toBe('function')
     expect(typeof getAgentById).toBe('function')
     expect(typeof getQualificationsByLead).toBe('function')
     expect(typeof getMessagesByLead).toBe('function')
