@@ -15,12 +15,12 @@ process.env.CAL_USERNAME = 'testagent';
 process.env.CAL_WEBHOOK_SECRET = 'test_webhook_secret';
 
 // Import modules after setting env vars
-const calcom = require('../../lib/calcom');
+const calcom = require('../../lib/services/CalcomClient');
 const BookingLinkService = require('../../lib/services/BookingLinkService');
 const bookingService = new BookingLinkService();
-const { 
-    handleBookingCreated, 
-    handleBookingRescheduled, 
+const {
+    handleBookingCreated,
+    handleBookingRescheduled,
     handleBookingCancelled,
     handleMeetingEnded,
     handleCalWebhook,
@@ -29,7 +29,7 @@ const {
     sleep,
     calculateBackoffDelay,
     RETRY_CONFIG
-} = require('../../lib/calcom-webhook-handler');
+} = require('../../lib/services/CalcomWebhookHandler');
 
 // Test results tracker
 const results = {

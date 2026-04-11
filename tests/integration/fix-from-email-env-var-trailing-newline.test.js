@@ -130,21 +130,21 @@ test('trim() is safe on clean values (no side effects)', () => {
 });
 
 // ────────────────────────────────────────────────────────────────────────────
-// lib/pilot-conversion-service.js check
+// lib/services/PilotConversionService.js check
 // ────────────────────────────────────────────────────────────────────────────
 
-test('lib/pilot-conversion-service.js trims FROM_EMAIL', () => {
-  const content = fs.readFileSync(path.join(PROJECT_ROOT, 'lib/pilot-conversion-service.js'), 'utf8');
+test('lib/services/PilotConversionService.js trims FROM_EMAIL', () => {
+  const content = fs.readFileSync(path.join(PROJECT_ROOT, 'lib/services/PilotConversionService.js'), 'utf8');
   const fromEmailLine = content.split('\n').find(l => l.includes('FROM_EMAIL') && l.includes('process.env.FROM_EMAIL') && !l.includes('//'));
-  assert.ok(fromEmailLine, 'FROM_EMAIL assignment not found in lib/pilot-conversion-service.js');
-  assert.ok(fromEmailLine.includes('.trim()'), `FROM_EMAIL missing .trim() in lib/pilot-conversion-service.js: ${fromEmailLine.trim()}`);
+  assert.ok(fromEmailLine, 'FROM_EMAIL assignment not found in lib/services/PilotConversionService.js');
+  assert.ok(fromEmailLine.includes('.trim()'), `FROM_EMAIL missing .trim() in lib/services/PilotConversionService.js: ${fromEmailLine.trim()}`);
 });
 
-test('lib/pilot-conversion-service.js trims RESEND_API_KEY', () => {
-  const content = fs.readFileSync(path.join(PROJECT_ROOT, 'lib/pilot-conversion-service.js'), 'utf8');
+test('lib/services/PilotConversionService.js trims RESEND_API_KEY', () => {
+  const content = fs.readFileSync(path.join(PROJECT_ROOT, 'lib/services/PilotConversionService.js'), 'utf8');
   const resendLine = content.split('\n').find(l => l.includes('RESEND_API_KEY') && l.includes('process.env.RESEND_API_KEY') && l.includes('=') && !l.includes('if (') && !l.includes('//'));
-  assert.ok(resendLine, 'RESEND_API_KEY assignment not found in lib/pilot-conversion-service.js');
-  assert.ok(resendLine.includes('.trim()'), `RESEND_API_KEY missing .trim() in lib/pilot-conversion-service.js: ${resendLine.trim()}`);
+  assert.ok(resendLine, 'RESEND_API_KEY assignment not found in lib/services/PilotConversionService.js');
+  assert.ok(resendLine.includes('.trim()'), `RESEND_API_KEY missing .trim() in lib/services/PilotConversionService.js: ${resendLine.trim()}`);
 });
 
 // ────────────────────────────────────────────────────────────────────────────

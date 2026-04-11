@@ -1,21 +1,24 @@
 /**
- * Unit Tests: lib/sequence-service.js
+ * Unit Tests: lib/services/SequenceService.js
  * Task: b54381ed-a14f-4887-9e23-7ab783d7ecb7
  * Bug: No automatic sequence creation on new lead / no-response
+ *
+ * Updated to use the SequenceService class API.
  */
 
 'use strict';
 
 const assert = require('assert');
+const SequenceService = require('../../lib/services/SequenceService');
 
-// ===== MOCK SUPABASE =====
+// ===== MOCK DB =====
 let mockInsertedRow = null;
 let mockExistingSequence = null;
 let mockLeadById = null;
 let mockLeadByPhone = null;
 let mockInsertError = null;
 
-const mockSupabase = {
+const mockDb = {
   from(table) {
     return {
       select(fields) {
@@ -64,29 +67,6 @@ const mockSupabase = {
   }
 };
 
-// Inject mock before requiring the module
-process.env.NEXT_PUBLIC_API_URL = 'http://mock';
-process.env.API_SECRET_KEY = 'mock-key';
-
-// Patch createClient
-const { createClient: origCreateClient } = require('../../lib/db-client');
-const supabaseModule = require('../../lib/db-client');
-const origCreate = supabaseModule.createClient;
-supabaseModule.createClient = () => mockSupabase;
-
-// Clear module cache so sequence-service picks up our mock
-delete require.cache[require.resolve('../../lib/sequence-service')];
-const {
-  createLeadSequence,
-  findLeadByFubId,
-  findLeadByPhone,
-  hasActiveSequence,
-  getInitialSendTime,
-} = require('../../lib/sequence-service');
-
-// Restore
-supabaseModule.createClient = origCreate;
-
 // ===== TESTS =====
 
 let passed = 0;
@@ -121,11 +101,14 @@ function test(name, fn) {
 
 async function runTests() {
   console.log('\n╔══════════════════════════════════════════════════════╗');
-  console.log('║  Unit Tests: sequence-service.js                    ║');
+  console.log('║  Unit Tests: SequenceService                        ║');
   console.log('║  Task: b54381ed-a14f-4887-9e23-7ab783d7ecb7         ║');
   console.log('╚══════════════════════════════════════════════════════╝\n');
 
-  // Reset state before each group
+  // Inject mock DB via constructor
+  const svc = new SequenceService({ db: mockDb });
+
+  // Helper to reset state between tests
   function reset() {
     mockInsertedRow = null;
     mockExistingSequence = null;
@@ -138,26 +121,25 @@ async function runTests() {
   console.log('📋 getInitialSendTime:');
   await test('no_response is ~24h in future', () => {
     const before = Date.now();
-    const ts = getInitialSendTime('no_response');
-    const after = Date.now();
+    const ts = svc.getInitialSendTime('no_response');
     const ms = new Date(ts).getTime() - before;
     assert.ok(ms >= 23 * 3600 * 1000 && ms <= 25 * 3600 * 1000, `Expected ~24h, got ${ms}ms`);
   });
 
   await test('post_viewing is ~4h in future', () => {
-    const ts = getInitialSendTime('post_viewing');
+    const ts = svc.getInitialSendTime('post_viewing');
     const ms = new Date(ts).getTime() - Date.now();
     assert.ok(ms >= 3.9 * 3600 * 1000, `Expected ~4h, got ${ms}ms`);
   });
 
   await test('no_show is ~30m in future', () => {
-    const ts = getInitialSendTime('no_show');
+    const ts = svc.getInitialSendTime('no_show');
     const ms = new Date(ts).getTime() - Date.now();
     assert.ok(ms >= 29 * 60 * 1000 && ms <= 31 * 60 * 1000, `Expected ~30m, got ${ms}ms`);
   });
 
   await test('nurture is ~7 days in future', () => {
-    const ts = getInitialSendTime('nurture');
+    const ts = svc.getInitialSendTime('nurture');
     const ms = new Date(ts).getTime() - Date.now();
     assert.ok(ms >= 6.9 * 24 * 3600 * 1000, `Expected ~7d, got ${ms}ms`);
   });
@@ -167,8 +149,7 @@ async function runTests() {
 
   await test('creates no_response sequence successfully', async () => {
     reset();
-    mockLeadById = { id: 'lead-uuid-001' };
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-001',
       sequence_type: 'no_response',
       trigger_reason: 'new_lead_no_response',
@@ -184,7 +165,7 @@ async function runTests() {
 
   await test('creates post_viewing sequence successfully', async () => {
     reset();
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-002',
       sequence_type: 'post_viewing',
       trigger_reason: 'booking_confirmed',
@@ -195,7 +176,7 @@ async function runTests() {
 
   await test('creates no_show sequence successfully', async () => {
     reset();
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-003',
       sequence_type: 'no_show',
       trigger_reason: 'missed_appointment',
@@ -206,20 +187,20 @@ async function runTests() {
 
   await test('returns null when lead_id is missing', async () => {
     reset();
-    const seq = await createLeadSequence({ sequence_type: 'no_response' });
+    const seq = await svc.createLeadSequence({ sequence_type: 'no_response' });
     assert.strictEqual(seq, null, 'Should return null without lead_id');
   });
 
   await test('returns null for invalid sequence_type', async () => {
     reset();
-    const seq = await createLeadSequence({ lead_id: 'lead-uuid-001', sequence_type: 'invalid_type' });
+    const seq = await svc.createLeadSequence({ lead_id: 'lead-uuid-001', sequence_type: 'invalid_type' });
     assert.strictEqual(seq, null, 'Should return null for invalid type');
   });
 
   await test('returns null when active sequence already exists (duplicate guard)', async () => {
     reset();
     mockExistingSequence = { id: 'existing-seq-id', status: 'active' };
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-001',
       sequence_type: 'no_response',
       trigger_reason: 'new_lead_no_response',
@@ -230,7 +211,7 @@ async function runTests() {
   await test('uses provided next_send_at timestamp', async () => {
     reset();
     const customTime = new Date(Date.now() + 48 * 3600 * 1000).toISOString();
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-001',
       sequence_type: 'no_response',
       next_send_at: customTime,
@@ -239,10 +220,10 @@ async function runTests() {
     assert.strictEqual(seq.next_send_at, customTime);
   });
 
-  await test('returns null on Supabase insert error', async () => {
+  await test('returns null on DB insert error', async () => {
     reset();
     mockInsertError = { message: 'DB constraint violation' };
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-001',
       sequence_type: 'no_response',
     });
@@ -252,7 +233,7 @@ async function runTests() {
   await test('stores metadata on sequence', async () => {
     reset();
     const meta = { fub_id: '12345', triggered_by: 'lead.created' };
-    const seq = await createLeadSequence({
+    const seq = await svc.createLeadSequence({
       lead_id: 'lead-uuid-001',
       sequence_type: 'no_response',
       metadata: meta,
@@ -266,7 +247,7 @@ async function runTests() {
   console.log('╚══════════════════════════════════════════════════════╝');
   console.log(`  ✅ Passed: ${passed}`);
   console.log(`  ❌ Failed: ${failed}`);
-  const rate = passed / (passed + failed);
+  const rate = (passed + failed) > 0 ? passed / (passed + failed) : 1;
   console.log(`  📈 Pass rate: ${(rate * 100).toFixed(0)}%`);
   console.log('');
 
