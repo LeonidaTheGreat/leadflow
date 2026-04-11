@@ -163,6 +163,8 @@ The following .md files are **auto-generated** from the database by `scripts/gen
 - `PRD_INDEX.md` — from `prds` table
 - `DASHBOARD.md` — from `generate-dashboard-complete.js`
 - `JOURNEYS.md` — from `project.config.json` journeys + `product_reviews` table (journey type)
+- `SERVICES.md` — from `lib/services/` (class names, methods, dependencies)
+- `API.md` — from `routes/` and `integration/` (endpoints, methods, paths, services called)
 
 Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifying a PRD doc, update the `prds` table (`file_path`, `status`, `version`).
 
