@@ -62,6 +62,14 @@ leadflow/
 │   ├── marketing/
 │   └── orchestrator/
 │
+├── schema/                    ← Per-domain schema docs (progressive disclosure)
+│   ├── agents.md              ← real_estate_agents, onboarding, auth (20 tables)
+│   ├── crm.md                 ← leads, dnc_list, qualifications (6 tables)
+│   ├── communications.md      ← messages, sms, conversations, webhooks (6 tables)
+│   ├── bookings.md            ← Cal.com bookings and reminders (4 tables)
+│   ├── billing.md             ← subscriptions, payments, referrals (8 tables)
+│   ├── analytics.md           ← events, metrics, NPS, distribution (18 tables)
+│   └── orchestration.md       ← tasks, use_cases, code_reviews, PRDs (15 tables)
 ├── migrations/                ← SQL migration files (numbered)
 ├── sql/                       ← SQL schemas and one-off migration scripts
 ├── supabase/                  ← Legacy Supabase migrations (historical only)
@@ -191,6 +199,11 @@ These rules define where new files belong. Enforced by genome codebase rules.
 - **Guides** go in `docs/guides/`
 - **Reports** go in `docs/reports/`
 - **Marketing handoffs** go in `docs/marketing-handoff/`
+
+### Database Schema
+- **Schema reference**: `SCHEMA.md` — slim index with domain links and quick table lookup
+- **Domain details**: `schema/<domain>.md` — load only the domain you need (agents, crm, communications, bookings, billing, analytics, orchestration)
+- **Auto-generated** every heartbeat from live PostgreSQL — do NOT edit manually
 
 ### SQL
 - **Numbered migrations** go in `migrations/` (format: `NNN_description.sql`)

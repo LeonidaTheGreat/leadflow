@@ -1,41 +1,111 @@
+<!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from live PostgreSQL. -->
 # LeadFlow Database Schema Reference
+
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> 68 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-04-11T22:17:52.146Z | 77 tables in local PostgreSQL (openclaw DB).
+
+**Load only the domain file you need** — don't load this entire file when you only need 2-3 tables.
 
 ## Common Gotchas
+
 - **messages has NO agent_id** — join through leads to get the agent
-- **sms_messages has NO agent_id** — same, join through leads  
+- **sms_messages has NO agent_id** — same, join through leads
 - **"agents" in code = real_estate_agents** — customers, not AI agents
-- **tasks.agent_id = AI agent role** (dev, qc, product) — different concept
+- **tasks.agent_id = AI agent role** (dev, qc, product) — different concept, text not uuid
 - **Two message tables**: `messages` (full, preferred) and `sms_messages` (legacy, minimal)
+- **Database**: local PostgreSQL on Mac Mini, NOT Supabase
 
-## Key Product Tables
+## Domains
 
-### real_estate_agents (THE customer table)
-id (uuid), email, password_hash, first_name, last_name, phone_number, state, status, timezone, email_verified, stripe_customer_id, subscription_status, plan_tier, mrr, trial_ends_at, source, pilot_started_at, onboarding_step, onboarding_completed, utm_source/medium/campaign, created_at, updated_at
+| Domain | Tables | Description |
+|--------|--------|-------------|
+| [Agents (Customers)](schema/agents.md) | 20 | Real estate agents (paying customers), profiles, settings, onboarding, pilot, auth |
+| [CRM & Leads](schema/crm.md) | 6 | Leads, qualifications, FUB-related tables, DNC list |
+| [Communications](schema/communications.md) | 6 | SMS messages, email logs, conversations, sequences, templates, webhooks |
+| [Bookings](schema/bookings.md) | 4 | Cal.com bookings, appointment reminders, booking configs |
+| [Billing](schema/billing.md) | 8 | Stripe subscriptions, payments, invoices, referrals, trials |
+| [Analytics & Metrics](schema/analytics.md) | 18 | Events, page views, NPS, PostHog, revenue and distribution metrics |
+| [Orchestration](schema/orchestration.md) | 15 | Tasks, use cases, PRDs, code reviews, product decisions, system tables |
 
-### leads
-id (uuid), fub_id, **agent_id (uuid FK→real_estate_agents)**, name, email, phone, source, status, market, consent_sms, dnc, budget_min/max, timeline, urgency_score, created_at
+## Quick Table Lookup
 
-### messages (primary — use this for SMS)
-id (uuid), **lead_id (uuid FK→leads)**, direction, channel, message_body, ai_generated, twilio_sid, twilio_status, status, sent_at, metadata, created_at. **NO agent_id.**
+| Table | Domain |
+|-------|--------|
+| `action_items` | [Orchestration](schema/orchestration.md) |
+| `agent_booking_configs` | [Bookings](schema/bookings.md) |
+| `agent_integrations` | [Agents (Customers)](schema/agents.md) |
+| `agent_nps_responses` | [Analytics & Metrics](schema/analytics.md) |
+| `agent_onboarding_wizard` | [Agents (Customers)](schema/agents.md) |
+| `agent_page_views` | [Analytics & Metrics](schema/analytics.md) |
+| `agent_profiles` | [Agents (Customers)](schema/agents.md) |
+| `agent_sessions` | [Analytics & Metrics](schema/analytics.md) |
+| `agent_settings` | [Agents (Customers)](schema/agents.md) |
+| `agent_survey_schedule` | [Analytics & Metrics](schema/analytics.md) |
+| `analytics_events` | [Analytics & Metrics](schema/analytics.md) |
+| `booking_activities` | [Bookings](schema/bookings.md) |
+| `booking_reminders` | [Bookings](schema/bookings.md) |
+| `bookings` | [Bookings](schema/bookings.md) |
+| `checkout_sessions` | [Billing](schema/billing.md) |
+| `code_reviews` | [Orchestration](schema/orchestration.md) |
+| `completed_work` | [Orchestration](schema/orchestration.md) |
+| `conversations` | [Communications](schema/communications.md) |
+| `customers` | [Agents (Customers)](schema/agents.md) |
+| `demo_runs` | [Analytics & Metrics](schema/analytics.md) |
+| `demo_tokens` | [Agents (Customers)](schema/agents.md) |
+| `distribution_channels` | [Analytics & Metrics](schema/analytics.md) |
+| `distribution_metrics` | [Analytics & Metrics](schema/analytics.md) |
+| `dnc_list` | [CRM & Leads](schema/crm.md) |
+| `e2e_test_specs` | [Orchestration](schema/orchestration.md) |
+| `email_events` | [Analytics & Metrics](schema/analytics.md) |
+| `events` | [Analytics & Metrics](schema/analytics.md) |
+| `inactivity_alerts` | [Analytics & Metrics](schema/analytics.md) |
+| `lead_satisfaction_events` | [CRM & Leads](schema/crm.md) |
+| `lead_sequences` | [CRM & Leads](schema/crm.md) |
+| `lead_simulations` | [CRM & Leads](schema/crm.md) |
+| `leads` | [CRM & Leads](schema/crm.md) |
+| `messages` | [Communications](schema/communications.md) |
+| `metrics` | [Analytics & Metrics](schema/analytics.md) |
+| `mrr_snapshots` | [Billing](schema/billing.md) |
+| `nps_prompt_dismissals` | [Analytics & Metrics](schema/analytics.md) |
+| `nps_survey_tokens` | [Analytics & Metrics](schema/analytics.md) |
+| `onboarding_drafts` | [Agents (Customers)](schema/agents.md) |
+| `onboarding_events` | [Agents (Customers)](schema/agents.md) |
+| `onboarding_simulations` | [Agents (Customers)](schema/agents.md) |
+| `onboarding_stuck_alerts` | [Agents (Customers)](schema/agents.md) |
+| `password_reset_tokens` | [Agents (Customers)](schema/agents.md) |
+| `payments` | [Billing](schema/billing.md) |
+| `pilot_invites` | [Agents (Customers)](schema/agents.md) |
+| `pilot_progress` | [Agents (Customers)](schema/agents.md) |
+| `pilot_recruitment_campaigns` | [Agents (Customers)](schema/agents.md) |
+| `pilot_recruitment_targets` | [Agents (Customers)](schema/agents.md) |
+| `pilot_recruitment_touchpoints` | [Agents (Customers)](schema/agents.md) |
+| `pilot_signups` | [Agents (Customers)](schema/agents.md) |
+| `prds` | [Orchestration](schema/orchestration.md) |
+| `product_decisions` | [Orchestration](schema/orchestration.md) |
+| `product_feedback` | [Orchestration](schema/orchestration.md) |
+| `product_reviews` | [Orchestration](schema/orchestration.md) |
+| `profiles` | [Agents (Customers)](schema/agents.md) |
+| `project_goals` | [Analytics & Metrics](schema/analytics.md) |
+| `project_metadata` | [Analytics & Metrics](schema/analytics.md) |
+| `qualifications` | [CRM & Leads](schema/crm.md) |
+| `real_estate_agents` | [Agents (Customers)](schema/agents.md) |
+| `referral_links` | [Billing](schema/billing.md) |
+| `referrals` | [Billing](schema/billing.md) |
+| `revenue_metrics` | [Analytics & Metrics](schema/analytics.md) |
+| `schema_migrations` | [Orchestration](schema/orchestration.md) |
+| `sessions` | [Agents (Customers)](schema/agents.md) |
+| `sms_messages` | [Communications](schema/communications.md) |
+| `subscription_events` | [Billing](schema/billing.md) |
+| `subscriptions` | [Billing](schema/billing.md) |
+| `system_components` | [Analytics & Metrics](schema/analytics.md) |
+| `task_dependencies` | [Orchestration](schema/orchestration.md) |
+| `task_outcomes` | [Orchestration](schema/orchestration.md) |
+| `tasks` | [Orchestration](schema/orchestration.md) |
+| `templates` | [Communications](schema/communications.md) |
+| `trial_email_logs` | [Billing](schema/billing.md) |
+| `use_cases` | [Orchestration](schema/orchestration.md) |
+| `webhook_configs` | [Communications](schema/communications.md) |
+| `webhook_delivery_logs` | [Communications](schema/communications.md) |
+| `weekly_performance_email_logs` | [Orchestration](schema/orchestration.md) |
+| `weekly_performance_reports` | [Orchestration](schema/orchestration.md) |
 
-### sms_messages (legacy — prefer messages)
-id (uuid), lead_id, direction, body, twilio_sid, status, created_at. **NO agent_id.**
-
-### conversations
-id (uuid), lead_id, agent_id, from_number, to_number, status, trigger_type, twilio_sid
-
-### bookings
-id (uuid), attendee_email/name/phone, start_time, end_time, status, lead_id, agent_id, meeting_url, source
-
-## Billing Tables
-- **subscriptions**: id, user_id, customer_id, stripe_customer_id, stripe_subscription_id, status, tier, interval, current_period_start/end
-- **customers**: id, email, name, stripe_customer_id, plan_tier, mrr, status, trial_ends_at
-- **checkout_sessions**: id, user_id, customer_id, stripe_session_id, tier, status
-- **payments**: id, subscription_id, stripe_invoice_id, amount, currency, status
-
-## Orchestration Tables
-- **tasks**: id, title, description, project_id, agent_id (AI role), model, status, priority, spawn_config (jsonb), use_case_id, pr_number
-- **use_cases**: id, name, description, priority, implementation_status, workflow (array), revenue_impact
-- **code_reviews**: id, task_id, pr_number, branch_name, status, review_notes (jsonb)
