@@ -41,19 +41,53 @@ function BillingPageContent() {
   const searchParams = useSearchParams()
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
   const [planTier, setPlanTier] = useState<string>('trial')
+  const [isExpired, setIsExpired] = useState<boolean>(false)
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('user')
-      if (raw) {
-        const user = JSON.parse(raw)
-        setPlanTier(user.planTier || 'trial')
-        setTrialEndsAt(user.trialEndsAt || null)
+    // Fetch authoritative trial status from the server
+    const token =
+      (typeof localStorage !== 'undefined' && localStorage.getItem('leadflow_token')) ||
+      (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('leadflow_token')) ||
+      null
+
+    if (token) {
+      fetch('/api/auth/trial-status', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!data) return
+          setPlanTier(data.planTier || 'trial')
+          setTrialEndsAt(data.trialEndsAt || null)
+          setIsExpired(data.isExpired === true)
+        })
+        .catch(() => {
+          // Network failure — fall back to cached user data
+          try {
+            const raw = localStorage.getItem('leadflow_user') || localStorage.getItem('user')
+            if (raw) {
+              const user = JSON.parse(raw)
+              setPlanTier(user.planTier || 'trial')
+              setTrialEndsAt(user.trialEndsAt || null)
+            }
+          } catch {
+            // ignore
+          }
+        })
+    } else {
+      // No token — try local cache as last resort
+      try {
+        const raw = localStorage.getItem('leadflow_user') || localStorage.getItem('user')
+        if (raw) {
+          const user = JSON.parse(raw)
+          setPlanTier(user.planTier || 'trial')
+          setTrialEndsAt(user.trialEndsAt || null)
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
     }
 
     // Handle success/cancel redirects
@@ -107,6 +141,36 @@ function BillingPageContent() {
   
   return (
     <div className="max-w-4xl mx-auto py-8">
+      {/* Expired trial banner — shown above everything else */}
+      {isExpired && (
+        <div className="rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-700 p-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-red-800 dark:text-red-200 font-bold text-base mb-1">
+              Your trial has expired
+            </p>
+            <p className="text-red-700 dark:text-red-300 text-sm">
+              Your access has ended. Upgrade now to restore your account and keep all your data.
+            </p>
+          </div>
+          <button
+            onClick={() => handleUpgrade('pro')}
+            disabled={loadingPlan === 'pro'}
+            className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loadingPlan === 'pro' ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Upgrade Now <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Success message */}
       {upgradeStatus === 'success' && (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800 p-4 mb-6">

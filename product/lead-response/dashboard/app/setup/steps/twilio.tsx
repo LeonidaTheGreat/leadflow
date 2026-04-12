@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Phone, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
+import { Phone, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react'
 
 interface Props {
   agentId: string
@@ -27,12 +27,20 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
   const [phoneInput, setPhoneInput] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
+  const [retryable, setRetryable] = useState(false)
   const [mode, setMode] = useState<'system' | 'existing'>('system')
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 10)
     setPhoneInput(raw)
     setError('')
+    setRetryable(false)
+  }
+
+  const switchToBYOD = () => {
+    setMode('existing')
+    setError('')
+    setRetryable(false)
   }
 
   const handleSave = async () => {
@@ -43,6 +51,8 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
     }
 
     setIsSaving(true)
+    setError('')
+    setRetryable(false)
     try {
       const token = getToken()
       const authHeaders: Record<string, string> = {
@@ -62,7 +72,13 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
         if (data.success) {
           onComplete('system')
         } else {
-          setError(data.error || 'Failed to provision phone number. Please try again.')
+          // Use the human-readable message if provided, otherwise fall back to error field
+          const displayMessage =
+            data.message ||
+            data.error ||
+            'Failed to provision phone number. Please try again.'
+          setError(displayMessage)
+          setRetryable(!!data.retryable)
         }
       } else {
         // Bring-your-own Twilio number — validate and store as before
@@ -80,6 +96,7 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
       }
     } catch {
       setError('Connection failed. Please try again.')
+      setRetryable(true)
     } finally {
       setIsSaving(false)
     }
@@ -102,7 +119,7 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
         {/* Mode selector */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button
-            onClick={() => setMode('system')}
+            onClick={() => { setMode('system'); setError(''); setRetryable(false) }}
             className={`rounded-lg p-4 border-2 text-left transition-all ${
               mode === 'system'
                 ? 'border-blue-500 bg-blue-500/10'
@@ -122,7 +139,7 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
           </button>
 
           <button
-            onClick={() => setMode('existing')}
+            onClick={switchToBYOD}
             className={`rounded-lg p-4 border-2 text-left transition-all ${
               mode === 'existing'
                 ? 'border-blue-500 bg-blue-500/10'
@@ -165,7 +182,7 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
         )}
 
         {/* System mode info */}
-        {mode === 'system' && (
+        {mode === 'system' && !error && (
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
             <p className="text-sm text-blue-300">
               <span className="font-medium">LeadFlow will assign you a dedicated US number.</span>
@@ -174,11 +191,31 @@ export default function SetupTwilio({ agentId, onComplete, onSkip, onBack }: Pro
           </div>
         )}
 
-        {/* Error */}
+        {/* Error — with retry/BYOD affordances when retryable */}
         {error && (
-          <div className="flex items-center gap-2 text-red-400 text-sm mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            {error}
+          <div className="mb-4">
+            <div className="flex items-start gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+            {retryable && mode === 'system' && (
+              <div className="flex flex-col sm:flex-row gap-2 mt-3">
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Try Again
+                </button>
+                <button
+                  onClick={switchToBYOD}
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-blue-400 hover:text-blue-300 text-sm font-medium rounded-lg border border-blue-500/30 hover:border-blue-400/50 transition-colors"
+                >
+                  Use Your Own Number Instead
+                </button>
+              </div>
+            )}
           </div>
         )}
 
