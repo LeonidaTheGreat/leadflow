@@ -10,8 +10,15 @@ const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/check-stuck-pilots');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
+const calcomWebhookRouter = require('./routes/calcom-webhook');
+const billingRouter = require('./routes/billing');
 
 const app = express();
+
+// Stripe webhooks require the raw body for signature verification — must be
+// registered before express.json() so the raw buffer is preserved on this path.
+app.use('/webhook/stripe', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 
 // System routes
@@ -28,6 +35,12 @@ app.use('/', checkStuckPilotsRouter);
 
 // Admin: activation outreach (personal email to verified but unactivated signups)
 app.use('/', activationOutreachRouter);
+
+// Cal.com webhook and admin endpoints
+app.use('/', calcomWebhookRouter);
+
+// Billing (Stripe webhook + subscription/portal API)
+app.use('/', billingRouter);
 
 // Local development
 if (process.env.NODE_ENV !== 'production') {
