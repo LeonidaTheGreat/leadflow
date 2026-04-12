@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-12T04:01:47.859Z | Source: `lib/services/`
+> Generated: 2026-04-12T19:09:03.978Z | Source: `lib/services/`
 
-**18 services across 18 files**
+**15 services across 15 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
@@ -15,13 +15,10 @@
 | [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, axios |
 | [EmailService](#emailservice) | `EmailService.js` | 7 | - |
 | [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, TwilioService… |
-| [OnboardingTelemetryService](#onboardingtelemetryservice) | `OnboardingTelemetryService.js` | 7 | - |
 | [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | - |
-| [PosthogService](#posthogservice) | `PosthogService.js` | 7 | posthog-node |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
 | [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db |
 | [StuckPilotsService](#stuckpilotsservice) | `StuckPilotsService.js` | 6 | https, db |
-| [SubscriptionService](#subscriptionservice) | `SubscriptionService.js` | 19 | db, stripe |
 | [SystemStatusService](#systemstatusservice) | `SystemStatusService.js` | 2 | - |
 | [TwilioService](#twilioservice) | `TwilioService.js` | 11 | twilio, db |
 | [WeeklyPerformanceService](#weeklyperformanceservice) | `WeeklyPerformanceService.js` | 13 | db |
@@ -247,26 +244,6 @@
 
 ---
 
-## OnboardingTelemetryService
-
-**File:** `lib/services/OnboardingTelemetryService.js`
-
-**Constructor params:** `db`, `options`
-
-### Methods
-
-| Method | Params | Description |
-|--------|--------|-------------|
-| `isSmokeTestAccount()` | `email` | - |
-| `logOnboardingEvent()` | `agentId`, `stepName`, `status`, `metadata` | Log an onboarding step event for an agent |
-| `getFunnelStatus()` | - | Get funnel status for all agents |
-| `getFunnelConversions()` | - | Get funnel conversion rates |
-| `checkAndAlertStuckAgents()` | - | Check for stuck agents and create/update alerts |
-| `createStuckAlerts()` | `stuckAgents` | Create or update stuck agent alerts |
-| `getOnboardingEvents()` | `agentId`, `limit` | Get onboarding events (optionally filtered by agent) |
-
----
-
 ## PilotConversionService
 
 **File:** `lib/services/PilotConversionService.js`
@@ -289,28 +266,6 @@
 | `sendConversionEmail()` | `agent`, `milestone` | - |
 | `processMilestone()` | `milestone` | - |
 | `runConversionSequence()` | - | - |
-
----
-
-## PosthogService
-
-**File:** `lib/services/PosthogService.js`
-
-**Dependencies:** `posthog-node`
-
-**Constructor params:** `options`
-
-### Methods
-
-| Method | Params | Description |
-|--------|--------|-------------|
-| `trackServerEvent()` | `distinctId`, `event`, `properties` | Track a server-side event |
-| `trackConversion()` | `distinctId`, `conversionType`, `value`, `properties` | Track a conversion event |
-| `trackLeadCapture()` | `distinctId`, `email`, `variant`, `properties` | Track lead capture |
-| `trackFormSubmission()` | `distinctId`, `formName`, `properties` | Track form submission |
-| `identifyUser()` | `distinctId`, `properties` | Identify a user with traits |
-| `getFeatureFlag()` | `distinctId`, `flagKey` | Check if a feature flag is enabled for a user |
-| `shutdown()` | - | Shutdown PostHog client (call before app exits) |
 
 ---
 
@@ -372,40 +327,6 @@
 | `buildAlertMessage()` | `pilot`, `dashboardUrl` | - |
 | `checkAndAlertStuckPilots()` | `options` | - |
 | `createDefaultStuckPilotsService()` | - | - |
-
----
-
-## SubscriptionService
-
-**File:** `lib/services/SubscriptionService.js`
-
-**Dependencies:** `db`, `stripe`
-
-**Constructor params:** `dbClient`, `options`
-
-### Methods
-
-| Method | Params | Description |
-|--------|--------|-------------|
-| `createStripeClient()` | - | - |
-| `createDefaultDbClient()` | - | - |
-| `createTierPrices()` | - | - |
-| `getTierPrices()` | - | - |
-| `createManagedSubscription()` | `params` | - |
-| `getOrCreateCustomer()` | `userId` | - |
-| `attachPaymentMethod()` | `customerId`, `paymentMethodId` | - |
-| `persistSubscription()` | `params` | - |
-| `updateAgentSubscription()` | `userId`, `updates` | - |
-| `changeSubscriptionPlan()` | `params` | - |
-| `calculateProrationAmount()` | `oldSub`, `newSub` | - |
-| `scheduleSubscriptionChange()` | `params` | - |
-| `cancelManagedSubscription()` | `params` | - |
-| `reactivateSubscription()` | `subscriptionId` | - |
-| `updateSubscriptionInDatabase()` | `stripeSubscriptionId`, `updates` | - |
-| `getSubscriptionDetails()` | `subscriptionId` | - |
-| `listUserSubscriptions()` | `userId`, `options` | - |
-| `createMockSubscription()` | `userId`, `tier`, `interval` | - |
-| `getMockSubscriptionDetails()` | `subscriptionId` | - |
 
 ---
 
