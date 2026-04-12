@@ -80,7 +80,9 @@ CREATE TABLE IF NOT EXISTS dnc_list (
 -- Index on phone number for fast lookups
 CREATE INDEX IF NOT EXISTS idx_dnc_phone ON dnc_list(phone_number);
 
--- Add sms_opt_out column to leads table
+-- Add legacy sms_opt_out column to leads table.
+-- NOTE: runtime consent checks use leads.consent_sms (with leads.dnc for hard opt-outs).
+-- sms_opt_out remains here only for backward compatibility with older schema history.
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
@@ -89,7 +91,7 @@ BEGIN
     END IF;
 END $$;
 
--- Create index on sms_opt_out
+-- Legacy index retained for compatibility while consent_sms stays canonical in app code.
 CREATE INDEX IF NOT EXISTS idx_leads_sms_opt_out ON leads(sms_opt_out) WHERE sms_opt_out = true;
 
 -- Add function to update updated_at timestamp
