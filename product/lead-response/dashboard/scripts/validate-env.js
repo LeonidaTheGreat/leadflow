@@ -5,7 +5,8 @@
  * Falls back to hardcoded list if config not found.
  *
  * Catches: missing vars, placeholder values, trailing whitespace/newlines.
- * Fails the build in production if any required var is invalid.
+ * Fails the build in production (VERCEL_ENV=production). Preview/dev builds
+ * log warnings but don't block deployment.
  *
  * Add to package.json: "prebuild": "node scripts/validate-env.js"
  */
@@ -40,16 +41,21 @@ const REQUIRED_IN_PRODUCTION = envValidation.required_in_production || [
 ]
 const NO_PLACEHOLDERS = envValidation.no_placeholders !== false
 const TRIM_WHITESPACE = envValidation.trim_whitespace !== false
-const isProductionBuild = process.env.NODE_ENV === 'production' || process.env.VERCEL
+const isVercel = !!process.env.VERCEL
+const isProduction = process.env.VERCEL_ENV === 'production'
+const isProductionBuild = process.env.NODE_ENV === 'production' || isVercel
 
 const errors = []
+const warnings = []
 
 for (const key of REQUIRED) {
   const val = process.env[key]
 
   if (!val) {
-    if (isProductionBuild) {
+    if (isProduction) {
       errors.push(`MISSING: ${key} is not set`)
+    } else if (isProductionBuild) {
+      warnings.push(`${key} not set (preview build, non-blocking)`)
     } else {
       console.warn(`⚠️  ${key} not set (ok in development)`)
     }
@@ -57,13 +63,21 @@ for (const key of REQUIRED) {
   }
 
   if (TRIM_WHITESPACE && val !== val.trim()) {
-    errors.push(`WHITESPACE: ${key} has leading/trailing whitespace or newlines — will break interpolation`)
+    if (isProduction) {
+      errors.push(`WHITESPACE: ${key} has leading/trailing whitespace or newlines — will break interpolation`)
+    } else {
+      warnings.push(`${key} has whitespace (preview build, non-blocking)`)
+    }
   }
 
   if (NO_PLACEHOLDERS) {
     const lower = val.toLowerCase()
     if (lower.includes('placeholder') || lower.includes('your-') || lower === 'test' || lower === 'undefined') {
-      errors.push(`PLACEHOLDER: ${key} contains a placeholder value: "${val.slice(0, 20)}..."`)
+      if (isProduction) {
+        errors.push(`PLACEHOLDER: ${key} contains a placeholder value: "${val.slice(0, 20)}..."`)
+      } else {
+        warnings.push(`${key} contains a placeholder value (preview build, non-blocking)`)
+      }
     }
   }
 }
@@ -71,7 +85,7 @@ for (const key of REQUIRED) {
 for (const key of REQUIRED_IN_PRODUCTION) {
   const val = process.env[key]
 
-  if (!isProductionBuild && !val) {
+  if (!isProduction && !val) {
     continue
   }
 
@@ -92,11 +106,17 @@ for (const key of REQUIRED_IN_PRODUCTION) {
   }
 }
 
+if (warnings.length > 0) {
+  console.warn('\n⚠️  ENV WARNINGS (non-blocking):\n')
+  warnings.forEach(w => console.warn(`  ${w}`))
+  console.warn('')
+}
+
 if (errors.length > 0) {
   console.error('\n❌ ENV VALIDATION FAILED:\n')
   errors.forEach(e => console.error(`  ${e}`))
   console.error('\nFix the environment variables and redeploy.\n')
   process.exit(1)
 } else {
-  console.log(`✅ Env validation passed (${REQUIRED.length} vars checked)`)
+  console.log(`✅ Env validation passed (${REQUIRED.length} vars checked${warnings.length > 0 ? `, ${warnings.length} warnings` : ''})`)
 }
