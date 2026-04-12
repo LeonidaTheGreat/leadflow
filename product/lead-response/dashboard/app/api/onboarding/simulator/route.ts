@@ -358,6 +358,17 @@ async function getSimulationStatus(agentId: string, sessionId: string) {
       })
       .eq('session_id', sessionId)
 
+    // Persist Aha telemetry on the agent record immediately when simulation succeeds.
+    // This avoids relying on later onboarding completion payloads to carry simulator state.
+    await supabase
+      .from('real_estate_agents')
+      .update({
+        aha_completed: true,
+        aha_response_time_ms: derived.response_time_ms,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', agentId)
+
     await logAnalyticsEvent('onboarding_simulation_succeeded', agentId, sessionId, {
       responseTimeMs: derived.response_time_ms,
     })
