@@ -1,4 +1,6 @@
-import { Suspense } from 'react'
+'use client'
+
+import { Suspense, useState } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
 import { LeadFeed } from '@/components/dashboard/LeadFeed'
@@ -12,37 +14,138 @@ import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
 import { AhaMomentBanner } from '@/components/dashboard/AhaMomentBanner'
 import { RoiMetricsWidget } from '@/components/dashboard/RoiMetricsWidget'
 
-export const metadata = {
-  title: 'Lead Feed - AI Lead Response',
+// ---------------------------------------------------------------------------
+// Send Test Lead Card — lets agents fire a real SMS through the full pipeline
+// ---------------------------------------------------------------------------
+
+type TestLeadStatus = 'idle' | 'loading' | 'success' | 'error'
+
+function SendTestLeadCard() {
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [status, setStatus] = useState<TestLeadStatus>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  async function handleSend() {
+    if (!phoneNumber.trim()) return
+
+    setStatus('loading')
+    setErrorMessage('')
+
+    try {
+      const res = await fetch('/api/test-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phoneNumber.trim() }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        setStatus('success')
+      } else {
+        setStatus('error')
+        setErrorMessage(data.error || 'Something went wrong. Please try again.')
+      }
+    } catch {
+      setStatus('error')
+      setErrorMessage('Network error. Please check your connection and try again.')
+    }
+  }
+
+  function handleReset() {
+    setStatus('idle')
+    setErrorMessage('')
+  }
+
+  return (
+    <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 mt-0.5">
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-sm font-semibold">
+            T
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-0.5 text-sm">
+            Send Test Lead — verify your SMS pipeline
+          </h3>
+          <p className="text-xs text-amber-700 dark:text-amber-300 mb-3">
+            Fires a fake lead through the real pipeline (AI qualification then Twilio SMS).
+            Enter your phone number to receive the test message.
+          </p>
+
+          {status === 'success' ? (
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-medium text-green-700 dark:text-green-400">
+                SMS sent! Check your phone.
+              </p>
+              <button
+                onClick={handleReset}
+                className="text-xs text-amber-600 dark:text-amber-400 underline hover:no-underline"
+              >
+                Send another
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="+14165551234"
+                disabled={status === 'loading'}
+                className="flex-1 min-w-0 px-3 py-1.5 text-sm rounded-md border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50"
+              />
+              <button
+                onClick={handleSend}
+                disabled={status === 'loading' || !phoneNumber.trim()}
+                className="px-3 py-1.5 text-sm font-medium rounded-md bg-amber-600 hover:bg-amber-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {status === 'loading' ? 'Sending...' : 'Send Test Lead'}
+              </button>
+            </div>
+          )}
+
+          {status === 'error' && (
+            <p className="mt-2 text-xs text-red-600 dark:text-red-400">{errorMessage}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
+
+// ---------------------------------------------------------------------------
+// Dashboard Page
+// ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      {/* Success toast — shown after returning from Stripe checkout (?upgrade=success) */}
+      {/* Success toast -- shown after returning from Stripe checkout (?upgrade=success) */}
       <Suspense fallback={null}>
         <UpgradeSuccessToast />
       </Suspense>
 
-      {/* Upgrade Banner — shows for paid tier agents */}
+      {/* Upgrade Banner -- shows for paid tier agents */}
       <UpgradeBanner />
 
-      {/* Trial Countdown Widget — shows for trial agents with countdown and 3-tier urgency */}
+      {/* Trial Countdown Widget -- shows for trial agents with countdown and 3-tier urgency */}
       <TrialCountdownWidget />
 
-      {/* Pilot Status Banner — shows for pilot agents */}
+      {/* Pilot Status Banner -- shows for pilot agents */}
       <PilotStatusBanner />
 
-      {/* Sample Data Banner — shows for first-time users with sample leads */}
+      {/* Sample Data Banner -- shows for first-time users with sample leads */}
       <SampleDataBanner />
 
-      {/* Onboarding Wizard Launcher — shows if onboarding not completed */}
+      {/* Onboarding Wizard Launcher -- shows if onboarding not completed */}
       <OnboardingWizardLauncher />
 
-      {/* Aha Moment Banner — shows for trial users who haven't completed simulator */}
+      {/* Aha Moment Banner -- shows for trial users who haven't completed simulator */}
       <AhaMomentBanner />
 
-      {/* ROI Metrics Widget — shows value LeadFlow delivers */}
+      {/* ROI Metrics Widget -- shows value LeadFlow delivers */}
       <Suspense fallback={<RoiMetricsWidgetSkeleton />}>
         <RoiMetricsWidget />
       </Suspense>
@@ -68,12 +171,12 @@ export default function DashboardPage() {
         <StatsCards />
       </Suspense>
 
-      {/* SMS Analytics Cards — displays SMS delivery, reply, and booking conversion rates */}
+      {/* SMS Analytics Cards -- displays SMS delivery, reply, and booking conversion rates */}
       <Suspense fallback={<SmsAnalyticsCardsSkeleton />}>
         <SmsAnalyticsCards />
       </Suspense>
 
-      {/* Lead Satisfaction Widget — renders only when ≥5 responses collected */}
+      {/* Lead Satisfaction Widget -- renders only when >=5 responses collected */}
       <Suspense fallback={null}>
         <LeadSatisfactionCardWrapper />
       </Suspense>
@@ -82,9 +185,12 @@ export default function DashboardPage() {
         <LeadFeed />
       </Suspense>
 
+      {/* Send Test Lead -- verify the end-to-end SMS pipeline */}
+      <SendTestLeadCard />
+
       {/* Next Steps */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">🚀 Next Steps</h3>
+        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Next Steps</h3>
         <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
           <li>Connect FUB webhook to auto-import leads (URL in Settings)</li>
           <li>Add real Anthropic API key for AI qualification</li>
