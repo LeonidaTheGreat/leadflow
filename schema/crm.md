@@ -38,8 +38,6 @@
 | consent_sms | boolean | yes | false |
 | consent_email | boolean | yes | false |
 | dnc | boolean | yes | false |
-
-`consent_sms` is the canonical SMS consent field for all current LeadFlow send/no-send decisions. New code should rely on this field, not `sms_opt_out`.
 | budget_min | integer | yes | - |
 | budget_max | integer | yes | - |
 | timeline | text | yes | - |
@@ -50,8 +48,6 @@
 | responded_at | timestamp with time zone | yes | - |
 | sms_opt_out | boolean | yes | false |
 | created_at | timestamp with time zone | yes | now() |
-
-`sms_opt_out` is a legacy column introduced by an older Twilio migration and is currently unused by application logic. Operationally, opt-outs are represented by `consent_sms = false` and typically `dnc = true`.
 | updated_at | timestamp with time zone | yes | now() |
 | is_sample | boolean | no | false |
 | sample_type | text | yes | - |
@@ -59,7 +55,8 @@
 | budget | text | yes | - |
 
 **Notes:**
-- `consent_sms` is the canonical SMS consent flag.
-- `sms_opt_out` is a legacy/unused column left in place for compatibility; do not reference it in new code.
+- `consent_sms` is the canonical SMS consent field for all current LeadFlow send/no-send decisions.
+- `sms_opt_out` is a legacy column introduced by an older Twilio migration and is currently unused by application logic.
+- New code should rely on `consent_sms`, not `sms_opt_out`.
 - Treat a lead as ineligible for SMS when `dnc = true` or `consent_sms = false`.
 

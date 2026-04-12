@@ -265,6 +265,11 @@
 | property_interest | text | yes | - |
 | budget | text | yes | - |
 
+**Notes:**
+- `consent_sms` is the canonical SMS consent field used by current application logic.
+- `sms_opt_out` is a legacy/unused column retained for compatibility; do not reference it in new code.
+- Treat a lead as ineligible for SMS when `dnc = true` or `consent_sms = false`.
+
 ### messages
 
 | Column | Type | Nullable | Default |
