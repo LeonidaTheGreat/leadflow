@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-12T19:09:03.978Z | Source: `lib/services/`
+> Generated: 2026-04-12T19:41:22.407Z | Source: `lib/services/`
 
 **15 services across 15 files**
 

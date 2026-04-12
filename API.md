@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-04-12T19:09:03.931Z | Source: `routes/`, `integration/`
+> Generated: 2026-04-12T19:41:22.354Z | Source: `routes/`, `integration/`
 
-**8 endpoints across 5 files**
+**18 endpoints across 7 files**
 
 ## Summary
 
@@ -11,6 +11,16 @@
 |--------|------|----------|------|------|
 | **GET** | `/api/admin/activation-list` | - | API key (admin) | `routes/admin/activation-outreach.js` |
 | **POST** | `/api/admin/send-activation-email` | - | API key (admin) | `routes/admin/activation-outreach.js` |
+| **POST** | `/webhook/stripe` | - | None | `routes/billing.js` |
+| **POST** | `/api/billing/checkout` | - | Bearer token | `routes/billing.js` |
+| **POST** | `/api/billing/portal` | - | Bearer token | `routes/billing.js` |
+| **GET** | `/api/billing/status/:userId` | - | Bearer token | `routes/billing.js` |
+| **POST** | `/webhook/calcom` | - | None | `routes/calcom-webhook.js` |
+| **GET** | `/api/calcom/webhooks` | - | Bearer token | `routes/calcom-webhook.js` |
+| **POST** | `/api/calcom/webhooks` | - | Bearer token | `routes/calcom-webhook.js` |
+| **DELETE** | `/api/calcom/webhooks/:id` | - | Bearer token | `routes/calcom-webhook.js` |
+| **GET** | `/api/calcom/webhooks/:id/stats` | - | Bearer token | `routes/calcom-webhook.js` |
+| **POST** | `/api/calcom/webhooks/:id/test` | - | Bearer token | `routes/calcom-webhook.js` |
 | **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/check-stuck-pilots.js` |
 | **GET** | `/` | `systemStatusService` | None | `routes/system.js` |
 | **GET** | `/health` | `systemStatusService` | None | `routes/system.js` |
@@ -29,6 +39,54 @@
 ### POST `/api/admin/send-activation-email`
 
 - **Auth:** API key (admin)
+
+---
+
+## `routes/billing.js`
+
+### POST `/webhook/stripe`
+
+- **Auth:** None
+
+### POST `/api/billing/checkout`
+
+- **Auth:** Bearer token
+
+### POST `/api/billing/portal`
+
+- **Auth:** Bearer token
+
+### GET `/api/billing/status/:userId`
+
+- **Auth:** Bearer token
+
+---
+
+## `routes/calcom-webhook.js`
+
+### POST `/webhook/calcom`
+
+- **Auth:** None
+
+### GET `/api/calcom/webhooks`
+
+- **Auth:** Bearer token
+
+### POST `/api/calcom/webhooks`
+
+- **Auth:** Bearer token
+
+### DELETE `/api/calcom/webhooks/:id`
+
+- **Auth:** Bearer token
+
+### GET `/api/calcom/webhooks/:id/stats`
+
+- **Auth:** Bearer token
+
+### POST `/api/calcom/webhooks/:id/test`
+
+- **Auth:** Bearer token
 
 ---
 
