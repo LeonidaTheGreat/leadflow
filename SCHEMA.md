@@ -2,9 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-04-11T22:20:04.798Z | 77 tables in local PostgreSQL (openclaw DB).
-
-**Load only the domain file you need** — don't load this entire file when you only need 2-3 tables.
+> Generated: 2026-04-12T02:01:22.034Z | 77 tables in local PostgreSQL (openclaw DB).
 
 ## Common Gotchas
 
@@ -15,97 +13,483 @@
 - **Two message tables**: `messages` (full, preferred) and `sms_messages` (legacy, minimal)
 - **Database**: local PostgreSQL on Mac Mini, NOT Supabase
 
-## Domains
+## Table Overview
 
-| Domain | Tables | Description |
-|--------|--------|-------------|
-| [Agents (Customers)](schema/agents.md) | 20 | Real estate agents (paying customers), profiles, settings, onboarding, pilot, auth |
-| [CRM & Leads](schema/crm.md) | 6 | Leads, qualifications, FUB-related tables, DNC list |
-| [Communications](schema/communications.md) | 6 | SMS messages, email logs, conversations, sequences, templates, webhooks |
-| [Bookings](schema/bookings.md) | 4 | Cal.com bookings, appointment reminders, booking configs |
-| [Billing](schema/billing.md) | 8 | Stripe subscriptions, payments, invoices, referrals, trials |
-| [Analytics & Metrics](schema/analytics.md) | 18 | Events, page views, NPS, PostHog, revenue and distribution metrics |
-| [Orchestration](schema/orchestration.md) | 15 | Tasks, use cases, PRDs, code reviews, product decisions, system tables |
+### Product — Customers
 
-## Quick Table Lookup
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `real_estate_agents` | 2 | |
+| `customers` | 0 | |
+| `profiles` | 0 | |
+| `agent_profiles` | 0 | |
+| `agent_settings` | 1 | |
+| `agent_integrations` | 2 | |
 
-| Table | Domain |
-|-------|--------|
-| `action_items` | [Orchestration](schema/orchestration.md) |
-| `agent_booking_configs` | [Bookings](schema/bookings.md) |
-| `agent_integrations` | [Agents (Customers)](schema/agents.md) |
-| `agent_nps_responses` | [Analytics & Metrics](schema/analytics.md) |
-| `agent_onboarding_wizard` | [Agents (Customers)](schema/agents.md) |
-| `agent_page_views` | [Analytics & Metrics](schema/analytics.md) |
-| `agent_profiles` | [Agents (Customers)](schema/agents.md) |
-| `agent_sessions` | [Analytics & Metrics](schema/analytics.md) |
-| `agent_settings` | [Agents (Customers)](schema/agents.md) |
-| `agent_survey_schedule` | [Analytics & Metrics](schema/analytics.md) |
-| `analytics_events` | [Analytics & Metrics](schema/analytics.md) |
-| `booking_activities` | [Bookings](schema/bookings.md) |
-| `booking_reminders` | [Bookings](schema/bookings.md) |
-| `bookings` | [Bookings](schema/bookings.md) |
-| `checkout_sessions` | [Billing](schema/billing.md) |
-| `code_reviews` | [Orchestration](schema/orchestration.md) |
-| `completed_work` | [Orchestration](schema/orchestration.md) |
-| `conversations` | [Communications](schema/communications.md) |
-| `customers` | [Agents (Customers)](schema/agents.md) |
-| `demo_runs` | [Analytics & Metrics](schema/analytics.md) |
-| `demo_tokens` | [Agents (Customers)](schema/agents.md) |
-| `distribution_channels` | [Analytics & Metrics](schema/analytics.md) |
-| `distribution_metrics` | [Analytics & Metrics](schema/analytics.md) |
-| `dnc_list` | [CRM & Leads](schema/crm.md) |
-| `e2e_test_specs` | [Orchestration](schema/orchestration.md) |
-| `email_events` | [Analytics & Metrics](schema/analytics.md) |
-| `events` | [Analytics & Metrics](schema/analytics.md) |
-| `inactivity_alerts` | [Analytics & Metrics](schema/analytics.md) |
-| `lead_satisfaction_events` | [CRM & Leads](schema/crm.md) |
-| `lead_sequences` | [CRM & Leads](schema/crm.md) |
-| `lead_simulations` | [CRM & Leads](schema/crm.md) |
-| `leads` | [CRM & Leads](schema/crm.md) |
-| `messages` | [Communications](schema/communications.md) |
-| `metrics` | [Analytics & Metrics](schema/analytics.md) |
-| `mrr_snapshots` | [Billing](schema/billing.md) |
-| `nps_prompt_dismissals` | [Analytics & Metrics](schema/analytics.md) |
-| `nps_survey_tokens` | [Analytics & Metrics](schema/analytics.md) |
-| `onboarding_drafts` | [Agents (Customers)](schema/agents.md) |
-| `onboarding_events` | [Agents (Customers)](schema/agents.md) |
-| `onboarding_simulations` | [Agents (Customers)](schema/agents.md) |
-| `onboarding_stuck_alerts` | [Agents (Customers)](schema/agents.md) |
-| `password_reset_tokens` | [Agents (Customers)](schema/agents.md) |
-| `payments` | [Billing](schema/billing.md) |
-| `pilot_invites` | [Agents (Customers)](schema/agents.md) |
-| `pilot_progress` | [Agents (Customers)](schema/agents.md) |
-| `pilot_recruitment_campaigns` | [Agents (Customers)](schema/agents.md) |
-| `pilot_recruitment_targets` | [Agents (Customers)](schema/agents.md) |
-| `pilot_recruitment_touchpoints` | [Agents (Customers)](schema/agents.md) |
-| `pilot_signups` | [Agents (Customers)](schema/agents.md) |
-| `prds` | [Orchestration](schema/orchestration.md) |
-| `product_decisions` | [Orchestration](schema/orchestration.md) |
-| `product_feedback` | [Orchestration](schema/orchestration.md) |
-| `product_reviews` | [Orchestration](schema/orchestration.md) |
-| `profiles` | [Agents (Customers)](schema/agents.md) |
-| `project_goals` | [Analytics & Metrics](schema/analytics.md) |
-| `project_metadata` | [Analytics & Metrics](schema/analytics.md) |
-| `qualifications` | [CRM & Leads](schema/crm.md) |
-| `real_estate_agents` | [Agents (Customers)](schema/agents.md) |
-| `referral_links` | [Billing](schema/billing.md) |
-| `referrals` | [Billing](schema/billing.md) |
-| `revenue_metrics` | [Analytics & Metrics](schema/analytics.md) |
-| `schema_migrations` | [Orchestration](schema/orchestration.md) |
-| `sessions` | [Agents (Customers)](schema/agents.md) |
-| `sms_messages` | [Communications](schema/communications.md) |
-| `subscription_events` | [Billing](schema/billing.md) |
-| `subscriptions` | [Billing](schema/billing.md) |
-| `system_components` | [Analytics & Metrics](schema/analytics.md) |
-| `task_dependencies` | [Orchestration](schema/orchestration.md) |
-| `task_outcomes` | [Orchestration](schema/orchestration.md) |
-| `tasks` | [Orchestration](schema/orchestration.md) |
-| `templates` | [Communications](schema/communications.md) |
-| `trial_email_logs` | [Billing](schema/billing.md) |
-| `use_cases` | [Orchestration](schema/orchestration.md) |
-| `webhook_configs` | [Communications](schema/communications.md) |
-| `webhook_delivery_logs` | [Communications](schema/communications.md) |
-| `weekly_performance_email_logs` | [Orchestration](schema/orchestration.md) |
-| `weekly_performance_reports` | [Orchestration](schema/orchestration.md) |
+### Product — Leads & Messages
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `leads` | 0 | |
+| `messages` | 0 | |
+| `sms_messages` | 0 | |
+| `conversations` | 0 | |
+| `lead_sequences` | 0 | |
+| `lead_satisfaction_events` | 0 | |
+| `lead_simulations` | 19 | |
+| `dnc_list` | 0 | |
+
+### Product — Bookings
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `bookings` | 0 | |
+| `booking_activities` | 0 | |
+| `booking_reminders` | 0 | |
+| `agent_booking_configs` | 0 | |
+
+### Product — Billing
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `subscriptions` | 3 | |
+| `subscription_events` | 15 | |
+| `payments` | 1 | |
+| `checkout_sessions` | 0 | |
+| `mrr_snapshots` | 0 | |
+
+### Product — Onboarding
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `onboarding_drafts` | 0 | |
+| `onboarding_simulations` | 7 | |
+| `onboarding_events` | 0 | |
+| `onboarding_stuck_alerts` | 0 | |
+| `agent_onboarding_wizard` | 0 | |
+| `pilot_invites` | 10 | |
+| `pilot_signups` | 20 | |
+| `pilot_progress` | 2 | |
+| `pilot_recruitment_campaigns` | 1 | |
+| `pilot_recruitment_targets` | 20 | |
+
+### Product — Auth
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `sessions` | 172 | |
+| `password_reset_tokens` | 324 | |
+| `demo_tokens` | 9 | |
+
+### Product — Analytics & Events
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `analytics_events` | 0 | |
+| `events` | 638 | |
+| `email_events` | 339 | |
+| `agent_page_views` | 4 | |
+| `agent_sessions` | 1 | |
+| `demo_runs` | 0 | |
+| `agent_nps_responses` | 0 | |
+| `nps_survey_tokens` | 0 | |
+| `nps_prompt_dismissals` | 0 | |
+| `agent_survey_schedule` | 341 | |
+| `inactivity_alerts` | 0 | |
+
+### Product — Templates & Webhooks
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `templates` | 0 | |
+| `webhook_configs` | 0 | |
+| `webhook_delivery_logs` | 0 | |
+
+### Product — Referrals & Trials
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `referral_links` | 0 | |
+| `referrals` | 0 | |
+| `trial_email_logs` | 0 | |
+
+### Orchestration — Tasks
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `tasks` | 3936 | |
+| `task_dependencies` | 48 | |
+| `task_outcomes` | 0 | |
+| `completed_work` | 9 | |
+| `action_items` | 254 | |
+
+### Orchestration — Product
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `use_cases` | 341 | |
+| `prds` | 152 | |
+| `e2e_test_specs` | 438 | |
+| `code_reviews` | 1153 | |
+| `product_feedback` | 47 | |
+| `product_reviews` | 184 | |
+| `product_decisions` | 42 | |
+
+### Orchestration — Metrics
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `metrics` | 35937 | |
+| `revenue_metrics` | 0 | |
+| `distribution_channels` | 1 | |
+| `distribution_metrics` | 250 | |
+| `project_metadata` | 2 | |
+| `project_goals` | 2 | |
+| `system_components` | 21 | |
+
+### System
+
+| Table | Rows | Purpose |
+|-------|------|---------|
+| `schema_migrations` | 12 | |
+| `weekly_performance_reports` | 0 | |
+| `weekly_performance_email_logs` | 0 | |
+
+### Uncategorized
+
+| Table | Rows |
+|-------|------|
+| `pilot_recruitment_touchpoints` | 2 |
+| `qualifications` | 0 |
+
+---
+
+## Key Table Schemas
+
+### real_estate_agents
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| email | text | no | - |
+| password_hash | text | no | - |
+| first_name | text | no | - |
+| last_name | text | no | - |
+| phone_number | text | yes | - |
+| state | text | yes | - |
+| status | text | yes | 'onboarding'::text |
+| timezone | text | yes | 'America/New_York'::text |
+| email_verified | boolean | yes | false |
+| stripe_customer_id | text | yes | - |
+| subscription_status | text | yes | 'inactive'::text |
+| plan_tier | text | yes | - |
+| mrr | integer | yes | 0 |
+| trial_ends_at | timestamp with time zone | yes | - |
+| source | text | yes | - |
+| pilot_started_at | timestamp with time zone | yes | - |
+| pilot_expires_at | timestamp with time zone | yes | - |
+| onboarding_step | integer | yes | 0 |
+| last_onboarding_step_update | timestamp with time zone | yes | now() |
+| onboarding_completed | boolean | yes | false |
+| onboarding_completed_at | timestamp with time zone | yes | - |
+| satisfaction_ping_enabled | boolean | no | true |
+| created_at | timestamp with time zone | yes | now() |
+| updated_at | timestamp with time zone | yes | now() |
+| last_login_at | timestamp with time zone | yes | - |
+| trial_banner_dismissed | boolean | yes | false |
+| trial_email_day6_sent | boolean | yes | false |
+| trial_email_day3_sent | boolean | yes | false |
+| trial_email_day1_sent | boolean | yes | false |
+| trial_email_expired_sent | boolean | yes | false |
+| subscription_start_date | timestamp with time zone | yes | - |
+| utm_source | text | yes | - |
+| utm_medium | text | yes | - |
+| utm_campaign | text | yes | - |
+| utm_content | text | yes | - |
+| utm_term | text | yes | - |
+| demo_runs_used | integer | yes | 0 |
+| activation_email_sent | boolean | yes | false |
+| trial_email_welcome_sent | boolean | no | false |
+| trial_email_day1_aha_sent | boolean | no | false |
+| trial_email_day3_upgrade_sent | boolean | no | false |
+| trial_email_day7_warning_sent | boolean | no | false |
+| trial_email_day14_expired_sent | boolean | no | false |
+| trial_email_day15_final_sent | boolean | no | false |
+| referred_by_agent_id | uuid | yes | - |
+| referral_link_generated_at | timestamp with time zone | yes | - |
+| total_referral_credits | integer | yes | 0 |
+| fub_onboarding_completed | boolean | yes | false |
+| fub_onboarding_step | integer | yes | 0 |
+| aha_moment_day1_sent | boolean | no | false |
+| aha_moment_day1_sent_at | timestamp with time zone | yes | - |
+| aha_moment_day3_sent | boolean | no | false |
+| aha_moment_day3_sent_at | timestamp with time zone | yes | - |
+| trial_start_date | timestamp with time zone | yes | - |
+| aha_completed | boolean | no | false |
+| aha_response_time_ms | integer | yes | - |
+| onboarding_final_step | character varying | yes | - |
+
+**Foreign keys:**
+- `referred_by_agent_id` → `real_estate_agents.id`
+
+### leads
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| fub_id | text | yes | - |
+| agent_id | uuid | yes | - |
+| name | text | yes | - |
+| email | text | yes | - |
+| phone | text | no | - |
+| source | text | no | - |
+| source_metadata | jsonb | yes | '{}'::jsonb |
+| status | text | yes | 'new'::text |
+| market | text | yes | 'ca-ontario'::text |
+| consent_sms | boolean | yes | false |
+| consent_email | boolean | yes | false |
+| dnc | boolean | yes | false |
+| budget_min | integer | yes | - |
+| budget_max | integer | yes | - |
+| timeline | text | yes | - |
+| location | text | yes | - |
+| property_type | text | yes | - |
+| urgency_score | integer | yes | - |
+| last_contact_at | timestamp with time zone | yes | - |
+| responded_at | timestamp with time zone | yes | - |
+| sms_opt_out | boolean | yes | false |
+| created_at | timestamp with time zone | yes | now() |
+| updated_at | timestamp with time zone | yes | now() |
+| is_sample | boolean | no | false |
+| sample_type | text | yes | - |
+| property_interest | text | yes | - |
+| budget | text | yes | - |
+
+### messages
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| lead_id | uuid | no | - |
+| direction | text | no | - |
+| channel | text | yes | 'sms'::text |
+| message_body | text | no | - |
+| ai_generated | boolean | yes | false |
+| ai_confidence | numeric | yes | - |
+| ai_prompt_tokens | integer | yes | - |
+| ai_completion_tokens | integer | yes | - |
+| twilio_sid | text | yes | - |
+| twilio_status | text | yes | - |
+| twilio_error_code | text | yes | - |
+| twilio_error_message | text | yes | - |
+| status | text | yes | 'pending'::text |
+| sent_at | timestamp with time zone | yes | - |
+| delivered_at | timestamp with time zone | yes | - |
+| failed_at | timestamp with time zone | yes | - |
+| metadata | jsonb | yes | '{}'::jsonb |
+| created_at | timestamp with time zone | yes | now() |
+| is_sample | boolean | no | false |
+
+### conversations
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| lead_id | uuid | yes | - |
+| agent_id | uuid | yes | - |
+| from_number | text | yes | - |
+| to_number | text | yes | - |
+| status | text | yes | - |
+| trigger_type | text | yes | - |
+| twilio_sid | text | yes | - |
+| error_code | text | yes | - |
+| error_message | text | yes | - |
+| has_media | boolean | yes | false |
+| media_url | text | yes | - |
+| created_at | timestamp with time zone | yes | now() |
+| updated_at | timestamp with time zone | yes | now() |
+
+### bookings
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| cal_booking_id | bigint | yes | - |
+| cal_booking_uid | character varying | yes | - |
+| cal_event_type_id | bigint | yes | - |
+| cal_event_type_slug | character varying | yes | - |
+| attendee_email | character varying | no | - |
+| attendee_name | character varying | yes | - |
+| attendee_phone | character varying | yes | - |
+| attendee_timezone | character varying | yes | - |
+| title | character varying | yes | - |
+| description | text | yes | - |
+| start_time | timestamp with time zone | no | - |
+| end_time | timestamp with time zone | no | - |
+| status | character varying | yes | 'booked'::character varying |
+| location | character varying | yes | - |
+| meeting_url | character varying | yes | - |
+| meeting_link | text | yes | - |
+| lead_id | uuid | yes | - |
+| agent_id | uuid | yes | - |
+| calcom_booking_id | text | yes | - |
+| calcom_event_type_id | text | yes | - |
+| notes | text | yes | - |
+| metadata | jsonb | yes | '{}'::jsonb |
+| source | character varying | yes | 'cal.com'::character varying |
+| cancellation_reason | text | yes | - |
+| reschedule_count | integer | yes | 0 |
+| created_at | timestamp with time zone | yes | now() |
+| updated_at | timestamp with time zone | yes | now() |
+| cancelled_at | timestamp with time zone | yes | - |
+| completed_at | timestamp with time zone | yes | - |
+
+### subscriptions
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| user_id | uuid | yes | - |
+| customer_id | uuid | yes | - |
+| stripe_customer_id | character varying | no | - |
+| stripe_subscription_id | character varying | yes | - |
+| status | character varying | no | 'incomplete'::character varying |
+| tier | character varying | no | - |
+| price_id | character varying | no | - |
+| interval | character varying | no | 'month'::character varying |
+| current_period_start | timestamp without time zone | yes | - |
+| current_period_end | timestamp without time zone | yes | - |
+| trial_start | timestamp without time zone | yes | - |
+| trial_end | timestamp without time zone | yes | - |
+| cancel_at_period_end | boolean | yes | false |
+| canceled_at | timestamp without time zone | yes | - |
+| ended_at | timestamp without time zone | yes | - |
+| metadata | jsonb | yes | '{}'::jsonb |
+| created_at | timestamp without time zone | yes | CURRENT_TIMESTAMP |
+| updated_at | timestamp without time zone | yes | CURRENT_TIMESTAMP |
+
+### customers
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| email | text | no | - |
+| name | text | no | - |
+| phone | text | yes | - |
+| company | text | yes | - |
+| stripe_customer_id | text | yes | - |
+| stripe_subscription_id | text | yes | - |
+| plan_tier | text | yes | - |
+| plan_price | integer | yes | - |
+| billing_cycle | text | yes | 'monthly'::text |
+| status | text | yes | 'trialing'::text |
+| trial_ends_at | timestamp without time zone | yes | - |
+| current_period_start | timestamp without time zone | yes | - |
+| current_period_end | timestamp without time zone | yes | - |
+| cancel_at_period_end | boolean | yes | false |
+| canceled_at | timestamp without time zone | yes | - |
+| mrr | integer | yes | 0 |
+| lead_count | integer | yes | 0 |
+| sms_sent_count | integer | yes | 0 |
+| sms_quota | integer | yes | 100 |
+| lead_quota | integer | yes | 50 |
+| features | jsonb | yes | '{"api_access": false, "custom_branding" |
+| metadata | jsonb | yes | '{}'::jsonb |
+| created_at | timestamp without time zone | yes | now() |
+| updated_at | timestamp without time zone | yes | now() |
+
+### sessions
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| user_id | uuid | yes | - |
+| token | text | yes | - |
+| ip_address | text | yes | - |
+| user_agent | text | yes | - |
+| last_used_at | timestamp with time zone | yes | - |
+| expires_at | timestamp with time zone | yes | - |
+| created_at | timestamp with time zone | yes | now() |
+
+### tasks
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | uuid_generate_v4() |
+| title | text | no | - |
+| description | text | yes | - |
+| project_id | text | yes | 'leadflow'::text |
+| agent_id | text | yes | - |
+| model | text | yes | 'kimi'::text |
+| status | text | yes | 'backlog'::text |
+| priority | integer | yes | 3 |
+| estimated_cost_usd | numeric | yes | 0.00 |
+| actual_cost_usd | numeric | yes | 0.00 |
+| estimated_hours | numeric | yes | 1.00 |
+| parent_task_id | uuid | yes | - |
+| decomposition_level | integer | yes | 0 |
+| retry_count | integer | yes | 0 |
+| max_retries | integer | yes | 3 |
+| last_error | text | yes | - |
+| acceptance_criteria | jsonb | yes | '[]'::jsonb |
+| test_results | jsonb | yes | - |
+| tests_passed | integer | yes | 0 |
+| tests_failed | integer | yes | 0 |
+| created_at | timestamp with time zone | yes | now() |
+| updated_at | timestamp with time zone | yes | now() |
+| ready_at | timestamp with time zone | yes | - |
+| started_at | timestamp with time zone | yes | - |
+| completed_at | timestamp with time zone | yes | - |
+| spawn_config | jsonb | yes | - |
+| session_key | text | yes | - |
+| tags | ARRAY | yes | '{}'::text[] |
+| metadata | jsonb | yes | '{}'::jsonb |
+| use_case_id | text | yes | - |
+| prd_id | text | yes | - |
+| branch_name | text | yes | - |
+| pr_number | integer | yes | - |
+| failure_count | integer | yes | 0 |
+| retry_with_model | text | yes | - |
+| dedup_key | text | yes | - |
+
+### use_cases
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | text | no | - |
+| prd_id | text | yes | - |
+| name | text | no | - |
+| description | text | yes | - |
+| phase | text | yes | - |
+| priority | integer | yes | 2 |
+| implementation_status | text | yes | 'not_started'::text |
+| e2e_tests_defined | boolean | yes | false |
+| e2e_tests_passing | boolean | yes | false |
+| acceptance_criteria | jsonb | yes | - |
+| depends_on | ARRAY | yes | - |
+| workflow | ARRAY | yes | ARRAY['product'::text, 'dev'::text, 'qc' |
+| shippable_after_step | integer | yes | - |
+| revenue_impact | text | yes | 'none'::text |
+| project_id | text | yes | - |
+| updated_at | timestamp with time zone | yes | CURRENT_TIMESTAMP |
+| metadata | jsonb | yes | '{}'::jsonb |
+| acceptance_checks | jsonb | yes | '[]'::jsonb |
+
+**Foreign keys:**
+- `prd_id` → `prds.id`
+
+### code_reviews
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| id | uuid | no | gen_random_uuid() |
+| project_id | text | no | - |
+| task_id | uuid | yes | - |
+| pr_number | integer | yes | - |
+| branch_name | text | yes | - |
+| reviewer_agent | text | yes | - |
+| status | text | yes | 'pending'::text |
+| review_notes | jsonb | yes | - |
+| created_at | timestamp with time zone | yes | CURRENT_TIMESTAMP |
+| updated_at | timestamp with time zone | yes | CURRENT_TIMESTAMP |
 
