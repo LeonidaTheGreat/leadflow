@@ -18,6 +18,33 @@ const express = require('express');
 const router = express.Router();
 const CalcomWebhookHandler = require('../lib/services/CalcomWebhookHandler');
 const CalcomWebhookManagement = require('../lib/services/CalcomWebhookManagement');
+const { getPool } = require('../lib/db');
+
+/**
+ * Write a dead letter record for a failed webhook processing attempt.
+ * Best-effort: failures are logged but never thrown.
+ */
+async function writeDeadLetter(source, eventType, payload, errorMessage) {
+  try {
+    const pool = getPool();
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS webhook_dead_letters (
+        id SERIAL PRIMARY KEY,
+        source TEXT NOT NULL,
+        event_type TEXT,
+        payload JSONB,
+        error_message TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+    await pool.query(
+      'INSERT INTO webhook_dead_letters (source, event_type, payload, error_message) VALUES ($1, $2, $3, $4)',
+      [source, eventType, JSON.stringify(payload), errorMessage]
+    );
+  } catch (dbErr) {
+    console.error('[calcom-webhook] dead_letter DB write failed:', dbErr.message);
+  }
+}
 
 const handler = new CalcomWebhookHandler();
 const management = new CalcomWebhookManagement();
@@ -64,8 +91,16 @@ router.post('/webhook/calcom', (req, res) => {
     handler.handleCalWebhook(event)
         .then(() => res.json({ received: true, processed: true }))
         .catch(err => {
-            console.error('[calcom-webhook] processing error:', err.message);
-            res.status(500).json({ error: 'Webhook processing failed' });
+            const eventType = event.triggerEvent || event.type || 'unknown';
+            console.error(JSON.stringify({
+                level: 'error',
+                source: 'calcom-webhook',
+                event_type: eventType,
+                error: err.message,
+                timestamp: new Date().toISOString()
+            }));
+            writeDeadLetter('calcom', eventType, event, err.message);
+            res.status(200).json({ received: true, processed: false, error: err.message });
         });
 });
 
