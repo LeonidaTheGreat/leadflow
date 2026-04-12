@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-04-11T13:05:12.574Z | Source: `routes/`, `integration/`
+> Generated: 2026-04-12T04:01:47.865Z | Source: `routes/`, `integration/`
 
-**29 endpoints across 5 files**
+**31 endpoints across 6 files**
 
 ## Summary
 
@@ -35,6 +35,8 @@
 | **POST** | `/sync` | `billingService` | None | `routes/billing.js` |
 | **GET** | `/status` | `billingService` | None | `routes/billing.js` |
 | **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/check-stuck-pilots.js` |
+| **GET** | `/` | `systemStatusService` | None | `routes/system.js` |
+| **GET** | `/health` | `systemStatusService` | None | `routes/system.js` |
 | **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
 | **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
 | **POST** | `/webhook/fub` | `fubService` | None | `integration/fub-webhook-listener.js` |
@@ -179,6 +181,20 @@
 Stuck Pilots Cron Route
 
 - **Auth:** Vercel cron
+
+---
+
+## `routes/system.js`
+
+### GET `/`
+
+- **Auth:** None
+- **Services:** `systemStatusService`
+
+### GET `/health`
+
+- **Auth:** None
+- **Services:** `systemStatusService`
 
 ---
 

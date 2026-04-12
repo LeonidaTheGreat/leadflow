@@ -88,7 +88,7 @@ class QueryBuilder implements PromiseLike<any> {
     } else if (op && val !== undefined) {
       // not(key, op, val) - new syntax, e.g., not('rating', 'is', null)
       if (op === 'is' && val === null) {
-        this.filters.push({ key, op: 'is.null', val: 'null' })
+        this.filters.push({ key, op: 'not.is.null', val: null })
       } else {
         this.filters.push({ key, op: `not.${op}`, val })
       }
@@ -245,6 +245,8 @@ class QueryBuilder implements PromiseLike<any> {
         url.searchParams.set(f.key, `not.${f.val}`)
       } else if (f.op === 'is.null') {
         url.searchParams.set(f.key, 'is.null')
+      } else if (f.op === 'not.is.null') {
+        url.searchParams.set(f.key, 'not.is.null')
       } else if (f.op === 'is') {
         url.searchParams.set(f.key, `is.${f.val}`)
       } else if (f.op.startsWith('not.')) {

@@ -77,7 +77,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
       }
 
       // Store auth token + user in localStorage BEFORE navigation (FR-2)
-      // This ensures /setup can render without calling /api/auth/me
+      // This ensures /dashboard/onboarding can render without calling /api/auth/me
       if (data.token) {
         try {
           localStorage.setItem('leadflow_token', data.token)
@@ -92,7 +92,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           // ignore storage errors
         }
       }
-      router.push(data.redirectTo || '/setup')
+      router.push(data.redirectTo || '/dashboard/onboarding')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)

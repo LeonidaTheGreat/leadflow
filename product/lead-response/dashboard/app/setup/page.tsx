@@ -12,10 +12,10 @@ import SetupProgress from './components/progress'
 type SetupStep = 'fub' | 'twilio' | 'sms-verify' | 'simulator' | 'complete'
 
 const STEPS: { id: SetupStep; label: string }[] = [
+  { id: 'simulator', label: 'Test AI' },
   { id: 'fub', label: 'Connect FUB' },
   { id: 'twilio', label: 'Phone Number' },
   { id: 'sms-verify', label: 'Verify SMS' },
-  { id: 'simulator', label: 'Test AI' },
   { id: 'complete', label: 'Done' },
 ]
 
@@ -30,6 +30,7 @@ interface WizardState {
 
 // ws is the raw DB row (snake_case keys), not the WizardState (camelCase)
 function resumeStep(ws: Record<string, unknown>): SetupStep {
+  if (!ws.simulator_completed) return 'simulator'
   if (!ws.fub_connected) return 'fub'
   if (!ws.twilio_connected) return 'twilio'
   if (!ws.sms_verified) return 'sms-verify'
@@ -39,7 +40,7 @@ function resumeStep(ws: Record<string, unknown>): SetupStep {
 function SetupPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [currentStep, setCurrentStep] = useState<SetupStep>('fub')
+  const [currentStep, setCurrentStep] = useState<SetupStep>('simulator')
   const [setupData, setSetupData] = useState<WizardState>({
     fubConnected: false,
     fubApiKey: '',
@@ -283,11 +284,11 @@ function SetupPageInner() {
                 onComplete={(phone) => {
                   const updated = { ...setupData, smsVerified: true }
                   setSetupData(updated)
-                  saveWizardState({ smsVerified: true, currentStep: 'simulator' })
+                  saveWizardState({ smsVerified: true, currentStep: 'complete' })
                   nextStep()
                 }}
                 onSkip={() => {
-                  saveWizardState({ smsVerified: false, currentStep: 'simulator' })
+                  saveWizardState({ smsVerified: false, currentStep: 'complete' })
                   nextStep()
                 }}
                 onBack={prevStep}
@@ -299,7 +300,7 @@ function SetupPageInner() {
                 onNext={() => {
                   const updated = { ...setupData, simulatorCompleted: true }
                   setSetupData(updated)
-                  saveWizardState({ simulatorCompleted: true, currentStep: 'complete' })
+                  saveWizardState({ simulatorCompleted: true, currentStep: 'fub' })
                   nextStep()
                 }}
                 onBack={prevStep}

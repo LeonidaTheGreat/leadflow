@@ -64,7 +64,7 @@ export default function PilotSignupForm({ compact = false, className = '' }: Pil
       }
 
       // Store auth token + user in localStorage BEFORE navigation (FR-2)
-      // This ensures /setup can render without calling /api/auth/me
+      // This ensures /dashboard/onboarding can render without calling /api/auth/me
       if (data.token) {
         try {
           localStorage.setItem('leadflow_token', data.token)
@@ -83,7 +83,7 @@ export default function PilotSignupForm({ compact = false, className = '' }: Pil
       setSuccess(true)
       // Redirect after a brief delay to show success state
       setTimeout(() => {
-        router.push(data.redirectTo || '/setup')
+        router.push(data.redirectTo || '/dashboard/onboarding')
       }, 1500)
     } catch {
       setError('Something went wrong. Please try again.')

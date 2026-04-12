@@ -122,9 +122,9 @@ function LoginPageContent() {
         storage.setItem('leadflow_user', JSON.stringify(result.user))
       }
 
-      // Redirect new agents (onboarding not complete) to the setup wizard
+      // Redirect new agents (onboarding not complete) to frictionless onboarding
       if (result.user?.onboardingCompleted === false) {
-        router.push('/setup')
+        router.push('/dashboard/onboarding')
       } else {
         router.push(redirectUrl)
       }

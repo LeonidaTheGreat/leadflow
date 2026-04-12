@@ -33,11 +33,11 @@ test('setup completion route reads simulatorCompleted from request body', () => 
   )
 })
 
-test('setup completion route maps simulatorCompleted to aha_completed', () => {
+test('setup completion route maps simulatorCompleted=true to aha_completed', () => {
   assert.ok(
-    content.includes("if (typeof simulatorCompleted === 'boolean')") &&
-      content.includes('updateData.aha_completed = simulatorCompleted'),
-    'setup completion route must persist simulatorCompleted into real_estate_agents.aha_completed'
+    content.includes('if (simulatorCompleted === true)') &&
+      content.includes('updateData.aha_completed = true'),
+    'setup completion route must persist simulatorCompleted=true into real_estate_agents.aha_completed'
   )
 })
 

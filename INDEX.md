@@ -2,7 +2,7 @@
 # Knowledge Index
 
 > Topic → file map. Read this first to find the right reference file.
-> Generated: 2026-04-11T16:12:03.136Z
+> Generated: 2026-04-12T04:01:47.924Z
 
 ## Project Root
 
@@ -34,7 +34,7 @@
 | `QC-REVIEW-FIX-ONBOARDING-500.md` | QC REVIEW: Fix Onboarding 500 Error — Schema Collision Resolution | no |
 | `QC-REVIEW-fd0012f1.md` | QC REVIEW REPORT | no |
 | `README.md` | LeadFlow AI | no |
-| `SCHEMA.md` | LeadFlow Database Schema Reference | no |
+| `SCHEMA.md` | LeadFlow Database Schema Reference | yes |
 | `SERVICES.md` | Services Reference | yes |
 | `SKILLS.md` | LeadFlow Orchestrator - SKILLS.md | no |
 | `SOUL.md` | LeadFlow Orchestrator - PRODUCTIVITY OWNER | no |

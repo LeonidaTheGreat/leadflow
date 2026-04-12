@@ -4,6 +4,8 @@
  * Tests the API route logic in isolation (no server needed).
  * These test validation logic, field mapping, and error handling.
  */
+import fs from 'fs'
+import path from 'path'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -26,10 +28,12 @@ function mapBodyToDbPatch(body: Record<string, unknown>, agentId: string) {
 
 /** Wizard state resume logic: picks the first incomplete step */
 function resumeStep(ws: {
+  simulator_completed?: boolean
   fub_connected?: boolean
   twilio_connected?: boolean
   sms_verified?: boolean
-}): 'fub' | 'twilio' | 'sms-verify' | 'complete' {
+}): 'simulator' | 'fub' | 'twilio' | 'sms-verify' | 'complete' {
+  if (!ws.simulator_completed) return 'simulator'
   if (!ws.fub_connected) return 'fub'
   if (!ws.twilio_connected) return 'twilio'
   if (!ws.sms_verified) return 'sms-verify'
@@ -114,28 +118,44 @@ describe('Setup Wizard — field mapping (status route)', () => {
 })
 
 describe('Setup Wizard — step resume logic', () => {
-  test('starts at fub when nothing connected', () => {
-    expect(resumeStep({})).toBe('fub')
+  test('starts at simulator when nothing is completed', () => {
+    expect(resumeStep({})).toBe('simulator')
   })
 
-  test('resumes at twilio when fub done but twilio not', () => {
-    expect(resumeStep({ fub_connected: true })).toBe('twilio')
+  test('resumes at fub after simulator is done but fub is not', () => {
+    expect(resumeStep({ simulator_completed: true })).toBe('fub')
   })
 
-  test('resumes at sms-verify when fub + twilio done', () => {
-    expect(resumeStep({ fub_connected: true, twilio_connected: true })).toBe('sms-verify')
+  test('resumes at twilio when simulator + fub are done but twilio is not', () => {
+    expect(resumeStep({ simulator_completed: true, fub_connected: true })).toBe('twilio')
+  })
+
+  test('resumes at sms-verify when simulator + fub + twilio are done', () => {
+    expect(
+      resumeStep({ simulator_completed: true, fub_connected: true, twilio_connected: true })
+    ).toBe('sms-verify')
   })
 
   test('goes to complete when all done', () => {
     expect(
-      resumeStep({ fub_connected: true, twilio_connected: true, sms_verified: true })
+      resumeStep({
+        simulator_completed: true,
+        fub_connected: true,
+        twilio_connected: true,
+        sms_verified: true
+      })
     ).toBe('complete')
   })
 
-  test('starts at fub if all false', () => {
+  test('starts at simulator if all false', () => {
     expect(
-      resumeStep({ fub_connected: false, twilio_connected: false, sms_verified: false })
-    ).toBe('fub')
+      resumeStep({
+        simulator_completed: false,
+        fub_connected: false,
+        twilio_connected: false,
+        sms_verified: false
+      })
+    ).toBe('simulator')
   })
 })
 
@@ -202,5 +222,23 @@ describe('Setup Wizard — completion summary', () => {
   test('counts all 3 connected', () => {
     const steps = [true, true, true]
     expect(steps.filter(Boolean).length).toBe(3)
+  })
+})
+
+describe('Setup Wizard — demo-first sequence (no FUB gate)', () => {
+  const setupPagePath = path.join(__dirname, '../app/setup/page.tsx')
+
+  test('initial step is simulator', () => {
+    const content = fs.readFileSync(setupPagePath, 'utf8')
+    expect(content).toContain("useState<SetupStep>('simulator')")
+  })
+
+  test('steps array places simulator before fub', () => {
+    const content = fs.readFileSync(setupPagePath, 'utf8')
+    const simulatorIndex = content.indexOf("{ id: 'simulator', label: 'Test AI' }")
+    const fubIndex = content.indexOf("{ id: 'fub', label: 'Connect FUB' }")
+    expect(simulatorIndex).toBeGreaterThan(-1)
+    expect(fubIndex).toBeGreaterThan(-1)
+    expect(simulatorIndex).toBeLessThan(fubIndex)
   })
 })
