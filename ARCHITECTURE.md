@@ -67,7 +67,8 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
 | SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
 | StuckPilotsService | `lib/services/StuckPilotsService.js` | — |
-| SubscriptionService | `lib/services/SubscriptionService.js` | — |
+| SubscriptionService | `lib/services/SubscriptionService.js` | @param {{ userId: string, tier: string, interval?: string, paymentMethodId?: string, trial?: boolean }} params |
+| SystemStatusService | `lib/services/SystemStatusService.js` | — |
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
 <!-- /AUTO-GENERATED services -->

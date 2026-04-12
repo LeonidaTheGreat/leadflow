@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-11T13:05:12.478Z | Source: `lib/services/`
+> Generated: 2026-04-12T04:01:47.859Z | Source: `lib/services/`
 
-**17 services across 17 files**
+**18 services across 18 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
@@ -22,6 +22,7 @@
 | [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db |
 | [StuckPilotsService](#stuckpilotsservice) | `StuckPilotsService.js` | 6 | https, db |
 | [SubscriptionService](#subscriptionservice) | `SubscriptionService.js` | 19 | db, stripe |
+| [SystemStatusService](#systemstatusservice) | `SystemStatusService.js` | 2 | - |
 | [TwilioService](#twilioservice) | `TwilioService.js` | 11 | twilio, db |
 | [WeeklyPerformanceService](#weeklyperformanceservice) | `WeeklyPerformanceService.js` | 13 | db |
 
@@ -405,6 +406,19 @@
 | `listUserSubscriptions()` | `userId`, `options` | - |
 | `createMockSubscription()` | `userId`, `tier`, `interval` | - |
 | `getMockSubscriptionDetails()` | `subscriptionId` | - |
+
+---
+
+## SystemStatusService
+
+**File:** `lib/services/SystemStatusService.js`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `getRootStatus()` | - | - |
+| `getHealthStatus()` | - | - |
 
 ---
 

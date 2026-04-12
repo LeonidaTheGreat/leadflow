@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Sparkles, AlertCircle, CheckCircle2, MessageCircle, X } from 'lucide-react'
 
 interface SetupSimulatorProps {
@@ -11,6 +11,19 @@ interface SetupSimulatorProps {
   }
   setSetupData: (data: any) => void
   agentId: string | null
+}
+
+const POLL_INTERVAL_MS = 700
+const POLL_TIMEOUT_MS = 30000
+
+type SimulationApiState = {
+  session_id?: string
+  status?: 'idle' | 'running' | 'inbound_received' | 'ai_responded' | 'success' | 'skipped' | 'timeout' | 'failed'
+  conversation?: Array<{ role: string; message: string }>
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export default function SetupSimulator({ 
@@ -25,6 +38,52 @@ export default function SetupSimulator({
   const [error, setError] = useState('')
   const [showSkipConfirm, setShowSkipConfirm] = useState(false)
   const [skipReason, setSkipReason] = useState('')
+  const [sessionId, setSessionId] = useState<string | null>(null)
+
+  const pollSimulationStatus = async (agentIdValue: string, sessionIdValue: string) => {
+    const startedAt = Date.now()
+    let lastMessageCount = 0
+
+    while (Date.now() - startedAt < POLL_TIMEOUT_MS) {
+      await sleep(POLL_INTERVAL_MS)
+
+      const statusResponse = await fetch('/api/onboarding/simulator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'status',
+          agentId: agentIdValue,
+          sessionId: sessionIdValue,
+        }),
+      })
+
+      if (!statusResponse.ok) {
+        const errData = await statusResponse.json().catch(() => ({}))
+        throw new Error(errData.error || `Simulator status failed (${statusResponse.status})`)
+      }
+
+      const statusData = await statusResponse.json()
+      const state: SimulationApiState = statusData?.state || {}
+      const turns = Array.isArray(state.conversation) ? state.conversation : []
+
+      if (turns.length > lastMessageCount) {
+        setConversation(turns)
+        lastMessageCount = turns.length
+      }
+
+      if (state.status === 'success') {
+        setSimulationStatus('complete')
+        setSetupData({ ...setupData, simulatorCompleted: true })
+        return
+      }
+
+      if (state.status === 'failed' || state.status === 'timeout' || state.status === 'skipped') {
+        throw new Error(`Simulation ${state.status}`)
+      }
+    }
+
+    throw new Error('Simulation timed out')
+  }
 
   const startSimulation = async () => {
     if (!agentId) {
@@ -37,14 +96,17 @@ export default function SetupSimulator({
     setConversation([])
 
     try {
+      const generatedSessionId = `setup-${agentId}-${Date.now()}`
+      setSessionId(generatedSessionId)
+
       const response = await fetch('/api/onboarding/simulator', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'start',
           agentId,
-          sessionId: `setup-${agentId}-${Date.now()}`
-        })
+          sessionId: generatedSessionId,
+        }),
       })
 
       if (!response.ok) {
@@ -53,18 +115,10 @@ export default function SetupSimulator({
       }
 
       const data = await response.json()
-      const messages = data.state.conversation || []
+      const resolvedSessionId: string = data?.state?.session_id || generatedSessionId
+      setSessionId(resolvedSessionId)
 
-      // Animate messages appearing one by one
-      for (let i = 0; i < messages.length; i++) {
-        const randomDelay = i === 0 ? 800 : 1200 + (crypto.getRandomValues(new Uint8Array(1))[0] / 255) * 800
-        await new Promise(r => setTimeout(r, randomDelay))
-        setConversation(prev => [...prev, messages[i]])
-      }
-
-      // Mark complete
-      setSimulationStatus('complete')
-      setSetupData({ ...setupData, simulatorCompleted: true })
+      await pollSimulationStatus(agentId, resolvedSessionId)
     } catch (err: any) {
       setError(err?.message || 'Failed to start simulation. Please try again.')
       setSimulationStatus('idle')
@@ -93,9 +147,9 @@ export default function SetupSimulator({
         body: JSON.stringify({
           action: 'skip',
           agentId,
-          sessionId: `setup-${agentId}-${Date.now()}`,
-          reason: skipReason || 'user_confirmed_skip'
-        })
+          sessionId: sessionId || `setup-${agentId}-${Date.now()}`,
+          reason: skipReason || 'user_confirmed_skip',
+        }),
       })
     } catch (err) {
       // Non-fatal — continue anyway

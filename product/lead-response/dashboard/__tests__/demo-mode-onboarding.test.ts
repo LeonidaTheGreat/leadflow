@@ -307,6 +307,19 @@ describe('Demo Mode — No FUB Required', () => {
       expect(content).toContain('/api/onboarding/simulator')
       expect(content.toLowerCase()).not.toContain('fub')
     })
+
+    it('try-ai step uses /api/demo/run test-lead flow (no Twilio SMS)', () => {
+      const tryAiPath = path.join(
+        __dirname,
+        '../app/onboarding/steps/try-ai.tsx'
+      )
+      const content = fs.readFileSync(tryAiPath, 'utf8')
+      expect(content).toContain('/api/demo/run')
+      expect(content).not.toContain('/api/demo/send-aha-sms')
+      expect(content).toContain('leadName')
+      expect(content).toContain('propertyInterest')
+      expect(content).toContain('aiResponse')
+    })
   })
 
   describe('Demo UI accessible at /dashboard/demo (AC-5)', () => {

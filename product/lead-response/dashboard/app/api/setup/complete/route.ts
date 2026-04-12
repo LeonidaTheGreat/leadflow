@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
       onboarding_step: 99 // 99 = complete
     }
 
-    if (typeof simulatorCompleted === 'boolean') {
-      updateData.aha_completed = simulatorCompleted
+    if (simulatorCompleted === true) {
+      updateData.aha_completed = true
     }
 
     // Update agent's onboarding status

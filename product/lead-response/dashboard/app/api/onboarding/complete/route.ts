@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (completionPayload) {
-    if (typeof completionPayload.ahaCompleted === 'boolean') {
+    if (completionPayload.ahaCompleted === true) {
       updateData.aha_completed = completionPayload.ahaCompleted
     }
     if (typeof completionPayload.ahaResponseTimeMs === 'number') {

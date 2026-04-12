@@ -8,7 +8,7 @@
  *
  * Logic:
  *   1. No token  → redirect to /login
- *   2. Token present + onboardingCompleted === false → redirect to /setup
+ *   2. Token present + onboardingCompleted === false → redirect to /dashboard/onboarding
  *   3. Token present + onboarding done → stay (render nothing)
  *
  * The user object (with onboardingCompleted) is written to localStorage/
@@ -63,7 +63,7 @@ export function OnboardingGuard() {
       try {
         const user: StoredUser = JSON.parse(userRaw)
         if (user.onboardingCompleted === false) {
-          router.replace('/setup')
+          router.replace('/dashboard/onboarding')
           return
         }
         // onboarding done — stay on page
@@ -82,7 +82,7 @@ export function OnboardingGuard() {
         if (!data) return
         // If wizard row exists but has no completed_at, redirect to setup
         if (data.wizardState === null || data.wizardState?.completed_at === null) {
-          router.replace('/setup')
+          router.replace('/dashboard/onboarding')
         }
       })
       .catch(() => {

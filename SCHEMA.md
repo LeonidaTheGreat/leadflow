@@ -2,7 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-04-12T02:01:22.034Z | 77 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-04-12T04:01:47.845Z | 77 tables in local PostgreSQL (openclaw DB).
 
 ## Common Gotchas
 
@@ -23,8 +23,8 @@
 | `customers` | 0 | |
 | `profiles` | 0 | |
 | `agent_profiles` | 0 | |
-| `agent_settings` | 1 | |
-| `agent_integrations` | 2 | |
+| `agent_settings` | 2 | |
+| `agent_integrations` | 0 | |
 
 ### Product — Leads & Messages
 
@@ -63,11 +63,11 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `onboarding_drafts` | 0 | |
-| `onboarding_simulations` | 7 | |
+| `onboarding_simulations` | 2 | |
 | `onboarding_events` | 0 | |
 | `onboarding_stuck_alerts` | 0 | |
 | `agent_onboarding_wizard` | 0 | |
-| `pilot_invites` | 10 | |
+| `pilot_invites` | 0 | |
 | `pilot_signups` | 20 | |
 | `pilot_progress` | 2 | |
 | `pilot_recruitment_campaigns` | 1 | |
@@ -78,7 +78,7 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `sessions` | 172 | |
-| `password_reset_tokens` | 324 | |
+| `password_reset_tokens` | 16 | |
 | `demo_tokens` | 9 | |
 
 ### Product — Analytics & Events
@@ -86,15 +86,15 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `analytics_events` | 0 | |
-| `events` | 638 | |
+| `events` | 479 | |
 | `email_events` | 339 | |
-| `agent_page_views` | 4 | |
-| `agent_sessions` | 1 | |
+| `agent_page_views` | 0 | |
+| `agent_sessions` | 0 | |
 | `demo_runs` | 0 | |
 | `agent_nps_responses` | 0 | |
 | `nps_survey_tokens` | 0 | |
 | `nps_prompt_dismissals` | 0 | |
-| `agent_survey_schedule` | 341 | |
+| `agent_survey_schedule` | 0 | |
 | `inactivity_alerts` | 0 | |
 
 ### Product — Templates & Webhooks
@@ -117,7 +117,7 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `tasks` | 3936 | |
+| `tasks` | 3954 | |
 | `task_dependencies` | 48 | |
 | `task_outcomes` | 0 | |
 | `completed_work` | 9 | |
@@ -127,19 +127,19 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `use_cases` | 341 | |
+| `use_cases` | 342 | |
 | `prds` | 152 | |
 | `e2e_test_specs` | 438 | |
 | `code_reviews` | 1153 | |
 | `product_feedback` | 47 | |
-| `product_reviews` | 184 | |
+| `product_reviews` | 192 | |
 | `product_decisions` | 42 | |
 
 ### Orchestration — Metrics
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `metrics` | 35937 | |
+| `metrics` | 36026 | |
 | `revenue_metrics` | 0 | |
 | `distribution_channels` | 1 | |
 | `distribution_metrics` | 250 | |
@@ -264,11 +264,6 @@
 | sample_type | text | yes | - |
 | property_interest | text | yes | - |
 | budget | text | yes | - |
-
-**Notes:**
-- `consent_sms` is the canonical SMS consent field used by current application logic.
-- `sms_opt_out` is a legacy/unused column retained for compatibility; do not reference it in new code.
-- Treat a lead as ineligible for SMS when `dnc = true` or `consent_sms = false`.
 
 ### messages
 
