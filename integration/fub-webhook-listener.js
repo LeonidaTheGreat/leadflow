@@ -3,9 +3,36 @@
 const crypto = require('crypto');
 const express = require('express');
 const FUBService = require('../lib/services/FUBService');
+const { getPool } = require('../lib/db');
 
 const router = express.Router();
 const fubService = new FUBService();
+
+/**
+ * Write a dead letter record for a failed webhook processing attempt.
+ * Best-effort: failures are logged but never thrown.
+ */
+async function writeDeadLetter(source, eventType, payload, errorMessage) {
+  try {
+    const pool = getPool();
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS webhook_dead_letters (
+        id SERIAL PRIMARY KEY,
+        source TEXT NOT NULL,
+        event_type TEXT,
+        payload JSONB,
+        error_message TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+    await pool.query(
+      'INSERT INTO webhook_dead_letters (source, event_type, payload, error_message) VALUES ($1, $2, $3, $4)',
+      [source, eventType, JSON.stringify(payload), errorMessage]
+    );
+  } catch (dbErr) {
+    console.error('[fub-webhook] dead_letter DB write failed:', dbErr.message);
+  }
+}
 
 router.post('/webhook/fub', (req, res) => {
   // ─── Signature verification ────────────────────────────────────────────────
@@ -41,9 +68,21 @@ router.post('/webhook/fub', (req, res) => {
     const result = fubService.handleWebhookPayload(req.body || {});
     return res.status(200).json(result);
   } catch (error) {
-    console.error('❌ Failed to process FUB webhook:', error.message);
-    return res.status(500).json({
-      received: false,
+    const body = req.body || {};
+    const eventType = body.type || body.event || 'unknown';
+    const leadId = body.person && body.person.id ? String(body.person.id) : (body.personId ? String(body.personId) : null);
+    console.error(JSON.stringify({
+      level: 'error',
+      source: 'fub-webhook',
+      event_type: eventType,
+      lead_id: leadId,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    }));
+    writeDeadLetter('fub', eventType, body, error.message);
+    return res.status(200).json({
+      received: true,
+      processed: false,
       error: 'Failed to process webhook payload'
     });
   }
