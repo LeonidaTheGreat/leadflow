@@ -15,7 +15,7 @@ import twilio from 'twilio'
  *
  * Returns:
  *   { success: true, phoneNumber: "+15551234567" }
- *   { success: false, error: "..." }
+ *   { success: false, error: "...", retryable?: true }
  */
 export async function POST(request: NextRequest) {
   if (!isSupabaseConfigured()) {
@@ -44,6 +44,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // FIRST: Check if this agent already has a provisioned number — return it immediately
+    const { data: existingIntegration, error: integrationError } = await supabase
+      .from('agent_integrations')
+      .select('twilio_phone_e164, twilio_phone_number, twilio_phone_sid')
+      .eq('agent_id', agentId)
+      .single()
+
+    if (!integrationError && existingIntegration) {
+      const existingE164 = existingIntegration.twilio_phone_e164
+      const existingRaw = existingIntegration.twilio_phone_number
+
+      if (existingE164) {
+        console.log('[provision-phone] Agent already has number:', existingE164, 'for agent:', agentId)
+        const cleanPhone = existingE164.replace(/^\+1/, '').replace(/\D/g, '')
+        return NextResponse.json({
+          success: true,
+          phoneNumber: existingE164,
+          phoneNumberClean: cleanPhone,
+          sid: existingIntegration.twilio_phone_sid ?? undefined,
+          alreadyProvisioned: true,
+        })
+      }
+
+      if (existingRaw) {
+        const digits = existingRaw.replace(/\D/g, '')
+        const e164 = `+1${digits}`
+        console.log('[provision-phone] Agent already has number (raw):', e164, 'for agent:', agentId)
+        return NextResponse.json({
+          success: true,
+          phoneNumber: e164,
+          phoneNumberClean: digits,
+          alreadyProvisioned: true,
+        })
+      }
+    }
+
     // Ensure LeadFlow Twilio credentials are configured
     const accountSid = process.env.TWILIO_ACCOUNT_SID
     const authToken = process.env.TWILIO_AUTH_TOKEN
@@ -56,7 +92,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Search for an available US local number
+    // SECOND: Search for an available US local number
     const client = twilio(accountSid, authToken)
 
     const searchParams: Record<string, string | boolean> = {
@@ -93,13 +129,32 @@ export async function POST(request: NextRequest) {
           )
         }
       }
+    }
 
-      if (!availableNumbers || availableNumbers.length === 0) {
-        return NextResponse.json(
-          { success: false, error: 'No phone numbers available at this time. Please try again.' },
-          { status: 503 }
-        )
+    // THIRD: CA (Canadian) fallback — if US search still empty, try Canada
+    if (!availableNumbers || availableNumbers.length === 0) {
+      console.log('[provision-phone] No US numbers found, trying CA fallback for agent:', agentId)
+      try {
+        availableNumbers = await client.availablePhoneNumbers('CA')
+          .local.list({ smsEnabled: true, voiceEnabled: false, limit: 5 })
+      } catch (twilioError: any) {
+        console.error('[provision-phone] Twilio CA fallback search error:', twilioError?.message)
+        // CA search failed — fall through to the final "no numbers" error below
       }
+    }
+
+    // FOURTH: All searches exhausted — return a helpful, retryable error
+    if (!availableNumbers || availableNumbers.length === 0) {
+      console.warn('[provision-phone] No numbers available (US + CA exhausted) for agent:', agentId)
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'no_numbers_available',
+          message: 'No numbers available right now. Please try again in a few minutes, or bring your own Twilio number.',
+          retryable: true,
+        },
+        { status: 503 }
+      )
     }
 
     // Pick the first available number
