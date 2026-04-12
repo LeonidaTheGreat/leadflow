@@ -170,7 +170,3 @@ Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifyi
 
 Journey definitions live in `project.config.json` → `journeys[]`. The PM agent is responsible for reviewing and maintaining these — adding new journeys as the product evolves, updating steps when flows change, and triggering manual reviews via `!journey-review`.
 
-## Active Blockers (as of Feb 2026)
-- Pilot agent recruitment pending Stojan approval
-- Landing page needs design handoff
-- A2P 10DLC SMS compliance registration pending
