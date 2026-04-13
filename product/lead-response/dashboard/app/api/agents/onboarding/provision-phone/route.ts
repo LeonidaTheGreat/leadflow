@@ -10,6 +10,11 @@ import twilio from 'twilio'
  * it to the agent. Called when the agent selects "Use LeadFlow Number" in
  * the Setup Wizard (Step 2).
  *
+ * Assignment order:
+ *   1. Return existing number if agent already has one.
+ *   2. Assign from the pre-purchased phone_inventory pool (instant, no Twilio API call).
+ *   3. Fall through to on-demand Twilio search + purchase only if the pool is empty.
+ *
  * Body params:
  *   areaCode?: string   - optional 3-digit US area code to search near
  *
@@ -92,7 +97,105 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // SECOND: Search for an available US local number
+    // SECOND: Try to assign from the pre-purchased phone_inventory pool.
+    // If an area code was requested, prefer a matching number; fall back to any available.
+    type PoolRow = { id: number; sid: string; e164: string; area_code: string | null; country: string }
+    let poolNumber: PoolRow | null = null
+
+    if (areaCode) {
+      const { data: areaMatch } = await supabase
+        .from('phone_inventory')
+        .select('id, sid, e164, area_code, country')
+        .eq('status', 'available')
+        .eq('area_code', areaCode)
+        .order('created_at', { ascending: true })
+        .limit(1)
+      const row = Array.isArray(areaMatch) ? areaMatch[0] : areaMatch
+      if (row?.e164) poolNumber = row as PoolRow
+    }
+
+    if (!poolNumber) {
+      const { data: anyAvailable } = await supabase
+        .from('phone_inventory')
+        .select('id, sid, e164, area_code, country')
+        .eq('status', 'available')
+        .order('created_at', { ascending: true })
+        .limit(1)
+      const row = Array.isArray(anyAvailable) ? anyAvailable[0] : anyAvailable
+      if (row?.e164) poolNumber = row as PoolRow
+    }
+
+    if (poolNumber?.e164 && poolNumber?.sid) {
+      console.log('[provision-phone] Assigning from pool:', poolNumber.e164, 'for agent:', agentId)
+
+      // Mark number as assigned in the pool
+      const { error: poolUpdateError } = await supabase
+        .from('phone_inventory')
+        .update({ status: 'assigned', assigned_to: agentId, assigned_at: new Date().toISOString() })
+        .eq('id', poolNumber.id)
+
+      if (poolUpdateError) {
+        // Pool update failed — log and fall through to on-demand purchase
+        console.error('[provision-phone] Pool update error, falling through to Twilio:', poolUpdateError)
+      } else {
+        const cleanPhone = poolNumber.e164.replace(/^\+1/, '').replace(/\D/g, '')
+
+        // Record the number in agent_integrations
+        const { error: dbError } = await supabase
+          .from('agent_integrations')
+          .upsert(
+            {
+              agent_id: agentId,
+              twilio_phone_number: cleanPhone,
+              twilio_phone_sid: poolNumber.sid,
+              twilio_phone_e164: poolNumber.e164,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'agent_id' }
+          )
+
+        if (dbError) {
+          console.error('[provision-phone] DB error writing pool number to agent_integrations:', dbError)
+          // Revert pool assignment so the number stays available for the next attempt
+          await supabase
+            .from('phone_inventory')
+            .update({ status: 'available', assigned_to: null, assigned_at: null })
+            .eq('id', poolNumber.id)
+          return NextResponse.json(
+            { success: false, error: 'Phone number assigned but could not be saved. Please try again.' },
+            { status: 500 }
+          )
+        }
+
+        // Enable SMS in agent settings
+        await supabase
+          .from('agent_settings')
+          .upsert(
+            { agent_id: agentId, sms_enabled: true, updated_at: new Date().toISOString() },
+            { onConflict: 'agent_id' }
+          )
+
+        // Update agent onboarding state
+        await supabase
+          .from('real_estate_agents')
+          .update({ phone_configured: true, onboarding_step: 2, updated_at: new Date().toISOString() })
+          .eq('id', agentId)
+
+        console.log('[provision-phone] Assigned from pool:', poolNumber.e164, 'for agent:', agentId)
+        return NextResponse.json({
+          success: true,
+          phoneNumber: poolNumber.e164,
+          phoneNumberClean: cleanPhone,
+          sid: poolNumber.sid,
+          fromPool: true,
+        })
+      }
+    }
+
+    // THIRD: Pool is empty (or pool update failed) — fall through to on-demand Twilio
+    console.log('[provision-phone] Pool empty or unavailable, falling through to on-demand Twilio for agent:', agentId)
+
+    // Search for an available US local number
     const client = twilio(accountSid, authToken)
 
     const searchParams: Record<string, string | boolean> = {
@@ -131,7 +234,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // THIRD: CA (Canadian) fallback — if US search still empty, try Canada
+    // FOURTH: CA (Canadian) fallback — if US search still empty, try Canada
     if (!availableNumbers || availableNumbers.length === 0) {
       console.log('[provision-phone] No US numbers found, trying CA fallback for agent:', agentId)
       try {
@@ -143,7 +246,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // FOURTH: All searches exhausted — return a helpful, retryable error
+    // FIFTH: All searches exhausted — return a helpful, retryable error
     if (!availableNumbers || availableNumbers.length === 0) {
       console.warn('[provision-phone] No numbers available (US + CA exhausted) for agent:', agentId)
       return NextResponse.json(
