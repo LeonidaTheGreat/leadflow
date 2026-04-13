@@ -15,16 +15,6 @@ const fubService = new FUBService();
 async function writeDeadLetter(source, eventType, payload, errorMessage) {
   try {
     const pool = getPool();
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS webhook_dead_letters (
-        id SERIAL PRIMARY KEY,
-        source TEXT NOT NULL,
-        event_type TEXT,
-        payload JSONB,
-        error_message TEXT,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `);
     await pool.query(
       'INSERT INTO webhook_dead_letters (source, event_type, payload, error_message) VALUES ($1, $2, $3, $4)',
       [source, eventType, JSON.stringify(payload), errorMessage]
