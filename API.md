@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-04-12T19:41:22.354Z | Source: `routes/`, `integration/`
+> Generated: 2026-04-13T17:46:09.676Z | Source: `routes/`, `integration/`
 
 **18 endpoints across 7 files**
 
@@ -9,8 +9,8 @@
 
 | Method | Path | Services | Auth | File |
 |--------|------|----------|------|------|
-| **GET** | `/api/admin/activation-list` | - | API key (admin) | `routes/admin/activation-outreach.js` |
-| **POST** | `/api/admin/send-activation-email` | - | API key (admin) | `routes/admin/activation-outreach.js` |
+| **GET** | `/api/admin/activation-list` | - | Bearer token | `routes/admin/activation-outreach.js` |
+| **POST** | `/api/admin/send-activation-email` | - | Bearer token | `routes/admin/activation-outreach.js` |
 | **POST** | `/webhook/stripe` | - | None | `routes/billing.js` |
 | **POST** | `/api/billing/checkout` | - | Bearer token | `routes/billing.js` |
 | **POST** | `/api/billing/portal` | - | Bearer token | `routes/billing.js` |
@@ -26,7 +26,7 @@
 | **GET** | `/health` | `systemStatusService` | None | `routes/system.js` |
 | **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
 | **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
-| **POST** | `/webhook/fub` | `fubService` | None | `integration/fub-webhook-listener.js` |
+| **POST** | `/webhook/fub` | - | None | `integration/fub-webhook-listener.js` |
 
 ---
 
@@ -34,11 +34,11 @@
 
 ### GET `/api/admin/activation-list`
 
-- **Auth:** API key (admin)
+- **Auth:** Bearer token
 
 ### POST `/api/admin/send-activation-email`
 
-- **Auth:** API key (admin)
+- **Auth:** Bearer token
 
 ---
 
@@ -137,5 +137,4 @@ Preview endpoint: returns the email HTML for a given agent (or demo agent if age
 ### POST `/webhook/fub`
 
 - **Auth:** None
-- **Services:** `fubService`
 

@@ -15,17 +15,15 @@ const express = require('express');
 const router = express.Router();
 const { getPool } = require('../../lib/db');
 const ActivationService = require('../../lib/services/ActivationService');
+const requireApiKey = require('../../lib/middleware/require-api-key');
 
 function getService() {
   return new ActivationService({ pool: getPool() });
 }
 
 // ─── GET /api/admin/activation-list ───────────────────────────────────────────
-router.get('/api/admin/activation-list', async (req, res) => {
+router.get('/api/admin/activation-list', requireApiKey, async (req, res) => {
   const service = getService();
-  if (!service.verifyAdminAuth(req)) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
   try {
     const rows = await service.getActivationList();
     if (req.query.format === 'csv') {
@@ -41,11 +39,8 @@ router.get('/api/admin/activation-list', async (req, res) => {
 });
 
 // ─── POST /api/admin/send-activation-email ────────────────────────────────────
-router.post('/api/admin/send-activation-email', async (req, res) => {
+router.post('/api/admin/send-activation-email', requireApiKey, async (req, res) => {
   const service = getService();
-  if (!service.verifyAdminAuth(req)) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
   const { agent_id } = req.body || {};
   if (!agent_id) {
     return res.status(400).json({ error: 'agent_id is required' });
