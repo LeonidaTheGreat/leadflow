@@ -45,7 +45,7 @@ app.use('/', billingRouter);
 // Global error handler — must be after all route registrations
 app.use((err, req, res, next) => {
   console.error(`[${req.method} ${req.path}] Unhandled error:`, err.message)
-  res.status(err.status || 500).json({ error: err.message || 'Internal server error', code: err.code || 'INTERNAL_ERROR' })
+  res.status(err.statusCode || err.status || 500).json({ error: err.message || 'Internal server error', code: err.code || 'INTERNAL_ERROR' })
 })
 
 // Local development

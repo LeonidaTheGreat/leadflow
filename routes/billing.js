@@ -15,16 +15,25 @@
 const express = require('express');
 const router = express.Router();
 const BillingService = require('../lib/services/BillingService');
+const requireApiKey = require('../lib/middleware/require-api-key');
+const { getPool } = require('../lib/db');
 
 const billing = new BillingService();
 
-// ─── Auth middleware ──────────────────────────────────────────────────────────
-function requireApiKey(req, res, next) {
-    const provided = req.headers['x-api-key'];
-    if (!provided || provided !== process.env.LEADFLOW_API_KEY) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-    return next();
+/**
+ * Write a dead letter record for a failed webhook processing attempt.
+ * Best-effort: failures are logged but never thrown.
+ */
+async function writeDeadLetter(source, eventType, payload, errorMessage) {
+  try {
+    const pool = getPool();
+    await pool.query(
+      'INSERT INTO webhook_dead_letters (source, event_type, payload, error_message) VALUES ($1, $2, $3, $4)',
+      [source, eventType, JSON.stringify(payload), errorMessage]
+    );
+  } catch (dbErr) {
+    console.error('[billing] dead_letter DB write failed:', dbErr.message);
+  }
 }
 
 // ─── POST /webhook/stripe ─────────────────────────────────────────────────────
@@ -51,8 +60,16 @@ router.post('/webhook/stripe', async (req, res) => {
         const result = await billing.processWebhookEvent(event);
         return res.json({ received: true, ...result });
     } catch (err) {
-        console.error('[billing] webhook processing error:', err.message);
-        return res.status(500).json({ error: 'Webhook processing failed' });
+        const eventType = event && event.type ? event.type : 'unknown';
+        console.error(JSON.stringify({
+            level: 'error',
+            source: 'billing-webhook',
+            event_type: eventType,
+            error: err.message,
+            timestamp: new Date().toISOString()
+        }));
+        writeDeadLetter('stripe', eventType, event, err.message);
+        return res.status(200).json({ received: true, processed: false, error: 'Webhook processing failed' });
     }
 });
 

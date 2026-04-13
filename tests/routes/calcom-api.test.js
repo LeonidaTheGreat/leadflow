@@ -7,6 +7,9 @@ const path = require('path');
 const routePath = path.join(__dirname, '..', '..', 'routes', 'calcom-webhook.js');
 const routeContent = fs.readFileSync(routePath, 'utf8');
 
+const middlewarePath = path.join(__dirname, '..', '..', 'lib', 'middleware', 'require-api-key.js');
+const middlewareContent = fs.readFileSync(middlewarePath, 'utf8');
+
 let passed = 0;
 let failed = 0;
 
@@ -25,20 +28,24 @@ console.log('\n=== route: Cal.com admin API ===\n');
 
 // ─── Auth middleware ──────────────────────────────────────────────────────────
 
-check('defines requireApiKey middleware', () => {
-  assert.match(routeContent, /function requireApiKey/);
+check('imports requireApiKey from shared middleware', () => {
+  assert.match(routeContent, /require\(['"]\.\.\/lib\/middleware\/require-api-key['"]\)/);
 });
 
-check('requireApiKey checks x-api-key header', () => {
-  assert.match(routeContent, /x-api-key/);
+check('shared middleware checks x-api-key header', () => {
+  assert.match(middlewareContent, /x-api-key/);
 });
 
-check('requireApiKey returns 401 when key is missing or wrong', () => {
-  assert.match(routeContent, /res\.status\(401\)/);
+check('shared middleware returns 401 when key is missing or wrong', () => {
+  assert.match(middlewareContent, /res\.status\(401\)/);
 });
 
-check('requireApiKey compares against LEADFLOW_API_KEY env var', () => {
-  assert.match(routeContent, /LEADFLOW_API_KEY/);
+check('shared middleware uses timingSafeEqual', () => {
+  assert.match(middlewareContent, /timingSafeEqual/);
+});
+
+check('shared middleware compares against LEADFLOW_API_KEY env var', () => {
+  assert.match(middlewareContent, /LEADFLOW_API_KEY/);
 });
 
 // ─── GET /api/calcom/webhooks ────────────────────────────────────────────────

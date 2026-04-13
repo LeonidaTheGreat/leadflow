@@ -280,14 +280,23 @@ export async function POST(request: NextRequest) {
     const selectedNumber = availableNumbers[0].phoneNumber
 
     // Purchase (provision) the number on LeadFlow's Twilio account
+    const onDemandSmsUrl = process.env.NEXT_PUBLIC_APP_URL
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/twilio`
+      : undefined
+    if (!onDemandSmsUrl) {
+      console.warn('[provision-phone] NEXT_PUBLIC_APP_URL not set — smsUrl will not be configured on provisioned number; set it manually later')
+    }
     let provisionedNumber
     try {
-      provisionedNumber = await client.incomingPhoneNumbers.create({
+      const createParams: Record<string, string> = {
         phoneNumber: selectedNumber,
         friendlyName: `LeadFlow Agent ${agentId}`,
-        smsUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/twilio`,
         smsMethod: 'POST',
-      })
+      }
+      if (onDemandSmsUrl) {
+        createParams.smsUrl = onDemandSmsUrl
+      }
+      provisionedNumber = await client.incomingPhoneNumbers.create(createParams)
     } catch (twilioError: any) {
       console.error('[provision-phone] Twilio provision error:', twilioError?.message)
       return NextResponse.json(
