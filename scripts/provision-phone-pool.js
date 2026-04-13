@@ -90,7 +90,7 @@ async function main() {
       let usNumbers = []
       try {
         usNumbers = await client.availablePhoneNumbers('US')
-          .local.list({ smsEnabled: true, voiceEnabled: false, limit: usToBuy })
+          .local.list({ smsEnabled: true, limit: usToBuy })
       } catch (err) {
         console.error('  Twilio US search error:', err.message)
       }
@@ -108,7 +108,7 @@ async function main() {
       let caNumbers = []
       try {
         caNumbers = await client.availablePhoneNumbers('CA')
-          .local.list({ smsEnabled: true, voiceEnabled: false, limit: caToBuy })
+          .local.list({ smsEnabled: true, limit: caToBuy })
       } catch (err) {
         console.error('  Twilio CA search error:', err.message)
       }
@@ -156,8 +156,6 @@ async function purchaseAndInsert(client, pool, availableNum, country) {
     provisioned = await client.incomingPhoneNumbers.create({
       phoneNumber,
       friendlyName: 'LeadFlow Pool',
-      smsUrl: `${process.env.NEXT_PUBLIC_APP_URL || ''}/api/webhook/twilio`,
-      smsMethod: 'POST',
     })
   } catch (err) {
     console.log(`FAIL (Twilio purchase): ${err.message}`)
