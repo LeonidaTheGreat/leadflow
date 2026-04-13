@@ -92,7 +92,7 @@ router.post('/api/billing/checkout', requireApiKey, async (req, res) => {
         return res.status(201).json(result);
     } catch (err) {
         console.error('[billing] checkout error:', err.message);
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -109,7 +109,7 @@ router.post('/api/billing/portal', requireApiKey, async (req, res) => {
         return res.json(result);
     } catch (err) {
         console.error('[billing] portal error:', err.message);
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -120,7 +120,7 @@ router.get('/api/billing/status/:userId', requireApiKey, async (req, res) => {
         return res.json(status);
     } catch (err) {
         console.error('[billing] status error:', err.message);
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 

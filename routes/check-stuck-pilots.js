@@ -11,15 +11,15 @@
 const express = require('express');
 const router = express.Router();
 const { createDefaultStuckPilotsService } = require('../lib/services/StuckPilotsService');
+const requireCronSecret = require('../lib/middleware/require-cron-secret');
 const stuckPilotsService = createDefaultStuckPilotsService();
 
 /**
  * GET /api/cron/check-stuck-pilots
  *
- * Vercel sets the Authorization header for legitimate cron invocations.
- * We accept the request regardless — the route itself is not sensitive.
+ * Vercel sets Authorization: Bearer <CRON_SECRET> on legitimate cron invocations.
  */
-router.get('/api/cron/check-stuck-pilots', async (req, res) => {
+router.get('/api/cron/check-stuck-pilots', requireCronSecret, async (req, res) => {
   console.log('[check-stuck-pilots] Cron triggered');
 
   try {
@@ -35,7 +35,7 @@ router.get('/api/cron/check-stuck-pilots', async (req, res) => {
     console.error('[check-stuck-pilots] Error:', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal server error',
       timestamp: new Date().toISOString(),
     });
   }

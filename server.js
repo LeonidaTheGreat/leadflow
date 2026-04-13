@@ -5,6 +5,23 @@
 
 require('dotenv').config();
 const express = require('express');
+
+// ─── Stripe startup validation ────────────────────────────────────────────────
+// Check required billing env vars at module load. Log clearly in production but
+// do not crash — other routes (FUB webhook, cron, Cal.com) must still function.
+if (process.env.NODE_ENV === 'production') {
+  const REQUIRED_STRIPE_VARS = [
+    'STRIPE_SECRET_KEY',
+    'STRIPE_PRICE_STARTER_MONTHLY',
+    'STRIPE_PRICE_PROFESSIONAL_MONTHLY',
+    'STRIPE_PRICE_ENTERPRISE_MONTHLY',
+  ];
+  const missingStripe = REQUIRED_STRIPE_VARS.filter(v => !process.env[v]);
+  if (missingStripe.length > 0) {
+    console.error('[server] BILLING MISCONFIGURED — missing env vars:', missingStripe.join(', '));
+    console.error('[server] Billing routes are disabled until these are set.');
+  }
+}
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/weekly-performance');

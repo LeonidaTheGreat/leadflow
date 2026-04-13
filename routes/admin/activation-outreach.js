@@ -15,17 +15,15 @@ const express = require('express');
 const router = express.Router();
 const { getPool } = require('../../lib/db');
 const ActivationService = require('../../lib/services/ActivationService');
+const requireApiKey = require('../../lib/middleware/require-api-key');
 
 function getService() {
   return new ActivationService({ pool: getPool() });
 }
 
 // ─── GET /api/admin/activation-list ───────────────────────────────────────────
-router.get('/api/admin/activation-list', async (req, res) => {
+router.get('/api/admin/activation-list', requireApiKey, async (req, res) => {
   const service = getService();
-  if (!service.verifyAdminAuth(req)) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
   try {
     const rows = await service.getActivationList();
     if (req.query.format === 'csv') {
@@ -36,16 +34,13 @@ router.get('/api/admin/activation-list', async (req, res) => {
     return res.json(service.formatListAsJson(rows));
   } catch (err) {
     console.error('[activation-outreach] list error:', err.message);
-    return res.status(500).json({ error: 'Internal server error', detail: err.message });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // ─── POST /api/admin/send-activation-email ────────────────────────────────────
-router.post('/api/admin/send-activation-email', async (req, res) => {
+router.post('/api/admin/send-activation-email', requireApiKey, async (req, res) => {
   const service = getService();
-  if (!service.verifyAdminAuth(req)) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
   const { agent_id } = req.body || {};
   if (!agent_id) {
     return res.status(400).json({ error: 'agent_id is required' });
@@ -57,12 +52,12 @@ router.post('/api/admin/send-activation-email', async (req, res) => {
       if (result.error === 'Agent email is not verified' || result.error === 'Agent has already completed onboarding') {
         return res.status(400).json({ error: result.error });
       }
-      return res.status(502).json({ error: 'Email send failed', detail: result.detail });
+      return res.status(502).json({ error: 'Email send failed' });
     }
     return res.json({ success: true, agent_id: result.agent_id, email: result.email, resend_id: result.resend_id });
   } catch (err) {
     console.error('[activation-outreach] send error:', err.message);
-    return res.status(500).json({ error: 'Internal server error', detail: err.message });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 

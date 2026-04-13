@@ -9,15 +9,16 @@
 const express = require('express');
 const router = express.Router();
 const { WeeklyPerformanceService } = require('../lib/services/WeeklyPerformanceService');
+const requireCronSecret = require('../lib/middleware/require-cron-secret');
 const weeklyPerformanceService = new WeeklyPerformanceService();
 
 /**
  * GET /api/cron/weekly-performance
  *
  * Vercel cron trigger: sends weekly AI performance emails to all eligible agents.
- * In production Vercel sets the Authorization header for cron requests.
+ * Vercel sets Authorization: Bearer <CRON_SECRET> on cron requests.
  */
-router.get('/api/cron/weekly-performance', async (req, res) => {
+router.get('/api/cron/weekly-performance', requireCronSecret, async (req, res) => {
   try {
     console.log('[Weekly Performance] Cron triggered');
 
@@ -40,7 +41,6 @@ router.get('/api/cron/weekly-performance', async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Weekly performance email sequence failed',
-      error: error.message,
       timestamp: new Date().toISOString()
     });
   }
@@ -75,8 +75,7 @@ router.get('/api/cron/weekly-performance/preview', async (req, res) => {
     console.error('[Weekly Performance] Preview error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to generate email preview',
-      error: error.message
+      message: 'Failed to generate email preview'
     });
   }
 });
