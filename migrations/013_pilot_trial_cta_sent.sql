@@ -1,5 +1,6 @@
--- Add trial_cta_sent column to pilot_progress table
+-- Migration 013: Add trial_cta_sent column to pilot_progress table
 -- This tracks whether the trial CTA email has been sent after 48h in aha_moment stage
+-- Note: Migration 014 is intentionally absent — it was deleted and never applied.
 
 ALTER TABLE pilot_progress
   ADD COLUMN IF NOT EXISTS trial_cta_sent BOOLEAN NOT NULL DEFAULT false,
