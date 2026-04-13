@@ -1,5 +1,6 @@
 -- Migration: Trial Aha Moment — AI Response by Day 3
 -- UC: uc-revenue-aha-moment
+-- Note: Migration 011 is intentionally absent — it was deleted and never applied.
 
 -- Add columns to track aha moment email status (separate from trial sequence)
 ALTER TABLE real_estate_agents
