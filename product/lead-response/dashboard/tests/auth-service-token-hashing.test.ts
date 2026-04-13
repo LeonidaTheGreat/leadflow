@@ -59,4 +59,19 @@ describe('AuthService.createSession token storage', () => {
     )
     expect(insert).not.toHaveBeenCalled()
   })
+
+  it('fails closed if hashing returns a non-SHA-256 token format', async () => {
+    const insert = jest.fn()
+    const from = jest.fn().mockReturnValue({ insert })
+    const db = { from } as any
+    const service = new AuthService(db, 'test-secret')
+
+    jest.spyOn(service, 'generateSessionToken').mockReturnValue('raw-token')
+    jest.spyOn(service as any, 'hashToken').mockReturnValue('not-a-valid-sha256-hash')
+
+    await expect(service.createSession({ userId: 'agent-1' })).rejects.toThrow(
+      'Session token hashing failed'
+    )
+    expect(insert).not.toHaveBeenCalled()
+  })
 })

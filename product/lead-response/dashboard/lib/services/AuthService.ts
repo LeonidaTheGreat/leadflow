@@ -10,6 +10,8 @@ const MINUTES_PER_HOUR = 60
 const SECONDS_PER_MINUTE = 60
 const MS_PER_SECOND = 1000
 const SESSION_TOKEN_BYTES = 32
+const SHA256_HEX_LENGTH = 64
+const SHA256_HEX_REGEX = /^[a-f0-9]+$/
 const DEFAULT_JWT_SECRET = 'your-secret-key-change-in-production'
 
 interface JWTPayload {
@@ -70,6 +72,10 @@ export class AuthService {
     return crypto.createHash('sha256').update(token).digest('hex')
   }
 
+  private isValidTokenHash(tokenHash: string): boolean {
+    return tokenHash.length === SHA256_HEX_LENGTH && SHA256_HEX_REGEX.test(tokenHash)
+  }
+
   private getSessionExpiryDate(rememberMe?: boolean): Date {
     const now = Date.now()
     const durationMs = rememberMe
@@ -81,7 +87,7 @@ export class AuthService {
   async createSession(input: SessionCreateInput): Promise<Session> {
     const rawToken = this.generateSessionToken()
     const tokenHash = this.hashToken(rawToken)
-    if (tokenHash === rawToken) {
+    if (tokenHash === rawToken || !this.isValidTokenHash(tokenHash)) {
       throw new Error('Session token hashing failed')
     }
     const now = new Date()
