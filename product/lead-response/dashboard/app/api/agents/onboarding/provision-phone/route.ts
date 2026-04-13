@@ -128,6 +128,23 @@ export async function POST(request: NextRequest) {
     if (poolNumber?.e164 && poolNumber?.sid) {
       console.log('[provision-phone] Assigning from pool:', poolNumber.e164, 'for agent:', agentId)
 
+      // Configure the Twilio number's smsUrl so inbound SMS is routed correctly
+      const smsWebhookUrl = process.env.NEXT_PUBLIC_APP_URL
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/twilio`
+        : undefined
+      if (smsWebhookUrl) {
+        try {
+          const poolClient = twilio(accountSid, authToken)
+          await poolClient.incomingPhoneNumbers(poolNumber.sid).update({
+            smsUrl: smsWebhookUrl,
+            smsMethod: 'POST',
+          })
+        } catch (updateErr: any) {
+          console.warn('[provision-phone] Could not set smsUrl on pool number:', updateErr?.message)
+          // Non-fatal — number still assigned, smsUrl can be configured later
+        }
+      }
+
       // Mark number as assigned in the pool
       const { error: poolUpdateError } = await supabase
         .from('phone_inventory')
@@ -200,7 +217,6 @@ export async function POST(request: NextRequest) {
 
     const searchParams: Record<string, string | boolean> = {
       smsEnabled: true,
-      voiceEnabled: false,
     }
     if (areaCode) {
       searchParams.areaCode = areaCode
@@ -223,7 +239,7 @@ export async function POST(request: NextRequest) {
       if (areaCode) {
         try {
           availableNumbers = await client.availablePhoneNumbers('US')
-            .local.list({ smsEnabled: true, voiceEnabled: false, limit: 5 })
+            .local.list({ smsEnabled: true, limit: 5 })
         } catch (twilioError: any) {
           console.error('[provision-phone] Twilio fallback search error:', twilioError?.message)
           return NextResponse.json(
@@ -239,7 +255,7 @@ export async function POST(request: NextRequest) {
       console.log('[provision-phone] No US numbers found, trying CA fallback for agent:', agentId)
       try {
         availableNumbers = await client.availablePhoneNumbers('CA')
-          .local.list({ smsEnabled: true, voiceEnabled: false, limit: 5 })
+          .local.list({ smsEnabled: true, limit: 5 })
       } catch (twilioError: any) {
         console.error('[provision-phone] Twilio CA fallback search error:', twilioError?.message)
         // CA search failed — fall through to the final "no numbers" error below
