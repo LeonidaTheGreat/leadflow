@@ -19,6 +19,7 @@ const router = express.Router();
 const CalcomWebhookHandler = require('../lib/services/CalcomWebhookHandler');
 const CalcomWebhookManagement = require('../lib/services/CalcomWebhookManagement');
 const { getPool } = require('../lib/db');
+const requireApiKey = require('../lib/middleware/require-api-key');
 
 /**
  * Write a dead letter record for a failed webhook processing attempt.
@@ -38,15 +39,6 @@ async function writeDeadLetter(source, eventType, payload, errorMessage) {
 
 const handler = new CalcomWebhookHandler();
 const management = new CalcomWebhookManagement();
-
-// ─── Auth middleware for admin endpoints ──────────────────────────────────────
-function requireApiKey(req, res, next) {
-    const provided = req.headers['x-api-key'];
-    if (!provided || provided !== process.env.LEADFLOW_API_KEY) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-    return next();
-}
 
 // ─── POST /webhook/calcom ────────────────────────────────────────────────────
 router.post('/webhook/calcom', (req, res) => {
