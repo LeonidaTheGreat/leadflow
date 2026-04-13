@@ -1,3 +1,20 @@
+/**
+ * Spec
+ * What:
+ * - Keep the billing checkout audit write in `product/lead-response/dashboard/app/api/billing/create-checkout/route.ts`
+ *   inside the `POST` handler, and ensure upgrade attempts are logged to `checkout_sessions`.
+ * - Add a regression test in `product/lead-response/dashboard/tests/fix-subscription-attempts-table-does-not-exist.test.ts`
+ *   that verifies this route only writes audit data to `checkout_sessions` with the expected
+ *   column mapping.
+ * Verify:
+ * - Run `npm test -- --runInBand tests/fix-subscription-attempts-table-does-not-exist.test.js` from
+ *   `product/lead-response/dashboard` and expect all assertions to pass.
+ * - Run a grep for the missing-table name against this route and expect no matches.
+ * Boundaries:
+ * - Do not change Stripe price configuration, success/cancel redirects, or unrelated billing routes.
+ * - Do not modify database schema/migrations for this fix; reroute stays within the existing
+ *   `checkout_sessions` table.
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
