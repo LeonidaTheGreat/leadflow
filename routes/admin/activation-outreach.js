@@ -15,6 +15,8 @@ const express = require('express');
 const router = express.Router();
 const { getPool } = require('../../lib/db');
 const ActivationService = require('../../lib/services/ActivationService');
+const createLogger = require('../../lib/utils/logger');
+const log = createLogger('activation-outreach');
 
 function getService() {
   return new ActivationService({ pool: getPool() });
@@ -35,7 +37,7 @@ router.get('/api/admin/activation-list', async (req, res) => {
     }
     return res.json(service.formatListAsJson(rows));
   } catch (err) {
-    console.error('[activation-outreach] list error:', err.message);
+    log.error('list error', { error: err.message });
     return res.status(500).json({ error: 'Internal server error', detail: err.message });
   }
 });
@@ -61,7 +63,7 @@ router.post('/api/admin/send-activation-email', async (req, res) => {
     }
     return res.json({ success: true, agent_id: result.agent_id, email: result.email, resend_id: result.resend_id });
   } catch (err) {
-    console.error('[activation-outreach] send error:', err.message);
+    log.error('send error', { error: err.message });
     return res.status(500).json({ error: 'Internal server error', detail: err.message });
   }
 });

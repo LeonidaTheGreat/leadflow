@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const express = require('express');
 const FUBService = require('../lib/services/FUBService');
 const { getPool } = require('../lib/db');
+const createLogger = require('../lib/utils/logger');
+const log = createLogger('fub-webhook');
 
 const router = express.Router();
 const fubService = new FUBService();
@@ -20,7 +22,7 @@ async function writeDeadLetter(source, eventType, payload, errorMessage) {
       [source, eventType, JSON.stringify(payload), errorMessage]
     );
   } catch (dbErr) {
-    console.error('[fub-webhook] dead_letter DB write failed:', dbErr.message);
+    log.error('dead_letter DB write failed', { error: dbErr.message });
   }
 }
 
@@ -50,7 +52,7 @@ router.post('/webhook/fub', (req, res) => {
       return res.status(401).json({ error: 'Invalid webhook signature' });
     }
   } else {
-    console.warn('[fub-webhook] FUB_WEBHOOK_SECRET not set — skipping signature verification');
+    log.warn('FUB_WEBHOOK_SECRET not set — skipping signature verification');
   }
 
   // ─── Payload processing ────────────────────────────────────────────────────
@@ -61,14 +63,7 @@ router.post('/webhook/fub', (req, res) => {
     const body = req.body || {};
     const eventType = body.type || body.event || 'unknown';
     const leadId = body.person && body.person.id ? String(body.person.id) : (body.personId ? String(body.personId) : null);
-    console.error(JSON.stringify({
-      level: 'error',
-      source: 'fub-webhook',
-      event_type: eventType,
-      lead_id: leadId,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    }));
+    log.error('webhook payload processing failed', { event_type: eventType, lead_id: leadId, error: error.message });
     writeDeadLetter('fub', eventType, body, error.message);
     return res.status(200).json({
       received: true,
