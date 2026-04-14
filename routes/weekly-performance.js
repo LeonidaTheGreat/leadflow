@@ -11,6 +11,8 @@ const router = express.Router();
 const requireCronSecret = require('../lib/middleware/require-cron-secret');
 const requireApiKey = require('../lib/middleware/require-api-key');
 const { WeeklyPerformanceService } = require('../lib/services/WeeklyPerformanceService');
+const { logger } = require('../lib/logger');
+const log = logger.child('weekly-performance');
 const weeklyPerformanceService = new WeeklyPerformanceService();
 
 /**
@@ -21,11 +23,11 @@ const weeklyPerformanceService = new WeeklyPerformanceService();
  */
 router.get('/api/cron/weekly-performance', requireCronSecret, async (req, res) => {
   try {
-    console.log('[Weekly Performance] Cron triggered');
+    log.info('Cron triggered');
 
     const results = await weeklyPerformanceService.runWeeklyReportSequence();
 
-    console.log('[Weekly Performance] Sequence completed:', {
+    log.info('Sequence completed', {
       totalEligible: results.totalEligible,
       totalSent: results.totalSent,
       totalFailed: results.totalFailed
@@ -38,7 +40,7 @@ router.get('/api/cron/weekly-performance', requireCronSecret, async (req, res) =
       results
     });
   } catch (error) {
-    console.error('[Weekly Performance] Cron error:', error);
+    log.error('Cron error', error);
     return res.status(500).json({
       success: false,
       message: 'Weekly performance email sequence failed',
@@ -74,7 +76,7 @@ router.get('/api/cron/weekly-performance/preview', requireApiKey, async (req, re
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(html);
   } catch (error) {
-    console.error('[Weekly Performance] Preview error:', error);
+    log.error('Preview error', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to generate email preview',

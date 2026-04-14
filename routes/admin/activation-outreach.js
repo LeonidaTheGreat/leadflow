@@ -16,6 +16,8 @@ const router = express.Router();
 const { getPool } = require('../../lib/db');
 const ActivationService = require('../../lib/services/ActivationService');
 const requireApiKey = require('../../lib/middleware/require-api-key');
+const { logger } = require('../../lib/logger');
+const log = logger.child('activation-outreach');
 
 function getService() {
   return new ActivationService({ pool: getPool() });
@@ -33,7 +35,7 @@ router.get('/api/admin/activation-list', requireApiKey, async (req, res) => {
     }
     return res.json(service.formatListAsJson(rows));
   } catch (err) {
-    console.error('[activation-outreach] list error:', err.message);
+    log.error('List activation error', err);
     return res.status(500).json({ error: 'Internal server error', detail: err.message });
   }
 });
@@ -56,7 +58,7 @@ router.post('/api/admin/send-activation-email', requireApiKey, async (req, res) 
     }
     return res.json({ success: true, agent_id: result.agent_id, email: result.email, resend_id: result.resend_id });
   } catch (err) {
-    console.error('[activation-outreach] send error:', err.message);
+    log.error('Send activation email error', err);
     return res.status(500).json({ error: 'Internal server error', detail: err.message });
   }
 });

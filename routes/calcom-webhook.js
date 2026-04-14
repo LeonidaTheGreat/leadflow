@@ -20,6 +20,8 @@ const CalcomWebhookHandler = require('../lib/services/CalcomWebhookHandler');
 const CalcomWebhookManagement = require('../lib/services/CalcomWebhookManagement');
 const requireApiKey = require('../lib/middleware/require-api-key');
 const { writeDeadLetter } = require('../lib/utils/dead-letter');
+const { logger } = require('../lib/logger');
+const log = logger.child('calcom-webhook');
 
 const handler = new CalcomWebhookHandler();
 const management = new CalcomWebhookManagement();
@@ -58,13 +60,7 @@ router.post('/webhook/calcom', (req, res) => {
         .then(() => res.json({ received: true, processed: true }))
         .catch(err => {
             const eventType = event.triggerEvent || event.type || 'unknown';
-            console.error(JSON.stringify({
-                level: 'error',
-                source: 'calcom-webhook',
-                event_type: eventType,
-                error: err.message,
-                timestamp: new Date().toISOString()
-            }));
+            log.error('Webhook processing error', err, { eventType });
             writeDeadLetter('calcom', eventType, event, err.message);
             res.status(200).json({ received: true, processed: false, error: err.message });
         });
@@ -76,7 +72,7 @@ router.get('/api/calcom/webhooks', requireApiKey, async (req, res) => {
         const webhooks = await management.listWebhooks();
         return res.json({ success: true, webhooks });
     } catch (err) {
-        console.error('[calcom-webhook] list error:', err.message);
+        log.error('List webhooks error', err);
         return res.status(500).json({ error: 'Failed to list webhooks', detail: err.message });
     }
 });
@@ -87,7 +83,7 @@ router.post('/api/calcom/webhooks', requireApiKey, async (req, res) => {
         const result = await management.registerWebhook(req.body);
         return res.status(201).json(result);
     } catch (err) {
-        console.error('[calcom-webhook] register error:', err.message);
+        log.error('Register webhook error', err);
         const status = err.message.includes('required') || err.message.includes('Invalid') ? 400 : 500;
         return res.status(status).json({ error: err.message });
     }
@@ -99,7 +95,7 @@ router.delete('/api/calcom/webhooks/:id', requireApiKey, async (req, res) => {
         const result = await management.deleteWebhook(req.params.id);
         return res.json(result);
     } catch (err) {
-        console.error('[calcom-webhook] delete error:', err.message);
+        log.error('Delete webhook error', err);
         return res.status(500).json({ error: err.message });
     }
 });
@@ -110,7 +106,7 @@ router.get('/api/calcom/webhooks/:id/stats', requireApiKey, async (req, res) => 
         const stats = await management.getWebhookStats(req.params.id);
         return res.json({ success: true, webhookId: req.params.id, stats });
     } catch (err) {
-        console.error('[calcom-webhook] stats error:', err.message);
+        log.error('Webhook stats error', err);
         return res.status(500).json({ error: err.message });
     }
 });
@@ -121,7 +117,7 @@ router.post('/api/calcom/webhooks/:id/test', requireApiKey, async (req, res) => 
         const result = await management.testWebhook(req.params.id);
         return res.json(result);
     } catch (err) {
-        console.error('[calcom-webhook] test error:', err.message);
+        log.error('Test webhook error', err);
         const status = err.message.includes('not found') ? 404 : 500;
         return res.status(status).json({ error: err.message });
     }
