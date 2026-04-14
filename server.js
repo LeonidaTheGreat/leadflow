@@ -5,7 +5,7 @@
 
 require('dotenv').config();
 const express = require('express');
-const { logger } = require('./lib/logger');
+const { logger, requestLogger } = require('./lib/logger');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/internal/weekly-performance');
@@ -21,6 +21,7 @@ const app = express();
 app.use('/webhook/stripe', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
+app.use(requestLogger);
 
 // System routes
 app.use('/', systemRouter);
