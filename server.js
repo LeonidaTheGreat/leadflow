@@ -11,6 +11,7 @@ const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/internal/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
+const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
@@ -40,6 +41,9 @@ app.use('/', weeklyPerformanceRouter);
 
 // Stuck pilots cron route (checks pilot_progress, not onboarding_events)
 app.use('/', checkStuckPilotsRouter);
+
+// Dead letter replay cron route (retries failed webhook events)
+app.use('/', deadLetterReplayRouter);
 
 // Admin: activation outreach (personal email to verified but unactivated signups)
 app.use('/', activationOutreachRouter);

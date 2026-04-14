@@ -28,15 +28,16 @@ const billing = new BillingService();
 router.post('/webhook/stripe', async (req, res) => {
     const signature = req.headers['stripe-signature'];
 
+    // Signature verification is mandatory — reject if secret is not configured
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+        log.error('STRIPE_WEBHOOK_SECRET not configured — rejecting webhook');
+        return res.status(503).json({ error: 'Webhook verification not configured' });
+    }
+
     let event;
     try {
-        if (process.env.STRIPE_WEBHOOK_SECRET) {
-            // Throws if signature is invalid — raw body required
-            event = billing.verifyWebhookSignature(req.body, signature);
-        } else {
-            // No secret configured: parse JSON body (dev/test only)
-            event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-        }
+        // Throws if signature is invalid — raw body required
+        event = billing.verifyWebhookSignature(req.body, signature);
     } catch (err) {
         log.error('Webhook signature error', err);
         return res.status(400).json({ error: 'Webhook signature verification failed' });
