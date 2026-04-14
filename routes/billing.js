@@ -18,7 +18,11 @@ const BillingService = require('../lib/services/BillingService');
 const requireApiKey = require('../lib/middleware/require-api-key');
 const { writeDeadLetter } = require('../lib/utils/dead-letter');
 const { logger } = require('../lib/logger');
+const { ValidationError } = require('../lib/errors');
 const log = logger.child('billing');
+
+const VALID_TIERS = ['starter', 'professional', 'enterprise'];
+const VALID_INTERVALS = ['month', 'year'];
 
 const billing = new BillingService();
 
@@ -43,6 +47,14 @@ router.post('/webhook/stripe', async (req, res) => {
         return res.status(400).json({ error: 'Webhook signature verification failed' });
     }
 
+    // Validate event shape after signature verification
+    if (!event.type || typeof event.type !== 'string') {
+        return res.status(400).json({ error: 'Invalid event: type must be a non-empty string' });
+    }
+    if (!event.data || !event.data.object) {
+        return res.status(400).json({ error: 'Invalid event: data.object is required' });
+    }
+
     try {
         const result = await billing.processWebhookEvent(event);
         return res.json({ received: true, ...result });
@@ -56,13 +68,19 @@ router.post('/webhook/stripe', async (req, res) => {
 
 // ─── POST /api/billing/checkout ──────────────────────────────────────────────
 router.post('/api/billing/checkout', requireApiKey, async (req, res) => {
-    const { userId, tier, interval, paymentMethodId, trial } = req.body || {};
-
-    if (!userId || !tier) {
-        return res.status(400).json({ error: 'userId and tier are required' });
-    }
-
     try {
+        const { userId, tier, interval, paymentMethodId, trial } = req.body || {};
+
+        if (!userId || typeof userId !== 'string' || !userId.trim()) {
+            throw new ValidationError('userId is required and must be a non-empty string');
+        }
+        if (!VALID_TIERS.includes(tier)) {
+            throw new ValidationError(`tier must be one of: ${VALID_TIERS.join(', ')}`);
+        }
+        if (interval !== undefined && !VALID_INTERVALS.includes(interval)) {
+            throw new ValidationError(`interval must be one of: ${VALID_INTERVALS.join(', ')}`);
+        }
+
         const result = await billing.createCompleteSubscription({
             userId,
             tier,
@@ -72,6 +90,9 @@ router.post('/api/billing/checkout', requireApiKey, async (req, res) => {
         });
         return res.status(201).json(result);
     } catch (err) {
+        if (err instanceof ValidationError) {
+            return res.status(400).json({ error: err.message });
+        }
         log.error('Checkout error', err);
         return res.status(500).json({ error: err.message });
     }
@@ -79,16 +100,22 @@ router.post('/api/billing/checkout', requireApiKey, async (req, res) => {
 
 // ─── POST /api/billing/portal ────────────────────────────────────────────────
 router.post('/api/billing/portal', requireApiKey, async (req, res) => {
-    const { customerId, returnUrl } = req.body || {};
-
-    if (!customerId) {
-        return res.status(400).json({ error: 'customerId is required' });
-    }
-
     try {
+        const { customerId, returnUrl } = req.body || {};
+
+        if (!customerId || typeof customerId !== 'string' || !customerId.startsWith('cus_')) {
+            throw new ValidationError('customerId is required and must be a string starting with "cus_"');
+        }
+        if (returnUrl !== undefined && typeof returnUrl !== 'string') {
+            throw new ValidationError('returnUrl must be a string');
+        }
+
         const result = await billing.createPortalSession(customerId, { returnUrl });
         return res.json(result);
     } catch (err) {
+        if (err instanceof ValidationError) {
+            return res.status(400).json({ error: err.message });
+        }
         log.error('Portal error', err);
         return res.status(500).json({ error: err.message });
     }

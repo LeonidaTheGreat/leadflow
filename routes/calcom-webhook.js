@@ -21,6 +21,7 @@ const CalcomWebhookManagement = require('../lib/services/CalcomWebhookManagement
 const requireApiKey = require('../lib/middleware/require-api-key');
 const { writeDeadLetter } = require('../lib/utils/dead-letter');
 const { logger } = require('../lib/logger');
+const { ValidationError } = require('../lib/errors');
 const log = logger.child('calcom-webhook');
 
 const handler = new CalcomWebhookHandler();
@@ -55,8 +56,21 @@ router.post('/webhook/calcom', (req, res) => {
         }
     }
 
-    if (!event || (!event.triggerEvent && !event.type)) {
+    if (!event) {
         return res.status(400).json({ error: 'Invalid webhook payload' });
+    }
+
+    const triggerEvent = event.triggerEvent;
+    const eventType = event.type;
+    if ((!triggerEvent || typeof triggerEvent !== 'string') &&
+        (!eventType || typeof eventType !== 'string')) {
+        const ve = new ValidationError('Event must have a triggerEvent or type field (non-empty string)');
+        return res.status(400).json({ error: ve.message });
+    }
+
+    if ('payload' in event && !event.payload) {
+        const ve = new ValidationError('Event payload must not be null or empty when present');
+        return res.status(400).json({ error: ve.message });
     }
 
     handler.handleCalWebhook(event)
