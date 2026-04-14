@@ -10,12 +10,29 @@ import {
   sendSatisfactionPing,
 } from '@/lib/satisfaction'
 import type { Lead, Agent } from '@/lib/types'
+import twilio from 'twilio'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
 
 // Satisfaction ping fires after AI response cooldown (10 min = 600000ms)
 const SATISFACTION_PING_DELAY_MS = 10 * 60 * 1000
+
+/**
+ * Verify Twilio webhook signature using X-Twilio-Signature header.
+ * Fail-closed: returns false if auth token is not configured.
+ */
+function verifyTwilioSignature(request: NextRequest, params: Record<string, string>): boolean {
+  const authToken = process.env.TWILIO_AUTH_TOKEN
+  if (!authToken) return false // fail-closed
+
+  const signature = request.headers.get('x-twilio-signature')
+  if (!signature) return false
+
+  // Reconstruct the full URL Twilio used to sign (must match exactly)
+  const url = request.url
+  return twilio.validateRequest(authToken, signature, url, params)
+}
 
 // ============================================
 // TWILIO INBOUND SMS WEBHOOK
@@ -37,12 +54,21 @@ export async function POST(request: NextRequest) {
     console.log('📥 Twilio webhook START')
     const formData = await request.formData()
     console.log('📥 FormData parsed')
-    
+
     const from = formData.get('From') as string
     const to = formData.get('To') as string
     const body = (formData.get('Body') as string || '').trim()
     const messageSid = formData.get('MessageSid') as string
-    const numMedia = parseInt(formData.get('NumMedia') as string || '0')
+
+    // Convert FormData to plain object for signature verification
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => { params[key] = String(value) })
+
+    // Verify Twilio signature — fail-closed
+    if (!verifyTwilioSignature(request, params)) {
+      console.error('❌ Twilio webhook signature verification failed')
+      return new NextResponse('Forbidden', { status: 403 })
+    }
 
     console.log('📥 Inbound SMS:', { from, to, body: body.substring(0, 50), messageSid })
 
@@ -349,16 +375,7 @@ export async function POST(request: NextRequest) {
         .order('created_at', { ascending: true })
         .limit(10)
 
-      // Check for opt-out
-      if (checkOptOut(body)) {
-        console.log('🚫 Lead opted out:', lead.id)
-        await supabaseAdmin.from('leads').update({ status: 'opted_out' }).eq('id', lead.id)
-        const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Message>You've been opted out. You won't receive any more messages.</Message>
-</Response>`
-        return new NextResponse(twiml, { headers: { 'Content-Type': 'text/xml' } })
-      }
+      // Note: opt-out already handled above (lines 182-218) — no duplicate check needed
 
       // Generate AI response using agent system
       const agentResponse = await generateAgentResponse(
@@ -542,6 +559,15 @@ export async function PUT(request: NextRequest) {
   // Handle status callbacks from Twilio
   try {
     const formData = await request.formData()
+
+    // Verify Twilio signature — fail-closed
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => { params[key] = String(value) })
+    if (!verifyTwilioSignature(request, params)) {
+      console.error('❌ Twilio status callback signature verification failed')
+      return new NextResponse('Forbidden', { status: 403 })
+    }
+
     const messageSid = formData.get('MessageSid') as string
     const status = formData.get('MessageStatus') as string
     const errorCode = formData.get('ErrorCode') as string
