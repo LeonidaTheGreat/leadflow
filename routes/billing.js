@@ -17,6 +17,8 @@ const router = express.Router();
 const BillingService = require('../lib/services/BillingService');
 const requireApiKey = require('../lib/middleware/require-api-key');
 const { writeDeadLetter } = require('../lib/utils/dead-letter');
+const { logger } = require('../lib/logger');
+const log = logger.child('billing');
 
 const billing = new BillingService();
 
@@ -36,7 +38,7 @@ router.post('/webhook/stripe', async (req, res) => {
             event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
         }
     } catch (err) {
-        console.error('[billing] webhook signature error:', err.message);
+        log.error('Webhook signature error', err);
         return res.status(400).json({ error: 'Webhook signature verification failed' });
     }
 
@@ -45,13 +47,7 @@ router.post('/webhook/stripe', async (req, res) => {
         return res.json({ received: true, ...result });
     } catch (err) {
         const eventType = event && event.type ? event.type : 'unknown';
-        console.error(JSON.stringify({
-            level: 'error',
-            source: 'billing-webhook',
-            event_type: eventType,
-            error: err.message,
-            timestamp: new Date().toISOString()
-        }));
+        log.error('Webhook processing error', err, { eventType });
         writeDeadLetter('stripe', eventType, event, err.message);
         return res.status(200).json({ received: true, processed: false, error: 'Webhook processing failed' });
     }
@@ -75,7 +71,7 @@ router.post('/api/billing/checkout', requireApiKey, async (req, res) => {
         });
         return res.status(201).json(result);
     } catch (err) {
-        console.error('[billing] checkout error:', err.message);
+        log.error('Checkout error', err);
         return res.status(500).json({ error: err.message });
     }
 });
@@ -92,7 +88,7 @@ router.post('/api/billing/portal', requireApiKey, async (req, res) => {
         const result = await billing.createPortalSession(customerId, { returnUrl });
         return res.json(result);
     } catch (err) {
-        console.error('[billing] portal error:', err.message);
+        log.error('Portal error', err);
         return res.status(500).json({ error: err.message });
     }
 });
@@ -103,7 +99,7 @@ router.get('/api/billing/status/:userId', requireApiKey, async (req, res) => {
         const status = await billing.getUserSubscriptionStatus(req.params.userId);
         return res.json(status);
     } catch (err) {
-        console.error('[billing] status error:', err.message);
+        log.error('Status error', err);
         return res.status(500).json({ error: err.message });
     }
 });
