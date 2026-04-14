@@ -1,5 +1,6 @@
 const express = require('express');
 const SystemStatusService = require('../lib/services/SystemStatusService');
+const { getAllBreakerMetrics } = require('../lib/utils/circuit-breaker');
 
 const router = express.Router();
 const systemStatusService = new SystemStatusService();
@@ -43,6 +44,14 @@ router.get('/', healthRateLimit, (_req, res) => {
 router.get('/health', healthRateLimit, (_req, res) => {
     const response = systemStatusService.getHealthStatus();
     return res.json(response);
+});
+
+router.get('/health/breakers', healthRateLimit, (_req, res) => {
+    res.json({
+        success: true,
+        timestamp: new Date().toISOString(),
+        breakers: getAllBreakerMetrics(),
+    });
 });
 
 module.exports = router;
