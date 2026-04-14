@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       .eq('id', resetToken.agent_id)
 
     if (updateError) {
-      console.error('Failed to update password:', updateError.message)
+      logger.error('Failed to update password:', updateError.message)
       return NextResponse.json(
         { error: 'Failed to update password. Please try again.' },
         { status: 500 }
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Reset password error:', error)
+    logger.error('Reset password error:', error)
     return NextResponse.json(
       { error: 'An unexpected error occurred. Please try again.' },
       { status: 500 }

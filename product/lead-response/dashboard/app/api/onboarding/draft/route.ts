@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingStep } from '@/lib/types/onboarding';
+import { logger } from '@/lib/logger'
 
 const DRAFT_EXPIRY_HOURS = 48; // Drafts expire after 48 hours
 
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (error) {
-        console.error('Draft update error:', error);
+        logger.error('Draft update error:', error);
         return NextResponse.json(
           { success: false, error: 'Failed to update draft' },
           { status: 500 }
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (error) {
-          console.error('Draft update error:', error);
+          logger.error('Draft update error:', error);
           return NextResponse.json(
             { success: false, error: 'Failed to update draft' },
             { status: 500 }
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (error) {
-          console.error('Draft creation error:', error);
+          logger.error('Draft creation error:', error);
           return NextResponse.json(
             { success: false, error: 'Failed to create draft' },
             { status: 500 }
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Save draft error:', error);
+    logger.error('Save draft error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -178,7 +179,7 @@ export async function GET(request: NextRequest) {
           message: 'No draft found',
         });
       }
-      console.error('Draft fetch error:', error);
+      logger.error('Draft fetch error:', error);
       return NextResponse.json(
         { success: false, error: 'Failed to fetch draft' },
         { status: 500 }
@@ -216,7 +217,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Get draft error:', error);
+    logger.error('Get draft error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -246,7 +247,7 @@ export async function DELETE(request: NextRequest) {
       .eq('id', draftId);
 
     if (error) {
-      console.error('Draft delete error:', error);
+      logger.error('Draft delete error:', error);
       return NextResponse.json(
         { success: false, error: 'Failed to delete draft' },
         { status: 500 }
@@ -259,7 +260,7 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Delete draft error:', error);
+    logger.error('Delete draft error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

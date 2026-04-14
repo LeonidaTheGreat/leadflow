@@ -10,9 +10,13 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
-      - run: npm test
+      - name: API tests
+        run: npm test
       - name: Dashboard build
         working-directory: product/lead-response/dashboard
         run: |
           npm ci
           npm run build
+      - name: Dashboard tests
+        working-directory: product/lead-response/dashboard
+        run: npx jest --passWithNoTests --bail --ci

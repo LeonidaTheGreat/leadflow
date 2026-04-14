@@ -3,6 +3,7 @@ import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { generateAiSmsResponse } from '@/lib/ai'
 import { sendSms } from '@/lib/twilio'
 import { createMessage } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/cron/follow-up
@@ -56,7 +57,7 @@ async function hasReachedFrequencyCap(leadId: string): Promise<boolean> {
     .gte('created_at', oneDayAgo)
   
   if (error) {
-    console.error('Error checking frequency cap:', error)
+    logger.error('Error checking frequency cap:', error)
     return false // Don't block send on error
   }
   
@@ -121,12 +122,12 @@ export async function GET(request: NextRequest) {
     const isDryRun = request.nextUrl.searchParams.get('test') === 'true'
 
     if (isDryRun) {
-      console.log('🧪 Running in DRY-RUN mode')
+      logger.info('🧪 Running in DRY-RUN mode')
     }
 
     // Check quiet hours
     if (isQuietHours() && !isDryRun) {
-      console.log('🌙 Quiet hours - skipping cron run')
+      logger.info('🌙 Quiet hours - skipping cron run')
       return NextResponse.json({
         skipped: true,
         reason: 'quiet_hours',
@@ -143,7 +144,7 @@ export async function GET(request: NextRequest) {
       .lt('total_messages_sent', 3) // Max 3 messages per sequence
 
     if (sequencesError) {
-      console.error('❌ Error fetching sequences:', sequencesError)
+      logger.error('❌ Error fetching sequences:', sequencesError)
       return NextResponse.json(
         {
           success: false,
@@ -180,7 +181,7 @@ export async function GET(request: NextRequest) {
       .in('id', leadIds)
 
     if (leadsError) {
-      console.error('❌ Error fetching leads:', leadsError)
+      logger.error('❌ Error fetching leads:', leadsError)
       return NextResponse.json(
         {
           success: false,
@@ -207,7 +208,7 @@ export async function GET(request: NextRequest) {
         .in('id', agentIds)
 
       if (agentsError) {
-        console.warn('⚠️ Error fetching agents (continuing without agent data):', agentsError)
+        logger.warn('⚠️ Error fetching agents (continuing without agent data):', agentsError)
       } else {
         for (const agent of agentsData || []) {
           agentsMap[agent.id] = agent
@@ -230,7 +231,7 @@ export async function GET(request: NextRequest) {
       leads: leadsMap[s.lead_id] || null,
     }))
 
-    console.log(`📋 Found ${sequences.length} sequences to process`)
+    logger.info(`📋 Found ${sequences.length} sequences to process`)
 
     const results: any[] = []
     let sent = 0
@@ -243,13 +244,13 @@ export async function GET(request: NextRequest) {
 
       // Safety checks
       if (!lead || !agent) {
-        console.warn(`⚠️ Skipping sequence ${sequence.id} - missing lead or agent`)
+        logger.warn(`⚠️ Skipping sequence ${sequence.id} - missing lead or agent`)
         skipped++
         continue
       }
 
       if (lead.dnc || !lead.consent_sms) {
-        console.warn(`⚠️ Skipping lead ${lead.id} - DNC or no consent`)
+        logger.warn(`⚠️ Skipping lead ${lead.id} - DNC or no consent`)
         
         // Mark sequence as completed (can't send)
         await supabase
@@ -265,7 +266,7 @@ export async function GET(request: NextRequest) {
         // Check frequency cap: max 3 messages per lead per 24h
         const atFrequencyCap = await hasReachedFrequencyCap(lead.id)
         if (atFrequencyCap) {
-          console.warn(`⚠️ Lead ${lead.id} at frequency cap (3 messages in 24h) - skipping`)
+          logger.warn(`⚠️ Lead ${lead.id} at frequency cap (3 messages in 24h) - skipping`)
           skipped++
           continue
         }
@@ -278,10 +279,10 @@ export async function GET(request: NextRequest) {
         // Add TCPA-compliant footer and validate message length
         const complianceMessage = ensureSmsFitWithFooter(aiResponse.message)
         
-        console.log(`📝 Message length: ${aiResponse.message.length} → ${complianceMessage.length} (with footer)`)
+        logger.info(`📝 Message length: ${aiResponse.message.length} → ${complianceMessage.length} (with footer)`)
 
         if (isDryRun) {
-          console.log(`🧪 [DRY-RUN] Would send to ${lead.name}: "${complianceMessage}"`)
+          logger.info(`🧪 [DRY-RUN] Would send to ${lead.name}: "${complianceMessage}"`)
           results.push({
             sequence_id: sequence.id,
             lead_name: lead.name,
@@ -300,7 +301,7 @@ export async function GET(request: NextRequest) {
         })
 
         if (!smsResult.success) {
-          console.error(`❌ Failed to send SMS to ${lead.name}:`, smsResult.error)
+          logger.error(`❌ Failed to send SMS to ${lead.name}:`, smsResult.error)
           failed++
           continue
         }
@@ -320,7 +321,7 @@ export async function GET(request: NextRequest) {
             sent_at: new Date().toISOString(),
           })
         } catch (msgErr: any) {
-          console.error(`❌ Failed to save message record for ${lead.name}:`, msgErr.message)
+          logger.error(`❌ Failed to save message record for ${lead.name}:`, msgErr.message)
           // Continue anyway - SMS was sent, just not logged. Log to error tracking.
         }
 
@@ -346,17 +347,17 @@ export async function GET(request: NextRequest) {
             .eq('id', sequence.id)
           
           if (updateErr) {
-            console.error(`❌ Failed to update sequence ${sequence.id}:`, updateErr)
+            logger.error(`❌ Failed to update sequence ${sequence.id}:`, updateErr)
             failed++
             continue
           }
         } catch (updateErr: any) {
-          console.error(`❌ Exception updating sequence ${sequence.id}:`, updateErr.message)
+          logger.error(`❌ Exception updating sequence ${sequence.id}:`, updateErr.message)
           failed++
           continue
         }
 
-        console.log(`✅ Sent follow-up to ${lead.name} (sequence ${sequence.sequence_type}, step ${nextStep})`)
+        logger.info(`✅ Sent follow-up to ${lead.name} (sequence ${sequence.sequence_type}, step ${nextStep})`)
         
         results.push({
           sequence_id: sequence.id,
@@ -369,7 +370,7 @@ export async function GET(request: NextRequest) {
         sent++
 
       } catch (err: any) {
-        console.error(`❌ Error processing sequence ${sequence.id}:`, err.message)
+        logger.error(`❌ Error processing sequence ${sequence.id}:`, err.message)
         failed++
       }
     }
@@ -385,7 +386,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ Cron follow-up error:', error)
+    logger.error('❌ Cron follow-up error:', error)
     return NextResponse.json(
       {
         success: false,

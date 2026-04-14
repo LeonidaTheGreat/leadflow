@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getSatisfactionStats } from '@/lib/satisfaction'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
       stats,
     })
   } catch (error: any) {
-    console.error('❌ /api/satisfaction/stats error:', error)
+    logger.error('❌ /api/satisfaction/stats error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

@@ -9,6 +9,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -20,7 +21,7 @@ const TELEGRAM_CHAT_ID   = process.env.TELEGRAM_CHAT_ID
 
 async function sendTelegramAlert(text: string): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    console.warn('[inactivity-check] Telegram not configured — skipping notification')
+    logger.warn('[inactivity-check] Telegram not configured — skipping notification')
     return
   }
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
@@ -30,7 +31,7 @@ async function sendTelegramAlert(text: string): Promise<void> {
     body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' }),
   })
   if (!res.ok) {
-    console.error('[inactivity-check] Telegram send failed:', await res.text())
+    logger.error('[inactivity-check] Telegram send failed:', await res.text())
   }
 }
 
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ alerted, checked: agentMap.size })
   } catch (error) {
-    console.error('[inactivity-check] error:', error)
+    logger.error('[inactivity-check] error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

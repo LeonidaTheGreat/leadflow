@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/agents/onboarding/configure-phone
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
   )
 
   if (intError) {
-    console.error('Failed to store phone number:', intError)
+    logger.error('Failed to store phone number:', intError)
     return NextResponse.json({ error: 'Failed to save phone number' }, { status: 500 })
   }
 

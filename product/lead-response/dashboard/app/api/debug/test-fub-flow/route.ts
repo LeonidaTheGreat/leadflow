@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: Request) {
   try {
     const { phone } = await request.json()
     
-    console.log('🔍 Testing FUB flow for phone:', phone)
+    logger.info('🔍 Testing FUB flow for phone:', phone)
     
     // Step 1: Search for existing lead
-    console.log('Step 1: Searching FUB...')
+    logger.info('Step 1: Searching FUB...')
     const existing = await searchLeadByPhone(phone)
-    console.log('Search result:', existing ? `Found ID ${existing.id}` : 'Not found')
+    logger.info('Search result:', existing ? `Found ID ${existing.id}` : 'Not found')
     
     if (existing?.id) {
       return NextResponse.json({
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     }
     
     // Step 2: Create new lead
-    console.log('Step 2: Creating in FUB...')
+    logger.info('Step 2: Creating in FUB...')
     const newLead = await createLeadInFub({
       firstName: 'Debug',
       lastName: 'Test',
@@ -32,14 +33,14 @@ export async function POST(request: Request) {
     })
     
     if (!newLead?.id) {
-      console.error('❌ Failed to create lead')
+      logger.error('❌ Failed to create lead')
       return NextResponse.json({
         success: false,
         error: 'createLeadInFub returned null',
       }, { status: 500 })
     }
     
-    console.log('✅ Created lead:', newLead.id)
+    logger.info('✅ Created lead:', newLead.id)
     
     return NextResponse.json({
       success: true,
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
     })
     
   } catch (error: any) {
-    console.error('❌ Debug endpoint error:', error)
+    logger.error('❌ Debug endpoint error:', error)
     return NextResponse.json({
       success: false,
       error: error.message,

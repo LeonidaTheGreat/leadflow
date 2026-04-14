@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin as db } from '@/lib/db'
 import { sendActivationEmail } from '@/lib/verification-email'
+import { logger } from '@/lib/logger'
 
 function isAuthorized(req: NextRequest): boolean {
   const secret = (process.env.API_SECRET_KEY || '').trim()
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
       .limit(limit)
 
     if (error) {
-      console.error('Error fetching stuck agents:', error)
+      logger.error('Error fetching stuck agents:', error)
       return NextResponse.json({ error: 'Database error', details: error.message }, { status: 500 })
     }
 
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
       errors: results.errors.length > 0 ? results.errors : undefined
     })
   } catch (err: any) {
-    console.error('Batch activation email error:', err)
+    logger.error('Batch activation email error:', err)
     return NextResponse.json({ error: 'Unexpected error', details: err.message }, { status: 500 })
   }
 }

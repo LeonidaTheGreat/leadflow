@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
+import { logger } from '@/lib/logger'
 
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
@@ -94,17 +95,17 @@ export async function POST(request: NextRequest) {
     })
 
     // Log summary
-    console.log(`📊 MRR Snapshot:`)
-    console.log(`   Total MRR: $${totalMRR.toFixed(2)}`)
-    console.log(`   Customers: ${totalCustomers}`)
-    console.log(`   Breakdown: Starter=$${breakdown.starter?.toFixed(2) || 0}, Professional=$${breakdown.professional?.toFixed(2) || 0}, Enterprise=$${breakdown.enterprise?.toFixed(2) || 0}`)
+    logger.info(`📊 MRR Snapshot:`)
+    logger.info(`   Total MRR: $${totalMRR.toFixed(2)}`)
+    logger.info(`   Customers: ${totalCustomers}`)
+    logger.info(`   Breakdown: Starter=$${breakdown.starter?.toFixed(2) || 0}, Professional=$${breakdown.professional?.toFixed(2) || 0}, Enterprise=$${breakdown.enterprise?.toFixed(2) || 0}`)
 
     return NextResponse.json({
       success: true,
       data: snapshot,
     })
   } catch (error: any) {
-    console.error('MRR snapshot error:', error)
+    logger.error('MRR snapshot error:', error)
     return NextResponse.json(
       { error: 'Failed to create MRR snapshot' },
       { status: 500 }
@@ -141,7 +142,7 @@ export async function GET(request: NextRequest) {
       data: latestSnapshot,
     })
   } catch (error) {
-    console.error('MRR fetch error:', error)
+    logger.error('MRR fetch error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch MRR' },
       { status: 500 }

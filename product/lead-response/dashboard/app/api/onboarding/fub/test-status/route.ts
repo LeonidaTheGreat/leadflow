@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/onboarding/fub/test-status
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ received: false })
   } catch (err) {
-    console.error('test-status error:', err)
+    logger.error('test-status error:', err)
     return NextResponse.json({ received: false })
   }
 }

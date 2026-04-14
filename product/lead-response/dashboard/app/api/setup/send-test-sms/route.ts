@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import twilio from 'twilio'
+import { logger } from '@/lib/logger'
 
 const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_PHONE_NUMBER_US || ''
 
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('Send test SMS error:', error)
+    logger.error('Send test SMS error:', error)
 
     if (error.code === 21603) {
       return NextResponse.json(

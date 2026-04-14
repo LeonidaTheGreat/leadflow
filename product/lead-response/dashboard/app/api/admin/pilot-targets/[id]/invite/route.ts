@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
 import { sendPilotInviteEmail } from '@/lib/email-service'
+import { logger } from '@/lib/logger'
 
 function generateInviteToken(): { rawToken: string; tokenHash: string } {
   const rawToken = crypto.randomBytes(32).toString('hex')
@@ -130,7 +131,7 @@ export async function POST(
         })
 
       if (createError && !createError.message?.includes('duplicate key')) {
-        console.error('Error creating agent:', createError)
+        logger.error('Error creating agent:', createError)
         return NextResponse.json({ success: false, error: 'Failed to create agent record' }, { status: 500 })
       }
     }
@@ -151,7 +152,7 @@ export async function POST(
       })
 
     if (inviteError) {
-      console.error('Error creating invite:', inviteError)
+      logger.error('Error creating invite:', inviteError)
       return NextResponse.json({ success: false, error: 'Failed to create invite' }, { status: 500 })
     }
 
@@ -166,7 +167,7 @@ export async function POST(
     })
 
     if (!emailSent) {
-      console.warn(`Email sending failed for ${email}, invite record created. Agent: ${agentId}`)
+      logger.warn(`Email sending failed for ${email}, invite record created. Agent: ${agentId}`)
     }
 
     // 6. Mark target as contacted
@@ -182,7 +183,7 @@ export async function POST(
       emailSent,
     })
   } catch (error: any) {
-    console.error('Error in target invite endpoint:', error)
+    logger.error('Error in target invite endpoint:', error)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }

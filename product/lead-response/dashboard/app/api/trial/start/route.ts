@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer, isSupabaseConfigured } from '@/lib/supabase-server'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { logger } from '@/lib/logger'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (createError || !agent) {
-      console.error('Trial account creation error:', createError)
+      logger.error('Trial account creation error:', createError)
       return NextResponse.json(
         { error: 'Failed to create account. Please try again.' },
         { status: 500 }
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
       source: 'trial_cta',
       created_at: new Date().toISOString(),
     }).then(({ error }) => {
-      if (error) console.error('Failed to log trial_started event:', error)
+      if (error) logger.error('Failed to log trial_started event:', error)
     })
 
     // Generate JWT session token
@@ -175,7 +176,7 @@ export async function POST(request: NextRequest) {
     return response
 
   } catch (error) {
-    console.error('Trial start error:', error)
+    logger.error('Trial start error:', error)
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
+import { logger } from '@/lib/logger'
 
 interface DemoRequest {
   leadName: string
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
         
         responseText = result.text.trim()
       } catch (aiError) {
-        console.error('[demo] AI generation failed:', aiError)
+        logger.error('[demo] AI generation failed:', aiError)
         // Fallback to mock response on AI error
         responseText = generateMockResponse({
           leadName: sanitizedName,
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('[demo] Unexpected error:', error)
+    logger.error('[demo] Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

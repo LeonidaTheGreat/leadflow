@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   if (!isPostgrestConfigured()) {
@@ -22,13 +23,13 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query
 
     if (error) {
-      console.error('[dashboard/leads] query failed:', error)
+      logger.error('[dashboard/leads] query failed:', error)
       return NextResponse.json({ error: 'Failed to load leads' }, { status: 500 })
     }
 
     return NextResponse.json({ leads: data || [] })
   } catch (error) {
-    console.error('[dashboard/leads] unexpected error:', error)
+    logger.error('[dashboard/leads] unexpected error:', error)
     return NextResponse.json({ error: 'Failed to load leads' }, { status: 500 })
   }
 }

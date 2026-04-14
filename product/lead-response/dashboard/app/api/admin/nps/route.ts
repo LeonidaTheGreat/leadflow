@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getNPSStats, getUnprocessedChurnRisks, markChurnRiskProcessed } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 // Simple admin auth check - verify the request has a valid admin token
 async function isAdmin(request: NextRequest): Promise<boolean> {
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
     const stats = await getNPSStats()
     return NextResponse.json(stats)
   } catch (error: any) {
-    console.error('Error fetching admin NPS data:', error)
+    logger.error('Error fetching admin NPS data:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     )
   } catch (error: any) {
-    console.error('Error processing admin NPS action:', error)
+    logger.error('Error processing admin NPS action:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

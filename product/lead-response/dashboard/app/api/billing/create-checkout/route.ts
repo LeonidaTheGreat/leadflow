@@ -18,6 +18,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
+import { logger } from '@/lib/logger'
 
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
@@ -162,7 +163,7 @@ export async function POST(request: NextRequest) {
     const envVarName = PRICE_ID_ENV_MAP[tier]
     const priceId = process.env[envVarName]
     if (!isValidPriceId(priceId)) {
-      console.error(
+      logger.error(
         `Missing or invalid Stripe Price ID for tier "${tier}". ` +
         `Set ${envVarName} in Vercel environment variables to a valid price_... ID.`
       )
@@ -189,7 +190,7 @@ export async function POST(request: NextRequest) {
       )
       agent = result.data
     } catch (err: any) {
-      console.error('Agent lookup timeout/error:', err)
+      logger.error('Agent lookup timeout/error:', err)
       if (err.message.includes('timed out')) {
         return NextResponse.json(
           { error: 'Service temporarily unavailable. Please try again.', code: 'SERVICE_UNAVAILABLE' },
@@ -260,13 +261,13 @@ export async function POST(request: NextRequest) {
         5000
       )
     } catch (err: any) {
-      console.warn('Failed to log checkout session (non-critical):', err)
+      logger.warn('Failed to log checkout session (non-critical):', err)
       // Don't fail the checkout if logging fails — Stripe session is already created
     }
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error: any) {
-    console.error('Checkout error:', error)
+    logger.error('Checkout error:', error)
 
     if (error.type === 'StripeInvalidRequestError') {
       return NextResponse.json(

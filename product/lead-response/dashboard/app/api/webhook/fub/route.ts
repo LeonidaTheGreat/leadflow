@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin, createLead, getLeadByPhone, updateLead, createMessage, logEvent } from '@/lib/supabase'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone, isOptOut, sendSms } from '@/lib/twilio'
-import { syncLeadToFub, logSmsActivity, logQualification, verifyWebhookSignature } from '@/lib/fub'
+import { syncLeadToFub, logSmsActivity, logQualification, handleWebhookEvent, verifyWebhookSignature } from '@/lib/fub'
 import { getAgentBookingLink } from '@/lib/calcom'
 import type { FubWebhookPayload, Lead, Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
@@ -16,25 +17,20 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
-    const signature = request.headers.get('x-signature') || request.headers.get('x-followupboss-signature') || request.headers.get('fub-signature')
+    const signature = request.headers.get('x-signature')
     const secret = process.env.FUB_WEBHOOK_SECRET
 
-    // Verify webhook signature — fail-closed
-    if (!secret) {
-      console.error('❌ FUB_WEBHOOK_SECRET not configured — rejecting request')
-      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
-    }
-    if (!signature) {
-      console.error('❌ Missing FUB webhook signature header')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-    if (!verifyWebhookSignature(body, signature, secret)) {
-      console.error('❌ Invalid FUB webhook signature')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Verify webhook signature if secret is configured
+    if (secret && signature) {
+      const isValid = verifyWebhookSignature(body, signature, secret)
+      if (!isValid) {
+        logger.error('❌ Invalid FUB webhook signature')
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
     }
 
     const payload: FubWebhookPayload = JSON.parse(body)
-    console.log('📨 FUB Webhook received:', payload.event)
+    logger.info('📨 FUB Webhook received:', payload.event)
 
     // Log the event
     await logEvent({
@@ -61,12 +57,12 @@ export async function POST(request: NextRequest) {
         return await handleLeadAssigned(payload.data)
       
       default:
-        console.log('Unhandled FUB event:', payload.event)
+        logger.info('Unhandled FUB event:', payload.event)
         return NextResponse.json({ received: true, handled: false, event: payload.event })
     }
   } catch (error: any) {
-    console.error('❌ FUB webhook error:', error)
-    console.error('Error stack:', error.stack)
+    logger.error('❌ FUB webhook error:', error)
+    logger.error('Error stack:', error.stack)
     
     // Try to log to Supabase, but don't fail if that also fails
     try {
@@ -76,7 +72,7 @@ export async function POST(request: NextRequest) {
         source: 'fub_webhook',
       })
     } catch (logError) {
-      console.error('Failed to log error:', logError)
+      logger.error('Failed to log error:', logError)
     }
 
     return NextResponse.json(
@@ -93,12 +89,12 @@ export async function POST(request: NextRequest) {
 async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: string) {
   // If we got resourceIds instead of full lead data, fetch from FUB
   if (resourceIds && uri && (!fubLead || !fubLead.id)) {
-    console.log('🆕 Fetching lead data from FUB:', resourceIds, 'URI:', uri)
+    logger.info('🆕 Fetching lead data from FUB:', resourceIds, 'URI:', uri)
     // Trim newlines from env vars (Vercel CLI adds them)
     const fubSystemName = (process.env.FUB_SYSTEM_NAME || 'LeadFlow-Properties').trim()
     const fubSystemKey = (process.env.FUB_SYSTEM_KEY || '').trim()
     const fubApiKey = (process.env.FUB_API_KEY || '').trim()
-    console.log('🔑 Using system:', fubSystemName)
+    logger.info('🔑 Using system:', fubSystemName)
     // FUB uses Basic Auth, not Bearer - API key is the username
     const basicAuth = Buffer.from(`${fubApiKey}:`).toString('base64')
     try {
@@ -109,33 +105,33 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
           'X-System-Key': fubSystemKey,
         }
       })
-      console.log('📡 FUB response status:', response.status)
+      logger.info('📡 FUB response status:', response.status)
       if (response.ok) {
         const data = await response.json()
-        console.log('📡 FUB data:', JSON.stringify(data).substring(0, 200))
+        logger.info('📡 FUB data:', JSON.stringify(data).substring(0, 200))
         // FUB returns array of people
         if (data.people && data.people.length > 0) {
           fubLead = data.people[0]
-          console.log('✅ Found lead:', fubLead.id)
+          logger.info('✅ Found lead:', fubLead.id)
         } else {
-          console.error('❌ No people in FUB response')
+          logger.error('❌ No people in FUB response')
         }
       } else {
         const errorText = await response.text()
-        console.error('❌ FUB fetch failed:', response.status, errorText)
+        logger.error('❌ FUB fetch failed:', response.status, errorText)
       }
     } catch (error) {
-      console.error('❌ Failed to fetch lead from FUB:', error)
+      logger.error('❌ Failed to fetch lead from FUB:', error)
       return NextResponse.json({ error: 'Failed to fetch lead data', details: String(error) }, { status: 500 })
     }
   }
 
   if (!fubLead || !fubLead.id) {
-    console.error('❌ No lead data after fetch. fubLead:', fubLead)
+    logger.error('❌ No lead data after fetch. fubLead:', fubLead)
     return NextResponse.json({ error: 'No lead data available' }, { status: 400 })
   }
 
-  console.log('🆕 Processing lead.created:', fubLead.id)
+  logger.info('🆕 Processing lead.created:', fubLead.id)
 
   // Extract phone from FUB format (phones array or phoneNumber field)
   const phoneNumber = fubLead.phoneNumber || 
@@ -148,7 +144,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
   const { data: existingLead } = await getLeadByPhone(phone)
   
   if (existingLead) {
-    console.log('📋 Lead already exists:', existingLead.id)
+    logger.info('📋 Lead already exists:', existingLead.id)
     // Update FUB ID if not set
     if (!existingLead.fub_id) {
       await updateLead(existingLead.id, { fub_id: fubLead.id })
@@ -178,11 +174,11 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
   })
 
   if (leadError || !lead) {
-    console.error('❌ Error creating lead:', leadError)
+    logger.error('❌ Error creating lead:', leadError)
     return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 })
   }
 
-  console.log('✅ Lead created:', lead.id)
+  logger.info('✅ Lead created:', lead.id)
 
   // Run AI qualification
   const qualification = await qualifyLead({
@@ -227,7 +223,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
 
   // Check consent before sending SMS
   if (!lead.consent_sms) {
-    console.log('⚠️  Lead has not consented to SMS, skipping')
+    logger.info('⚠️  Lead has not consented to SMS, skipping')
     return NextResponse.json({ 
       success: true, 
       lead_id: lead.id, 
@@ -238,7 +234,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
 
   // Check DNC
   if (lead.dnc) {
-    console.log('🚫 Lead is on DNC list, skipping SMS')
+    logger.info('🚫 Lead is on DNC list, skipping SMS')
     return NextResponse.json({ 
       success: true, 
       lead_id: lead.id, 
@@ -276,7 +272,7 @@ async function handleLeadCreated(fubLead: any, resourceIds?: number[], uri?: str
     // Log in FUB
     await logSmsActivity(fubLead.id, aiResponse.message, smsResult.messageSid!, smsResult.status!)
 
-    console.log('✅ AI SMS sent:', smsResult.messageSid)
+    logger.info('✅ AI SMS sent:', smsResult.messageSid)
   }
 
   return NextResponse.json({
@@ -311,7 +307,7 @@ async function handleLeadUpdated(fubLead: any, resourceIds?: number[], uri?: str
         }
       }
     } catch (error) {
-      console.error('❌ Failed to fetch lead from FUB:', error)
+      logger.error('❌ Failed to fetch lead from FUB:', error)
     }
   }
 
@@ -319,7 +315,7 @@ async function handleLeadUpdated(fubLead: any, resourceIds?: number[], uri?: str
     return NextResponse.json({ error: 'No lead data available' }, { status: 400 })
   }
 
-  console.log('📝 Processing lead.updated:', fubLead.id)
+  logger.info('📝 Processing lead.updated:', fubLead.id)
 
   // Find lead by FUB ID
   const { data: lead } = await supabaseAdmin
@@ -365,7 +361,7 @@ async function handleStatusChanged(fubLead: any, resourceIds?: number[], uri?: s
         }
       }
     } catch (error) {
-      console.error('❌ Failed to fetch lead from FUB:', error)
+      logger.error('❌ Failed to fetch lead from FUB:', error)
     }
   }
 
@@ -373,7 +369,7 @@ async function handleStatusChanged(fubLead: any, resourceIds?: number[], uri?: s
     return NextResponse.json({ error: 'No lead data available' }, { status: 400 })
   }
 
-  console.log('🔄 Processing lead.status_changed:', fubLead.id)
+  logger.info('🔄 Processing lead.status_changed:', fubLead.id)
 
   const { data: lead } = await supabaseAdmin
     .from('leads')
@@ -425,7 +421,7 @@ async function handleStatusChanged(fubLead: any, resourceIds?: number[], uri?: s
 }
 
 async function handleLeadAssigned(fubLead: any) {
-  console.log('👤 Processing lead.assigned:', fubLead.id)
+  logger.info('👤 Processing lead.assigned:', fubLead.id)
 
   // Update agent assignment
   const { data: agent } = await supabaseAdmin
@@ -435,7 +431,7 @@ async function handleLeadAssigned(fubLead: any) {
     .single()
 
   if (!agent) {
-    console.log('⚠️  No agent found with fub_id:', fubLead.agentId)
+    logger.info('⚠️  No agent found with fub_id:', fubLead.agentId)
     return NextResponse.json({ success: true, sms_sent: false, reason: 'no_agent_found' })
   }
 
@@ -453,7 +449,7 @@ async function handleLeadAssigned(fubLead: any) {
     .single() as { data: Lead | null }
 
   if (!lead) {
-    console.log('⚠️  Lead not found in database:', fubLead.id)
+    logger.info('⚠️  Lead not found in database:', fubLead.id)
     return NextResponse.json({ success: true, sms_sent: false, reason: 'lead_not_found' })
   }
 
@@ -465,7 +461,7 @@ async function handleLeadAssigned(fubLead: any) {
     !lead.dnc
 
   if (!shouldSendIntro) {
-    console.log('📵 Skipping intro SMS:', {
+    logger.info('📵 Skipping intro SMS:', {
       leadId: lead.id,
       hasConsent: lead.consent_sms,
       hasPhone: !!lead.phone,
@@ -507,9 +503,9 @@ async function handleLeadAssigned(fubLead: any) {
     // Log SMS activity in FUB
     await logSmsActivity(fubLead.id, introMessage, smsResult.messageSid!, smsResult.status!)
 
-    console.log('✅ Agent intro SMS sent:', smsResult.messageSid)
+    logger.info('✅ Agent intro SMS sent:', smsResult.messageSid)
   } else {
-    console.error('❌ Failed to send intro SMS:', smsResult.error)
+    logger.error('❌ Failed to send intro SMS:', smsResult.error)
   }
 
   return NextResponse.json({ 

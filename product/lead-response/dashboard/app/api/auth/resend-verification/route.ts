@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { 
+import { logger } from '@/lib/logger'
   getAgentByEmail, 
   checkResendRateLimit, 
   createVerificationToken, 
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
     )
 
   } catch (error) {
-    console.error('Resend verification error:', error)
+    logger.error('Resend verification error:', error)
     return NextResponse.json(
       { error: 'An unexpected error occurred' },
       { status: 500 }

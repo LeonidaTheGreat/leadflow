@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/onboarding/simulator/status
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error && error.code !== 'PGRST116') {
-      console.error('Simulator status fetch error:', error)
+      logger.error('Simulator status fetch error:', error)
       return NextResponse.json({ error: 'Failed to fetch status' }, { status: 500 })
     }
 
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Simulator status error:', error)
+    logger.error('Simulator status error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

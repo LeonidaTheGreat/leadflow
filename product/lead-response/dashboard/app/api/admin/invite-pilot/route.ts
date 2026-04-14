@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 import { sendPilotInviteEmail } from '@/lib/email-service'
+import { logger } from '@/lib/logger'
 
 function generateInviteToken(): { rawToken: string; tokenHash: string } {
   const rawToken = crypto.randomBytes(32).toString('hex')
@@ -17,7 +18,7 @@ function checkAdminAuth(request: NextRequest): boolean {
   const expectedToken = process.env.ADMIN_SECRET
 
   if (!expectedToken) {
-    console.warn('ADMIN_SECRET not configured in environment')
+    logger.warn('ADMIN_SECRET not configured in environment')
     return false
   }
 
@@ -142,7 +143,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
         })
 
       if (createError && !createError.message.includes('duplicate key')) {
-        console.error('Error creating agent:', createError)
+        logger.error('Error creating agent:', createError)
         return NextResponse.json(
           { success: false, error: 'Failed to create agent record' },
           { status: 500 }
@@ -168,7 +169,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
       })
 
     if (inviteError) {
-      console.error('Error creating invite:', inviteError)
+      logger.error('Error creating invite:', inviteError)
       return NextResponse.json(
         { success: false, error: 'Failed to create invite record' },
         { status: 500 }
@@ -187,7 +188,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     })
 
     if (!emailSent) {
-      console.warn(`Email sending failed for ${email}, but invite record created. Agent ID: ${agentId}`)
+      logger.warn(`Email sending failed for ${email}, but invite record created. Agent ID: ${agentId}`)
     }
 
     // 7. Return success response (do NOT return raw token in response — it should never be logged)
@@ -201,7 +202,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
       { status: 200 }
     )
   } catch (error: any) {
-    console.error('Error in invite-pilot endpoint:', error)
+    logger.error('Error in invite-pilot endpoint:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -248,7 +249,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       { status: 400 }
     )
   } catch (error: any) {
-    console.error('Error in invite-pilot GET:', error)
+    logger.error('Error in invite-pilot GET:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

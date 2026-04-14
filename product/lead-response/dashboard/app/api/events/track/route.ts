@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import jwt from 'jsonwebtoken'
+import { logger } from '@/lib/logger'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     // Non-critical endpoint — never return 5xx that would block UI
-    console.error('[events/track] error:', error)
+    logger.error('[events/track] error:', error)
     return NextResponse.json({ success: false }, { status: 200 })
   }
 }

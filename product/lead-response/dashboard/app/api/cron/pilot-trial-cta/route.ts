@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
 import { sendPilotTrialCTAEmail } from '@/lib/email-service'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/cron/pilot-trial-cta
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('📧 Running pilot trial CTA email job...')
+    logger.info('📧 Running pilot trial CTA email job...')
 
     // Find pilots in aha_moment stage for > 48h who haven't received trial CTA
     const { data: pilots, error: pilotsError } = await postgrestAdmin
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       .lt('stage_entered_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
 
     if (pilotsError) {
-      console.error('Error fetching pilots for trial CTA:', pilotsError)
+      logger.error('Error fetching pilots for trial CTA:', pilotsError)
       return NextResponse.json(
         { success: false, error: 'Failed to fetch pilots' },
         { status: 500 }
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!pilots || pilots.length === 0) {
-      console.log('✅ No pilots need trial CTA emails at this time')
+      logger.info('✅ No pilots need trial CTA emails at this time')
       return NextResponse.json({
         success: true,
         message: 'No pilots need trial CTA emails',
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    console.log(`📧 Found ${pilots.length} pilots needing trial CTA emails`)
+    logger.info(`📧 Found ${pilots.length} pilots needing trial CTA emails`)
 
     // Fetch agent details for each pilot
     const agentIds = pilots.map((p: any) => p.agent_id)
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       .in('id', agentIds)
 
     if (agentsError) {
-      console.error('Error fetching agent details:', agentsError)
+      logger.error('Error fetching agent details:', agentsError)
       return NextResponse.json(
         { success: false, error: 'Failed to fetch agent details' },
         { status: 500 }
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
     for (const pilot of pilots as any[]) {
       const agent = agentMap.get(pilot.agent_id) as any
       if (!agent || !agent.email) {
-        console.warn(`Agent not found or no email for pilot ${pilot.agent_id}`)
+        logger.warn(`Agent not found or no email for pilot ${pilot.agent_id}`)
         results.push({ agentId: pilot.agent_id, email: '', success: false, error: 'Agent not found or no email' })
         failedCount++
         continue
@@ -110,23 +111,23 @@ export async function POST(request: NextRequest) {
             .eq('agent_id', pilot.agent_id)
 
           if (updateError) {
-            console.error(`Failed to mark trial_cta_sent for ${pilot.agent_id}:`, updateError)
+            logger.error(`Failed to mark trial_cta_sent for ${pilot.agent_id}:`, updateError)
             results.push({ agentId: pilot.agent_id, email: agent.email, success: false, error: 'Failed to update record' })
             failedCount++
             continue
           }
 
-          console.log(`✅ Trial CTA email sent to ${agent.email}`)
+          logger.info(`✅ Trial CTA email sent to ${agent.email}`)
           results.push({ agentId: pilot.agent_id, email: agent.email, success: true })
           sentCount++
         } else {
-          console.error(`Failed to send trial CTA email to ${agent.email}`)
+          logger.error(`Failed to send trial CTA email to ${agent.email}`)
           results.push({ agentId: pilot.agent_id, email: agent.email, success: false, error: 'Email send failed' })
           failedCount++
         }
       } catch (emailError) {
         const errorMessage = emailError instanceof Error ? emailError.message : String(emailError)
-        console.error(`Error sending trial CTA email to ${agent.email}:`, emailError)
+        logger.error(`Error sending trial CTA email to ${agent.email}:`, emailError)
         results.push({ agentId: pilot.agent_id, email: agent.email, success: false, error: errorMessage })
         failedCount++
       }
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Pilot trial CTA cron job error:', error)
+    logger.error('❌ Pilot trial CTA cron job error:', error)
     return NextResponse.json(
       {
         success: false,

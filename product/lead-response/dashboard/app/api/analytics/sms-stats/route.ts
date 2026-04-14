@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering — stats must reflect current data
 export const dynamic = 'force-dynamic'
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
     const { data: outboundMessages, error: outboundError } = await outboundQuery
 
     if (outboundError) {
-      console.error('[sms-stats] Error fetching outbound messages:', outboundError)
+      logger.error('[sms-stats] Error fetching outbound messages:', outboundError)
       // Return empty stats instead of crashing — table may have different schema
       return NextResponse.json({
         deliveryRate: null,
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest) {
     const { data: inboundMessages, error: inboundError } = await inboundQuery
 
     if (inboundError) {
-      console.error('[sms-stats] Error fetching inbound messages:', inboundError)
+      logger.error('[sms-stats] Error fetching inbound messages:', inboundError)
       throw inboundError
     }
 
@@ -172,7 +173,7 @@ export async function GET(request: NextRequest) {
     const { data: bookings, error: bookingsError } = await bookingsQuery
 
     if (bookingsError) {
-      console.error('[sms-stats] Error fetching bookings:', bookingsError)
+      logger.error('[sms-stats] Error fetching bookings:', bookingsError)
       // Booking table errors are non-fatal — return null for conversion rate
     }
 
@@ -216,7 +217,7 @@ export async function GET(request: NextRequest) {
       }
     )
   } catch (error) {
-    console.error('[sms-stats] Unexpected error:', error)
+    logger.error('[sms-stats] Unexpected error:', error)
     return NextResponse.json(
       {
         error:

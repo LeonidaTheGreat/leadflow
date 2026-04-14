@@ -3,6 +3,7 @@ import { postgrestAdmin } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
+import { logger } from '@/lib/logger'
 
 const supabase = postgrestAdmin
 
@@ -17,7 +18,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID
  */
 async function notifyTelegram(name: string, email: string, brokerage: string | null): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    console.log('[pilot-signup] Telegram not configured, skipping notification')
+    logger.info('[pilot-signup] Telegram not configured, skipping notification')
     return
   }
 
@@ -45,12 +46,12 @@ async function notifyTelegram(name: string, email: string, brokerage: string | n
     })
 
     if (!response.ok) {
-      console.error('[pilot-signup] Telegram notification failed:', await response.text())
+      logger.error('[pilot-signup] Telegram notification failed:', await response.text())
     } else {
-      console.log('[pilot-signup] Telegram notification sent successfully')
+      logger.info('[pilot-signup] Telegram notification sent successfully')
     }
   } catch (err) {
-    console.error('[pilot-signup] Telegram notification error:', err)
+    logger.error('[pilot-signup] Telegram notification error:', err)
   }
 }
 
@@ -64,7 +65,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
     const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
 
     if (!RESEND_API_KEY) {
-      console.log('[pilot-signup] RESEND_API_KEY not configured, skipping welcome email')
+      logger.info('[pilot-signup] RESEND_API_KEY not configured, skipping welcome email')
       return
     }
 
@@ -131,12 +132,12 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
     })
 
     if (!response.ok) {
-      console.error('[pilot-signup] Welcome email failed:', await response.text())
+      logger.error('[pilot-signup] Welcome email failed:', await response.text())
     } else {
-      console.log('[pilot-signup] Welcome email sent successfully')
+      logger.info('[pilot-signup] Welcome email sent successfully')
     }
   } catch (err) {
-    console.error('[pilot-signup] Welcome email error:', err)
+    logger.error('[pilot-signup] Welcome email error:', err)
   }
 }
 
@@ -220,7 +221,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (createError) {
-      console.error('Error creating pilot agent:', createError)
+      logger.error('Error creating pilot agent:', createError)
       return NextResponse.json(
         { error: 'Failed to create account. Please try again.' },
         { status: 500 }
@@ -236,7 +237,7 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     })).catch((err: unknown) => {
-      console.error('[pilot-signup] Failed to create pilot_progress record:', err)
+      logger.error('[pilot-signup] Failed to create pilot_progress record:', err)
     })
 
     // Create agent integrations record if FUB API key provided
@@ -251,7 +252,7 @@ export async function POST(request: NextRequest) {
             updated_at: new Date().toISOString()
           })
       } catch (err) {
-        console.error('[pilot-signup] Failed to store FUB API key:', err)
+        logger.error('[pilot-signup] Failed to store FUB API key:', err)
         // Non-blocking — don't fail signup if this fails
       }
     }
@@ -271,7 +272,7 @@ export async function POST(request: NextRequest) {
       },
       created_at: new Date().toISOString()
     })).catch((err: unknown) => {
-      console.error('Failed to log pilot_started event:', err)
+      logger.error('Failed to log pilot_started event:', err)
     })
 
     // Create verification token and send email (non-blocking)
@@ -282,7 +283,7 @@ export async function POST(request: NextRequest) {
           await sendVerificationEmail(agent.email, agent.id, firstName, verificationToken)
         }
       } catch (err) {
-        console.error('Failed to send verification email:', err)
+        logger.error('Failed to send verification email:', err)
       }
     })()
 
@@ -329,7 +330,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Pilot signup error:', error)
+    logger.error('Pilot signup error:', error)
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

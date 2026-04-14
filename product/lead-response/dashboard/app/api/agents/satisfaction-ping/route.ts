@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,11 +34,11 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('❌ Error updating satisfaction_ping_enabled:', error)
+      logger.error('❌ Error updating satisfaction_ping_enabled:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    console.log(`✅ Agent ${agentId} satisfaction ping ${enabled ? 'enabled' : 'disabled'}`)
+    logger.info(`✅ Agent ${agentId} satisfaction ping ${enabled ? 'enabled' : 'disabled'}`)
 
     return NextResponse.json({
       success: true,
@@ -45,7 +46,7 @@ export async function PATCH(request: NextRequest) {
       satisfactionPingEnabled: data.satisfaction_ping_enabled,
     })
   } catch (error: any) {
-    console.error('❌ /api/agents/satisfaction-ping error:', error)
+    logger.error('❌ /api/agents/satisfaction-ping error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

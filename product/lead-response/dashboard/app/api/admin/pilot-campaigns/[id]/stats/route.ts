@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 export async function GET(
   request: NextRequest,
@@ -73,7 +74,7 @@ export async function GET(
       }
     })
   } catch (err) {
-    console.error('Error getting campaign stats:', err)
+    logger.error('Error getting campaign stats:', err)
     return NextResponse.json(
       { success: false, error: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }

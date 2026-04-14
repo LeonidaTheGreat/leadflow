@@ -4,6 +4,7 @@ import { updateMessageStatus, createMessage, getLeadByPhone, updateLead, logEven
 import { classifyIntent, generateAiSmsResponse } from '@/lib/ai'
 import { sendAiSmsResponse } from '@/lib/twilio'
 import { getAgentById } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // TWILIO STATUS CALLBACK & INBOUND WEBHOOK
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       body[key] = value.toString()
     })
 
-    console.log('📨 Twilio webhook:', body.MessageSid, body.MessageStatus || 'inbound')
+    logger.info('📨 Twilio webhook:', body.MessageSid, body.MessageStatus || 'inbound')
 
     // Handle status callback (outbound message status update)
     if (body.MessageStatus) {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true })
 
   } catch (error: any) {
-    console.error('❌ Twilio webhook error:', error)
+    logger.error('❌ Twilio webhook error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -58,9 +59,9 @@ async function handleStatusUpdate(body: Record<string, string>) {
   )
 
   if (error) {
-    console.error('❌ Error updating message status:', error)
+    logger.error('❌ Error updating message status:', error)
   } else {
-    console.log('✅ Message status updated:', MessageSid, MessageStatus)
+    logger.info('✅ Message status updated:', MessageSid, MessageStatus)
   }
 
   // Log delivery failures
@@ -87,13 +88,13 @@ async function handleStatusUpdate(body: Record<string, string>) {
 async function handleInboundMessage(body: Record<string, string>) {
   const message = parseInboundMessage(body)
   
-  console.log('📥 Inbound SMS from:', message.From)
+  logger.info('📥 Inbound SMS from:', message.From)
 
   // Find lead by phone
   const { data: lead } = await getLeadByPhone(message.From)
 
   if (!lead) {
-    console.log('⚠️  No lead found for phone:', message.From)
+    logger.info('⚠️  No lead found for phone:', message.From)
     
     // Log unmatched message
     await logEvent({
@@ -160,7 +161,7 @@ async function handleInboundMessage(body: Record<string, string>) {
 
   // Classify intent for smart response
   const intentResult = await classifyIntent(message.Body)
-  console.log('🤖 Intent classified:', intentResult.intent, `(${(intentResult.confidence * 100).toFixed(0)}%)`)
+  logger.info('🤖 Intent classified:', intentResult.intent, `(${(intentResult.confidence * 100).toFixed(0)}%)`)
 
   // Generate and send AI response
   let aiResponse: { message: string; confidence: number }
@@ -212,7 +213,7 @@ async function handleInboundMessage(body: Record<string, string>) {
       responded_at: new Date().toISOString(),
     })
 
-    console.log('✅ Auto-response sent')
+    logger.info('✅ Auto-response sent')
   }
 
   return NextResponse.json({
@@ -228,7 +229,7 @@ async function handleInboundMessage(body: Record<string, string>) {
 // ============================================
 
 async function handleOptOut(lead: any) {
-  console.log('🚫 Processing opt-out for lead:', lead.id)
+  logger.info('🚫 Processing opt-out for lead:', lead.id)
 
   // Update lead DNC status
   await updateLead(lead.id, {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       .eq('id', userId)
 
     if (error) {
-      console.error('Error updating onboarding step:', error)
+      logger.error('Error updating onboarding step:', error)
       return NextResponse.json(
         { error: 'Failed to save progress' },
         { status: 500 }
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
 
   } catch (error) {
-    console.error('Setup progress error:', error)
+    logger.error('Setup progress error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

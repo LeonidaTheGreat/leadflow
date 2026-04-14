@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/admin/simulate-lead
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error('Failed to store simulation:', error)
+      logger.error('Failed to store simulation:', error)
       // Still return the conversation even if storage fails
       return NextResponse.json({
         id: null,
@@ -123,7 +124,7 @@ export async function POST(request: Request) {
       createdAt: data.created_at,
     })
   } catch (err: any) {
-    console.error('Simulation error:', err)
+    logger.error('Simulation error:', err)
     return NextResponse.json({ error: 'Simulation failed', detail: err.message }, { status: 500 })
   }
 }

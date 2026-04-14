@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (referralsError) {
-      console.error('Error fetching referrals:', referralsError)
+      logger.error('Error fetching referrals:', referralsError)
       return NextResponse.json({ error: 'Failed to fetch referrals' }, { status: 500 })
     }
 
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
       referrals: referrals || []
     })
   } catch (error) {
-    console.error('Error fetching referral stats:', error)
+    logger.error('Error fetching referral stats:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

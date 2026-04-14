@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import twilio from 'twilio'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
         })
 
       if (error) {
-        console.error('Twilio connection error:', error)
+        logger.error('Twilio connection error:', error)
         return NextResponse.json(
           { error: 'Failed to store Twilio credentials' },
           { status: 500 }
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
         })
 
       if (error) {
-        console.error('Twilio connection error:', error)
+        logger.error('Twilio connection error:', error)
         return NextResponse.json(
           { error: 'Failed to store phone number' },
           { status: 500 }
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       message: 'Twilio connected successfully',
     })
   } catch (error) {
-    console.error('Twilio connect error:', error)
+    logger.error('Twilio connect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -131,7 +132,7 @@ export async function DELETE(request: NextRequest) {
       .eq('agent_id', agentId)
 
     if (error) {
-      console.error('Twilio disconnect error:', error)
+      logger.error('Twilio disconnect error:', error)
       return NextResponse.json(
         { error: 'Failed to disconnect Twilio' },
         { status: 500 }
@@ -151,7 +152,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Twilio disconnected successfully',
     })
   } catch (error) {
-    console.error('Twilio disconnect error:', error)
+    logger.error('Twilio disconnect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

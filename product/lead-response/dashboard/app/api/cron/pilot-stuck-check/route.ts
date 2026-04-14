@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
 import { sendStuckPilotAlert } from '@/lib/telegram-service'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/cron/pilot-stuck-check
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('🔍 Running pilot stuck check...')
+    logger.info('🔍 Running pilot stuck check...')
 
     // Find pilots stuck for >24h who haven't been alerted yet
     // Uses pilot_progress table (correct source for white-glove program)
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
       .order('stage_entered_at', { ascending: true })
 
     if (queryError) {
-      console.error('Error querying stuck pilots:', queryError)
+      logger.error('Error querying stuck pilots:', queryError)
       return NextResponse.json(
         { success: false, error: 'Failed to query stuck pilots' },
         { status: 500 }
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!stuckPilots || stuckPilots.length === 0) {
-      console.log('✅ No stuck pilots detected')
+      logger.info('✅ No stuck pilots detected')
       return NextResponse.json({
         success: true,
         message: 'No stuck pilots detected',
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    console.log(`⚠️ Found ${stuckPilots.length} stuck pilot(s)`)
+    logger.info(`⚠️ Found ${stuckPilots.length} stuck pilot(s)`)
 
     const results: Array<{
       agentId: string
@@ -124,7 +125,7 @@ export async function POST(request: NextRequest) {
             .eq('id', pilot.id)
 
           if (updateError) {
-            console.error(`Failed to mark pilot ${pilot.id} as stuck:`, updateError)
+            logger.error(`Failed to mark pilot ${pilot.id} as stuck:`, updateError)
             results.push({
               agentId: pilot.agent_id,
               name: agentName,
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
             continue
           }
 
-          console.log(`✅ Alert sent for ${agentName} (stuck in ${pilot.stage} for ${hoursStuck}h)`)
+          logger.info(`✅ Alert sent for ${agentName} (stuck in ${pilot.stage} for ${hoursStuck}h)`)
           results.push({
             agentId: pilot.agent_id,
             name: agentName,
@@ -145,7 +146,7 @@ export async function POST(request: NextRequest) {
             alerted: true
           })
         } else {
-          console.warn(`⚠️ Failed to send alert for ${agentName}`)
+          logger.warn(`⚠️ Failed to send alert for ${agentName}`)
           results.push({
             agentId: pilot.agent_id,
             name: agentName,
@@ -157,7 +158,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
-        console.error(`Error processing stuck pilot ${pilot.id}:`, error)
+        logger.error(`Error processing stuck pilot ${pilot.id}:`, error)
         results.push({
           agentId: pilot.agent_id,
           name: agentName,
@@ -181,7 +182,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Pilot stuck check error:', error)
+    logger.error('❌ Pilot stuck check error:', error)
     return NextResponse.json(
       {
         success: false,

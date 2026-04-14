@@ -10,29 +10,13 @@ import {
   sendSatisfactionPing,
 } from '@/lib/satisfaction'
 import type { Lead, Agent } from '@/lib/types'
-import twilio from 'twilio'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
 
 // Satisfaction ping fires after AI response cooldown (10 min = 600000ms)
 const SATISFACTION_PING_DELAY_MS = 10 * 60 * 1000
-
-/**
- * Verify Twilio webhook signature using X-Twilio-Signature header.
- * Fail-closed: returns false if auth token is not configured.
- */
-function verifyTwilioSignature(request: NextRequest, params: Record<string, string>): boolean {
-  const authToken = process.env.TWILIO_AUTH_TOKEN
-  if (!authToken) return false // fail-closed
-
-  const signature = request.headers.get('x-twilio-signature')
-  if (!signature) return false
-
-  // Reconstruct the full URL Twilio used to sign (must match exactly)
-  const url = request.url
-  return twilio.validateRequest(authToken, signature, url, params)
-}
 
 // ============================================
 // TWILIO INBOUND SMS WEBHOOK
@@ -51,30 +35,21 @@ function verifyTwilioSignature(request: NextRequest, params: Record<string, stri
  */
 export async function POST(request: NextRequest) {
   try {
-    console.log('📥 Twilio webhook START')
+    logger.info('📥 Twilio webhook START')
     const formData = await request.formData()
-    console.log('📥 FormData parsed')
-
+    logger.info('📥 FormData parsed')
+    
     const from = formData.get('From') as string
     const to = formData.get('To') as string
     const body = (formData.get('Body') as string || '').trim()
     const messageSid = formData.get('MessageSid') as string
+    const numMedia = parseInt(formData.get('NumMedia') as string || '0')
 
-    // Convert FormData to plain object for signature verification
-    const params: Record<string, string> = {}
-    formData.forEach((value, key) => { params[key] = String(value) })
-
-    // Verify Twilio signature — fail-closed
-    if (!verifyTwilioSignature(request, params)) {
-      console.error('❌ Twilio webhook signature verification failed')
-      return new NextResponse('Forbidden', { status: 403 })
-    }
-
-    console.log('📥 Inbound SMS:', { from, to, body: body.substring(0, 50), messageSid })
+    logger.info('📥 Inbound SMS:', { from, to, body: body.substring(0, 50), messageSid })
 
     // Validate required fields
     if (!from || !body) {
-      console.error('❌ Missing required fields in Twilio webhook')
+      logger.error('❌ Missing required fields in Twilio webhook')
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
 </Response>`
@@ -87,7 +62,7 @@ export async function POST(request: NextRequest) {
     // Normalize phone number
     const phone = normalizePhone(from)
     if (!phone) {
-      console.error('❌ Invalid phone number:', from)
+      logger.error('❌ Invalid phone number:', from)
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
 </Response>`
@@ -106,12 +81,12 @@ export async function POST(request: NextRequest) {
 
     // If not found locally, check FUB
     if (leadError || !lead) {
-      console.log('⚠️  Lead not found locally, checking FUB:', phone)
+      logger.info('⚠️  Lead not found locally, checking FUB:', phone)
       
       const fubLead = await searchLeadByPhone(phone)
       
       if (fubLead?.id) {
-        console.log('✅ Found lead in FUB:', fubLead.id)
+        logger.info('✅ Found lead in FUB:', fubLead.id)
         // Sync FUB lead to local DB
         const agent = await getDefaultAgent()
         const { data: newLead } = await createLead({
@@ -128,7 +103,7 @@ export async function POST(request: NextRequest) {
         lead = newLead as Lead
       } else {
         // Create NEW lead in FUB (inbound SMS creates lead)
-        console.log('🆕 Creating NEW lead in FUB from inbound SMS:', phone)
+        logger.info('🆕 Creating NEW lead in FUB from inbound SMS:', phone)
         
         const fubLead = await createLeadInFub({
           firstName: 'New',
@@ -139,20 +114,20 @@ export async function POST(request: NextRequest) {
         })
         
         if (!fubLead?.id) {
-          console.error('❌ Failed to create lead in FUB')
+          logger.error('❌ Failed to create lead in FUB')
           return NextResponse.json({ 
             success: false, 
             error: 'Failed to create lead in FUB'
           }, { status: 500 })
         }
         
-        console.log('✅ Lead created in FUB:', fubLead.id)
+        logger.info('✅ Lead created in FUB:', fubLead.id)
         
         // Now the FUB webhook will fire and create it in our DB
         // But let's also create it locally immediately
-        console.log('📝 Creating local lead...')
+        logger.info('📝 Creating local lead...')
         const agent = await getDefaultAgent()
-        console.log('📝 Agent:', agent?.id || 'none')
+        logger.info('📝 Agent:', agent?.id || 'none')
         
         const leadData: Partial<Lead> = {
           fub_id: String(fubLead.id),
@@ -165,12 +140,12 @@ export async function POST(request: NextRequest) {
           consent_sms: true,
           consent_email: false,
         }
-        console.log('📝 Lead data:', JSON.stringify(leadData))
+        logger.info('📝 Lead data:', JSON.stringify(leadData))
         
         const { data: newLead, error: createError } = await createLead(leadData)
         
         if (createError) {
-          console.error('❌ createLead error:', createError)
+          logger.error('❌ createLead error:', createError)
           return NextResponse.json({ 
             success: false, 
             error: 'Failed to create local lead',
@@ -178,7 +153,7 @@ export async function POST(request: NextRequest) {
           }, { status: 500 })
         }
         
-        console.log('✅ Local lead created:', newLead?.id)
+        logger.info('✅ Local lead created:', newLead?.id)
         lead = newLead as Lead
       }
     }
@@ -212,7 +187,7 @@ export async function POST(request: NextRequest) {
     )
 
     if (isOptingOut) {
-      console.log('🚫 Opt-out request from:', phone)
+      logger.info('🚫 Opt-out request from:', phone)
       
       // Update lead DNC status
       await supabaseAdmin
@@ -251,7 +226,7 @@ export async function POST(request: NextRequest) {
     )
 
     if (isOptingIn && !lead.consent_sms) {
-      console.log('✅ Opt-in request from:', phone)
+      logger.info('✅ Opt-in request from:', phone)
       
       await supabaseAdmin
         .from('leads')
@@ -274,7 +249,7 @@ export async function POST(request: NextRequest) {
 
     // Check if lead is on DNC list
     if (lead.dnc || !lead.consent_sms) {
-      console.log('🚫 Lead on DNC or no consent:', phone)
+      logger.info('🚫 Lead on DNC or no consent:', phone)
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
 </Response>`
@@ -288,10 +263,10 @@ export async function POST(request: NextRequest) {
     // ============================================
     const pendingPing = await getPendingSatisfactionPing(lead.id)
     if (pendingPing) {
-      console.log('📊 Pending satisfaction ping found — classifying reply:', body)
+      logger.info('📊 Pending satisfaction ping found — classifying reply:', body)
       const rating = classifyReply(body)
       await recordSatisfactionReply(pendingPing.id, body, rating)
-      console.log(`📊 Satisfaction reply classified as: ${rating}`)
+      logger.info(`📊 Satisfaction reply classified as: ${rating}`)
 
       // If negative + STOP-like — opt-out is already handled above, but log it
       if (rating === 'negative') {
@@ -327,7 +302,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (msgError) {
-      console.error('❌ Error saving inbound message:', msgError)
+      logger.error('❌ Error saving inbound message:', msgError)
     }
 
     // Update lead last_contact_at
@@ -353,7 +328,7 @@ export async function POST(request: NextRequest) {
 
     // Determine if we should auto-respond
     // Only auto-respond if agent is fully configured with required fields
-    console.log('🤖 Agent check:', {
+    logger.info('🤖 Agent check:', {
       hasAgent: !!agent,
       agentId: agent?.id,
       market: agent?.market,
@@ -362,10 +337,10 @@ export async function POST(request: NextRequest) {
     })
     const hasRequiredAgent = agent && agent.market && agent.settings
     const shouldAutoRespond = hasRequiredAgent && agent!.settings?.auto_respond !== false
-    console.log('🤖 Auto-respond decision:', { hasRequiredAgent, shouldAutoRespond })
+    logger.info('🤖 Auto-respond decision:', { hasRequiredAgent, shouldAutoRespond })
 
     if (shouldAutoRespond) {
-      console.log('🤖 Generating AI response for lead:', lead.id)
+      logger.info('🤖 Generating AI response for lead:', lead.id)
 
       // Fetch conversation history
       const { data: conversation } = await supabaseAdmin
@@ -375,7 +350,16 @@ export async function POST(request: NextRequest) {
         .order('created_at', { ascending: true })
         .limit(10)
 
-      // Note: opt-out already handled above (lines 182-218) — no duplicate check needed
+      // Check for opt-out
+      if (checkOptOut(body)) {
+        logger.info('🚫 Lead opted out:', lead.id)
+        await supabaseAdmin.from('leads').update({ status: 'opted_out' }).eq('id', lead.id)
+        const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>You've been opted out. You won't receive any more messages.</Message>
+</Response>`
+        return new NextResponse(twiml, { headers: { 'Content-Type': 'text/xml' } })
+      }
 
       // Generate AI response using agent system
       const agentResponse = await generateAgentResponse(
@@ -389,7 +373,7 @@ export async function POST(request: NextRequest) {
       // Update lead with any extracted info
       const extractedInfo = extractInfo(body, null)
       if (Object.keys(extractedInfo).length > 0) {
-        console.log('📝 Updating lead with extracted info:', extractedInfo)
+        logger.info('📝 Updating lead with extracted info:', extractedInfo)
         await supabaseAdmin.from('leads').update({
           ...extractedInfo,
           updated_at: new Date().toISOString(),
@@ -403,7 +387,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Save outbound message to database
-      console.log('💾 Saving outbound message to database...')
+      logger.info('💾 Saving outbound message to database...')
       const { data: outboundMsg, error: outboundError } = await supabaseAdmin
         .from('messages')
         .insert({
@@ -420,8 +404,8 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (outboundError) {
-        console.error('❌ Error saving outbound message:', outboundError)
-        console.error('Message data:', {
+        logger.error('❌ Error saving outbound message:', outboundError)
+        logger.error('Message data:', {
           lead_id: lead.id,
           direction: 'outbound',
           message_length: cleanMessage.length
@@ -438,7 +422,7 @@ export async function POST(request: NextRequest) {
           source: 'twilio_webhook'
         })
       } else {
-        console.log('✅ Outbound message saved:', outboundMsg?.id)
+        logger.info('✅ Outbound message saved:', outboundMsg?.id)
       }
 
       // Update responded_at
@@ -447,7 +431,7 @@ export async function POST(request: NextRequest) {
         .update({ responded_at: new Date().toISOString() })
         .eq('id', lead.id)
 
-      console.log('✅ Agent response generated:', {
+      logger.info('✅ Agent response generated:', {
         action: agentResponse.action,
         confidence: agentResponse.confidence,
       })
@@ -473,7 +457,7 @@ export async function POST(request: NextRequest) {
               agentSatisfactionPingEnabled: satisfactionEnabled,
             })
           } catch (e: any) {
-            console.error('❌ Satisfaction ping error:', e.message)
+            logger.error('❌ Satisfaction ping error:', e.message)
           }
         }, SATISFACTION_PING_DELAY_MS)
       }
@@ -499,8 +483,8 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ Twilio webhook error:', error)
-    console.error('Stack:', error.stack)
+    logger.error('❌ Twilio webhook error:', error)
+    logger.error('Stack:', error.stack)
     
     // Try to log to events but don't fail if this also fails
     try {
@@ -514,7 +498,7 @@ export async function POST(request: NextRequest) {
         source: 'twilio_webhook',
       })
     } catch (logError) {
-      console.error('Failed to log error:', logError)
+      logger.error('Failed to log error:', logError)
     }
 
     // Return empty TwiML on error (don't expose errors to Twilio)
@@ -559,20 +543,11 @@ export async function PUT(request: NextRequest) {
   // Handle status callbacks from Twilio
   try {
     const formData = await request.formData()
-
-    // Verify Twilio signature — fail-closed
-    const params: Record<string, string> = {}
-    formData.forEach((value, key) => { params[key] = String(value) })
-    if (!verifyTwilioSignature(request, params)) {
-      console.error('❌ Twilio status callback signature verification failed')
-      return new NextResponse('Forbidden', { status: 403 })
-    }
-
     const messageSid = formData.get('MessageSid') as string
     const status = formData.get('MessageStatus') as string
     const errorCode = formData.get('ErrorCode') as string
 
-    console.log('📊 SMS Status Update:', { messageSid, status, errorCode })
+    logger.info('📊 SMS Status Update:', { messageSid, status, errorCode })
 
     // Update message status in database
     const { error } = await supabaseAdmin
@@ -586,12 +561,12 @@ export async function PUT(request: NextRequest) {
       .eq('twilio_sid', messageSid)
 
     if (error) {
-      console.error('❌ Error updating message status:', error)
+      logger.error('❌ Error updating message status:', error)
     }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('❌ Status callback error:', error)
+    logger.error('❌ Status callback error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 const FUB_API_BASE = 'https://api.followupboss.com/v1'
 
@@ -41,10 +42,10 @@ async function registerFubWebhooks(
       if (!response.ok) {
         // 409 Conflict means already registered — treat as success
         if (response.status === 409) {
-          console.log(`ℹ️  FUB webhook already registered for event: ${event}`)
+          logger.info(`ℹ️  FUB webhook already registered for event: ${event}`)
           subscriptions.push({ event, status: 'already_registered' })
         } else {
-          console.error(`❌ FUB webhook registration failed for ${event}:`, response.status, responseText)
+          logger.error(`❌ FUB webhook registration failed for ${event}:`, response.status, responseText)
           return {
             success: false,
             error: `Failed to register webhook for event "${event}": ${response.status} ${responseText}`,
@@ -57,11 +58,11 @@ async function registerFubWebhooks(
         } catch {
           data = { raw: responseText }
         }
-        console.log(`✅ FUB webhook registered for event: ${event}`, data)
+        logger.info(`✅ FUB webhook registered for event: ${event}`, data)
         subscriptions.push({ event, status: 'registered', id: data?.id })
       }
     } catch (err: any) {
-      console.error(`❌ FUB webhook registration network error for ${event}:`, err.message)
+      logger.error(`❌ FUB webhook registration network error for ${event}:`, err.message)
       return { success: false, error: `Network error registering webhook: ${err.message}` }
     }
   }
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       })
 
     if (error) {
-      console.error('FUB connection error:', error)
+      logger.error('FUB connection error:', error)
       return NextResponse.json(
         { error: 'Failed to store API key' },
         { status: 500 }
@@ -125,8 +126,8 @@ export async function POST(request: NextRequest) {
     if (!webhookResult.success) {
       // Webhook registration failed — the API key was stored but the webhook
       // is not active. Return partial success so the agent can still proceed.
-      console.error('❌ FUB webhook registration failed:', webhookResult.error)
-      console.warn('⚠️  FUB API key stored but webhook not active — leads will not be pushed to LeadFlow')
+      logger.error('❌ FUB webhook registration failed:', webhookResult.error)
+      logger.warn('⚠️  FUB API key stored but webhook not active — leads will not be pushed to LeadFlow')
       return NextResponse.json({
         valid: true,
         message: 'FUB connected successfully, but webhook registration failed. Lead events may not arrive automatically.',
@@ -143,7 +144,7 @@ export async function POST(request: NextRequest) {
       webhook_subscriptions: webhookResult.subscriptions,
     })
   } catch (error) {
-    console.error('FUB connect error:', error)
+    logger.error('FUB connect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -165,7 +166,7 @@ export async function DELETE(request: NextRequest) {
       .eq('agent_id', agentId)
 
     if (error) {
-      console.error('FUB disconnect error:', error)
+      logger.error('FUB disconnect error:', error)
       return NextResponse.json(
         { error: 'Failed to disconnect FUB' },
         { status: 500 }
@@ -176,7 +177,7 @@ export async function DELETE(request: NextRequest) {
       message: 'FUB disconnected successfully',
     })
   } catch (error) {
-    console.error('FUB disconnect error:', error)
+    logger.error('FUB disconnect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

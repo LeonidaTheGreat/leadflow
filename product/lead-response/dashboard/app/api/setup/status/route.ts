@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -28,13 +29,13 @@ export async function GET(request: NextRequest) {
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 = row not found — that's fine for new agents
-      console.error('Setup status fetch error:', error)
+      logger.error('Setup status fetch error:', error)
       return NextResponse.json({ wizardState: null })
     }
 
     return NextResponse.json({ wizardState: data || null })
   } catch (err) {
-    console.error('Setup status error:', err)
+    logger.error('Setup status error:', err)
     return NextResponse.json({ wizardState: null })
   }
 }
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
       .upsert(patch, { onConflict: 'agent_id' })
 
     if (error) {
-      console.error('Setup status save error:', error)
+      logger.error('Setup status save error:', error)
       // Non-fatal — return success so client continues
     }
 
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error('Setup status upsert error:', err)
+    logger.error('Setup status upsert error:', err)
     return NextResponse.json({ ok: true }) // Non-fatal
   }
 }

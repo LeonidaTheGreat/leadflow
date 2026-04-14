@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { auth } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   // Require an active authenticated session before returning any data
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('Integration status error:', error)
+      logger.error('Integration status error:', error)
     }
 
     // Get Twilio settings
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Integration status GET error:', error)
+    logger.error('Integration status GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

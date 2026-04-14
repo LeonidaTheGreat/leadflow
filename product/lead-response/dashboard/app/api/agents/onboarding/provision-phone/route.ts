@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import twilio from 'twilio'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/agents/onboarding/provision-phone
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
       const existingRaw = existingIntegration.twilio_phone_number
 
       if (existingE164) {
-        console.log('[provision-phone] Agent already has number:', existingE164, 'for agent:', agentId)
+        logger.info('[provision-phone] Agent already has number:', existingE164, 'for agent:', agentId)
         const cleanPhone = existingE164.replace(/^\+1/, '').replace(/\D/g, '')
         return NextResponse.json({
           success: true,
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
       if (existingRaw) {
         const digits = existingRaw.replace(/\D/g, '')
         const e164 = `+1${digits}`
-        console.log('[provision-phone] Agent already has number (raw):', e164, 'for agent:', agentId)
+        logger.info('[provision-phone] Agent already has number (raw):', e164, 'for agent:', agentId)
         return NextResponse.json({
           success: true,
           phoneNumber: e164,
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
     const authToken = process.env.TWILIO_AUTH_TOKEN
 
     if (!accountSid || !authToken) {
-      console.error('[provision-phone] Missing Twilio credentials in environment')
+      logger.error('[provision-phone] Missing Twilio credentials in environment')
       return NextResponse.json(
         { success: false, error: 'Twilio credentials not configured on server' },
         { status: 503 }
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (poolNumber?.e164 && poolNumber?.sid) {
-      console.log('[provision-phone] Assigning from pool:', poolNumber.e164, 'for agent:', agentId)
+      logger.info('[provision-phone] Assigning from pool:', poolNumber.e164, 'for agent:', agentId)
 
       // Configure the Twilio number's smsUrl so inbound SMS is routed correctly
       const smsWebhookUrl = process.env.NEXT_PUBLIC_APP_URL
@@ -140,7 +141,7 @@ export async function POST(request: NextRequest) {
             smsMethod: 'POST',
           })
         } catch (updateErr: any) {
-          console.warn('[provision-phone] Could not set smsUrl on pool number:', updateErr?.message)
+          logger.warn('[provision-phone] Could not set smsUrl on pool number:', updateErr?.message)
           // Non-fatal — number still assigned, smsUrl can be configured later
         }
       }
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest) {
 
       if (poolUpdateError) {
         // Pool update failed — log and fall through to on-demand purchase
-        console.error('[provision-phone] Pool update error, falling through to Twilio:', poolUpdateError)
+        logger.error('[provision-phone] Pool update error, falling through to Twilio:', poolUpdateError)
       } else {
         const cleanPhone = poolNumber.e164.replace(/^\+1/, '').replace(/\D/g, '')
 
@@ -172,7 +173,7 @@ export async function POST(request: NextRequest) {
           )
 
         if (dbError) {
-          console.error('[provision-phone] DB error writing pool number to agent_integrations:', dbError)
+          logger.error('[provision-phone] DB error writing pool number to agent_integrations:', dbError)
           // Revert pool assignment so the number stays available for the next attempt
           await supabase
             .from('phone_inventory')
@@ -198,7 +199,7 @@ export async function POST(request: NextRequest) {
           .update({ phone_configured: true, onboarding_step: 2, updated_at: new Date().toISOString() })
           .eq('id', agentId)
 
-        console.log('[provision-phone] Assigned from pool:', poolNumber.e164, 'for agent:', agentId)
+        logger.info('[provision-phone] Assigned from pool:', poolNumber.e164, 'for agent:', agentId)
         return NextResponse.json({
           success: true,
           phoneNumber: poolNumber.e164,
@@ -210,7 +211,7 @@ export async function POST(request: NextRequest) {
     }
 
     // THIRD: Pool is empty (or pool update failed) — fall through to on-demand Twilio
-    console.log('[provision-phone] Pool empty or unavailable, falling through to on-demand Twilio for agent:', agentId)
+    logger.info('[provision-phone] Pool empty or unavailable, falling through to on-demand Twilio for agent:', agentId)
 
     // Search for an available US local number
     const client = twilio(accountSid, authToken)
@@ -227,7 +228,7 @@ export async function POST(request: NextRequest) {
       availableNumbers = await client.availablePhoneNumbers('US')
         .local.list({ ...searchParams, limit: 5 })
     } catch (twilioError: any) {
-      console.error('[provision-phone] Twilio search error:', twilioError?.message)
+      logger.error('[provision-phone] Twilio search error:', twilioError?.message)
       return NextResponse.json(
         { success: false, error: 'Failed to search for available phone numbers' },
         { status: 502 }
@@ -241,7 +242,7 @@ export async function POST(request: NextRequest) {
           availableNumbers = await client.availablePhoneNumbers('US')
             .local.list({ smsEnabled: true, limit: 5 })
         } catch (twilioError: any) {
-          console.error('[provision-phone] Twilio fallback search error:', twilioError?.message)
+          logger.error('[provision-phone] Twilio fallback search error:', twilioError?.message)
           return NextResponse.json(
             { success: false, error: 'Failed to find available phone numbers' },
             { status: 502 }
@@ -252,19 +253,19 @@ export async function POST(request: NextRequest) {
 
     // FOURTH: CA (Canadian) fallback — if US search still empty, try Canada
     if (!availableNumbers || availableNumbers.length === 0) {
-      console.log('[provision-phone] No US numbers found, trying CA fallback for agent:', agentId)
+      logger.info('[provision-phone] No US numbers found, trying CA fallback for agent:', agentId)
       try {
         availableNumbers = await client.availablePhoneNumbers('CA')
           .local.list({ smsEnabled: true, limit: 5 })
       } catch (twilioError: any) {
-        console.error('[provision-phone] Twilio CA fallback search error:', twilioError?.message)
+        logger.error('[provision-phone] Twilio CA fallback search error:', twilioError?.message)
         // CA search failed — fall through to the final "no numbers" error below
       }
     }
 
     // FIFTH: All searches exhausted — return a helpful, retryable error
     if (!availableNumbers || availableNumbers.length === 0) {
-      console.warn('[provision-phone] No numbers available (US + CA exhausted) for agent:', agentId)
+      logger.warn('[provision-phone] No numbers available (US + CA exhausted) for agent:', agentId)
       return NextResponse.json(
         {
           success: false,
@@ -284,7 +285,7 @@ export async function POST(request: NextRequest) {
       ? `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/twilio`
       : undefined
     if (!onDemandSmsUrl) {
-      console.warn('[provision-phone] NEXT_PUBLIC_APP_URL not set — smsUrl will not be configured on provisioned number; set it manually later')
+      logger.warn('[provision-phone] NEXT_PUBLIC_APP_URL not set — smsUrl will not be configured on provisioned number; set it manually later')
     }
     let provisionedNumber
     try {
@@ -298,7 +299,7 @@ export async function POST(request: NextRequest) {
       }
       provisionedNumber = await client.incomingPhoneNumbers.create(createParams)
     } catch (twilioError: any) {
-      console.error('[provision-phone] Twilio provision error:', twilioError?.message)
+      logger.error('[provision-phone] Twilio provision error:', twilioError?.message)
       return NextResponse.json(
         { success: false, error: 'Failed to provision phone number. Please try again.' },
         { status: 502 }
@@ -324,9 +325,9 @@ export async function POST(request: NextRequest) {
       )
 
     if (dbError) {
-      console.error('[provision-phone] DB error:', dbError)
+      logger.error('[provision-phone] DB error:', dbError)
       // Number was provisioned but DB write failed — log for manual cleanup
-      console.error('[provision-phone] ORPHANED TWILIO NUMBER — SID:', provisionedNumber.sid)
+      logger.error('[provision-phone] ORPHANED TWILIO NUMBER — SID:', provisionedNumber.sid)
       return NextResponse.json(
         { success: false, error: 'Phone number provisioned but could not be saved. Contact support.' },
         { status: 500 }
@@ -354,7 +355,7 @@ export async function POST(request: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', agentId)
-    console.log('[provision-phone] Provisioned:', assignedNumber, 'for agent:', agentId)
+    logger.info('[provision-phone] Provisioned:', assignedNumber, 'for agent:', agentId)
 
     return NextResponse.json({
       success: true,
@@ -363,7 +364,7 @@ export async function POST(request: NextRequest) {
       sid: provisionedNumber.sid,
     })
   } catch (error: any) {
-    console.error('[provision-phone] Unexpected error:', error?.message)
+    logger.error('[provision-phone] Unexpected error:', error?.message)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { shouldShowNPSPrompt, dismissNPSPrompt } from '@/lib/nps-service'
 import { supabaseAdmin } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 // GET - Check if NPS prompt should be shown
 export async function GET(request: NextRequest) {
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     const result = await shouldShowNPSPrompt(agentId)
     return NextResponse.json(result)
   } catch (error: any) {
-    console.error('Error checking NPS prompt:', error)
+    logger.error('Error checking NPS prompt:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     await dismissNPSPrompt(agentId, trigger)
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error dismissing NPS prompt:', error)
+    logger.error('Error dismissing NPS prompt:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

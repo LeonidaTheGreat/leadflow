@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { auth } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/outreach-candidates
@@ -142,7 +143,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (err: any) {
-    console.error('[outreach-candidates]', err)
+    logger.error('[outreach-candidates]', err)
     return NextResponse.json({ error: err.message ?? 'Internal error' }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { resumeSequence } from '@/lib/sequences'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/sequences/[id]/resume
@@ -30,7 +31,7 @@ export async function POST(
     })
 
   } catch (error: any) {
-    console.error('❌ Resume sequence error:', error)
+    logger.error('❌ Resume sequence error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

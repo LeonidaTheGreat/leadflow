@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getExpiredTrialAgents } from '@/lib/trial'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('📅 Running expired trial cleanup...')
+    logger.info('📅 Running expired trial cleanup...')
 
     // Get all expired trial agents
     const expiredAgentIds = await getExpiredTrialAgents()
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    console.log(`Found ${expiredAgentIds.length} expired trial agents`)
+    logger.info(`Found ${expiredAgentIds.length} expired trial agents`)
 
     // Log events for each expired trial
     const events = expiredAgentIds.map(agentId => ({
@@ -56,9 +57,9 @@ export async function POST(request: NextRequest) {
       .insert(events)
 
     if (eventError) {
-      console.error('Error logging trial expiry events:', eventError)
+      logger.error('Error logging trial expiry events:', eventError)
     } else {
-      console.log(`✅ Logged ${expiredAgentIds.length} trial expiry events`)
+      logger.info(`✅ Logged ${expiredAgentIds.length} trial expiry events`)
     }
 
     // Optionally send notifications to Telegram or email
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Cron job error:', error)
+    logger.error('❌ Cron job error:', error)
     return NextResponse.json(
       {
         success: false,

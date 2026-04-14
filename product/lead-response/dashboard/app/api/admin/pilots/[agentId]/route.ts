@@ -8,6 +8,7 @@ import {
   sendPilotTrialCTAEmail,
 } from '@/lib/email-service'
 import crypto from 'crypto'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/admin/pilots/[agentId]/log-contact
@@ -66,7 +67,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, pilot: data })
   } catch (error) {
-    console.error('Failed to log contact:', error)
+    logger.error('Failed to log contact:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to log contact' },
       { status: 500 }
@@ -177,7 +178,7 @@ export async function PATCH(
           break
       }
     } catch (emailError) {
-      console.error('Failed to send lifecycle email:', emailError)
+      logger.error('Failed to send lifecycle email:', emailError)
       // Don't fail the stage advance if email fails — log and continue
     }
 
@@ -187,7 +188,7 @@ export async function PATCH(
       emailSent,
     })
   } catch (error) {
-    console.error('Failed to advance stage:', error)
+    logger.error('Failed to advance stage:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to advance stage' },
       { status: 500 }

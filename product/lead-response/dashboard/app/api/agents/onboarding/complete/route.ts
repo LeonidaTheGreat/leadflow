@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/agents/onboarding/complete
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     .eq('id', agentId)
 
   if (error) {
-    console.error('Failed to complete onboarding:', error)
+    logger.error('Failed to complete onboarding:', error)
     return NextResponse.json({ error: 'Failed to complete onboarding' }, { status: 500 })
   }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { shouldShowNPSPrompt } from '@/lib/nps-service'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/nps/prompt-status
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
       trigger: result.trigger || null,
     })
   } catch (error: any) {
-    console.error('Error checking NPS prompt status:', error)
+    logger.error('Error checking NPS prompt status:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

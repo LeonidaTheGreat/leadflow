@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { sendAhaMomentDay1Email } from '@/lib/email-service'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/onboarding/send-aha-day1
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Day-1 email error:', error)
+    logger.error('Day-1 email error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

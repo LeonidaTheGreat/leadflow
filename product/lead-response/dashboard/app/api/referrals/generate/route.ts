@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import crypto from 'crypto'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      console.error('Failed to create referral link:', insertError)
+      logger.error('Failed to create referral link:', insertError)
       return NextResponse.json({ error: 'Failed to generate referral link' }, { status: 500 })
     }
 
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Error generating referral link:', error)
+    logger.error('Error generating referral link:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

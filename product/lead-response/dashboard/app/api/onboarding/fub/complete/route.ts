@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/onboarding/fub/complete
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     .eq('id', agentId)
 
   if (error) {
-    console.error('Failed to mark FUB onboarding complete:', error)
+    logger.error('Failed to mark FUB onboarding complete:', error)
     return NextResponse.json({ error: 'Failed to update onboarding state' }, { status: 500 })
   }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
       onboardingCompleted: agent.onboarding_completed ?? false,
     })
   } catch (err) {
-    console.error('[api/auth/me] Unexpected error:', err)
+    logger.error('[api/auth/me] Unexpected error:', err)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 }

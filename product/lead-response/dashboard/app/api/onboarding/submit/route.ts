@@ -3,6 +3,7 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import bcrypt from 'bcryptjs';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingSubmission } from '@/lib/types/onboarding';
+import { logger } from '@/lib/logger'
 
 // Password hashing using bcrypt (consistent with login route)
 async function hashPassword(password: string): Promise<string> {
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (agentError) {
-      console.error('Agent creation error:', agentError);
+      logger.error('Agent creation error:', agentError);
       return NextResponse.json(
         { success: false, error: 'Failed to create agent account' },
         { status: 500 }
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
         });
 
       if (intError) {
-        console.error('Integration creation error:', intError);
+        logger.error('Integration creation error:', intError);
         // Don't fail the whole request if integrations fail
       }
     }
@@ -144,7 +145,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (settingsError) {
-      console.error('Settings creation error:', settingsError);
+      logger.error('Settings creation error:', settingsError);
       // Don't fail the whole request if settings fail
     }
 
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error('Onboarding submission error:', error);
+    logger.error('Onboarding submission error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

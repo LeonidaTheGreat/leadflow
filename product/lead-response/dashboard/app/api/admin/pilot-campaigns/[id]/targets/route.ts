@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 export async function GET(
   request: NextRequest,
@@ -27,7 +28,7 @@ export async function GET(
 
     return NextResponse.json({ success: true, targets: data })
   } catch (err) {
-    console.error('Error listing targets:', err)
+    logger.error('Error listing targets:', err)
     return NextResponse.json(
       { success: false, error: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }
@@ -73,7 +74,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, target: data }, { status: 201 })
   } catch (err) {
-    console.error('Error adding target:', err)
+    logger.error('Error adding target:', err)
     return NextResponse.json(
       { success: false, error: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }

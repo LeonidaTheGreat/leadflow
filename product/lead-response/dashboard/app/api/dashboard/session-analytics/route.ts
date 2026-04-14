@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
     const data = await response.json()
     return NextResponse.json(data)
   } catch (err) {
-    console.error('[dashboard/session-analytics] error:', err)
+    logger.error('[dashboard/session-analytics] error:', err)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

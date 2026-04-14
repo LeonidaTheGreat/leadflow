@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import Stripe from 'stripe'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (agentError || !agent) {
-      console.error('Agent lookup error:', agentError)
+      logger.error('Agent lookup error:', agentError)
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
     }
 
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
         .update({ stripe_customer_id: customerId, updated_at: new Date().toISOString() })
         .eq('id', agent.id)
 
-      console.log(`✅ Created Stripe customer ${customerId} for agent ${agent.id}`)
+      logger.info(`✅ Created Stripe customer ${customerId} for agent ${agent.id}`)
     }
 
     // ── 6. Create Checkout session ────────────────────────────────────────────
@@ -116,14 +117,14 @@ export async function POST(request: NextRequest) {
       })
     } catch (logError) {
       // Non-fatal — proceed even if logging fails
-      console.warn('Failed to log subscription attempt:', logError)
+      logger.warn('Failed to log subscription attempt:', logError)
     }
 
-    console.log(`✅ Upgrade checkout session ${session.id} created for pilot agent ${agent.id} → ${plan}`)
+    logger.info(`✅ Upgrade checkout session ${session.id} created for pilot agent ${agent.id} → ${plan}`)
 
     return NextResponse.json({ url: session.url, sessionId: session.id })
   } catch (error: any) {
-    console.error('Upgrade checkout error:', error)
+    logger.error('Upgrade checkout error:', error)
 
     if (error.type === 'StripeInvalidRequestError') {
       return NextResponse.json(

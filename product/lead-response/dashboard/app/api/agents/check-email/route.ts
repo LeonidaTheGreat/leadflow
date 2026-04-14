@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
       email: email.toLowerCase(),
     })
   } catch (error) {
-    console.error('Email check error:', error)
+    logger.error('Email check error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

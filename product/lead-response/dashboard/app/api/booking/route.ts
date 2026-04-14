@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAgentById, getLeadById } from '@/lib/supabase'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
 import { validateSession } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - API routes should never be static
 export const dynamic = 'force-dynamic'
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ Booking API error:', error)
+    logger.error('❌ Booking API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -167,7 +168,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ Create booking error:', error)
+    logger.error('❌ Create booking error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

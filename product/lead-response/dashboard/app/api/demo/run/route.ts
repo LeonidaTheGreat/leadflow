@@ -11,6 +11,7 @@ import { getAuthUserId } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/db'
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
+import { logger } from '@/lib/logger'
 
 const DEMO_LIMIT = 3
 
@@ -169,7 +170,7 @@ export async function POST(request: NextRequest) {
       property_interest: propertyInterest,
     })
   } catch (err) {
-    console.error('[demo/run] AI generation failed:', err)
+    logger.error('[demo/run] AI generation failed:', err)
     return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
   }
 
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
     .eq('id', agentId)
 
   if (updateError) {
-    console.error('[demo/run] Failed to increment demo counter:', updateError)
+    logger.error('[demo/run] Failed to increment demo counter:', updateError)
     // Non-fatal — proceed but log
   }
 
@@ -201,7 +202,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (insertError) {
-    console.error('[demo/run] Failed to insert demo_run row:', insertError)
+    logger.error('[demo/run] Failed to insert demo_run row:', insertError)
   }
 
   const newDemosUsed = demosUsed + 1

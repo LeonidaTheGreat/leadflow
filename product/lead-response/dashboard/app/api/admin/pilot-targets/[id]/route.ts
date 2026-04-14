@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 export async function PATCH(
   request: NextRequest,
@@ -32,7 +33,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, target: data })
   } catch (err) {
-    console.error('Error updating target:', err)
+    logger.error('Error updating target:', err)
     return NextResponse.json(
       { success: false, error: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 // Store Cal.com link
 export async function POST(request: NextRequest) {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
       })
 
     if (error) {
-      console.error('Cal.com connection error:', error)
+      logger.error('Cal.com connection error:', error)
       return NextResponse.json(
         { error: 'Failed to store Cal.com link' },
         { status: 500 }
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       message: 'Cal.com connected successfully',
     })
   } catch (error) {
-    console.error('Cal.com connect error:', error)
+    logger.error('Cal.com connect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -68,7 +69,7 @@ export async function DELETE(request: NextRequest) {
       .eq('agent_id', agentId)
 
     if (error) {
-      console.error('Cal.com disconnect error:', error)
+      logger.error('Cal.com disconnect error:', error)
       return NextResponse.json(
         { error: 'Failed to disconnect Cal.com' },
         { status: 500 }
@@ -79,7 +80,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Cal.com disconnected successfully',
     })
   } catch (error) {
-    console.error('Cal.com disconnect error:', error)
+    logger.error('Cal.com disconnect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

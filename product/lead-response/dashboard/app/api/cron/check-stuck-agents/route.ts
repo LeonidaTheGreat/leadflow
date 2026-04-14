@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
     const querySecret = new URL(request.url).searchParams.get('secret')
 
     if (!cronSecret) {
-      console.warn('[/api/cron/check-stuck-agents] CRON_SECRET not configured')
+      logger.warn('[/api/cron/check-stuck-agents] CRON_SECRET not configured')
       return NextResponse.json(
         { error: 'CRON_SECRET not configured' },
         { status: 500 }
@@ -28,14 +29,14 @@ export async function GET(request: NextRequest) {
     const result = await onboardingTelemetry.checkAndAlertStuckAgents(postgrestAdmin)
 
     if (!result.success) {
-      console.error('[/api/cron/check-stuck-agents] Error:', result.error)
+      logger.error('[/api/cron/check-stuck-agents] Error:', result.error)
       return NextResponse.json(
         { error: result.error },
         { status: 500 }
       )
     }
 
-    console.log(
+    logger.info(
       `[/api/cron/check-stuck-agents] Complete. Alerts created: ${result.alerts_created}`
     )
 
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     )
   } catch (error: any) {
-    console.error('[/api/cron/check-stuck-agents] Unexpected error:', error)
+    logger.error('[/api/cron/check-stuck-agents] Unexpected error:', error)
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/agents/onboarding/fub-connect
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
     })
   } catch {
     // Webhook registration is best-effort; don't fail the whole connect
-    console.warn('FUB webhook registration failed (non-fatal)')
+    logger.warn('FUB webhook registration failed (non-fatal)')
   }
 
   // Store API key in agent_integrations
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
   )
 
   if (intError) {
-    console.error('Failed to store FUB API key:', intError)
+    logger.error('Failed to store FUB API key:', intError)
     return NextResponse.json({ error: 'Failed to save credentials' }, { status: 500 })
   }
 
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
     .eq('id', agentId)
 
   if (agentError) {
-    console.error('Failed to update agent onboarding state:', agentError)
+    logger.error('Failed to update agent onboarding state:', agentError)
     return NextResponse.json({ error: 'Failed to update onboarding state' }, { status: 500 })
   }
 

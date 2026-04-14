@@ -3,11 +3,12 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { normalizePhone } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
 import type { Lead } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: Request) {
   const logs: string[] = []
   const log = (msg: string) => {
-    console.log(msg)
+    logger.info(msg)
     logs.push(msg)
   }
   

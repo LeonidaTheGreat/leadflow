@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { auth } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result, { status: 200 })
   } catch (error: any) {
-    console.error('[/api/admin/funnel] Error:', error)
+    logger.error('[/api/admin/funnel] Error:', error)
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

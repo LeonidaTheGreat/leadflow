@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import { randomUUID, randomBytes } from 'crypto'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/onboarding/simulator
@@ -258,7 +259,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('Onboarding simulator error:', error)
+    logger.error('Onboarding simulator error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -285,7 +286,7 @@ async function startSimulation(agentId: string, sessionId: string) {
     })
 
   if (dbError) {
-    console.error('[simulator] Failed to create simulation record:', dbError)
+    logger.error('[simulator] Failed to create simulation record:', dbError)
     // Continue — status polling will still work via time-based derivation if DB row exists next call
   }
 
@@ -403,7 +404,7 @@ async function skipSimulation(agentId: string, sessionId: string, reason?: strin
     )
 
   if (error) {
-    console.error('[simulator] Failed to record skip:', error)
+    logger.error('[simulator] Failed to record skip:', error)
   }
 
   await logAnalyticsEvent('onboarding_simulation_skipped', agentId, sessionId, {
@@ -428,6 +429,6 @@ async function logAnalyticsEvent(
       created_at: new Date().toISOString(),
     })
   } catch (err) {
-    console.error('[simulator] Failed to log analytics event:', err)
+    logger.error('[simulator] Failed to log analytics event:', err)
   }
 }

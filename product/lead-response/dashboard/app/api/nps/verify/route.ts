@@ -5,6 +5,7 @@ import {
   isTokenUsed,
 } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   try {
@@ -63,7 +64,7 @@ export async function GET(request: NextRequest) {
       trigger: payload.trigger,
     })
   } catch (error: any) {
-    console.error('Error verifying NPS token:', error)
+    logger.error('Error verifying NPS token:', error)
     return NextResponse.json(
       { valid: false, error: 'Internal server error' },
       { status: 500 }

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/services/AuthService'
 import { logSessionStart } from '@/lib/session-analytics'
+import { logger } from '@/lib/logger'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org', process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '')
 
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Login error:', error)
+    logger.error('Login error:', error)
     return NextResponse.json(
       { error: 'An unexpected error occurred' },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
+import { logger } from '@/lib/logger'
 
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (agentError || !agent) {
-      console.error('Agent lookup error:', agentError)
+      logger.error('Agent lookup error:', agentError)
       return NextResponse.json(
         { error: 'Agent not found', code: 'AGENT_NOT_FOUND' },
         { status: 404 }
@@ -100,13 +101,13 @@ export async function POST(request: NextRequest) {
           .eq('id', agentId)
 
         if (updateError) {
-          console.error('Failed to update agent with Stripe customer ID:', updateError)
+          logger.error('Failed to update agent with Stripe customer ID:', updateError)
           // Continue anyway - we have the customer ID
         }
 
-        console.log(`✅ Created Stripe customer ${customerId} for agent ${agentId}`)
+        logger.info(`✅ Created Stripe customer ${customerId} for agent ${agentId}`)
       } catch (stripeError: any) {
-        console.error('Failed to create Stripe customer:', stripeError)
+        logger.error('Failed to create Stripe customer:', stripeError)
         return NextResponse.json(
           { 
             error: 'Failed to create billing customer', 
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
     })
 
-    console.log(`✅ Portal session created for agent ${agentId}: ${portalSession.id}`)
+    logger.info(`✅ Portal session created for agent ${agentId}: ${portalSession.id}`)
 
     return NextResponse.json({
       success: true,
@@ -148,7 +149,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('Portal session creation error:', error)
+    logger.error('Portal session creation error:', error)
 
     // Handle specific Stripe errors
     if (error.type === 'StripeInvalidRequestError') {
@@ -237,7 +238,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('Portal config GET error:', error)
+    logger.error('Portal config GET error:', error)
     return NextResponse.json(
       { error: 'Failed to get portal configuration', code: 'INTERNAL_ERROR' },
       { status: 500 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateSession } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/supabase'
 import { AnalyticsService } from '@/lib/services/AnalyticsService'
+import { logger } from '@/lib/logger'
 
 const analyticsService = new AnalyticsService(supabaseAdmin)
 
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
     ].filter(Boolean)
 
     if (errors.length > 0) {
-      console.warn('Some analytics queries had errors:', errors)
+      logger.warn('Some analytics queries had errors:', errors)
     }
 
     return NextResponse.json(
@@ -98,7 +99,7 @@ export async function GET(request: NextRequest) {
       }
     )
   } catch (error) {
-    console.error('Error in analytics dashboard route:', error)
+    logger.error('Error in analytics dashboard route:', error)
     return NextResponse.json(
       {
         success: false,
