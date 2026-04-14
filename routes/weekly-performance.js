@@ -8,6 +8,8 @@
 
 const express = require('express');
 const router = express.Router();
+const requireCronSecret = require('../lib/middleware/require-cron-secret');
+const requireApiKey = require('../lib/middleware/require-api-key');
 const { WeeklyPerformanceService } = require('../lib/services/WeeklyPerformanceService');
 const weeklyPerformanceService = new WeeklyPerformanceService();
 
@@ -17,7 +19,7 @@ const weeklyPerformanceService = new WeeklyPerformanceService();
  * Vercel cron trigger: sends weekly AI performance emails to all eligible agents.
  * In production Vercel sets the Authorization header for cron requests.
  */
-router.get('/api/cron/weekly-performance', async (req, res) => {
+router.get('/api/cron/weekly-performance', requireCronSecret, async (req, res) => {
   try {
     console.log('[Weekly Performance] Cron triggered');
 
@@ -52,7 +54,7 @@ router.get('/api/cron/weekly-performance', async (req, res) => {
  *   agentId (optional) — UUID of the agent to preview
  *   format  (optional) — "json" returns JSON with stats; default returns raw HTML
  */
-router.get('/api/cron/weekly-performance/preview', async (req, res) => {
+router.get('/api/cron/weekly-performance/preview', requireApiKey, async (req, res) => {
   try {
     const { agentId, format } = req.query;
 
