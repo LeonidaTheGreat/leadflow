@@ -8,10 +8,10 @@
 
 const express = require('express');
 const router = express.Router();
-const requireCronSecret = require('../lib/middleware/require-cron-secret');
-const requireApiKey = require('../lib/middleware/require-api-key');
-const { WeeklyPerformanceService } = require('../lib/services/WeeklyPerformanceService');
-const { logger } = require('../lib/logger');
+const requireCronSecret = require('../../lib/middleware/require-cron-secret');
+const requireApiKey = require('../../lib/middleware/require-api-key');
+const { WeeklyPerformanceService } = require('../../lib/services/WeeklyPerformanceService');
+const { logger } = require('../../lib/logger');
 const log = logger.child('weekly-performance');
 const weeklyPerformanceService = new WeeklyPerformanceService();
 

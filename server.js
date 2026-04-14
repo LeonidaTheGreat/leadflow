@@ -5,11 +5,12 @@
 
 require('dotenv').config();
 const express = require('express');
-const { logger } = require('./lib/logger');
+const { logger, requestLogger } = require('./lib/logger');
+const { webhookLimiter, adminLimiter } = require('./lib/middleware/rate-limiter');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const systemRouter = require('./routes/system');
-const weeklyPerformanceRouter = require('./routes/weekly-performance');
-const checkStuckPilotsRouter = require('./routes/check-stuck-pilots');
+const weeklyPerformanceRouter = require('./routes/internal/weekly-performance');
+const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
@@ -21,6 +22,12 @@ const app = express();
 app.use('/webhook/stripe', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
+app.use(requestLogger);
+
+// Rate limiting — applied after body parsing and request logging
+app.use('/webhook', webhookLimiter);
+app.use('/api/cron', adminLimiter);
+app.use('/api/admin', adminLimiter);
 
 // System routes
 app.use('/', systemRouter);
@@ -57,7 +64,7 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
-    console.log(`🚀 Local server: http://localhost:${PORT}`);
+    logger.info(`Local server started on port ${PORT}`, 'Startup');
   });
 }
 
