@@ -3,6 +3,14 @@ import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
 import { Resend } from 'resend'
 
+// Structured log helper — Vercel function logs capture JSON natively
+function log(level: 'info' | 'warn' | 'error', message: string, context?: Record<string, unknown>) {
+  const entry = { timestamp: new Date().toISOString(), level, module: 'stripe-webhook', message, ...context }
+  if (level === 'error') console.error(JSON.stringify(entry))
+  else if (level === 'warn') console.warn(JSON.stringify(entry))
+  else console.log(JSON.stringify(entry))
+}
+
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 
@@ -99,7 +107,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       .eq('id', userId)
 
     if (updateError) {
-      console.error('Failed to update agent:', updateError)
+      log('error', 'Failed to update agent', { userId, error: updateError.message })
       // Continue — still persist the subscription record
     }
 
@@ -125,9 +133,9 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     }, { onConflict: 'stripe_subscription_id' })
 
     if (subError) {
-      console.error('CRITICAL: Failed to upsert subscription record:', subError)
+      log('error', 'Failed to upsert subscription record', { userId, subscriptionId: subscription.id, error: subError.message })
     } else {
-      console.log(`✅ Subscription persisted: ${subscription.id} for user ${userId}, tier=${tier}`)
+      log('info', 'Subscription persisted', { subscriptionId: subscription.id, userId, tier })
     }
 
     // Log subscription creation event
@@ -214,17 +222,17 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 </html>
           `,
         })
-        console.log(`📧 Confirmation email sent to ${agent.email} for ${planName} plan`)
-      } catch (emailError) {
-        console.error('Failed to send confirmation email:', emailError)
+        log('info', 'Confirmation email sent', { email: agent.email, plan: planName })
+      } catch (emailError: any) {
+        log('error', 'Failed to send confirmation email', { email: agent.email, error: emailError.message })
         // Email failure is non-blocking — subscription is already created
       }
     }
 
     // Log for analytics (PostHog)
-    console.log(`📊 New subscription: ${userId} - ${tier} - $${mrr}/mo`)
-  } catch (error) {
-    console.error('Error handling checkout complete:', error)
+    log('info', 'New subscription', { userId, tier, mrr })
+  } catch (error: any) {
+    log('error', 'Error handling checkout complete', { error: error.message })
   }
 }
 
@@ -269,7 +277,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     created_at: new Date().toISOString(),
   })
 
-  console.log(`💰 Payment received: ${agentId} - $${amount}`)
+  log('info', 'Payment received', { agentId, amount })
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
@@ -298,7 +306,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     created_at: new Date().toISOString(),
   })
 
-  console.log(`⚠️  Payment failed: ${agentId}`)
+  log('warn', 'Payment failed', { agentId, invoiceId: invoice.id, attemptCount: invoice.attempt_count })
 }
 
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
@@ -329,7 +337,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     created_at: new Date().toISOString(),
   })
 
-  console.log(`❌ Subscription cancelled: ${agentId} - Lost $${mrr}/mo`)
+  log('info', 'Subscription cancelled', { agentId, mrrLost: mrr, reason: subscription.cancellation_details?.reason })
 }
 
 export async function POST(request: NextRequest) {
@@ -349,9 +357,9 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe!.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err: any) {
-      console.error('Webhook signature verification failed:', err)
+      log('error', 'Webhook signature verification failed', { error: err.message })
       return NextResponse.json(
-        { error: `Webhook Error: ${err.message}` },
+        { error: 'Webhook signature verification failed' },
         { status: 400 }
       )
     }
@@ -375,12 +383,12 @@ export async function POST(request: NextRequest) {
         break
 
       default:
-        console.log(`⏭️  Unhandled event type: ${event.type}`)
+        log('info', 'Unhandled event type', { eventType: event.type })
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook error:', error)
+    log('error', 'Webhook processing failed', { error: error instanceof Error ? error.message : String(error) })
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
