@@ -5,6 +5,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const { logger } = require('./lib/logger');
 const { router: fubRouter } = require('./integration/fub-webhook-listener');
 const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/weekly-performance');
@@ -44,7 +45,11 @@ app.use('/', billingRouter);
 
 // Global error handler — must be after all route registrations
 app.use((err, req, res, next) => {
-  console.error(`[${req.method} ${req.path}] Unhandled error:`, err.message)
+  logger.error('Unhandled route error', err, 'HTTP', {
+    requestId: req.requestId,
+    method: req.method,
+    path: req.path,
+  })
   res.status(err.statusCode || err.status || 500).json({ error: err.message || 'Internal server error', code: err.code || 'INTERNAL_ERROR' })
 })
 
@@ -61,5 +66,5 @@ module.exports = app;
 
 // Catch unhandled promise rejections — log but don't crash
 process.on('unhandledRejection', (reason) => {
-  console.error('[unhandledRejection]', reason)
+  logger.error('Unhandled promise rejection', reason instanceof Error ? reason : new Error(String(reason)), 'Process')
 })
