@@ -3,26 +3,10 @@
 const crypto = require('crypto');
 const express = require('express');
 const FUBService = require('../lib/services/FUBService');
-const { getPool } = require('../lib/db');
+const { writeDeadLetter } = require('../lib/utils/dead-letter');
 
 const router = express.Router();
 const fubService = new FUBService();
-
-/**
- * Write a dead letter record for a failed webhook processing attempt.
- * Best-effort: failures are logged but never thrown.
- */
-async function writeDeadLetter(source, eventType, payload, errorMessage) {
-  try {
-    const pool = getPool();
-    await pool.query(
-      'INSERT INTO webhook_dead_letters (source, event_type, payload, error_message) VALUES ($1, $2, $3, $4)',
-      [source, eventType, JSON.stringify(payload), errorMessage]
-    );
-  } catch (dbErr) {
-    console.error('[fub-webhook] dead_letter DB write failed:', dbErr.message);
-  }
-}
 
 router.post('/webhook/fub', (req, res) => {
   // ─── Signature verification ────────────────────────────────────────────────

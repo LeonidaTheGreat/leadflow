@@ -1,17 +1,17 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-12T19:41:22.407Z | Source: `lib/services/`
+> Generated: 2026-04-13T17:46:09.723Z | Source: `lib/services/`
 
 **15 services across 15 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
-| [ActivationService](#activationservice) | `ActivationService.js` | 5 | EmailService |
+| [ActivationService](#activationservice) | `ActivationService.js` | 5 | crypto, EmailService |
 | [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db |
 | [BookingLinkService](#bookinglinkservice) | `BookingLinkService.js` | 6 | db, CalcomClient |
 | [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios |
-| [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | db, SequenceService, crypto |
+| [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | db, SequenceService, TwilioService, crypto |
 | [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, axios |
 | [EmailService](#emailservice) | `EmailService.js` | 7 | - |
 | [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, TwilioService… |
@@ -29,7 +29,7 @@
 
 **File:** `lib/services/ActivationService.js`
 
-**Dependencies:** `EmailService`
+**Dependencies:** `crypto`, `EmailService`
 
 **Constructor params:** `options`
 
@@ -136,7 +136,7 @@
 
 **File:** `lib/services/CalcomWebhookHandler.js`
 
-**Dependencies:** `db`, `SequenceService`, `crypto`
+**Dependencies:** `db`, `SequenceService`, `TwilioService`, `crypto`
 
 **Constructor params:** `options`
 
