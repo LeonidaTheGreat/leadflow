@@ -1,27 +1,27 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-13T17:46:09.723Z | Source: `lib/services/`
+> Generated: 2026-04-14T22:53:40.504Z | Source: `lib/services/`
 
 **15 services across 15 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
 | [ActivationService](#activationservice) | `ActivationService.js` | 5 | crypto, EmailService |
-| [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db |
-| [BookingLinkService](#bookinglinkservice) | `BookingLinkService.js` | 6 | db, CalcomClient |
-| [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios |
-| [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | db, SequenceService, TwilioService, crypto |
-| [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, axios |
-| [EmailService](#emailservice) | `EmailService.js` | 7 | - |
-| [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, TwilioService… |
-| [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | - |
+| [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db, logger, circuit-breaker |
+| [BookingLinkService](#bookinglinkservice) | `BookingLinkService.js` | 6 | db, CalcomClient, logger |
+| [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios, circuit-breaker, request-context |
+| [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | db, logger, SequenceService, TwilioService… |
+| [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, logger, circuit-breaker… |
+| [EmailService](#emailservice) | `EmailService.js` | 7 | request-context, circuit-breaker |
+| [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, circuit-breaker… |
+| [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | logger, circuit-breaker |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
-| [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db |
+| [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db, logger |
 | [StuckPilotsService](#stuckpilotsservice) | `StuckPilotsService.js` | 6 | https, db |
 | [SystemStatusService](#systemstatusservice) | `SystemStatusService.js` | 2 | - |
-| [TwilioService](#twilioservice) | `TwilioService.js` | 11 | twilio, db |
-| [WeeklyPerformanceService](#weeklyperformanceservice) | `WeeklyPerformanceService.js` | 13 | db |
+| [TwilioService](#twilioservice) | `TwilioService.js` | 11 | twilio, db, logger, circuit-breaker… |
+| [WeeklyPerformanceService](#weeklyperformanceservice) | `WeeklyPerformanceService.js` | 13 | db, logger, circuit-breaker |
 
 ---
 
@@ -49,7 +49,7 @@
 
 **File:** `lib/services/BillingService.js`
 
-**Dependencies:** `stripe`, `db`
+**Dependencies:** `stripe`, `db`, `logger`, `circuit-breaker`
 
 **Constructor params:** `options`
 
@@ -84,7 +84,7 @@
 
 **File:** `lib/services/BookingLinkService.js`
 
-**Dependencies:** `db`, `CalcomClient`
+**Dependencies:** `db`, `CalcomClient`, `logger`
 
 **Constructor params:** `options`
 
@@ -105,7 +105,7 @@
 
 **File:** `lib/services/CalcomClient.js`
 
-**Dependencies:** `axios`
+**Dependencies:** `axios`, `circuit-breaker`, `request-context`
 
 **Constructor params:** `options`
 
@@ -136,7 +136,7 @@
 
 **File:** `lib/services/CalcomWebhookHandler.js`
 
-**Dependencies:** `db`, `SequenceService`, `TwilioService`, `crypto`
+**Dependencies:** `db`, `logger`, `SequenceService`, `TwilioService`, `circuit-breaker`, `crypto`
 
 **Constructor params:** `options`
 
@@ -160,7 +160,7 @@
 | `scheduleBookingReminders()` | `booking`, `db` | - |
 | `cancelExistingReminders()` | `bookingId`, `db` | - |
 | `triggerPostMeetingFollowUp()` | `booking` | - |
-| `withRetry()` | `fn`, `options`, `operationName` | - |
+| `withRetry()` | `fn`, `options` | - |
 | `sleep()` | `ms` | - |
 | `calculateBackoffDelay()` | `attempt` | - |
 
@@ -170,7 +170,7 @@
 
 **File:** `lib/services/CalcomWebhookManagement.js`
 
-**Dependencies:** `db`, `crypto`, `axios`
+**Dependencies:** `db`, `crypto`, `logger`, `circuit-breaker`, `axios`
 
 **Constructor params:** `options`
 
@@ -198,6 +198,8 @@
 
 **File:** `lib/services/EmailService.js`
 
+**Dependencies:** `request-context`, `circuit-breaker`
+
 **Constructor params:** `options`
 
 ### Methods
@@ -218,7 +220,7 @@
 
 **File:** `lib/services/FUBService.js`
 
-**Dependencies:** `crypto`, `events`, `axios`, `TwilioService`, `SatisfactionService`, `SequenceService`
+**Dependencies:** `crypto`, `events`, `axios`, `circuit-breaker`, `request-context`, `TwilioService`, `SatisfactionService`, `SequenceService`
 
 **Constructor params:** `options`
 
@@ -234,10 +236,10 @@
 | `handleLeadUpdated()` | `leadData` | - |
 | `handleLeadStatusChanged()` | `leadData` | - |
 | `handleLeadAssigned()` | `leadData` | - |
-| `fetchLeadFromFub()` | `leadId` | - |
+| `fetchLeadFromFub()` | `leadId`, `requestId` | - |
 | `checkDncStatus()` | - | - |
 | `generateAiSmsResponse()` | `lead`, `options` | - |
-| `logSmsInFub()` | `logData` | - |
+| `logSmsInFub()` | `logData`, `requestId` | - |
 | `invalidateLeadCache()` | `leadId` | - |
 | `cacheLeadContext()` | `lead` | - |
 | `logFubEvent()` | `event`, `data` | - |
@@ -247,6 +249,8 @@
 ## PilotConversionService
 
 **File:** `lib/services/PilotConversionService.js`
+
+**Dependencies:** `logger`, `circuit-breaker`
 
 **Constructor params:** `options`
 
@@ -293,7 +297,7 @@
 
 **File:** `lib/services/SequenceService.js`
 
-**Dependencies:** `db`
+**Dependencies:** `db`, `logger`
 
 **Constructor params:** `options`
 
@@ -347,7 +351,7 @@
 
 **File:** `lib/services/TwilioService.js`
 
-**Dependencies:** `twilio`, `db`
+**Dependencies:** `twilio`, `db`, `logger`, `circuit-breaker`, `request-context`
 
 **Constructor params:** `options`
 
@@ -373,7 +377,7 @@
 
 **File:** `lib/services/WeeklyPerformanceService.js`
 
-**Dependencies:** `db`
+**Dependencies:** `db`, `logger`, `circuit-breaker`
 
 **Constructor params:** `dbClient`, `emailService`
 
