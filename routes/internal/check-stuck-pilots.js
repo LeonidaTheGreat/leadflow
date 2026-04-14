@@ -10,9 +10,9 @@
 
 const express = require('express');
 const router = express.Router();
-const requireCronSecret = require('../lib/middleware/require-cron-secret');
-const { createDefaultStuckPilotsService } = require('../lib/services/StuckPilotsService');
-const { logger } = require('../lib/logger');
+const requireCronSecret = require('../../lib/middleware/require-cron-secret');
+const { createDefaultStuckPilotsService } = require('../../lib/services/StuckPilotsService');
+const { logger } = require('../../lib/logger');
 const log = logger.child('check-stuck-pilots');
 const stuckPilotsService = createDefaultStuckPilotsService();
 
