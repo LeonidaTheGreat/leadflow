@@ -32,15 +32,18 @@ router.post('/webhook/calcom', (req, res) => {
                       req.headers['cal-signature-256'] ||
                       req.headers['cal-signature'];
 
-    // Verify signature when CALCOM_WEBHOOK_SECRET is configured
-    if (process.env.CALCOM_WEBHOOK_SECRET) {
-        const rawBody = typeof req.body === 'string'
-            ? req.body
-            : JSON.stringify(req.body);
+    // Signature verification is mandatory — reject if secret is not configured
+    if (!process.env.CALCOM_WEBHOOK_SECRET) {
+        log.error('CALCOM_WEBHOOK_SECRET not configured — rejecting webhook');
+        return res.status(503).json({ error: 'Webhook verification not configured' });
+    }
 
-        if (!handler.verifyWebhookSignature(rawBody, signature || '')) {
-            return res.status(401).json({ error: 'Invalid webhook signature' });
-        }
+    const rawBody = typeof req.body === 'string'
+        ? req.body
+        : JSON.stringify(req.body);
+
+    if (!handler.verifyWebhookSignature(rawBody, signature || '')) {
+        return res.status(401).json({ error: 'Invalid webhook signature' });
     }
 
     let event = req.body;
