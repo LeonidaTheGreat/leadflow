@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     // Use message_body column (sms_messages column name vs 'body' in messages table).
     let inboundQuery = supabaseAdmin
       .from('sms_messages')
-      .select('lead_id, body, leads!inner(agent_id)')
+      .select('lead_id, message_body, leads!inner(agent_id)')
       .eq('direction', 'inbound')
       .eq('leads.agent_id', agentId)
 
@@ -135,10 +135,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Unique leads who replied (excluding opt-outs)
-    // Use body — the column name in sms_messages
+    // Use message_body — the column name in sms_messages
     const repliedLeadIds = new Set(
       (inboundMessages || [])
-        .filter((m: any) => !isOptOut(m.body))
+        .filter((m: any) => !isOptOut(m.message_body))
         .map((m: any) => m.lead_id)
         .filter(Boolean)
     )
