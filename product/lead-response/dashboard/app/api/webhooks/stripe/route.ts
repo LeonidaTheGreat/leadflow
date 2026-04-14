@@ -10,6 +10,105 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
 const resendKey = process.env.RESEND_API_KEY?.trim()
 const resend = resendKey ? new Resend(resendKey) : null
 
+// Event handlers
+
+async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
+  // Update subscription_attempts status regardless of agentId
+  const { error: updateError } = await supabase
+    .from('subscription_attempts')
+    .update({ status: 'session_expired' })
+    .eq('stripe_session_id', session.id)
+
+  if (updateError) {
+    console.error('Failed to update subscription_attempts:', updateError)
+  }
+
+  const agentId = session.client_reference_id
+  if (!agentId) return
+
+  try {
+
+    // Check if agent already paid (don't send recovery email to paying customers)
+    const { data: agent } = await supabase
+      .from('real_estate_agents')
+      .select('id, email, first_name, plan_tier, status')
+      .eq('id', agentId)
+      .single()
+
+    if (!agent) {
+      console.warn(`checkout.session.expired: agent ${agentId} not found`)
+      return
+    }
+
+    // Skip if agent already has an active paid plan
+    if (agent.status === 'active' && agent.plan_tier && agent.plan_tier !== 'trial' && agent.plan_tier !== 'pilot') {
+      console.log(`Skipping abandonment email for ${agentId} — already on ${agent.plan_tier} plan`)
+      return
+    }
+
+    // Send abandonment recovery email via Resend
+    if (resend && agent.email) {
+      const firstName = agent.first_name || 'there'
+      await resend.emails.send({
+        from: 'LeadFlow AI <support@leadflowai.com>',
+        to: agent.email,
+        subject: 'Your LeadFlow upgrade is waiting',
+        html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 30px 20px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { background: #f9fafb; padding: 30px 20px; border: 1px solid #e5e7eb; }
+    .footer { background: #f3f4f6; padding: 20px; border-radius: 0 0 8px 8px; font-size: 12px; color: #6b7280; text-align: center; }
+    .button { display: inline-block; background: #059669; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your upgrade is waiting</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${firstName},</p>
+      <p>We noticed you started upgrading your LeadFlow account but didn't finish. No worries — your upgrade is just one click away.</p>
+      <p>Pick up right where you left off:</p>
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="https://leadflow-ai-five.vercel.app/settings/billing" class="button">Complete Your Upgrade</a>
+      </p>
+      <p>If you ran into any issues or have questions about our plans, just reply to this email — we're happy to help.</p>
+      <p>Best,<br>The LeadFlow Team</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 LeadFlow AI. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+        `,
+      })
+      console.log(`Abandonment recovery email sent to ${agent.email}`)
+    }
+
+    // Log the event
+    await supabase.from('subscription_events').insert({
+      user_id: agentId,
+      event_type: 'checkout_abandoned',
+      stripe_event_data: {
+        session_id: session.id,
+        recovery_email_sent: Boolean(resend && agent.email),
+      },
+      created_at: new Date().toISOString(),
+    })
+
+    console.log(`Checkout session expired: ${agentId} (session ${session.id})`)
+  } catch (error) {
+    console.error('Error handling checkout.session.expired:', error)
+  }
+}
+
 // Helper functions
 function calculateMRR(subscription: Stripe.Subscription): number {
   const item = subscription.items.data[0]
@@ -84,15 +183,16 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       : 'unknown'
 
     // Update agent with subscription info (non-blocking — subscription upsert is more important)
+    // Only set columns that exist in real_estate_agents (see SCHEMA.md)
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
         stripe_customer_id: stripeCustomerId,
-        stripe_subscription_id: subscriptionId,
         plan_tier: tier,
         mrr: mrr,
         status: 'active',
-        plan_activated_at: new Date().toISOString(),
+        subscription_status: 'active',
+        subscription_start_date: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
@@ -282,9 +382,9 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!agentId) return
 
-  // Mark as at risk
+  // Mark as at risk — use subscription_status (payment_status column doesn't exist)
   await supabase.from('real_estate_agents').update({
-    payment_status: 'past_due',
+    subscription_status: 'past_due',
     updated_at: new Date().toISOString(),
   }).eq('id', agentId)
 
@@ -307,11 +407,10 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
 
   const mrr = calculateMRR(subscription)
 
-  // Record churn
+  // Record churn — cancelled_at column doesn't exist; use subscription_status
   await supabase.from('real_estate_agents').update({
-    status: 'cancelled',
+    subscription_status: 'cancelled',
     mrr: 0,
-    cancelled_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }).eq('id', agentId)
 
@@ -367,6 +466,10 @@ export async function POST(request: NextRequest) {
 
       case 'invoice.payment_failed':
         await handlePaymentFailed(event.data.object as Stripe.Invoice)
+        break
+
+      case 'checkout.session.expired':
+        await handleCheckoutSessionExpired(event.data.object as Stripe.Checkout.Session)
         break
 
       case 'customer.subscription.deleted':
