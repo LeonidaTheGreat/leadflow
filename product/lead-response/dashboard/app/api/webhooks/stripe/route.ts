@@ -84,15 +84,16 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       : 'unknown'
 
     // Update agent with subscription info (non-blocking — subscription upsert is more important)
+    // Only set columns that exist in real_estate_agents (see SCHEMA.md)
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
         stripe_customer_id: stripeCustomerId,
-        stripe_subscription_id: subscriptionId,
         plan_tier: tier,
         mrr: mrr,
         status: 'active',
-        plan_activated_at: new Date().toISOString(),
+        subscription_status: 'active',
+        subscription_start_date: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
@@ -282,9 +283,9 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!agentId) return
 
-  // Mark as at risk
+  // Mark as at risk — use subscription_status (payment_status column doesn't exist)
   await supabase.from('real_estate_agents').update({
-    payment_status: 'past_due',
+    subscription_status: 'past_due',
     updated_at: new Date().toISOString(),
   }).eq('id', agentId)
 
