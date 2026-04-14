@@ -1,5 +1,8 @@
 'use strict';
 
+// Recommended vercel.json cron: { "path": "/api/cron/dead-letter-replay", "schedule": "0 */6 * * *" }
+// (every 6 hours — adjust based on webhook volume)
+
 const express = require('express');
 const router = express.Router();
 const requireCronSecret = require('../../lib/middleware/require-cron-secret');
