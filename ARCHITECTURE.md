@@ -61,13 +61,10 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
-| OnboardingTelemetryService | `lib/services/OnboardingTelemetryService.js` | OnboardingTelemetryService — Tracks agent onboarding funnel events and stuck-agent alerts |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
-| PosthogService | `lib/services/PosthogService.js` | PosthogService — Server-side PostHog analytics tracking |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
 | SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
 | StuckPilotsService | `lib/services/StuckPilotsService.js` | — |
-| SubscriptionService | `lib/services/SubscriptionService.js` | @param {{ userId: string, tier: string, interval?: string, paymentMethodId?: string, trial?: boolean }} params |
 | SystemStatusService | `lib/services/SystemStatusService.js` | — |
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
@@ -103,9 +100,104 @@ Lead arrives (FUB webhook) → server.js → AI qualification → SMS response (
 ### Orchestration Pipeline
 ```
 Heartbeat → detect issues → create task → spawn agent → dev codes
-→ verify (build + syntax) → create PR → QC reviews (sonnet) → CI passes
-→ merge → deploy
+→ verify (build + syntax + tests + quality) → create PR → QC reviews (sonnet)
+→ CI passes → merge → deploy
 ```
+
+---
+
+## Security Architecture (ENFORCED)
+
+### Authentication
+- **Webhook signatures:** All inbound webhooks verified with HMAC-SHA256 + `crypto.timingSafeEqual()`. Fail-closed — if secret env var missing, returns 503 (not skip).
+  - FUB: `FUB_WEBHOOK_SECRET` → HMAC verification in `integration/fub-webhook-listener.js`
+  - Stripe: `STRIPE_WEBHOOK_SECRET` → `stripe.webhooks.constructEvent()` in `routes/billing.js`
+  - Cal.com: `CALCOM_WEBHOOK_SECRET` → HMAC verification in `routes/calcom-webhook.js`
+- **Cron auth:** `lib/middleware/require-cron-secret.js` — verifies Vercel's `Authorization: Bearer <CRON_SECRET>` with timing-safe comparison. Fail-closed.
+- **API key auth:** `lib/middleware/require-api-key.js` — `crypto.timingSafeEqual()`. Protects admin and preview endpoints.
+
+### Rate Limiting
+Applied in `server.js` via `lib/middleware/rate-limiter.js`:
+- `/webhook/*` → 120 req/min per IP (webhookLimiter)
+- `/api/cron/*` → 10 req/min per IP (adminLimiter)
+- `/api/admin/*` → 10 req/min per IP (adminLimiter)
+- `/health*` → 60 req/min per IP (custom in-memory limiter in `routes/system.js`)
+
+### Principle: Fail-Closed
+Every auth/verification path rejects by default. No `if (secret) { verify } else { skip }` patterns. If a secret is missing, the system refuses requests rather than degrading silently.
+
+---
+
+## Resilience Architecture
+
+### Circuit Breakers
+`lib/utils/circuit-breaker.js` — protects all external API calls from cascade failures.
+
+| Service | Breaker | Threshold | Reset | Methods Wrapped |
+|---------|---------|-----------|-------|-----------------|
+| FUB | `breakers.fub` | 5 failures | 30s | fetchLeadFromFub, logSmsInFub |
+| Stripe | `breakers.stripe` | 3 failures | 60s | subscriptions.create, customers.retrieve/create, billingPortal.sessions.create |
+| Cal.com | `breakers.calcom` | 5 failures | 30s | calApiRequest (covers all API calls) |
+| Twilio | `breakers.twilio` | 5 failures | 30s | messages.create, messages.fetch |
+
+States: CLOSED (normal) → OPEN (fail-fast after threshold) → HALF_OPEN (test one request) → CLOSED
+
+Metrics exposed at `GET /health/breakers` via `getAllBreakerMetrics()`.
+
+### Retry Logic
+`withRetry()` in `lib/utils/circuit-breaker.js` — exponential backoff with jitter.
+- Max 3 retries, base delay 1s
+- Skips retry on: `CIRCUIT_OPEN` errors, 4xx HTTP responses, non-retryable DB errors (constraint violations)
+- Used by: CalcomWebhookHandler (15+ callsites), FUBService
+
+### Dead-Letter Queue
+Failed webhooks written to `webhook_dead_letters` table via `lib/utils/dead-letter.js`.
+- `lib/utils/dead-letter-replay.js` — replays with exponential backoff (2^retry_count minutes)
+- Cron route: `GET /api/cron/dead-letter-replay` (requireCronSecret protected)
+- Max 5 retries before marking as `abandoned`
+
+---
+
+## Observability Architecture
+
+### Structured Logging
+`lib/logger.js` — all logging is structured JSON. Zero `console.*` calls in production code.
+- PII redaction: password, token, apiKey, secret, authorization, cookie, credit_card
+- Child loggers with scoped context in every service and route
+- Request/response lifecycle logging with timing
+
+### Request Tracing
+- `lib/request-context.js` — `AsyncLocalStorage` threads requestId through entire async call stack
+- `requestLogger` middleware generates `X-Request-ID`, wraps `next()` in context store
+- All external-calling services use `getRequestId()` as fallback for requestId propagation
+- X-Request-ID forwarded to: FUB API, Cal.com API, Resend API
+- Background/cron tasks get synthetic `bg-<ts>-<rand>` IDs
+
+### Health Endpoints
+- `GET /health` — basic health check (env vars, DB connectivity)
+- `GET /health/breakers` — circuit breaker state for all 4 external services
+
+---
+
+## Route Organization
+
+```
+routes/
+├── system.js                    ← GET /, /health, /health/breakers
+├── billing.js                   ← POST /webhook/stripe, /api/billing/*
+├── calcom-webhook.js            ← POST /webhook/calcom, /api/calcom/*
+├── admin/
+│   └── activation-outreach.js   ← GET/POST /api/admin/*
+└── internal/
+    ├── check-stuck-pilots.js    ← GET /api/cron/check-stuck-pilots (cron)
+    ├── weekly-performance.js    ← GET /api/cron/weekly-performance (cron)
+    └── dead-letter-replay.js    ← GET /api/cron/dead-letter-replay (cron)
+
+integration/
+└── fub-webhook-listener.js      ← POST /webhook/fub
+```
+
+Internal cron routes are separated from customer-facing API routes. All cron routes require `CRON_SECRET` verification.
 
 ---
 
