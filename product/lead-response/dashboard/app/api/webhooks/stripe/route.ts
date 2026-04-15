@@ -14,7 +14,7 @@ function log(level: 'info' | 'warn' | 'error', message: string, context?: Record
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 const resendKey = process.env.RESEND_API_KEY?.trim()
 const resend = resendKey ? new Resend(resendKey) : null
 
@@ -342,9 +342,9 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!stripe) {
+    if (!stripe || !webhookSecret) {
       return NextResponse.json(
-        { error: 'Stripe not configured' },
+        { error: 'Stripe webhook not configured' },
         { status: 503 }
       )
     }
@@ -355,7 +355,7 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature
     let event: Stripe.Event
     try {
-      event = stripe!.webhooks.constructEvent(body, signature, webhookSecret)
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err: any) {
       log('error', 'Webhook signature verification failed', { error: err.message })
       return NextResponse.json(
