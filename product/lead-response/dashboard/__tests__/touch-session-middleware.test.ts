@@ -22,6 +22,16 @@ const mockUpdate = jest.fn(() => mockUpdateChain)
 mockUpdateChain.eq.mockResolvedValue({ error: null })
 
 jest.mock('@/lib/db', () => ({
+  postgrestAdmin: {
+    from: jest.fn(() => ({
+      update: mockUpdate,
+      insert: jest.fn(() => ({
+        select: jest.fn(() => ({
+          single: jest.fn().mockResolvedValue({ data: null, error: null }),
+        })),
+      })),
+    })),
+  },
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
       update: mockUpdate,
