@@ -20,16 +20,21 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
-    const signature = request.headers.get('x-signature')
+    const signature = request.headers.get('x-signature') || request.headers.get('x-followupboss-signature') || request.headers.get('fub-signature')
     const secret = process.env.FUB_WEBHOOK_SECRET
 
-    // Verify webhook signature if secret is configured
-    if (secret && signature) {
-      const isValid = verifyWebhookSignature(body, signature, secret)
-      if (!isValid) {
-        logger.error('❌ Invalid FUB webhook signature')
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
+    // Verify webhook signature — fail-closed
+    if (!secret) {
+      logger.error('❌ FUB_WEBHOOK_SECRET not configured — rejecting request')
+      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+    }
+    if (!signature) {
+      logger.error('❌ Missing FUB webhook signature header')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!verifyWebhookSignature(body, signature, secret)) {
+      logger.error('❌ Invalid FUB webhook signature')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const payload: FubWebhookPayload = JSON.parse(body)
