@@ -14,36 +14,44 @@ import {
 } from '@/lib/services/inbound-sms-service'
 import type { Agent } from '@/lib/types'
 import { logger } from '@/lib/logger'
+import twilio from 'twilio'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
+
+/**
+ * Verify Twilio webhook signature using X-Twilio-Signature header.
+ * Fail-closed: returns false if auth token is not configured.
+ */
+function verifyTwilioSignature(request: NextRequest, params: Record<string, string>): boolean {
+  const authToken = process.env.TWILIO_AUTH_TOKEN
+  if (!authToken) return false
+  const signature = request.headers.get('x-twilio-signature')
+  if (!signature) return false
+  return twilio.validateRequest(authToken, signature, request.url, params)
+}
 
 // ============================================
 // TWILIO INBOUND SMS WEBHOOK
 // ============================================
 
-/**
- * Handle incoming SMS from leads
- * POST /api/webhook/twilio
- *
- * Twilio sends form data:
- * - From: sender phone number
- * - To: Twilio phone number
- * - Body: message text
- * - MessageSid: unique message ID
- * - NumMedia: number of media attachments
- */
 export async function POST(request: NextRequest) {
   try {
     logger.info('📥 Twilio webhook START')
     const formData = await request.formData()
-    logger.info('📥 FormData parsed')
 
     const from = formData.get('From') as string
     const to = formData.get('To') as string
     const body = (formData.get('Body') as string || '').trim()
     const messageSid = formData.get('MessageSid') as string
-    const numMedia = parseInt(formData.get('NumMedia') as string || '0')
+
+    // Verify Twilio signature — fail-closed
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => { params[key] = String(value) })
+    if (!verifyTwilioSignature(request, params)) {
+      logger.error('❌ Twilio webhook signature verification failed')
+      return new NextResponse('Forbidden', { status: 403 })
+    }
 
     logger.info('📥 Inbound SMS:', { from, to, body: body.substring(0, 50), messageSid })
 
@@ -184,6 +192,15 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const formData = await request.formData()
+
+    // Verify Twilio signature — fail-closed
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => { params[key] = String(value) })
+    if (!verifyTwilioSignature(request, params)) {
+      logger.error('❌ Twilio status callback signature verification failed')
+      return new NextResponse('Forbidden', { status: 403 })
+    }
+
     const messageSid = formData.get('MessageSid') as string
     const status = formData.get('MessageStatus') as string
     const errorCode = formData.get('ErrorCode') as string
