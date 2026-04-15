@@ -9,6 +9,8 @@
  *   Email 3 (Day 7):   Urgency / pilot offer
  */
 
+import { logger } from '@/lib/logger'
+
 // Lazy-load Resend to avoid build error when package isn't installed
 let _resend: unknown = null
 async function getResend() {
@@ -297,7 +299,7 @@ async function sendLeadMagnetEmail(
   } | null
 
   if (!resend) {
-    console.log(`📧 [lead-magnet] Email queued (Resend not configured): ${emailType} to ${to}`)
+    logger.info(`[lead-magnet] Email queued (Resend not configured): ${emailType} to ${to}`)
     return { sent: false, provider: 'logged' }
   }
 
@@ -310,15 +312,15 @@ async function sendLeadMagnetEmail(
     })
 
     if (error) {
-      console.error(`❌ [lead-magnet] Failed to send ${emailType} to ${to}:`, error)
+      logger.error(`[lead-magnet] Failed to send ${emailType} to ${to}`, error)
       return { sent: false, provider: 'resend', error: error.message }
     }
 
-    console.log(`✅ [lead-magnet] Sent ${emailType} to ${to}`)
+    logger.info(`[lead-magnet] Sent ${emailType} to ${to}`)
     return { sent: true, provider: 'resend' }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err)
-    console.error(`❌ [lead-magnet] Error sending ${emailType}:`, message)
+    logger.error(`[lead-magnet] Error sending ${emailType}`, message)
     return { sent: false, provider: 'resend', error: message }
   }
 }

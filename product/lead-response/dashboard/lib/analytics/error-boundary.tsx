@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { PostHogEvents } from './posthog-config'
+import { logger } from '@/lib/logger'
 
 // Use window.posthog (loaded via PostHogProvider) instead of importing posthog-js directly.
 // This avoids a build error when posthog-js isn't in package.json and matches
@@ -47,7 +48,7 @@ export class PostHogErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log to console
-    console.error('[PostHog Error Boundary] Caught error:', error, errorInfo)
+    logger.error('[PostHog Error Boundary] Caught error', { error: error?.message, componentStack: errorInfo?.componentStack })
 
     // Report to PostHog
     try {
@@ -60,7 +61,7 @@ export class PostHogErrorBoundary extends React.Component<Props, State> {
         timestamp: new Date().toISOString(),
       })
     } catch (analyticsError) {
-      console.error('[PostHog Error Boundary] Failed to report error:', analyticsError)
+      logger.error('[PostHog Error Boundary] Failed to report error', analyticsError)
     }
   }
 
@@ -116,7 +117,7 @@ export class RecoverableErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('[Recoverable Error Boundary] Caught error:', error, errorInfo)
+    logger.error('[Recoverable Error Boundary] Caught error', { error: error?.message, componentStack: errorInfo?.componentStack })
 
     try {
       captureEvent(PostHogEvents.ERROR_BOUNDARY_CAUGHT, {
@@ -129,7 +130,7 @@ export class RecoverableErrorBoundary extends React.Component<
         timestamp: new Date().toISOString(),
       })
     } catch (analyticsError) {
-      console.error('[Recoverable Error Boundary] Failed to report error:', analyticsError)
+      logger.error('[Recoverable Error Boundary] Failed to report error', analyticsError)
     }
 
     this.setState({ errorInfo })

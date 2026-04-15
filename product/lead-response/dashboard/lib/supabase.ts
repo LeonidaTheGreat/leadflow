@@ -6,6 +6,7 @@
  */
 
 import { postgrestAdmin, postgrestPublic } from './db'
+import { logger } from '@/lib/logger'
 import type { 
   Lead, 
   Agent, 
@@ -377,7 +378,7 @@ export async function getLeadSummary(agentId: string): Promise<{ data: any[]; er
 export function subscribeToLeads(callback: (payload: any) => void) {
   // PostgREST does not support realtime subscriptions
   // You would need to implement polling or WebSocket-based updates
-  console.warn('subscribeToLeads: PostgREST does not support realtime subscriptions')
+  logger.warn('subscribeToLeads: PostgREST does not support realtime subscriptions')
   return {
     unsubscribe: () => {},
   }
@@ -386,7 +387,7 @@ export function subscribeToLeads(callback: (payload: any) => void) {
 export function subscribeToMessages(leadId: string, callback: (payload: any) => void) {
   // PostgREST does not support realtime subscriptions
   // You would need to implement polling or WebSocket-based updates
-  console.warn('subscribeToMessages: PostgREST does not support realtime subscriptions')
+  logger.warn('subscribeToMessages: PostgREST does not support realtime subscriptions')
   return {
     unsubscribe: () => {},
   }

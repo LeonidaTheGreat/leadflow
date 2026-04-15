@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
+import { logger } from '@/lib/logger'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org',
@@ -103,7 +104,7 @@ export async function getExpiredTrialAgents(): Promise<string[]> {
     .lt('trial_ends_at', now)
 
   if (error || !agents) {
-    console.error('Error fetching expired trial agents:', error)
+    logger.error('Error fetching expired trial agents', error)
     return []
   }
 

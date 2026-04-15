@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import type { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 const DEFAULT_SESSION_HOURS = 24
 const REMEMBER_ME_SESSION_DAYS = 30
@@ -108,7 +109,7 @@ export class AuthService {
       .single()
 
     if (error) {
-      console.error('Failed to create session:', error)
+      logger.error('Failed to create session', error)
       throw new Error('Failed to create session')
     }
 
@@ -208,7 +209,7 @@ export class AuthService {
       .lt('expires_at', new Date().toISOString())
 
     if (error) {
-      console.error('Failed to cleanup expired sessions:', error)
+      logger.error('Failed to cleanup expired sessions', error)
       return 0
     }
 
@@ -251,7 +252,7 @@ export class AuthService {
   async isAdminUser(request: NextRequest): Promise<boolean> {
     const adminEmail = process.env.ADMIN_EMAIL
     if (!adminEmail) {
-      console.warn('ADMIN_EMAIL not configured in environment')
+      logger.warn('ADMIN_EMAIL not configured in environment')
       return false
     }
 

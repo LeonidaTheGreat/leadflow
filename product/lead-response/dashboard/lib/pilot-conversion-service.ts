@@ -14,6 +14,7 @@
  */
 
 import { createClient } from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 // Initialize Supabase client
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org';
@@ -71,7 +72,7 @@ export function isResendConfigured(): boolean {
  */
 export async function getEligibleAgents(milestone: MilestoneKey): Promise<any[]> {
   if (!isSupabaseConfigured() || !supabase) {
-    console.warn('Supabase not configured, returning empty agent list');
+    logger.warn('Supabase not configured, returning empty agent list');
     return [];
   }
 
@@ -86,15 +87,15 @@ export async function getEligibleAgents(milestone: MilestoneKey): Promise<any[]>
       .rpc('get_pilot_agents_for_milestone', { p_milestone: milestone });
 
     if (error) {
-      console.error('Error fetching eligible agents:', error);
+      logger.error('Error fetching eligible agents:', error);
       throw error;
     }
 
-    console.log(`[Pilot Conversion] Found ${agents?.length || 0} agents eligible for ${milestone}`);
+    logger.info(`[Pilot Conversion] Found ${agents?.length || 0} agents eligible for ${milestone}`);
     return agents || [];
 
   } catch (error) {
-    console.error(`Error getting eligible agents for ${milestone}:`, error);
+    logger.error(`Error getting eligible agents for ${milestone}:`, error);
     throw error;
   }
 }
@@ -124,7 +125,7 @@ export async function getAgentStats(agentId: string): Promise<{
       .not('responded_at', 'is', null);
 
     if (leadsError) {
-      console.error('Error fetching leads:', leadsError);
+      logger.error('Error fetching leads:', leadsError);
     }
 
     const leadsResponded = leadsData?.length || 0;
@@ -166,7 +167,7 @@ export async function getAgentStats(agentId: string): Promise<{
     };
 
   } catch (error) {
-    console.error(`Error getting stats for agent ${agentId}:`, error);
+    logger.error(`Error getting stats for agent ${agentId}:`, error);
     return {
       leadsResponded: 0,
       avgResponseTime: 'N/A',
@@ -384,8 +385,8 @@ async function sendEmailViaResend(
   content: { html: string; text: string }
 ): Promise<{ success: boolean; id?: string; mock?: boolean }> {
   if (!isResendConfigured()) {
-    console.warn('Resend not configured, logging email instead');
-    console.log(`[MOCK EMAIL] To: ${to}, Subject: ${subject}`);
+    logger.warn('Resend not configured, logging email instead');
+    logger.info(`[MOCK EMAIL] To: ${to}, Subject: ${subject}`);
     return { success: true, mock: true, id: `mock_${Date.now()}` };
   }
 
@@ -415,7 +416,7 @@ async function sendEmailViaResend(
     return { success: true, id: result.id };
 
   } catch (error) {
-    console.error('Error sending email via Resend:', error);
+    logger.error('Error sending email via Resend:', error);
     throw error;
   }
 }
@@ -441,7 +442,7 @@ async function logEmailSend(params: {
   skippedReason?: string;
 }): Promise<void> {
   if (!isSupabaseConfigured() || !supabase) {
-    console.log('[MOCK LOG] Email send logged:', params);
+    logger.info('[MOCK LOG] Email send logged:', params);
     return;
   }
 
@@ -468,10 +469,10 @@ async function logEmailSend(params: {
       });
 
     if (error) {
-      console.error('Error logging email send:', error);
+      logger.error('Error logging email send:', error);
     }
   } catch (error) {
-    console.error('Error in logEmailSend:', error);
+    logger.error('Error in logEmailSend:', error);
   }
 }
 
@@ -491,14 +492,14 @@ export async function hasAgentUpgraded(agentId: string): Promise<boolean> {
       .single();
 
     if (error) {
-      console.error('Error checking agent plan tier:', error);
+      logger.error('Error checking agent plan tier:', error);
       return false;
     }
 
     return data && data.plan_tier !== 'pilot';
 
   } catch (error) {
-    console.error('Error in hasAgentUpgraded:', error);
+    logger.error('Error in hasAgentUpgraded:', error);
     return false;
   }
 }
@@ -516,7 +517,7 @@ export async function sendConversionEmail(
     // Check stop condition: has agent upgraded?
     const upgraded = await hasAgentUpgraded(agent.agent_id);
     if (upgraded) {
-      console.log(`[Pilot Conversion] Skipping ${milestone} for ${agent.agent_email} - already upgraded`);
+      logger.info(`[Pilot Conversion] Skipping ${milestone} for ${agent.agent_email} - already upgraded`);
       await logEmailSend({
         agentId: agent.agent_id,
         milestone,
@@ -558,11 +559,11 @@ export async function sendConversionEmail(
       stats
     });
 
-    console.log(`[Pilot Conversion] Sent ${milestone} email to ${agent.agent_email}`);
+    logger.info(`[Pilot Conversion] Sent ${milestone} email to ${agent.agent_email}`);
     return { success: true, messageId: sendResult.id };
 
   } catch (error: any) {
-    console.error(`[Pilot Conversion] Failed to send ${milestone} to ${agent.agent_email}:`, error);
+    logger.error(`[Pilot Conversion] Failed to send ${milestone} to ${agent.agent_email}:`, error);
     
     // Log failure
     await logEmailSend({
@@ -590,7 +591,7 @@ export async function processMilestone(milestone: MilestoneKey): Promise<{
   failed: number;
   errors: Array<{ agent?: string; error: string }>;
 }> {
-  console.log(`[Pilot Conversion] Processing ${milestone}...`);
+  logger.info(`[Pilot Conversion] Processing ${milestone}...`);
   
   const results = {
     milestone,
@@ -618,11 +619,11 @@ export async function processMilestone(milestone: MilestoneKey): Promise<{
       }
     }
 
-    console.log(`[Pilot Conversion] ${milestone} complete: ${results.sent} sent, ${results.skipped} skipped, ${results.failed} failed`);
+    logger.info(`[Pilot Conversion] ${milestone} complete: ${results.sent} sent, ${results.skipped} skipped, ${results.failed} failed`);
     return results;
 
   } catch (error: any) {
-    console.error(`[Pilot Conversion] Error processing ${milestone}:`, error);
+    logger.error(`[Pilot Conversion] Error processing ${milestone}:`, error);
     results.errors.push({ error: error.message });
     return results;
   }
@@ -642,7 +643,7 @@ export async function runConversionSequence(): Promise<{
     errors: Array<{ agent?: string; error: string }>;
   }>;
 }> {
-  console.log('[Pilot Conversion] Starting conversion sequence check...');
+  logger.info('[Pilot Conversion] Starting conversion sequence check...');
   
   const results: {
     timestamp: string;
@@ -661,6 +662,6 @@ export async function runConversionSequence(): Promise<{
     results.milestones[milestone] = await processMilestone(milestone);
   }
 
-  console.log('[Pilot Conversion] Sequence check complete');
+  logger.info('[Pilot Conversion] Sequence check complete');
   return results;
 }

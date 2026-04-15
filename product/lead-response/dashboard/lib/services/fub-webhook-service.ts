@@ -11,6 +11,7 @@
 
 import { NextResponse } from 'next/server'
 import { supabaseAdmin, createLead, getLeadByPhone, updateLead, createMessage } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone, sendSms } from '@/lib/twilio'
 import { logSmsActivity, logQualification } from '@/lib/fub'
@@ -65,7 +66,7 @@ export async function fetchFubLeadByUri(uri: string): Promise<any | null> {
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('FUB fetch failed:', response.status, errorText)
+      logger.error(`FUB fetch failed: ${response.status} ${errorText}`)
       return null
     }
 
@@ -74,10 +75,10 @@ export async function fetchFubLeadByUri(uri: string): Promise<any | null> {
       return data.people[0]
     }
 
-    console.error('No people in FUB response')
+    logger.error('No people in FUB response')
     return null
   } catch (error) {
-    console.error('Failed to fetch lead from FUB:', error)
+    logger.error('Failed to fetch lead from FUB', error)
     return null
   }
 }
@@ -93,7 +94,7 @@ export async function handleLeadCreated(
 ): Promise<Response> {
   // If we got resourceIds instead of full lead data, fetch from FUB
   if (resourceIds && uri && (!fubLead || !fubLead.id)) {
-    console.log('Fetching lead data from FUB:', resourceIds, 'URI:', uri)
+    logger.info(`Fetching lead data from FUB: ${resourceIds} URI: ${uri}`)
     fubLead = await fetchFubLeadByUri(uri)
 
     if (!fubLead) {
@@ -105,11 +106,11 @@ export async function handleLeadCreated(
   }
 
   if (!fubLead || !fubLead.id) {
-    console.error('No lead data after fetch. fubLead:', fubLead)
+    logger.error('No lead data after fetch', fubLead)
     return NextResponse.json({ error: 'No lead data available' }, { status: 400 })
   }
 
-  console.log('Processing lead.created:', fubLead.id)
+  logger.info(`Processing lead.created: ${fubLead.id}`)
 
   // Extract phone from FUB format (phones array or phoneNumber field)
   const phoneNumber =
@@ -123,7 +124,7 @@ export async function handleLeadCreated(
   const { data: existingLead } = await getLeadByPhone(phone)
 
   if (existingLead) {
-    console.log('Lead already exists:', existingLead.id)
+    logger.info(`Lead already exists: ${existingLead.id}`)
     if (!existingLead.fub_id) {
       await updateLead(existingLead.id, { fub_id: fubLead.id })
     }
@@ -152,11 +153,11 @@ export async function handleLeadCreated(
   })
 
   if (leadError || !lead) {
-    console.error('Error creating lead:', leadError)
+    logger.error('Error creating lead', leadError)
     return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 })
   }
 
-  console.log('Lead created:', lead.id)
+  logger.info(`Lead created: ${lead.id}`)
 
   // Run AI qualification
   const qualification = await qualifyLead({
@@ -201,7 +202,7 @@ export async function handleLeadCreated(
 
   // Check consent before sending SMS
   if (!lead.consent_sms) {
-    console.log('Lead has not consented to SMS, skipping')
+    logger.info('Lead has not consented to SMS, skipping')
     return NextResponse.json({
       success: true,
       lead_id: lead.id,
@@ -212,7 +213,7 @@ export async function handleLeadCreated(
 
   // Check DNC
   if (lead.dnc) {
-    console.log('Lead is on DNC list, skipping SMS')
+    logger.info('Lead is on DNC list, skipping SMS')
     return NextResponse.json({
       success: true,
       lead_id: lead.id,
@@ -243,7 +244,7 @@ export async function handleLeadCreated(
     await updateLead(lead.id, { responded_at: new Date().toISOString() })
     await logSmsActivity(fubLead.id, aiResponse.message, smsResult.messageSid!, smsResult.status!)
 
-    console.log('AI SMS sent:', smsResult.messageSid)
+    logger.info(`AI SMS sent: ${smsResult.messageSid}`)
   }
 
   return NextResponse.json({
@@ -269,7 +270,7 @@ export async function handleLeadUpdated(
     return NextResponse.json({ error: 'No lead data available' }, { status: 400 })
   }
 
-  console.log('Processing lead.updated:', fubLead.id)
+  logger.info(`Processing lead.updated: ${fubLead.id}`)
 
   const { data: lead } = (await supabaseAdmin
     .from('leads')
@@ -304,7 +305,7 @@ export async function handleStatusChanged(
     return NextResponse.json({ error: 'No lead data available' }, { status: 400 })
   }
 
-  console.log('Processing lead.status_changed:', fubLead.id)
+  logger.info(`Processing lead.status_changed: ${fubLead.id}`)
 
   const { data: lead } = (await supabaseAdmin
     .from('leads')
@@ -355,7 +356,7 @@ export async function handleStatusChanged(
 }
 
 export async function handleLeadAssigned(fubLead: any): Promise<Response> {
-  console.log('Processing lead.assigned:', fubLead.id)
+  logger.info(`Processing lead.assigned: ${fubLead.id}`)
 
   const { data: agent } = await supabaseAdmin
     .from('real_estate_agents')
@@ -364,7 +365,7 @@ export async function handleLeadAssigned(fubLead: any): Promise<Response> {
     .single()
 
   if (!agent) {
-    console.log('No agent found with fub_id:', fubLead.agentId)
+    logger.info(`No agent found with fub_id: ${fubLead.agentId}`)
     return NextResponse.json({ success: true, sms_sent: false, reason: 'no_agent_found' })
   }
 
@@ -380,7 +381,7 @@ export async function handleLeadAssigned(fubLead: any): Promise<Response> {
     .single()) as { data: Lead | null }
 
   if (!lead) {
-    console.log('Lead not found in database:', fubLead.id)
+    logger.info(`Lead not found in database: ${fubLead.id}`)
     return NextResponse.json({ success: true, sms_sent: false, reason: 'lead_not_found' })
   }
 
@@ -388,7 +389,7 @@ export async function handleLeadAssigned(fubLead: any): Promise<Response> {
     lead.consent_sms === true && lead.phone && agent.name && !lead.dnc
 
   if (!shouldSendIntro) {
-    console.log('Skipping intro SMS:', {
+    logger.info('Skipping intro SMS', {
       leadId: lead.id,
       hasConsent: lead.consent_sms,
       hasPhone: !!lead.phone,
@@ -431,9 +432,9 @@ export async function handleLeadAssigned(fubLead: any): Promise<Response> {
     })
 
     await logSmsActivity(fubLead.id, introMessage, smsResult.messageSid!, smsResult.status!)
-    console.log('Agent intro SMS sent:', smsResult.messageSid)
+    logger.info(`Agent intro SMS sent: ${smsResult.messageSid}`)
   } else {
-    console.error('Failed to send intro SMS:', smsResult.error)
+    logger.error('Failed to send intro SMS', smsResult.error)
   }
 
   return NextResponse.json({

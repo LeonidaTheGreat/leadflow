@@ -9,6 +9,7 @@
  */
 import { postgrestAdmin } from '@/lib/db'
 import { NextRequest } from 'next/server'
+import { logger } from '@/lib/logger'
 
 const supabase = postgrestAdmin
 
@@ -70,7 +71,7 @@ export async function logSessionStart(
 
     if (error) {
       // Log the error but do NOT throw — login must succeed even if session logging fails
-      console.error('[agent-session] logSessionStart failed:', error.message, {
+      logger.error(`[agent-session] logSessionStart failed: ${error.message}`, {
         agentId,
         code: error.code,
       })
@@ -87,7 +88,7 @@ export async function logSessionStart(
     }
   } catch (err) {
     // Catch unexpected errors (network, env vars missing, etc.)
-    console.error('[agent-session] logSessionStart unexpected error:', err)
+    logger.error('[agent-session] logSessionStart unexpected error', err)
     return null
   }
 }
@@ -106,12 +107,12 @@ export async function touchSession(sessionId: string): Promise<boolean> {
       .eq('id', sessionId)
 
     if (error) {
-      console.error('[agent-session] touchSession failed:', error.message, { sessionId })
+      logger.error(`[agent-session] touchSession failed: ${error.message}`, { sessionId })
       return false
     }
     return true
   } catch (err) {
-    console.error('[agent-session] touchSession unexpected error:', err)
+    logger.error('[agent-session] touchSession unexpected error', err)
     return false
   }
 }
@@ -132,12 +133,12 @@ export async function touchSessionByAgentId(agentId: string): Promise<boolean> {
       .eq('agent_id', agentId)
 
     if (error) {
-      console.error('[agent-session] touchSessionByAgentId failed:', error.message, { agentId })
+      logger.error(`[agent-session] touchSessionByAgentId failed: ${error.message}`, { agentId })
       return false
     }
     return true
   } catch (err) {
-    console.error('[agent-session] touchSessionByAgentId unexpected error:', err)
+    logger.error('[agent-session] touchSessionByAgentId unexpected error', err)
     return false
   }
 }

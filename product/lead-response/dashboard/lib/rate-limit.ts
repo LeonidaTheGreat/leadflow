@@ -1,9 +1,11 @@
 /**
  * RATE LIMITER - Prevent spam/abuse
- * 
+ *
  * Simple in-memory rate limiter for MVP
  * Tracks messages per lead per minute
  */
+
+import { logger } from '@/lib/logger'
 
 interface RateLimitEntry {
   count: number;
@@ -142,7 +144,7 @@ export function cleanupExpiredEntries() {
   }
 
   if (cleaned > 0) {
-    console.log(`🧹 Cleaned up ${cleaned} expired rate limit entries`);
+    logger.info(`Cleaned up ${cleaned} expired rate limit entries`);
   }
 }
 

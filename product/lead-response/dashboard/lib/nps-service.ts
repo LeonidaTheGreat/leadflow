@@ -7,6 +7,7 @@
 import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import { logger } from '@/lib/logger'
 
 // Initialize Supabase client
 const dbUrl = process.env.NEXT_PUBLIC_API_URL || ''
@@ -175,7 +176,7 @@ export async function getAgentsDueForSurvey(): Promise<
     .eq('real_estate_agents.status', 'active')
 
   if (error || !data) {
-    console.error('Error fetching agents due for survey:', error)
+    logger.error('Error fetching agents due for survey', error)
     return []
   }
 
@@ -238,7 +239,7 @@ export async function submitNPSResponse(
     })
 
     if (responseError) {
-      console.error('Error inserting NPS response:', responseError)
+      logger.error('Error inserting NPS response', responseError)
       return { success: false, error: 'Failed to save response' }
     }
 
@@ -252,7 +253,7 @@ export async function submitNPSResponse(
 
     return { success: true }
   } catch (error: any) {
-    console.error('Error submitting NPS response:', error)
+    logger.error('Error submitting NPS response', error)
     return { success: false, error: error.message }
   }
 }
@@ -308,13 +309,13 @@ export async function submitProductFeedback(
       .single()
 
     if (error) {
-      console.error('Error inserting product feedback:', error)
+      logger.error('Error inserting product feedback', error)
       return { success: false, error: 'Failed to save feedback' }
     }
 
     return { success: true, feedbackId: data.id }
   } catch (error: any) {
-    console.error('Error submitting product feedback:', error)
+    logger.error('Error submitting product feedback', error)
     return { success: false, error: error.message }
   }
 }

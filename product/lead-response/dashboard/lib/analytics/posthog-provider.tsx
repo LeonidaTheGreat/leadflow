@@ -1,4 +1,5 @@
 import { useEffect, Suspense, ReactNode } from 'react';
+import { logger } from '@/lib/logger'
 
 // PostHog is loaded dynamically to avoid SSR issues
 let posthogModule: any = null;
@@ -14,7 +15,7 @@ async function loadPostHog() {
     posthogModule = await import('posthog-js');
     return posthogModule;
   } catch (e) {
-    console.error('Failed to load PostHog:', e);
+    logger.error('Failed to load PostHog', e);
     return null;
   }
 }
@@ -65,7 +66,7 @@ export function PostHogProvider({ children }: PostHogProviderProps): React.React
             api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
             capture_pageview: false,
             loaded: () => {
-              console.log('[PostHog] Loaded successfully');
+              logger.info('[PostHog] Loaded successfully');
             }
           });
         }

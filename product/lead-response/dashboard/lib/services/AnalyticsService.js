@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 export class AnalyticsService {
   constructor(dbClient) {
@@ -14,7 +15,7 @@ export class AnalyticsService {
   }
 
   logError(message, error) {
-    console.error(message, error)
+    logger.error(message, error)
   }
 
   async getMessagesPerDay(daysBack = 30) {
@@ -312,7 +313,7 @@ export class AnalyticsService {
       }
     }
 
-    console.log(`Generated ${messages.length} sample messages`)
+    logger.info(`Generated ${messages.length} sample messages`)
   }
 }
 

@@ -1,5 +1,6 @@
 import twilio from 'twilio'
 import type { TwilioMessage, Message, Lead, Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // TWILIO SMS CLIENT
@@ -73,7 +74,7 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
   
   // Mock mode for development/testing
   if (isMockMode || !client) {
-    console.log('📤 [MOCK SMS]', {
+    logger.info('[MOCK SMS]', {
       to,
       from: fromNumber,
       body: body.substring(0, 50) + (body.length > 50 ? '...' : ''),
@@ -109,7 +110,7 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
 
       const message = await client.messages.create(messageParams)
 
-      console.log('📤 SMS sent:', {
+      logger.info('SMS sent', {
         sid: message.sid,
         to,
         status: message.status,
@@ -125,7 +126,7 @@ export async function sendSms(options: SendSmsOptions): Promise<SendSmsResult> {
       const errorCode = error.code || error.status;
       const isRetryable = isRetryableError(errorCode);
 
-      console.error(`❌ Twilio send error (attempt ${attempt + 1}/${maxRetries}):`, {
+      logger.error(`Twilio send error (attempt ${attempt + 1}/${maxRetries})`, {
         errorCode,
         message: error.message,
         retryable: isRetryable,
@@ -270,7 +271,7 @@ export function handleStatusCallback(body: TwilioStatusCallback): {
 } {
   const { MessageSid, MessageStatus, ErrorCode, ErrorMessage, From, To } = body
 
-  console.log('📊 Twilio status:', {
+  logger.info('Twilio status', {
     sid: MessageSid,
     status: MessageStatus,
     from: From,

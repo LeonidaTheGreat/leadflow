@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/db'
 import { Resend } from 'resend'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 // Lazy init — Resend throws if API key is missing at import time, which crashes Next.js build in CI
@@ -54,7 +55,7 @@ async function getTrialAgents(): Promise<TrialAgent[]> {
     .eq('email_verified', true)
 
   if (error) {
-    console.error('Error fetching trial agents:', error)
+    logger.error('Error fetching trial agents', error)
     return []
   }
 
@@ -108,7 +109,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
     })
 
     if (error) {
-      console.error(`Failed to send welcome email to ${agent.email}:`, error)
+      logger.error(`Failed to send welcome email to ${agent.email}`, error)
       return { success: false, error: error.message }
     }
 
@@ -119,7 +120,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
       .eq('id', agent.id)
 
     if (updateError) {
-      console.error(`Failed to mark welcome email as sent for ${agent.id}:`, updateError)
+      logger.error(`Failed to mark welcome email as sent for ${agent.id}`, updateError)
     }
 
     // Log the email send
@@ -133,7 +134,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
     return { success: true }
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Welcome email error for ${agent.email}:`, error)
+    logger.error(`Welcome email error for ${agent.email}`, error)
     return { success: false, error }
   }
 }
@@ -185,7 +186,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
     })
 
     if (error) {
-      console.error(`Failed to send day 1 aha email to ${agent.email}:`, error)
+      logger.error(`Failed to send day 1 aha email to ${agent.email}`, error)
       return { success: false, error: error.message }
     }
 
@@ -196,7 +197,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
       .eq('id', agent.id)
 
     if (updateError) {
-      console.error(`Failed to mark day 1 aha email as sent for ${agent.id}:`, updateError)
+      logger.error(`Failed to mark day 1 aha email as sent for ${agent.id}`, updateError)
     }
 
     // Log the email send
@@ -210,7 +211,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
     return { success: true }
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Day 1 aha email error for ${agent.email}:`, error)
+    logger.error(`Day 1 aha email error for ${agent.email}`, error)
     return { success: false, error }
   }
 }
@@ -256,7 +257,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
     })
 
     if (error) {
-      console.error(`Failed to send day 3 upgrade email to ${agent.email}:`, error)
+      logger.error(`Failed to send day 3 upgrade email to ${agent.email}`, error)
       return { success: false, error: error.message }
     }
 
@@ -267,7 +268,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
       .eq('id', agent.id)
 
     if (updateError) {
-      console.error(`Failed to mark day 3 upgrade email as sent for ${agent.id}:`, updateError)
+      logger.error(`Failed to mark day 3 upgrade email as sent for ${agent.id}`, updateError)
     }
 
     // Log the email send
@@ -281,7 +282,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
     return { success: true }
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Day 3 upgrade email error for ${agent.email}:`, error)
+    logger.error(`Day 3 upgrade email error for ${agent.email}`, error)
     return { success: false, error }
   }
 }
@@ -331,7 +332,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
     })
 
     if (error) {
-      console.error(`Failed to send day 7 warning email to ${agent.email}:`, error)
+      logger.error(`Failed to send day 7 warning email to ${agent.email}`, error)
       return { success: false, error: error.message }
     }
 
@@ -342,7 +343,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
       .eq('id', agent.id)
 
     if (updateError) {
-      console.error(`Failed to mark day 7 warning email as sent for ${agent.id}:`, updateError)
+      logger.error(`Failed to mark day 7 warning email as sent for ${agent.id}`, updateError)
     }
 
     // Log the email send
@@ -356,7 +357,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
     return { success: true }
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Day 7 warning email error for ${agent.email}:`, error)
+    logger.error(`Day 7 warning email error for ${agent.email}`, error)
     return { success: false, error }
   }
 }
@@ -406,7 +407,7 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
     })
 
     if (error) {
-      console.error(`Failed to send day 14 expired email to ${agent.email}:`, error)
+      logger.error(`Failed to send day 14 expired email to ${agent.email}`, error)
       return { success: false, error: error.message }
     }
 
@@ -417,7 +418,7 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
       .eq('id', agent.id)
 
     if (updateError) {
-      console.error(`Failed to mark day 14 expired email as sent for ${agent.id}:`, updateError)
+      logger.error(`Failed to mark day 14 expired email as sent for ${agent.id}`, updateError)
     }
 
     // Log the email send
@@ -431,7 +432,7 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
     return { success: true }
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Day 14 expired email error for ${agent.email}:`, error)
+    logger.error(`Day 14 expired email error for ${agent.email}`, error)
     return { success: false, error }
   }
 }
@@ -485,7 +486,7 @@ async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolea
     })
 
     if (error) {
-      console.error(`Failed to send day 15 final email to ${agent.email}:`, error)
+      logger.error(`Failed to send day 15 final email to ${agent.email}`, error)
       return { success: false, error: error.message }
     }
 
@@ -496,7 +497,7 @@ async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolea
       .eq('id', agent.id)
 
     if (updateError) {
-      console.error(`Failed to mark day 15 final email as sent for ${agent.id}:`, updateError)
+      logger.error(`Failed to mark day 15 final email as sent for ${agent.id}`, updateError)
     }
 
     // Log the email send
@@ -510,7 +511,7 @@ async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolea
     return { success: true }
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Day 15 final email error for ${agent.email}:`, error)
+    logger.error(`Day 15 final email error for ${agent.email}`, error)
     return { success: false, error }
   }
 }
@@ -531,10 +532,10 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
   const results: EmailResult[] = []
 
   try {
-    console.log('📧 Running active trial email sequence...')
+    logger.info('Running active trial email sequence...')
 
     const agents = await getTrialAgents()
-    console.log(`Found ${agents.length} trial agents to process`)
+    logger.info(`Found ${agents.length} trial agents to process`)
 
     if (agents.length === 0) {
       return results
@@ -580,7 +581,7 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
 
     // Send Welcome emails (Day 0)
     if (welcomeAgents.length > 0) {
-      console.log(`📧 Sending welcome emails to ${welcomeAgents.length} agents...`)
+      logger.info(`Sending welcome emails to ${welcomeAgents.length} agents...`)
       let success = 0
       let failed = 0
       const errors: string[] = []
@@ -602,12 +603,12 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         failed,
         errors
       })
-      console.log(`✅ Welcome: ${success}/${welcomeAgents.length} emails sent`)
+      logger.info(`Welcome: ${success}/${welcomeAgents.length} emails sent`)
     }
 
     // Send Day 1 Aha emails
     if (day1AhaAgents.length > 0) {
-      console.log(`📧 Sending day 1 aha emails to ${day1AhaAgents.length} agents...`)
+      logger.info(`Sending day 1 aha emails to ${day1AhaAgents.length} agents...`)
       let success = 0
       let failed = 0
       const errors: string[] = []
@@ -629,12 +630,12 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         failed,
         errors
       })
-      console.log(`✅ Day 1 Aha: ${success}/${day1AhaAgents.length} emails sent`)
+      logger.info(`Day 1 Aha: ${success}/${day1AhaAgents.length} emails sent`)
     }
 
     // Send Day 3 Upgrade emails
     if (day3UpgradeAgents.length > 0) {
-      console.log(`📧 Sending day 3 upgrade emails to ${day3UpgradeAgents.length} agents...`)
+      logger.info(`Sending day 3 upgrade emails to ${day3UpgradeAgents.length} agents...`)
       let success = 0
       let failed = 0
       const errors: string[] = []
@@ -656,12 +657,12 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         failed,
         errors
       })
-      console.log(`✅ Day 3 Upgrade: ${success}/${day3UpgradeAgents.length} emails sent`)
+      logger.info(`Day 3 Upgrade: ${success}/${day3UpgradeAgents.length} emails sent`)
     }
 
     // Send Day 7 Warning emails
     if (day7WarningAgents.length > 0) {
-      console.log(`📧 Sending day 7 warning emails to ${day7WarningAgents.length} agents...`)
+      logger.info(`Sending day 7 warning emails to ${day7WarningAgents.length} agents...`)
       let success = 0
       let failed = 0
       const errors: string[] = []
@@ -683,12 +684,12 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         failed,
         errors
       })
-      console.log(`✅ Day 7 Warning: ${success}/${day7WarningAgents.length} emails sent`)
+      logger.info(`Day 7 Warning: ${success}/${day7WarningAgents.length} emails sent`)
     }
 
     // Send Day 14 Expired emails
     if (day14ExpiredAgents.length > 0) {
-      console.log(`📧 Sending day 14 expired emails to ${day14ExpiredAgents.length} agents...`)
+      logger.info(`Sending day 14 expired emails to ${day14ExpiredAgents.length} agents...`)
       let success = 0
       let failed = 0
       const errors: string[] = []
@@ -710,12 +711,12 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         failed,
         errors
       })
-      console.log(`✅ Day 14 Expired: ${success}/${day14ExpiredAgents.length} emails sent`)
+      logger.info(`Day 14 Expired: ${success}/${day14ExpiredAgents.length} emails sent`)
     }
 
     // Send Day 15 Final emails
     if (day15FinalAgents.length > 0) {
-      console.log(`📧 Sending day 15 final emails to ${day15FinalAgents.length} agents...`)
+      logger.info(`Sending day 15 final emails to ${day15FinalAgents.length} agents...`)
       let success = 0
       let failed = 0
       const errors: string[] = []
@@ -737,12 +738,12 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
         failed,
         errors
       })
-      console.log(`✅ Day 15 Final: ${success}/${day15FinalAgents.length} emails sent`)
+      logger.info(`Day 15 Final: ${success}/${day15FinalAgents.length} emails sent`)
     }
 
     return results
   } catch (error) {
-    console.error('Error in sendActiveTrialSequence:', error)
+    logger.error('Error in sendActiveTrialSequence', error)
     throw error
   }
 }
@@ -770,13 +771,13 @@ export async function sendTrialWelcomeEmail(agentId: string, email: string, firs
     return result.success
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err)
-    console.error(`Failed to send trial welcome email for ${agentId}:`, error)
+    logger.error(`Failed to send trial welcome email for ${agentId}`, error)
     return false
   }
 }
 
 // Keep old function name for backward compatibility during transition
 export async function sendTrialReminderEmails(): Promise<EmailResult[]> {
-  console.log('⚠️ sendTrialReminderEmails is deprecated, use sendActiveTrialSequence instead')
+  logger.warn('sendTrialReminderEmails is deprecated, use sendActiveTrialSequence instead')
   return sendActiveTrialSequence()
 }

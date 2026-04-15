@@ -1,9 +1,11 @@
 /**
  * ERROR HANDLER - User-friendly error classification
- * 
+ *
  * Maps technical errors to user-friendly messages
  * Classifies errors for logging and UI display
  */
+
+import { logger } from '@/lib/logger'
 
 export type ErrorCategory = 
   | 'invalid_input'
@@ -325,7 +327,7 @@ export function logError(
   const error = getErrorInfo(code);
   const timestamp = new Date().toISOString();
 
-  console.error(`❌ [${timestamp}] ${code}:`, {
+  logger.error(`[${timestamp}] ${code}`, {
     category: error.category,
     userMessage: error.userMessage,
     debugMessage: error.debugMessage,

@@ -6,6 +6,7 @@
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { randomUUID, createHash } from 'crypto'
+import { logger } from '@/lib/logger'
 
 function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex')
@@ -54,7 +55,7 @@ async function logEmailEvent(event: EmailEvent): Promise<void> {
   try {
     await supabase.from('email_events').insert(event)
   } catch (error) {
-    console.error('Error logging email event:', error)
+    logger.error('Error logging email event', error)
   }
 }
 
@@ -73,8 +74,8 @@ async function sendEmail(
     const resend = await getResend()
     // If Resend not configured, log and return success (for testing)
     if (!resend) {
-      console.log(`📧 Email queued (Resend not configured): ${emailType} to ${to}`)
-      console.log(`   Verification URL: ${metadata?.verificationUrl}`)
+      logger.info(`Email queued (Resend not configured): ${emailType} to ${to}`)
+      logger.info(`   Verification URL: ${metadata?.verificationUrl}`)
       await logEmailEvent({
         customer_id: customerId,
         email_type: emailType,
@@ -95,7 +96,7 @@ async function sendEmail(
     })
 
     if (error) {
-      console.error(`❌ Failed to send email (${emailType}) to ${to}:`, error)
+      logger.error(`Failed to send email (${emailType}) to ${to}`, error)
       await logEmailEvent({
         customer_id: customerId,
         email_type: emailType,
@@ -108,7 +109,7 @@ async function sendEmail(
       return false
     }
 
-    console.log(`✅ Email sent (${emailType}) to ${to}`)
+    logger.info(`Email sent (${emailType}) to ${to}`)
     await logEmailEvent({
       customer_id: customerId,
       email_type: emailType,
@@ -121,7 +122,7 @@ async function sendEmail(
 
     return true
   } catch (error: any) {
-    console.error(`❌ Error sending email (${emailType}):`, error)
+    logger.error(`Error sending email (${emailType})`, error)
     await logEmailEvent({
       customer_id: customerId,
       email_type: emailType,
@@ -154,13 +155,13 @@ export async function createVerificationToken(agentId: string): Promise<string |
       })
 
     if (error) {
-      console.error('Error creating verification token:', error)
+      logger.error('Error creating verification token', error)
       return null
     }
 
     return rawToken // return raw token for the verification URL — DB stores only the hash
   } catch (error) {
-    console.error('Error creating verification token:', error)
+    logger.error('Error creating verification token:', error)
     return null
   }
 }
@@ -179,7 +180,7 @@ export async function checkResendRateLimit(agentId: string): Promise<{ allowed: 
       .gte('created_at', oneHourAgo)
 
     if (error) {
-      console.error('Error checking rate limit:', error)
+      logger.error('Error checking rate limit', error)
       return { allowed: false, remaining: 0 }
     }
 
@@ -189,7 +190,7 @@ export async function checkResendRateLimit(agentId: string): Promise<{ allowed: 
 
     return { allowed, remaining }
   } catch (error) {
-    console.error('Error checking rate limit:', error)
+    logger.error('Error checking rate limit:', error)
     return { allowed: false, remaining: 0 }
   }
 }
@@ -317,7 +318,7 @@ export async function verifyEmailToken(token: string): Promise<{
       .eq('id', tokenData.id)
 
     if (updateTokenError) {
-      console.error('Error marking token as used:', updateTokenError)
+      logger.error('Error marking token as used', updateTokenError)
       return { success: false, error: 'server_error' }
     }
 
@@ -328,13 +329,13 @@ export async function verifyEmailToken(token: string): Promise<{
       .eq('id', tokenData.agent_id)
 
     if (updateAgentError) {
-      console.error('Error marking agent as verified:', updateAgentError)
+      logger.error('Error marking agent as verified', updateAgentError)
       return { success: false, error: 'server_error' }
     }
 
     return { success: true, agentId: tokenData.agent_id }
   } catch (error) {
-    console.error('Error verifying email token:', error)
+    logger.error('Error verifying email token', error)
     return { success: false, error: 'server_error' }
   }
 }
@@ -419,7 +420,7 @@ export async function sendActivationEmail(
         .update({ activation_email_sent: true, updated_at: new Date().toISOString() })
         .eq('id', agentId)
     } catch (err) {
-      console.error('Error marking activation_email_sent:', err)
+      logger.error('Error marking activation_email_sent', err)
     }
   }
 
@@ -443,7 +444,7 @@ export async function getAgentByEmail(email: string): Promise<{ id: string; emai
 
     return data
   } catch (error) {
-    console.error('Error getting agent by email:', error)
+    logger.error('Error getting agent by email', error)
     return null
   }
 }
