@@ -17,9 +17,21 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 let fromImpl: (table: string) => any
 
 jest.mock('@/lib/db', () => ({
+  postgrestAdmin: {
+    from: (table: string) => fromImpl(table),
+  },
+  supabaseAdmin: {
+    from: (table: string) => fromImpl(table),
+  },
   createClient: jest.fn(() => ({
     from: (table: string) => fromImpl(table),
   })),
+}))
+
+// Mock AuthService — pilot-status uses getAuthUserId
+jest.mock('@/lib/services/AuthService', () => ({
+  getAuthUserId: jest.fn(() => Promise.resolve('agent-123')),
+  validateSession: jest.fn(),
 }))
 
 // Mock bcrypt
@@ -120,7 +132,7 @@ describe('Pilot Signup API', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.redirectTo).toBe('/setup')
+      expect(data.redirectTo).toBe('/dashboard/onboarding')
       
       // Verify the insert was called with pilot-specific fields
       expect(insertData).toBeDefined()

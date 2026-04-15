@@ -23,6 +23,11 @@ mockUpdate.mockReturnValue({ eq: mockEq })
 mockEq.mockResolvedValue({ data: null, error: null })
 
 jest.mock('@/lib/db', () => ({
+  postgrestAdmin: {
+    from: jest.fn(() => ({
+      update: mockUpdate,
+    })),
+  },
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
       update: mockUpdate,
