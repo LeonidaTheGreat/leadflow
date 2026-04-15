@@ -45,14 +45,11 @@ export async function GET(request: NextRequest) {
       id: user.id,
       email: user.email,
       firstName: user.first_name,
-      lastName: user.last_name,
-    },
+      lastName: user.last_name },
     currentSession: {
       id: session.id,
       expiresAt: session.expiresAt,
       createdAt: session.createdAt,
-      lastUsedAt: session.lastUsedAt,
-    },
-    activeSessions: sessions.length,
-  })
+      lastUsedAt: session.lastUsedAt },
+    activeSessions: sessions.length })
 }

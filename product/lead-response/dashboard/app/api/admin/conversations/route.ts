@@ -102,9 +102,7 @@ export async function GET(request: Request) {
             id: m.id,
             direction: m.direction === 'inbound' ? 'inbound' : 'outbound',
             body: m.message_body,
-            timestamp: m.created_at,
-          })),
-        }
+            timestamp: m.created_at })) }
       })
 
     // Apply outcome filter
@@ -118,6 +116,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ conversations })
   } catch (err: any) {
     logger.error('Conversations fetch error:', err)
-    return NextResponse.json({ error: 'Failed to load conversations', detail: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to load conversations' }, { status: 500 })
   }
 }

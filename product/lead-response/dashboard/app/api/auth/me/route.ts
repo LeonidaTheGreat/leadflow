@@ -41,8 +41,7 @@ export async function GET(request: NextRequest) {
       email: agent.email,
       firstName: agent.first_name,
       lastName: agent.last_name,
-      onboardingCompleted: agent.onboarding_completed ?? false,
-    })
+      onboardingCompleted: agent.onboarding_completed ?? false })
   } catch (err) {
     logger.error('[api/auth/me] Unexpected error:', err)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

@@ -68,43 +68,33 @@ export async function GET(request: NextRequest) {
             sent: delivery.sent,
             delivered: delivery.delivered,
             failed: delivery.failed,
-            pending: delivery.pending,
-          },
+            pending: delivery.pending },
           responseRate: {
             totalSent: response.totalSent,
             totalResponded: response.totalResponded,
-            responseRate: response.responseRate,
-          },
+            responseRate: response.responseRate },
           sequenceCompletion: {
             started: sequence.started,
             completed: sequence.completed,
-            completionRate: sequence.completionRate,
-          },
+            completionRate: sequence.completionRate },
           leadConversion: {
             totalLeads: conversion.totalLeads,
             convertedLeads: conversion.convertedLeads,
-            conversionRate: conversion.conversionRate,
-          },
+            conversionRate: conversion.conversionRate },
           responseTime: {
             avgResponseTime: respTime.avgResponseTime,
-            medianResponseTime: respTime.medianResponseTime,
-          },
-        },
-        timestamp: new Date().toISOString(),
-      },
+            medianResponseTime: respTime.medianResponseTime } },
+        timestamp: new Date().toISOString() },
       {
         headers: {
-          'Cache-Control': 'private, no-store',
-        },
-      }
+          'Cache-Control': 'private, no-store' } }
     )
   } catch (error) {
     logger.error('Error in analytics dashboard route:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch analytics data',
-      },
+        error: error instanceof Error ? error.message : 'Failed to fetch analytics data' },
       { status: 500 }
     )
   }

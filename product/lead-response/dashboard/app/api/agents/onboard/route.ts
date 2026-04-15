@@ -21,8 +21,7 @@ async function notifyPilotSignup(name: string, email: string) {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
-    })
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }) })
   } catch (err) {
     logger.error('Telegram notification failed (non-blocking):', err)
   }
@@ -46,8 +45,7 @@ export async function POST(request: NextRequest) {
       utmMedium,
       utmCampaign,
       utmContent,
-      utmTerm,
-    } = body
+      utmTerm } = body
 
     // Validate required fields — NO credit card or billing info needed
     if (!email || !password || !firstName || !lastName || !phoneNumber || !state) {
@@ -97,8 +95,7 @@ export async function POST(request: NextRequest) {
       utm_medium: utmMedium || null,
       utm_campaign: utmCampaign || null,
       utm_content: utmContent || null,
-      utm_term: utmTerm || null,
-    }
+      utm_term: utmTerm || null }
 
     // Only add aha fields if provided (columns may not exist yet)
     if (ahaCompleted !== undefined) {
@@ -131,8 +128,7 @@ export async function POST(request: NextRequest) {
           agent_id: agent.id,
           cal_com_link: calcomLink || null,
           twilio_phone_number: smsPhoneNumber || null,
-          created_at: new Date().toISOString(),
-        })
+          created_at: new Date().toISOString() })
 
       if (intError) {
         logger.error('Integration creation error:', intError)
@@ -148,8 +144,7 @@ export async function POST(request: NextRequest) {
         auto_response_enabled: true,
         sms_enabled: !!smsPhoneNumber,
         email_notifications: true,
-        created_at: new Date().toISOString(),
-      })
+        created_at: new Date().toISOString() })
 
     if (settingsError) {
       logger.error('Settings creation error:', settingsError)
@@ -172,9 +167,7 @@ export async function POST(request: NextRequest) {
           plan: 'pilot',
           durationDays: PILOT_DURATION_DAYS,
           startsAt: now.toISOString(),
-          expiresAt: pilotExpiresAt.toISOString(),
-        },
-      },
+          expiresAt: pilotExpiresAt.toISOString() } },
       { status: 200 }
     )
   } catch (error) {

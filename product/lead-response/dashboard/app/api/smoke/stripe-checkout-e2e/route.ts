@@ -63,8 +63,7 @@ export async function GET() {
     try {
       const customer = await stripe.customers.create({
         email: testEmail,
-        metadata: { agent_id: testAgentId, source: 'smoke_test' },
-      })
+        metadata: { agent_id: testAgentId, source: 'smoke_test' } })
       stripeCustomerId = customer.id
       addStep('create_customer', 'pass', `Customer ${customer.id}`, s1)
     } catch (err: any) {
@@ -89,8 +88,7 @@ export async function GET() {
         mode: 'subscription',
         success_url: 'https://leadflow-ai-five.vercel.app/dashboard?smoke=ok',
         cancel_url: 'https://leadflow-ai-five.vercel.app/pricing?smoke=cancelled',
-        metadata: { agent_id: testAgentId, source: 'smoke_test' },
-      })
+        metadata: { agent_id: testAgentId, source: 'smoke_test' } })
 
       if (!session.id || !session.url) {
         addStep('create_checkout_session', 'fail', 'Session created but missing id or url', s2)
@@ -108,14 +106,11 @@ export async function GET() {
       // Attach a test payment method to the customer
       const paymentMethod = await stripe.paymentMethods.create({
         type: 'card',
-        card: { token: 'tok_visa' },
-      })
+        card: { token: 'tok_visa' } })
       await stripe.paymentMethods.attach(paymentMethod.id, {
-        customer: stripeCustomerId!,
-      })
+        customer: stripeCustomerId! })
       await stripe.customers.update(stripeCustomerId!, {
-        invoice_settings: { default_payment_method: paymentMethod.id },
-      })
+        invoice_settings: { default_payment_method: paymentMethod.id } })
 
       const priceId = await resolveTestPriceId(stripe)
       const subscription = await stripe.subscriptions.create({
@@ -124,9 +119,7 @@ export async function GET() {
         metadata: {
           agent_id: testAgentId,
           tier: 'starter',
-          source: 'smoke_test',
-        },
-      })
+          source: 'smoke_test' } })
 
       stripeSubscriptionId = subscription.id
 
@@ -152,8 +145,7 @@ export async function GET() {
         status: 'trial',
         plan_tier: 'trial',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
 
       // Simulate what handleCheckoutComplete does: update agent + upsert subscription
       const subscription = await stripe!.subscriptions.retrieve(stripeSubscriptionId!)
@@ -167,8 +159,7 @@ export async function GET() {
         subscription_status: 'active',
         plan_tier: 'starter',
         mrr: (lineItem?.price?.unit_amount || 4900) / 100,
-        updated_at: new Date().toISOString(),
-      }).eq('id', testAgentId)
+        updated_at: new Date().toISOString() }).eq('id', testAgentId)
 
       // Upsert subscription record (mirrors webhook handler)
       await postgrestAdmin.from('subscriptions').upsert({
@@ -184,8 +175,7 @@ export async function GET() {
         cancel_at_period_end: subscription.cancel_at_period_end,
         metadata: subscription.metadata || {},
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'stripe_subscription_id' })
+        updated_at: new Date().toISOString() }, { onConflict: 'stripe_subscription_id' })
 
       addStep('webhook_db_writes', 'pass', 'Agent updated + subscription upserted', s4)
     } catch (err: any) {
@@ -326,8 +316,7 @@ function respond(
       ...(failedStep && { failure_point: failedStep.step }),
       steps,
       duration_ms: Date.now() - startTime,
-      timestamp: new Date().toISOString(),
-    },
+      timestamp: new Date().toISOString() },
     { status: allPassed ? 200 : 500 }
   )
 }

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       logger.error('Error fetching stuck agents:', error)
-      return NextResponse.json({ error: 'Database error', details: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     if (!agents || agents.length === 0) {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (err: any) {
     logger.error('Batch activation email error:', err)
-    return NextResponse.json({ error: 'Unexpected error', details: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
   }
 }
 
@@ -125,6 +125,6 @@ export async function GET(request: NextRequest) {
       description: 'Verified agents who have not completed onboarding and have not received an activation email'
     })
   } catch (err: any) {
-    return NextResponse.json({ error: 'Unexpected error', details: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
   }
 }

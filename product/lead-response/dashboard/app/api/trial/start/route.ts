@@ -30,8 +30,7 @@ export async function POST(request: NextRequest) {
       name,
       utm_source,
       utm_medium,
-      utm_campaign,
-    } = body
+      utm_campaign } = body
 
     // Validate required fields
     if (!email || !password) {
@@ -106,8 +105,7 @@ export async function POST(request: NextRequest) {
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .select('id, email, first_name, last_name, plan_tier, trial_ends_at')
       .single()
 
@@ -129,11 +127,9 @@ export async function POST(request: NextRequest) {
         source: 'trial_cta',
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
-      },
+        utm_campaign: utm_campaign || null },
       source: 'trial_cta',
-      created_at: new Date().toISOString(),
-    }).then(({ error }) => {
+      created_at: new Date().toISOString() }).then(({ error }) => {
       if (error) logger.error('Failed to log trial_started event:', error)
     })
 
@@ -143,8 +139,7 @@ export async function POST(request: NextRequest) {
         id: agent.id,
         email: agent.email,
         plan_tier: agent.plan_tier,
-        trial_ends_at: agent.trial_ends_at,
-      },
+        trial_ends_at: agent.trial_ends_at },
       JWT_SECRET,
       { expiresIn: '30d' }
     )
@@ -159,10 +154,8 @@ export async function POST(request: NextRequest) {
         firstName: agent.first_name,
         lastName: agent.last_name,
         planTier: agent.plan_tier,
-        trialEndsAt: agent.trial_ends_at,
-      },
-      redirectTo: '/dashboard/onboarding',
-    })
+        trialEndsAt: agent.trial_ends_at },
+      redirectTo: '/dashboard/onboarding' })
 
     // Set auth cookie (30-day trial)
     response.cookies.set('auth-token', token, {
@@ -170,8 +163,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: '/',
-    })
+      path: '/' })
 
     return response
 

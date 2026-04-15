@@ -29,8 +29,7 @@ const SAMPLE_LEADS = [
     latest_qualification: {
       intent: 'buy',
       is_qualified: true,
-      confidence_score: 0.87,
-    },
+      confidence_score: 0.87 },
     ai_drafted_response:
       "Hi Sarah! Thanks for reaching out about the listing on Zillow. I'd love to set up a showing for you. Are you available this weekend — Saturday or Sunday afternoon? I can also send over the full property details and recent comparable sales in the area. What works best for you?",
     is_sample: true,
@@ -42,8 +41,7 @@ const SAMPLE_LEADS = [
     dnc: false,
     source_metadata: {},
     responded_at: null,
-    last_contact_at: null,
-  },
+    last_contact_at: null },
   {
     id: 'sample-lead-002',
     name: 'Michael Chen',
@@ -65,8 +63,7 @@ const SAMPLE_LEADS = [
     latest_qualification: {
       intent: 'buy',
       is_qualified: true,
-      confidence_score: 0.94,
-    },
+      confidence_score: 0.94 },
     ai_drafted_response:
       "Hi Michael! That's great — being pre-approved speeds things up considerably. I have two condos in Mississauga that fit your budget and are available for immediate possession. Can I send you the details? If you like what you see, we could schedule viewings as early as tomorrow.",
     is_sample: true,
@@ -78,8 +75,7 @@ const SAMPLE_LEADS = [
     dnc: false,
     source_metadata: {},
     responded_at: null,
-    last_contact_at: null,
-  },
+    last_contact_at: null },
   {
     id: 'sample-lead-003',
     name: 'Emily Rodriguez',
@@ -101,8 +97,7 @@ const SAMPLE_LEADS = [
     latest_qualification: {
       intent: 'buy',
       is_qualified: false,
-      confidence_score: 0.61,
-    },
+      confidence_score: 0.61 },
     ai_drafted_response:
       "Hi Emily! Totally understand — finding the right neighbourhood is just as important as the home itself. I put together a quick comparison of Brampton vs. Mississauga for your budget range. Would a 15-minute call this week help? I can walk you through the pros and cons with recent data.",
     is_sample: true,
@@ -114,8 +109,7 @@ const SAMPLE_LEADS = [
     dnc: false,
     source_metadata: {},
     responded_at: null,
-    last_contact_at: null,
-  },
+    last_contact_at: null },
 ]
 
 /**
@@ -162,8 +156,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       eligible,
-      leads: eligible ? SAMPLE_LEADS : [],
-    })
+      leads: eligible ? SAMPLE_LEADS : [] })
   } catch (err) {
     logger.error('[sample-leads] unexpected error:', err)
     return NextResponse.json({ eligible: false, leads: [] })

@@ -86,8 +86,7 @@ async function generateAiResponse(lead: DemoLeadInput): Promise<string> {
       system: DEMO_SYSTEM_PROMPT,
       prompt: buildDemoPrompt(lead),
       maxTokens: 200,
-      temperature: 0.7,
-    } as any)
+      temperature: 0.7 } as any)
     return result.text.trim()
   } catch {
     return generateMockResponse(lead)
@@ -153,9 +152,7 @@ export async function POST(request: NextRequest) {
         demos_remaining: 0,
         cta: {
           text: 'Connect Follow Up Boss',
-          url: '/dashboard/onboarding#fub',
-        },
-      },
+          url: '/dashboard/onboarding#fub' } },
       { status: 200 }
     )
   }
@@ -167,8 +164,7 @@ export async function POST(request: NextRequest) {
       name: leadName,
       phone: leadPhone ?? undefined,
       source: leadSource ?? undefined,
-      property_interest: propertyInterest,
-    })
+      property_interest: propertyInterest })
   } catch (err) {
     logger.error('[demo/run] AI generation failed:', err)
     return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
@@ -196,8 +192,7 @@ export async function POST(request: NextRequest) {
       lead_phone: leadPhone,
       lead_source: leadSource,
       ai_response: aiResponse,
-      response_time_ms: responseTimeMs,
-    })
+      response_time_ms: responseTimeMs })
     .select('id')
     .single()
 
@@ -213,6 +208,5 @@ export async function POST(request: NextRequest) {
     demo_run_id: demoRun?.id ?? null,
     ai_response: aiResponse,
     response_time_ms: responseTimeMs,
-    demos_remaining: newDemosRemaining,
-  })
+    demos_remaining: newDemosRemaining })
 }

@@ -5,8 +5,7 @@ import {
   handleLeadCreated,
   handleLeadUpdated,
   handleStatusChanged,
-  handleLeadAssigned,
-} from '@/lib/services/fub-webhook-service'
+  handleLeadAssigned } from '@/lib/services/fub-webhook-service'
 import type { FubWebhookPayload } from '@/lib/types'
 import { logger } from '@/lib/logger'
 
@@ -44,8 +43,7 @@ export async function POST(request: NextRequest) {
     await logEvent({
       event_type: `fub_${payload.event}`,
       event_data: payload.data,
-      source: 'fub_webhook',
-    })
+      source: 'fub_webhook' })
 
     // Handle the event
     switch (payload.event) {
@@ -76,8 +74,7 @@ export async function POST(request: NextRequest) {
       await logEvent({
         event_type: 'fub_webhook_error',
         event_data: { error: error.message, stack: error.stack },
-        source: 'fub_webhook',
-      })
+        source: 'fub_webhook' })
     } catch (logError) {
       logger.error('Failed to log error:', logError)
     }

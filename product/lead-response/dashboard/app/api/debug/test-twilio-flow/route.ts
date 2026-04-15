@@ -75,8 +75,7 @@ export async function POST(request: Request) {
           lastName: 'Lead',
           phones: [{ value: phone, type: 'Mobile' }],
           source: 'Debug SMS',
-          stage: 'New Lead',
-        })
+          stage: 'New Lead' })
         
         if (newFubLead?.id) {
           log(`   ✅ Created in FUB: ${newFubLead.id}`)
@@ -84,8 +83,7 @@ export async function POST(request: Request) {
             success: true,
             action: 'created_in_fub',
             fub_id: newFubLead.id,
-            logs,
-          })
+            logs })
         } else {
           log('   ❌ createLeadInFub returned null')
           return NextResponse.json({ 

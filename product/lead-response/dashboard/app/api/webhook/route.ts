@@ -14,8 +14,27 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify API key — fail-closed
+    const apiKey = process.env.LEADFLOW_API_KEY
+    const authHeader = request.headers.get('authorization') || request.headers.get('x-api-key')
+    if (!apiKey) {
+      logger.error('LEADFLOW_API_KEY not configured — rejecting request')
+      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+    }
+    if (!authHeader) {
+      logger.error('Missing authorization header on generic webhook')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const token = authHeader.replace(/^Bearer\s+/i, '')
+    const crypto = await import('crypto')
+    const valid = crypto.timingSafeEqual(Buffer.from(token), Buffer.from(apiKey))
+    if (!valid) {
+      logger.error('Invalid API key on generic webhook')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
-    
+
     // Validate required fields
     const { name, email, phone, source, message, agent_id } = body
     
@@ -36,8 +55,7 @@ export async function POST(request: NextRequest) {
         success: true,
         lead_id: existingLead.id,
         existing: true,
-        message: 'Lead already exists',
-      })
+        message: 'Lead already exists' })
     }
 
     // Get agent (specified or default)
@@ -73,8 +91,7 @@ export async function POST(request: NextRequest) {
       source_metadata: body,
       status: 'new',
       consent_sms: true, // Assume consent from form submission
-      market: agent.market,
-    })
+      market: agent.market })
 
     if (leadError || !lead) {
       logger.error('Lead creation error:', leadError)
@@ -93,8 +110,7 @@ export async function POST(request: NextRequest) {
       phone: lead.phone,
       message,
       source,
-      metadata: body,
-    })
+      metadata: body })
 
     // Save qualification
     await supabaseAdmin.from('qualifications').insert({
@@ -109,8 +125,7 @@ export async function POST(request: NextRequest) {
       confidence_score: qualification.confidence_score,
       is_qualified: qualification.is_qualified,
       qualification_reason: qualification.qualification_reason,
-      raw_response: qualification.raw_response,
-    })
+      raw_response: qualification.raw_response })
 
     // Update lead with qualification data
     await updateLead(lead.id, {
@@ -120,15 +135,13 @@ export async function POST(request: NextRequest) {
       location: qualification.location,
       property_type: qualification.property_type,
       urgency_score: calculateLeadScore(qualification),
-      status: qualification.is_qualified ? 'qualified' : 'new',
-    })
+      status: qualification.is_qualified ? 'qualified' : 'new' })
 
     // Log event
     await logEvent({
       lead_id: lead.id,
       event_type: 'lead_received',
-      event_data: { source, qualification },
-    })
+      event_data: { source, qualification } })
 
     // Send AI SMS response if qualified
     let smsResult: any = { success: false, mock: true, messageSid: undefined }
@@ -136,8 +149,7 @@ export async function POST(request: NextRequest) {
     if (qualification.is_qualified && agent.settings.auto_respond) {
       const enrichedLead = { ...lead, latest_qualification: qualification }
       const aiResponse = await generateAiSmsResponse(enrichedLead, agent, {
-        trigger: 'initial',
-      })
+        trigger: 'initial' })
 
       smsResult = await sendAiSmsResponse(enrichedLead, agent, aiResponse.message)
 
@@ -152,12 +164,10 @@ export async function POST(request: NextRequest) {
           twilio_sid: smsResult.messageSid,
           twilio_status: smsResult.status,
           status: 'sent',
-          sent_at: new Date().toISOString(),
-        })
+          sent_at: new Date().toISOString() })
 
         await updateLead(lead.id, {
-          responded_at: new Date().toISOString(),
-        })
+          responded_at: new Date().toISOString() })
 
         logger.info('✅ AI SMS sent:', smsResult.messageSid)
       }
@@ -169,8 +179,7 @@ export async function POST(request: NextRequest) {
       qualified: qualification.is_qualified,
       confidence: qualification.confidence_score,
       sms_sent: smsResult.success,
-      sms_mock: smsResult.mock,
-    })
+      sms_mock: smsResult.mock })
   } catch (error: any) {
     logger.error('Webhook error:', error)
     return NextResponse.json(

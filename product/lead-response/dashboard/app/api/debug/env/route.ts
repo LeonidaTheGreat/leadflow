@@ -45,6 +45,5 @@ export async function GET() {
     sequences_error: sequencesError,
     sequences_accessible: !sequencesError,
     leads_error: leadsError,
-    leads_accessible: !leadsError,
-  })
+    leads_accessible: !leadsError })
 }

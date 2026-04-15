@@ -65,8 +65,7 @@ export async function POST(request: Request) {
         source: fubLead.source || 'fub_sync',
         status: 'new',
         consent_sms: false, // Will need explicit opt-in
-        consent_email: false,
-      })
+        consent_email: false })
       
       if (createError) {
         log(`❌ createLead error: ${createError.message}`)
@@ -89,8 +88,7 @@ export async function POST(request: Request) {
       lastName: 'Lead',
       phones: [{ value: phone, type: 'Mobile' }],
       source: 'SMS Inbound',
-      stage: 'New Lead',
-    })
+      stage: 'New Lead' })
     
     if (!newFubLead?.id) {
       log('❌ createLeadInFub returned null')
@@ -113,8 +111,7 @@ export async function POST(request: Request) {
       source: 'SMS Inbound',
       status: 'new',
       consent_sms: true,
-      consent_email: false,
-    })
+      consent_email: false })
     
     if (createError) {
       log(`❌ createLead error: ${createError.message}`)
@@ -127,8 +124,7 @@ export async function POST(request: Request) {
       action: 'full_flow_complete',
       fub_id: newFubLead.id,
       lead_id: newLead?.id,
-      logs,
-    })
+      logs })
     
   } catch (error: any) {
     log(`❌ FATAL: ${error.message}`)

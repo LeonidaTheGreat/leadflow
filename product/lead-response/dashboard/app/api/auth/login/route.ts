@@ -63,8 +63,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       userAgent: request.headers.get('user-agent') || undefined,
       ipAddress,
-      rememberMe,
-    })
+      rememberMe })
 
     // Update last login timestamp
     await supabase
@@ -86,8 +85,7 @@ export async function POST(request: NextRequest) {
         firstName: user.first_name,
         lastName: user.last_name,
         // onboardingCompleted drives the post-login wizard redirect
-        onboardingCompleted: user.onboarding_completed ?? false,
-      }
+        onboardingCompleted: user.onboarding_completed ?? false }
     })
 
     // Set HTTP-only cookie with session token
@@ -99,8 +97,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: cookieMaxAge,
-      path: '/',
-    })
+      path: '/' })
 
     return response
   } catch (error) {

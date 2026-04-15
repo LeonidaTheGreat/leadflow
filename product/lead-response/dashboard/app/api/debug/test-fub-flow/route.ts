@@ -18,8 +18,7 @@ export async function POST(request: Request) {
         success: true,
         action: 'found',
         fub_id: existing.id,
-        name: `${existing.firstName} ${existing.lastName}`,
-      })
+        name: `${existing.firstName} ${existing.lastName}` })
     }
     
     // Step 2: Create new lead
@@ -29,15 +28,13 @@ export async function POST(request: Request) {
       lastName: 'Test',
       phones: [{ value: phone, type: 'Mobile' }],
       source: 'Debug Test',
-      stage: 'New Lead',
-    })
+      stage: 'New Lead' })
     
     if (!newLead?.id) {
       logger.error('❌ Failed to create lead')
       return NextResponse.json({
         success: false,
-        error: 'createLeadInFub returned null',
-      }, { status: 500 })
+        error: 'createLeadInFub returned null' }, { status: 500 })
     }
     
     logger.info('✅ Created lead:', newLead.id)
@@ -46,15 +43,13 @@ export async function POST(request: Request) {
       success: true,
       action: 'created',
       fub_id: newLead.id,
-      name: `${newLead.firstName} ${newLead.lastName}`,
-    })
+      name: `${newLead.firstName} ${newLead.lastName}` })
     
   } catch (error: any) {
     logger.error('❌ Debug endpoint error:', error)
     return NextResponse.json({
       success: false,
       error: error.message,
-      stack: error.stack,
-    }, { status: 500 })
+      stack: error.stack }, { status: 500 })
   }
 }

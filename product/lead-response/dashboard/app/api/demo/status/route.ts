@@ -33,6 +33,5 @@ export async function GET(request: NextRequest) {
     demos_used: demosUsed,
     demos_remaining: demosRemaining,
     demo_limit: DEMO_LIMIT,
-    limit_reached: demosUsed >= DEMO_LIMIT,
-  })
+    limit_reached: demosUsed >= DEMO_LIMIT })
 }

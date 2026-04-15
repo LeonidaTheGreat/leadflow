@@ -26,33 +26,27 @@ export async function POST(request: NextRequest) {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
-          'Content-Type': 'application/json',
-        },
-      })
+          'Content-Type': 'application/json' } })
 
       if (response.ok) {
         const data = await response.json()
         return NextResponse.json({
           valid: true,
-          user: data.users?.[0] || null,
-        })
+          user: data.users?.[0] || null })
       } else if (response.status === 401) {
         return NextResponse.json({
           valid: false,
-          message: 'Invalid API key. Please check your credentials.',
-        })
+          message: 'Invalid API key. Please check your credentials.' })
       } else {
         return NextResponse.json({
           valid: false,
-          message: 'Could not verify API key. Please try again.',
-        })
+          message: 'Could not verify API key. Please try again.' })
       }
     } catch (fetchError) {
       logger.error('FUB API error:', fetchError)
       return NextResponse.json({
         valid: false,
-        message: 'Failed to connect to Follow Up Boss. Please try again.',
-      })
+        message: 'Failed to connect to Follow Up Boss. Please try again.' })
     }
   } catch (error) {
     logger.error('FUB verification error:', error)

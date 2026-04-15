@@ -5,8 +5,7 @@ import {
   sendPilotWelcomeEmail,
   sendPilotSetupCompleteEmail,
   sendPilotAhaMomentEmail,
-  sendPilotTrialCTAEmail,
-} from '@/lib/email-service'
+  sendPilotTrialCTAEmail } from '@/lib/email-service'
 import crypto from 'crypto'
 import { logger } from '@/lib/logger'
 
@@ -52,8 +51,7 @@ export async function POST(
         last_contact_type: contactType,
         support_notes: notes
           ? (notes || '') + `\n[${contactType.toUpperCase()}] ${new Date().toISOString()}: ${notes}`
-          : null,
-      })
+          : null })
       .eq('agent_id', agentId)
       .select()
       .single()
@@ -121,8 +119,7 @@ export async function PATCH(
       .from('pilot_progress')
       .update({
         stage: newStage,
-        stage_entered_at: new Date().toISOString(),
-      })
+        stage_entered_at: new Date().toISOString() })
       .eq('agent_id', agentId)
       .select()
       .single()
@@ -185,8 +182,7 @@ export async function PATCH(
     return NextResponse.json({
       success: true,
       pilot: updatedPilot,
-      emailSent,
-    })
+      emailSent })
   } catch (error) {
     logger.error('Failed to advance stage:', error)
     return NextResponse.json(

@@ -27,12 +27,11 @@ export async function GET(request: NextRequest) {
       registration: registrationStatus,
       delivery: deliveryHealth,
       riskLevel,
-      summary: buildSummary(riskLevel, registrationStatus, deliveryHealth),
-    })
+      summary: buildSummary(riskLevel, registrationStatus, deliveryHealth) })
   } catch (error: any) {
     logger.error('[a2p-status] Error:', error.message)
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     )
   }

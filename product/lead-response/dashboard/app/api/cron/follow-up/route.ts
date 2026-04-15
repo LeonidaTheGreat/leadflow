@@ -111,11 +111,11 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
     
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!cronSecret) {
+      return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 })
+    }
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check for test/dry-run mode
@@ -131,8 +131,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         skipped: true,
         reason: 'quiet_hours',
-        message: 'Outside sending hours (9 AM - 9 PM)',
-      })
+        message: 'Outside sending hours (9 AM - 9 PM)' })
     }
 
     // Step 1: Query active sequences due for sending (no nested joins to avoid FK requirement)
@@ -149,13 +148,11 @@ export async function GET(request: NextRequest) {
         {
           success: false,
           error: 'Failed to fetch sequences',
-          details: sequencesError.message,
           processed: 0,
           sent: 0,
           skipped: 0,
           failed: 0,
-          dry_run: isDryRun,
-        },
+          dry_run: isDryRun },
         { status: 500 }
       )
     }
@@ -168,8 +165,7 @@ export async function GET(request: NextRequest) {
         sent: 0,
         skipped: 0,
         failed: 0,
-        dry_run: isDryRun,
-      })
+        dry_run: isDryRun })
     }
 
     // Step 2: Collect unique lead IDs and fetch leads separately
@@ -186,13 +182,11 @@ export async function GET(request: NextRequest) {
         {
           success: false,
           error: 'Failed to fetch leads',
-          details: leadsError.message,
           processed: rawSequences.length,
           sent: 0,
           skipped: 0,
           failed: 0,
-          dry_run: isDryRun,
-        },
+          dry_run: isDryRun },
         { status: 500 }
       )
     }
@@ -221,15 +215,13 @@ export async function GET(request: NextRequest) {
     for (const lead of leadsData || []) {
       leadsMap[lead.id] = {
         ...lead,
-        agents: agentsMap[lead.agent_id] || null,
-      }
+        agents: agentsMap[lead.agent_id] || null }
     }
 
     // Assemble sequences with enriched lead/agent data
     const sequences = rawSequences.map((s: any) => ({
       ...s,
-      leads: leadsMap[s.lead_id] || null,
-    }))
+      leads: leadsMap[s.lead_id] || null }))
 
     logger.info(`📋 Found ${sequences.length} sequences to process`)
 
@@ -273,8 +265,7 @@ export async function GET(request: NextRequest) {
 
         // Generate contextual AI message
         const aiResponse = await generateAiSmsResponse(lead, agent, {
-          trigger: 'followup',
-        })
+          trigger: 'followup' })
 
         // Add TCPA-compliant footer and validate message length
         const complianceMessage = ensureSmsFitWithFooter(aiResponse.message)
@@ -288,8 +279,7 @@ export async function GET(request: NextRequest) {
             lead_name: lead.name,
             message: complianceMessage,
             message_length: complianceMessage.length,
-            dry_run: true,
-          })
+            dry_run: true })
           continue
         }
 
@@ -297,8 +287,7 @@ export async function GET(request: NextRequest) {
         const smsResult = await sendSms({
           to: lead.phone,
           body: complianceMessage,
-          statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status`,
-        })
+          statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status` })
 
         if (!smsResult.success) {
           logger.error(`❌ Failed to send SMS to ${lead.name}:`, smsResult.error)
@@ -318,8 +307,7 @@ export async function GET(request: NextRequest) {
             twilio_sid: smsResult.messageSid,
             twilio_status: smsResult.status,
             status: 'sent',
-            sent_at: new Date().toISOString(),
-          })
+            sent_at: new Date().toISOString() })
         } catch (msgErr: any) {
           logger.error(`❌ Failed to save message record for ${lead.name}:`, msgErr.message)
           // Continue anyway - SMS was sent, just not logged. Log to error tracking.
@@ -342,8 +330,7 @@ export async function GET(request: NextRequest) {
               last_sent_at: new Date().toISOString(),
               next_send_at: nextSendAt,
               status: newStatus,
-              updated_at: new Date().toISOString(),
-            })
+              updated_at: new Date().toISOString() })
             .eq('id', sequence.id)
           
           if (updateErr) {
@@ -364,8 +351,7 @@ export async function GET(request: NextRequest) {
           lead_name: lead.name,
           message: aiResponse.message,
           status: newStatus,
-          step: nextStep,
-        })
+          step: nextStep })
         
         sent++
 
@@ -382,8 +368,7 @@ export async function GET(request: NextRequest) {
       skipped,
       failed,
       dry_run: isDryRun,
-      results,
-    })
+      results })
 
   } catch (error: any) {
     logger.error('❌ Cron follow-up error:', error)
@@ -391,13 +376,11 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         error: 'Internal server error',
-        details: error.message,
         processed: 0,
         sent: 0,
         skipped: 0,
         failed: 0,
-        dry_run: false,
-      },
+        dry_run: false },
       { status: 500 }
     )
   }

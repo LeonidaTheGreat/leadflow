@@ -63,9 +63,7 @@ This pilot agent has not logged in or had any session activity in over ${INACTIV
           chat_id: TELEGRAM_CHAT_ID,
           text: message,
           parse_mode: 'HTML',
-          disable_web_page_preview: true,
-        }),
-      }
+          disable_web_page_preview: true }) }
     )
 
     if (!response.ok) {
@@ -88,7 +86,10 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret) {
+      return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 })
+    }
+    if (authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest) {
     if (sessionsError) {
       logger.error('[inactivity-alerts] Error fetching inactive sessions:', sessionsError)
       return NextResponse.json(
-        { error: 'Failed to fetch inactive sessions', details: sessionsError.message },
+        { error: 'Failed to fetch inactive sessions' },
         { status: 500 }
       )
     }
@@ -141,8 +142,7 @@ export async function GET(request: NextRequest) {
         message: 'No inactive agents found',
         checked: 0,
         alerted: 0,
-        skipped: 0,
-      })
+        skipped: 0 })
     }
 
     // Deduplicate by agent_id — keep only the most recent session per agent
@@ -154,8 +154,7 @@ export async function GET(request: NextRequest) {
       if (!existing || session.last_active_at > existing.last_active_at) {
         agentMap.set(agentId, {
           last_active_at: session.last_active_at,
-          agent: (session as any).real_estate_agents,
-        })
+          agent: (session as any).real_estate_agents })
       }
     }
 
@@ -196,8 +195,7 @@ export async function GET(request: NextRequest) {
           email,
           last_active_at,
           action: 'skipped',
-          reason: 'dedup_check_failed',
-        })
+          reason: 'dedup_check_failed' })
         continue
       }
 
@@ -213,8 +211,7 @@ export async function GET(request: NextRequest) {
           email,
           last_active_at,
           action: 'skipped',
-          reason: 'already_alerted_within_24h',
-        })
+          reason: 'already_alerted_within_24h' })
         continue
       }
 
@@ -227,8 +224,7 @@ export async function GET(request: NextRequest) {
           agent_id: agentId,
           email,
           last_active_at,
-          action: 'dry_run',
-        })
+          action: 'dry_run' })
         continue
       }
 
@@ -239,8 +235,7 @@ export async function GET(request: NextRequest) {
       const { error: insertError } = await supabase.from('inactivity_alerts').insert({
         agent_id: agentId,
         alerted_at: new Date().toISOString(),
-        channel: 'telegram',
-      })
+        channel: 'telegram' })
 
       if (insertError) {
         logger.error(
@@ -255,8 +250,7 @@ export async function GET(request: NextRequest) {
         agent_id: agentId,
         email,
         last_active_at,
-        action: 'alerted',
-      })
+        action: 'alerted' })
     }
 
     logger.info(
@@ -269,12 +263,11 @@ export async function GET(request: NextRequest) {
       alerted,
       skipped,
       dry_run: isDryRun,
-      results,
-    })
+      results })
   } catch (error: any) {
     logger.error('[inactivity-alerts] Unexpected error:', error)
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

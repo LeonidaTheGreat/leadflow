@@ -10,8 +10,7 @@ import {
   handleOptIn,
   handleSatisfactionReply,
   saveInboundMessage,
-  generateAndSaveAiResponse,
-} from '@/lib/services/inbound-sms-service'
+  generateAndSaveAiResponse } from '@/lib/services/inbound-sms-service'
 import type { Agent } from '@/lib/types'
 import { logger } from '@/lib/logger'
 import twilio from 'twilio'
@@ -125,8 +124,7 @@ export async function POST(request: NextRequest) {
       agentId: agent?.id,
       market: agent?.market,
       hasSettings: !!agent?.settings,
-      autoRespond: agent?.settings?.auto_respond,
-    })
+      autoRespond: agent?.settings?.auto_respond })
     const hasRequiredAgent = agent && agent.market && agent.settings
     const shouldAutoRespond = hasRequiredAgent && agent!.settings?.auto_respond !== false
     logger.info('🤖 Auto-respond decision:', { hasRequiredAgent, shouldAutoRespond })
@@ -147,8 +145,7 @@ export async function POST(request: NextRequest) {
 
       logger.info('✅ Agent response generated:', {
         action: aiResult.action,
-        confidence: aiResult.confidence,
-      })
+        confidence: aiResult.confidence })
 
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -169,10 +166,8 @@ export async function POST(request: NextRequest) {
         event_data: {
           error: error.message,
           stack: error.stack,
-          source: 'twilio_webhook',
-        },
-        source: 'twilio_webhook',
-      })
+          source: 'twilio_webhook' },
+        source: 'twilio_webhook' })
     } catch (logError) {
       logger.error('Failed to log error:', logError)
     }
@@ -213,8 +208,7 @@ export async function PUT(request: NextRequest) {
         twilio_status: status,
         error_code: errorCode,
         delivered_at: status === 'delivered' ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('twilio_sid', messageSid)
 
     if (error) {

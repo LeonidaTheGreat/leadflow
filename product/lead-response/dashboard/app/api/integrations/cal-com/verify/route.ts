@@ -24,21 +24,18 @@ export async function POST(request: NextRequest) {
     try {
       const response = await fetch(calcomLink, {
         method: 'HEAD',
-        redirect: 'follow',
-      })
+        redirect: 'follow' })
 
       if (response.ok) {
         return NextResponse.json({ valid: true })
       } else if (response.status === 404) {
         return NextResponse.json({
           valid: false,
-          message: 'Booking link not found',
-        })
+          message: 'Booking link not found' })
       } else {
         return NextResponse.json({
           valid: false,
-          message: 'Could not verify booking link',
-        })
+          message: 'Could not verify booking link' })
       }
     } catch (fetchError) {
       // If we can't reach it, but it's a valid format, we'll accept it
@@ -49,8 +46,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         valid: false,
-        message: 'Failed to verify booking link',
-      })
+        message: 'Failed to verify booking link' })
     }
   } catch (error) {
     logger.error('Cal.com verification error:', error)

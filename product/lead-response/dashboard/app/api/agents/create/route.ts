@@ -108,8 +108,7 @@ export async function POST(request: NextRequest) {
             utm_medium: sanitizeUtm(utm_medium),
             utm_campaign: sanitizeUtm(utm_campaign),
             utm_content: sanitizeUtm(utm_content),
-            utm_term: sanitizeUtm(utm_term),
-          })
+            utm_term: sanitizeUtm(utm_term) })
           .select('id')
           .single(),
         5000

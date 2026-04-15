@@ -77,8 +77,7 @@ export async function POST(request: Request) {
       lastName: 'Test',
       phones: [{ value: phone, type: 'Mobile' }],
       source: 'FormData Test',
-      stage: 'New Lead',
-    })
+      stage: 'New Lead' })
     
     if (!newFubLead?.id) {
       log('❌ Failed to create in FUB')
@@ -98,8 +97,7 @@ export async function POST(request: Request) {
       source: 'FormData Test',
       status: 'new',
       consent_sms: true,
-      consent_email: false,
-    })
+      consent_email: false })
     
     if (createError) {
       log(`❌ createLead error: ${createError.message}`)
@@ -112,8 +110,7 @@ export async function POST(request: Request) {
       action: 'created',
       fub_id: newFubLead.id,
       lead_id: newLead?.id,
-      logs,
-    })
+      logs })
     
   } catch (error: any) {
     log(`❌ FATAL: ${error.message}`)

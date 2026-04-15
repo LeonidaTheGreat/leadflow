@@ -32,8 +32,7 @@ export async function POST(request: NextRequest) {
           valid: false,
           message:
             'Phone number provisioning is not supported via this endpoint. ' +
-            'Please use /api/agents/onboarding/provision-phone to request a LeadFlow number.',
-        },
+            'Please use /api/agents/onboarding/provision-phone to request a LeadFlow number.' },
         { status: 400 }
       )
     }
@@ -59,10 +58,8 @@ export async function POST(request: NextRequest) {
           twilio_phone_number: cleanPhone,
           twilio_account_sid: accountSid,
           twilio_auth_token: authToken,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'agent_id',
-        })
+          updated_at: new Date().toISOString() }, {
+          onConflict: 'agent_id' })
 
       if (error) {
         logger.error('Twilio connection error:', error)
@@ -78,10 +75,8 @@ export async function POST(request: NextRequest) {
         .upsert({
           agent_id: agentId,
           twilio_phone_number: cleanPhone,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'agent_id',
-        })
+          updated_at: new Date().toISOString() }, {
+          onConflict: 'agent_id' })
 
       if (error) {
         logger.error('Twilio connection error:', error)
@@ -98,15 +93,12 @@ export async function POST(request: NextRequest) {
       .upsert({
         agent_id: agentId,
         sms_enabled: true,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'agent_id',
-      })
+        updated_at: new Date().toISOString() }, {
+        onConflict: 'agent_id' })
 
     return NextResponse.json({
       valid: true,
-      message: 'Twilio connected successfully',
-    })
+      message: 'Twilio connected successfully' })
   } catch (error) {
     logger.error('Twilio connect error:', error)
     return NextResponse.json(
@@ -127,8 +119,7 @@ export async function DELETE(request: NextRequest) {
         twilio_phone_number: null,
         twilio_account_sid: null,
         twilio_auth_token: null,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('agent_id', agentId)
 
     if (error) {
@@ -144,13 +135,11 @@ export async function DELETE(request: NextRequest) {
       .from('agent_settings')
       .update({
         sms_enabled: false,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('agent_id', agentId)
 
     return NextResponse.json({
-      message: 'Twilio disconnected successfully',
-    })
+      message: 'Twilio disconnected successfully' })
   } catch (error) {
     logger.error('Twilio disconnect error:', error)
     return NextResponse.json(

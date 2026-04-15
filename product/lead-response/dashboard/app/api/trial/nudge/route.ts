@@ -78,8 +78,7 @@ export async function GET(request: NextRequest) {
           const customer = await stripe.customers.create({
             email: agent.email,
             name: [agent.first_name, agent.last_name].filter(Boolean).join(' ') || undefined,
-            metadata: { agent_id: userId, source: 'trial_nudge' },
-          })
+            metadata: { agent_id: userId, source: 'trial_nudge' } })
           customerId = customer.id
 
           await supabaseAdmin
@@ -94,13 +93,11 @@ export async function GET(request: NextRequest) {
           line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
           mode: 'subscription',
           subscription_data: {
-            metadata: { agent_id: userId, plan: 'pro', upgraded_from: 'trial_nudge' },
-          },
+            metadata: { agent_id: userId, plan: 'pro', upgraded_from: 'trial_nudge' } },
           success_url: `${baseUrl}/dashboard?upgrade=success&plan=pro`,
           cancel_url: `${baseUrl}/dashboard?upgrade=cancelled`,
           automatic_tax: { enabled: true },
-          allow_promotion_codes: true,
-        })
+          allow_promotion_codes: true })
 
         checkoutUrl = session.url
       } catch (stripeError: any) {
@@ -121,8 +118,7 @@ export async function GET(request: NextRequest) {
       isExpired,
       daysRemaining,
       expiresAt: expiresAt?.toISOString() ?? null,
-      checkoutUrl,
-    })
+      checkoutUrl })
   } catch (error: any) {
     logger.error('Trial nudge error:', error)
     return NextResponse.json({ error: 'Internal error', shouldShow: false }, { status: 500 })

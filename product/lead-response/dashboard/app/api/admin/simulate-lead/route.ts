@@ -79,16 +79,14 @@ export async function POST(request: Request) {
       conversation.push({
         role: 'lead',
         message: leadMessage,
-        timestamp: leadTimestamp,
-      })
+        timestamp: leadTimestamp })
 
       // AI response
       const aiMessage = generateAiResponse(turn, name, property)
       conversation.push({
         role: 'ai',
         message: aiMessage,
-        timestamp: aiTimestamp,
-      })
+        timestamp: aiTimestamp })
     }
 
     // Store in lead_simulations table
@@ -101,8 +99,7 @@ export async function POST(request: Request) {
         property_interest: property,
         conversation,
         outcome: 'completed',
-        triggered_by: 'stojan',
-      })
+        triggered_by: 'stojan' })
       .select('id, created_at')
       .single()
 
@@ -113,18 +110,16 @@ export async function POST(request: Request) {
         id: null,
         conversation,
         outcome: 'completed',
-        warning: 'Simulation ran but could not be saved',
-      })
+        warning: 'Simulation ran but could not be saved' })
     }
 
     return NextResponse.json({
       id: data.id,
       conversation,
       outcome: 'completed',
-      createdAt: data.created_at,
-    })
+      createdAt: data.created_at })
   } catch (err: any) {
     logger.error('Simulation error:', err)
-    return NextResponse.json({ error: 'Simulation failed', detail: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Simulation failed' }, { status: 500 })
   }
 }

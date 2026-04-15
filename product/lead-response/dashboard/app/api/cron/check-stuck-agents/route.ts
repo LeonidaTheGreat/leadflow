@@ -44,14 +44,13 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         message: `Checked for stuck agents. Created ${result.alerts_created} alerts.`,
-        alerts_created: result.alerts_created,
-      },
+        alerts_created: result.alerts_created },
       { status: 200 }
     )
   } catch (error: any) {
     logger.error('[/api/cron/check-stuck-agents] Unexpected error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

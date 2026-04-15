@@ -49,8 +49,7 @@ export async function POST(request: NextRequest) {
     const breakdown: Record<string, number> = {
       starter: 0,
       professional: 0,
-      enterprise: 0,
-    }
+      enterprise: 0 }
 
     let hasMore = true
     let startingAfter: string | undefined
@@ -59,8 +58,7 @@ export async function POST(request: NextRequest) {
       const subscriptions = await stripe!.subscriptions.list({
         status: 'active',
         limit: 100,
-        ...(startingAfter && { starting_after: startingAfter }),
-      })
+        ...(startingAfter && { starting_after: startingAfter }) })
 
       for (const sub of subscriptions.data) {
         const mrr = calculateMRR(sub)
@@ -91,8 +89,7 @@ export async function POST(request: NextRequest) {
 
     await supabase.from('mrr_snapshots').insert({
       ...snapshot,
-      recorded_at: new Date().toISOString(),
-    })
+      recorded_at: new Date().toISOString() })
 
     // Log summary
     logger.info(`📊 MRR Snapshot:`)
@@ -102,8 +99,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: snapshot,
-    })
+      data: snapshot })
   } catch (error: any) {
     logger.error('MRR snapshot error:', error)
     return NextResponse.json(
@@ -132,15 +128,12 @@ export async function GET(request: NextRequest) {
           breakdown: { starter: 0, professional: 0, enterprise: 0 },
           customer_count: 0,
           arr: 0,
-          date: null,
-        },
-      })
+          date: null } })
     }
 
     return NextResponse.json({
       success: true,
-      data: latestSnapshot,
-    })
+      data: latestSnapshot })
   } catch (error) {
     logger.error('MRR fetch error:', error)
     return NextResponse.json(

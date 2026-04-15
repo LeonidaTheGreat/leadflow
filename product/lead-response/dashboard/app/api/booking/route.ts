@@ -75,14 +75,12 @@ export async function GET(request: NextRequest) {
       agentUsername,
       leadName: lead?.name || undefined,
       leadEmail: lead?.email || undefined,
-      leadPhone: lead?.phone || undefined,
-    })
+      leadPhone: lead?.phone || undefined })
 
     return NextResponse.json({
       success: true,
       booking_link: bookingLink,
-      agent_username: agentUsername,
-    })
+      agent_username: agentUsername })
 
   } catch (error: any) {
     logger.error('❌ Booking API error:', error)
@@ -164,8 +162,7 @@ export async function POST(request: NextRequest) {
       agent_id: agent.id,
       start_time,
       end_time,
-      notes,
-    })
+      notes })
 
   } catch (error: any) {
     logger.error('❌ Create booking error:', error)

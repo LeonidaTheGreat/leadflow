@@ -46,9 +46,7 @@ export async function POST(request: NextRequest) {
         Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
         'Content-Type': 'application/json',
         'X-System': 'LeadFlow AI',
-        'X-System-Key': apiKey,
-      },
-    })
+        'X-System-Key': apiKey } })
 
     if (!fubResponse.ok) {
       if (fubResponse.status === 401) {
@@ -90,8 +88,7 @@ export async function POST(request: NextRequest) {
           fub_api_key: hashedKey, // store only SHA-256 hash, never the raw key
           fub_connected: true,
           current_step: 'webhook',
-          updated_at: now,
-        },
+          updated_at: now },
         { onConflict: 'agent_id' }
       )
 
@@ -104,6 +101,5 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     valid: true,
-    fubUser,
-  })
+    fubUser })
 }

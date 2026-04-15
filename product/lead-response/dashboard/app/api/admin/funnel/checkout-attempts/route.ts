@@ -72,8 +72,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           : 0,
         abandonment_rate: counts.initiated > 0
           ? Math.round((counts.expired / counts.initiated) * 10000) / 100
-          : 0,
-      }))
+          : 0 }))
 
     // Totals
     const totalInitiated = (attempts ?? []).length
@@ -92,10 +91,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         abandonment_rate: totalInitiated > 0
           ? Math.round((totalExpired / totalInitiated) * 10000) / 100
           : 0,
-        as_of: new Date().toISOString(),
-      },
-      daily,
-    })
+        as_of: new Date().toISOString() },
+      daily })
   } catch (err: any) {
     logger.error('[checkout-attempts] error:', err?.message ?? err)
     return NextResponse.json(

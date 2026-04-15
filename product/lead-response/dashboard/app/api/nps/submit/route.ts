@@ -5,8 +5,7 @@ import {
   hashToken,
   isTokenUsed,
   markTokenUsed,
-  submitNPSResponse,
-} from '@/lib/nps-service'
+  submitNPSResponse } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'

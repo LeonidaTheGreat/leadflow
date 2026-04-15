@@ -45,8 +45,7 @@ export async function POST(request: NextRequest) {
   const updateData: Record<string, any> = {
     onboarding_completed: true,
     onboarding_completed_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
+    updated_at: new Date().toISOString() }
 
   if (completionPayload) {
     if (completionPayload.ahaCompleted === true) {
@@ -74,6 +73,5 @@ export async function POST(request: NextRequest) {
     success: true,
     message: 'Onboarding completed',
     agentId: authenticatedId,
-    onboardingCompletedAt: updateData.onboarding_completed_at,
-  })
+    onboardingCompletedAt: updateData.onboarding_completed_at })
 }

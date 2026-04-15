@@ -36,6 +36,5 @@ export async function GET(request: NextRequest) {
     currentStep: step,
     fubConnected: step >= 1,
     phoneConfigured: step >= 2,
-    smsVerified: step >= 3,
-  })
+    smsVerified: step >= 3 })
 }

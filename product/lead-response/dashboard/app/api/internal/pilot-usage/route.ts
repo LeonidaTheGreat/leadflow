@@ -122,8 +122,7 @@ export async function GET(req: NextRequest) {
         sessionsLast7d,
         topPage,
         inactiveHours,
-        atRisk: inactiveHours !== null && inactiveHours > 72,
-      }
+        atRisk: inactiveHours !== null && inactiveHours > 72 }
     })
 
     return NextResponse.json({ pilots, generatedAt: now.toISOString() })

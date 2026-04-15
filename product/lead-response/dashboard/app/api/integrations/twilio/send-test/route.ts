@@ -45,8 +45,7 @@ export async function POST(request: NextRequest) {
     const message = await twilioClient.messages.create({
       body: `Hi ${displayName}! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI`,
       from: fromNumber,
-      to: formattedPhone,
-    })
+      to: formattedPhone })
 
     if (!message.sid) {
       return NextResponse.json(
@@ -58,8 +57,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Test SMS sent successfully',
-      messageSid: message.sid,
-    })
+      messageSid: message.sid })
   } catch (error: any) {
     logger.error('Twilio error:', error)
 

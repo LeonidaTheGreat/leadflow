@@ -28,8 +28,7 @@ export async function POST(request: NextRequest) {
     .update({
       fub_onboarding_completed: true,
       fub_onboarding_step: 4,
-      updated_at: now,
-    })
+      updated_at: now })
     .eq('id', agentId)
 
   if (error) {
@@ -45,8 +44,7 @@ export async function POST(request: NextRequest) {
         agent_id: agentId,
         completed_at: now,
         current_step: 'complete',
-        updated_at: now,
-      },
+        updated_at: now },
       { onConflict: 'agent_id' }
     )
 

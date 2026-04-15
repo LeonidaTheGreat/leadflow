@@ -43,8 +43,7 @@ export async function GET(request: NextRequest) {
       const lead = realLeads[0]
       return NextResponse.json({
         received: true,
-        leadName: lead.name || 'Unknown Lead',
-      })
+        leadName: lead.name || 'Unknown Lead' })
     }
 
     return NextResponse.json({ received: false })

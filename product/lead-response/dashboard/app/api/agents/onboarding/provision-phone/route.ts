@@ -69,8 +69,7 @@ export async function POST(request: NextRequest) {
           phoneNumber: existingE164,
           phoneNumberClean: cleanPhone,
           sid: existingIntegration.twilio_phone_sid ?? undefined,
-          alreadyProvisioned: true,
-        })
+          alreadyProvisioned: true })
       }
 
       if (existingRaw) {
@@ -81,8 +80,7 @@ export async function POST(request: NextRequest) {
           success: true,
           phoneNumber: e164,
           phoneNumberClean: digits,
-          alreadyProvisioned: true,
-        })
+          alreadyProvisioned: true })
       }
     }
 
@@ -138,8 +136,7 @@ export async function POST(request: NextRequest) {
           const poolClient = twilio(accountSid, authToken)
           await poolClient.incomingPhoneNumbers(poolNumber.sid).update({
             smsUrl: smsWebhookUrl,
-            smsMethod: 'POST',
-          })
+            smsMethod: 'POST' })
         } catch (updateErr: any) {
           logger.warn('[provision-phone] Could not set smsUrl on pool number:', updateErr?.message)
           // Non-fatal — number still assigned, smsUrl can be configured later
@@ -167,8 +164,7 @@ export async function POST(request: NextRequest) {
               twilio_phone_number: cleanPhone,
               twilio_phone_sid: poolNumber.sid,
               twilio_phone_e164: poolNumber.e164,
-              updated_at: new Date().toISOString(),
-            },
+              updated_at: new Date().toISOString() },
             { onConflict: 'agent_id' }
           )
 
@@ -205,8 +201,7 @@ export async function POST(request: NextRequest) {
           phoneNumber: poolNumber.e164,
           phoneNumberClean: cleanPhone,
           sid: poolNumber.sid,
-          fromPool: true,
-        })
+          fromPool: true })
       }
     }
 
@@ -217,8 +212,7 @@ export async function POST(request: NextRequest) {
     const client = twilio(accountSid, authToken)
 
     const searchParams: Record<string, string | boolean> = {
-      smsEnabled: true,
-    }
+      smsEnabled: true }
     if (areaCode) {
       searchParams.areaCode = areaCode
     }
@@ -271,8 +265,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: 'no_numbers_available',
           message: 'No numbers available right now. Please try again in a few minutes, or bring your own Twilio number.',
-          retryable: true,
-        },
+          retryable: true },
         { status: 503 }
       )
     }
@@ -292,8 +285,7 @@ export async function POST(request: NextRequest) {
       const createParams: Record<string, string> = {
         phoneNumber: selectedNumber,
         friendlyName: `LeadFlow Agent ${agentId}`,
-        smsMethod: 'POST',
-      }
+        smsMethod: 'POST' }
       if (onDemandSmsUrl) {
         createParams.smsUrl = onDemandSmsUrl
       }
@@ -319,8 +311,7 @@ export async function POST(request: NextRequest) {
           twilio_phone_number: cleanPhone,
           twilio_phone_sid: provisionedNumber.sid,
           twilio_phone_e164: assignedNumber,
-          updated_at: new Date().toISOString(),
-        },
+          updated_at: new Date().toISOString() },
         { onConflict: 'agent_id' }
       )
 
@@ -341,8 +332,7 @@ export async function POST(request: NextRequest) {
         {
           agent_id: agentId,
           sms_enabled: true,
-          updated_at: new Date().toISOString(),
-        },
+          updated_at: new Date().toISOString() },
         { onConflict: 'agent_id' }
       )
 
@@ -352,8 +342,7 @@ export async function POST(request: NextRequest) {
       .update({
         phone_configured: true,
         onboarding_step: 2,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('id', agentId)
     logger.info(`[provision-phone] Provisioned: ${assignedNumber} for agent: ${agentId}`)
 
@@ -361,8 +350,7 @@ export async function POST(request: NextRequest) {
       success: true,
       phoneNumber: assignedNumber,
       phoneNumberClean: cleanPhone,
-      sid: provisionedNumber.sid,
-    })
+      sid: provisionedNumber.sid })
   } catch (error: any) {
     logger.error('[provision-phone] Unexpected error:', error?.message)
     return NextResponse.json(

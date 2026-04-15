@@ -21,8 +21,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-}
+  'Access-Control-Allow-Headers': 'Content-Type' }
 
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders })
@@ -82,11 +81,9 @@ export async function POST(request: NextRequest) {
           status: 'nurture',
           utm_source: utmSource,
           utm_medium: utmMedium,
-          utm_campaign: utmCampaign,
-        },
+          utm_campaign: utmCampaign },
         {
-          onConflict: 'email',
-        }
+          onConflict: 'email' }
       )
 
     if (dbError) {

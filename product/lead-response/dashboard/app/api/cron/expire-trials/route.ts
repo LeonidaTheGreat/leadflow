@@ -45,8 +45,7 @@ export async function POST(request: NextRequest) {
       agent_id: agentId,
       event_data: {
         action: 'trial_auto_expired',
-        timestamp: new Date().toISOString(),
-      },
+        timestamp: new Date().toISOString() },
       source: 'cron_job',
       created_at: new Date().toISOString()
     }))
@@ -77,9 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Cron job failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
+        error: 'Cron job failed' },
       { status: 500 }
     )
   }

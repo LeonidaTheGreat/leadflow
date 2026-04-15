@@ -23,8 +23,7 @@ export async function POST(request: NextRequest) {
         email: email?.toLowerCase()?.trim(),
         valid: false,
         error: validator.getErrors()[0]?.message || 'Invalid email format',
-        errors: validator.getErrors(),
-      });
+        errors: validator.getErrors() });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -53,8 +52,7 @@ export async function POST(request: NextRequest) {
         exists: true,
         agentStatus: existingAgent.status,
         message: 'Email is already registered',
-        suggestion: generateEmailSuggestion(normalizedEmail),
-      });
+        suggestion: generateEmailSuggestion(normalizedEmail) });
     }
 
     // Check if there's an incomplete draft with this email
@@ -80,10 +78,8 @@ export async function POST(request: NextRequest) {
             draftId: existingDraft.id,
             currentStep: existingDraft.current_step,
             completedSteps: existingDraft.completed_steps,
-            lastUpdatedAt: existingDraft.last_updated_at,
-          },
-          message: 'Email is available but has an existing draft',
-        });
+            lastUpdatedAt: existingDraft.last_updated_at },
+          message: 'Email is available but has an existing draft' });
       }
     }
 
@@ -93,8 +89,7 @@ export async function POST(request: NextRequest) {
       email: normalizedEmail,
       valid: true,
       hasDraft: false,
-      message: 'Email is available',
-    });
+      message: 'Email is available' });
 
   } catch (error) {
     logger.error('Email check error:', error);
@@ -125,8 +120,7 @@ export async function GET(request: NextRequest) {
     const mockRequest = new Request('http://localhost', {
       method: 'POST',
       body: JSON.stringify({ email }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+      headers: { 'Content-Type': 'application/json' } });
 
     // @ts-ignore - creating a mock NextRequest
     return POST(new NextRequest(mockRequest));

@@ -37,9 +37,7 @@ function buildTestPayload(phoneNumber: string): FubWebhookPayload {
       phones: [{ value: phoneNumber, type: 'mobile', isPrimary: 1 }],
       source: TEST_LEAD_SOURCE,
       status: 'New Lead',
-      consents: { sms: true, email: false },
-    },
-  }
+      consents: { sms: true, email: false } } }
 }
 
 function signPayload(payload: string, secret: string): string {
@@ -99,8 +97,7 @@ export async function POST(request: NextRequest) {
   // Prepare request headers
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'x-test-lead': 'true',
-  }
+    'x-test-lead': 'true' }
 
   // Sign if webhook secret is configured
   const webhookSecret = process.env.FUB_WEBHOOK_SECRET
@@ -116,8 +113,7 @@ export async function POST(request: NextRequest) {
     webhookResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers,
-      body: payloadStr,
-    })
+      body: payloadStr })
   } catch (err: any) {
     logger.error('[test-lead] Failed to reach webhook endpoint:', err?.message)
     return NextResponse.json(
@@ -145,6 +141,5 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    message: 'Test lead sent — you should receive an SMS shortly',
-  })
+    message: 'Test lead sent — you should receive an SMS shortly' })
 }

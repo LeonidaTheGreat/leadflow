@@ -78,10 +78,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           onboarded: 0,
           never_activated: 0,
           as_of: now.toISOString(),
-          window_days: windowDays,
-        },
-        segments: { active: [], onboarded: [], never_activated: [] },
-      })
+          window_days: windowDays },
+        segments: { active: [], onboarded: [], never_activated: [] } })
     }
 
     const agentIds: string[] = allAgents.map((a: any) => a.id)
@@ -99,8 +97,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const connected = Boolean(row.follow_up_boss_api_key && row.follow_up_boss_api_key !== '')
       fubMap.set(row.agent_id, {
         connected,
-        connected_at: connected ? (row.updated_at ?? null) : null,
-      })
+        connected_at: connected ? (row.updated_at ?? null) : null })
     }
 
     // 3. Fetch recent leads (within window) per agent
@@ -176,8 +173,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const segments: { active: AgentRow[]; onboarded: AgentRow[]; never_activated: AgentRow[] } = {
       active: [],
       onboarded: [],
-      never_activated: [],
-    }
+      never_activated: [] }
 
     for (const agent of allAgents) {
       const fub = fubMap.get(agent.id)
@@ -207,8 +203,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         fub_connected_at: fubConnectedAt,
         leads_last_7d: leadsInWindow,
         sms_sent_last_7d: smsInWindow,
-        last_activity_at: lastActivityAt,
-      }
+        last_activity_at: lastActivityAt }
 
       if (fubConnected && leadsInWindow > 0 && smsInWindow > 0) {
         segments.active.push(agentRow)
@@ -226,10 +221,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         onboarded: segments.onboarded.length,
         never_activated: segments.never_activated.length,
         as_of: now.toISOString(),
-        window_days: windowDays,
-      },
-      segments,
-    })
+        window_days: windowDays },
+      segments })
   } catch (err: any) {
     logger.error('[trial-activation] error:', err?.message ?? err)
     return NextResponse.json(

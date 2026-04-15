@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   verifySurveyToken,
   hashToken,
-  isTokenUsed,
-} from '@/lib/nps-service'
+  isTokenUsed } from '@/lib/nps-service'
 import { supabaseServer } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
 
@@ -35,8 +34,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         valid: true,
         alreadyResponded: true,
-        agent: null,
-      })
+        agent: null })
     }
 
     // Get agent info
@@ -59,10 +57,8 @@ export async function GET(request: NextRequest) {
       agent: {
         id: agent.id,
         name: `${agent.first_name} ${agent.last_name}`,
-        email: agent.email,
-      },
-      trigger: payload.trigger,
-    })
+        email: agent.email },
+      trigger: payload.trigger })
   } catch (error: any) {
     logger.error('Error verifying NPS token:', error)
     return NextResponse.json(

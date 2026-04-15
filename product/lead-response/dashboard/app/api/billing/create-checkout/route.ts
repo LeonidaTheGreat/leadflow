@@ -41,8 +41,7 @@ const PRICE_ID_ENV_MAP: Record<string, string> = {
   pro_monthly:     'STRIPE_PRICE_PRO_MONTHLY',
   pro_annual:      'STRIPE_PRICE_PRO_ANNUAL',
   team_monthly:    'STRIPE_PRICE_TEAM_MONTHLY',
-  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL',
-}
+  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL' }
 
 /**
  * Validate a Stripe Price ID looks correct.
@@ -52,7 +51,7 @@ const PRICE_ID_ENV_MAP: Record<string, string> = {
  * This rejects placeholder values like price_starter_49, price_pro_149, price_team_399.
  */
 function isValidPriceId(id: string | undefined): id is string {
-  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,}$/.test(id)
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14 }$/.test(id)
 }
 
 /** Validate a UUID v4 format */
@@ -127,8 +126,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: `Invalid pricing tier: ${tier}. Must be one of: ${Object.keys(PRICING_TIERS).join(', ')}`,
-          code: 'INVALID_TIER',
-        },
+          code: 'INVALID_TIER' },
         { status: 400 }
       )
     }
@@ -171,8 +169,7 @@ export async function POST(request: NextRequest) {
         {
           error: `Billing is not configured for the "${tier}" plan. Contact support.`,
           code: 'PRICE_NOT_CONFIGURED',
-          envVar: envVarName,
-        },
+          envVar: envVarName },
         { status: 503 }
       )
     }
@@ -219,8 +216,7 @@ export async function POST(request: NextRequest) {
     } else {
       const customer = await stripe.customers.create({
         email,
-        metadata: { agent_id: agentId },
-      })
+        metadata: { agent_id: agentId } })
       customerId = customer.id
     }
 
@@ -235,14 +231,11 @@ export async function POST(request: NextRequest) {
         metadata: {
           agent_id: agentId,
           tier: tier.split('_')[0], // 'starter' | 'professional' | 'enterprise'
-          source: 'onboarding_flow',
-        },
-      },
+          source: 'onboarding_flow' } },
       success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/pricing?cancelled=true`,
       automatic_tax: { enabled: true },
-      allow_promotion_codes: true,
-    })
+      allow_promotion_codes: true })
 
     // Log checkout session to checkout_sessions table (with 5s timeout)
     const tierInterval = tier.endsWith('_annual') ? 'year' : 'month'
@@ -256,8 +249,7 @@ export async function POST(request: NextRequest) {
           stripe_session_id: session.id,
           status: 'pending',
           url: session.url,
-          created_at: new Date().toISOString(),
-        }),
+          created_at: new Date().toISOString() }),
         5000
       )
     } catch (err: any) {
@@ -271,7 +263,7 @@ export async function POST(request: NextRequest) {
 
     if (error.type === 'StripeInvalidRequestError') {
       return NextResponse.json(
-        { error: `Stripe error: ${error.message}`, code: 'STRIPE_INVALID_REQUEST' },
+        { error: 'Service error', code: 'STRIPE_INVALID_REQUEST' },
         { status: 400 }
       )
     }

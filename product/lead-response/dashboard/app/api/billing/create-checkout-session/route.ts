@@ -15,8 +15,7 @@ function getPriceIdForPlan(planId: string): string | null {
   const priceIdMap: Record<string, string> = {
     starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
     pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
-    team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '',
-  }
+    team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
   return priceIdMap[planId] || null
 }
 
@@ -84,8 +83,7 @@ export async function POST(request: NextRequest) {
       line_items: [
         {
           price: priceId,
-          quantity: 1,
-        },
+          quantity: 1 },
       ],
       customer_email: agent.email,
       client_reference_id: agent.id,
@@ -93,9 +91,7 @@ export async function POST(request: NextRequest) {
       cancel_url: `${new URL(request.url).origin}/settings/billing?upgrade=cancelled`,
       metadata: {
         agent_id: agent.id,
-        plan_id: planId,
-      },
-    })
+        plan_id: planId } })
 
     return NextResponse.json({ url: session.url })
   } catch (error) {

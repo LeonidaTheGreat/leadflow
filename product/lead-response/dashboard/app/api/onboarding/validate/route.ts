@@ -29,8 +29,7 @@ export async function POST(request: NextRequest) {
         valid: isValid,
         errors: onboardingValidator.getErrors(),
         errorsByField: onboardingValidator.getErrorsByField(),
-        message: isValid ? 'All fields are valid' : 'Validation failed',
-      });
+        message: isValid ? 'All fields are valid' : 'Validation failed' });
     }
 
     // Validate specific step
@@ -52,8 +51,7 @@ export async function POST(request: NextRequest) {
       step,
       errors: onboardingValidator.getErrors(),
       errorsByField: onboardingValidator.getErrorsByField(),
-      message: isValid ? `${step} is valid` : `Validation failed for ${step}`,
-    });
+      message: isValid ? `${step} is valid` : `Validation failed for ${step}` });
 
   } catch (error) {
     logger.error('Validation error:', error);

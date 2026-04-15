@@ -53,8 +53,7 @@ export async function POST(request: Request) {
         token,
         expires_at: expiresAt,
         label,
-        created_by: 'stojan',
-      })
+        created_by: 'stojan' })
       .select('token, expires_at')
       .single()
 
@@ -71,11 +70,10 @@ export async function POST(request: Request) {
     return NextResponse.json({
       token: data.token,
       url,
-      expiresAt: data.expires_at,
-    })
+      expiresAt: data.expires_at })
   } catch (err: any) {
     logger.error('Demo link creation error:', err)
-    return NextResponse.json({ error: 'Failed to create demo link', detail: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create demo link' }, { status: 500 })
   }
 }
 
@@ -106,9 +104,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       valid: !isExpired,
       expiresAt: data.expires_at,
-      expired: isExpired,
-    })
+      expired: isExpired })
   } catch (err: any) {
-    return NextResponse.json({ valid: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ valid: false, error: 'Internal server error' }, { status: 500 })
   }
 }

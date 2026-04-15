@@ -61,8 +61,7 @@ export async function GET(request: NextRequest) {
         first_name: agent.first_name || '',
         last_name: agent.last_name || '',
         hours_in_stage: hoursInStage,
-        is_stuck: isStuck,
-      }
+        is_stuck: isStuck }
     })
 
     // Sort by stuck first, then by hours in stage descending

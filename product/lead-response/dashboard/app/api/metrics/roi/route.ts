@@ -177,8 +177,7 @@ export async function GET(request: NextRequest) {
       appointmentsBookedThisMonth,
       estimatedRevenueProtected,
       bookingRate: Math.round(bookingRate * 100 * 10) / 10, // Round to 1 decimal place (%)
-      hasData: leadsResponded > 0 || appointmentsBookedThisMonth > 0,
-    })
+      hasData: leadsResponded > 0 || appointmentsBookedThisMonth > 0 })
   } catch (error) {
     logger.error('Error fetching ROI metrics:', error)
     return NextResponse.json(

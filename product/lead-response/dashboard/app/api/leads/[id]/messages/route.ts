@@ -29,8 +29,7 @@ export async function GET(
     }
 
     return NextResponse.json({
-      messages: messages || [],
-    })
+      messages: messages || [] })
 
   } catch (error: any) {
     logger.error('❌ Messages API error:', error)

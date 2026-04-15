@@ -28,8 +28,7 @@ async function sendTelegramAlert(text: string): Promise<void> {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' }),
-  })
+    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' }) })
   if (!res.ok) {
     logger.error('[inactivity-check] Telegram send failed:', await res.text())
   }
@@ -100,8 +99,7 @@ export async function POST(request: NextRequest) {
       const hoursInactive = Math.floor((now.getTime() - lastSeenDate.getTime()) / (1000 * 60 * 60))
       const daysInactive  = Math.floor(hoursInactive / 24)
       const lastSeenStr   = lastSeenDate.toLocaleDateString('en-CA', {
-        year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-      })
+        year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 
       const message = `⚠️ <b>${name}</b> hasn't logged in for ${daysInactive > 0 ? `${daysInactive} day(s)` : `${hoursInactive} hour(s)`}.\nLast seen: ${lastSeenStr}`
 
@@ -111,8 +109,7 @@ export async function POST(request: NextRequest) {
       await supabase.from('inactivity_alerts').insert({
         agent_id: agentId,
         alerted_at: now.toISOString(),
-        channel: 'telegram',
-      })
+        channel: 'telegram' })
 
       alerted++
     }

@@ -114,8 +114,7 @@ export async function POST(request: NextRequest) {
       responseText = generateMockResponse({
         leadName: sanitizedName,
         propertyInterest: sanitizedProperty,
-        leadSource: sanitizedSource,
-      })
+        leadSource: sanitizedSource })
       usedMockMode = true
       
       // Add small delay to simulate AI processing
@@ -129,11 +128,9 @@ export async function POST(request: NextRequest) {
           prompt: buildDemoPrompt({
             leadName: sanitizedName,
             propertyInterest: sanitizedProperty,
-            leadSource: sanitizedSource,
-          }),
+            leadSource: sanitizedSource }),
           maxTokens: 200,
-          temperature: 0.7,
-        } as any)
+          temperature: 0.7 } as any)
         
         responseText = result.text.trim()
       } catch (aiError) {
@@ -142,8 +139,7 @@ export async function POST(request: NextRequest) {
         responseText = generateMockResponse({
           leadName: sanitizedName,
           propertyInterest: sanitizedProperty,
-          leadSource: sanitizedSource,
-        })
+          leadSource: sanitizedSource })
         usedMockMode = true
       }
     }
@@ -157,9 +153,7 @@ export async function POST(request: NextRequest) {
       personalization: {
         leadName: sanitizedName,
         propertyInterest: sanitizedProperty,
-        leadSource: sanitizedSource,
-      },
-    })
+        leadSource: sanitizedSource } })
   } catch (error) {
     logger.error('[demo] Unexpected error:', error)
     return NextResponse.json(

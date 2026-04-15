@@ -61,8 +61,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      feedbackId: result.feedbackId,
-    })
+      feedbackId: result.feedbackId })
   } catch (error: any) {
     logger.error('Error submitting feedback:', error)
     return NextResponse.json(

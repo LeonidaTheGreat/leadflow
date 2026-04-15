@@ -30,8 +30,7 @@ export async function POST(request: Request) {
     headers,
     body,
     rawBody: rawBody.substring(0, 500),
-    timestamp: new Date().toISOString(),
-  })
+    timestamp: new Date().toISOString() })
 
   // Save to database for inspection
   try {
@@ -40,11 +39,9 @@ export async function POST(request: Request) {
       event_data: {
         headers,
         body,
-        rawBody: rawBody.substring(0, 1000),
-      },
+        rawBody: rawBody.substring(0, 1000) },
       source: 'twilio_debug',
-      ip_address: headers['x-forwarded-for'] || 'unknown',
-    } as any)
+      ip_address: headers['x-forwarded-for'] || 'unknown' } as any)
   } catch (e) {
     logger.error('Failed to log event:', e)
   }
@@ -56,8 +53,7 @@ export async function POST(request: Request) {
 </Response>`
 
   return new NextResponse(twiml, {
-    headers: { 'Content-Type': 'text/xml' },
-  })
+    headers: { 'Content-Type': 'text/xml' } })
 }
 
 export async function GET() {
@@ -71,6 +67,5 @@ export async function GET() {
 
   return NextResponse.json({
     message: 'Twilio Debug Endpoint',
-    recent_events: events || [],
-  })
+    recent_events: events || [] })
 }

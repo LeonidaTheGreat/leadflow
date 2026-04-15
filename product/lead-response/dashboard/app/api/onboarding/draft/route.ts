@@ -46,8 +46,7 @@ export async function POST(request: NextRequest) {
       completed_steps: completedSteps || [],
       is_completed: false,
       last_updated_at: now,
-      expires_at: expiresAt.toISOString(),
-    };
+      expires_at: expiresAt.toISOString() };
 
     let result;
 
@@ -100,8 +99,7 @@ export async function POST(request: NextRequest) {
           .from('onboarding_drafts')
           .insert({
             ...draftData,
-            started_at: now,
-          })
+            started_at: now })
           .select()
           .single();
 
@@ -123,10 +121,8 @@ export async function POST(request: NextRequest) {
         email: result.email,
         currentStep: result.current_step,
         completedSteps: result.completed_steps,
-        expiresAt: result.expires_at,
-      },
-      message: 'Draft saved successfully',
-    });
+        expiresAt: result.expires_at },
+      message: 'Draft saved successfully' });
 
   } catch (error) {
     logger.error('Save draft error:', error);
@@ -176,8 +172,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           success: true,
           data: null,
-          message: 'No draft found',
-        });
+          message: 'No draft found' });
       }
       logger.error('Draft fetch error:', error);
       return NextResponse.json(
@@ -198,8 +193,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: null,
         message: 'Draft has expired',
-        expired: true,
-      });
+        expired: true });
     }
 
     return NextResponse.json({
@@ -212,9 +206,7 @@ export async function GET(request: NextRequest) {
         completedSteps: draft.completed_steps,
         startedAt: draft.started_at,
         lastUpdatedAt: draft.last_updated_at,
-        expiresAt: draft.expires_at,
-      },
-    });
+        expiresAt: draft.expires_at } });
 
   } catch (error) {
     logger.error('Get draft error:', error);
@@ -256,8 +248,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Draft deleted successfully',
-    });
+      message: 'Draft deleted successfully' });
 
   } catch (error) {
     logger.error('Delete draft error:', error);

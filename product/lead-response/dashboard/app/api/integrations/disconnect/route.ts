@@ -24,8 +24,7 @@ export async function POST(request: NextRequest) {
         updateData = { 
           twilio_phone_number: null,
           twilio_account_sid: null,
-          twilio_auth_token: null,
-        }
+          twilio_auth_token: null }
         // Also disable SMS in settings
         await supabase
           .from('agent_settings')
@@ -46,8 +45,7 @@ export async function POST(request: NextRequest) {
       .from('agent_integrations')
       .update({
         ...updateData,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('agent_id', agentId)
 
     if (error) {
@@ -59,8 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: `${integration} disconnected successfully`,
-    })
+      message: `${integration} disconnected successfully` })
   } catch (error) {
     logger.error('Disconnect error:', error)
     return NextResponse.json(

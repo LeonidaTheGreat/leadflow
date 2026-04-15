@@ -64,8 +64,7 @@ export async function POST(request: NextRequest) {
   // Map camelCase state fields to snake_case DB columns
   const patch: Record<string, unknown> = {
     agent_id: agentId,
-    updated_at: new Date().toISOString(),
-  }
+    updated_at: new Date().toISOString() }
 
   if (body.fubConnected !== undefined) patch.fub_connected = body.fubConnected
   if (body.fubApiKey !== undefined) patch.fub_api_key = body.fubApiKey

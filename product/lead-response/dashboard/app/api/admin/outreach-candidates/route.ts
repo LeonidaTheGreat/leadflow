@@ -116,8 +116,7 @@ export async function GET(request: NextRequest) {
         engagement_score: engagementScore,
         contacted: invite !== null,
         contacted_at: invite?.invited_at ?? null,
-        invite_status: invite?.status ?? null,
-      }
+        invite_status: invite?.status ?? null }
     })
 
     // Sort by engagement score descending
@@ -139,11 +138,9 @@ export async function GET(request: NextRequest) {
         trial: candidates.filter((c: any) => c.plan_tier === 'trial').length,
         pilot: candidates.filter((c: any) => c.plan_tier === 'pilot').length,
         completed_onboarding: candidates.filter((c: any) => c.onboarding_completed).length,
-        high_engagement: candidates.filter((c: any) => c.engagement_score >= 50).length,
-      },
-    })
+        high_engagement: candidates.filter((c: any) => c.engagement_score >= 50).length } })
   } catch (err: any) {
     logger.error('[outreach-candidates]', err)
-    return NextResponse.json({ error: err.message ?? 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }

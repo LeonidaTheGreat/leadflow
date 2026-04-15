@@ -86,10 +86,8 @@ export async function POST(request: NextRequest) {
         agent_id: agentId || null,
         event_data: {
           ...(properties || {}),
-          timestamp: new Date().toISOString(),
-        },
-        created_at: new Date().toISOString(),
-      })
+          timestamp: new Date().toISOString() },
+        created_at: new Date().toISOString() })
     }
 
     return NextResponse.json({ success: true })

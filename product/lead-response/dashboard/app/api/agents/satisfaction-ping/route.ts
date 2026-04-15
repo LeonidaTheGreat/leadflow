@@ -27,15 +27,14 @@ export async function PATCH(request: NextRequest) {
       .from('real_estate_agents')
       .update({
         satisfaction_ping_enabled: enabled,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('id', agentId)
       .select('id, satisfaction_ping_enabled')
       .single()
 
     if (error) {
       logger.error('❌ Error updating satisfaction_ping_enabled:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 
     logger.info(`✅ Agent ${agentId} satisfaction ping ${enabled ? 'enabled' : 'disabled'}`)
@@ -43,11 +42,10 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       agentId: data.id,
-      satisfactionPingEnabled: data.satisfaction_ping_enabled,
-    })
+      satisfactionPingEnabled: data.satisfaction_ping_enabled })
   } catch (error: any) {
     logger.error('❌ /api/agents/satisfaction-ping error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -73,9 +71,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       agentId: data.id,
-      satisfactionPingEnabled: data.satisfaction_ping_enabled ?? true,
-    })
+      satisfactionPingEnabled: data.satisfaction_ping_enabled ?? true })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -32,6 +32,5 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     fub_onboarding_completed: data.fub_onboarding_completed ?? false,
-    fub_onboarding_step: data.fub_onboarding_step ?? 0,
-  })
+    fub_onboarding_step: data.fub_onboarding_step ?? 0 })
 }

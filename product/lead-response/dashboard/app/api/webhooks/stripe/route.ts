@@ -42,8 +42,7 @@ function getTierFromPriceId(priceId: string): string {
   const tierMap: Record<string, string> = {
     [process.env.STRIPE_PRICE_STARTER_MONTHLY || '']: 'starter',
     [process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '']: 'pro',
-    [process.env.STRIPE_PRICE_TEAM_MONTHLY || '']: 'team',
-  }
+    [process.env.STRIPE_PRICE_TEAM_MONTHLY || '']: 'team' }
   return tierMap[priceId] || 'professional'
 }
 
@@ -52,8 +51,7 @@ function getPlanDisplayName(tier: string): string {
     starter: 'Starter',
     pro: 'Pro',
     team: 'Team',
-    professional: 'Pro',
-  }
+    professional: 'Pro' }
   return names[tier] || 'Professional'
 }
 
@@ -87,8 +85,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       ? new Date(subscription.current_period_end * 1000).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
-          day: 'numeric',
-        })
+          day: 'numeric' })
       : 'unknown'
 
     // Update agent with subscription info (non-blocking — subscription upsert is more important)
@@ -102,8 +99,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         status: 'active',
         subscription_status: 'active',
         subscription_start_date: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('id', userId)
 
     if (updateError) {
@@ -129,8 +125,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       ended_at: (subscription as any).ended_at ? new Date((subscription as any).ended_at * 1000).toISOString() : null,
       metadata: subscription.metadata || {},
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'stripe_subscription_id' })
+      updated_at: new Date().toISOString() }, { onConflict: 'stripe_subscription_id' })
 
     if (subError) {
       log('error', 'Failed to upsert subscription record', { userId, subscriptionId: subscription.id, error: subError.message })
@@ -148,10 +143,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         subscription_id: subscriptionId,
         tier,
         mrr,
-        stripe_customer_id: stripeCustomerId,
-      },
-      created_at: new Date().toISOString(),
-    })
+        stripe_customer_id: stripeCustomerId },
+      created_at: new Date().toISOString() })
 
     // Send confirmation email via Resend (non-blocking)
     if (agent && resend) {
@@ -220,8 +213,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   </div>
 </body>
 </html>
-          `,
-        })
+          ` })
         log('info', 'Confirmation email sent', { email: agent.email, plan: planName })
       } catch (emailError: any) {
         log('error', 'Failed to send confirmation email', { email: agent.email, error: emailError.message })
@@ -232,7 +224,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     // Log for analytics (PostHog)
     log('info', 'New subscription', { userId, tier, mrr })
   } catch (error: any) {
-    log('error', 'Error handling checkout complete', { error: error.message })
+    log('error', 'Error handling checkout complete', { error: 'Internal server error' })
   }
 }
 
@@ -259,14 +251,12 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     period_start: new Date(invoice.period_start * 1000).toISOString(),
     period_end: new Date(invoice.period_end * 1000).toISOString(),
     status: 'succeeded',
-    created_at: new Date().toISOString(),
-  })
+    created_at: new Date().toISOString() })
 
   // Update agent MRR
   await supabase.from('real_estate_agents').update({
     mrr: mrr,
-    updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+    updated_at: new Date().toISOString() }).eq('id', agentId)
 
   // Log event
   await supabase.from('subscription_events').insert({
@@ -274,8 +264,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     event_type: 'payment_received',
     mrr: Math.round(mrr * 100),
     stripe_event_data: { invoice_id: invoice.id, amount, mrr },
-    created_at: new Date().toISOString(),
-  })
+    created_at: new Date().toISOString() })
 
   log('info', 'Payment received', { agentId, amount })
 }
@@ -294,8 +283,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   // Mark as at risk — use subscription_status (payment_status column doesn't exist)
   await supabase.from('real_estate_agents').update({
     subscription_status: 'past_due',
-    updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+    updated_at: new Date().toISOString() }).eq('id', agentId)
 
   // Log event
   await supabase.from('subscription_events').insert({
@@ -303,8 +291,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     event_type: 'payment_failed',
     attempt_count: invoice.attempt_count || 1,
     stripe_event_data: { invoice_id: invoice.id, attempt_count: invoice.attempt_count || 1 },
-    created_at: new Date().toISOString(),
-  })
+    created_at: new Date().toISOString() })
 
   log('warn', 'Payment failed', { agentId, invoiceId: invoice.id, attemptCount: invoice.attempt_count })
 }
@@ -321,8 +308,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     status: 'cancelled',
     mrr: 0,
     cancelled_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }).eq('id', agentId)
+    updated_at: new Date().toISOString() }).eq('id', agentId)
 
   // Log churn event
   await supabase.from('subscription_events').insert({
@@ -332,10 +318,8 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     stripe_event_data: {
       subscription_id: subscription.id,
       mrr_lost: mrr,
-      reason: subscription.cancellation_details?.reason || 'unknown',
-    },
-    created_at: new Date().toISOString(),
-  })
+      reason: subscription.cancellation_details?.reason || 'unknown' },
+    created_at: new Date().toISOString() })
 
   log('info', 'Subscription cancelled', { agentId, mrrLost: mrr, reason: subscription.cancellation_details?.reason })
 }
@@ -357,7 +341,7 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err: any) {
-      log('error', 'Webhook signature verification failed', { error: err.message })
+      log('error', 'Webhook signature verification failed', { error: 'Internal server error' })
       return NextResponse.json(
         { error: 'Webhook signature verification failed' },
         { status: 400 }
