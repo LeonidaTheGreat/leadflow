@@ -8,6 +8,7 @@ import {
   handleLeadAssigned,
 } from '@/lib/services/fub-webhook-service'
 import type { FubWebhookPayload } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
@@ -26,13 +27,13 @@ export async function POST(request: NextRequest) {
     if (secret && signature) {
       const isValid = verifyWebhookSignature(body, signature, secret)
       if (!isValid) {
-        console.error('❌ Invalid FUB webhook signature')
+        logger.error('❌ Invalid FUB webhook signature')
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
     }
 
     const payload: FubWebhookPayload = JSON.parse(body)
-    console.log('📨 FUB Webhook received:', payload.event)
+    logger.info('📨 FUB Webhook received:', payload.event)
 
     // Log the event
     await logEvent({
@@ -59,12 +60,12 @@ export async function POST(request: NextRequest) {
         return await handleLeadAssigned(payload.data)
 
       default:
-        console.log('Unhandled FUB event:', payload.event)
+        logger.info('Unhandled FUB event:', payload.event)
         return NextResponse.json({ received: true, handled: false, event: payload.event })
     }
   } catch (error: any) {
-    console.error('❌ FUB webhook error:', error)
-    console.error('Error stack:', error.stack)
+    logger.error('❌ FUB webhook error:', error)
+    logger.error('Error stack:', error.stack)
 
     try {
       await logEvent({
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
         source: 'fub_webhook',
       })
     } catch (logError) {
-      console.error('Failed to log error:', logError)
+      logger.error('Failed to log error:', logError)
     }
 
     return NextResponse.json(

@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase.from('agent_page_views').insert(insertPayload)
 
     if (error) {
-      logger.error('[page-views] Insert failed:', error.message, { agentId, page, code: error.code })
+      logger.error(`[page-views] Insert failed: ${error.message}`, { agentId, page, code: error.code })
       return NextResponse.json({ logged: false, reason: error.code }, { status: 200 })
     }
 

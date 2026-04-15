@@ -1,14 +1,14 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-14T22:53:40.504Z | Source: `lib/services/`
+> Generated: 2026-04-15T00:56:38.221Z | Source: `lib/services/`
 
 **15 services across 15 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
 | [ActivationService](#activationservice) | `ActivationService.js` | 5 | crypto, EmailService |
-| [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db, logger, circuit-breaker |
+| [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db, logger, circuit-breaker… |
 | [BookingLinkService](#bookinglinkservice) | `BookingLinkService.js` | 6 | db, CalcomClient, logger |
 | [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios, circuit-breaker, request-context |
 | [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | db, logger, SequenceService, TwilioService… |
@@ -49,7 +49,7 @@
 
 **File:** `lib/services/BillingService.js`
 
-**Dependencies:** `stripe`, `db`, `logger`, `circuit-breaker`
+**Dependencies:** `stripe`, `db`, `logger`, `circuit-breaker`, `config`
 
 **Constructor params:** `options`
 

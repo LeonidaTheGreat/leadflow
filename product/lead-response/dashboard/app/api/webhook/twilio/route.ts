@@ -13,6 +13,7 @@ import {
   generateAndSaveAiResponse,
 } from '@/lib/services/inbound-sms-service'
 import type { Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
@@ -34,9 +35,9 @@ export const dynamic = 'force-dynamic'
  */
 export async function POST(request: NextRequest) {
   try {
-    console.log('📥 Twilio webhook START')
+    logger.info('📥 Twilio webhook START')
     const formData = await request.formData()
-    console.log('📥 FormData parsed')
+    logger.info('📥 FormData parsed')
 
     const from = formData.get('From') as string
     const to = formData.get('To') as string
@@ -44,25 +45,25 @@ export async function POST(request: NextRequest) {
     const messageSid = formData.get('MessageSid') as string
     const numMedia = parseInt(formData.get('NumMedia') as string || '0')
 
-    console.log('📥 Inbound SMS:', { from, to, body: body.substring(0, 50), messageSid })
+    logger.info('📥 Inbound SMS:', { from, to, body: body.substring(0, 50), messageSid })
 
     // Validate required fields
     if (!from || !body) {
-      console.error('❌ Missing required fields in Twilio webhook')
+      logger.error('❌ Missing required fields in Twilio webhook')
       return emptyTwiml()
     }
 
     // Normalize phone number
     const phone = normalizePhone(from)
     if (!phone) {
-      console.error('❌ Invalid phone number:', from)
+      logger.error('❌ Invalid phone number:', from)
       return emptyTwiml()
     }
 
     // Find or create lead
     const leadResult = await findOrCreateLeadByPhone(phone)
     if (!leadResult.lead) {
-      console.error('❌ Lead creation failed:', leadResult.error)
+      logger.error('❌ Lead creation failed:', leadResult.error)
       if (leadResult.error === 'Failed to create lead in FUB') {
         return NextResponse.json({ success: false, error: 'Failed to create lead in FUB' }, { status: 500 })
       }
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     // Check for opt-out keywords (TCPA compliance)
     if (isOptOutMessage(body)) {
-      console.log('🚫 Opt-out request from:', phone)
+      logger.info('🚫 Opt-out request from:', phone)
       await handleOptOut(lead)
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Check for opt-in keywords
     if (isOptInMessage(body) && !lead.consent_sms) {
-      console.log('✅ Opt-in request from:', phone)
+      logger.info('✅ Opt-in request from:', phone)
       await handleOptIn(lead)
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -97,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     // Check if lead is on DNC list
     if (lead.dnc || !lead.consent_sms) {
-      console.log('🚫 Lead on DNC or no consent:', phone)
+      logger.info('🚫 Lead on DNC or no consent:', phone)
       return emptyTwiml()
     }
 
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
     await saveInboundMessage(lead, body, messageSid, to)
 
     // Determine if we should auto-respond
-    console.log('🤖 Agent check:', {
+    logger.info('🤖 Agent check:', {
       hasAgent: !!agent,
       agentId: agent?.id,
       market: agent?.market,
@@ -120,10 +121,10 @@ export async function POST(request: NextRequest) {
     })
     const hasRequiredAgent = agent && agent.market && agent.settings
     const shouldAutoRespond = hasRequiredAgent && agent!.settings?.auto_respond !== false
-    console.log('🤖 Auto-respond decision:', { hasRequiredAgent, shouldAutoRespond })
+    logger.info('🤖 Auto-respond decision:', { hasRequiredAgent, shouldAutoRespond })
 
     if (shouldAutoRespond) {
-      console.log('🤖 Generating AI response for lead:', lead.id)
+      logger.info('🤖 Generating AI response for lead:', lead.id)
 
       const aiResult = await generateAndSaveAiResponse(lead, agent!, body)
 
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
         return new NextResponse(twiml, { headers: { 'Content-Type': 'text/xml' } })
       }
 
-      console.log('✅ Agent response generated:', {
+      logger.info('✅ Agent response generated:', {
         action: aiResult.action,
         confidence: aiResult.confidence,
       })
@@ -151,8 +152,8 @@ export async function POST(request: NextRequest) {
     // No auto-respond
     return emptyTwiml()
   } catch (error: any) {
-    console.error('❌ Twilio webhook error:', error)
-    console.error('Stack:', error.stack)
+    logger.error('❌ Twilio webhook error:', error)
+    logger.error('Stack:', error.stack)
 
     try {
       await supabaseAdmin.from('events').insert({
@@ -165,7 +166,7 @@ export async function POST(request: NextRequest) {
         source: 'twilio_webhook',
       })
     } catch (logError) {
-      console.error('Failed to log error:', logError)
+      logger.error('Failed to log error:', logError)
     }
 
     // Return empty TwiML on error (don't expose errors to Twilio)
@@ -187,7 +188,7 @@ export async function PUT(request: NextRequest) {
     const status = formData.get('MessageStatus') as string
     const errorCode = formData.get('ErrorCode') as string
 
-    console.log('📊 SMS Status Update:', { messageSid, status, errorCode })
+    logger.info('📊 SMS Status Update:', { messageSid, status, errorCode })
 
     const { error } = await supabaseAdmin
       .from('messages')
@@ -200,12 +201,12 @@ export async function PUT(request: NextRequest) {
       .eq('twilio_sid', messageSid)
 
     if (error) {
-      console.error('❌ Error updating message status:', error)
+      logger.error('❌ Error updating message status:', error)
     }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('❌ Status callback error:', error)
+    logger.error('❌ Status callback error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }

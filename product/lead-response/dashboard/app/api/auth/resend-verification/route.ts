@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { 
 import { logger } from '@/lib/logger'
-  getAgentByEmail, 
-  checkResendRateLimit, 
-  createVerificationToken, 
-  sendVerificationEmail 
+import {
+  getAgentByEmail,
+  checkResendRateLimit,
+  createVerificationToken,
+  sendVerificationEmail
 } from '@/lib/verification-email'
 
 /**

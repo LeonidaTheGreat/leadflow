@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     
     const { triggerEvent, payload: bookingData } = webhookPayload
     
-    logger.info('📅 Cal.com event:', triggerEvent, 'Booking ID:', bookingData.bookingId)
+    logger.info(`📅 Cal.com event: ${triggerEvent} Booking ID: ${bookingData.bookingId}`)
     
     // Handle booking event
     const result = await handleBookingWebhook(webhookPayload)

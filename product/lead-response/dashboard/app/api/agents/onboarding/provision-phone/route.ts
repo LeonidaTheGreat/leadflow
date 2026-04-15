@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       const existingRaw = existingIntegration.twilio_phone_number
 
       if (existingE164) {
-        logger.info('[provision-phone] Agent already has number:', existingE164, 'for agent:', agentId)
+        logger.info(`[provision-phone] Agent already has number: ${existingE164} for agent: ${agentId}`)
         const cleanPhone = existingE164.replace(/^\+1/, '').replace(/\D/g, '')
         return NextResponse.json({
           success: true,
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       if (existingRaw) {
         const digits = existingRaw.replace(/\D/g, '')
         const e164 = `+1${digits}`
-        logger.info('[provision-phone] Agent already has number (raw):', e164, 'for agent:', agentId)
+        logger.info(`[provision-phone] Agent already has number (raw): ${e164} for agent: ${agentId}`)
         return NextResponse.json({
           success: true,
           phoneNumber: e164,
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (poolNumber?.e164 && poolNumber?.sid) {
-      logger.info('[provision-phone] Assigning from pool:', poolNumber.e164, 'for agent:', agentId)
+      logger.info(`[provision-phone] Assigning from pool: ${poolNumber.e164} for agent: ${agentId}`)
 
       // Configure the Twilio number's smsUrl so inbound SMS is routed correctly
       const smsWebhookUrl = process.env.NEXT_PUBLIC_APP_URL
@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
           .update({ phone_configured: true, onboarding_step: 2, updated_at: new Date().toISOString() })
           .eq('id', agentId)
 
-        logger.info('[provision-phone] Assigned from pool:', poolNumber.e164, 'for agent:', agentId)
+        logger.info(`[provision-phone] Assigned from pool: ${poolNumber.e164} for agent: ${agentId}`)
         return NextResponse.json({
           success: true,
           phoneNumber: poolNumber.e164,
@@ -355,7 +355,7 @@ export async function POST(request: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', agentId)
-    logger.info('[provision-phone] Provisioned:', assignedNumber, 'for agent:', agentId)
+    logger.info(`[provision-phone] Provisioned: ${assignedNumber} for agent: ${agentId}`)
 
     return NextResponse.json({
       success: true,

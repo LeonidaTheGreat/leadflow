@@ -4,17 +4,32 @@
  * Usage:
  *   import { logger } from '@/lib/logger'
  *   logger.info('message', { key: 'value' })
- *   logger.error('failed', { error: err.message })
+ *   logger.error('failed', err)
+ *   logger.info('lead:', leadId)
  */
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+type LogContext = Record<string, unknown> | unknown
 
-function log(level: LogLevel, message: string, context?: Record<string, unknown>) {
+function normalizeContext(ctx: LogContext): Record<string, unknown> | undefined {
+  if (ctx === undefined || ctx === null) return undefined
+  if (typeof ctx === 'object' && !Array.isArray(ctx) && !(ctx instanceof Error)) {
+    return ctx as Record<string, unknown>
+  }
+  if (ctx instanceof Error) {
+    return { error: ctx.message, stack: ctx.stack }
+  }
+  // Bare value (string, number, etc.) — wrap as detail
+  return { detail: String(ctx) }
+}
+
+function log(level: LogLevel, message: string, context?: LogContext) {
+  const normalized = normalizeContext(context)
   const entry = {
     timestamp: new Date().toISOString(),
     level,
     message,
-    ...context,
+    ...normalized,
   }
   const json = JSON.stringify(entry)
   switch (level) {
@@ -25,8 +40,8 @@ function log(level: LogLevel, message: string, context?: Record<string, unknown>
 }
 
 export const logger = {
-  debug: (msg: string, ctx?: Record<string, unknown>) => log('debug', msg, ctx),
-  info: (msg: string, ctx?: Record<string, unknown>) => log('info', msg, ctx),
-  warn: (msg: string, ctx?: Record<string, unknown>) => log('warn', msg, ctx),
-  error: (msg: string, ctx?: Record<string, unknown>) => log('error', msg, ctx),
+  debug: (msg: string, ctx?: LogContext) => log('debug', msg, ctx),
+  info: (msg: string, ctx?: LogContext) => log('info', msg, ctx),
+  warn: (msg: string, ctx?: LogContext) => log('warn', msg, ctx),
+  error: (msg: string, ctx?: LogContext) => log('error', msg, ctx),
 }

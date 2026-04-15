@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       body[key] = value.toString()
     })
 
-    logger.info('📨 Twilio webhook:', body.MessageSid, body.MessageStatus || 'inbound')
+    logger.info(`📨 Twilio webhook: ${body.MessageSid} ${body.MessageStatus || 'inbound'}`)
 
     // Handle status callback (outbound message status update)
     if (body.MessageStatus) {
@@ -61,7 +61,7 @@ async function handleStatusUpdate(body: Record<string, string>) {
   if (error) {
     logger.error('❌ Error updating message status:', error)
   } else {
-    logger.info('✅ Message status updated:', MessageSid, MessageStatus)
+    logger.info(`✅ Message status updated: ${MessageSid} ${MessageStatus}`)
   }
 
   // Log delivery failures
@@ -161,7 +161,7 @@ async function handleInboundMessage(body: Record<string, string>) {
 
   // Classify intent for smart response
   const intentResult = await classifyIntent(message.Body)
-  logger.info('🤖 Intent classified:', intentResult.intent, `(${(intentResult.confidence * 100).toFixed(0)}%)`)
+  logger.info(`🤖 Intent classified: ${intentResult.intent} ${`(${(intentResult.confidence * 100).toFixed(0)}%)`}`)
 
   // Generate and send AI response
   let aiResponse: { message: string; confidence: number }

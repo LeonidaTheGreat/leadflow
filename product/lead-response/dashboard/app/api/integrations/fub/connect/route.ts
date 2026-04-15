@@ -45,7 +45,7 @@ async function registerFubWebhooks(
           logger.info(`ℹ️  FUB webhook already registered for event: ${event}`)
           subscriptions.push({ event, status: 'already_registered' })
         } else {
-          logger.error(`❌ FUB webhook registration failed for ${event}:`, response.status, responseText)
+          logger.error(`❌ FUB webhook registration failed for event "${event}": ${response.status} ${responseText}`)
           return {
             success: false,
             error: `Failed to register webhook for event "${event}": ${response.status} ${responseText}`,

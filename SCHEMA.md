@@ -2,7 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-04-14T22:53:40.496Z | 80 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-04-15T00:56:38.200Z | 80 tables in local PostgreSQL (openclaw DB).
 
 ## Common Gotchas
 
@@ -77,8 +77,8 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `sessions` | 183 | |
-| `password_reset_tokens` | 23 | |
+| `sessions` | 184 | |
+| `password_reset_tokens` | 24 | |
 | `demo_tokens` | 9 | |
 
 ### Product — Analytics & Events
@@ -87,14 +87,14 @@
 |-------|------|---------|
 | `analytics_events` | 0 | |
 | `events` | 486 | |
-| `email_events` | 347 | |
+| `email_events` | 348 | |
 | `agent_page_views` | 3 | |
 | `agent_sessions` | 0 | |
 | `demo_runs` | 0 | |
 | `agent_nps_responses` | 0 | |
 | `nps_survey_tokens` | 0 | |
 | `nps_prompt_dismissals` | 0 | |
-| `agent_survey_schedule` | 8 | |
+| `agent_survey_schedule` | 9 | |
 | `inactivity_alerts` | 0 | |
 
 ### Product — Templates & Webhooks
@@ -117,7 +117,7 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `tasks` | 4056 | |
+| `tasks` | 4058 | |
 | `task_dependencies` | 48 | |
 | `task_outcomes` | 0 | |
 | `completed_work` | 9 | |
@@ -139,7 +139,7 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `metrics` | 37633 | |
+| `metrics` | 37676 | |
 | `revenue_metrics` | 0 | |
 | `distribution_channels` | 1 | |
 | `distribution_metrics` | 250 | |
