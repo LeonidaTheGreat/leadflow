@@ -29,8 +29,13 @@ jest.mock('@/lib/db', () => ({
 }))
 
 // Mock AuthService — pilot-status uses getAuthUserId
+// Returns agent-123 when auth-token cookie present, null otherwise
 jest.mock('@/lib/services/AuthService', () => ({
-  getAuthUserId: jest.fn(() => Promise.resolve('agent-123')),
+  getAuthUserId: jest.fn((request: any) => {
+    const cookieHeader = request.headers.get('cookie') || ''
+    const hasToken = cookieHeader.includes('auth-token=')
+    return Promise.resolve(hasToken ? 'agent-123' : null)
+  }),
   validateSession: jest.fn(),
 }))
 

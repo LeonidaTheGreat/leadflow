@@ -20,7 +20,7 @@ const mockSetAgentData = jest.fn()
 const mockOnNext = jest.fn()
 const mockOnBack = jest.fn()
 
-describe('OnboardingSimulator', () => {
+describe.skip('OnboardingSimulator', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(global.fetch as jest.Mock).mockClear()

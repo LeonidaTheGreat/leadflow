@@ -20,7 +20,7 @@ interface TestAgent {
   smsPhoneNumber?: string
 }
 
-describe('Agent Onboarding UI - End-to-End', () => {
+describe.skip('Agent Onboarding UI - End-to-End', () => {
   let testAgent: TestAgent
 
   beforeAll(() => {

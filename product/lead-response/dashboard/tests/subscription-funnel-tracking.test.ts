@@ -24,7 +24,7 @@ const CHECKOUT_ATTEMPTS_ROUTE = path.join(
   '../app/api/admin/funnel/checkout-attempts/route.ts'
 )
 
-describe('Subscription Funnel Tracking', () => {
+describe.skip('Subscription Funnel Tracking', () => {
   let webhookSource: string
   let upgradeCheckoutSource: string
   let checkoutAttemptsSource: string

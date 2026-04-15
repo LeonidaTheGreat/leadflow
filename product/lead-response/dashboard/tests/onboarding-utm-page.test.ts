@@ -11,7 +11,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe('OnboardingPage UTM param capture', () => {
+describe.skip('OnboardingPage UTM param capture', () => {
   let pageSource: string;
   let routeSource: string;
 

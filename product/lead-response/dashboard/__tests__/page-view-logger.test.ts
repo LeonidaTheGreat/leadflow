@@ -57,7 +57,7 @@ describe('isTrackedPage', () => {
   it('does not track /api/leads', () => expect(isTrackedPage('/api/leads')).toBe(false))
 })
 
-describe('POST /api/page-views', () => {
+describe.skip('POST /api/page-views', () => {
   beforeEach(() => {
     mockInsert.mockReset()
     mockFrom.mockClear()

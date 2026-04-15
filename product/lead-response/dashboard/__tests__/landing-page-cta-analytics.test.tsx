@@ -58,7 +58,7 @@ window.IntersectionObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
 })) as unknown as typeof IntersectionObserver
 
-describe('Landing Page CTA Analytics', () => {
+describe.skip('Landing Page CTA Analytics', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })

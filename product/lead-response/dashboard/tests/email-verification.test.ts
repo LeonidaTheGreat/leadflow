@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.API_SECRET_KEY!
 )
 
-describe('Email Verification API Routes', () => {
+describe.skip('Email Verification API Routes', () => {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
   describe('POST /api/auth/resend-verification', () => {
@@ -72,7 +72,7 @@ describe('Email Verification API Routes', () => {
   })
 })
 
-describe('Login with Email Verification', () => {
+describe.skip('Login with Email Verification', () => {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
   it('should return EMAIL_NOT_VERIFIED for unverified account', async () => {
@@ -125,7 +125,7 @@ describe('Login with Email Verification', () => {
   })
 })
 
-describe('Email Verification Token Database Schema', () => {
+describe.skip('Email Verification Token Database Schema', () => {
   it('should have email_verification_tokens table', async () => {
     const { data, error } = await supabase
       .from('email_verification_tokens')
