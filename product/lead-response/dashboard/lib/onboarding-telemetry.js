@@ -3,6 +3,7 @@
  */
 
 // DB client is passed as parameter to all functions — no direct import needed
+const { logger } = require('@/lib/logger')
 
 const STEP_INDEX = {
   email_verified: 1,
@@ -22,7 +23,7 @@ function isSmokTestAccount(email) {
 async function logOnboardingEvent(supabase, agentId, stepName, status, metadata = {}) {
   try {
     if (!STEP_NAMES.includes(stepName)) {
-      console.error(`[onboarding-telemetry] Invalid step name: ${stepName}`)
+      logger.error(`[onboarding-telemetry] Invalid step name: ${stepName}`)
       return {
         success: false,
         error: `Invalid step name: ${stepName}. Valid values: ${STEP_NAMES.join(', ')}`,
@@ -42,11 +43,11 @@ async function logOnboardingEvent(supabase, agentId, stepName, status, metadata 
       .single()
 
     if (eventError) {
-      console.error('[onboarding-telemetry] Event insert error:', eventError)
+      logger.error('[onboarding-telemetry] Event insert error:', eventError)
       return { success: false, error: eventError.message }
     }
 
-    console.log(`[onboarding-telemetry] Event logged: ${agentId} → ${stepName} (${status})`)
+    logger.info(`[onboarding-telemetry] Event logged: ${agentId} → ${stepName} (${status})`)
 
     if (status === 'completed') {
       const stepIndex = STEP_INDEX[stepName]
@@ -58,7 +59,7 @@ async function logOnboardingEvent(supabase, agentId, stepName, status, metadata 
         .single()
 
       if (getError) {
-        console.error('[onboarding-telemetry] Error fetching agent:', getError)
+        logger.error('[onboarding-telemetry] Error fetching agent:', getError)
         return { success: true, event, updateError: getError.message }
       }
 
@@ -74,11 +75,11 @@ async function logOnboardingEvent(supabase, agentId, stepName, status, metadata 
           .eq('id', agentId)
 
         if (updateError) {
-          console.error('[onboarding-telemetry] Error updating step:', updateError)
+          logger.error('[onboarding-telemetry] Error updating step:', updateError)
           return { success: true, event, updateError: updateError.message }
         }
 
-        console.log(`[onboarding-telemetry] Step updated: ${agentId} step ${currentStep} → ${stepIndex}`)
+        logger.info(`[onboarding-telemetry] Step updated: ${agentId} step ${currentStep} → ${stepIndex}`)
 
         if (stepIndex === 5) {
           const { error: completeError } = await supabase
@@ -90,9 +91,9 @@ async function logOnboardingEvent(supabase, agentId, stepName, status, metadata 
             .eq('id', agentId)
 
           if (completeError) {
-            console.warn('[onboarding-telemetry] Error marking onboarding complete:', completeError)
+            logger.warn('[onboarding-telemetry] Error marking onboarding complete:', completeError)
           } else {
-            console.log(`[onboarding-telemetry] Onboarding completed: ${agentId}`)
+            logger.info(`[onboarding-telemetry] Onboarding completed: ${agentId}`)
           }
         }
       }
@@ -100,7 +101,7 @@ async function logOnboardingEvent(supabase, agentId, stepName, status, metadata 
 
     return { success: true, event }
   } catch (err) {
-    console.error('[onboarding-telemetry] Unexpected error:', err)
+    logger.error('[onboarding-telemetry] Unexpected error:', err)
     return { success: false, error: err.message }
   }
 }
@@ -114,7 +115,7 @@ async function getFunnelStatus(supabase) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[onboarding-telemetry] Error fetching funnel status:', error)
+      logger.error('[onboarding-telemetry] Error fetching funnel status:', error)
       return { success: false, error: error.message }
     }
 
@@ -131,7 +132,7 @@ async function getFunnelStatus(supabase) {
 
     return { success: true, agents: agentsWithTimeAtStep }
   } catch (err) {
-    console.error('[onboarding-telemetry] Unexpected error in getFunnelStatus:', err)
+    logger.error('[onboarding-telemetry] Unexpected error in getFunnelStatus:', err)
     return { success: false, error: err.message }
   }
 }
@@ -143,13 +144,13 @@ async function getFunnelConversions(supabase) {
       .select('*')
 
     if (error) {
-      console.error('[onboarding-telemetry] Error fetching conversion rates:', error)
+      logger.error('[onboarding-telemetry] Error fetching conversion rates:', error)
       return { success: false, error: error.message }
     }
 
     return { success: true, conversions }
   } catch (err) {
-    console.error('[onboarding-telemetry] Unexpected error in getFunnelConversions:', err)
+    logger.error('[onboarding-telemetry] Unexpected error in getFunnelConversions:', err)
     return { success: false, error: err.message }
   }
 }
@@ -172,7 +173,7 @@ async function checkAndAlertStuckAgents(supabase) {
 
     return createStuckAlerts(supabase, stuckAgents)
   } catch (err) {
-    console.error('[onboarding-telemetry] Unexpected error in checkAndAlertStuckAgents:', err)
+    logger.error('[onboarding-telemetry] Unexpected error in checkAndAlertStuckAgents:', err)
     return { success: false, error: err.message }
   }
 }
@@ -227,7 +228,7 @@ async function createStuckAlerts(supabase, stuckAgents) {
 
         if (!insertError) {
           alerts.push(newAlert)
-          console.log(`[onboarding-telemetry] Stuck alert created: ${agent.id} on step ${stepName}`)
+          logger.info(`[onboarding-telemetry] Stuck alert created: ${agent.id} on step ${stepName}`)
 
           // Insert into product_feedback so PM/orchestrator can triage UX issues
           const { error: feedbackError } = await supabase
@@ -250,19 +251,14 @@ async function createStuckAlerts(supabase, stuckAgents) {
             })
 
           if (feedbackError) {
-            console.error(
-              `[onboarding-telemetry] Failed to insert product_feedback for stuck agent ${agent.id}:`,
-              feedbackError.message
-            )
+            logger.error(`[onboarding-telemetry] Failed to insert product_feedback for stuck agent ${agent.id}: ${feedbackError.message}`)
           } else {
-            console.log(
-              `[onboarding-telemetry] product_feedback row created for stuck agent ${agent.id} at step ${stepName}`
-            )
+            logger.info(`[onboarding-telemetry] product_feedback row created for stuck agent ${agent.id} at step ${stepName}`)
           }
         }
       }
     } catch (err) {
-      console.error(`[onboarding-telemetry] Error creating alert for ${agent.id}:`, err)
+      logger.error(`[onboarding-telemetry] Error creating alert for ${agent.id}:`, err)
     }
   }
 
@@ -284,13 +280,13 @@ async function getOnboardingEvents(supabase, agentId = null, limit = 50) {
     const { data: events, error } = await query
 
     if (error) {
-      console.error('[onboarding-telemetry] Error fetching events:', error)
+      logger.error('[onboarding-telemetry] Error fetching events:', error)
       return { success: false, error: error.message }
     }
 
     return { success: true, events }
   } catch (err) {
-    console.error('[onboarding-telemetry] Unexpected error in getOnboardingEvents:', err)
+    logger.error('[onboarding-telemetry] Unexpected error in getOnboardingEvents:', err)
     return { success: false, error: err.message }
   }
 }

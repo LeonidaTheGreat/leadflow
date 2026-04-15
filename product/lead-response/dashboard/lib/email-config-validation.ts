@@ -3,6 +3,8 @@
  * Ensures required environment variables are configured for email delivery
  */
 
+import { logger } from '@/lib/logger'
+
 export interface EmailConfigValidation {
   isValid: boolean
   issues: string[]
@@ -57,20 +59,20 @@ export function logEmailConfigStatus(): void {
   const validation = validateEmailConfig()
 
   if (!validation.isValid) {
-    console.error('❌ Email Configuration Issues:')
+    logger.error('Email Configuration Issues:')
     validation.issues.forEach((issue) => {
-      console.error(`   - ${issue}`)
+      logger.error(`   - ${issue}`)
     })
   }
 
   if (validation.warnings.length > 0) {
-    console.warn('⚠️  Email Configuration Warnings:')
+    logger.warn('Email Configuration Warnings:')
     validation.warnings.forEach((warning) => {
-      console.warn(`   - ${warning}`)
+      logger.warn(`   - ${warning}`)
     })
   }
 
   if (validation.isValid && validation.warnings.length === 0) {
-    console.log('✅ Email configuration looks good')
+    logger.info('Email configuration looks good')
   }
 }

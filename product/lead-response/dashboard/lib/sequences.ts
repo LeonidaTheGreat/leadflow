@@ -5,6 +5,7 @@
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import type { LeadSequence, SequenceStatus, SequenceType, CreateSequenceParams, UpdateSequenceParams } from './types/sequences'
+import { logger } from '@/lib/logger'
 
 /**
  * Create a new sequence for a lead
@@ -27,7 +28,7 @@ export async function createSequence(params: CreateSequenceParams): Promise<Lead
     .single()
 
   if (error) {
-    console.error('❌ Error creating sequence:', error)
+    logger.error('Error creating sequence', error)
     return null
   }
 
@@ -48,7 +49,7 @@ export async function pauseSequence(sequenceId: string): Promise<boolean> {
     .eq('status', 'active') // Only pause active sequences
 
   if (error) {
-    console.error('❌ Error pausing sequence:', error)
+    logger.error('Error pausing sequence', error)
     return false
   }
 
@@ -70,7 +71,7 @@ export async function pauseAllSequences(leadId: string): Promise<number> {
     .select()
 
   if (error) {
-    console.error('❌ Error pausing sequences:', error)
+    logger.error('Error pausing sequences', error)
     return 0
   }
 
@@ -93,7 +94,7 @@ export async function resumeSequence(sequenceId: string, nextSendAt?: string): P
     .lt('total_messages_sent', 3) // Don't resume completed sequences
 
   if (error) {
-    console.error('❌ Error resuming sequence:', error)
+    logger.error('Error resuming sequence', error)
     return false
   }
 
@@ -113,7 +114,7 @@ export async function completeSequence(sequenceId: string): Promise<boolean> {
     .eq('id', sequenceId)
 
   if (error) {
-    console.error('❌ Error completing sequence:', error)
+    logger.error('Error completing sequence', error)
     return false
   }
 
@@ -131,7 +132,7 @@ export async function getLeadSequences(leadId: string): Promise<LeadSequence[]> 
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('❌ Error fetching sequences:', error)
+    logger.error('Error fetching sequences', error)
     return []
   }
 
@@ -150,7 +151,7 @@ export async function getActiveSequences(leadId: string): Promise<LeadSequence[]
     .order('next_send_at', { ascending: true })
 
   if (error) {
-    console.error('❌ Error fetching active sequences:', error)
+    logger.error('Error fetching active sequences', error)
     return []
   }
 
@@ -169,7 +170,7 @@ export async function recordSequenceSent(sequenceId: string, sequenceType: Seque
     .single()
 
   if (fetchError || !sequence) {
-    console.error('❌ Error fetching sequence:', fetchError)
+    logger.error('Error fetching sequence', fetchError)
     return false
   }
 
@@ -193,7 +194,7 @@ export async function recordSequenceSent(sequenceId: string, sequenceType: Seque
     .eq('id', sequenceId)
 
   if (error) {
-    console.error('❌ Error recording sequence sent:', error)
+    logger.error('Error recording sequence sent', error)
     return false
   }
 

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { FubWebhookPayload, FubLeadData, Lead, Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // FOLLOW UP BOSS API CLIENT
@@ -42,7 +43,7 @@ export async function fetchLeadFromFub(leadId: string): Promise<FubLeadData | nu
     const response = await fubClient.get(`/people/${leadId}`)
     return response.data
   } catch (error: any) {
-    console.error('❌ FUB fetch lead error:', error.message)
+    logger.error('FUB fetch lead error', error.message)
     return null
   }
 }
@@ -69,15 +70,15 @@ export async function createLeadInFub(leadData: Partial<FubLeadData>): Promise<F
     
     if (!response.ok) {
       const errorData = await response.text()
-      console.error('❌ FUB create lead error:', response.status, errorData)
+      logger.error(`FUB create lead error: ${response.status} ${errorData}`)
       return null
     }
     
     const data = await response.json()
-    console.log('✅ Lead created in FUB:', data.id)
+    logger.info(`Lead created in FUB: ${data.id}`)
     return data
   } catch (error: any) {
-    console.error('❌ FUB create lead fetch error:', error.message)
+    logger.error('FUB create lead fetch error', error.message)
     return null
   }
 }
@@ -93,10 +94,10 @@ export async function updateLeadInFub(
 
   try {
     const response = await fubClient.put(`/people/${leadId}`, updates)
-    console.log('✅ Lead updated in FUB:', leadId)
+    logger.info(`Lead updated in FUB: ${leadId}`)
     return response.data
   } catch (error: any) {
-    console.error('❌ FUB update lead error:', error.message)
+    logger.error('FUB update lead error', error.message)
     return null
   }
 }
@@ -119,7 +120,7 @@ export async function searchLeadByPhone(phone: string): Promise<FubLeadData | nu
     })
     
     if (!response.ok) {
-      console.error('❌ FUB search error:', response.status)
+      logger.error(`FUB search error: ${response.status}`)
       return null
     }
     
@@ -127,7 +128,7 @@ export async function searchLeadByPhone(phone: string): Promise<FubLeadData | nu
     const people = data.people || []
     return people.length > 0 ? people[0] : null
   } catch (error: any) {
-    console.error('❌ FUB search fetch error:', error.message)
+    logger.error('FUB search fetch error', error.message)
     return null
   }
 }
@@ -164,7 +165,7 @@ export async function syncLeadToFub(lead: Lead): Promise<{ success: boolean; fub
       }
     }
   } catch (error: any) {
-    console.error('❌ FUB sync error:', error.message)
+    logger.error('FUB sync error', error.message)
     return { success: false }
   }
 }
@@ -224,10 +225,10 @@ export async function addNoteToLead(
       isHtml: false,
     })
 
-    console.log('✅ Note added to FUB lead:', leadId)
+    logger.info(`Note added to FUB lead: ${leadId}`)
     return true
   } catch (error: any) {
-    console.error('❌ FUB add note error:', error.message)
+    logger.error('FUB add note error', error.message)
     return false
   }
 }
@@ -313,7 +314,7 @@ export async function handleWebhookEvent(payload: FubWebhookPayload): Promise<{
 }> {
   const { event, data } = payload
 
-  console.log('📨 FUB Webhook:', event, '- Lead:', data.id)
+  logger.info(`FUB Webhook: ${event} - Lead: ${data.id}`)
 
   switch (event) {
     case 'lead.created':
@@ -329,7 +330,7 @@ export async function handleWebhookEvent(payload: FubWebhookPayload): Promise<{
       return handleLeadAssigned(data)
     
     default:
-      console.log('⚠️  Unhandled FUB event:', event)
+      logger.warn(`Unhandled FUB event: ${event}`)
       return { success: false }
   }
 }
@@ -412,10 +413,10 @@ export async function fetchAllLeads(
       page++
     }
 
-    console.log(`✅ Fetched ${leads.length} leads from FUB`)
+    logger.info(`Fetched ${leads.length} leads from FUB`)
     return leads
   } catch (error: any) {
-    console.error('❌ FUB fetch all leads error:', error.message)
+    logger.error('FUB fetch all leads error', error.message)
     return leads
   }
 }
@@ -435,7 +436,7 @@ export async function syncLeadsFromFub(
       await onLead(lead)
       synced++
     } catch (error) {
-      console.error('❌ Error syncing lead:', lead.id, error)
+      logger.error(`Error syncing lead: ${lead.id}`, error)
       errors++
     }
   }

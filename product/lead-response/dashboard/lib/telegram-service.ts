@@ -4,6 +4,7 @@
  */
 
 import * as https from 'https'
+import { logger } from '@/lib/logger'
 
 interface TelegramMessage {
   chat_id?: number | string
@@ -22,7 +23,7 @@ export async function sendTelegramMessage(payload: TelegramMessage): Promise<boo
     const chatId = process.env.TELEGRAM_CHAT_ID || payload.chat_id
 
     if (!botToken || !chatId) {
-      console.warn('⚠️ Telegram not configured: BOT_TOKEN or CHAT_ID missing')
+      logger.warn('Telegram not configured: BOT_TOKEN or CHAT_ID missing')
       resolve(false)
       return
     }
@@ -52,16 +53,14 @@ export async function sendTelegramMessage(payload: TelegramMessage): Promise<boo
         if (res.statusCode === 200) {
           resolve(true)
         } else {
-          console.error(
-            `⚠️ Telegram send failed (${res.statusCode}): ${body.slice(0, 200)}`
-          )
+          logger.error(`Telegram send failed (${res.statusCode}): ${body.slice(0, 200)}`)
           resolve(false)
         }
       })
     })
 
     req.on('error', (err) => {
-      console.error(`⚠️ Telegram send error: ${err.message}`)
+      logger.error(`Telegram send error: ${err.message}`)
       resolve(false)
     })
 

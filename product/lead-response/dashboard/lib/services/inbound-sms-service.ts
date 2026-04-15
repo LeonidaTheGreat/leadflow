@@ -10,6 +10,7 @@
  */
 
 import { supabaseAdmin, createLead } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 import { generateAgentResponse, checkOptOut, extractInfo } from '@/agents/sms-agent/agent'
 import { normalizePhone, sendSms } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
@@ -87,11 +88,11 @@ export async function findOrCreateLeadByPhone(phone: string): Promise<
   }
 
   // Not found locally — check FUB
-  console.log('Lead not found locally, checking FUB:', phone)
+  logger.info(`Lead not found locally, checking FUB: ${phone}`)
   const fubLead = await searchLeadByPhone(phone)
 
   if (fubLead?.id) {
-    console.log('Found lead in FUB:', fubLead.id)
+    logger.info(`Found lead in FUB: ${fubLead.id}`)
     const agent = await getDefaultAgent()
     const { data: newLead } = await createLead({
       fub_id: String(fubLead.id),
@@ -111,7 +112,7 @@ export async function findOrCreateLeadByPhone(phone: string): Promise<
   }
 
   // Not in FUB — create new
-  console.log('Creating NEW lead in FUB from inbound SMS:', phone)
+  logger.info(`Creating NEW lead in FUB from inbound SMS: ${phone}`)
   const createdFubLead = await createLeadInFub({
     firstName: 'New',
     lastName: 'Lead',
@@ -121,11 +122,11 @@ export async function findOrCreateLeadByPhone(phone: string): Promise<
   })
 
   if (!createdFubLead?.id) {
-    console.error('Failed to create lead in FUB')
+    logger.error('Failed to create lead in FUB')
     return { error: 'Failed to create lead in FUB' }
   }
 
-  console.log('Lead created in FUB:', createdFubLead.id)
+  logger.info(`Lead created in FUB: ${createdFubLead.id}`)
   const agent = await getDefaultAgent()
 
   const leadData: Partial<Lead> = {
@@ -142,11 +143,11 @@ export async function findOrCreateLeadByPhone(phone: string): Promise<
 
   const { data: newLead, error: createError } = await createLead(leadData)
   if (createError || !newLead) {
-    console.error('createLead error:', createError)
+    logger.error('createLead error', createError)
     return { error: createError?.message || 'Failed to create local lead' }
   }
 
-  console.log('Local lead created:', newLead.id)
+  logger.info(`Local lead created: ${newLead.id}`)
   return { lead: newLead as Lead }
 }
 
@@ -214,10 +215,10 @@ export async function handleSatisfactionReply(lead: Lead, body: string): Promise
     return false
   }
 
-  console.log('Pending satisfaction ping found — classifying reply:', body)
+  logger.info(`Pending satisfaction ping found — classifying reply: ${body}`)
   const rating = classifyReply(body)
   await recordSatisfactionReply(pendingPing.id, body, rating)
-  console.log(`Satisfaction reply classified as: ${rating}`)
+  logger.info(`Satisfaction reply classified as: ${rating}`)
 
   if (rating === 'negative') {
     await supabaseAdmin.from('events').insert({
@@ -257,7 +258,7 @@ export async function saveInboundMessage(
     .single()
 
   if (msgError) {
-    console.error('Error saving inbound message:', msgError)
+    logger.error('Error saving inbound message', msgError)
   }
 
   await supabaseAdmin
@@ -329,7 +330,7 @@ export async function generateAndSaveAiResponse(
 
   // Check for opt-out via agent utility
   if (checkOptOut(inboundBody)) {
-    console.log('Lead opted out via agent check:', lead.id)
+    logger.info(`Lead opted out via agent check: ${lead.id}`)
     await supabaseAdmin.from('leads').update({ status: 'opted_out' }).eq('id', lead.id)
     return { message: "You've been opted out. You won't receive any more messages.", confidence: 1, action: 'opt_out' }
   }
@@ -348,7 +349,7 @@ export async function generateAndSaveAiResponse(
   // Update lead with any extracted info
   const extractedInfo = extractInfo(inboundBody, null)
   if (Object.keys(extractedInfo).length > 0) {
-    console.log('Updating lead with extracted info:', extractedInfo)
+    logger.info('Updating lead with extracted info', extractedInfo)
     await supabaseAdmin.from('leads').update({
       ...extractedInfo,
       updated_at: new Date().toISOString(),
@@ -365,7 +366,7 @@ export async function generateAndSaveAiResponse(
   }
 
   // Save outbound message
-  console.log('Saving outbound message to database...')
+  logger.info('Saving outbound message to database...')
   const { data: outboundMsg, error: outboundError } = await supabaseAdmin
     .from('messages')
     .insert({
@@ -382,7 +383,7 @@ export async function generateAndSaveAiResponse(
     .single()
 
   if (outboundError) {
-    console.error('Error saving outbound message:', outboundError)
+    logger.error('Error saving outbound message', outboundError)
     await supabaseAdmin.from('events').insert({
       lead_id: lead.id,
       event_type: 'outbound_message_save_failed',
@@ -394,7 +395,7 @@ export async function generateAndSaveAiResponse(
       source: 'twilio_webhook',
     })
   } else {
-    console.log('Outbound message saved:', outboundMsg?.id)
+    logger.info(`Outbound message saved: ${outboundMsg?.id}`)
   }
 
   // Update responded_at
@@ -419,7 +420,7 @@ export async function generateAndSaveAiResponse(
           agentSatisfactionPingEnabled: satisfactionEnabled,
         })
       } catch (e: any) {
-        console.error('Satisfaction ping error:', e.message)
+        logger.error('Satisfaction ping error', e.message)
       }
     }, SATISFACTION_PING_DELAY_MS)
   }

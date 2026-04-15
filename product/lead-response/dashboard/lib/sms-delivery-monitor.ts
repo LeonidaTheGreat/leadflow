@@ -9,6 +9,7 @@
  */
 
 import { createClient } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.imagineapi.org'
 const API_SERVICE_KEY = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || ''
@@ -55,7 +56,7 @@ export async function checkSmsDeliveryHealth(): Promise<SmsDeliveryHealth> {
     .gte('created_at', since)
 
   if (error) {
-    console.error('[sms-delivery-monitor] Failed to fetch messages:', error.message)
+    logger.error(`[sms-delivery-monitor] Failed to fetch messages: ${error.message}`)
     return {
       status: 'unmonitored',
       deliveryRate: null,

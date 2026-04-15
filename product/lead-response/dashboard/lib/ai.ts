@@ -2,14 +2,15 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { createOpenAI } from '@ai-sdk/openai'
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
-import type { 
-  QualificationInput, 
-  AiQualificationResult, 
+import type {
+  QualificationInput,
+  AiQualificationResult,
   AiSmsResponse,
   Lead,
   Agent,
-  Market 
+  Market
 } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // AI TIMEOUT WRAPPER
@@ -108,7 +109,7 @@ export type QualificationResult = z.infer<typeof qualificationSchema>
 export async function qualifyLead(input: QualificationInput): Promise<AiQualificationResult> {
   // Mock mode: return sensible defaults without calling API
   if (isMockMode()) {
-    console.log('🤖 Using mock AI qualification (no API key)')
+    logger.info('Using mock AI qualification (no API key)')
     return {
       intent: 'buy',
       budget_min: 500000,
@@ -142,8 +143,8 @@ export async function qualifyLead(input: QualificationInput): Promise<AiQualific
       raw_response: result.object,
     }
   } catch (error) {
-    console.error('❌ AI qualification failed:', error)
-    console.log('🤖 Falling back to mock qualification')
+    logger.error('AI qualification failed', error)
+    logger.info('Falling back to mock qualification')
     
     // Fallback to mock qualification
     return {
@@ -261,11 +262,11 @@ export async function generateAiSmsResponse(
 ): Promise<AiSmsResponse> {
   // Check mock mode
   const mockMode = isMockMode()
-  console.log('🤖 AI SMS - Mock mode check:', { mockMode, hasKey: !!process.env.ANTHROPIC_API_KEY, keyLength: process.env.ANTHROPIC_API_KEY?.length || 0 })
+  logger.info('AI SMS - Mock mode check', { mockMode, hasKey: !!process.env.ANTHROPIC_API_KEY, keyLength: process.env.ANTHROPIC_API_KEY?.length || 0 })
   
   // Mock mode: return a default message
   if (mockMode) {
-    console.log('🤖 Using mock SMS response (no API key or invalid key)')
+    logger.info('Using mock SMS response (no API key or invalid key)')
     const firstName = (lead.name && lead.name !== 'New Lead') ? lead.name.split(' ')[0] : 'there'
     const agentFirstName = agent.name.split(' ')[0]
     const location = lead.location || 'the area'
@@ -322,7 +323,7 @@ export async function generateAiSmsResponse(
       personalize: result.object.personalize,
     }
   } catch (error) {
-    console.error('❌ AI SMS generation failed:', error)
+    logger.error('AI SMS generation failed', error)
     // Return error instead of mock to diagnose the issue
     throw error
     

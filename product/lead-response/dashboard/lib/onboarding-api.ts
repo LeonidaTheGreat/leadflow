@@ -11,6 +11,7 @@ import {
   OnboardingResult,
   OnboardingDraft,
 } from '@/lib/types/onboarding';
+import { logger } from '@/lib/logger'
 
 // API Configuration
 const API_BASE = '/api/onboarding';
@@ -322,7 +323,7 @@ export async function resumeOnboarding(
       message: `Resume from ${draft.current_step}`,
     };
   } catch (error) {
-    console.error('Resume onboarding error:', error);
+    logger.error('Resume onboarding error', error);
     return { canResume: false, message: 'Failed to load draft' };
   }
 }

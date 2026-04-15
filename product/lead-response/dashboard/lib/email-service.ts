@@ -4,6 +4,7 @@
  */
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 // Lazy-load Resend to avoid build error when package isn't installed
 let _resend: any = null
@@ -265,7 +266,7 @@ async function sendEmail(
     const resend = await getResend()
     // If Resend not configured, return error — AC7 requires 500 with clear error, not silent success
     if (!resend) {
-      console.error(`❌ Email send failed: RESEND_API_KEY not configured (${emailType} to ${to})`)
+      logger.error(`Email send failed: RESEND_API_KEY not configured (${emailType} to ${to})`)
       return false
     }
 
@@ -282,7 +283,7 @@ async function sendEmail(
     })
 
     if (error) {
-      console.error(`❌ Failed to send email (${emailType}) to ${to}:`, error)
+      logger.error(`Failed to send email (${emailType}) to ${to}`, error)
       await logEmailEvent({
         customer_id: customerId,
         email_type: emailType,
@@ -295,7 +296,7 @@ async function sendEmail(
       return false
     }
 
-    console.log(`✅ Email sent (${emailType}) to ${to}`)
+    logger.info(`Email sent (${emailType}) to ${to}`)
     await logEmailEvent({
       customer_id: customerId,
       email_type: emailType,
@@ -308,7 +309,7 @@ async function sendEmail(
 
     return true
   } catch (error: any) {
-    console.error(`❌ Error sending email (${emailType}):`, error)
+    logger.error(`Error sending email (${emailType})`, error)
     await logEmailEvent({
       customer_id: customerId,
       email_type: emailType,
@@ -329,7 +330,7 @@ async function logEmailEvent(event: EmailEvent): Promise<void> {
   try {
     await supabase.from('email_events').insert(event)
   } catch (error) {
-    console.error('Error logging email event:', error)
+    logger.error('Error logging email event', error)
   }
 }
 

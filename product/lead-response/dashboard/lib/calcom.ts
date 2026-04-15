@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { Booking, CalcomBooking, CalcomEventType, Lead, Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // CAL.COM API CLIENT
@@ -23,7 +24,7 @@ if (CALCOM_API_KEY) {
     return config
   })
 } else {
-  console.warn('⚠️  CALCOM_API_KEY not set - booking integration disabled')
+  logger.warn('CALCOM_API_KEY not set - booking integration disabled')
 }
 
 // ============================================
@@ -107,10 +108,10 @@ export async function createBooking(
       ...data,
     })
 
-    console.log('✅ Booking created:', response.data.uid)
+    logger.info(`Booking created: ${response.data.uid}`)
     return response.data
   } catch (error: any) {
-    console.error('❌ Cal.com create booking error:', error.message)
+    logger.error('Cal.com create booking error', error.message)
     return null
   }
 }
@@ -125,7 +126,7 @@ export async function getBooking(uid: string): Promise<CalcomBooking | null> {
     const response = await calcomClient.get(`/bookings/${uid}`)
     return response.data
   } catch (error: any) {
-    console.error('❌ Cal.com get booking error:', error.message)
+    logger.error('Cal.com get booking error', error.message)
     return null
   }
 }
@@ -144,10 +145,10 @@ export async function cancelBooking(
       data: { reason },
     })
 
-    console.log('✅ Booking cancelled:', uid)
+    logger.info(`Booking cancelled: ${uid}`)
     return true
   } catch (error: any) {
-    console.error('❌ Cal.com cancel booking error:', error.message)
+    logger.error('Cal.com cancel booking error', error.message)
     return false
   }
 }
@@ -168,10 +169,10 @@ export async function rescheduleBooking(
       end: newEnd,
     })
 
-    console.log('✅ Booking rescheduled:', uid)
+    logger.info(`Booking rescheduled: ${uid}`)
     return response.data
   } catch (error: any) {
-    console.error('❌ Cal.com reschedule error:', error.message)
+    logger.error('Cal.com reschedule error', error.message)
     return null
   }
 }
@@ -206,7 +207,7 @@ export async function getAvailability(
 
     return response.data.slots || []
   } catch (error: any) {
-    console.error('❌ Cal.com availability error:', error.message)
+    logger.error('Cal.com availability error', error.message)
     return []
   }
 }
@@ -242,7 +243,7 @@ export async function getEventTypes(username: string): Promise<CalcomEventType[]
 
     return response.data.event_types || []
   } catch (error: any) {
-    console.error('❌ Cal.com get event types error:', error.message)
+    logger.error('Cal.com get event types error', error.message)
     return []
   }
 }
@@ -257,7 +258,7 @@ export async function getEventType(id: number): Promise<CalcomEventType | null> 
     const response = await calcomClient.get(`/event-types/${id}`)
     return response.data
   } catch (error: any) {
-    console.error('❌ Cal.com get event type error:', error.message)
+    logger.error('Cal.com get event type error', error.message)
     return null
   }
 }
@@ -342,7 +343,7 @@ export async function handleBookingWebhook(
 }> {
   const { triggerEvent, payload: data } = payload
 
-  console.log('📅 Cal.com webhook:', triggerEvent, '- Booking:', data.bookingId)
+  logger.info(`Cal.com webhook: ${triggerEvent} - Booking: ${data.bookingId}`)
 
   const bookingData: Partial<Booking> = {
     calcom_booking_id: String(data.bookingId),

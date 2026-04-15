@@ -5,6 +5,7 @@
  */
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 // Lazy-load Resend to avoid build error when package isn't installed
 let _resend: any = null
@@ -125,7 +126,7 @@ async function logEmailEvent(event: EmailEvent): Promise<void> {
   try {
     await supabase.from('email_events').insert(event)
   } catch (error) {
-    console.error('Error logging email event:', error)
+    logger.error('Error logging email event', error)
   }
 }
 
@@ -149,8 +150,8 @@ export async function sendNPSSurveyEmail(
     
     // If Resend not configured, log and return success (for testing)
     if (!resend) {
-      console.log(`📧 NPS Survey email queued (Resend not configured): to ${to}`)
-      console.log(`   Survey URL: ${surveyUrl}`)
+      logger.info(`NPS Survey email queued (Resend not configured): to ${to}`)
+      logger.info(`   Survey URL: ${surveyUrl}`)
       await logEmailEvent({
         customer_id: customerId,
         email_type: 'nps_survey',
@@ -172,7 +173,7 @@ export async function sendNPSSurveyEmail(
     })
 
     if (error) {
-      console.error(`❌ Failed to send NPS survey email to ${to}:`, error)
+      logger.error(`Failed to send NPS survey email to ${to}`, error)
       await logEmailEvent({
         customer_id: customerId,
         email_type: 'nps_survey',
@@ -185,7 +186,7 @@ export async function sendNPSSurveyEmail(
       return false
     }
 
-    console.log(`✅ NPS survey email sent to ${to}`)
+    logger.info(`NPS survey email sent to ${to}`)
     await logEmailEvent({
       customer_id: customerId,
       email_type: 'nps_survey',
@@ -198,7 +199,7 @@ export async function sendNPSSurveyEmail(
 
     return true
   } catch (error: any) {
-    console.error(`❌ Error sending NPS survey email:`, error)
+    logger.error('Error sending NPS survey email', error)
     await logEmailEvent({
       customer_id: customerId,
       email_type: 'nps_survey',

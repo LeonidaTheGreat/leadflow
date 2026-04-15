@@ -5,6 +5,7 @@
 
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendSms } from '@/lib/twilio'
+import { logger } from '@/lib/logger'
 
 // ============================================
 // CONSTANTS
@@ -69,7 +70,7 @@ export async function getPendingSatisfactionPing(leadId: string) {
     .maybeSingle()
 
   if (error) {
-    console.error('❌ Error checking pending satisfaction ping:', error)
+    logger.error('Error checking pending satisfaction ping', error)
     return null
   }
 
@@ -97,11 +98,11 @@ export async function recordSatisfactionReply(
     .eq('id', eventId)
 
   if (error) {
-    console.error('❌ Error recording satisfaction reply:', error)
+    logger.error('Error recording satisfaction reply', error)
     return false
   }
 
-  console.log(`✅ Satisfaction reply recorded: ${rating} for event ${eventId}`)
+  logger.info(`Satisfaction reply recorded: ${rating} for event ${eventId}`)
   return true
 }
 
@@ -134,7 +135,7 @@ export async function sendSatisfactionPing(opts: SendSatisfactionPingOptions): P
 
   // 1. Check agent setting
   if (!agentSatisfactionPingEnabled) {
-    console.log('📊 Satisfaction ping disabled for agent — skipping')
+    logger.info('Satisfaction ping disabled for agent — skipping')
     return false
   }
 
@@ -144,7 +145,7 @@ export async function sendSatisfactionPing(opts: SendSatisfactionPingOptions): P
     const ageMs = Date.now() - lastAiMs
     if (ageMs < SATISFACTION_COOLDOWN_MS) {
       const remainingMin = Math.ceil((SATISFACTION_COOLDOWN_MS - ageMs) / 60000)
-      console.log(`⏳ Satisfaction ping cooldown — ${remainingMin}m remaining, skipping`)
+      logger.info(`Satisfaction ping cooldown — ${remainingMin}m remaining, skipping`)
       return false
     }
   }
@@ -166,7 +167,7 @@ export async function sendSatisfactionPing(opts: SendSatisfactionPingOptions): P
 
   const { data: existingPings } = await pingQuery.limit(1)
   if (existingPings && existingPings.length > 0) {
-    console.log('📊 Satisfaction ping already sent for this conversation — skipping')
+    logger.info('Satisfaction ping already sent for this conversation — skipping')
     return false
   }
 
@@ -177,7 +178,7 @@ export async function sendSatisfactionPing(opts: SendSatisfactionPingOptions): P
   })
 
   if (!smsResult.success) {
-    console.error('❌ Failed to send satisfaction ping:', smsResult.error)
+    logger.error('Failed to send satisfaction ping', smsResult.error)
     return false
   }
 
@@ -195,11 +196,11 @@ export async function sendSatisfactionPing(opts: SendSatisfactionPingOptions): P
     })
 
   if (insertError) {
-    console.error('❌ Error logging satisfaction ping event:', insertError)
+    logger.error('Error logging satisfaction ping event', insertError)
     // Don't fail — ping was still sent
   }
 
-  console.log(`✅ Satisfaction ping sent to lead ${leadId} (SID: ${smsResult.messageSid})`)
+  logger.info(`Satisfaction ping sent to lead ${leadId} (SID: ${smsResult.messageSid})`)
   return true
 }
 
