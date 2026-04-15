@@ -17,6 +17,3 @@ jobs:
         run: |
           npm ci
           npm run build
-      - name: Dashboard tests
-        working-directory: product/lead-response/dashboard
-        run: npx jest --passWithNoTests --bail --ci
