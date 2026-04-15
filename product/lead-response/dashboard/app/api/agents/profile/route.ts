@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 // GET /api/agents/profile - Get current agent profile
 export async function GET(request: NextRequest) {
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Profile fetch error:', error)
+      logger.error('Profile fetch error:', error)
       return NextResponse.json(
         { error: 'Failed to fetch profile' },
         { status: 500 }
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Profile GET error:', error)
+    logger.error('Profile GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -118,7 +119,7 @@ export async function PUT(request: NextRequest) {
       .eq('id', agentId)
 
     if (agentError) {
-      console.error('Agent update error:', agentError)
+      logger.error('Agent update error:', agentError)
       return NextResponse.json(
         { error: 'Failed to update profile' },
         { status: 500 }
@@ -138,7 +139,7 @@ export async function PUT(request: NextRequest) {
       })
 
     if (profileError) {
-      console.error('Profile update error:', profileError)
+      logger.error('Profile update error:', profileError)
       // Don't fail the whole request if profile upsert fails
     }
 
@@ -159,7 +160,7 @@ export async function PUT(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Profile PUT error:', error)
+    logger.error('Profile PUT error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

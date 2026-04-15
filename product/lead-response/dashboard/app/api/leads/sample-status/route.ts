@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
       .eq('is_sample', true)
 
     if (error) {
-      console.error('Sample status query error:', error)
+      logger.error('Sample status query error:', error)
       return NextResponse.json({ hasSampleLeads: false, sampleLeadCount: 0, agentId: userId })
     }
 
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Sample status error:', error)
+    logger.error('Sample status error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

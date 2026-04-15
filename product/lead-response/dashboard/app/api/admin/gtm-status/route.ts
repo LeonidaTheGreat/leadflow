@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isAdminUser } from '@/lib/services/AuthService'
 import { postgrestAdmin } from '@/lib/db'
 import { checkSmsDeliveryHealth, getA2pRegistrationStatus } from '@/lib/sms-delivery-monitor'
+import { logger } from '@/lib/logger'
 
 type ActionItem = {
   id: string
@@ -186,7 +187,7 @@ export async function GET(request: NextRequest) {
       actionItems: pendingActionItems,
     })
   } catch (error: any) {
-    console.error('[gtm-status] Error:', error.message)
+    logger.error('[gtm-status] Error:', error.message)
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to load GTM execution status' },
       { status: 500 }

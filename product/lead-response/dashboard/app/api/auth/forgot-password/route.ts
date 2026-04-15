@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import crypto from 'crypto'
 import { sendPasswordResetEmail } from '@/lib/email-service'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
         })
 
       if (insertError) {
-        console.error('Failed to insert reset token:', insertError.message)
+        logger.error('Failed to insert reset token:', insertError.message)
         // Still return 200 — don't expose DB errors
         return NextResponse.json({ success: true })
       }
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Always return 200 (anti-enumeration)
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Forgot password error:', error)
+    logger.error('Forgot password error:', error)
     // Return 200 even on unexpected errors (anti-enumeration)
     return NextResponse.json({ success: true })
   }

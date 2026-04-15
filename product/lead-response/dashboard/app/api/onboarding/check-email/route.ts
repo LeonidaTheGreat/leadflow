@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { OnboardingValidator } from '@/lib/onboarding-validation';
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/onboarding/check-email
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (agentError && agentError.code !== 'PGRST116') {
-      console.error('Agent check error:', agentError);
+      logger.error('Agent check error:', agentError);
       return NextResponse.json(
         { success: false, error: 'Failed to check email availability' },
         { status: 500 }
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Email check error:', error);
+    logger.error('Email check error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -131,7 +132,7 @@ export async function GET(request: NextRequest) {
     return POST(new NextRequest(mockRequest));
 
   } catch (error) {
-    console.error('Email check GET error:', error);
+    logger.error('Email check GET error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

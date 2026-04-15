@@ -2,7 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-04-12T04:01:47.845Z | 77 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-04-15T00:56:38.200Z | 80 tables in local PostgreSQL (openclaw DB).
 
 ## Common Gotchas
 
@@ -19,7 +19,7 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `real_estate_agents` | 2 | |
+| `real_estate_agents` | 3 | |
 | `customers` | 0 | |
 | `profiles` | 0 | |
 | `agent_profiles` | 0 | |
@@ -53,7 +53,7 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `subscriptions` | 3 | |
-| `subscription_events` | 15 | |
+| `subscription_events` | 18 | |
 | `payments` | 1 | |
 | `checkout_sessions` | 0 | |
 | `mrr_snapshots` | 0 | |
@@ -63,10 +63,10 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `onboarding_drafts` | 0 | |
-| `onboarding_simulations` | 2 | |
-| `onboarding_events` | 0 | |
+| `onboarding_simulations` | 3 | |
+| `onboarding_events` | 1 | |
 | `onboarding_stuck_alerts` | 0 | |
-| `agent_onboarding_wizard` | 0 | |
+| `agent_onboarding_wizard` | 1 | |
 | `pilot_invites` | 0 | |
 | `pilot_signups` | 20 | |
 | `pilot_progress` | 2 | |
@@ -77,8 +77,8 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `sessions` | 172 | |
-| `password_reset_tokens` | 16 | |
+| `sessions` | 184 | |
+| `password_reset_tokens` | 24 | |
 | `demo_tokens` | 9 | |
 
 ### Product — Analytics & Events
@@ -86,15 +86,15 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `analytics_events` | 0 | |
-| `events` | 479 | |
-| `email_events` | 339 | |
-| `agent_page_views` | 0 | |
+| `events` | 486 | |
+| `email_events` | 348 | |
+| `agent_page_views` | 3 | |
 | `agent_sessions` | 0 | |
 | `demo_runs` | 0 | |
 | `agent_nps_responses` | 0 | |
 | `nps_survey_tokens` | 0 | |
 | `nps_prompt_dismissals` | 0 | |
-| `agent_survey_schedule` | 0 | |
+| `agent_survey_schedule` | 9 | |
 | `inactivity_alerts` | 0 | |
 
 ### Product — Templates & Webhooks
@@ -117,29 +117,29 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `tasks` | 3954 | |
+| `tasks` | 4058 | |
 | `task_dependencies` | 48 | |
 | `task_outcomes` | 0 | |
 | `completed_work` | 9 | |
-| `action_items` | 254 | |
+| `action_items` | 260 | |
 
 ### Orchestration — Product
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `use_cases` | 342 | |
+| `use_cases` | 351 | |
 | `prds` | 152 | |
 | `e2e_test_specs` | 438 | |
-| `code_reviews` | 1153 | |
+| `code_reviews` | 1154 | |
 | `product_feedback` | 47 | |
-| `product_reviews` | 192 | |
+| `product_reviews` | 212 | |
 | `product_decisions` | 42 | |
 
 ### Orchestration — Metrics
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `metrics` | 36026 | |
+| `metrics` | 37676 | |
 | `revenue_metrics` | 0 | |
 | `distribution_channels` | 1 | |
 | `distribution_metrics` | 250 | |
@@ -159,8 +159,11 @@
 
 | Table | Rows |
 |-------|------|
+| `phone_inventory` | 1 |
 | `pilot_recruitment_touchpoints` | 2 |
 | `qualifications` | 0 |
+| `subscription_attempts` | 0 |
+| `webhook_dead_letters` | 0 |
 
 ---
 

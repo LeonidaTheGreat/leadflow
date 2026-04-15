@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import bcrypt from 'bcryptjs'
+import { logger } from '@/lib/logger'
 
 /** Pilot duration in days */
 const PILOT_DURATION_DAYS = 60
@@ -23,7 +24,7 @@ async function notifyPilotSignup(name: string, email: string) {
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
     })
   } catch (err) {
-    console.error('Telegram notification failed (non-blocking):', err)
+    logger.error('Telegram notification failed (non-blocking):', err)
   }
 }
 
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (agentError) {
-      console.error('Agent creation error:', agentError)
+      logger.error('Agent creation error:', agentError)
       return NextResponse.json(
         { error: 'Failed to create agent account' },
         { status: 500 }
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
         })
 
       if (intError) {
-        console.error('Integration creation error:', intError)
+        logger.error('Integration creation error:', intError)
         // Don't fail the whole request if integrations fail
       }
     }
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
       })
 
     if (settingsError) {
-      console.error('Settings creation error:', settingsError)
+      logger.error('Settings creation error:', settingsError)
     }
 
     // Send welcome email (implement email service)
@@ -177,7 +178,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Onboarding error:', error)
+    logger.error('Onboarding error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

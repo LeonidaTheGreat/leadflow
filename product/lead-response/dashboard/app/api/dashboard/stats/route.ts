@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
 import type { DashboardStats } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 function getEmptyStats(): DashboardStats {
   return {
@@ -26,7 +27,7 @@ export async function GET() {
       .select('*')
 
     if (error) {
-      console.error('[dashboard/stats] query failed:', error)
+      logger.error('[dashboard/stats] query failed:', error)
       return NextResponse.json({ error: 'Failed to load dashboard stats' }, { status: 500 })
     }
 
@@ -45,7 +46,7 @@ export async function GET() {
 
     return NextResponse.json({ stats })
   } catch (error) {
-    console.error('[dashboard/stats] unexpected error:', error)
+    logger.error('[dashboard/stats] unexpected error:', error)
     return NextResponse.json({ error: 'Failed to load dashboard stats' }, { status: 500 })
   }
 }

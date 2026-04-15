@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkTrialStatus } from '@/lib/trial'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/trial/status
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(trialStatus)
 
   } catch (error) {
-    console.error('Trial status error:', error)
+    logger.error('Trial status error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
           .eq('id', existingCustomer.id)
 
         if (updateError) {
-          console.error('Error reactivating customer:', updateError)
+          logger.error('Error reactivating customer:', updateError)
           return NextResponse.json(
             { error: 'Failed to reactivate account' },
             { status: 500 }
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (createError) {
-      console.error('Error creating customer:', createError)
+      logger.error('Error creating customer:', createError)
       return NextResponse.json(
         { error: 'Failed to create customer account' },
         { status: 500 }
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error: any) {
-    console.error('Customer creation error:', error)
+    logger.error('Customer creation error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

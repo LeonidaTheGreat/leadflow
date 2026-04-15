@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * Three sample leads with AI-drafted SMS responses.
@@ -152,7 +153,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error || !agent) {
-      console.error('[sample-leads] agent lookup error:', error?.message)
+      logger.error('[sample-leads] agent lookup error:', error?.message)
       return NextResponse.json({ eligible: false, leads: [] })
     }
 
@@ -164,7 +165,7 @@ export async function GET(request: NextRequest) {
       leads: eligible ? SAMPLE_LEADS : [],
     })
   } catch (err) {
-    console.error('[sample-leads] unexpected error:', err)
+    logger.error('[sample-leads] unexpected error:', err)
     return NextResponse.json({ eligible: false, leads: [] })
   }
 }

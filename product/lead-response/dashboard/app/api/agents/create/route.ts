@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import bcrypt from 'bcryptjs'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -59,9 +60,9 @@ export async function POST(request: NextRequest) {
     } catch (err: any) {
       // On timeout or error, continue (fail open for deduplication)
       if (err.message.includes('timed out')) {
-        console.warn('Duplicate check timeout for email:', email)
+        logger.warn('Duplicate check timeout for email:', email)
       } else {
-        console.error('Duplicate check error:', err)
+        logger.error('Duplicate check error:', err)
       }
       existingAgent = null
     }
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
       )
       agent = result.data
     } catch (err: any) {
-      console.error('Error creating agent:', err)
+      logger.error('Error creating agent:', err)
       if (err.message.includes('timed out')) {
         return NextResponse.json(
           { error: 'Service temporarily unavailable. Please try again.' },
@@ -135,7 +136,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Signup error:', error)
+    logger.error('Signup error:', error)
     return NextResponse.json(
       { error: 'An unexpected error occurred' },
       { status: 500 }

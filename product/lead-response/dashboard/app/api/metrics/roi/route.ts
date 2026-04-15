@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering — metrics must reflect current data
 export const dynamic = 'force-dynamic'
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
       .eq('status', 'responded')
 
     if (respondedError) {
-      console.error('Error fetching responded leads:', respondedError)
+      logger.error('Error fetching responded leads:', respondedError)
       return NextResponse.json({ error: 'Failed to fetch responded leads' }, { status: 500 })
     }
 
@@ -122,7 +123,7 @@ export async function GET(request: NextRequest) {
       .lte('created_at', monthEnd)
 
     if (bookingsError) {
-      console.error('Error fetching monthly bookings:', bookingsError)
+      logger.error('Error fetching monthly bookings:', bookingsError)
       return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 })
     }
 
@@ -138,7 +139,7 @@ export async function GET(request: NextRequest) {
       .eq('agent_id', agentId)
 
     if (allTimeBookingsError) {
-      console.error('Error fetching all-time bookings:', allTimeBookingsError)
+      logger.error('Error fetching all-time bookings:', allTimeBookingsError)
       return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 })
     }
 
@@ -179,7 +180,7 @@ export async function GET(request: NextRequest) {
       hasData: leadsResponded > 0 || appointmentsBookedThisMonth > 0,
     })
   } catch (error) {
-    console.error('Error fetching ROI metrics:', error)
+    logger.error('Error fetching ROI metrics:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

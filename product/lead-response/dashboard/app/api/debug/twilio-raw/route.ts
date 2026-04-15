@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: Request) {
   const headers: Record<string, string> = {}
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   // Log to console
-  console.log('📥 RAW TWILIO WEBHOOK:', {
+  logger.info('📥 RAW TWILIO WEBHOOK:', {
     headers,
     body,
     rawBody: rawBody.substring(0, 500),
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
       ip_address: headers['x-forwarded-for'] || 'unknown',
     } as any)
   } catch (e) {
-    console.error('Failed to log event:', e)
+    logger.error('Failed to log event:', e)
   }
 
   // Return TwiML (required by Twilio)

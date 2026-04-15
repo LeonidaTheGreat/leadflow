@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingStep } from '@/lib/types/onboarding';
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/onboarding/validate
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Validation error:', error);
+    logger.error('Validation error:', error);
     return NextResponse.json(
       { 
         success: false, 

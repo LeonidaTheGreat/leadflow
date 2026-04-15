@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
-      console.error('Error logging event:', error)
+      logger.error('Error logging event:', error)
       return NextResponse.json(
         { error: 'Failed to log event' },
         { status: 500 }
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
 
   } catch (error) {
-    console.error('Analytics event error:', error)
+    logger.error('Analytics event error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

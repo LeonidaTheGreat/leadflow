@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { sendAhaMomentDay3Email } from '@/lib/email-service'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/onboarding/send-aha-day3
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Day-3 email error:', error)
+    logger.error('Day-3 email error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -124,7 +125,7 @@ export async function GET(request: NextRequest) {
       .lte('trial_started_at', threeDaysAgoEnd.toISOString())
 
     if (error) {
-      console.error('Day-3 cohort fetch error:', error)
+      logger.error('Day-3 cohort fetch error:', error)
       return NextResponse.json({ error: 'Failed to fetch cohort' }, { status: 500 })
     }
 
@@ -167,7 +168,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Day-3 cohort error:', error)
+    logger.error('Day-3 cohort error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

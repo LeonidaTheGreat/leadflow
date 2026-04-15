@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import Stripe from 'stripe'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest) {
         checkoutUrl = session.url
       } catch (stripeError: any) {
         // Non-fatal: fall back to pricing page
-        console.warn('Trial nudge: Stripe checkout creation failed:', stripeError.message)
+        logger.warn('Trial nudge: Stripe checkout creation failed:', stripeError.message)
       }
     }
 
@@ -123,7 +124,7 @@ export async function GET(request: NextRequest) {
       checkoutUrl,
     })
   } catch (error: any) {
-    console.error('Trial nudge error:', error)
+    logger.error('Trial nudge error:', error)
     return NextResponse.json({ error: 'Internal error', shouldShow: false }, { status: 500 })
   }
 }

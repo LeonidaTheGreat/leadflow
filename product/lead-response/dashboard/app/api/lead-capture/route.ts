@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { sendPlaybookEmail } from '@/lib/lead-magnet-email'
+import { logger } from '@/lib/logger'
 
 // Email format validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     // Check Supabase is configured
     if (!isSupabaseConfigured()) {
-      console.error('[lead-capture] Supabase not configured')
+      logger.error('[lead-capture] Supabase not configured')
       return NextResponse.json(
         { success: false, error: 'Server configuration error' },
         { status: 500, headers: corsHeaders }
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       )
 
     if (dbError) {
-      console.error('[lead-capture] DB error:', dbError)
+      logger.error('[lead-capture] DB error:', dbError)
       // Don't leak DB error details to client
       return NextResponse.json(
         { success: false, error: 'Failed to save. Please try again.' },
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // Send Email 1 (playbook delivery) — fire and don't await to keep response fast
     sendPlaybookEmail(email, firstName || undefined).catch((err) =>
-      console.error('[lead-capture] Email send error:', err)
+      logger.error('[lead-capture] Email send error:', err)
     )
 
     return NextResponse.json(
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
     )
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    console.error('[lead-capture] Unexpected error:', message)
+    logger.error('[lead-capture] Unexpected error:', message)
     return NextResponse.json(
       { success: false, error: 'An unexpected error occurred. Please try again.' },
       { status: 500, headers: corsHeaders }

@@ -4,6 +4,7 @@ import {
   generateSurveyToken,
 } from '@/lib/nps-service'
 import { sendNPSSurveyEmail } from '@/lib/nps-email-service'
+import { logger } from '@/lib/logger'
 
 // Cron secret for authentication
 const CRON_SECRET = process.env.CRON_SECRET
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
       ...results,
     })
   } catch (error: any) {
-    console.error('Error in NPS survey cron:', error)
+    logger.error('Error in NPS survey cron:', error)
     return NextResponse.json(
       { error: 'Internal server error', message: error.message },
       { status: 500 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendSms } from '@/lib/twilio'
 import { createMessage, getLeadById, getAgentById } from '@/lib/supabase'
 import { generateAiSmsResponse } from '@/lib/ai'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/sms/send-manual
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (messageError) {
-      console.error('❌ Failed to save message:', messageError)
+      logger.error('❌ Failed to save message:', messageError)
       return NextResponse.json(
         { error: 'SMS sent but failed to save to database' },
         { status: 500 }
@@ -135,7 +136,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ Send manual SMS error:', error)
+    logger.error('❌ Send manual SMS error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

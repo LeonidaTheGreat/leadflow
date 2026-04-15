@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
       .eq('agent_id', agentId)
 
     if (error) {
-      console.error('Disconnect error:', error)
+      logger.error('Disconnect error:', error)
       return NextResponse.json(
         { error: 'Failed to disconnect integration' },
         { status: 500 }
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
       message: `${integration} disconnected successfully`,
     })
   } catch (error) {
-    console.error('Disconnect error:', error)
+    logger.error('Disconnect error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

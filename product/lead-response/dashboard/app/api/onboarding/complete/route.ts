@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 interface CompletionPayload {
   ahaCompleted?: boolean
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     .eq('id', authenticatedId)
 
   if (error) {
-    console.error('[onboarding/complete] Failed to update agent:', error)
+    logger.error('[onboarding/complete] Failed to update agent:', error)
     return NextResponse.json({ error: 'Failed to record onboarding completion' }, { status: 500 })
   }
 

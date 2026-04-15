@@ -18,6 +18,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/db'
 import type { FubWebhookPayload } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 const TEST_LEAD_FIRST_NAME = 'Test'
 const TEST_LEAD_LAST_NAME = 'Lead'
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       body: payloadStr,
     })
   } catch (err: any) {
-    console.error('[test-lead] Failed to reach webhook endpoint:', err?.message)
+    logger.error('[test-lead] Failed to reach webhook endpoint:', err?.message)
     return NextResponse.json(
       { error: 'Could not reach the webhook endpoint. Check NEXT_PUBLIC_APP_URL.' },
       { status: 502 }
@@ -133,14 +134,14 @@ export async function POST(request: NextRequest) {
     } catch {
       detail = await webhookResponse.text().catch(() => String(webhookResponse.status))
     }
-    console.error(`[test-lead] Webhook returned ${webhookResponse.status}:`, detail)
+    logger.error(`[test-lead] Webhook returned ${webhookResponse.status}:`, detail)
     return NextResponse.json(
       { error: `Pipeline error (${webhookResponse.status}): ${detail}` },
       { status: 502 }
     )
   }
 
-  console.log(`[test-lead] Pipeline triggered for agent=${agent.email} phone=${phoneNumber}`)
+  logger.info(`[test-lead] Pipeline triggered for agent=${agent.email} phone=${phoneNumber}`)
 
   return NextResponse.json({
     success: true,

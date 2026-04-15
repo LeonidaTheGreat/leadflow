@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/leads/[id]/messages
@@ -20,7 +21,7 @@ export async function GET(
       .order('created_at', { ascending: true })
 
     if (error) {
-      console.error('❌ Error fetching messages:', error)
+      logger.error('❌ Error fetching messages:', error)
       return NextResponse.json(
         { error: 'Failed to fetch messages' },
         { status: 500 }
@@ -32,7 +33,7 @@ export async function GET(
     })
 
   } catch (error: any) {
-    console.error('❌ Messages API error:', error)
+    logger.error('❌ Messages API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

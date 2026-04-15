@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyEmailToken, sendActivationEmail } from '@/lib/verification-email'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/auth/verify-email?token=<token>
@@ -32,12 +33,12 @@ export async function GET(request: NextRequest) {
         if (agent && !agent.activation_email_sent) {
           // Fire-and-forget — don't block the redirect on email delivery
           sendActivationEmail(agent.email, result.agentId, agent.first_name).catch((err) => {
-            console.error('Failed to send activation email:', err)
+            logger.error('Failed to send activation email:', err)
           })
         }
       } catch (emailErr) {
         // Non-fatal — log but still redirect
-        console.error('Error fetching agent for activation email:', emailErr)
+        logger.error('Error fetching agent for activation email:', emailErr)
       }
 
       // Redirect to onboarding
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(new URL('/check-your-inbox?error=invalid_token', request.url))
     }
   } catch (error) {
-    console.error('Verify email error:', error)
+    logger.error('Verify email error:', error)
     return NextResponse.redirect(new URL('/check-your-inbox?error=invalid_token', request.url))
   }
 }

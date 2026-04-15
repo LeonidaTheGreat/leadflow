@@ -13,6 +13,7 @@ import { getAuthUserId } from '@/lib/services/AuthService'
 import { supabaseAdmin } from '@/lib/db'
 import { sendSms, normalizePhone, isValidPhoneNumber } from '@/lib/twilio'
 import { checkDemoSmsRateLimit } from '@/lib/rate-limit'
+import { logger } from '@/lib/logger'
 
 const AHA_SMS_BODY =
   "Hi! I saw you're interested in 123 Main St. What timeline are you working with? - Sent by LeadFlow AI"
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
       .eq('id', agentId)
   } catch (err) {
     // Non-blocking — SMS already sent, log and continue
-    console.error('Failed to update aha_completed:', err)
+    logger.error('Failed to update aha_completed:', err)
   }
 
   return NextResponse.json({

@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { sendWelcomeEmail } from '@/lib/email-service'
 import { initializeSurveySchedule } from '@/lib/nps-service'
 import { createSession } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = postgrestAdmin
 
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (createError) {
-      console.error('Error creating trial agent:', createError)
+      logger.error('Error creating trial agent:', createError)
       return NextResponse.json(
         { error: 'Failed to create account. Please try again.' },
         { status: 500 }
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize NPS survey schedule for the new agent (non-blocking)
     void Promise.resolve(initializeSurveySchedule(agent.id)).catch((err: unknown) => {
-      console.error('Failed to initialize NPS survey schedule:', err)
+      logger.error('Failed to initialize NPS survey schedule:', err)
     })
 
     // Log trial_signup_completed event (FR-8: Instrumentation)
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
           created_at: new Date().toISOString()
         })
       } catch (err: unknown) {
-        console.error('Failed to log trial_signup_completed event:', err)
+        logger.error('Failed to log trial_signup_completed event:', err)
       }
     })()
 
@@ -155,7 +156,7 @@ export async function POST(request: NextRequest) {
           .update({ trial_email_welcome_sent: true })
           .eq('id', agent.id)
       } catch (err: unknown) {
-        console.error('[trial-signup] Welcome email error:', err)
+        logger.error('[trial-signup] Welcome email error:', err)
         // Email failure should not block signup - just log and continue
       }
     })()
@@ -224,7 +225,7 @@ export async function POST(request: NextRequest) {
     return response
 
   } catch (error) {
-    console.error('Trial signup error:', error)
+    logger.error('Trial signup error:', error)
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }

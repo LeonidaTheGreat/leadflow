@@ -12,6 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 function verifyAdminAuth(request: NextRequest): boolean {
   const apiKey = process.env.LEADFLOW_API_KEY
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       daily,
     })
   } catch (err: any) {
-    console.error('[checkout-attempts] error:', err?.message ?? err)
+    logger.error('[checkout-attempts] error:', err?.message ?? err)
     return NextResponse.json(
       { error: 'Internal server error', detail: err?.message ?? 'unknown' },
       { status: 500 },

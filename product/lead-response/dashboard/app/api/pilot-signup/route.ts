@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { postgrestAdmin as db } from '@/lib/db';
+import { logger } from '@/lib/logger'
 
 // Simple in-memory rate limiting (per-IP)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('DB insert error:', error);
+      logger.error('DB insert error:', error);
 
       // Handle duplicate email (unique constraint violation)
       if (error.code === '23505' || (typeof error.message === 'string' && error.message.includes('unique'))) {
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (err) {
-    console.error('API error:', err);
+    logger.error('API error:', err);
     
     return NextResponse.json(
       { success: false, error: 'An unexpected error occurred. Please try again.' },

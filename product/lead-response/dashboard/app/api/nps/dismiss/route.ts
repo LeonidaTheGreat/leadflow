@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { dismissNPSPrompt } from '@/lib/nps-service'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/nps/dismiss
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error dismissing NPS prompt:', error)
+    logger.error('Error dismissing NPS prompt:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

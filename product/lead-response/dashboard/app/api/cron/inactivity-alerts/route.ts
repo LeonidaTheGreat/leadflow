@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/cron/inactivity-alerts
@@ -30,7 +31,7 @@ async function sendTelegramAlert(
   const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID
 
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    console.warn('[inactivity-alerts] Telegram not configured — skipping notification')
+    logger.warn('[inactivity-alerts] Telegram not configured — skipping notification')
     return false
   }
 
@@ -69,14 +70,14 @@ This pilot agent has not logged in or had any session activity in over ${INACTIV
 
     if (!response.ok) {
       const body = await response.text()
-      console.error('[inactivity-alerts] Telegram send failed:', body)
+      logger.error('[inactivity-alerts] Telegram send failed:', body)
       return false
     }
 
-    console.log(`[inactivity-alerts] Telegram alert sent for agent ${agentId}`)
+    logger.info(`[inactivity-alerts] Telegram alert sent for agent ${agentId}`)
     return true
   } catch (err) {
-    console.error('[inactivity-alerts] Telegram request error:', err)
+    logger.error('[inactivity-alerts] Telegram request error:', err)
     return false
   }
 }
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest) {
 
     const isDryRun = request.nextUrl.searchParams.get('test') === 'true'
     if (isDryRun) {
-      console.log('[inactivity-alerts] 🧪 DRY-RUN mode')
+      logger.info('[inactivity-alerts] 🧪 DRY-RUN mode')
     }
 
     const inactivityCutoff = new Date(
@@ -126,7 +127,7 @@ export async function GET(request: NextRequest) {
       .order('last_active_at', { ascending: true })
 
     if (sessionsError) {
-      console.error('[inactivity-alerts] Error fetching inactive sessions:', sessionsError)
+      logger.error('[inactivity-alerts] Error fetching inactive sessions:', sessionsError)
       return NextResponse.json(
         { error: 'Failed to fetch inactive sessions', details: sessionsError.message },
         { status: 500 }
@@ -134,7 +135,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!inactiveSessions || inactiveSessions.length === 0) {
-      console.log('[inactivity-alerts] No inactive agents found')
+      logger.info('[inactivity-alerts] No inactive agents found')
       return NextResponse.json({
         success: true,
         message: 'No inactive agents found',
@@ -158,7 +159,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log(`[inactivity-alerts] Found ${agentMap.size} unique inactive agents`)
+    logger.info(`[inactivity-alerts] Found ${agentMap.size} unique inactive agents`)
 
     let alerted = 0
     let skipped = 0
@@ -185,7 +186,7 @@ export async function GET(request: NextRequest) {
         .limit(1)
 
       if (alertCheckError) {
-        console.error(
+        logger.error(
           `[inactivity-alerts] Error checking dedup for agent ${agentId}:`,
           alertCheckError.message
         )
@@ -203,7 +204,7 @@ export async function GET(request: NextRequest) {
       if (recentAlerts && recentAlerts.length > 0) {
         const alertedAt = recentAlerts[0].alerted_at
         const alertedAtStr = typeof alertedAt === 'string' ? alertedAt : new Date(alertedAt).toISOString()
-        console.log(
+        logger.info(
           `[inactivity-alerts] Skipping agent ${agentId} — alert sent at ${alertedAtStr}`
         )
         skipped++
@@ -219,7 +220,7 @@ export async function GET(request: NextRequest) {
 
       // Dry-run: don't send or insert
       if (isDryRun) {
-        console.log(
+        logger.info(
           `[inactivity-alerts] 🧪 [DRY-RUN] Would alert for agent ${agentId} (${email}), last_active_at: ${last_active_at}`
         )
         results.push({
@@ -242,7 +243,7 @@ export async function GET(request: NextRequest) {
       })
 
       if (insertError) {
-        console.error(
+        logger.error(
           `[inactivity-alerts] Failed to insert alert record for ${agentId}:`,
           insertError.message
         )
@@ -258,7 +259,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    console.log(
+    logger.info(
       `[inactivity-alerts] Done — alerted: ${alerted}, skipped: ${skipped}, dry_run: ${isDryRun}`
     )
 
@@ -271,7 +272,7 @@ export async function GET(request: NextRequest) {
       results,
     })
   } catch (error: any) {
-    console.error('[inactivity-alerts] Unexpected error:', error)
+    logger.error('[inactivity-alerts] Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

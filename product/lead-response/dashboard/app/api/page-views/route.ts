@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
 const DB_KEY = process.env.API_SECRET_KEY || ''
@@ -68,13 +69,13 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase.from('agent_page_views').insert(insertPayload)
 
     if (error) {
-      console.error('[page-views] Insert failed:', error.message, { agentId, page, code: error.code })
+      logger.error(`[page-views] Insert failed: ${error.message}`, { agentId, page, code: error.code })
       return NextResponse.json({ logged: false, reason: error.code }, { status: 200 })
     }
 
     return NextResponse.json({ logged: true }, { status: 200 })
   } catch (err) {
-    console.error('[page-views] Unexpected error:', err)
+    logger.error('[page-views] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

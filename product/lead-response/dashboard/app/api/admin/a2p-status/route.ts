@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { isAdminUser } from '@/lib/services/AuthService'
 import { checkSmsDeliveryHealth, getA2pRegistrationStatus } from '@/lib/sms-delivery-monitor'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/a2p-status
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
       summary: buildSummary(riskLevel, registrationStatus, deliveryHealth),
     })
   } catch (error: any) {
-    console.error('[a2p-status] Error:', error.message)
+    logger.error('[a2p-status] Error:', error.message)
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

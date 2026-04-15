@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/conversations
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
       .limit(20)
 
     if (leadsError) {
-      console.error('Failed to fetch leads:', leadsError)
+      logger.error('Failed to fetch leads:', leadsError)
       return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 })
     }
 
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
       .order('created_at', { ascending: true })
 
     if (msgError) {
-      console.error('Failed to fetch messages:', msgError)
+      logger.error('Failed to fetch messages:', msgError)
     }
 
     const messagesByLead: Record<string, typeof messages> = {}
@@ -116,7 +117,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ conversations })
   } catch (err: any) {
-    console.error('Conversations fetch error:', err)
+    logger.error('Conversations fetch error:', err)
     return NextResponse.json({ error: 'Failed to load conversations', detail: err.message }, { status: 500 })
   }
 }

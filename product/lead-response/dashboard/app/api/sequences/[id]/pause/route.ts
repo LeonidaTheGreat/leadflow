@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pauseSequence } from '@/lib/sequences'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/sequences/[id]/pause
@@ -28,7 +29,7 @@ export async function POST(
     })
 
   } catch (error: any) {
-    console.error('❌ Pause sequence error:', error)
+    logger.error('❌ Pause sequence error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

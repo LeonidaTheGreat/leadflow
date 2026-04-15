@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { auth } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     )
   } catch (error: any) {
-    console.error('[/api/onboarding/log-event] Error:', error)
+    logger.error('[/api/onboarding/log-event] Error:', error)
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

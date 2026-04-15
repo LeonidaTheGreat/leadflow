@@ -3,6 +3,7 @@ import { createLead, getLeadByPhone, updateLead, createMessage, logEvent, getAge
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone } from '@/lib/twilio'
 import type { Lead, Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Check for duplicate lead
     const { data: existingLead } = await getLeadByPhone(normalizedPhone)
     if (existingLead) {
-      console.log('📋 Lead already exists:', existingLead.id)
+      logger.info('📋 Lead already exists:', existingLead.id)
       return NextResponse.json({
         success: true,
         lead_id: existingLead.id,
@@ -76,14 +77,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (leadError || !lead) {
-      console.error('Lead creation error:', leadError)
+      logger.error('Lead creation error:', leadError)
       return NextResponse.json(
         { error: 'Failed to create lead' },
         { status: 500 }
       )
     }
 
-    console.log('✅ Lead created:', lead.id)
+    logger.info('✅ Lead created:', lead.id)
 
     // Run AI qualification
     const qualification = await qualifyLead({
@@ -158,7 +159,7 @@ export async function POST(request: NextRequest) {
           responded_at: new Date().toISOString(),
         })
 
-        console.log('✅ AI SMS sent:', smsResult.messageSid)
+        logger.info('✅ AI SMS sent:', smsResult.messageSid)
       }
     }
 
@@ -171,7 +172,7 @@ export async function POST(request: NextRequest) {
       sms_mock: smsResult.mock,
     })
   } catch (error: any) {
-    console.error('Webhook error:', error)
+    logger.error('Webhook error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

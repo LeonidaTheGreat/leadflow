@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Trial status error:', error)
+    logger.error('Trial status error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

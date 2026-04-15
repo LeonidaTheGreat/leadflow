@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-04-13T17:46:09.676Z | Source: `routes/`, `integration/`
+> Generated: 2026-04-15T00:56:38.227Z | Source: `routes/`, `integration/`
 
-**18 endpoints across 7 files**
+**20 endpoints across 8 files**
 
 ## Summary
 
@@ -21,11 +21,13 @@
 | **DELETE** | `/api/calcom/webhooks/:id` | - | Bearer token | `routes/calcom-webhook.js` |
 | **GET** | `/api/calcom/webhooks/:id/stats` | - | Bearer token | `routes/calcom-webhook.js` |
 | **POST** | `/api/calcom/webhooks/:id/test` | - | Bearer token | `routes/calcom-webhook.js` |
-| **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/check-stuck-pilots.js` |
+| **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/internal/check-stuck-pilots.js` |
+| **GET** | `/api/cron/dead-letter-replay` | - | Vercel cron | `routes/internal/dead-letter-replay.js` |
+| **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Bearer token | `routes/internal/weekly-performance.js` |
+| **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Bearer token | `routes/internal/weekly-performance.js` |
 | **GET** | `/` | `systemStatusService` | None | `routes/system.js` |
 | **GET** | `/health` | `systemStatusService` | None | `routes/system.js` |
-| **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
-| **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Vercel cron | `routes/weekly-performance.js` |
+| **GET** | `/health/breakers` | - | None | `routes/system.js` |
 | **POST** | `/webhook/fub` | - | None | `integration/fub-webhook-listener.js` |
 
 ---
@@ -90,13 +92,39 @@
 
 ---
 
-## `routes/check-stuck-pilots.js`
+## `routes/internal/check-stuck-pilots.js`
 
 ### GET `/api/cron/check-stuck-pilots`
 
 Stuck Pilots Cron Route
 
 - **Auth:** Vercel cron
+
+---
+
+## `routes/internal/dead-letter-replay.js`
+
+### GET `/api/cron/dead-letter-replay`
+
+- **Auth:** Vercel cron
+
+---
+
+## `routes/internal/weekly-performance.js`
+
+### GET `/api/cron/weekly-performance`
+
+Weekly Performance Email Routes
+
+- **Auth:** Bearer token
+- **Services:** `WeeklyPerformanceService`
+
+### GET `/api/cron/weekly-performance/preview`
+
+Preview endpoint: returns the email HTML for a given agent (or demo agent if agentId is omitted).
+
+- **Auth:** Bearer token
+- **Services:** `weeklyPerformanceService`
 
 ---
 
@@ -112,23 +140,9 @@ Stuck Pilots Cron Route
 - **Auth:** None
 - **Services:** `systemStatusService`
 
----
+### GET `/health/breakers`
 
-## `routes/weekly-performance.js`
-
-### GET `/api/cron/weekly-performance`
-
-Weekly Performance Email Routes
-
-- **Auth:** Vercel cron
-- **Services:** `WeeklyPerformanceService`
-
-### GET `/api/cron/weekly-performance/preview`
-
-Preview endpoint: returns the email HTML for a given agent (or demo agent if agentId is omitted).
-
-- **Auth:** Vercel cron
-- **Services:** `weeklyPerformanceService`
+- **Auth:** None
 
 ---
 

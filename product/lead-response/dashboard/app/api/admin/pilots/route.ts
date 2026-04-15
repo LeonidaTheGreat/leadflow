@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
 import { isAdminUser } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/pilots
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, pilots, total })
   } catch (error) {
-    console.error('Failed to fetch pilots:', error)
+    logger.error('Failed to fetch pilots:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch pilots' },
       { status: 500 }

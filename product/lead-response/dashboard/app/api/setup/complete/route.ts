@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 const supabase = supabaseAdmin
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       .eq('id', userId)
 
     if (error) {
-      console.error('Error completing setup:', error)
+      logger.error('Error completing setup:', error)
       return NextResponse.json(
         { error: 'Failed to complete setup' },
         { status: 500 }
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Setup complete error:', error)
+    logger.error('Setup complete error:', error)
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }

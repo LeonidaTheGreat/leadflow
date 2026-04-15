@@ -8,6 +8,7 @@
  */
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 function getSupabase() {
   return createClient(
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
       .order("created_at", { ascending: true })
 
     if (agentsError) {
-      console.error("[pilot-usage] agents query failed:", agentsError)
+      logger.error("[pilot-usage] agents query failed:", agentsError)
       return NextResponse.json({ error: "Failed to fetch pilot agents" }, { status: 500 })
     }
 
@@ -62,7 +63,7 @@ export async function GET(req: NextRequest) {
       .order("session_start", { ascending: false })
 
     if (sessionsError) {
-      console.error("[pilot-usage] sessions query failed:", sessionsError)
+      logger.error("[pilot-usage] sessions query failed:", sessionsError)
       return NextResponse.json({ error: "Failed to fetch session data" }, { status: 500 })
     }
 
@@ -127,7 +128,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ pilots, generatedAt: now.toISOString() })
   } catch (err) {
-    console.error("[pilot-usage] Unexpected error:", err)
+    logger.error("[pilot-usage] Unexpected error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

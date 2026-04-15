@@ -3,6 +3,7 @@ import { supabaseAdmin, createLead } from '@/lib/supabase'
 import { normalizePhone } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
 import type { Lead, Agent } from '@/lib/types'
+import { logger } from '@/lib/logger'
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
@@ -16,7 +17,7 @@ async function getDefaultAgent(): Promise<Agent | null> {
 export async function POST(request: Request) {
   const logs: string[] = []
   const log = (msg: string) => {
-    console.log(msg)
+    logger.info(msg)
     logs.push(msg)
   }
   

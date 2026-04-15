@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitProductFeedback } from '@/lib/nps-service'
 import { validateSession } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       feedbackId: result.feedbackId,
     })
   } catch (error: any) {
-    console.error('Error submitting feedback:', error)
+    logger.error('Error submitting feedback:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendActiveTrialSequence } from '@/lib/trial-emails'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/cron/send-trial-emails
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('📧 Running active trial email sequence...')
+    logger.info('📧 Running active trial email sequence...')
 
     const results = await sendActiveTrialSequence()
 
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Trial email cron job error:', error)
+    logger.error('❌ Trial email cron job error:', error)
     return NextResponse.json(
       {
         success: false,

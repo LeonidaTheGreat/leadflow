@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/onboarding/simulator-status
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle()
 
     if (error) {
-      console.error('Failed to check simulation status:', error)
+      logger.error('Failed to check simulation status:', error)
       return NextResponse.json(
         { error: 'Failed to check simulation status' },
         { status: 500 }
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Simulator status error:', error)
+    logger.error('Simulator status error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

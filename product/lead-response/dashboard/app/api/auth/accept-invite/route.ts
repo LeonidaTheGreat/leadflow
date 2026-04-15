@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
+import { logger } from '@/lib/logger'
 
 interface AcceptInviteRequest {
   token: string
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       .eq('id', agentId)
 
     if (updateAgentError) {
-      console.error('Error updating agent:', updateAgentError)
+      logger.error('Error updating agent:', updateAgentError)
       return NextResponse.json(
         { success: false, error: 'Failed to activate agent account' },
         { status: 500 }
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }, { onConflict: 'agent_id', ignoreDuplicates: true })).catch((err: unknown) => {
-      console.error('[accept-invite] Failed to create pilot_progress record:', err)
+      logger.error('[accept-invite] Failed to create pilot_progress record:', err)
     })
 
     // 5. Update the invite record
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       .eq('id', invite.id)
 
     if (updateInviteError) {
-      console.error('Error updating invite:', updateInviteError)
+      logger.error('Error updating invite:', updateInviteError)
       return NextResponse.json(
         { success: false, error: 'Failed to accept invite' },
         { status: 500 }
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       { status: 200 }
     )
   } catch (error: any) {
-    console.error('Error in accept-invite endpoint:', error)
+    logger.error('Error in accept-invite endpoint:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

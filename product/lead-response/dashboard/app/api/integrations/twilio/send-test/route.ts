@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import twilio from 'twilio'
+import { logger } from '@/lib/logger'
 
 const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_PHONE_NUMBER_US || ''
 
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
       messageSid: message.sid,
     })
   } catch (error: any) {
-    console.error('Twilio error:', error)
+    logger.error('Twilio error:', error)
 
     // Handle specific Twilio errors
     if (error.code === 21603) {

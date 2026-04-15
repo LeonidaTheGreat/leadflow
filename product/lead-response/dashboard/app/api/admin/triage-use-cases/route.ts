@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 // Statuses considered "stuck"
 const STUCK_STATUSES = ['needs_merge', 'not_started', 'in_progress', 'stuck']
@@ -195,7 +196,7 @@ export async function GET(request: NextRequest) {
       generated_at: new Date().toISOString(),
     })
   } catch (error: any) {
-    console.error('[/api/admin/triage-use-cases] Error:', error)
+    logger.error('[/api/admin/triage-use-cases] Error:', error)
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

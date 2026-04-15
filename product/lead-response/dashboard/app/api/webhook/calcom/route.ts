@@ -3,6 +3,7 @@ import { verifyWebhookSignature, parseWebhookPayload, handleBookingWebhook } fro
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendSms } from '@/lib/twilio'
 import { generateConfirmationMessage } from '@/lib/calcom'
+import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
 export const dynamic = 'force-dynamic'
@@ -22,7 +23,7 @@ export const dynamic = 'force-dynamic'
  */
 export async function POST(request: NextRequest) {
   try {
-    console.log('📥 Cal.com webhook START')
+    logger.info('📥 Cal.com webhook START')
     
     // Read raw body for signature verification
     const rawBody = await request.text()
@@ -30,19 +31,19 @@ export async function POST(request: NextRequest) {
     // Get signature header
     const signature = request.headers.get('X-Calcom-Signature')
     if (!signature) {
-      console.error('❌ Missing X-Calcom-Signature header')
+      logger.error('❌ Missing X-Calcom-Signature header')
       return new NextResponse('Missing signature', { status: 400 })
     }
     
     // Verify signature
     const secret = process.env.CALCOM_WEBHOOK_SECRET
     if (!secret) {
-      console.error('❌ CALCOM_WEBHOOK_SECRET not set')
+      logger.error('❌ CALCOM_WEBHOOK_SECRET not set')
       return new NextResponse('Webhook secret not configured', { status: 500 })
     }
     
     if (!verifyWebhookSignature(rawBody, signature, secret)) {
-      console.error('❌ Invalid signature')
+      logger.error('❌ Invalid signature')
       return new NextResponse('Invalid signature', { status: 401 })
     }
     
@@ -51,24 +52,24 @@ export async function POST(request: NextRequest) {
     try {
       payload = JSON.parse(rawBody)
     } catch (e) {
-      console.error('❌ Invalid JSON payload')
+      logger.error('❌ Invalid JSON payload')
       return new NextResponse('Invalid JSON', { status: 400 })
     }
     
     const webhookPayload = parseWebhookPayload(payload)
     if (!webhookPayload) {
-      console.error('❌ Invalid webhook payload')
+      logger.error('❌ Invalid webhook payload')
       return new NextResponse('Invalid payload', { status: 400 })
     }
     
     const { triggerEvent, payload: bookingData } = webhookPayload
     
-    console.log('📅 Cal.com event:', triggerEvent, 'Booking ID:', bookingData.bookingId)
+    logger.info(`📅 Cal.com event: ${triggerEvent} Booking ID: ${bookingData.bookingId}`)
     
     // Handle booking event
     const result = await handleBookingWebhook(webhookPayload)
     if (!result.success) {
-      console.error('❌ Failed to handle booking event:', triggerEvent)
+      logger.error('❌ Failed to handle booking event:', triggerEvent)
       await supabaseAdmin.from('events').insert({
         event_type: 'calcom_webhook_error',
         event_data: { 
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     // Extract booking data
     const { bookingData: parsedBooking } = result
     if (!parsedBooking) {
-      console.error('❌ No booking data extracted')
+      logger.error('❌ No booking data extracted')
       return new NextResponse('No booking data', { status: 500 })
     }
     
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
     }
     
     if (!lead) {
-      console.warn('⚠️  Lead not found for booking:', attendee?.email || attendee?.phoneNumber)
+      logger.warn('⚠️  Lead not found for booking:', attendee?.email || attendee?.phoneNumber)
       await supabaseAdmin.from('events').insert({
         event_type: 'calcom_lead_not_found',
         event_data: { 
@@ -146,7 +147,7 @@ export async function POST(request: NextRequest) {
       .single()
     
     if (bookingError) {
-      console.error('❌ Failed to store booking:', bookingError)
+      logger.error('❌ Failed to store booking:', bookingError)
       await supabaseAdmin.from('events').insert({
         event_type: 'booking_store_error',
         event_data: { 
@@ -162,7 +163,7 @@ export async function POST(request: NextRequest) {
     if (lead && lead.phone && lead.consent_sms && !lead.dnc) {
       const agent = lead.agent
       if (!agent) {
-        console.warn('⚠️  Agent not found for lead:', lead.id)
+        logger.warn('⚠️  Agent not found for lead:', lead.id)
         // Still store booking, but skip SMS
       } else {
         const agentName = agent.name || 'your agent'
@@ -202,7 +203,7 @@ export async function POST(request: NextRequest) {
         })
         
         if (!smsResult.success) {
-          console.error('❌ Failed to send SMS:', smsResult.error)
+          logger.error('❌ Failed to send SMS:', smsResult.error)
           await supabaseAdmin.from('events').insert({
             event_type: 'sms_send_error',
             event_data: { 
@@ -214,7 +215,7 @@ export async function POST(request: NextRequest) {
             source: 'calcom_webhook'
           })
         } else {
-          console.log('✅ SMS sent to lead:', lead.phone)
+          logger.info('✅ SMS sent to lead:', lead.phone)
           
           // Store outbound SMS message
           await supabaseAdmin.from('messages').insert({
@@ -247,12 +248,12 @@ export async function POST(request: NextRequest) {
       source: 'calcom_webhook'
     })
     
-    console.log('✅ Cal.com webhook processed successfully')
+    logger.info('✅ Cal.com webhook processed successfully')
     return new NextResponse('OK', { status: 200 })
     
   } catch (error: any) {
-    console.error('❌ Cal.com webhook error:', error)
-    console.error('Stack:', error.stack)
+    logger.error('❌ Cal.com webhook error:', error)
+    logger.error('Stack:', error.stack)
     
     // Log error to events table
     await supabaseAdmin.from('events').insert({

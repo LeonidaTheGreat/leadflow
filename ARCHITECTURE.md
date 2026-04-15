@@ -201,6 +201,45 @@ Internal cron routes are separated from customer-facing API routes. All cron rou
 
 ---
 
+## Dashboard (Next.js — `product/lead-response/dashboard/`)
+
+The customer-facing dashboard is a separate Next.js app deployed to Vercel (`leadflow-ai`). It has its own route handlers, services, and DB access via Supabase client.
+
+### Dashboard API Routes (`app/api/`)
+
+| Route | Purpose | Auth |
+|-------|---------|------|
+| `webhook/twilio/` | Inbound SMS + status callbacks | `twilio.validateRequest()` (X-Twilio-Signature) |
+| `webhook/fub/` | FUB lead events | HMAC-SHA256 (`timingSafeEqual`) |
+| `webhook/calcom/` | Cal.com booking events | HMAC-SHA256 |
+| `webhooks/stripe/` | Stripe subscription events | `stripe.webhooks.constructEvent()` |
+| `cron/follow-up/` | Follow-up cron job | CRON_SECRET Bearer token |
+| `cron/inactivity-alerts/` | Inactivity alert cron | CRON_SECRET Bearer token |
+| `auth/pilot-signup/` | Pilot signup flow | Public |
+| `onboarding/` | Onboarding wizard | Session auth |
+| `stripe/` | Checkout + portal sessions | Session auth |
+| `admin/` | Admin operations | API key auth |
+
+### Dashboard Libraries (`lib/`)
+
+| Module | Purpose |
+|--------|---------|
+| `lib/supabase.ts` | Supabase client (PostgREST) for dashboard DB access |
+| `lib/twilio.ts` | Twilio SMS client + phone normalization |
+| `lib/fub.ts` | FUB API client + webhook verification |
+| `lib/calcom.ts` | Cal.com booking link management |
+| `lib/ai.ts` | AI SMS response generation |
+| `lib/logger.ts` | Structured JSON logger for Vercel function logs |
+| `lib/satisfaction.ts` | Satisfaction ping system |
+
+### Dashboard Rules
+- All webhook routes use fail-closed signature verification
+- Structured logging via `@/lib/logger` (no raw `console.*`)
+- Supabase client for all DB access (PostgREST, not raw SQL)
+- Business logic belongs in `lib/` services, not in route handlers
+
+---
+
 ## Key Directories
 
 ```

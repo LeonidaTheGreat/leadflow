@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/admin/demo-link
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error('Failed to create demo token:', error)
+      logger.error('Failed to create demo token:', error)
       return NextResponse.json({ error: 'Failed to create demo link' }, { status: 500 })
     }
 
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
       expiresAt: data.expires_at,
     })
   } catch (err: any) {
-    console.error('Demo link creation error:', err)
+    logger.error('Demo link creation error:', err)
     return NextResponse.json({ error: 'Failed to create demo link', detail: err.message }, { status: 500 })
   }
 }

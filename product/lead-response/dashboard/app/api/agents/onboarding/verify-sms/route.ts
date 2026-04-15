@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/agents/onboarding/verify-sms
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (err: any) {
-    console.error('Twilio SMS error:', err)
+    logger.error('Twilio SMS error:', err)
     const userMessage =
       err.code === 21603
         ? 'Invalid phone number format.'
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
     .eq('id', agentId)
 
   if (updateError) {
-    console.error('Failed to mark sms_verified:', updateError)
+    logger.error('Failed to mark sms_verified:', updateError)
     // SMS was sent — return success even if DB update fails
   }
 
