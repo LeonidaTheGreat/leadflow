@@ -1,4 +1,21 @@
 {
+  "_taskSpec": {
+    "what": [
+      "Update /Users/clawdbot/projects/leadflow/package.json to document the audit-fix scope and pin a safe transitive dependency override for follow-redirects.",
+      "Refresh /Users/clawdbot/projects/leadflow/package-lock.json so the lockfile resolves follow-redirects to a non-vulnerable version without changing unrelated application code."
+    ],
+    "verify": [
+      "Run npm install to regenerate package-lock.json with the override applied.",
+      "Run npm audit --json and confirm metadata.vulnerabilities.high === 0, critical === 0, and total === 0.",
+      "Run npm test and expect the existing test command to complete successfully.",
+      "Run npm ls follow-redirects and confirm the installed version is 1.16.0."
+    ],
+    "boundaries": [
+      "Do not modify application source files, server routes, database schema, or business logic.",
+      "Do not change direct dependency versions unless required for the vulnerability fix.",
+      "Do not touch unrelated docs or config outside package.json/package-lock.json."
+    ]
+  },
   "name": "fub-ai-lead-response",
   "version": "1.0.0",
   "description": "FUB Webhook Integration - Receives FUB events and triggers AI SMS",
@@ -35,5 +52,8 @@
     "dotenv": "^17.3.1",
     "nodemon": "^3.0.2",
     "uuid": "^13.0.0"
+  },
+  "overrides": {
+    "follow-redirects": "1.16.0"
   }
 }
