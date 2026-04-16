@@ -288,6 +288,10 @@ describe('Pilot Signup API', () => {
     })
 
     it('should reject unauthenticated requests', async () => {
+      // Override the default mock to simulate missing/invalid auth
+      const { getAuthUserId } = require('@/lib/services/AuthService')
+      ;(getAuthUserId as jest.Mock).mockResolvedValueOnce(null)
+
       const request = makeStatusRequest({})
 
       const response = await pilotStatusHandler(request)
