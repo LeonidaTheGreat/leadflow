@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { OnboardingValidator } from '@/lib/onboarding-validation';
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/logger';
+import { randomInt } from 'crypto';
 
 /**
  * POST /api/onboarding/check-email
@@ -148,5 +149,5 @@ function generateEmailSuggestion(email: string): string | undefined {
     `${localPart}.realty@${domain}`,
   ];
 
-  return suggestions[Math.floor(Math.random() * suggestions.length)];
+  return suggestions[randomInt(0, suggestions.length)];
 }

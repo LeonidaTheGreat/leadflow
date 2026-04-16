@@ -32,7 +32,7 @@ async function run() {
     console.log('\n🧪 Cal.com Class Refactor — E2E Tests\n');
 
     // ─── CalcomClient ─────────────────────────────────────────────────────────
-    const CalcomClient = require('../lib/services/CalcomClient');
+    const CalcomClient = require('../../lib/services/CalcomClient');
 
     await test('CalcomClient exports a class constructor', async () => {
         assert.strictEqual(typeof CalcomClient, 'function');
@@ -82,7 +82,7 @@ async function run() {
     });
 
     // ─── CalcomWebhookHandler ─────────────────────────────────────────────────
-    const CalcomWebhookHandler = require('../lib/services/CalcomWebhookHandler');
+    const CalcomWebhookHandler = require('../../lib/services/CalcomWebhookHandler');
 
     await test('CalcomWebhookHandler exports a class constructor', async () => {
         assert.strictEqual(typeof CalcomWebhookHandler, 'function');
@@ -136,7 +136,7 @@ async function run() {
     });
 
     // ─── CalcomWebhookManagement ──────────────────────────────────────────────
-    const CalcomWebhookManagement = require('../lib/services/CalcomWebhookManagement');
+    const CalcomWebhookManagement = require('../../lib/services/CalcomWebhookManagement');
 
     await test('CalcomWebhookManagement exports a class constructor', async () => {
         assert.strictEqual(typeof CalcomWebhookManagement, 'function');
@@ -164,7 +164,7 @@ async function run() {
     });
 
     // ─── BookingLinkService integration ──────────────────────────────────────
-    const BookingLinkService = require('../lib/services/BookingLinkService');
+    const BookingLinkService = require('../../lib/services/BookingLinkService');
 
     await test('BookingLinkService accepts injected CalcomClient', async () => {
         const calls = [];
