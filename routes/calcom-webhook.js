@@ -79,7 +79,7 @@ router.post('/webhook/calcom', (req, res) => {
             const eventType = event.triggerEvent || event.type || 'unknown';
             log.error('Webhook processing error', err, { eventType });
             writeDeadLetter('calcom', eventType, event, err.message);
-            res.status(200).json({ received: true, processed: false, error: err.message });
+            res.status(200).json({ received: true, processed: false, error: 'Webhook processing failed' });
         });
 });
 
@@ -90,7 +90,7 @@ router.get('/api/calcom/webhooks', requireApiKey, async (req, res) => {
         return res.json({ success: true, webhooks });
     } catch (err) {
         log.error('List webhooks error', err);
-        return res.status(500).json({ error: 'Failed to list webhooks', detail: err.message });
+        return res.status(500).json({ error: 'Failed to list webhooks' });
     }
 });
 
@@ -102,7 +102,7 @@ router.post('/api/calcom/webhooks', requireApiKey, async (req, res) => {
     } catch (err) {
         log.error('Register webhook error', err);
         const status = err.message.includes('required') || err.message.includes('Invalid') ? 400 : 500;
-        return res.status(status).json({ error: err.message });
+        return res.status(status).json({ error: status === 400 ? err.message : 'Internal server error' });
     }
 });
 
@@ -113,7 +113,7 @@ router.delete('/api/calcom/webhooks/:id', requireApiKey, async (req, res) => {
         return res.json(result);
     } catch (err) {
         log.error('Delete webhook error', err);
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -124,7 +124,7 @@ router.get('/api/calcom/webhooks/:id/stats', requireApiKey, async (req, res) => 
         return res.json({ success: true, webhookId: req.params.id, stats });
     } catch (err) {
         log.error('Webhook stats error', err);
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -136,7 +136,7 @@ router.post('/api/calcom/webhooks/:id/test', requireApiKey, async (req, res) => 
     } catch (err) {
         log.error('Test webhook error', err);
         const status = err.message.includes('not found') ? 404 : 500;
-        return res.status(status).json({ error: err.message });
+        return res.status(status).json({ error: status === 404 ? 'Webhook not found' : 'Internal server error' });
     }
 });
 

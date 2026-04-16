@@ -36,7 +36,7 @@ router.get('/api/admin/activation-list', requireApiKey, async (req, res) => {
     return res.json(service.formatListAsJson(rows));
   } catch (err) {
     log.error('List activation error', err);
-    return res.status(500).json({ error: 'Internal server error', detail: err.message });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -59,7 +59,7 @@ router.post('/api/admin/send-activation-email', requireApiKey, async (req, res) 
     return res.json({ success: true, agent_id: result.agent_id, email: result.email, resend_id: result.resend_id });
   } catch (err) {
     log.error('Send activation email error', err);
-    return res.status(500).json({ error: 'Internal server error', detail: err.message });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 

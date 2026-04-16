@@ -61,7 +61,7 @@ app.use((err, req, res, next) => {
     method: req.method,
     path: req.path,
   })
-  res.status(err.statusCode || err.status || 500).json({ error: err.message || 'Internal server error', code: err.code || 'INTERNAL_ERROR' })
+  res.status(err.statusCode || err.status || 500).json({ error: 'Internal server error', code: err.code || 'INTERNAL_ERROR' })
 })
 
 // Local development
