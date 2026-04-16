@@ -34,7 +34,7 @@ export async function PATCH(request: NextRequest) {
 
     if (error) {
       logger.error('❌ Error updating satisfaction_ping_enabled:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to update satisfaction ping setting' }, { status: 500 })
     }
 
     logger.info(`✅ Agent ${agentId} satisfaction ping ${enabled ? 'enabled' : 'disabled'}`)
@@ -45,7 +45,7 @@ export async function PATCH(request: NextRequest) {
       satisfactionPingEnabled: data.satisfaction_ping_enabled })
   } catch (error: any) {
     logger.error('❌ /api/agents/satisfaction-ping error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
 
@@ -73,6 +73,6 @@ export async function GET(request: NextRequest) {
       agentId: data.id,
       satisfactionPingEnabled: data.satisfaction_ping_enabled ?? true })
   } catch (error: any) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

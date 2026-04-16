@@ -41,6 +41,6 @@ export async function GET(request: NextRequest) {
       stats })
   } catch (error: any) {
     logger.error('❌ /api/satisfaction/stats error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
