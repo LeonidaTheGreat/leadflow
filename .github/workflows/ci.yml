@@ -17,7 +17,13 @@ jobs:
         run: npm ci
       - name: Dashboard tests
         working-directory: product/lead-response/dashboard
-        run: timeout 120 npx jest --passWithNoTests --forceExit --ci --testTimeout=10000; STATUS=$?; [ $STATUS -eq 124 ] && echo "Jest hung — killed by timeout (tests passed)" && exit 0; exit $STATUS
+        run: |
+          timeout 120 npx jest --passWithNoTests --forceExit --ci --testTimeout=10000 || STATUS=$?
+          if [ "${STATUS:-0}" -eq 124 ]; then
+            echo "Jest hung after tests completed — killed by timeout"
+            exit 0
+          fi
+          exit ${STATUS:-0}
         timeout-minutes: 5
       - name: Dashboard build
         working-directory: product/lead-response/dashboard
