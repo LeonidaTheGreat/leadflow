@@ -60,7 +60,7 @@ router.get('/api/cron/dead-letter-replay', requireCronSecret, async (req, res) =
     log.error('Dead letter replay failed', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal error',
       timestamp: new Date().toISOString(),
     });
   }

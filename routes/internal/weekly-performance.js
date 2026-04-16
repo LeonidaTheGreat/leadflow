@@ -44,7 +44,7 @@ router.get('/api/cron/weekly-performance', requireCronSecret, async (req, res) =
     return res.status(500).json({
       success: false,
       message: 'Weekly performance email sequence failed',
-      error: error.message,
+      error: 'Internal error',
       timestamp: new Date().toISOString()
     });
   }
@@ -80,7 +80,7 @@ router.get('/api/cron/weekly-performance/preview', requireApiKey, async (req, re
     return res.status(500).json({
       success: false,
       message: 'Failed to generate email preview',
-      error: error.message
+      error: 'Internal error'
     });
   }
 });
