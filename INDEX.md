@@ -2,7 +2,7 @@
 # Knowledge Index
 
 > Topic → file map. Read this first to find the right reference file.
-> Generated: 2026-04-15T00:56:38.332Z
+> Generated: 2026-04-16T04:21:07.999Z
 
 ## Project Root
 

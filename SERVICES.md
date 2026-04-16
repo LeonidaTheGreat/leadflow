@@ -1,20 +1,21 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-15T00:56:38.221Z | Source: `lib/services/`
+> Generated: 2026-04-16T04:21:07.938Z | Source: `lib/services/`
 
-**15 services across 15 files**
+**16 services across 16 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
 | [ActivationService](#activationservice) | `ActivationService.js` | 5 | crypto, EmailService |
 | [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db, logger, circuit-breaker… |
 | [BookingLinkService](#bookinglinkservice) | `BookingLinkService.js` | 6 | db, CalcomClient, logger |
-| [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios, circuit-breaker, request-context |
-| [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | db, logger, SequenceService, TwilioService… |
+| [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios, circuit-breaker, request-context, config |
+| [CalcomEventProcessor](#calcomeventprocessor) | `CalcomEventProcessor.js` | 12 | logger, circuit-breaker, SequenceService, TwilioService |
+| [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | crypto, db, logger, config… |
 | [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, logger, circuit-breaker… |
 | [EmailService](#emailservice) | `EmailService.js` | 7 | request-context, circuit-breaker |
-| [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, circuit-breaker… |
+| [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, logger… |
 | [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | logger, circuit-breaker |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
 | [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db, logger |
@@ -105,7 +106,7 @@
 
 **File:** `lib/services/CalcomClient.js`
 
-**Dependencies:** `axios`, `circuit-breaker`, `request-context`
+**Dependencies:** `axios`, `circuit-breaker`, `request-context`, `config`
 
 **Constructor params:** `options`
 
@@ -132,11 +133,38 @@
 
 ---
 
+## CalcomEventProcessor
+
+**File:** `lib/services/CalcomEventProcessor.js`
+
+**Dependencies:** `logger`, `circuit-breaker`, `SequenceService`, `TwilioService`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `withRetry()` | `fn`, `opts` | - |
+| `process()` | `event` | Dispatch a Cal.com webhook event to the appropriate handler. |
+| `handleBookingCreated()` | `booking` | Handle new booking created. |
+| `handleBookingRescheduled()` | `booking` | Handle booking rescheduled. |
+| `handleBookingCancelled()` | `booking` | Handle booking cancelled. |
+| `handleMeetingEnded()` | `booking` | Handle meeting ended. |
+| `findOrCreateLead()` | `attendee`, `db` | Find or create a lead from Cal.com attendee data. |
+| `findAgentForBooking()` | `booking`, `db` | Find the agent associated with a booking's event type. |
+| `logBookingActivity()` | `activityData`, `db` | Log booking activity to the audit table. |
+| `sendBookingConfirmationSMS()` | `bookingData` | Send booking confirmation SMS. |
+| `sendRescheduleConfirmationSMS()` | `bookingData` | Send reschedule confirmation SMS. |
+| `scheduleBookingReminders()` | `booking`, `db` | Schedule booking reminders. |
+
+---
+
 ## CalcomWebhookHandler
 
 **File:** `lib/services/CalcomWebhookHandler.js`
 
-**Dependencies:** `db`, `logger`, `SequenceService`, `TwilioService`, `circuit-breaker`, `crypto`
+**Dependencies:** `crypto`, `db`, `logger`, `config`, `SequenceService`, `CalcomEventProcessor`, `circuit-breaker`
 
 **Constructor params:** `options`
 
@@ -145,9 +173,9 @@
 | Method | Params | Description |
 |--------|--------|-------------|
 | `getDb()` | - | - |
-| `handleCalWebhook()` | `event` | - |
-| `calcomWebhookHandler()` | `req`, `res` | - |
-| `verifyWebhookSignature()` | `payload`, `signature` | - |
+| `verifyWebhookSignature()` | `payload`, `signature` | Verify a Cal.com webhook HMAC-SHA256 signature. |
+| `handleCalWebhook()` | `event` | Handle a normalised Cal.com webhook event. |
+| `calcomWebhookHandler()` | `req`, `res` | Express middleware handler — parses body, verifies signature, dispatches. |
 | `handleBookingCreated()` | `booking` | - |
 | `handleBookingRescheduled()` | `booking` | - |
 | `handleBookingCancelled()` | `booking` | - |
@@ -220,7 +248,7 @@
 
 **File:** `lib/services/FUBService.js`
 
-**Dependencies:** `crypto`, `events`, `axios`, `circuit-breaker`, `request-context`, `TwilioService`, `SatisfactionService`, `SequenceService`
+**Dependencies:** `crypto`, `events`, `axios`, `logger`, `circuit-breaker`, `request-context`, `TwilioService`, `SatisfactionService`, `SequenceService`
 
 **Constructor params:** `options`
 
@@ -351,7 +379,7 @@
 
 **File:** `lib/services/TwilioService.js`
 
-**Dependencies:** `twilio`, `db`, `logger`, `circuit-breaker`, `request-context`
+**Dependencies:** `twilio`, `db`, `logger`, `circuit-breaker`, `request-context`, `config`
 
 **Constructor params:** `options`
 

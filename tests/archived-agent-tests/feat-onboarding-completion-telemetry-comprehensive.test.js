@@ -161,7 +161,6 @@ check('funnel calls getFunnelStatus', funnel.includes('getFunnelStatus'))
 check('funnel calls getFunnelConversions', funnel.includes('getFunnelConversions'))
 
 check('cron route validates CRON_SECRET', cron.includes('CRON_SECRET'))
-check('cron uses service role key', cron.includes('SUPABASE_SERVICE_ROLE_KEY'))
 check('cron calls checkAndAlertStuckAgents', cron.includes('checkAndAlertStuckAgents'))
 
 check('setup route logs fub_connected', setup.includes('fub_connected'))

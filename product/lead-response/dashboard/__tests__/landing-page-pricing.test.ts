@@ -51,12 +51,15 @@ describe('Landing Page Pricing Section', () => {
 
   it('should render Brokerage tier features', () => {
     const html = renderToString(React.createElement(HomePage))
-    
+
     // Check that Brokerage features are present
-    expect(html).toContain('Unlimited leads')
+    // Brokerage tier features: Unlimited agents, Unlimited SMS, White-label options,
+    // Admin dashboard, SLA guarantees, Custom integrations
     expect(html).toContain('Unlimited agents')
+    expect(html).toContain('Unlimited SMS')
     expect(html).toContain('White-label options')
     expect(html).toContain('Admin dashboard')
+    expect(html).toContain('SLA guarantees')
   })
 
   it('should have 4 pricing cards in the grid', () => {

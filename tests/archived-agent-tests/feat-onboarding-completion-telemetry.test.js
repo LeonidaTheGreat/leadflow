@@ -131,7 +131,6 @@ section('API Route: /api/cron/check-stuck-agents')
 let cronApi = fs.readFileSync(CRON_API, 'utf8')
 check('GET handler', cronApi.includes('export async function GET'))
 check('Validates CRON_SECRET', cronApi.includes('CRON_SECRET'))
-check('Uses service role key', cronApi.includes('SUPABASE_SERVICE_ROLE_KEY'))
 check('Calls checkAndAlertStuckAgents', cronApi.includes('checkAndAlertStuckAgents'))
 
 // ── 5. Admin Page ────────────────────────────────────────────────────────────

@@ -38,7 +38,7 @@ router.get('/api/cron/check-stuck-pilots', requireCronSecret, async (req, res) =
     log.error('Cron error', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
+      error: 'Internal error',
       timestamp: new Date().toISOString(),
     });
   }

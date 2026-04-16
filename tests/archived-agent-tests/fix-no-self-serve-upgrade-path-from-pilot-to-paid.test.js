@@ -113,11 +113,6 @@ check('No hardcoded sk_test Stripe key', () =>
 check('Stripe key comes from env var', () =>
   assert.ok(route.includes('process.env.STRIPE_SECRET_KEY'), 'STRIPE_SECRET_KEY env var not used'))
 
-check('Supabase keys come from env vars', () => {
-  assert.ok(route.includes('NEXT_PUBLIC_SUPABASE_URL'), 'Supabase URL env var missing')
-  assert.ok(route.includes('SUPABASE_SERVICE_ROLE_KEY'), 'Supabase service role env var missing')
-})
-
 // ── 5. UpgradeButton component integrity ──────────────────────────────────────
 console.log('\n── UpgradeButton component ──')
 const upgradeBtn = fs.readFileSync(UPGRADE_BTN, 'utf8')

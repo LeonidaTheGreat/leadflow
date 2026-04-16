@@ -57,7 +57,8 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | BillingService | `lib/services/BillingService.js` | — |
 | BookingLinkService | `lib/services/BookingLinkService.js` | BookingLinkService |
 | CalcomClient | `lib/services/CalcomClient.js` | Cal.com API Client |
-| CalcomWebhookHandler | `lib/services/CalcomWebhookHandler.js` | Cal.com Webhook Handler |
+| CalcomEventProcessor | `lib/services/CalcomEventProcessor.js` | CalcomEventProcessor — event-specific booking logic for Cal.com webhooks. |
+| CalcomWebhookHandler | `lib/services/CalcomWebhookHandler.js` | CalcomWebhookHandler — route-facing class for Cal.com webhooks. |
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
