@@ -1,7 +1,7 @@
 /**
  * PATCH /api/agents/satisfaction-ping
  * Toggle satisfaction ping enabled/disabled for an agent
- * 
+ *
  * Body: { agentId: string, enabled: boolean }
  */
 
