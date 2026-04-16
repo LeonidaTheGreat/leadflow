@@ -71,10 +71,10 @@ async function run() {
     assert.ok(src.includes("startsWith('Bearer ')"), 'Missing Bearer scheme check')
   })
 
-  await test('isAuthenticated compares token to SUPABASE_SERVICE_ROLE_KEY', async () => {
+  await test('isAuthenticated compares token to API_SECRET_KEY', async () => {
     assert.ok(
-      src.includes('SUPABASE_SERVICE_ROLE_KEY') && src.includes('token === serviceRoleKey'),
-      'Missing token comparison against SUPABASE_SERVICE_ROLE_KEY'
+      (src.includes('API_SECRET_KEY') || src.includes('NEXT_PUBLIC_API_KEY')) && src.includes('token === serviceKey'),
+      'Missing token comparison against API_SECRET_KEY or NEXT_PUBLIC_API_KEY'
     )
   })
 

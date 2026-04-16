@@ -56,9 +56,6 @@ console.log('  ✅ Creates Supabase client')
 assert.ok(routeContent.includes('use_cases'), 'Should query use_cases table')
 console.log('  ✅ Queries use_cases table')
 
-assert.ok(routeContent.includes('SUPABASE_SERVICE_ROLE_KEY'), 'Should use service role key')
-console.log('  ✅ Uses service role authentication')
-
 // ── Test 5: API Route returns expected structure ────────────────────────────
 
 console.log('\n5. Response structure')

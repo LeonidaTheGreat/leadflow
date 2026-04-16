@@ -12,22 +12,14 @@ const { Client } = require('pg');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const LOCAL_PG_PASSWORD = process.env.LOCAL_PG_PASSWORD;
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const LOCAL_PG_URL = process.env.LOCAL_PG_URL;
 
-if (!SUPABASE_DB_PASSWORD || !SUPABASE_URL) {
-  console.warn('SKIP: Missing SUPABASE_DB_PASSWORD or SUPABASE_URL (Supabase removed from stack)');
+if (!LOCAL_PG_URL) {
+  console.warn('SKIP: Missing LOCAL_PG_URL — set it to run this integration test');
   process.exit(0);
 }
 
-const match = SUPABASE_URL.match(/https:\/\/(\w+)\.supabase\.co/);
-if (!match) {
-  console.warn('SKIP: Could not extract database reference from SUPABASE_URL (Supabase removed from stack)');
-  process.exit(0);
-}
-
-const dbRef = match[1];
-const connectionString = `postgresql://postgres:${encodeURIComponent(SUPABASE_DB_PASSWORD)}@db.${dbRef}.supabase.co:5432/postgres`;
+const connectionString = LOCAL_PG_URL;
 
 let passed = 0;
 let total = 0;

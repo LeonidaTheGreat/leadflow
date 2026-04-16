@@ -33,39 +33,6 @@ function log(message, color = 'reset') {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-// Simple Supabase client for testing
-async function supabaseQuery(table, method, params = {}) {
-  const url = new URL(`${SUPABASE_URL}/rest/v1/${table}`);
-  
-  if (params.select) {
-    url.searchParams.set('select', params.select);
-  }
-  
-  if (params.eq) {
-    url.searchParams.set(params.eq.column, `eq.${params.eq.value}`);
-  }
-
-  const headers = {
-    'apikey': SUPABASE_SERVICE_ROLE_KEY,
-    'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  };
-
-  const response = await fetch(url.toString(), {
-    method: method === 'delete' ? 'DELETE' : 'GET',
-    headers
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    return { data: null, error };
-  }
-
-  const data = await response.json();
-  return { data, error: null };
-}
-
 // Test 1: Verify webhook endpoint exists and accepts requests
 async function testWebhookEndpointExists() {
   log('\n📋 Test 1: Webhook endpoint exists', 'yellow');
@@ -94,65 +61,7 @@ async function testWebhookEndpointExists() {
   }
 }
 
-// Test 2: Verify subscriptions table schema has all required columns
-async function testSubscriptionsTableSchema() {
-  log('\n📋 Test 2: Subscriptions table has required columns', 'yellow');
-  
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    log('⚠️  Skipping: Supabase credentials not configured', 'yellow');
-    return { passed: true, skipped: true };
-  }
-
-  const requiredColumns = [
-    'user_id',
-    'stripe_customer_id',
-    'stripe_subscription_id',
-    'status',
-    'tier',
-    'price_id',
-    'interval',
-    'current_period_start',
-    'current_period_end',
-    'trial_start',
-    'trial_end',
-    'cancel_at_period_end',
-    'canceled_at',
-    'ended_at',
-    'metadata'
-  ];
-
-  try {
-    // Query information_schema to check columns
-    const url = `${SUPABASE_URL}/rest/v1/rpc/get_subscriptions_columns`;
-    
-    // Try a simpler approach - query the table and see what columns exist
-    const testUrl = new URL(`${SUPABASE_URL}/rest/v1/subscriptions`);
-    testUrl.searchParams.set('select', '*');
-    testUrl.searchParams.set('limit', '0');
-    
-    const response = await fetch(testUrl.toString(), {
-      headers: {
-        'apikey': SUPABASE_SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        'Accept': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      // Table might not exist or be accessible
-      log(`⚠️  Could not verify table schema (status: ${response.status})`, 'yellow');
-      return { passed: true, skipped: true };
-    }
-
-    log('✅ Subscriptions table is accessible', 'green');
-    return { passed: true };
-  } catch (error) {
-    log(`⚠️  Could not verify schema: ${error.message}`, 'yellow');
-    return { passed: true, skipped: true };
-  }
-}
-
-// Test 3: Verify webhook handler code contains subscriptions upsert
+// Test 2: Verify webhook handler code contains subscriptions upsert
 async function testWebhookHandlerCode() {
   log('\n📋 Test 3: Webhook handler contains subscriptions upsert logic', 'yellow');
   
@@ -333,7 +242,6 @@ async function runTests() {
   
   const tests = [
     testWebhookEndpointExists,
-    testSubscriptionsTableSchema,
     testWebhookHandlerCode,
     testRequiredFieldsInUpsert,
     testHandleCheckoutCompleteStructure,
