@@ -144,6 +144,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (err: any) {
     logger.error('[outreach-candidates]', err)
-    return NextResponse.json({ error: err.message ?? 'Internal error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }

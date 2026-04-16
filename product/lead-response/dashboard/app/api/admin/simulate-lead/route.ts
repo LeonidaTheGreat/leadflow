@@ -125,6 +125,6 @@ export async function POST(request: Request) {
     })
   } catch (err: any) {
     logger.error('Simulation error:', err)
-    return NextResponse.json({ error: 'Simulation failed', detail: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Simulation failed' }, { status: 500 })
   }
 }

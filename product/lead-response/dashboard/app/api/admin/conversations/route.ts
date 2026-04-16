@@ -118,6 +118,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ conversations })
   } catch (err: any) {
     logger.error('Conversations fetch error:', err)
-    return NextResponse.json({ error: 'Failed to load conversations', detail: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to load conversations' }, { status: 500 })
   }
 }

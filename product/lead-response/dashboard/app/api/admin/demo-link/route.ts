@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     })
   } catch (err: any) {
     logger.error('Demo link creation error:', err)
-    return NextResponse.json({ error: 'Failed to create demo link', detail: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create demo link' }, { status: 500 })
   }
 }
 
@@ -109,6 +109,6 @@ export async function GET(request: Request) {
       expired: isExpired,
     })
   } catch (err: any) {
-    return NextResponse.json({ valid: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ valid: false, error: 'Internal server error' }, { status: 500 })
   }
 }

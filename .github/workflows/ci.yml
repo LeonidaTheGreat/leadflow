@@ -12,6 +12,9 @@ jobs:
       - run: npm ci
       - name: API tests
         run: npm test
+      - name: Dashboard tests
+        working-directory: product/lead-response/dashboard
+        run: npx jest --passWithNoTests --forceExit --ci
       - name: Dashboard build
         working-directory: product/lead-response/dashboard
         run: |

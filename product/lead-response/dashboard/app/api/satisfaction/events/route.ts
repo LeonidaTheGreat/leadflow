@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       logger.error('❌ Error fetching satisfaction events:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to fetch satisfaction events' }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -50,6 +50,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     logger.error('❌ /api/satisfaction/events error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
