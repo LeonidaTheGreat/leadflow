@@ -18,7 +18,7 @@
  */
 
 const { test, expect } = require('@playwright/test');
-const { generateTestAgent } = require('../e2e/tests/fixtures');
+const { generateTestAgent } = require('../../e2e/tests/fixtures');
 
 const BASE_URL = process.env.TEST_BASE_URL || 'https://leadflow-ai-five.vercel.app';
 

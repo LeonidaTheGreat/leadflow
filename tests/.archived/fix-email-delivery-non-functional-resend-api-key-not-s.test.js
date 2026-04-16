@@ -41,20 +41,16 @@ async function run() {
   console.log('✅ PASS: RESEND_API_KEY is set in Vercel (not missing/placeholder)');
 
   // Test 5: All required env vars are set
-  const envVars = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'RESEND_API_KEY'];
+  const envVars = ['NEXT_PUBLIC_API_URL', 'RESEND_API_KEY'];
   for (const key of envVars) {
     assert.ok(body.checks[key]?.ok, `Env var ${key} is not set. Detail: "${body.checks[key]?.detail}"`);
   }
   console.log('✅ PASS: All required env vars are set in Vercel');
 
-  // Test 6: Supabase connectivity
-  assert.ok(body.checks['supabase_connectivity']?.ok, 'Supabase connectivity check failed');
-  console.log('✅ PASS: Supabase connectivity verified');
-
   console.log('\n============================================================');
   console.log('📊 TEST REPORT');
   console.log('============================================================');
-  console.log('✅ Passed: 6');
+  console.log('✅ Passed: 5');
   console.log('❌ Failed: 0');
   console.log('📈 Success Rate: 100%');
   console.log('\n🎉 RESEND_API_KEY confirmed set in Vercel — email delivery should be functional.');
