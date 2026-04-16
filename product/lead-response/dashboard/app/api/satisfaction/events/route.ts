@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       logger.error('❌ Error fetching satisfaction events:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -46,10 +46,9 @@ export async function GET(request: NextRequest) {
       events: events || [],
       total: count || 0,
       limit,
-      offset,
-    })
+      offset })
   } catch (error: any) {
     logger.error('❌ /api/satisfaction/events error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

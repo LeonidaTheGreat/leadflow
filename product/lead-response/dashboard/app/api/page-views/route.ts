@@ -63,8 +63,7 @@ export async function POST(request: NextRequest) {
     // agent_page_views has no session_id or visited_at columns; use created_at (auto-set) instead
     const insertPayload: Record<string, string> = {
       agent_id: agentId,
-      page,
-    }
+      page }
 
     const { error } = await supabase.from('agent_page_views').insert(insertPayload)
 

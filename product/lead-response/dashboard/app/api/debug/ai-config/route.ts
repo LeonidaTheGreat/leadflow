@@ -7,6 +7,5 @@ export async function GET() {
   return NextResponse.json({
     has_anthropic_key: hasAnthropicKey,
     key_prefix: keyPrefix,
-    node_env: process.env.NODE_ENV,
-  })
+    node_env: process.env.NODE_ENV })
 }

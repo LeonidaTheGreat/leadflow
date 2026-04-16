@@ -146,8 +146,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         trial_start_date: agent.trial_start_date,
         created_at: agent.created_at,
         simulation_status: completedSim?.status || null,
-        simulation_completed_at: completedSim?.created_at || null,
-      })
+        simulation_completed_at: completedSim?.created_at || null })
     }
 
     const ahaMomentRate = totalTrialAgents > 0 ? completedWithin3Days / totalTrialAgents : 0
@@ -161,13 +160,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       target_rate: targetRate,
       target_met: targetMet,
       period_days: periodDays,
-      as_of: now.toISOString(),
-    }
+      as_of: now.toISOString() }
 
     return NextResponse.json({
       metrics,
-      agents: agentDetails,
-    })
+      agents: agentDetails })
   } catch (err: any) {
     logger.error('[aha-moment-metrics] error:', err?.message ?? err)
     return NextResponse.json(

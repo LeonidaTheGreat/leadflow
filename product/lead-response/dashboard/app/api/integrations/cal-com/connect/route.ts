@@ -29,10 +29,8 @@ export async function POST(request: NextRequest) {
       .upsert({
         agent_id: agentId,
         cal_com_link: calcomLink,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'agent_id',
-      })
+        updated_at: new Date().toISOString() }, {
+        onConflict: 'agent_id' })
 
     if (error) {
       logger.error('Cal.com connection error:', error)
@@ -44,8 +42,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       valid: true,
-      message: 'Cal.com connected successfully',
-    })
+      message: 'Cal.com connected successfully' })
   } catch (error) {
     logger.error('Cal.com connect error:', error)
     return NextResponse.json(
@@ -64,8 +61,7 @@ export async function DELETE(request: NextRequest) {
       .from('agent_integrations')
       .update({
         cal_com_link: null,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('agent_id', agentId)
 
     if (error) {
@@ -77,8 +73,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Cal.com disconnected successfully',
-    })
+      message: 'Cal.com disconnected successfully' })
   } catch (error) {
     logger.error('Cal.com disconnect error:', error)
     return NextResponse.json(

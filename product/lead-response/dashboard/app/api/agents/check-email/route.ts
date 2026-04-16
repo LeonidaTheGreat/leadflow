@@ -21,8 +21,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       available: !data,
-      email: email.toLowerCase(),
-    })
+      email: email.toLowerCase() })
   } catch (error) {
     logger.error('Email check error:', error)
     return NextResponse.json(

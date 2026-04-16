@@ -146,9 +146,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Pilot trial CTA cron job failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
+        error: 'Pilot trial CTA cron job failed' },
       { status: 500 }
     )
   }

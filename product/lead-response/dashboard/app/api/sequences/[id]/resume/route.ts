@@ -27,8 +27,7 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: 'Sequence resumed',
-    })
+      message: 'Sequence resumed' })
 
   } catch (error: any) {
     logger.error('❌ Resume sequence error:', error)

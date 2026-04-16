@@ -81,8 +81,7 @@ export async function POST(request: NextRequest) {
     if (ai_assist) {
       // AI generates suggestion
       const aiResponse = await generateAiSmsResponse(lead, agent, {
-        trigger: 'manual',
-      })
+        trigger: 'manual' })
       finalMessage = aiResponse.message
       aiConfidence = aiResponse.confidence
     } else {
@@ -94,8 +93,7 @@ export async function POST(request: NextRequest) {
     const result = await sendSms({
       to: lead.phone,
       body: finalMessage,
-      statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status`,
-    })
+      statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status` })
 
     if (!result.success) {
       return NextResponse.json(
@@ -115,8 +113,7 @@ export async function POST(request: NextRequest) {
       twilio_sid: result.messageSid,
       twilio_status: result.status,
       status: 'sent',
-      sent_at: new Date().toISOString(),
-    })
+      sent_at: new Date().toISOString() })
 
     if (messageError) {
       logger.error('❌ Failed to save message:', messageError)
@@ -132,13 +129,12 @@ export async function POST(request: NextRequest) {
       status: result.status,
       message_body: finalMessage,
       ai_generated: ai_assist,
-      twilio_sid: result.messageSid,
-    })
+      twilio_sid: result.messageSid })
 
   } catch (error: any) {
     logger.error('❌ Send manual SMS error:', error)
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

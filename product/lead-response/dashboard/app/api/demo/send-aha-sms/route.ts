@@ -63,8 +63,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Rate limit exceeded. Max 3 demo SMS per day.',
-        resetInSeconds: rateCheck.resetInSeconds,
-      },
+        resetInSeconds: rateCheck.resetInSeconds },
       { status: 429 }
     )
   }
@@ -87,8 +86,7 @@ export async function POST(request: NextRequest) {
       .from('real_estate_agents')
       .update({
         aha_completed: true,
-        aha_response_time_ms: responseTimeMs,
-      })
+        aha_response_time_ms: responseTimeMs })
       .eq('id', agentId)
   } catch (err) {
     // Non-blocking — SMS already sent, log and continue
@@ -99,6 +97,5 @@ export async function POST(request: NextRequest) {
     success: true,
     responseTimeMs,
     mock: smsResult.mock ?? false,
-    remaining: rateCheck.remaining,
-  })
+    remaining: rateCheck.remaining })
 }

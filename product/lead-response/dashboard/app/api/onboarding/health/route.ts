@@ -18,8 +18,7 @@ export async function GET(request: NextRequest) {
       { path: '/api/onboarding/validate', methods: ['POST', 'GET'] },
       { path: '/api/onboarding/check-email', methods: ['POST', 'GET'] },
       { path: '/api/onboarding/submit', methods: ['POST', 'GET'] },
-    ],
-  };
+    ] };
 
   // Check for required env vars
   const requiredEnvVars = ['NEXT_PUBLIC_API_URL', 'API_SECRET_KEY'];
@@ -32,8 +31,7 @@ export async function GET(request: NextRequest) {
       {
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
-        error: `Missing environment variables: ${missingEnvVars.join(', ')}`,
-      },
+        error: `Missing environment variables: ${missingEnvVars.join(', ')}` },
       { status: 503 }
     );
   }

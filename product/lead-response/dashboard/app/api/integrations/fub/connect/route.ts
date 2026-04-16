@@ -20,8 +20,7 @@ async function registerFubWebhooks(
   const basicAuth = Buffer.from(`${apiKey}:`).toString('base64')
   const headers = {
     'Authorization': `Basic ${basicAuth}`,
-    'Content-Type': 'application/json',
-  }
+    'Content-Type': 'application/json' }
 
   const eventsToSubscribe = ['new_person', 'updated_contact']
   const subscriptions: any[] = []
@@ -33,9 +32,7 @@ async function registerFubWebhooks(
         headers,
         body: JSON.stringify({
           uri: webhookUrl,
-          event,
-        }),
-      })
+          event }) })
 
       const responseText = await response.text()
 
@@ -48,8 +45,7 @@ async function registerFubWebhooks(
           logger.error(`❌ FUB webhook registration failed for event "${event}": ${response.status} ${responseText}`)
           return {
             success: false,
-            error: `Failed to register webhook for event "${event}": ${response.status} ${responseText}`,
-          }
+            error: `Failed to register webhook for event "${event}": ${response.status} ${responseText}` }
         }
       } else {
         let data: any
@@ -63,7 +59,7 @@ async function registerFubWebhooks(
       }
     } catch (err: any) {
       logger.error(`❌ FUB webhook registration network error for ${event}:`, err.message)
-      return { success: false, error: `Network error registering webhook: ${err.message}` }
+      return { success: false, error: 'Service error' }
     }
   }
 
@@ -87,9 +83,7 @@ export async function POST(request: NextRequest) {
       method: 'GET',
       headers: {
         'Authorization': `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
-        'Content-Type': 'application/json',
-      },
-    })
+        'Content-Type': 'application/json' } })
 
     if (!verifyResponse.ok) {
       return NextResponse.json(
@@ -104,10 +98,8 @@ export async function POST(request: NextRequest) {
       .upsert({
         agent_id: agentId,
         fub_api_key: apiKey,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'agent_id',
-      })
+        updated_at: new Date().toISOString() }, {
+        onConflict: 'agent_id' })
 
     if (error) {
       logger.error('FUB connection error:', error)
@@ -133,16 +125,14 @@ export async function POST(request: NextRequest) {
         message: 'FUB connected successfully, but webhook registration failed. Lead events may not arrive automatically.',
         webhook_registered: false,
         webhook_error: webhookResult.error,
-        webhook_subscriptions: [],
-      })
+        webhook_subscriptions: [] })
     }
 
     return NextResponse.json({
       valid: true,
       message: 'FUB connected successfully',
       webhook_registered: true,
-      webhook_subscriptions: webhookResult.subscriptions,
-    })
+      webhook_subscriptions: webhookResult.subscriptions })
   } catch (error) {
     logger.error('FUB connect error:', error)
     return NextResponse.json(
@@ -161,8 +151,7 @@ export async function DELETE(request: NextRequest) {
       .from('agent_integrations')
       .update({
         fub_api_key: null,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('agent_id', agentId)
 
     if (error) {
@@ -174,8 +163,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'FUB disconnected successfully',
-    })
+      message: 'FUB disconnected successfully' })
   } catch (error) {
     logger.error('FUB disconnect error:', error)
     return NextResponse.json(

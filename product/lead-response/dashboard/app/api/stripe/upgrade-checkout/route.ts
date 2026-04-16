@@ -15,8 +15,7 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.ver
 const PLAN_PRICE_IDS: Record<string, string> = {
   starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
   pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
-  team: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly',
-}
+  team: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly' }
 
 /**
  * POST /api/stripe/upgrade-checkout
@@ -74,8 +73,7 @@ export async function POST(request: NextRequest) {
       const customer = await stripe.customers.create({
         email: agent.email,
         name: [agent.first_name, agent.last_name].filter(Boolean).join(' ') || undefined,
-        metadata: { agent_id: agent.id, source: 'pilot_upgrade' },
-      })
+        metadata: { agent_id: agent.id, source: 'pilot_upgrade' } })
       customerId = customer.id
 
       await supabase
@@ -96,15 +94,12 @@ export async function POST(request: NextRequest) {
         metadata: {
           agent_id: agent.id,
           plan: plan,
-          upgraded_from: 'pilot',
-        },
-      },
+          upgraded_from: 'pilot' } },
       // After payment, return to dashboard. Banner disappears because plan_tier is no longer 'trial'.
       success_url: `${baseUrl}/dashboard?upgrade=success`,
       cancel_url: `${baseUrl}/dashboard`,
       automatic_tax: { enabled: true },
-      allow_promotion_codes: true,
-    })
+      allow_promotion_codes: true })
 
     // ── 7. Log upgrade attempt ────────────────────────────────────────────────
     try {
@@ -113,8 +108,7 @@ export async function POST(request: NextRequest) {
         tier: plan,
         stripe_session_id: session.id,
         status: 'session_created',
-        created_at: new Date().toISOString(),
-      })
+        created_at: new Date().toISOString() })
     } catch (logError) {
       // Non-fatal — proceed even if logging fails
       logger.warn('Failed to log subscription attempt:', logError)
@@ -128,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     if (error.type === 'StripeInvalidRequestError') {
       return NextResponse.json(
-        { error: `Stripe error: ${error.message}`, code: 'STRIPE_INVALID_REQUEST' },
+        { error: 'Service error', code: 'STRIPE_INVALID_REQUEST' },
         { status: 400 }
       )
     }

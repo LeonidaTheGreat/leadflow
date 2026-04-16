@@ -86,9 +86,7 @@ export async function POST(request: NextRequest) {
           email: agent.email,
           metadata: {
             agent_id: agent.id,
-            source: 'leadflow_portal',
-          },
-        })
+            source: 'leadflow_portal' } })
         customerId = customer.id
 
         // Update agent record with new customer ID
@@ -96,8 +94,7 @@ export async function POST(request: NextRequest) {
           .from('real_estate_agents')
           .update({
             stripe_customer_id: customerId,
-            updated_at: new Date().toISOString(),
-          })
+            updated_at: new Date().toISOString() })
           .eq('id', agentId)
 
         if (updateError) {
@@ -111,8 +108,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { 
             error: 'Failed to create billing customer', 
-            code: 'STRIPE_CUSTOMER_ERROR',
-            details: stripeError.message 
+            code: 'STRIPE_CUSTOMER_ERROR' 
           },
           { status: 500 }
         )
@@ -125,8 +121,7 @@ export async function POST(request: NextRequest) {
     // Create Stripe Customer Portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: portalReturnUrl,
-    })
+      return_url: portalReturnUrl })
 
     // Log portal session creation for analytics
     await supabase.from('subscription_events').insert({
@@ -135,18 +130,15 @@ export async function POST(request: NextRequest) {
       stripe_customer_id: customerId,
       metadata: {
         portal_session_id: portalSession.id,
-        return_url: portalReturnUrl,
-      },
-      created_at: new Date().toISOString(),
-    })
+        return_url: portalReturnUrl },
+      created_at: new Date().toISOString() })
 
     logger.info(`✅ Portal session created for agent ${agentId}: ${portalSession.id}`)
 
     return NextResponse.json({
       success: true,
       url: portalSession.url,
-      sessionId: portalSession.id,
-    })
+      sessionId: portalSession.id })
 
   } catch (error: any) {
     logger.error('Portal session creation error:', error)
@@ -155,7 +147,7 @@ export async function POST(request: NextRequest) {
     if (error.type === 'StripeInvalidRequestError') {
       return NextResponse.json(
         { 
-          error: `Stripe error: ${error.message}`, 
+          error: 'Service error', 
           code: 'STRIPE_INVALID_REQUEST',
           stripe_code: error.code 
         },
@@ -176,8 +168,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Failed to create portal session', 
-        code: 'INTERNAL_ERROR',
-        details: error.message 
+        code: 'INTERNAL_ERROR' 
       },
       { status: 500 }
     )
@@ -233,9 +224,7 @@ export async function GET(request: NextRequest) {
         subscriptionId: agent.stripe_subscription_id,
         planTier: agent.plan_tier,
         status: agent.status,
-        mrr: agent.mrr,
-      },
-    })
+        mrr: agent.mrr } })
 
   } catch (error: any) {
     logger.error('Portal config GET error:', error)

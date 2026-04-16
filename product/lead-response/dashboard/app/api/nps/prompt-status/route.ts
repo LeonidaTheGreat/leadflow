@@ -35,8 +35,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       shouldShow: result.shouldShow,
-      trigger: result.trigger || null,
-    })
+      trigger: result.trigger || null })
   } catch (error: any) {
     logger.error('Error checking NPS prompt status:', error)
     return NextResponse.json(

@@ -27,9 +27,7 @@ export async function GET(req: NextRequest) {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${serviceKey}`,
-        'Content-Type': 'application/json',
-      },
-    })
+        'Content-Type': 'application/json' } })
 
     if (!response.ok) {
       const body = await response.json().catch(() => ({}))

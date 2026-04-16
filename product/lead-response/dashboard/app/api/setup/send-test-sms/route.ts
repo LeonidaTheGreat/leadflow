@@ -41,8 +41,7 @@ export async function POST(request: NextRequest) {
     const message = await twilioClient.messages.create({
       body: `Hi there! 👋 Your LeadFlow setup is complete. You're all set to auto-respond to leads in under 30 seconds. — LeadFlow AI`,
       from: fromNumber,
-      to: formattedPhone,
-    })
+      to: formattedPhone })
 
     if (!message.sid) {
       return NextResponse.json(

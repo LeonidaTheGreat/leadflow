@@ -43,9 +43,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Trial email cron job failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
+        error: 'Trial email cron job failed' },
       { status: 500 }
     )
   }

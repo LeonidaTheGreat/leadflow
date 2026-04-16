@@ -186,9 +186,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Pilot stuck check failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
+        error: 'Pilot stuck check failed' },
       { status: 500 }
     )
   }

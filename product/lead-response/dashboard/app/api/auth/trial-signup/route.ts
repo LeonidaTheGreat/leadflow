@@ -147,8 +147,7 @@ export async function POST(request: NextRequest) {
           {
             agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
             planTier: 'trial',
-            dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding',
-          }
+            dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding' }
         )
         // Mark welcome email as sent in the agent record
         await supabase
@@ -198,9 +197,7 @@ export async function POST(request: NextRequest) {
         email: agent.email,
         firstName: agent.first_name,
         lastName: agent.last_name,
-        onboardingCompleted: false,
-      },
-    })
+        onboardingCompleted: false } })
 
     // Set JWT auth cookie (backward compatibility)
     response.cookies.set('auth-token', token, {
@@ -219,8 +216,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 30 * 24 * 60 * 60, // 30 days (remember me)
-      path: '/',
-    })
+      path: '/' })
 
     return response
 

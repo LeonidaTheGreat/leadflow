@@ -48,9 +48,7 @@ export async function POST(request: NextRequest) {
         Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
         'Content-Type': 'application/json',
         'X-System': 'LeadFlow AI',
-        'X-System-Key': apiKey,
-      },
-    })
+        'X-System-Key': apiKey } })
 
     if (!fubResponse.ok) {
       if (fubResponse.status === 401) {
@@ -84,13 +82,10 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json' },
       body: JSON.stringify({
         url: `${webhookBaseUrl}/api/webhooks/fub`,
-        event: 'peopleCreated',
-      }),
-    })
+        event: 'peopleCreated' }) })
   } catch {
     // Webhook registration is best-effort; don't fail the whole connect
     logger.warn('FUB webhook registration failed (non-fatal)')
@@ -101,8 +96,7 @@ export async function POST(request: NextRequest) {
     {
       agent_id: agentId,
       fub_api_key: apiKey,
-      updated_at: new Date().toISOString(),
-    },
+      updated_at: new Date().toISOString() },
     { onConflict: 'agent_id' }
   )
 
@@ -116,8 +110,7 @@ export async function POST(request: NextRequest) {
     .from('real_estate_agents')
     .update({
       onboarding_step: 1,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString() })
     .eq('id', agentId)
 
   if (agentError) {
@@ -128,6 +121,5 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     valid: true,
     message: 'Follow Up Boss connected successfully!',
-    fubUser: fubUser ? { name: (fubUser as any).name, email: (fubUser as any).email } : null,
-  })
+    fubUser: fubUser ? { name: (fubUser as any).name, email: (fubUser as any).email } : null })
 }

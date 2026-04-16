@@ -55,9 +55,7 @@ export async function GET(request: NextRequest) {
         website: '',
         profileImage: profile?.photo_url || '',
         createdAt: agent.created_at,
-        onboardingCompleted: agent.onboarding_completed ?? false,
-      },
-    })
+        onboardingCompleted: agent.onboarding_completed ?? false } })
   } catch (error) {
     logger.error('Profile GET error:', error)
     return NextResponse.json(
@@ -85,8 +83,7 @@ export async function PUT(request: NextRequest) {
       bio,
       companyName,
       website,
-      profileImage,
-    } = body
+      profileImage } = body
 
     // Validate required fields
     if (!firstName || !lastName || !email || !phoneNumber || !state || !timezone) {
@@ -114,8 +111,7 @@ export async function PUT(request: NextRequest) {
         phone_number: phoneNumber,
         state,
         timezone,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('id', agentId)
 
     if (agentError) {
@@ -133,10 +129,8 @@ export async function PUT(request: NextRequest) {
         agent_id: agentId,
         bio: bio || null,
         photo_url: profileImage || null,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'agent_id',
-      })
+        updated_at: new Date().toISOString() }, {
+        onConflict: 'agent_id' })
 
     if (profileError) {
       logger.error('Profile update error:', profileError)
@@ -156,9 +150,7 @@ export async function PUT(request: NextRequest) {
         bio,
         companyName,
         website,
-        profileImage,
-      },
-    })
+        profileImage } })
   } catch (error) {
     logger.error('Profile PUT error:', error)
     return NextResponse.json(

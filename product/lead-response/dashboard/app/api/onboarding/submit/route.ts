@@ -42,8 +42,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: 'Validation failed',
           errors: onboardingValidator.getErrors(),
-          errorsByField: onboardingValidator.getErrorsByField(),
-        },
+          errorsByField: onboardingValidator.getErrorsByField() },
         { status: 400 }
       );
     }
@@ -60,8 +59,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Email is already registered',
-          code: 'EMAIL_EXISTS',
-        },
+          code: 'EMAIL_EXISTS' },
         { status: 409 }
       );
     }
@@ -100,9 +98,7 @@ export async function POST(request: NextRequest) {
           referrer: tracking.referrer,
           utm_source: tracking.utmSource,
           utm_medium: tracking.utmMedium,
-          utm_campaign: tracking.utmCampaign,
-        },
-      })
+          utm_campaign: tracking.utmCampaign } })
       .select()
       .single();
 
@@ -123,8 +119,7 @@ export async function POST(request: NextRequest) {
           cal_com_link: data.calcomLink || null,
           calcom_username: extractCalcomUsername(data.calcomLink),
           twilio_phone_number: data.smsPhoneNumber || null,
-          created_at: new Date().toISOString(),
-        });
+          created_at: new Date().toISOString() });
 
       if (intError) {
         logger.error('Integration creation error:', intError);
@@ -141,8 +136,7 @@ export async function POST(request: NextRequest) {
         sms_enabled: !!data.smsPhoneNumber,
         email_notifications: true,
         booking_enabled: !!data.calcomLink,
-        created_at: new Date().toISOString(),
-      });
+        created_at: new Date().toISOString() });
 
     if (settingsError) {
       logger.error('Settings creation error:', settingsError);
@@ -156,8 +150,7 @@ export async function POST(request: NextRequest) {
         .update({
           is_completed: true,
           agent_id: agent.id,
-          completed_at: new Date().toISOString(),
-        })
+          completed_at: new Date().toISOString() })
         .eq('id', draftId);
     } else {
       // Try to find and mark any draft for this email
@@ -166,8 +159,7 @@ export async function POST(request: NextRequest) {
         .update({
           is_completed: true,
           agent_id: agent.id,
-          completed_at: new Date().toISOString(),
-        })
+          completed_at: new Date().toISOString() })
         .eq('email', data.email.toLowerCase().trim())
         .eq('is_completed', false);
     }
@@ -180,11 +172,9 @@ export async function POST(request: NextRequest) {
         completion_time_ms: tracking.completionTimeMs,
         steps_completed: data.completedSteps,
         has_calendar: !!data.calcomLink,
-        has_sms: !!data.smsPhoneNumber,
-      },
+        has_sms: !!data.smsPhoneNumber },
       source: 'onboarding_api',
-      created_at: new Date().toISOString(),
-    });
+      created_at: new Date().toISOString() });
 
     // Return success (exclude password_hash)
     const { password_hash, ...agentSafe } = agent;
@@ -198,10 +188,8 @@ export async function POST(request: NextRequest) {
           firstName: agent.first_name,
           lastName: agent.last_name,
           message: 'Onboarding completed successfully',
-          redirectUrl: '/dashboard',
-        },
-        message: 'Welcome to LeadFlow AI!',
-      },
+          redirectUrl: '/dashboard' },
+        message: 'Welcome to LeadFlow AI!' },
       { status: 201 }
     );
 
@@ -248,20 +236,14 @@ export async function GET() {
       requirements: {
         password: {
           minLength: 8,
-          description: 'At least 8 characters',
-        },
+          description: 'At least 8 characters' },
         phoneNumber: {
           format: '10-digit US number',
-          description: 'Digits only or formatted',
-        },
-      },
+          description: 'Digits only or formatted' } },
       tracking: {
         completionTimeMs: 'Time taken to complete onboarding (optional)',
         referrer: 'Referrer URL (optional)',
         utmSource: 'UTM source (optional)',
         utmMedium: 'UTM medium (optional)',
-        utmCampaign: 'UTM campaign (optional)',
-      },
-    },
-  });
+        utmCampaign: 'UTM campaign (optional)' } } });
 }

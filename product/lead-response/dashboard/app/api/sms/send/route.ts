@@ -46,8 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           ...err.response,
-          resetInSeconds: rateLimit.resetInSeconds,
-        },
+          resetInSeconds: rateLimit.resetInSeconds },
         { status: err.statusCode }
       );
     }
@@ -75,8 +74,7 @@ export async function POST(request: NextRequest) {
       try {
         // Edge Case 3: AI Assist timeout (handled in AI function)
         const aiResponse = await generateAiSmsResponse(lead, agent, {
-          trigger: 'followup',
-        })
+          trigger: 'followup' })
         messageBody = aiResponse.message
         aiConfidence = aiResponse.confidence
       } catch (aiError: any) {
@@ -96,8 +94,7 @@ export async function POST(request: NextRequest) {
     const result = await sendSms({
       to: lead.phone,
       body: messageBody,
-      statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status`,
-    })
+      statusCallback: `${process.env.NEXT_PUBLIC_APP_URL}/api/sms/status` })
 
     if (!result.success) {
       // Classify Twilio error
@@ -106,8 +103,7 @@ export async function POST(request: NextRequest) {
         lead_id, 
         phone: lead.phone, 
         errorCode: result.errorCode,
-        errorMessage: result.error,
-      });
+        errorMessage: result.error });
 
       // Save failed message to database for debugging
       await createMessage({
@@ -122,8 +118,7 @@ export async function POST(request: NextRequest) {
         twilio_error_code: result.errorCode,
         twilio_error_message: result.error,
         status: 'failed',
-        failed_at: new Date().toISOString(),
-      })
+        failed_at: new Date().toISOString() })
 
       return NextResponse.json(
         {
@@ -131,8 +126,7 @@ export async function POST(request: NextRequest) {
           action: errorInfo.userAction,
           code: errorInfo.code,
           category: errorInfo.category,
-          retryable: errorInfo.retryable,
-        },
+          retryable: errorInfo.retryable },
         { status: errorInfo.statusCode }
       )
     }
@@ -148,15 +142,13 @@ export async function POST(request: NextRequest) {
       twilio_sid: result.messageSid,
       twilio_status: result.status,
       status: 'sent',
-      sent_at: new Date().toISOString(),
-    })
+      sent_at: new Date().toISOString() })
 
     return NextResponse.json({
       success: true,
       message_sid: result.messageSid,
       status: result.status,
-      mock: result.mock,
-    })
+      mock: result.mock })
 
   } catch (error: any) {
     logError('INTERNAL_ERROR', { errorMessage: error?.message }, error);

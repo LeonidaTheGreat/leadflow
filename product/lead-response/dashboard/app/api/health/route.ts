@@ -23,8 +23,7 @@ export async function GET() {
     const isPlaceholder = !value || value === 'placeholder'
     checks[key] = {
       ok: !!value && !isPlaceholder,
-      detail: !value ? 'missing' : isPlaceholder ? 'placeholder' : 'set',
-    }
+      detail: !value ? 'missing' : isPlaceholder ? 'placeholder' : 'set' }
   }
 
   // 2. Database connectivity via PostgREST
@@ -36,19 +35,16 @@ export async function GET() {
         .limit(1)
       checks['database'] = {
         ok: !error,
-        detail: error ? `query failed: ${error.message}` : 'connected',
-      }
+        detail: error ? `query failed: ${error.message}` : 'connected' }
     } catch (err: any) {
       checks['database'] = {
         ok: false,
-        detail: `exception: ${err.message}`,
-      }
+        detail: `exception: ${err.message}` }
     }
   } else {
     checks['database'] = {
       ok: false,
-      detail: 'skipped — PostgREST not configured',
-    }
+      detail: 'skipped — PostgREST not configured' }
   }
 
   // 3. API connectivity — derives from database connectivity check above
@@ -56,13 +52,11 @@ export async function GET() {
   if (checks['database']) {
     checks['api_connectivity'] = {
       ok: checks['database'].ok,
-      detail: checks['database'].ok ? 'ok' : checks['database'].detail,
-    }
+      detail: checks['database'].ok ? 'ok' : checks['database'].detail }
   } else {
     checks['api_connectivity'] = {
       ok: false,
-      detail: 'skipped — database check not run',
-    }
+      detail: 'skipped — database check not run' }
   }
 
   // Critical checks determine overall status (env vars + database connectivity).
@@ -88,8 +82,7 @@ export async function GET() {
       status: allOk ? 'ok' : 'degraded',
       checks,
       ...(criticalFailed.length > 0 && { errors: criticalFailed }),
-      ...(warningFailed.length > 0 && { warnings: warningFailed }),
-    },
+      ...(warningFailed.length > 0 && { warnings: warningFailed }) },
     { status: allOk ? 200 : 503 }
   )
 }

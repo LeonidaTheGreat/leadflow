@@ -23,8 +23,7 @@ export async function POST(request: NextRequest) {
     .update({
       onboarding_completed: true,
       onboarding_completed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString() })
     .eq('id', agentId)
 
   if (error) {

@@ -61,8 +61,7 @@ const TIMING = {
   AI_2_AT: 6000,
   LEAD_3_AT: 7500,
   AI_3_AT: 9000,         // simulation complete
-  TIMEOUT_AT: 90000,
-}
+  TIMEOUT_AT: 90000 }
 
 interface ConversationTurn {
   role: 'lead' | 'ai'
@@ -124,10 +123,8 @@ function deriveSimulationState(
         ai_response_received_at: null,
         response_time_ms: null,
         conversation: [],
-        lead_name: leadName,
-      },
-      shouldPersistSuccess: false,
-    }
+        lead_name: leadName },
+      shouldPersistSuccess: false }
   }
 
   // Build conversation turns visible so far
@@ -137,43 +134,37 @@ function deriveSimulationState(
     conversation.push({
       role: 'lead',
       message: LEAD_MESSAGES[0](leadName, propertyInterest || ''),
-      timestamp: makeTs(TIMING.LEAD_1_AT),
-    })
+      timestamp: makeTs(TIMING.LEAD_1_AT) })
   }
   if (elapsedMs >= TIMING.AI_1_AT) {
     conversation.push({
       role: 'ai',
       message: generateAiResponse(0, leadName, propertyInterest),
-      timestamp: makeTs(TIMING.AI_1_AT),
-    })
+      timestamp: makeTs(TIMING.AI_1_AT) })
   }
   if (elapsedMs >= TIMING.LEAD_2_AT) {
     conversation.push({
       role: 'lead',
       message: LEAD_MESSAGES[1](leadName, ''),
-      timestamp: makeTs(TIMING.LEAD_2_AT),
-    })
+      timestamp: makeTs(TIMING.LEAD_2_AT) })
   }
   if (elapsedMs >= TIMING.AI_2_AT) {
     conversation.push({
       role: 'ai',
       message: generateAiResponse(1, leadName, propertyInterest),
-      timestamp: makeTs(TIMING.AI_2_AT),
-    })
+      timestamp: makeTs(TIMING.AI_2_AT) })
   }
   if (elapsedMs >= TIMING.LEAD_3_AT) {
     conversation.push({
       role: 'lead',
       message: LEAD_MESSAGES[2](leadName, ''),
-      timestamp: makeTs(TIMING.LEAD_3_AT),
-    })
+      timestamp: makeTs(TIMING.LEAD_3_AT) })
   }
   if (elapsedMs >= TIMING.AI_3_AT) {
     conversation.push({
       role: 'ai',
       message: generateAiResponse(2, leadName, propertyInterest),
-      timestamp: makeTs(TIMING.AI_3_AT),
-    })
+      timestamp: makeTs(TIMING.AI_3_AT) })
   }
 
   // Derive status from what's visible
@@ -214,10 +205,8 @@ function deriveSimulationState(
       ai_response_received_at: aiResponseReceivedAt,
       response_time_ms: responseTimeMs,
       conversation,
-      lead_name: leadName,
-    },
-    shouldPersistSuccess,
-  }
+      lead_name: leadName },
+    shouldPersistSuccess }
 }
 
 // --- Route handler ---
@@ -282,8 +271,7 @@ async function startSimulation(agentId: string, sessionId: string) {
       simulation_started_at: startedAt,
       lead_name: leadName,
       property_interest: propertyInterest,
-      conversation: [],
-    })
+      conversation: [] })
 
   if (dbError) {
     logger.error('[simulator] Failed to create simulation record:', dbError)
@@ -304,9 +292,7 @@ async function startSimulation(agentId: string, sessionId: string) {
       ai_response_received_at: null,
       response_time_ms: null,
       conversation: [],
-      lead_name: leadName,
-    } satisfies SimulationState,
-  })
+      lead_name: leadName } satisfies SimulationState })
 }
 
 async function getSimulationStatus(agentId: string, sessionId: string) {
@@ -335,9 +321,7 @@ async function getSimulationStatus(agentId: string, sessionId: string) {
         ai_response_received_at: dbRow.ai_response_received_at,
         response_time_ms: dbRow.response_time_ms,
         conversation: dbRow.conversation || [],
-        lead_name: dbRow.lead_name,
-      } satisfies SimulationState,
-    })
+        lead_name: dbRow.lead_name } satisfies SimulationState })
   }
 
   // Derive current state from elapsed time.
@@ -355,8 +339,7 @@ async function getSimulationStatus(agentId: string, sessionId: string) {
         ai_response_received_at: derived.ai_response_received_at,
         response_time_ms: derived.response_time_ms,
         conversation: derived.conversation,
-        outcome: 'completed',
-      })
+        outcome: 'completed' })
       .eq('session_id', sessionId)
 
     // Persist Aha telemetry on the agent record immediately when simulation succeeds.
@@ -366,13 +349,11 @@ async function getSimulationStatus(agentId: string, sessionId: string) {
       .update({
         aha_completed: true,
         aha_response_time_ms: derived.response_time_ms,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('id', agentId)
 
     await logAnalyticsEvent('onboarding_simulation_succeeded', agentId, sessionId, {
-      responseTimeMs: derived.response_time_ms,
-    })
+      responseTimeMs: derived.response_time_ms })
   }
 
   return NextResponse.json({
@@ -380,9 +361,7 @@ async function getSimulationStatus(agentId: string, sessionId: string) {
       id: dbRow.id,
       session_id: sessionId,
       agent_id: agentId,
-      ...derived,
-    } satisfies SimulationState,
-  })
+      ...derived } satisfies SimulationState })
 }
 
 async function skipSimulation(agentId: string, sessionId: string, reason?: string) {
@@ -398,8 +377,7 @@ async function skipSimulation(agentId: string, sessionId: string, reason?: strin
         simulation_started_at: now,
         lead_name: 'Skipped',
         conversation: [],
-        skip_reason: reason || 'User chose to skip',
-      },
+        skip_reason: reason || 'User chose to skip' },
       { onConflict: 'session_id' }
     )
 
@@ -408,8 +386,7 @@ async function skipSimulation(agentId: string, sessionId: string, reason?: strin
   }
 
   await logAnalyticsEvent('onboarding_simulation_skipped', agentId, sessionId, {
-    reason: reason || 'User chose to skip',
-  })
+    reason: reason || 'User chose to skip' })
 
   return NextResponse.json({ success: true, message: 'Simulation skipped' })
 }
@@ -426,8 +403,7 @@ async function logAnalyticsEvent(
       event_type: eventType,
       event_data: { ...data, session_id: sessionId, timestamp: new Date().toISOString() },
       source: 'onboarding_simulator',
-      created_at: new Date().toISOString(),
-    })
+      created_at: new Date().toISOString() })
   } catch (err) {
     logger.error('[simulator] Failed to log analytics event:', err)
   }

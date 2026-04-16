@@ -316,9 +316,7 @@ export async function POST(request: NextRequest) {
         email: agent.email,
         firstName: agent.first_name,
         lastName: agent.last_name,
-        onboardingCompleted: false,
-      },
-    })
+        onboardingCompleted: false } })
 
     response.cookies.set('auth-token', token, {
       httpOnly: true,

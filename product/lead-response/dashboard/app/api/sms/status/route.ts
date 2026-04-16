@@ -72,10 +72,8 @@ async function handleStatusUpdate(body: Record<string, string>) {
         twilio_sid: MessageSid,
         status: MessageStatus,
         error_code: ErrorCode,
-        error_message: ErrorMessage,
-      },
-      source: 'twilio_status_callback',
-    })
+        error_message: ErrorMessage },
+      source: 'twilio_status_callback' })
   }
 
   return NextResponse.json({ received: true, status: MessageStatus })
@@ -102,10 +100,8 @@ async function handleInboundMessage(body: Record<string, string>) {
       event_data: {
         from: message.From,
         body: message.Body,
-        twilio_sid: message.MessageSid,
-      },
-      source: 'twilio_inbound',
-    })
+        twilio_sid: message.MessageSid },
+      source: 'twilio_inbound' })
 
     return NextResponse.json({ received: true, matched: false })
   }
@@ -122,14 +118,11 @@ async function handleInboundMessage(body: Record<string, string>) {
     delivered_at: new Date().toISOString(),
     metadata: {
       num_media: message.NumMedia,
-      media_url: message.MediaUrl0,
-    },
-  })
+      media_url: message.MediaUrl0 } })
 
   // Update lead last contact
   await updateLead(lead.id, {
-    last_contact_at: new Date().toISOString(),
-  })
+    last_contact_at: new Date().toISOString() })
 
   // Log event
   await logEvent({
@@ -137,10 +130,8 @@ async function handleInboundMessage(body: Record<string, string>) {
     lead_id: lead.id,
     event_data: {
       body: message.Body,
-      twilio_sid: message.MessageSid,
-    },
-    source: 'twilio_inbound',
-  })
+      twilio_sid: message.MessageSid },
+    source: 'twilio_inbound' })
 
   // Handle opt-out
   if (isOptOut(message.Body)) {
@@ -170,26 +161,22 @@ async function handleInboundMessage(body: Record<string, string>) {
     // Direct booking intent
     aiResponse = await generateAiSmsResponse(lead, agent, {
       trigger: 'initial',
-      customContext: 'Lead wants to book an appointment',
-    })
+      customContext: 'Lead wants to book an appointment' })
   } else if (intentResult.intent === 'question') {
     // Question - provide helpful response
     aiResponse = await generateAiSmsResponse(lead, agent, {
       trigger: 'followup',
-      customContext: `Lead asked: ${message.Body}`,
-    })
+      customContext: `Lead asked: ${message.Body}` })
   } else if (isPositiveResponse(message.Body)) {
     // Positive response - nurture
     aiResponse = await generateAiSmsResponse(lead, agent, {
       trigger: 'followup',
-      customContext: 'Lead expressed interest',
-    })
+      customContext: 'Lead expressed interest' })
   } else {
     // Generic response
     aiResponse = await generateAiSmsResponse(lead, agent, {
       trigger: 'followup',
-      customContext: `Lead said: ${message.Body}`,
-    })
+      customContext: `Lead said: ${message.Body}` })
   }
 
   // Send response
@@ -206,12 +193,10 @@ async function handleInboundMessage(body: Record<string, string>) {
       twilio_sid: smsResult.messageSid,
       twilio_status: smsResult.status,
       status: 'sent',
-      sent_at: new Date().toISOString(),
-    })
+      sent_at: new Date().toISOString() })
 
     await updateLead(lead.id, {
-      responded_at: new Date().toISOString(),
-    })
+      responded_at: new Date().toISOString() })
 
     logger.info('✅ Auto-response sent')
   }
@@ -220,8 +205,7 @@ async function handleInboundMessage(body: Record<string, string>) {
     received: true,
     lead_id: lead.id,
     intent: intentResult.intent,
-    auto_responded: smsResult.success,
-  })
+    auto_responded: smsResult.success })
 }
 
 // ============================================
@@ -235,16 +219,14 @@ async function handleOptOut(lead: any) {
   await updateLead(lead.id, {
     dnc: true,
     status: 'dnc',
-    consent_sms: false,
-  })
+    consent_sms: false })
 
   // Log event
   await logEvent({
     event_type: 'lead_opt_out',
     lead_id: lead.id,
     event_data: { source: 'sms_reply' },
-    source: 'twilio_inbound',
-  })
+    source: 'twilio_inbound' })
 
   // Send confirmation (optional - this is allowed even after opt-out)
   // Note: You can send one final confirmation message for opt-out

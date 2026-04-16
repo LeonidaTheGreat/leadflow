@@ -14,8 +14,7 @@ const PRIORITY_WEIGHTS: Record<string, number> = {
   '1': 4,
   '2': 3,
   '3': 2,
-  '4': 1,
-}
+  '4': 1 }
 
 interface UseCase {
   id: string
@@ -60,8 +59,7 @@ function categorizeUseCases(useCases: UseCase[]) {
     not_started: [],
     in_progress: [],
     complete: [],
-    other: [],
-  }
+    other: [] }
 
   for (const uc of useCases) {
     const status = (uc.implementation_status || 'unknown').toLowerCase()
@@ -86,8 +84,7 @@ function analyzeUseCase(uc: UseCase): Analysis {
     created_at: uc.created_at,
     updated_at: uc.updated_at,
     recommendation: null,
-    reasoning: [],
-  }
+    reasoning: [] }
 
   // Check for age
   const updatedAt = new Date(uc.updated_at || uc.created_at)
@@ -173,13 +170,11 @@ export async function GET(request: NextRequest) {
         needs_merge: categories.needs_merge.length,
         not_started: categories.not_started.length,
         in_progress: categories.in_progress.length,
-        stuck: categories.stuck.length,
-      },
+        stuck: categories.stuck.length },
       by_recommendation: analyses.reduce((acc: Record<string, number>, a: Analysis) => {
         acc[a.recommendation || 'UNKNOWN'] = (acc[a.recommendation || 'UNKNOWN'] || 0) + 1
         return acc
-      }, {}),
-    }
+      }, {}) }
 
     // Sort analyses by priority and recommendation
     const priorityOrder = ['START', 'MERGE', 'ESCALATE', 'REVIEW', 'CONTINUE', 'BACKLOG', 'DEPRECATE']
@@ -193,12 +188,11 @@ export async function GET(request: NextRequest) {
       success: true,
       summary,
       analyses,
-      generated_at: new Date().toISOString(),
-    })
+      generated_at: new Date().toISOString() })
   } catch (error: any) {
     logger.error('[/api/admin/triage-use-cases] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

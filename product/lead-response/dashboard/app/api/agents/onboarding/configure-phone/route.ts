@@ -50,8 +50,7 @@ export async function POST(request: NextRequest) {
     {
       agent_id: agentId,
       twilio_phone_number: e164,
-      updated_at: new Date().toISOString(),
-    },
+      updated_at: new Date().toISOString() },
     { onConflict: 'agent_id' }
   )
 
@@ -65,13 +64,11 @@ export async function POST(request: NextRequest) {
     .from('real_estate_agents')
     .update({
       onboarding_step: 2,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString() })
     .eq('id', agentId)
 
   return NextResponse.json({
     success: true,
     phoneNumber: e164,
-    message: 'Phone number configured successfully!',
-  })
+    message: 'Phone number configured successfully!' })
 }

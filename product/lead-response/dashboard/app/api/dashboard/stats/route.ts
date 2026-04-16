@@ -12,8 +12,7 @@ function getEmptyStats(): DashboardStats {
     leads_today: 0,
     leads_this_week: 0,
     avg_urgency: 0,
-    total_leads: 0,
-  }
+    total_leads: 0 }
 }
 
 export async function GET() {
@@ -41,8 +40,7 @@ export async function GET() {
       leads_today: acc.leads_today + (curr.leads_today || 0),
       leads_this_week: acc.leads_this_week + (curr.leads_this_week || 0),
       avg_urgency: (acc.avg_urgency || 0) + (curr.avg_urgency || 0),
-      total_leads: acc.total_leads + (curr.total_leads || 0),
-    }), getEmptyStats())
+      total_leads: acc.total_leads + (curr.total_leads || 0) }), getEmptyStats())
 
     return NextResponse.json({ stats })
   } catch (error) {

@@ -138,11 +138,9 @@ export async function POST(request: NextRequest) {
           title: bookingData.title,
           attendees: bookingData.attendees,
           organizer: bookingData.organizer,
-          uid: bookingData.uid,
-        },
+          uid: bookingData.uid },
         lead_id: lead?.id || null,
-        status: parsedBooking.status || 'confirmed',
-      })
+        status: parsedBooking.status || 'confirmed' })
       .select()
       .single()
     
@@ -171,12 +169,10 @@ export async function POST(request: NextRequest) {
         const dateStr = startDate.toLocaleDateString('en-US', {
           weekday: 'short',
           month: 'short',
-          day: 'numeric',
-        })
+          day: 'numeric' })
         const timeStr = startDate.toLocaleTimeString('en-US', {
           hour: 'numeric',
-          minute: '2-digit',
-        })
+          minute: '2-digit' })
         const meetingLink = bookingData.metadata?.videoCallUrl || 'https://cal.com'
         
         let smsBody = ''

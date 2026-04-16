@@ -28,16 +28,14 @@ export async function GET(request: NextRequest) {
           agents: statusResult.agents,
           total: statusResult.agents.length,
           by_step: {},
-          stuck_count: 0,
-        }
+          stuck_count: 0 }
 
         for (const agent of statusResult.agents) {
           const step = agent.onboarding_step || 0
           if (!result.status.by_step[step]) {
             result.status.by_step[step] = {
               count: 0,
-              step_name: getStepName(step),
-            }
+              step_name: getStepName(step) }
           }
           result.status.by_step[step].count += 1
 
@@ -65,7 +63,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     logger.error('[/api/admin/funnel] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
@@ -78,7 +76,6 @@ function getStepName(stepIndex: number): string {
     2: 'fub_connected',
     3: 'phone_configured',
     4: 'sms_verified',
-    5: 'aha_completed',
-  }
+    5: 'aha_completed' }
   return names[stepIndex] || `unknown_${stepIndex}`
 }

@@ -81,8 +81,7 @@ export async function POST(
       const emailSent = await sendPilotInviteEmail(email, (existingInvite as any).agent_id, {
         agentName: name,
         inviteUrl,
-        expiresAt: (existingInvite as any).token_expires_at,
-      })
+        expiresAt: (existingInvite as any).token_expires_at })
 
       // Mark target as contacted
       await postgrestAdmin
@@ -95,8 +94,7 @@ export async function POST(
         agentId: (existingInvite as any).agent_id,
         expiresAt: (existingInvite as any).token_expires_at,
         emailSent,
-        note: 'Existing invite refreshed and resent',
-      })
+        note: 'Existing invite refreshed and resent' })
     }
 
     // 3. Create or get agent record
@@ -127,8 +125,7 @@ export async function POST(
           plan_tier: 'pilot',
           email_verified: true,
           password_hash: 'invited',
-          created_at: new Date().toISOString(),
-        })
+          created_at: new Date().toISOString() })
 
       if (createError && !createError.message?.includes('duplicate key')) {
         logger.error('Error creating agent:', createError)
@@ -148,8 +145,7 @@ export async function POST(
         token: tokenHash,
         token_expires_at: expiresAt.toISOString(),
         agent_id: agentId,
-        status: 'pending',
-      })
+        status: 'pending' })
 
     if (inviteError) {
       logger.error('Error creating invite:', inviteError)
@@ -163,8 +159,7 @@ export async function POST(
     const emailSent = await sendPilotInviteEmail(email, agentId, {
       agentName: name,
       inviteUrl,
-      expiresAt: expiresAt.toISOString(),
-    })
+      expiresAt: expiresAt.toISOString() })
 
     if (!emailSent) {
       logger.warn(`Email sending failed for ${email}, invite record created. Agent: ${agentId}`)
@@ -180,8 +175,7 @@ export async function POST(
       success: true,
       agentId,
       expiresAt: expiresAt.toISOString(),
-      emailSent,
-    })
+      emailSent })
   } catch (error: any) {
     logger.error('Error in target invite endpoint:', error)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })

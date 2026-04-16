@@ -89,8 +89,7 @@ export async function POST(request: NextRequest) {
       .from('real_estate_agents')
       .update({
         password_hash: passwordHash,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('id', resetToken.agent_id)
 
     if (updateError) {

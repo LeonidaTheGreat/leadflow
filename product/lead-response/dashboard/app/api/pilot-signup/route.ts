@@ -80,9 +80,7 @@ export async function OPTIONS() {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
+      'Access-Control-Allow-Headers': 'Content-Type' } });
 }
 
 export async function POST(request: NextRequest) {
@@ -90,8 +88,7 @@ export async function POST(request: NextRequest) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+    'Access-Control-Allow-Headers': 'Content-Type' };
 
   // Rate limiting
   const ip = request.headers.get('x-forwarded-for') || 
@@ -143,8 +140,7 @@ export async function POST(request: NextRequest) {
       monthly_leads: (body.monthly_leads as string | undefined) || undefined,
       current_crm: (body.current_crm as string | undefined) || undefined,
       source,
-      utm_campaign: (body.utm_campaign as string | undefined) || undefined,
-    };
+      utm_campaign: (body.utm_campaign as string | undefined) || undefined };
 
     // Insert into database
     const { data, error } = await db
@@ -161,8 +157,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: 'This email has already been registered for the pilot program.',
-          },
+            error: 'This email has already been registered for the pilot program.' },
           { status: 409, headers: corsHeaders }
         );
       }
@@ -177,8 +172,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: "Thank you for signing up! We'll be in touch within 24 hours.",
-        data: { id: data?.id },
-      },
+        data: { id: data?.id } },
       { status: 201, headers: corsHeaders }
     );
 
@@ -192,8 +186,7 @@ export async function POST(request: NextRequest) {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        } 
+          'Access-Control-Allow-Headers': 'Content-Type' } 
       }
     );
   }

@@ -207,22 +207,18 @@ export async function GET(request: NextRequest) {
         messagesDelivered: totalDelivered,
         leadsMessaged: uniqueLeadsMsgd,
         leadsReplied: uniqueLeadsReplied,
-        bookingsMade: uniqueLeadsBooked,
-      },
+        bookingsMade: uniqueLeadsBooked },
       {
         headers: {
           // Cache for 60 seconds — fresh enough for near-real-time feel
-          'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=120',
-        },
-      }
+          'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=120' } }
     )
   } catch (error) {
     logger.error('[sms-stats] Unexpected error:', error)
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : 'Failed to fetch SMS analytics',
-      },
+          error instanceof Error ? error.message : 'Failed to fetch SMS analytics' },
       { status: 500 }
     )
   }

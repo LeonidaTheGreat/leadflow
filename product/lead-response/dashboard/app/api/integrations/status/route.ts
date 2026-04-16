@@ -33,22 +33,15 @@ export async function GET(request: NextRequest) {
       fub: {
         connected: !!integrations?.fub_api_key,
         config: {
-          apiKey: integrations?.fub_api_key ? '********' : '',
-        },
-      },
+          apiKey: integrations?.fub_api_key ? '********' : '' } },
       twilio: {
         connected: settings?.sms_enabled || false,
         config: {
-          phoneNumber: integrations?.twilio_phone_number || '',
-        },
-      },
+          phoneNumber: integrations?.twilio_phone_number || '' } },
       calcom: {
         connected: !!integrations?.cal_com_link,
         config: {
-          bookingLink: integrations?.cal_com_link || '',
-        },
-      },
-    })
+          bookingLink: integrations?.cal_com_link || '' } } })
   } catch (error) {
     logger.error('Integration status GET error:', error)
     return NextResponse.json(

@@ -38,8 +38,7 @@ export async function POST(request: NextRequest) {
         ...metadata,
         source: 'frontend',
         user_id: user.id,
-        timestamp_client: new Date().toISOString(),
-      }
+        timestamp_client: new Date().toISOString() }
     )
 
     if (!result.success) {
@@ -53,14 +52,13 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         event: result.event,
-        updateError: result.updateError || null,
-      },
+        updateError: result.updateError || null },
       { status: 200 }
     )
   } catch (error: any) {
     logger.error('[/api/onboarding/log-event] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

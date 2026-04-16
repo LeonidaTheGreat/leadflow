@@ -83,8 +83,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           ...err.response,
-          resetInSeconds: rateLimit.resetInSeconds,
-        },
+          resetInSeconds: rateLimit.resetInSeconds },
         { status: err.statusCode }
       );
     }
@@ -107,8 +106,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: aiResponse.message,
-      confidence: aiResponse.confidence,
-    })
+      confidence: aiResponse.confidence })
 
   } catch (error: any) {
     // Classify error
@@ -121,8 +119,7 @@ export async function POST(request: NextRequest) {
         action: errorInfo.userAction,
         code: errorInfo.code,
         category: errorInfo.category,
-        retryable: errorInfo.retryable,
-      },
+        retryable: errorInfo.retryable },
       { status: errorInfo.statusCode }
     )
   }

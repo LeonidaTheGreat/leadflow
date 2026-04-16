@@ -74,8 +74,7 @@ export async function POST(request: NextRequest) {
     const message = await twilio.messages.create({
       body: smsBody,
       from: fromNumber,
-      to: toNumber,
-    })
+      to: toNumber })
 
     if (!message.sid) {
       return NextResponse.json(
@@ -99,8 +98,7 @@ export async function POST(request: NextRequest) {
     .from('real_estate_agents')
     .update({
       onboarding_step: 3,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString() })
     .eq('id', agentId)
 
   if (updateError) {
@@ -110,6 +108,5 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    message: 'SMS sent! Check your phone.',
-  })
+    message: 'SMS sent! Check your phone.' })
 }

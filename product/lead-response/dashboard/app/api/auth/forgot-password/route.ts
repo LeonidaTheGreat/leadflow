@@ -60,8 +60,7 @@ export async function POST(request: NextRequest) {
           agent_id: agent.id,
           token_hash: tokenHash,
           expires_at: expiresAt.toISOString(),
-          used: false,
-        })
+          used: false })
 
       if (insertError) {
         logger.error('Failed to insert reset token:', insertError.message)
@@ -76,8 +75,7 @@ export async function POST(request: NextRequest) {
       const agentName = agent.first_name || undefined
       await sendPasswordResetEmail(agent.email, agent.id, {
         agentName,
-        resetUrl,
-      })
+        resetUrl })
     }
 
     // Always return 200 (anti-enumeration)

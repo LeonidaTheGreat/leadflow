@@ -140,8 +140,7 @@ export async function GET(request: NextRequest) {
       contactedCount,
       pilotCount,
       pendingActionItems: pendingActionItems.length,
-      a2pStatus: a2pRegistration.status,
-    })
+      a2pStatus: a2pRegistration.status })
 
     return NextResponse.json({
       success: true,
@@ -151,8 +150,7 @@ export async function GET(request: NextRequest) {
           targetCount,
           contactedCount,
           pilotCount,
-          a2pStatus: a2pRegistration.status,
-        }),
+          a2pStatus: a2pRegistration.status }),
         summary:
           executionStatus === 'not_started'
             ? 'No GTM execution has started yet. Add recruitment targets, begin outreach, and start A2P registration.'
@@ -160,32 +158,26 @@ export async function GET(request: NextRequest) {
               ? 'GTM work exists but execution is blocked by pending approvals or A2P compliance.'
               : executionStatus === 'ready_to_scale'
                 ? 'Pilot recruitment is active and ready to scale into broader distribution.'
-                : 'GTM execution is underway. Keep outreach, onboarding, and compliance moving in parallel.',
-      },
+                : 'GTM execution is underway. Keep outreach, onboarding, and compliance moving in parallel.' },
       recruitment: {
         activeCampaign,
         targetCount,
         contactedCount,
         signedUpCount,
-        byChannel,
-      },
+        byChannel },
       outreach: {
         verifiedCount,
         uncontactedVerifiedCount,
         inviteCount: invites.length,
-        pilotPlanCount: verifiedAgents.filter((agent: any) => agent.plan_tier === 'pilot').length,
-      },
+        pilotPlanCount: verifiedAgents.filter((agent: any) => agent.plan_tier === 'pilot').length },
       pilots: {
         total: pilotCount,
         stuckCount: stuckPilotCount,
-        paidCount: pilots.filter((pilot: any) => pilot.stage === 'paid').length,
-      },
+        paidCount: pilots.filter((pilot: any) => pilot.stage === 'paid').length },
       a2p: {
         registration: a2pRegistration,
-        delivery: deliveryHealth,
-      },
-      actionItems: pendingActionItems,
-    })
+        delivery: deliveryHealth },
+      actionItems: pendingActionItems })
   } catch (error: any) {
     logger.error('[gtm-status] Error:', error.message)
     return NextResponse.json(
