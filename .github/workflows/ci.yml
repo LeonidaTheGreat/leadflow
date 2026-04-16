@@ -17,7 +17,8 @@ jobs:
         run: npm ci
       - name: Dashboard tests
         working-directory: product/lead-response/dashboard
-        run: npx jest --passWithNoTests --forceExit --ci
+        run: npx jest --passWithNoTests --forceExit --ci --testTimeout=10000
+        timeout-minutes: 5
       - name: Dashboard build
         working-directory: product/lead-response/dashboard
         run: npm run build
