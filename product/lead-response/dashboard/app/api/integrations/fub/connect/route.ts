@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
+import { encrypt } from '@/lib/services/encryption-service'
 
 const FUB_API_BASE = 'https://api.followupboss.com/v1'
 
@@ -92,12 +93,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Store the API key (encrypted in production)
+    // Encrypt API key before storing in agent_integrations
     const { error } = await supabase
       .from('agent_integrations')
       .upsert({
         agent_id: agentId,
-        fub_api_key: apiKey,
+        fub_api_key: encrypt(apiKey),
         updated_at: new Date().toISOString() }, {
         onConflict: 'agent_id' })
 

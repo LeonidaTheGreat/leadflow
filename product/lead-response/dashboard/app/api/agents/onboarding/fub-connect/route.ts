@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
+import { encrypt } from '@/lib/services/encryption-service'
 
 /**
  * POST /api/agents/onboarding/fub-connect
@@ -91,11 +92,11 @@ export async function POST(request: NextRequest) {
     logger.warn('FUB webhook registration failed (non-fatal)')
   }
 
-  // Store API key in agent_integrations
+  // Encrypt API key before storing in agent_integrations
   const { error: intError } = await supabase.from('agent_integrations').upsert(
     {
       agent_id: agentId,
-      fub_api_key: apiKey,
+      fub_api_key: encrypt(apiKey),
       updated_at: new Date().toISOString() },
     { onConflict: 'agent_id' }
   )

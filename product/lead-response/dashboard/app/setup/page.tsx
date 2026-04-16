@@ -88,10 +88,13 @@ function SetupPageInner() {
 
           if (ws) {
             // Restore setup data
+            // fub_api_key is returned as a mask by the API — never store it in
+            // client state. The wizard uses fubConnected (boolean) to determine
+            // whether the step is complete.
             setSetupData((prev) => ({
               ...prev,
               fubConnected: ws.fub_connected ?? false,
-              fubApiKey: ws.fub_api_key ?? '',
+              fubApiKey: '',
               twilioConnected: ws.twilio_connected ?? false,
               twilioPhone: ws.twilio_phone ?? '',
               smsVerified: ws.sms_verified ?? false,
@@ -253,7 +256,10 @@ function SetupPageInner() {
                 setSetupData={(data) => {
                   setSetupData(data)
                   if (data.fubConnected) {
-                    saveWizardState({ fubConnected: true, fubApiKey: data.fubApiKey })
+                    // Only persist fubApiKey if a real key was entered in this session.
+                    const patch: Record<string, unknown> = { fubConnected: true }
+                    if (data.fubApiKey) patch.fubApiKey = data.fubApiKey
+                    saveWizardState(patch)
                   }
                 }}
               />

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import { getAuthUserId } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
+import { encrypt, isEncrypted } from '@/lib/services/encryption-service'
 
 const onboardingTelemetry = require('@/lib/onboarding-telemetry')
 
@@ -31,6 +32,14 @@ export async function GET(request: NextRequest) {
       // PGRST116 = row not found — that's fine for new agents
       logger.error('Setup status fetch error:', error)
       return NextResponse.json({ wizardState: null })
+    }
+
+    // Mask the FUB API key — never return plaintext or ciphertext to the client.
+    // The UI only needs to know whether a key is configured (truthy = yes).
+    // A masked placeholder lets the wizard display "key configured" without
+    // exposing the real value in the browser.
+    if (data?.fub_api_key) {
+      data.fub_api_key = '••••••••'
     }
 
     return NextResponse.json({ wizardState: data || null })
@@ -67,7 +76,17 @@ export async function POST(request: NextRequest) {
     updated_at: new Date().toISOString() }
 
   if (body.fubConnected !== undefined) patch.fub_connected = body.fubConnected
-  if (body.fubApiKey !== undefined) patch.fub_api_key = body.fubApiKey
+  if (body.fubApiKey !== undefined) {
+    const raw = body.fubApiKey as string
+    // Never overwrite a stored key with the UI mask placeholder returned by
+    // the GET endpoint. If the client sends back the mask, skip the column
+    // entirely so the existing encrypted value is preserved.
+    const isMaskPlaceholder = raw === '••••••••'
+    if (!isMaskPlaceholder) {
+      // Encrypt the key before storing; skip if already in encrypted format (idempotent)
+      patch.fub_api_key = raw && !isEncrypted(raw) ? encrypt(raw) : raw || null
+    }
+  }
   if (body.twilioConnected !== undefined) patch.twilio_connected = body.twilioConnected
   if (body.twilioPhone !== undefined) patch.twilio_phone = body.twilioPhone
   if (body.smsVerified !== undefined) patch.sms_verified = body.smsVerified

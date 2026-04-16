@@ -113,7 +113,11 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
         if (data.wizardState) {
           const ws = data.wizardState
           initState.fubConnected = ws.fub_connected ?? false
-          initState.fubApiKey = ws.fub_api_key ?? ''
+          // fub_api_key is returned as a mask placeholder ('••••••••') when a key
+          // is configured — never store it in state as the actual key value.
+          // Use an empty string so the wizard knows the step is complete (fubConnected)
+          // without ever holding sensitive data in browser memory.
+          initState.fubApiKey = ws.fub_api_key ? '' : ''
           initState.twilioConnected = ws.twilio_connected ?? false
           initState.twilioPhone = ws.twilio_phone ?? ''
           initState.smsVerified = ws.sms_verified ?? false
@@ -164,7 +168,12 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
   const handleFUBComplete = (apiKey: string) => {
     const next: Partial<SetupState> = { fubConnected: true, fubApiKey: apiKey, currentStep: 'twilio' }
     setState((prev) => ({ ...prev, ...next }))
-    saveWizardState(next)
+    // Only persist fubApiKey if a real key was entered in this session.
+    // An empty string means FUB was already connected and the encrypted key
+    // is already stored in the DB — sending it would null-out the stored value.
+    const patch: Partial<SetupState> = { fubConnected: true, currentStep: 'twilio' }
+    if (apiKey) patch.fubApiKey = apiKey
+    saveWizardState(patch)
   }
 
   const handleTwilioComplete = (phone: string) => {
@@ -345,7 +354,10 @@ export function OnboardingWizardOverlay({ onComplete, onDismiss }: OnboardingWiz
             {state.currentStep === 'fub' && (
               <SetupFUB
                 onNext={() => {
-                  if (state.fubApiKey) handleFUBComplete(state.fubApiKey)
+                  // Pass the current key only if it was entered in this session.
+                  // If FUB is already connected (key is in DB), advance without
+                  // re-submitting a key — the encrypted value is already stored.
+                  handleFUBComplete(state.fubApiKey)
                 }}
                 setupData={{
                   fubConnected: state.fubConnected,
