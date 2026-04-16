@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
 import { logger } from '@/lib/logger'
+import { encrypt } from '@/lib/services/encryption-service'
 
 const supabase = postgrestAdmin
 
@@ -240,14 +241,14 @@ export async function POST(request: NextRequest) {
       logger.error('[pilot-signup] Failed to create pilot_progress record:', err)
     })
 
-    // Create agent integrations record if FUB API key provided
+    // Create agent integrations record if FUB API key provided — encrypt before storing
     if (fub_api_key) {
       try {
         await supabase
           .from('agent_integrations')
           .insert({
             agent_id: agent.id,
-            follow_up_boss_api_key: fub_api_key,
+            follow_up_boss_api_key: encrypt(fub_api_key),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
