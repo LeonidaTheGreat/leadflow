@@ -2,6 +2,180 @@
 
 import { useEffect, useState } from 'react'
 
+// ============================================================
+// Pilot Recruitment Blast Panel
+// ============================================================
+
+interface BlastStats {
+  identified: number
+  contacted: number
+  responded: number
+  signed_up: number
+  total: number
+}
+
+interface BlastResult {
+  sent: number
+  skipped: number
+  errors: string[]
+}
+
+function PilotOutreachBlastPanel() {
+  const [stats, setStats] = useState<BlastStats | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [blasting, setBlasting] = useState(false)
+  const [blastResult, setBlastResult] = useState<BlastResult | null>(null)
+  const [adminToken, setAdminToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('admin_token')
+    if (stored) setAdminToken(stored)
+  }, [])
+
+  useEffect(() => {
+    async function loadStats() {
+      const token = localStorage.getItem('admin_token')
+      if (!token) {
+        setStatsLoading(false)
+        return
+      }
+      try {
+        const res = await fetch('/api/admin/outreach/blast', {
+          headers: { 'x-admin-token': token },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setStats(data.stats ?? null)
+        }
+      } catch {
+        // Stats are best-effort
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+    loadStats()
+  }, [])
+
+  async function handleBlast() {
+    let token = adminToken
+    if (!token) {
+      const entered = prompt('Enter admin token (ADMIN_SECRET):')
+      if (!entered) return
+      token = entered
+      localStorage.setItem('admin_token', token)
+      setAdminToken(token)
+    }
+
+    const confirmed = window.confirm(
+      `This will send outreach emails to all "identified" recruitment targets.\n\nAre you sure?`
+    )
+    if (!confirmed) return
+
+    setBlasting(true)
+    setBlastResult(null)
+    try {
+      const res = await fetch('/api/admin/outreach/blast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token,
+        },
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setBlastResult(data)
+        // Refresh stats
+        const statsRes = await fetch('/api/admin/outreach/blast', {
+          headers: { 'x-admin-token': token },
+        })
+        if (statsRes.ok) {
+          const statsData = await statsRes.json()
+          setStats(statsData.stats ?? null)
+        }
+      } else {
+        alert(`Blast failed: ${data.error ?? 'Unknown error'}`)
+      }
+    } catch (e: any) {
+      alert(`Error: ${e.message}`)
+    } finally {
+      setBlasting(false)
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-blue-200 p-6 mb-8">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">Pilot Recruitment Blast</h2>
+          <p className="text-gray-500 text-sm mt-0.5">
+            Send personalized outreach emails to all &quot;identified&quot; recruitment targets with a unique demo link.
+            Skips targets that already have an initial touchpoint.
+          </p>
+        </div>
+        <button
+          onClick={handleBlast}
+          disabled={blasting}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          data-testid="send-blast-button"
+        >
+          {blasting ? 'Sending…' : 'Send Blast'}
+        </button>
+      </div>
+
+      {/* Campaign stats */}
+      {!statsLoading && stats && (
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+          <div className="bg-gray-50 rounded-md p-3 text-center">
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Identified</p>
+            <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.identified}</p>
+          </div>
+          <div className="bg-blue-50 rounded-md p-3 text-center">
+            <p className="text-xs text-blue-600 uppercase tracking-wide">Contacted</p>
+            <p className="text-xl font-bold text-blue-700 mt-0.5">{stats.contacted}</p>
+          </div>
+          <div className="bg-yellow-50 rounded-md p-3 text-center">
+            <p className="text-xs text-yellow-600 uppercase tracking-wide">Responded</p>
+            <p className="text-xl font-bold text-yellow-700 mt-0.5">{stats.responded}</p>
+          </div>
+          <div className="bg-green-50 rounded-md p-3 text-center">
+            <p className="text-xs text-green-600 uppercase tracking-wide">Signed Up</p>
+            <p className="text-xl font-bold text-green-700 mt-0.5">{stats.signed_up}</p>
+          </div>
+          <div className="bg-gray-50 rounded-md p-3 text-center">
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Total</p>
+            <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.total}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Blast result */}
+      {blastResult && (
+        <div className="mt-4 bg-gray-50 border border-gray-200 rounded-md p-4" data-testid="blast-result">
+          <p className="text-sm font-semibold text-gray-900 mb-2">Blast complete</p>
+          <div className="flex gap-4 text-sm">
+            <span className="text-green-700 font-medium">{blastResult.sent} sent</span>
+            <span className="text-gray-500">{blastResult.skipped} skipped</span>
+            {blastResult.errors.length > 0 && (
+              <span className="text-red-600 font-medium">{blastResult.errors.length} errors</span>
+            )}
+          </div>
+          {blastResult.errors.length > 0 && (
+            <ul className="mt-2 text-xs text-red-600 list-disc list-inside space-y-0.5">
+              {blastResult.errors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================
+// Original Outreach Candidates (existing functionality below)
+// ============================================================
+
 interface Candidate {
   id: string
   name: string
@@ -221,6 +395,9 @@ export default function OutreachPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Pilot Recruitment Blast Panel */}
+      <PilotOutreachBlastPanel />
+
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
