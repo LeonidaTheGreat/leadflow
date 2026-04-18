@@ -5,7 +5,6 @@
  * Template follows the content brief: plain/personal, no logo, Segment A/B.
  */
 
-import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
 // Lazy-load Resend to avoid build error when package isn't installed
@@ -135,40 +134,13 @@ export async function sendPilotOutreachEmail(
 
     if (error) {
       logger.error(`[outreach-email] Failed to send to ${toEmail}:`, error)
-      await logEmailEvent(targetId, toEmail, subject, 'failed', error.message)
       return false
     }
 
     logger.info(`[outreach-email] Sent to ${toEmail} (resend_id=${emailData?.id})`)
-    await logEmailEvent(targetId, toEmail, subject, 'sent', undefined, emailData?.id)
     return true
   } catch (err: any) {
     logger.error(`[outreach-email] Exception sending to ${toEmail}:`, err)
-    await logEmailEvent(targetId, toEmail, subject, 'failed', err.message)
     return false
-  }
-}
-
-async function logEmailEvent(
-  targetId: string,
-  recipient: string,
-  subject: string,
-  status: 'sent' | 'failed',
-  errorMessage?: string,
-  resendId?: string
-): Promise<void> {
-  try {
-    await postgrestAdmin.from('email_events').insert({
-      customer_id: targetId,
-      email_type: 'pilot_outreach',
-      recipient,
-      subject,
-      status,
-      sent_at: status === 'sent' ? new Date().toISOString() : undefined,
-      error_message: errorMessage ?? null,
-      metadata: resendId ? { resend_id: resendId, source: 'outreach-blast' } : { source: 'outreach-blast' },
-    })
-  } catch (err) {
-    logger.error('[outreach-email] Failed to log email event:', err)
   }
 }

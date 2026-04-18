@@ -123,8 +123,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           .insert({
             token: tokenHash,
             expires_at: expiresAt,
-            label: `outreach-${targetId}`,
-            created_by: 'outreach-blast',
+            agent_context: { label: `outreach-${targetId}`, created_by: 'outreach-blast' },
           })
 
         if (tokenError) {

@@ -173,6 +173,98 @@ function PilotOutreachBlastPanel() {
 }
 
 // ============================================================
+// Pilot Recruitment Targets Table
+// ============================================================
+
+interface RecruitmentTarget {
+  id: string
+  name: string
+  email: string
+  location: string | null
+  brokerage: string | null
+  status: string
+  last_touch: string | null
+}
+
+const TARGET_STATUS_STYLES: Record<string, string> = {
+  identified: 'bg-gray-100 text-gray-700',
+  contacted: 'bg-blue-100 text-blue-700',
+  responded: 'bg-orange-100 text-orange-700',
+  scheduled: 'bg-purple-100 text-purple-700',
+  signed_up: 'bg-green-100 text-green-700',
+  declined: 'bg-red-100 text-red-700',
+  nurture: 'bg-yellow-100 text-yellow-700',
+}
+
+function PilotRecruitmentTargetsTable({ adminToken }: { adminToken: string | null }) {
+  const [targets, setTargets] = useState<RecruitmentTarget[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      const token = adminToken || localStorage.getItem('admin_token')
+      if (!token) { setLoading(false); return }
+      try {
+        const res = await fetch('/api/admin/outreach/targets', { headers: { 'x-admin-token': token } })
+        if (res.ok) {
+          const data = await res.json()
+          setTargets(data.targets ?? [])
+        }
+      } catch { /* best-effort */ }
+      finally { setLoading(false) }
+    }
+    load()
+  }, [adminToken])
+
+  if (loading) return <p className="text-gray-400 text-sm mb-8">Loading targets…</p>
+  if (targets.length === 0) return (
+    <p className="text-gray-500 text-sm mb-8">No identified targets found. Add targets to the campaign first.</p>
+  )
+
+  return (
+    <div className="mb-8">
+      <h2 className="text-base font-semibold text-gray-900 mb-3">Recruitment Targets</h2>
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table className="w-full text-sm" data-testid="targets-table">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Brokerage</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Touch</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {targets.map((t) => (
+              <tr key={t.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900">{t.name}</p>
+                  <p className="text-gray-400 text-xs">{t.email}</p>
+                </td>
+                <td className="px-4 py-3 text-gray-600">{t.location || '—'}</td>
+                <td className="px-4 py-3 text-gray-600">{t.brokerage || '—'}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${TARGET_STATUS_STYLES[t.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                    {t.status.replace('_', ' ')}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-gray-500">
+                  {t.last_touch ? new Date(t.last_touch.endsWith('Z') ? t.last_touch : t.last_touch + 'Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500">
+          {targets.length} targets total
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
 // Original Outreach Candidates (existing functionality below)
 // ============================================================
 
@@ -397,6 +489,9 @@ export default function OutreachPage() {
     <div className="p-6 max-w-7xl mx-auto">
       {/* Pilot Recruitment Blast Panel */}
       <PilotOutreachBlastPanel />
+
+      {/* Recruitment targets table */}
+      <PilotRecruitmentTargetsTable adminToken={adminToken} />
 
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
