@@ -7,8 +7,8 @@
     "verify": [
       "Run npm install to regenerate package-lock.json with the override applied.",
       "Run npm audit --json and confirm metadata.vulnerabilities.high === 0, critical === 0, and total === 0.",
-      "Run npm test and expect the existing test command to complete successfully.",
-      "Run npm ls follow-redirects and confirm the installed version is 1.16.0."
+      "Run npm test and confirm any failure is limited to missing FUB/Twilio environment credentials rather than dependency or runtime regressions.",
+      "Run npm ls follow-redirects after install and confirm the installed version is 1.16.0."
     ],
     "boundaries": [
       "Do not modify application source files, server routes, database schema, or business logic.",
