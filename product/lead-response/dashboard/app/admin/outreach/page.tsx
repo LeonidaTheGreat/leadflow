@@ -2,6 +2,272 @@
 
 import { useEffect, useState } from 'react'
 
+// ============================================================
+// Pilot Recruitment Blast Panel
+// ============================================================
+
+interface BlastStats {
+  identified: number
+  contacted: number
+  responded: number
+  signed_up: number
+  total: number
+}
+
+interface BlastResult {
+  sent: number
+  skipped: number
+  errors: string[]
+}
+
+function PilotOutreachBlastPanel() {
+  const [stats, setStats] = useState<BlastStats | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [blasting, setBlasting] = useState(false)
+  const [blastResult, setBlastResult] = useState<BlastResult | null>(null)
+  const [adminToken, setAdminToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('admin_token')
+    if (stored) setAdminToken(stored)
+  }, [])
+
+  useEffect(() => {
+    async function loadStats() {
+      const token = localStorage.getItem('admin_token')
+      if (!token) {
+        setStatsLoading(false)
+        return
+      }
+      try {
+        const res = await fetch('/api/admin/outreach/blast', {
+          headers: { 'x-admin-token': token },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setStats(data.stats ?? null)
+        }
+      } catch {
+        // Stats are best-effort
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+    loadStats()
+  }, [])
+
+  async function handleBlast() {
+    let token = adminToken
+    if (!token) {
+      const entered = prompt('Enter admin token (ADMIN_SECRET):')
+      if (!entered) return
+      token = entered
+      localStorage.setItem('admin_token', token)
+      setAdminToken(token)
+    }
+
+    const confirmed = window.confirm(
+      `This will send outreach emails to all "identified" recruitment targets.\n\nAre you sure?`
+    )
+    if (!confirmed) return
+
+    setBlasting(true)
+    setBlastResult(null)
+    try {
+      const res = await fetch('/api/admin/outreach/blast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token,
+        },
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setBlastResult(data)
+        // Refresh stats
+        const statsRes = await fetch('/api/admin/outreach/blast', {
+          headers: { 'x-admin-token': token },
+        })
+        if (statsRes.ok) {
+          const statsData = await statsRes.json()
+          setStats(statsData.stats ?? null)
+        }
+      } else {
+        alert(`Blast failed: ${data.error ?? 'Unknown error'}`)
+      }
+    } catch (e: any) {
+      alert(`Error: ${e.message}`)
+    } finally {
+      setBlasting(false)
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-blue-200 p-6 mb-8">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">Pilot Recruitment Blast</h2>
+          <p className="text-gray-500 text-sm mt-0.5">
+            Send personalized outreach emails to all &quot;identified&quot; recruitment targets with a unique demo link.
+            Skips targets that already have an initial touchpoint.
+          </p>
+        </div>
+        <button
+          onClick={handleBlast}
+          disabled={blasting}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          data-testid="send-blast-button"
+        >
+          {blasting ? 'Sending…' : 'Send Blast'}
+        </button>
+      </div>
+
+      {/* Campaign stats */}
+      {!statsLoading && stats && (
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+          <div className="bg-gray-50 rounded-md p-3 text-center">
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Identified</p>
+            <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.identified}</p>
+          </div>
+          <div className="bg-blue-50 rounded-md p-3 text-center">
+            <p className="text-xs text-blue-600 uppercase tracking-wide">Contacted</p>
+            <p className="text-xl font-bold text-blue-700 mt-0.5">{stats.contacted}</p>
+          </div>
+          <div className="bg-yellow-50 rounded-md p-3 text-center">
+            <p className="text-xs text-yellow-600 uppercase tracking-wide">Responded</p>
+            <p className="text-xl font-bold text-yellow-700 mt-0.5">{stats.responded}</p>
+          </div>
+          <div className="bg-green-50 rounded-md p-3 text-center">
+            <p className="text-xs text-green-600 uppercase tracking-wide">Signed Up</p>
+            <p className="text-xl font-bold text-green-700 mt-0.5">{stats.signed_up}</p>
+          </div>
+          <div className="bg-gray-50 rounded-md p-3 text-center">
+            <p className="text-xs text-gray-500 uppercase tracking-wide">Total</p>
+            <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.total}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Blast result */}
+      {blastResult && (
+        <div className="mt-4 bg-gray-50 border border-gray-200 rounded-md p-4" data-testid="blast-result">
+          <p className="text-sm font-semibold text-gray-900 mb-2">Blast complete</p>
+          <div className="flex gap-4 text-sm">
+            <span className="text-green-700 font-medium">{blastResult.sent} sent</span>
+            <span className="text-gray-500">{blastResult.skipped} skipped</span>
+            {blastResult.errors.length > 0 && (
+              <span className="text-red-600 font-medium">{blastResult.errors.length} errors</span>
+            )}
+          </div>
+          {blastResult.errors.length > 0 && (
+            <ul className="mt-2 text-xs text-red-600 list-disc list-inside space-y-0.5">
+              {blastResult.errors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================
+// Pilot Recruitment Targets Table
+// ============================================================
+
+interface RecruitmentTarget {
+  id: string
+  name: string
+  email: string
+  location: string | null
+  brokerage: string | null
+  status: string
+  last_touch: string | null
+}
+
+const TARGET_STATUS_STYLES: Record<string, string> = {
+  identified: 'bg-gray-100 text-gray-700',
+  contacted: 'bg-blue-100 text-blue-700',
+  responded: 'bg-orange-100 text-orange-700',
+  scheduled: 'bg-purple-100 text-purple-700',
+  signed_up: 'bg-green-100 text-green-700',
+  declined: 'bg-red-100 text-red-700',
+  nurture: 'bg-yellow-100 text-yellow-700',
+}
+
+function PilotRecruitmentTargetsTable({ adminToken }: { adminToken: string | null }) {
+  const [targets, setTargets] = useState<RecruitmentTarget[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      const token = adminToken || localStorage.getItem('admin_token')
+      if (!token) { setLoading(false); return }
+      try {
+        const res = await fetch('/api/admin/outreach/targets', { headers: { 'x-admin-token': token } })
+        if (res.ok) {
+          const data = await res.json()
+          setTargets(data.targets ?? [])
+        }
+      } catch { /* best-effort */ }
+      finally { setLoading(false) }
+    }
+    load()
+  }, [adminToken])
+
+  if (loading) return <p className="text-gray-400 text-sm mb-8">Loading targets…</p>
+  if (targets.length === 0) return (
+    <p className="text-gray-500 text-sm mb-8">No identified targets found. Add targets to the campaign first.</p>
+  )
+
+  return (
+    <div className="mb-8">
+      <h2 className="text-base font-semibold text-gray-900 mb-3">Recruitment Targets</h2>
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table className="w-full text-sm" data-testid="targets-table">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Brokerage</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Touch</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {targets.map((t) => (
+              <tr key={t.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3">
+                  <p className="font-medium text-gray-900">{t.name}</p>
+                  <p className="text-gray-400 text-xs">{t.email}</p>
+                </td>
+                <td className="px-4 py-3 text-gray-600">{t.location || '—'}</td>
+                <td className="px-4 py-3 text-gray-600">{t.brokerage || '—'}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${TARGET_STATUS_STYLES[t.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                    {t.status.replace('_', ' ')}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-gray-500">
+                  {t.last_touch ? new Date(t.last_touch.endsWith('Z') ? t.last_touch : t.last_touch + 'Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500">
+          {targets.length} targets total
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
+// Original Outreach Candidates (existing functionality below)
+// ============================================================
+
 interface Candidate {
   id: string
   name: string
@@ -221,6 +487,12 @@ export default function OutreachPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Pilot Recruitment Blast Panel */}
+      <PilotOutreachBlastPanel />
+
+      {/* Recruitment targets table */}
+      <PilotRecruitmentTargetsTable adminToken={adminToken} />
+
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
