@@ -67,6 +67,10 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
 | StuckPilotsService | `lib/services/StuckPilotsService.js` | — |
 | SystemStatusService | `lib/services/SystemStatusService.js` | — |
+<<<<<<< Updated upstream
+=======
+| TrialActivationService | `lib/services/TrialActivationService.js` | TrialActivationService — sends trial CTA emails to newly signed-up pilots and transitions them to trial_started stage. |
+>>>>>>> Stashed changes
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
 <!-- /AUTO-GENERATED services -->
