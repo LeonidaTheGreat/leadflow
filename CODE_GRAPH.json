@@ -1,0 +1,543 @@
+{
+  "generated_at": "2026-04-21T03:22:27.357Z",
+  "nodes": [
+    {
+      "id": "lib/db.js",
+      "lines": 349,
+      "type": "lib"
+    },
+    {
+      "id": "lib/errors.js",
+      "lines": 317,
+      "type": "lib"
+    },
+    {
+      "id": "lib/index.js",
+      "lines": 57,
+      "type": "lib"
+    },
+    {
+      "id": "lib/logger.js",
+      "lines": 205,
+      "type": "lib"
+    },
+    {
+      "id": "lib/request-context.js",
+      "lines": 24,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/ActivationService.js",
+      "lines": 203,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/BillingService.js",
+      "lines": 506,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/BookingLinkService.js",
+      "lines": 317,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/CalcomClient.js",
+      "lines": 418,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/CalcomEventProcessor.js",
+      "lines": 685,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/CalcomWebhookHandler.js",
+      "lines": 295,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/CalcomWebhookManagement.js",
+      "lines": 750,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/EmailService.js",
+      "lines": 183,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/FUBService.js",
+      "lines": 405,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/PilotConversionService.js",
+      "lines": 250,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/SatisfactionService.js",
+      "lines": 183,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/SequenceService.js",
+      "lines": 185,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/StuckPilotsService.js",
+      "lines": 167,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/SystemStatusService.js",
+      "lines": 24,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/TrialActivationService.js",
+      "lines": 301,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/TwilioService.js",
+      "lines": 669,
+      "type": "lib"
+    },
+    {
+      "id": "lib/services/WeeklyPerformanceService.js",
+      "lines": 582,
+      "type": "lib"
+    },
+    {
+      "id": "lib/middleware/rate-limiter.js",
+      "lines": 29,
+      "type": "lib"
+    },
+    {
+      "id": "lib/middleware/require-api-key.js",
+      "lines": 34,
+      "type": "lib"
+    },
+    {
+      "id": "lib/middleware/require-cron-secret.js",
+      "lines": 38,
+      "type": "lib"
+    },
+    {
+      "id": "lib/utils/circuit-breaker.js",
+      "lines": 142,
+      "type": "lib"
+    },
+    {
+      "id": "lib/utils/dead-letter-replay.js",
+      "lines": 130,
+      "type": "lib"
+    },
+    {
+      "id": "lib/utils/dead-letter.js",
+      "lines": 29,
+      "type": "lib"
+    },
+    {
+      "id": "routes/billing.js",
+      "lines": 136,
+      "type": "routes"
+    },
+    {
+      "id": "routes/calcom-webhook.js",
+      "lines": 144,
+      "type": "routes"
+    },
+    {
+      "id": "routes/system.js",
+      "lines": 58,
+      "type": "routes"
+    }
+  ],
+  "edges": [
+    {
+      "source": "lib/index.js",
+      "target": "lib/errors.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/index.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/index.js",
+      "target": "lib/types/index.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/logger.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/ActivationService.js",
+      "target": "lib/services/EmailService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BillingService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BillingService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BillingService.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BillingService.js",
+      "target": "lib/config/index.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BookingLinkService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BookingLinkService.js",
+      "target": "lib/services/CalcomClient.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/BookingLinkService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomClient.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomClient.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomClient.js",
+      "target": "lib/config/index.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomEventProcessor.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomEventProcessor.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomEventProcessor.js",
+      "target": "lib/services/SequenceService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomEventProcessor.js",
+      "target": "lib/services/TwilioService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookHandler.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookHandler.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookHandler.js",
+      "target": "lib/config/index.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookHandler.js",
+      "target": "lib/services/SequenceService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookHandler.js",
+      "target": "lib/services/CalcomEventProcessor.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookHandler.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookManagement.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookManagement.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/CalcomWebhookManagement.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/EmailService.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/EmailService.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/FUBService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/FUBService.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/FUBService.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/FUBService.js",
+      "target": "lib/services/TwilioService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/FUBService.js",
+      "target": "lib/services/SatisfactionService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/FUBService.js",
+      "target": "lib/services/SequenceService.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/PilotConversionService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/PilotConversionService.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/SatisfactionService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/SequenceService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/SequenceService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/StuckPilotsService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TrialActivationService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TrialActivationService.js",
+      "target": "lib/templates/trial-cta-email.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TwilioService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TwilioService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TwilioService.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TwilioService.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/TwilioService.js",
+      "target": "lib/config/index.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/WeeklyPerformanceService.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/WeeklyPerformanceService.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/services/WeeklyPerformanceService.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/utils/circuit-breaker.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/utils/circuit-breaker.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/utils/dead-letter-replay.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/utils/dead-letter-replay.js",
+      "target": "lib/request-context.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/utils/dead-letter.js",
+      "target": "lib/db.js",
+      "type": "require"
+    },
+    {
+      "source": "lib/utils/dead-letter.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/billing.js",
+      "target": "lib/services/BillingService.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/billing.js",
+      "target": "lib/middleware/require-api-key.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/billing.js",
+      "target": "lib/utils/dead-letter.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/billing.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/billing.js",
+      "target": "lib/errors.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/calcom-webhook.js",
+      "target": "lib/services/CalcomWebhookHandler.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/calcom-webhook.js",
+      "target": "lib/services/CalcomWebhookManagement.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/calcom-webhook.js",
+      "target": "lib/middleware/require-api-key.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/calcom-webhook.js",
+      "target": "lib/utils/dead-letter.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/calcom-webhook.js",
+      "target": "lib/logger.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/calcom-webhook.js",
+      "target": "lib/errors.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/system.js",
+      "target": "lib/services/SystemStatusService.js",
+      "type": "require"
+    },
+    {
+      "source": "routes/system.js",
+      "target": "lib/utils/circuit-breaker.js",
+      "type": "require"
+    }
+  ],
+  "state_access": [],
+  "db_access": [],
+  "issues": {
+    "circular_deps": [],
+    "hub_modules": [
+      "lib/logger.js (17)",
+      "lib/utils/circuit-breaker.js (11)",
+      "lib/db.js (10)"
+    ],
+    "orphan_modules": [
+      "lib/index.js",
+      "lib/services/ActivationService.js",
+      "lib/services/BookingLinkService.js",
+      "lib/services/FUBService.js",
+      "lib/services/PilotConversionService.js",
+      "lib/services/StuckPilotsService.js",
+      "lib/services/TrialActivationService.js",
+      "lib/services/WeeklyPerformanceService.js",
+      "lib/middleware/rate-limiter.js",
+      "lib/middleware/require-cron-secret.js",
+      "lib/utils/dead-letter-replay.js",
+      "routes/billing.js",
+      "routes/calcom-webhook.js",
+      "routes/system.js"
+    ]
+  }
+}
