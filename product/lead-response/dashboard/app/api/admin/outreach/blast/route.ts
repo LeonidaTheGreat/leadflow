@@ -1,15 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import crypto from 'crypto'
+import crypto, { timingSafeEqual } from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
 import { sendPilotOutreachEmail } from '@/lib/outreach-email-service'
 import { logger } from '@/lib/logger'
+
+// Verify admin token using constant-time comparison to prevent timing attacks
+function verifyAdminToken(incoming: string | null, secret: string | undefined): boolean {
+  if (!incoming || !secret) return false
+  try {
+    const a = Buffer.from(incoming)
+    const b = Buffer.from(secret)
+    if (a.length !== b.length) return false
+    return timingSafeEqual(a, b)
+  } catch {
+    return false
+  }
+}
 
 // Admin auth check — verify X-Admin-Token header matches ADMIN_SECRET
 function checkAdminAuth(request: NextRequest): boolean {
   const adminToken = request.headers.get('x-admin-token')
   const expectedToken = process.env.ADMIN_SECRET
-  if (!expectedToken) return false
-  return adminToken === expectedToken
+  return verifyAdminToken(adminToken, expectedToken)
 }
 
 // Exact pain point copy per target — content brief: "do not auto-summarize"
