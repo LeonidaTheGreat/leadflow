@@ -11,13 +11,13 @@
 
 const assert = require('assert');
 const { getPool } = require('../../lib/db');
-const StripeService = require('../../lib/services/StripeService');
+const { BillingService } = require('../../lib/services/BillingService');
 const EmailService = require('../../lib/services/EmailService');
 
 require('dotenv').config();
 
 const pool = getPool();
-const stripeService = new StripeService();
+const stripeService = new BillingService();
 const emailService = new EmailService();
 
 async function sleep(ms) {
