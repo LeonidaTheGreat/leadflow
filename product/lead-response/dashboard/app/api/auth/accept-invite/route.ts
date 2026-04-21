@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { supabaseServer } from '@/lib/supabase-server'
+import bcrypt from 'bcryptjs'
+import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
 interface AcceptInviteRequest {
   token: string
+  password?: string
 }
 
 interface AcceptInviteResponse {
@@ -13,22 +15,25 @@ interface AcceptInviteResponse {
   error?: string
 }
 
+const supabase = postgrestAdmin
+
 /**
  * POST /api/auth/accept-invite
  *
  * Accept a pilot invite via magic token.
  * This endpoint:
- * 1. Validates the token exists and is not expired
- * 2. Updates the agent as email_verified = true and status = 'active'
- * 3. Updates the invite as accepted
- * 4. Creates a session/auth token for the agent
+ * 1. Validates the token exists, is not expired, and status is 'invited'
+ * 2. Creates a new real_estate_agent account (email, name from invite)
+ * 3. Generates random password if not provided
+ * 4. Updates the invite as accepted with agent_id
+ * 5. Creates a pilot_progress record
  *
  * Returns: { success: true, agentId } or error
  */
 export async function POST(request: NextRequest): Promise<NextResponse<AcceptInviteResponse>> {
   try {
     const body: AcceptInviteRequest = await request.json()
-    const { token } = body
+    const { token, password } = body
 
     if (!token) {
       return NextResponse.json(
@@ -37,9 +42,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    // 1. Look up the invite token — hash incoming token before DB lookup (raw token never stored)
+    // 1. Look up the invite token — hash incoming token before DB lookup
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-    const { data: invite, error: inviteError } = await supabaseServer
+    const { data: invite, error: inviteError } = await supabase
       .from('pilot_invites')
       .select('*')
       .eq('token', tokenHash)
@@ -57,8 +62,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
     const expiresAt = new Date(invite.token_expires_at)
 
     if (expiresAt < now) {
-      // Mark as expired in the database
-      await supabaseServer
+      await supabase
         .from('pilot_invites')
         .update({ status: 'expired' })
         .eq('id', invite.id)
@@ -77,44 +81,70 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    const agentId = invite.agent_id
+    // 4. Check if already has an agent_id
+    if (invite.agent_id) {
+      return NextResponse.json(
+        { success: false, error: 'This invite has already been processed' },
+        { status: 409 }
+      )
+    }
 
-    // 4. Update the agent record
-    const { error: updateAgentError } = await supabaseServer
+    // 5. Parse name into first/last
+    const names = (invite.name || '').trim().split(' ')
+    const firstName = names[0] || 'Agent'
+    const lastName = names.slice(1).join(' ') || ''
+
+    // 6. Generate or use provided password
+    let passwordHash: string
+    if (password) {
+      if (password.length < 8) {
+        return NextResponse.json(
+          { success: false, error: 'Password must be at least 8 characters' },
+          { status: 400 }
+        )
+      }
+      passwordHash = await bcrypt.hash(password, 10)
+    } else {
+      const tempPassword = crypto.randomBytes(12).toString('hex')
+      passwordHash = await bcrypt.hash(tempPassword, 10)
+    }
+
+    // 7. Create the real_estate_agents record
+    const { data: newAgent, error: createAgentError } = await supabase
       .from('real_estate_agents')
-      .update({
-        status: 'active',
+      .insert({
+        email: invite.email.toLowerCase(),
+        first_name: firstName,
+        last_name: lastName,
+        password_hash: passwordHash,
+        source: 'pilot_invite',
+        status: 'onboarding',
         email_verified: true,
+        trial_start_date: new Date().toISOString(),
+        trial_expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
-      .eq('id', agentId)
+      .select('id')
+      .single()
 
-    if (updateAgentError) {
-      logger.error('Error updating agent:', updateAgentError)
+    if (createAgentError || !newAgent) {
+      logger.error('Error creating agent:', createAgentError)
       return NextResponse.json(
-        { success: false, error: 'Failed to activate agent account' },
+        { success: false, error: 'Failed to create agent account' },
         { status: 500 }
       )
     }
 
-    // 4b. Create pilot_progress record for admin tracking (upsert, non-blocking)
-    void Promise.resolve(supabaseServer.from('pilot_progress').upsert({
-      agent_id: agentId,
-      stage: 'signed_up',
-      stage_entered_at: new Date().toISOString(),
-      pilot_cohort: 'cohort-1',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'agent_id', ignoreDuplicates: true })).catch((err: unknown) => {
-      logger.error('[accept-invite] Failed to create pilot_progress record:', err)
-    })
+    const agentId = newAgent.id
 
-    // 5. Update the invite record
-    const { error: updateInviteError } = await supabaseServer
+    // 8. Update the invite record with agent_id and accepted status
+    const { error: updateInviteError } = await supabase
       .from('pilot_invites')
       .update({
         status: 'accepted',
-        accepted_at: new Date().toISOString()
+        accepted_at: new Date().toISOString(),
+        agent_id: agentId
       })
       .eq('id', invite.id)
 
@@ -126,9 +156,17 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    // 6. Create auth session
-    // Note: The agent can log in with their credentials.
-    // The client will receive the agentId and handle auth after redirect.
+    // 9. Create pilot_progress record for admin tracking (non-blocking)
+    void Promise.resolve(supabase.from('pilot_progress').insert({
+      agent_id: agentId,
+      stage: 'signed_up',
+      stage_entered_at: new Date().toISOString(),
+      pilot_cohort: 'cohort-1',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })).catch((err: unknown) => {
+      logger.error('[accept-invite] Failed to create pilot_progress record:', err)
+    })
 
     // Return success
     return NextResponse.json(
