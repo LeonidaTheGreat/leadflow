@@ -51,7 +51,7 @@ const PRICE_ID_ENV_MAP: Record<string, string> = {
  * This rejects placeholder values like price_starter_49, price_pro_149, price_team_399.
  */
 function isValidPriceId(id: string | undefined): id is string {
-  return typeof id === 'string' && /^price_[A-Za-z0-9]{14 }$/.test(id)
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,}$/.test(id)
 }
 
 /** Validate a UUID v4 format */
