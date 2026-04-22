@@ -63,10 +63,13 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
+| PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
 | SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
+| StripeService | `lib/services/StripeService.js` | Creates a Stripe coupon + promo code for a personal upgrade offer. |
 | StuckPilotsService | `lib/services/StuckPilotsService.js` | — |
 | SystemStatusService | `lib/services/SystemStatusService.js` | — |
+| TrialActivationService | `lib/services/TrialActivationService.js` | TrialActivationService — Sends trial CTA email to signed-up pilots and transitions them to 'trial_started' stage |
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
 <!-- /AUTO-GENERATED services -->
