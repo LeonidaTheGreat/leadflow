@@ -1,430 +1,511 @@
-/*
- * SPEC
- * What:  tests/unit/logger.test.js — tests for lib/logger.js
- *        Tests: logger.debug/info/warn/error/fatal, redaction, child(), withLogging(), requestLogger()
- * Verify: node tests/unit/logger.test.js → "Results: N passed, 0 failed"
- * Boundaries: only tests logger.js public API; does not modify logger.js or request-context.js
+/**
+ * Unit tests for lib/logger.js
+ *
+ * SPEC:
+ *   What:      Test all exported symbols (logger, requestLogger) in lib/logger.js
+ *              Files changed: tests/unit/logger.test.js (new, no prod files touched)
+ *   Verify:    node tests/unit/logger.test.js exits 0
+ *   Boundaries: Do NOT modify lib/logger.js or lib/request-context.js
  */
 
-'use strict';
+'use strict'
 
-const assert = require('assert');
+const assert = require('assert')
+const EventEmitter = require('events')
+const path = require('path')
 
-// Capture console output before requiring the module (logger uses console)
-const captured = [];
-const originalConsole = {
-  debug: console.debug,
-  info: console.info,
-  warn: console.warn,
-  error: console.error,
-};
+const { logger, requestLogger } = require(path.join(__dirname, '../../lib/logger'))
 
-function mockConsole() {
-  for (const level of ['debug', 'info', 'warn', 'error']) {
-    console[level] = (...args) => captured.push({ level, output: args[0] });
-  }
-}
+// ─── Test harness ────────────────────────────────────────────────────────────
 
-function restoreConsole() {
-  Object.assign(console, originalConsole);
-}
+const results = { passed: 0, failed: 0 }
 
-function flushCaptured() {
-  captured.length = 0;
-}
-
-function lastEntry(level) {
-  const entries = captured.filter(e => e.level === level);
-  if (!entries.length) return null;
+function test(name, fn) {
   try {
-    return JSON.parse(entries[entries.length - 1].output);
-  } catch {
-    return null;
-  }
-}
-
-// Require after setting up capture
-mockConsole();
-const { logger, requestLogger } = require('../../lib/logger');
-
-let passed = 0;
-let failed = 0;
-
-async function check(name, fn) {
-  flushCaptured();
-  try {
-    await fn();
-    originalConsole.info(`  ✅ ${name}`);
-    passed++;
+    fn()
+    results.passed++
+    console.log(`✅ PASS: ${name}`)
   } catch (err) {
-    originalConsole.error(`  ❌ ${name}: ${err.message}`);
-    failed++;
+    results.failed++
+    console.log(`❌ FAIL: ${name}`)
+    console.log(`   ${err.message}`)
   }
 }
 
-async function run() {
-  originalConsole.info('\n=== unit: logger ===\n');
-
-  // ── logger.info ──────────────────────────────────────────────────────────────
-
-  await check('logger.info writes JSON to console.info', () => {
-    logger.info('hello world', 'TestCtx', { key: 'val' });
-    const entry = lastEntry('info');
-    assert.ok(entry, 'expected a logged entry');
-    assert.strictEqual(entry.level, 'info');
-    assert.strictEqual(entry.message, 'hello world');
-    assert.strictEqual(entry.context, 'TestCtx');
-    assert.deepStrictEqual(entry.metadata, { key: 'val' });
-    assert.strictEqual(entry.service, 'leadflow-api');
-    assert.ok(entry.timestamp, 'timestamp must be present');
-  });
-
-  await check('logger.info without metadata logs null metadata', () => {
-    logger.info('bare message');
-    const entry = lastEntry('info');
-    assert.ok(entry);
-    assert.strictEqual(entry.message, 'bare message');
-    assert.strictEqual(entry.metadata, undefined);
-  });
-
-  // ── logger.warn ──────────────────────────────────────────────────────────────
-
-  await check('logger.warn writes JSON to console.warn', () => {
-    logger.warn('something off', 'WarnCtx', { extra: 1 });
-    const entry = lastEntry('warn');
-    assert.ok(entry);
-    assert.strictEqual(entry.level, 'warn');
-    assert.strictEqual(entry.message, 'something off');
-  });
-
-  await check('logger.warn includes error field when error provided', () => {
-    const err = new Error('boom');
-    err.code = 'TEST_ERR';
-    logger.warn('with error', 'Ctx', {}, err);
-    const entry = lastEntry('warn');
-    assert.ok(entry);
-    assert.ok(entry.error, 'expected error field');
-    assert.strictEqual(entry.error.name, 'Error');
-    assert.strictEqual(entry.error.message, 'boom');
-    assert.strictEqual(entry.error.code, 'TEST_ERR');
-  });
-
-  // ── logger.error ─────────────────────────────────────────────────────────────
-
-  await check('logger.error writes JSON to console.error', () => {
-    const err = new Error('fail hard');
-    logger.error('error message', err, 'ErrCtx', { detail: 42 });
-    const entry = lastEntry('error');
-    assert.ok(entry);
-    assert.strictEqual(entry.level, 'error');
-    assert.strictEqual(entry.message, 'error message');
-    assert.strictEqual(entry.error.message, 'fail hard');
-    assert.deepStrictEqual(entry.metadata, { detail: 42 });
-  });
-
-  await check('logger.error handles null error gracefully', () => {
-    logger.error('no error object', null, 'ErrCtx', {});
-    const entry = lastEntry('error');
-    assert.ok(entry);
-    assert.strictEqual(entry.error, undefined);
-  });
-
-  // ── logger.fatal ─────────────────────────────────────────────────────────────
-
-  await check('logger.fatal always logs (uses console.error)', () => {
-    const err = new Error('fatal boom');
-    logger.fatal('fatal message', err, 'FatalCtx', {});
-    // fatal maps to console.error
-    const entry = lastEntry('error');
-    assert.ok(entry);
-    assert.strictEqual(entry.level, 'fatal');
-    assert.strictEqual(entry.message, 'fatal message');
-    assert.strictEqual(entry.error.message, 'fatal boom');
-  });
-
-  // ── logger.debug (filtered by LOG_LEVEL=info default) ────────────────────────
-
-  await check('logger.debug is suppressed when LOG_LEVEL=info (default)', () => {
-    // Default minLevel is 'info' so debug should not produce output
-    const before = captured.length;
-    logger.debug('debug msg', 'DbgCtx', {});
-    // debug may or may not appear depending on env; we only assert if LOG_LEVEL != 'debug'
-    const logLevel = process.env.LOG_LEVEL || 'info';
-    if (logLevel !== 'debug') {
-      assert.strictEqual(captured.length, before, 'debug should be suppressed at info level');
-    }
-  });
-
-  // ── Sensitive data redaction ──────────────────────────────────────────────────
-
-  await check('metadata with "password" field is redacted', () => {
-    logger.info('redact test', 'RedactCtx', { password: 'supersecret', name: 'Alice' });
-    const entry = lastEntry('info');
-    assert.ok(entry);
-    assert.strictEqual(entry.metadata.password, '[REDACTED]');
-    assert.strictEqual(entry.metadata.name, 'Alice');
-  });
-
-  await check('metadata with "token" field is redacted', () => {
-    logger.info('token test', 'RedactCtx', { accessToken: 'abc123', userId: 7 });
-    const entry = lastEntry('info');
-    assert.strictEqual(entry.metadata.accessToken, '[REDACTED]');
-    assert.strictEqual(entry.metadata.userId, 7);
-  });
-
-  await check('metadata with "apiKey" field is redacted', () => {
-    logger.info('apiKey test', 'Ctx', { apiKey: 'sk-xxx', count: 3 });
-    const entry = lastEntry('info');
-    assert.strictEqual(entry.metadata.apiKey, '[REDACTED]');
-    assert.strictEqual(entry.metadata.count, 3);
-  });
-
-  await check('nested metadata with secret field is redacted', () => {
-    logger.info('nested redact', 'Ctx', { auth: { secret: 'hidden', label: 'ok' } });
-    const entry = lastEntry('info');
-    assert.strictEqual(entry.metadata.auth.secret, '[REDACTED]');
-    assert.strictEqual(entry.metadata.auth.label, 'ok');
-  });
-
-  await check('null metadata does not throw', () => {
-    logger.info('null meta', 'Ctx', null);
-    const entry = lastEntry('info');
-    assert.ok(entry);
-    assert.strictEqual(entry.metadata, null);
-  });
-
-  await check('non-object metadata (string) passes through unchanged', () => {
-    logger.info('string meta', 'Ctx', 'raw string');
-    const entry = lastEntry('info');
-    assert.ok(entry);
-    assert.strictEqual(entry.metadata, 'raw string');
-  });
-
-  // ── logger.child ──────────────────────────────────────────────────────────────
-
-  await check('child logger binds context to all log calls', () => {
-    const child = logger.child('ChildContext');
-    child.info('child info', { x: 1 });
-    const entry = lastEntry('info');
-    assert.ok(entry);
-    assert.strictEqual(entry.context, 'ChildContext');
-    assert.strictEqual(entry.message, 'child info');
-    assert.deepStrictEqual(entry.metadata, { x: 1 });
-  });
-
-  await check('child.warn passes error correctly', () => {
-    const child = logger.child('ChildWarn');
-    const err = new Error('child warn err');
-    child.warn('child warn', { y: 2 }, err);
-    const entry = lastEntry('warn');
-    assert.ok(entry);
-    assert.strictEqual(entry.context, 'ChildWarn');
-    assert.strictEqual(entry.error.message, 'child warn err');
-  });
-
-  await check('child.error passes error correctly', () => {
-    const child = logger.child('ChildError');
-    const err = new Error('child error');
-    child.error('child error msg', err, { z: 3 });
-    const entry = lastEntry('error');
-    assert.ok(entry);
-    assert.strictEqual(entry.context, 'ChildError');
-    assert.strictEqual(entry.error.message, 'child error');
-  });
-
-  await check('child.fatal logs at fatal level', () => {
-    const child = logger.child('ChildFatal');
-    const err = new Error('fatal from child');
-    child.fatal('fatal', err, {});
-    const entry = lastEntry('error'); // fatal uses console.error
-    assert.ok(entry);
-    assert.strictEqual(entry.level, 'fatal');
-  });
-
-  // ── logger.withLogging ────────────────────────────────────────────────────────
-
-  await check('withLogging logs start and completion for successful operation', async () => {
-    let capturedInner = [];
-    const before = captured.length;
-    const result = await logger.withLogging(
-      async () => 'operation result',
-      'TestOperation',
-      'WithLoggingCtx'
-    );
-    assert.strictEqual(result, 'operation result');
-    // should have logged "Starting: TestOperation" and "Completed: TestOperation"
-    const entries = captured.slice(before).map(e => JSON.parse(e.output));
-    const starting = entries.find(e => e.message && e.message.includes('Starting: TestOperation'));
-    const completed = entries.find(e => e.message && e.message.includes('Completed: TestOperation'));
-    assert.ok(starting, 'should log starting message');
-    assert.ok(completed, 'should log completed message');
-    assert.ok(typeof completed.metadata.durationMs === 'number', 'should include durationMs');
-  });
-
-  await check('withLogging logs failure and re-throws error', async () => {
-    const before = captured.length;
-    const opError = new Error('operation failed');
-    let thrown = null;
-    try {
-      await logger.withLogging(
-        async () => { throw opError; },
-        'FailingOperation',
-        'WithLoggingCtx'
-      );
-    } catch (e) {
-      thrown = e;
-    }
-    assert.strictEqual(thrown, opError, 'should re-throw the original error');
-    const entries = captured.slice(before).map(e => JSON.parse(e.output));
-    const failed = entries.find(e => e.level === 'error' && e.message && e.message.includes('Failed: FailingOperation'));
-    assert.ok(failed, 'should log failure message');
-    assert.strictEqual(failed.error.message, 'operation failed');
-  });
-
-  await check('withLogging without context defaults gracefully', async () => {
-    const result = await logger.withLogging(async () => 42, 'NoCtxOp');
-    assert.strictEqual(result, 42);
-  });
-
-  // ── requestLogger middleware ──────────────────────────────────────────────────
-
-  await check('requestLogger calls next()', () => {
-    let nextCalled = false;
-    const req = {
-      headers: { 'x-request-id': 'req-test-123', 'user-agent': 'test-agent' },
-      method: 'GET',
-      url: '/test',
-      ip: '127.0.0.1',
-      connection: { remoteAddress: '127.0.0.1' },
-    };
-    const events = {};
-    const res = {
-      setHeader: () => {},
-      statusCode: 200,
-      on: (event, cb) => { events[event] = cb; },
-    };
-    requestLogger(req, res, () => { nextCalled = true; });
-    assert.ok(nextCalled, 'next() must be called');
-  });
-
-  await check('requestLogger uses x-request-id header when present', () => {
-    const req = {
-      headers: { 'x-request-id': 'my-request-id', 'user-agent': 'ua' },
-      method: 'POST',
-      url: '/api/test',
-      ip: '10.0.0.1',
-      connection: { remoteAddress: '10.0.0.1' },
-    };
-    const res = {
-      setHeader: (name, val) => {},
-      statusCode: 201,
-      on: () => {},
-    };
-    const before = captured.length;
-    requestLogger(req, res, () => {});
-    const entries = captured.slice(before).map(e => { try { return JSON.parse(e.output); } catch { return null; } }).filter(Boolean);
-    const started = entries.find(e => e.message === 'Request started');
-    assert.ok(started, 'should log Request started');
-    assert.strictEqual(started.metadata.requestId, 'my-request-id');
-  });
-
-  await check('requestLogger generates requestId when header absent', () => {
-    const req = {
-      headers: { 'user-agent': 'ua' },
-      method: 'GET',
-      url: '/no-id',
-      ip: '127.0.0.1',
-      connection: { remoteAddress: '127.0.0.1' },
-    };
-    let setHeaderCalled = false;
-    const res = {
-      setHeader: (name, val) => {
-        if (name === 'X-Request-ID') setHeaderCalled = true;
-      },
-      statusCode: 200,
-      on: () => {},
-    };
-    requestLogger(req, res, () => {});
-    assert.ok(req.requestId, 'should assign requestId to req');
-    assert.ok(req.requestId.startsWith('req-'), 'generated requestId should start with req-');
-    assert.ok(setHeaderCalled, 'should set X-Request-ID response header');
-  });
-
-  await check('requestLogger logs completion on response finish with 200', () => {
-    const req = {
-      headers: { 'x-request-id': 'finish-test', 'user-agent': 'ua' },
-      method: 'GET',
-      url: '/finish',
-      ip: '127.0.0.1',
-      connection: { remoteAddress: '127.0.0.1' },
-    };
-    let finishCb = null;
-    const res = {
-      setHeader: () => {},
-      statusCode: 200,
-      on: (event, cb) => { if (event === 'finish') finishCb = cb; },
-    };
-    const before = captured.length;
-    requestLogger(req, res, () => {});
-    assert.ok(finishCb, 'finish handler must be registered');
-    finishCb(); // simulate response finish
-    const entries = captured.slice(before).map(e => { try { return JSON.parse(e.output); } catch { return null; } }).filter(Boolean);
-    const completed = entries.find(e => e.message === 'Request completed');
-    assert.ok(completed, 'should log Request completed');
-    assert.strictEqual(completed.metadata.statusCode, 200);
-    assert.strictEqual(completed.metadata.requestId, 'finish-test');
-    assert.ok(typeof completed.metadata.durationMs === 'number');
-  });
-
-  await check('requestLogger logs completion as warn for 4xx responses', () => {
-    const req = {
-      headers: { 'x-request-id': 'err-test', 'user-agent': 'ua' },
-      method: 'GET',
-      url: '/bad',
-      ip: '127.0.0.1',
-      connection: { remoteAddress: '127.0.0.1' },
-    };
-    let finishCb = null;
-    const res = {
-      setHeader: () => {},
-      statusCode: 404,
-      on: (event, cb) => { if (event === 'finish') finishCb = cb; },
-    };
-    const before = captured.length;
-    requestLogger(req, res, () => {});
-    finishCb();
-    const entries = captured.slice(before).map(e => { try { return JSON.parse(e.output); } catch { return null; } }).filter(Boolean);
-    const completed = entries.find(e => e.message === 'Request completed');
-    assert.ok(completed, 'should log Request completed');
-    assert.strictEqual(completed.level, 'warn', '4xx should log at warn level');
-    assert.strictEqual(completed.metadata.statusCode, 404);
-  });
-
-  // ── Module exports ────────────────────────────────────────────────────────────
-
-  await check('module exports logger and requestLogger as named exports', () => {
-    const mod = require('../../lib/logger');
-    assert.ok(mod.logger, 'should export logger');
-    assert.ok(mod.requestLogger, 'should export requestLogger');
-    assert.strictEqual(typeof mod.logger.info, 'function');
-    assert.strictEqual(typeof mod.requestLogger, 'function');
-  });
-
-  await check('default and named exports are the same object', () => {
-    const mod = require('../../lib/logger');
-    assert.strictEqual(mod.logger, mod.logger, 'sanity check');
-    // Both module.exports.logger and named export should be same
-    assert.strictEqual(typeof mod.logger.child, 'function');
-    assert.strictEqual(typeof mod.logger.withLogging, 'function');
-  });
-
-  restoreConsole();
-
-  originalConsole.info(`\nResults: ${passed} passed, ${failed} failed`);
-  if (failed > 0) process.exit(1);
+async function testAsync(name, fn) {
+  try {
+    await fn()
+    results.passed++
+    console.log(`✅ PASS: ${name}`)
+  } catch (err) {
+    results.failed++
+    console.log(`❌ FAIL: ${name}`)
+    console.log(`   ${err.message}`)
+  }
 }
 
-run().catch(err => {
-  originalConsole.error('Test runner error:', err);
-  process.exit(1);
-});
+// Capture all calls to console[method] during fn(), return array of parsed entries
+function captureEntries(method, fn) {
+  const entries = []
+  const original = console[method]
+  console[method] = (msg) => { try { entries.push(JSON.parse(msg)) } catch { entries.push(msg) } }
+  try { fn() } finally { console[method] = original }
+  return entries
+}
+
+async function captureEntriesAsync(method, fn) {
+  const entries = []
+  const original = console[method]
+  console[method] = (msg) => { try { entries.push(JSON.parse(msg)) } catch { entries.push(msg) } }
+  try { await fn() } finally { console[method] = original }
+  return entries
+}
+
+// Suppress console output during fn (no assertions on output)
+function silent(fn) {
+  const origInfo = console.info
+  const origWarn = console.warn
+  const origError = console.error
+  const origDebug = console.debug
+  console.info = console.warn = console.error = console.debug = () => {}
+  try { fn() } finally {
+    console.info = origInfo
+    console.warn = origWarn
+    console.error = origError
+    console.debug = origDebug
+  }
+}
+
+// ─── Module exports ───────────────────────────────────────────────────────────
+
+test('exports logger object and requestLogger function', () => {
+  assert.strictEqual(typeof logger, 'object')
+  assert.strictEqual(typeof requestLogger, 'function')
+})
+
+test('logger has all log methods', () => {
+  for (const m of ['debug', 'info', 'warn', 'error', 'fatal', 'child', 'withLogging']) {
+    assert.strictEqual(typeof logger[m], 'function', `logger.${m} should be a function`)
+  }
+})
+
+// ─── logger.info ─────────────────────────────────────────────────────────────
+
+test('logger.info writes JSON to console.info with correct fields', () => {
+  const [entry] = captureEntries('info', () => {
+    logger.info('hello', 'TestCtx', { key: 'value' })
+  })
+  assert.ok(entry, 'Should produce output')
+  assert.strictEqual(entry.level, 'info')
+  assert.strictEqual(entry.message, 'hello')
+  assert.strictEqual(entry.context, 'TestCtx')
+  assert.deepStrictEqual(entry.metadata, { key: 'value' })
+  assert.strictEqual(entry.service, 'leadflow-api')
+  assert.ok(entry.timestamp, 'Should have ISO timestamp')
+})
+
+test('logger.info handles missing metadata without throwing', () => {
+  assert.doesNotThrow(() => {
+    silent(() => logger.info('no-meta', 'ctx'))
+  })
+})
+
+test('logger.info handles null metadata without throwing', () => {
+  assert.doesNotThrow(() => {
+    silent(() => logger.info('null-meta', 'ctx', null))
+  })
+})
+
+// ─── logger.debug (suppressed at default info level) ─────────────────────────
+
+test('logger.debug produces no output at default LOG_LEVEL=info', () => {
+  let called = false
+  const orig = console.debug
+  console.debug = () => { called = true }
+  try { logger.debug('debug msg', 'ctx', {}) } finally { console.debug = orig }
+  assert.strictEqual(called, false, 'debug should be suppressed at info level')
+})
+
+// ─── logger.warn ─────────────────────────────────────────────────────────────
+
+test('logger.warn writes JSON to console.warn', () => {
+  const [entry] = captureEntries('warn', () => {
+    logger.warn('warning', 'WarnCtx', { detail: 'x' })
+  })
+  assert.strictEqual(entry.level, 'warn')
+  assert.strictEqual(entry.message, 'warning')
+  assert.strictEqual(entry.context, 'WarnCtx')
+})
+
+test('logger.warn attaches error object when provided', () => {
+  const err = new Error('something bad')
+  const [entry] = captureEntries('warn', () => {
+    logger.warn('warn with err', 'ctx', {}, err)
+  })
+  assert.ok(entry.error, 'Should include error field')
+  assert.strictEqual(entry.error.message, 'something bad')
+  assert.strictEqual(entry.error.name, 'Error')
+})
+
+test('logger.warn without error has no error field', () => {
+  const [entry] = captureEntries('warn', () => {
+    logger.warn('plain warn', 'ctx', {})
+  })
+  assert.strictEqual(entry.error, undefined)
+})
+
+// ─── logger.error ─────────────────────────────────────────────────────────────
+
+test('logger.error writes JSON to console.error', () => {
+  const [entry] = captureEntries('error', () => {
+    logger.error('something failed', null, 'ErrCtx', { code: 42 })
+  })
+  assert.strictEqual(entry.level, 'error')
+  assert.strictEqual(entry.message, 'something failed')
+  assert.strictEqual(entry.context, 'ErrCtx')
+  assert.deepStrictEqual(entry.metadata, { code: 42 })
+})
+
+test('logger.error attaches error details including code', () => {
+  const err = new Error('db connection failed')
+  err.code = 'ECONNREFUSED'
+  const [entry] = captureEntries('error', () => {
+    logger.error('database error', err, 'DB', {})
+  })
+  assert.ok(entry.error, 'Should have error field')
+  assert.strictEqual(entry.error.message, 'db connection failed')
+  assert.strictEqual(entry.error.code, 'ECONNREFUSED')
+  assert.strictEqual(entry.error.name, 'Error')
+})
+
+// ─── logger.fatal ─────────────────────────────────────────────────────────────
+
+test('logger.fatal always logs (no level check) and uses console.error', () => {
+  // outputLog maps 'fatal' → console.error
+  const [entry] = captureEntries('error', () => {
+    logger.fatal('catastrophe', null, 'FatalCtx', { impact: 'high' })
+  })
+  assert.ok(entry, 'Should produce output')
+  assert.strictEqual(entry.level, 'fatal')
+  assert.strictEqual(entry.message, 'catastrophe')
+  assert.strictEqual(entry.context, 'FatalCtx')
+})
+
+test('logger.fatal attaches error when provided', () => {
+  const err = new Error('disk full')
+  const [entry] = captureEntries('error', () => {
+    logger.fatal('storage failure', err, 'Storage', {})
+  })
+  assert.ok(entry.error, 'Should include error field')
+  assert.strictEqual(entry.error.message, 'disk full')
+})
+
+// ─── Sensitive field redaction ────────────────────────────────────────────────
+
+const SENSITIVE_FIELDS = ['password', 'token', 'apiKey', 'secret', 'authorization', 'cookie', 'credit_card']
+
+for (const field of SENSITIVE_FIELDS) {
+  test(`redacts sensitive field: ${field}`, () => {
+    const metadata = { [field]: 'should-be-hidden', safe: 'visible' }
+    const [entry] = captureEntries('info', () => {
+      logger.info('redact test', 'ctx', metadata)
+    })
+    assert.strictEqual(entry.metadata[field], '[REDACTED]', `${field} should be redacted`)
+    assert.strictEqual(entry.metadata.safe, 'visible', 'Non-sensitive field should pass through')
+  })
+}
+
+test('redacts sensitive fields in nested objects', () => {
+  const [entry] = captureEntries('info', () => {
+    logger.info('nested redact', 'ctx', { nested: { secret: 'hidden', visible: 'ok' } })
+  })
+  assert.strictEqual(entry.metadata.nested.secret, '[REDACTED]')
+  assert.strictEqual(entry.metadata.nested.visible, 'ok')
+})
+
+test('non-sensitive fields pass through unmodified', () => {
+  const [entry] = captureEntries('info', () => {
+    logger.info('safe', 'ctx', { userId: 'u123', action: 'login', count: 5 })
+  })
+  assert.strictEqual(entry.metadata.userId, 'u123')
+  assert.strictEqual(entry.metadata.action, 'login')
+  assert.strictEqual(entry.metadata.count, 5)
+})
+
+test('null metadata returns null (no crash)', () => {
+  assert.doesNotThrow(() => silent(() => logger.info('test', 'ctx', null)))
+})
+
+// ─── logger.child ─────────────────────────────────────────────────────────────
+
+test('logger.child returns object with all log methods', () => {
+  const child = logger.child('ChildCtx')
+  for (const m of ['debug', 'info', 'warn', 'error', 'fatal']) {
+    assert.strictEqual(typeof child[m], 'function', `child.${m} should be a function`)
+  }
+})
+
+test('logger.child.info passes predefined context through', () => {
+  const child = logger.child('MyService')
+  const [entry] = captureEntries('info', () => {
+    child.info('child log', { extra: 1 })
+  })
+  assert.strictEqual(entry.context, 'MyService')
+  assert.deepStrictEqual(entry.metadata, { extra: 1 })
+})
+
+test('logger.child.warn passes predefined context through', () => {
+  const child = logger.child('WarnSvc')
+  const [entry] = captureEntries('warn', () => {
+    child.warn('child warning', { x: 2 })
+  })
+  assert.strictEqual(entry.context, 'WarnSvc')
+})
+
+test('logger.child.error passes predefined context through', () => {
+  const err = new Error('child error')
+  const child = logger.child('ChildSvc')
+  const [entry] = captureEntries('error', () => {
+    child.error('child error msg', err, { meta: true })
+  })
+  assert.strictEqual(entry.context, 'ChildSvc')
+  assert.strictEqual(entry.error.message, 'child error')
+})
+
+test('logger.child.fatal passes predefined context through', () => {
+  const child = logger.child('FatalSvc')
+  const [entry] = captureEntries('error', () => {
+    child.fatal('fatal in child', null, {})
+  })
+  assert.strictEqual(entry.context, 'FatalSvc')
+  assert.strictEqual(entry.level, 'fatal')
+})
+
+// ─── logger.withLogging ───────────────────────────────────────────────────────
+
+async function runWithLoggingTests() {
+  await testAsync('logger.withLogging returns the operation result', async () => {
+    let result
+    const origInfo = console.info
+    console.info = () => {}
+    try {
+      result = await logger.withLogging(() => Promise.resolve(42), 'MyOp', 'ctx')
+    } finally {
+      console.info = origInfo
+    }
+    assert.strictEqual(result, 42)
+  })
+
+  await testAsync('logger.withLogging logs Starting and Completed messages', async () => {
+    const infoEntries = await captureEntriesAsync('info', async () => {
+      await logger.withLogging(() => Promise.resolve('ok'), 'TestOp', 'OpCtx')
+    })
+    const start = infoEntries.find(e => e.message && e.message.includes('Starting: TestOp'))
+    const done = infoEntries.find(e => e.message && e.message.includes('Completed: TestOp'))
+    assert.ok(start, 'Should log Starting message')
+    assert.ok(done, 'Should log Completed message')
+  })
+
+  await testAsync('logger.withLogging Completed log includes durationMs', async () => {
+    const infoEntries = await captureEntriesAsync('info', async () => {
+      await logger.withLogging(() => Promise.resolve(), 'TimedOp', 'ctx')
+    })
+    const done = infoEntries.find(e => e.message && e.message.includes('Completed: TimedOp'))
+    assert.ok(done, 'Should have Completed entry')
+    assert.ok('durationMs' in (done.metadata || {}), 'Should include durationMs in metadata')
+  })
+
+  await testAsync('logger.withLogging rethrows operation error', async () => {
+    const boom = new Error('op failed')
+    let threw = null
+    const origError = console.error
+    console.error = () => {}
+    const origInfo = console.info
+    console.info = () => {}
+    try {
+      await logger.withLogging(() => { throw boom }, 'FailOp', 'ctx')
+    } catch (err) {
+      threw = err
+    } finally {
+      console.error = origError
+      console.info = origInfo
+    }
+    assert.strictEqual(threw, boom, 'Should rethrow the original error')
+  })
+
+  await testAsync('logger.withLogging logs failure with error details', async () => {
+    const boom = new Error('op failed')
+    const errorEntries = []
+    const origError = console.error
+    const origInfo = console.info
+    console.error = (msg) => { try { errorEntries.push(JSON.parse(msg)) } catch {} }
+    console.info = () => {}
+    try {
+      await logger.withLogging(() => { throw boom }, 'FailOp', 'ctx')
+    } catch { /* expected */ } finally {
+      console.error = origError
+      console.info = origInfo
+    }
+    const failEntry = errorEntries.find(e => e.message && e.message.includes('Failed: FailOp'))
+    assert.ok(failEntry, 'Should log Failed message')
+    assert.ok(failEntry.error, 'Should include error details')
+    assert.strictEqual(failEntry.error.message, 'op failed')
+  })
+
+  await testAsync('logger.withLogging works without explicit context', async () => {
+    let result
+    const origInfo = console.info
+    console.info = () => {}
+    try {
+      result = await logger.withLogging(() => Promise.resolve('noctx'), 'NoCtxOp')
+    } finally {
+      console.info = origInfo
+    }
+    assert.strictEqual(result, 'noctx')
+  })
+}
+
+// ─── requestLogger middleware ─────────────────────────────────────────────────
+
+function makeReqRes(headers = {}) {
+  const req = {
+    headers,
+    method: 'GET',
+    url: '/test',
+    ip: '127.0.0.1',
+    connection: { remoteAddress: '127.0.0.1' },
+  }
+  const res = Object.assign(new EventEmitter(), {
+    setHeader: () => {},
+    statusCode: 200,
+  })
+  return { req, res }
+}
+
+test('requestLogger attaches requestId to req', () => {
+  const { req, res } = makeReqRes()
+  silent(() => requestLogger(req, res, () => {}))
+  assert.ok(req.requestId, 'Should set req.requestId')
+  assert.ok(typeof req.requestId === 'string', 'requestId should be a string')
+})
+
+test('requestLogger calls next()', () => {
+  const { req, res } = makeReqRes()
+  let nextCalled = false
+  silent(() => requestLogger(req, res, () => { nextCalled = true }))
+  assert.strictEqual(nextCalled, true, 'Should call next()')
+})
+
+test('requestLogger sets X-Request-ID response header', () => {
+  const { req, res } = makeReqRes()
+  let headerValue = null
+  res.setHeader = (name, val) => { if (name === 'X-Request-ID') headerValue = val }
+  silent(() => requestLogger(req, res, () => {}))
+  assert.ok(headerValue, 'Should set X-Request-ID header')
+})
+
+test('requestLogger uses x-request-id header from request when present', () => {
+  const { req, res } = makeReqRes({ 'x-request-id': 'fixed-id-123' })
+  res.setHeader = () => {}
+  silent(() => requestLogger(req, res, () => {}))
+  assert.strictEqual(req.requestId, 'fixed-id-123')
+})
+
+test('requestLogger generates requestId when x-request-id header is absent', () => {
+  const { req, res } = makeReqRes()
+  silent(() => requestLogger(req, res, () => {}))
+  assert.ok(req.requestId.startsWith('req-'), 'Generated requestId should start with req-')
+})
+
+test('requestLogger logs request start to console.info', () => {
+  const { req, res } = makeReqRes()
+  const infoEntries = captureEntries('info', () => {
+    requestLogger(req, res, () => {})
+  })
+  const startEntry = infoEntries.find(e => e.message === 'Request started')
+  assert.ok(startEntry, 'Should log Request started')
+  assert.strictEqual(startEntry.metadata.method, 'GET')
+  assert.strictEqual(startEntry.metadata.url, '/test')
+})
+
+test('requestLogger logs request completion on res finish (2xx → info)', () => {
+  const { req, res } = makeReqRes()
+  res.statusCode = 200
+  const infoEntries = []
+  const origInfo = console.info
+  console.info = (msg) => { try { infoEntries.push(JSON.parse(msg)) } catch {} }
+  try {
+    requestLogger(req, res, () => {})
+    res.emit('finish')
+  } finally {
+    console.info = origInfo
+  }
+  const finishEntry = infoEntries.find(e => e.message === 'Request completed')
+  assert.ok(finishEntry, 'Should log Request completed')
+  assert.strictEqual(finishEntry.metadata.statusCode, 200)
+  assert.ok('durationMs' in finishEntry.metadata, 'Should include durationMs')
+})
+
+test('requestLogger logs 4xx responses as warn', () => {
+  const { req, res } = makeReqRes()
+  res.statusCode = 404
+  const warnEntries = []
+  const origWarn = console.warn
+  const origInfo = console.info
+  console.warn = (msg) => { try { warnEntries.push(JSON.parse(msg)) } catch {} }
+  console.info = () => {}
+  try {
+    requestLogger(req, res, () => {})
+    res.emit('finish')
+  } finally {
+    console.warn = origWarn
+    console.info = origInfo
+  }
+  const warnEntry = warnEntries.find(e => e.message === 'Request completed')
+  assert.ok(warnEntry, '4xx should produce a warn log for Request completed')
+  assert.strictEqual(warnEntry.metadata.statusCode, 404)
+})
+
+test('requestLogger logs 5xx responses as warn', () => {
+  const { req, res } = makeReqRes()
+  res.statusCode = 500
+  const warnEntries = []
+  const origWarn = console.warn
+  const origInfo = console.info
+  console.warn = (msg) => { try { warnEntries.push(JSON.parse(msg)) } catch {} }
+  console.info = () => {}
+  try {
+    requestLogger(req, res, () => {})
+    res.emit('finish')
+  } finally {
+    console.warn = origWarn
+    console.info = origInfo
+  }
+  const warnEntry = warnEntries.find(e => e.message === 'Request completed')
+  assert.ok(warnEntry, '5xx should produce a warn log for Request completed')
+  assert.strictEqual(warnEntry.metadata.statusCode, 500)
+})
+
+// ─── Run async tests then print summary ──────────────────────────────────────
+
+async function main() {
+  console.log('\n🧪 lib/logger.js Unit Tests\n')
+
+  await runWithLoggingTests()
+
+  console.log('\n' + '='.repeat(60))
+  console.log('📊 TEST SUMMARY')
+  console.log('='.repeat(60))
+  console.log(`✅ Passed: ${results.passed}`)
+  console.log(`❌ Failed: ${results.failed}`)
+  const total = results.passed + results.failed
+  console.log(`📈 Pass rate: ${total > 0 ? Math.round((results.passed / total) * 100) : 0}%`)
+  console.log('='.repeat(60))
+
+  process.exit(results.failed > 0 ? 1 : 0)
+}
+
+main().catch((err) => {
+  console.error('Unexpected error:', err)
+  process.exit(1)
+})

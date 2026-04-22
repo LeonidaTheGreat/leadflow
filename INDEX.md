@@ -2,7 +2,7 @@
 # Knowledge Index
 
 > Topic → file map. Read this first to find the right reference file.
-> Generated: 2026-04-16T04:21:07.999Z
+> Generated: 2026-04-22T20:51:53.185Z
 
 ## Project Root
 
@@ -13,6 +13,7 @@
 | `ARCHITECTURE.md` | LeadFlow Architecture | yes |
 | `BOOTSTRAP.md` | BOOTSTRAP.md - Hello, World | no |
 | `CLAUDE.md` | LeadFlow AI — Project Context | no |
+| `CODE_GRAPH.md` | Code Dependency Graph | no |
 | `COMPLETION-4cd35200-70ca-47cd-ad9f-488f849560cb-QC-REVIEW.md` | QC Review: Implement Real Twilio SMS Integration | no |
 | `DASHBOARD.md` | 🤖 BO2026 Command Dashboard | no |
 | `DISCOVERIES.md` | Agent Discoveries | yes |
@@ -81,6 +82,7 @@
 | `docs/UC-REVENUE-RECOVERY-001-PM-SIGN-OFF.md` | UC-REVENUE-RECOVERY-001 — PM Sign-Off & Validation Report |
 | `docs/calcom-api-research.md` | Cal.com API Research Report |
 | `docs/design/CONTENT-BRIEF-NPS-AGENT-FEEDBACK.md` | Content Brief: NPS & Feedback Survey for Agents |
+| `docs/design/CONTENT-BRIEF-pilot-outreach-email-blast.md` | Content Brief: Pilot Outreach Email Blast |
 | `docs/design/DESIGN-EMAIL-VERIFICATION.md` | Design Specification: Email Verification UI |
 | `docs/design/DESIGN-FRICTIONLESS-ONBOARDING-001.md` | Design Spec: Self-Serve Frictionless Onboarding Flow |
 | `docs/design/DESIGN-PRICING-SECTION-4-TIERS.md` | Design Specification: Landing Page Pricing Section — 4 Tiers with Feature Comparison |
@@ -170,6 +172,7 @@
 | `docs/prd/PRD-ONBOARDING-WIZARD.md` | PRD: Post-Login Onboarding Wizard for New Agents |
 | `docs/prd/PRD-P0-IMPLEMENTATION-SPECS.md` | PRD: P0 Implementation Specifications — Revenue Recovery Actions |
 | `docs/prd/PRD-PILOT-RECRUITMENT-CAMPAIGN.md` | PRD: Pilot Recruitment Campaign Launch |
+| `docs/prd/PRD-PILOT-SIGNUP-FOLLOW-UP-SEQUENCE.md` | PRD: Pilot Signup Follow-Up Sequence |
 | `docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md` | PRD-PM-ACTION-ITEMS-DASHBOARD |
 | `docs/prd/PRD-PM-LOOP-DETECTION-FIX.md` | PRD: PM Task Loop Detection Fix |
 | `docs/prd/PRD-PRICING-CLARITY-TRIAL-USERS.md` | PRD: Pricing Clarity for Trial Users |
@@ -234,6 +237,7 @@
 | `docs/prd/PRD-genome-circuit-breaker-false-positive.md` | PRD: Genome Circuit Breaker False Positive Fix |
 | `docs/prd/REVENUE-ALERT-SUMMARY-2026-03-31.md` | Revenue Alert Summary — PM Triage & Reprioritization |
 | `docs/prd/genome-phase1a-observability.md` | Genome Phase 1A: Observability |
+| `docs/reports/CODE_GRAPH.md` | Code Dependency Graph |
 | `docs/reports/COMPLETION-009a0278-c220-461d-9f81-3ff476af8f73.md` | Completion Report: Fix — Codebase Rule Violated (build-passes) |
 | `docs/reports/COMPLETION-022a5f74-1727-4dc9-8d44-ec4509094856.md` | Completion Report: UC Acceptance Fix — uc-populate-subscriptions-on-checkout-complete |
 | `docs/reports/COMPLETION-02fbdb72-a6e0-4e1d-9b72-b1720ae0e3e2.md` | Completion Report: Trial Signup Missing Server-Side Session |

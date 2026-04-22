@@ -1,120 +1,1599 @@
 {
-  "generated_at": "2026-04-21T03:22:27.357Z",
+  "generated_at": "2026-04-22T20:51:53.239Z",
   "nodes": [
     {
       "id": "lib/db.js",
       "lines": 349,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "createClient",
+          "kind": "function",
+          "line": 348,
+          "signature": "createClient(url, key)"
+        },
+        {
+          "name": "getPool",
+          "kind": "function",
+          "line": 348,
+          "signature": "getPool()"
+        },
+        {
+          "name": "QueryBuilder",
+          "kind": "class",
+          "line": 15,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(table, baseUrl, apiKey)",
+              "line": 16
+            },
+            {
+              "name": "select",
+              "signature": "select(cols, opts)",
+              "line": 36
+            },
+            {
+              "name": "if",
+              "signature": "if(opts && opts.count)",
+              "line": 38
+            },
+            {
+              "name": "eq",
+              "signature": "eq(key, val)",
+              "line": 44
+            },
+            {
+              "name": "neq",
+              "signature": "neq(key, val)",
+              "line": 45
+            },
+            {
+              "name": "gt",
+              "signature": "gt(key, val)",
+              "line": 46
+            },
+            {
+              "name": "gte",
+              "signature": "gte(key, val)",
+              "line": 47
+            },
+            {
+              "name": "lt",
+              "signature": "lt(key, val)",
+              "line": 48
+            },
+            {
+              "name": "lte",
+              "signature": "lte(key, val)",
+              "line": 49
+            },
+            {
+              "name": "in",
+              "signature": "in(key, vals)",
+              "line": 51
+            },
+            {
+              "name": "is",
+              "signature": "is(key, val)",
+              "line": 53
+            },
+            {
+              "name": "not",
+              "signature": "not(key, op, val)",
+              "line": 62
+            },
+            {
+              "name": "or",
+              "signature": "or(filterStr)",
+              "line": 75
+            },
+            {
+              "name": "order",
+              "signature": "order(col, opts)",
+              "line": 80
+            },
+            {
+              "name": "limit",
+              "signature": "limit(n)",
+              "line": 85
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/e2e/fix-bookings-table-does-not-exist.test.js",
+        "tests/integration/upgrade-offer-endpoint.test.js"
+      ]
     },
     {
       "id": "lib/errors.js",
       "lines": 317,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "LeadFlowError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "if",
+              "signature": "if(Error.captureStackTrace)",
+              "line": 23
+            },
+            {
+              "name": "toJSON",
+              "signature": "toJSON()",
+              "line": 28
+            }
+          ]
+        },
+        {
+          "name": "ValidationError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Validation failed', fieldErrors, context)",
+              "line": 45
+            },
+            {
+              "name": "toJSON",
+              "signature": "toJSON()",
+              "line": 50
+            }
+          ]
+        },
+        {
+          "name": "AuthenticationError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Authentication required', context)",
+              "line": 62
+            }
+          ]
+        },
+        {
+          "name": "AuthorizationError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Access denied', context)",
+              "line": 68
+            }
+          ]
+        },
+        {
+          "name": "NotFoundError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(resource = 'Resource', context)",
+              "line": 74
+            }
+          ]
+        },
+        {
+          "name": "ConflictError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Resource already exists', context)",
+              "line": 80
+            }
+          ]
+        },
+        {
+          "name": "RateLimitError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Rate limit exceeded', retryAfter, context)",
+              "line": 86
+            },
+            {
+              "name": "toJSON",
+              "signature": "toJSON()",
+              "line": 91
+            }
+          ]
+        },
+        {
+          "name": "ExternalServiceError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(service, message, context)",
+              "line": 103
+            }
+          ]
+        },
+        {
+          "name": "DatabaseError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Database error', context)",
+              "line": 116
+            }
+          ]
+        },
+        {
+          "name": "ConfigurationError",
+          "kind": "class",
+          "line": 128,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(message = 'Configuration error', context)",
+              "line": 122
+            },
+            {
+              "name": "if",
+              "signature": "if(err.statusCode >= 500 || !err.isOperational)",
+              "line": 165
+            }
+          ]
+        },
+        {
+          "name": "errorHandler",
+          "kind": "function",
+          "line": 312,
+          "signature": "errorHandler(err, req, res, next)"
+        },
+        {
+          "name": "asyncHandler",
+          "kind": "function",
+          "line": 313,
+          "signature": "asyncHandler(fn)"
+        },
+        {
+          "name": "validateRequest",
+          "kind": "function",
+          "line": 314,
+          "signature": "validateRequest(schema)"
+        },
+        {
+          "name": "requireAuth",
+          "kind": "function",
+          "line": 315,
+          "signature": "requireAuth(req, res, next)"
+        },
+        {
+          "name": "requireRole",
+          "kind": "function",
+          "line": 316,
+          "signature": "requireRole(roles)"
+        }
+      ],
+      "test_files": [
+        "tests/unit/billing-input-validation.test.js",
+        "tests/unit/calcom-webhook-input-validation.test.js"
+      ]
     },
     {
       "id": "lib/index.js",
       "lines": 57,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "ValidationError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "AuthenticationError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "AuthorizationError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "NotFoundError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "ConflictError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "RateLimitError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "ExternalServiceError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "DatabaseError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "ConfigurationError",
+          "kind": "class",
+          "line": 30
+        },
+        {
+          "name": "asyncHandler",
+          "kind": "function",
+          "line": 30
+        },
+        {
+          "name": "validateRequest",
+          "kind": "function",
+          "line": 30
+        },
+        {
+          "name": "requireAuth",
+          "kind": "function",
+          "line": 30
+        },
+        {
+          "name": "requireRole",
+          "kind": "function",
+          "line": 30
+        },
+        {
+          "name": "requestLogger",
+          "kind": "function",
+          "line": 30
+        }
+      ]
     },
     {
       "id": "lib/logger.js",
       "lines": 205,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "logger",
+          "kind": "function",
+          "line": 202
+        },
+        {
+          "name": "requestLogger",
+          "kind": "function",
+          "line": 202,
+          "signature": "requestLogger(req, res, next)"
+        },
+        {
+          "name": "logger",
+          "kind": "function",
+          "line": 203
+        },
+        {
+          "name": "requestLogger",
+          "kind": "function",
+          "line": 204
+        }
+      ]
     },
     {
       "id": "lib/request-context.js",
       "lines": 24,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "requestContext",
+          "kind": "function",
+          "line": 23
+        },
+        {
+          "name": "getRequestContext",
+          "kind": "function",
+          "line": 23,
+          "signature": "getRequestContext()"
+        },
+        {
+          "name": "getRequestId",
+          "kind": "function",
+          "line": 23,
+          "signature": "getRequestId()"
+        }
+      ],
+      "test_files": [
+        "tests/unit/request-context.test.js"
+      ]
     },
     {
       "id": "lib/services/ActivationService.js",
       "lines": 203,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "ActivationService",
+          "kind": "class",
+          "line": 45,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 54
+            },
+            {
+              "name": "verifyAdminAuth",
+              "signature": "verifyAdminAuth(req)",
+              "line": 71
+            },
+            {
+              "name": "getActivationList",
+              "signature": "getActivationList()",
+              "line": 92
+            },
+            {
+              "name": "formatListAsCsv",
+              "signature": "formatListAsCsv(rows)",
+              "line": 103
+            },
+            {
+              "name": "formatListAsJson",
+              "signature": "formatListAsJson(rows)",
+              "line": 126
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/activation-service-class.test.js"
+      ]
     },
     {
       "id": "lib/services/BillingService.js",
       "lines": 506,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "BillingService",
+          "kind": "function",
+          "line": 502,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 60
+            },
+            {
+              "name": "initializeBilling",
+              "signature": "initializeBilling()",
+              "line": 65
+            },
+            {
+              "name": "if",
+              "signature": "if(this.stripe)",
+              "line": 68
+            },
+            {
+              "name": "for",
+              "signature": "for(const [tier, key] of [['starter','STRIPE_PRICE_STARTER_MONTHLY'],['professional','STRIPE_PRICE_PROFESSIONAL_MONTHLY'],['enterprise','STRIPE_PRICE_ENTERPRISE_MONTHLY']])",
+              "line": 70
+            },
+            {
+              "name": "createCompleteSubscription",
+              "signature": "createCompleteSubscription(params)",
+              "line": 75
+            },
+            {
+              "name": "createManagedSubscription",
+              "signature": "createManagedSubscription(params)",
+              "line": 83
+            },
+            {
+              "name": "getOrCreateCustomer",
+              "signature": "getOrCreateCustomer(userId)",
+              "line": 100
+            },
+            {
+              "name": "changePlan",
+              "signature": "changePlan(params)",
+              "line": 110
+            },
+            {
+              "name": "changeSubscriptionPlan",
+              "signature": "changeSubscriptionPlan(params)",
+              "line": 118
+            },
+            {
+              "name": "scheduleSubscriptionChange",
+              "signature": "scheduleSubscriptionChange(params)",
+              "line": 132
+            },
+            {
+              "name": "cancelManagedSubscription",
+              "signature": "cancelManagedSubscription(params)",
+              "line": 143
+            },
+            {
+              "name": "reactivateSubscription",
+              "signature": "reactivateSubscription(subscriptionId)",
+              "line": 158
+            }
+          ]
+        },
+        {
+          "name": "PORTAL_CONFIG",
+          "kind": "function",
+          "line": 503
+        },
+        {
+          "name": "TIER_PRICES",
+          "kind": "function",
+          "line": 504
+        },
+        {
+          "name": "EVENT_HANDLERS",
+          "kind": "function",
+          "line": 505
+        }
+      ],
+      "test_files": [
+        "tests/e2e/stripe-checkout-subscription-persistence.test.js"
+      ]
     },
     {
       "id": "lib/services/BookingLinkService.js",
       "lines": 317,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "BookingLinkService",
+          "kind": "class",
+          "line": 35,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 40
+            },
+            {
+              "name": "if",
+              "signature": "if(!this._db)",
+              "line": 47
+            },
+            {
+              "name": "generateAgentBookingLink",
+              "signature": "generateAgentBookingLink(agentId, eventTypeSlug, options = {})",
+              "line": 67
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/.archived/calcom-class-refactor-e2e.test.js",
+        "tests/e2e/calcom-integration.test.js",
+        "tests/integration/calcom-integration.test.js"
+      ]
     },
     {
       "id": "lib/services/CalcomClient.js",
       "lines": 418,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "CAL_API_BASE_URL",
+          "kind": "function",
+          "line": 405
+        },
+        {
+          "name": "getEventTypes",
+          "kind": "function",
+          "line": 407
+        },
+        {
+          "name": "getEventType",
+          "kind": "function",
+          "line": 408
+        },
+        {
+          "name": "getAvailableSlots",
+          "kind": "function",
+          "line": 409
+        },
+        {
+          "name": "createBooking",
+          "kind": "function",
+          "line": 410
+        },
+        {
+          "name": "getBooking",
+          "kind": "function",
+          "line": 411
+        },
+        {
+          "name": "cancelBooking",
+          "kind": "function",
+          "line": 412
+        },
+        {
+          "name": "rescheduleBooking",
+          "kind": "function",
+          "line": 413
+        },
+        {
+          "name": "getMe",
+          "kind": "function",
+          "line": 414
+        },
+        {
+          "name": "getTeamMembers",
+          "kind": "function",
+          "line": 415
+        },
+        {
+          "name": "isConfigured",
+          "kind": "function",
+          "line": 416
+        },
+        {
+          "name": "generateBookingUrl",
+          "kind": "function",
+          "line": 417
+        },
+        {
+          "name": "CalcomClient",
+          "kind": "class",
+          "line": 15,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 16
+            },
+            {
+              "name": "getApiKey",
+              "signature": "getApiKey()",
+              "line": 24
+            },
+            {
+              "name": "isConfigured",
+              "signature": "isConfigured()",
+              "line": 28
+            },
+            {
+              "name": "calApiRequest",
+              "signature": "calApiRequest(endpoint, options = {})",
+              "line": 32
+            },
+            {
+              "name": "if",
+              "signature": "if(!apiKey)",
+              "line": 35
+            },
+            {
+              "name": "getEventTypes",
+              "signature": "getEventTypes(filters = {})",
+              "line": 78
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/.archived/calcom-class-refactor-e2e.test.js",
+        "tests/e2e/calcom-integration.test.js",
+        "tests/integration/calcom-integration.test.js",
+        "tests/unit/calcom-class-backcompat.test.js",
+        "tests/unit/calcom-client-class.test.js"
+      ]
     },
     {
       "id": "lib/services/CalcomEventProcessor.js",
       "lines": 685,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "CalcomEventProcessor",
+          "kind": "class",
+          "line": 27,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 34
+            },
+            {
+              "name": "if",
+              "signature": "if(!options.db)",
+              "line": 35
+            },
+            {
+              "name": "withRetry",
+              "signature": "withRetry(fn, opts = {})",
+              "line": 45
+            },
+            {
+              "name": "process",
+              "signature": "process(event)",
+              "line": 57
+            },
+            {
+              "name": "switch",
+              "signature": "switch(eventType)",
+              "line": 64
+            },
+            {
+              "name": "handleBookingCreated",
+              "signature": "handleBookingCreated(booking)",
+              "line": 104
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/calcom-event-processor-class.test.js"
+      ]
     },
     {
       "id": "lib/services/CalcomWebhookHandler.js",
       "lines": 295,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "defaultHandler",
+          "kind": "function",
+          "line": 283
+        },
+        {
+          "name": "RETRY_CONFIG",
+          "kind": "function",
+          "line": 284
+        },
+        {
+          "name": "handleCalWebhook",
+          "kind": "function",
+          "line": 285
+        },
+        {
+          "name": "calcomWebhookHandler",
+          "kind": "function",
+          "line": 286
+        },
+        {
+          "name": "verifyWebhookSignature",
+          "kind": "function",
+          "line": 287
+        },
+        {
+          "name": "handleBookingCreated",
+          "kind": "function",
+          "line": 288
+        },
+        {
+          "name": "handleBookingRescheduled",
+          "kind": "function",
+          "line": 289
+        },
+        {
+          "name": "handleBookingCancelled",
+          "kind": "function",
+          "line": 290
+        },
+        {
+          "name": "handleMeetingEnded",
+          "kind": "function",
+          "line": 291
+        },
+        {
+          "name": "withRetry",
+          "kind": "function",
+          "line": 292
+        },
+        {
+          "name": "sleep",
+          "kind": "function",
+          "line": 293,
+          "signature": "sleep(ms)"
+        },
+        {
+          "name": "calculateBackoffDelay",
+          "kind": "function",
+          "line": 294,
+          "signature": "calculateBackoffDelay(attempt)"
+        },
+        {
+          "name": "CalcomWebhookHandler",
+          "kind": "class",
+          "line": 44,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 50
+            },
+            {
+              "name": "getDb",
+              "signature": "getDb()",
+              "line": 57
+            },
+            {
+              "name": "if",
+              "signature": "if(!this._db)",
+              "line": 58
+            },
+            {
+              "name": "verifyWebhookSignature",
+              "signature": "verifyWebhookSignature(payload, signature)",
+              "line": 89
+            },
+            {
+              "name": "handleCalWebhook",
+              "signature": "handleCalWebhook(event)",
+              "line": 134
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/.archived/calcom-class-refactor-e2e.test.js",
+        "tests/e2e/calcom-integration.test.js",
+        "tests/integration/calcom-integration.test.js",
+        "tests/integration/calcom-webhook-handler.test.js",
+        "tests/unit/calcom-class-backcompat.test.js",
+        "tests/unit/calcom-di-consistency.test.js",
+        "tests/unit/calcom-webhook-handler-class.test.js"
+      ]
     },
     {
       "id": "lib/services/CalcomWebhookManagement.js",
       "lines": 750,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "defaultWebhookManagement",
+          "kind": "function",
+          "line": 739
+        },
+        {
+          "name": "listWebhooks",
+          "kind": "function",
+          "line": 740,
+          "signature": "listWebhooks()"
+        },
+        {
+          "name": "registerWebhook",
+          "kind": "function",
+          "line": 741,
+          "signature": "registerWebhook(config)"
+        },
+        {
+          "name": "deleteWebhook",
+          "kind": "function",
+          "line": 742,
+          "signature": "deleteWebhook(webhookId)"
+        },
+        {
+          "name": "updateWebhook",
+          "kind": "function",
+          "line": 743,
+          "signature": "updateWebhook(webhookId, updates)"
+        },
+        {
+          "name": "getWebhook",
+          "kind": "function",
+          "line": 744,
+          "signature": "getWebhook(webhookId)"
+        },
+        {
+          "name": "logWebhookDelivery",
+          "kind": "function",
+          "line": 745,
+          "signature": "logWebhookDelivery(logData)"
+        },
+        {
+          "name": "getWebhookDeliveryLogs",
+          "kind": "function",
+          "line": 746,
+          "signature": "getWebhookDeliveryLogs(filters = {})"
+        },
+        {
+          "name": "getWebhookStats",
+          "kind": "function",
+          "line": 747,
+          "signature": "getWebhookStats(webhookId, dateRange = {})"
+        },
+        {
+          "name": "testWebhook",
+          "kind": "function",
+          "line": 748,
+          "signature": "testWebhook(webhookId)"
+        },
+        {
+          "name": "generateWebhookSecret",
+          "kind": "function",
+          "line": 749,
+          "signature": "generateWebhookSecret()"
+        },
+        {
+          "name": "CalcomWebhookManagement",
+          "kind": "class",
+          "line": 678,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 679
+            },
+            {
+              "name": "getDb",
+              "signature": "getDb()",
+              "line": 683
+            },
+            {
+              "name": "listWebhooks",
+              "signature": "listWebhooks()",
+              "line": 687
+            },
+            {
+              "name": "registerWebhook",
+              "signature": "registerWebhook(config)",
+              "line": 691
+            },
+            {
+              "name": "deleteWebhook",
+              "signature": "deleteWebhook(webhookId)",
+              "line": 695
+            },
+            {
+              "name": "updateWebhook",
+              "signature": "updateWebhook(webhookId, updates)",
+              "line": 699
+            },
+            {
+              "name": "getWebhook",
+              "signature": "getWebhook(webhookId)",
+              "line": 703
+            },
+            {
+              "name": "logWebhookDelivery",
+              "signature": "logWebhookDelivery(logData)",
+              "line": 707
+            },
+            {
+              "name": "getWebhookDeliveryLogs",
+              "signature": "getWebhookDeliveryLogs(filters = {})",
+              "line": 711
+            },
+            {
+              "name": "getWebhookStats",
+              "signature": "getWebhookStats(webhookId, dateRange = {})",
+              "line": 715
+            },
+            {
+              "name": "testWebhook",
+              "signature": "testWebhook(webhookId)",
+              "line": 719
+            },
+            {
+              "name": "generateWebhookSecret",
+              "signature": "generateWebhookSecret()",
+              "line": 723
+            },
+            {
+              "name": "generateId",
+              "signature": "generateId()",
+              "line": 727
+            },
+            {
+              "name": "generateTestSignature",
+              "signature": "generateTestSignature(payload, secret)",
+              "line": 731
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/.archived/calcom-class-refactor-e2e.test.js",
+        "tests/unit/calcom-class-backcompat.test.js",
+        "tests/unit/calcom-webhook-management-class.test.js"
+      ]
     },
     {
       "id": "lib/services/EmailService.js",
       "lines": 183,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "EmailService",
+          "kind": "class",
+          "line": 6,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 7
+            },
+            {
+              "name": "isConfigured",
+              "signature": "isConfigured()",
+              "line": 15
+            },
+            {
+              "name": "send",
+              "signature": "send(params)",
+              "line": 19
+            },
+            {
+              "name": "if",
+              "signature": "if(failIfUnconfigured)",
+              "line": 33
+            },
+            {
+              "name": "sendVerification",
+              "signature": "sendVerification(params)",
+              "line": 84
+            },
+            {
+              "name": "sendPilotConversion",
+              "signature": "sendPilotConversion(params)",
+              "line": 96
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/integration/upgrade-offer-endpoint.test.js",
+        "tests/unit/email-service-class.test.js"
+      ]
     },
     {
       "id": "lib/services/FUBService.js",
       "lines": 405,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "FUBService",
+          "kind": "class",
+          "line": 27,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 28
+            },
+            {
+              "name": "if",
+              "signature": "if(options.registerEventHandlers !== false)",
+              "line": 39
+            },
+            {
+              "name": "registerEventHandlers",
+              "signature": "registerEventHandlers()",
+              "line": 44
+            },
+            {
+              "name": "verifyWebhookSignature",
+              "signature": "verifyWebhookSignature(req)",
+              "line": 57
+            },
+            {
+              "name": "mapEvent",
+              "signature": "mapEvent(fubEvent)",
+              "line": 80
+            },
+            {
+              "name": "handleWebhookPayload",
+              "signature": "handleWebhookPayload(payload = {})",
+              "line": 84
+            },
+            {
+              "name": "handleLeadCreated",
+              "signature": "handleLeadCreated(leadData)",
+              "line": 103
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/fub-service-class.test.js"
+      ]
     },
     {
       "id": "lib/services/PilotConversionService.js",
       "lines": 250,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "PilotConversionService",
+          "kind": "class",
+          "line": 39,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 48
+            },
+            {
+              "name": "isDbConfigured",
+              "signature": "isDbConfigured()",
+              "line": 57
+            },
+            {
+              "name": "isResendConfigured",
+              "signature": "isResendConfigured()",
+              "line": 58
+            },
+            {
+              "name": "getEligibleAgents",
+              "signature": "getEligibleAgents(milestone)",
+              "line": 60
+            },
+            {
+              "name": "if",
+              "signature": "if(error)",
+              "line": 73
+            },
+            {
+              "name": "getAgentStats",
+              "signature": "getAgentStats(agentId)",
+              "line": 90
+            },
+            {
+              "name": "hasAgentUpgraded",
+              "signature": "hasAgentUpgraded(agentId)",
+              "line": 123
+            },
+            {
+              "name": "generateCheckoutUrl",
+              "signature": "generateCheckoutUrl(agent)",
+              "line": 132
+            },
+            {
+              "name": "renderTemplate",
+              "signature": "renderTemplate(template, agent, stats, checkoutUrl)",
+              "line": 136
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lib/services/PilotSignupOutreachService.js",
+      "lines": 306,
+      "type": "lib",
+      "exports": [
+        {
+          "name": "PilotSignupOutreachService",
+          "kind": "class",
+          "line": 17,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 18
+            },
+            {
+              "name": "getSignupsForStep",
+              "signature": "getSignupsForStep(step)",
+              "line": 25
+            },
+            {
+              "name": "if",
+              "signature": "if(step === STEP_WELCOME)",
+              "line": 29
+            },
+            {
+              "name": "sendStepEmail",
+              "signature": "sendStepEmail(signup, step)",
+              "line": 67
+            },
+            {
+              "name": "runSequence",
+              "signature": "runSequence()",
+              "line": 92
+            },
+            {
+              "name": "for",
+              "signature": "for(const step of [STEP_WELCOME, STEP_DAY3_REMINDER, STEP_DAY7_FINAL])",
+              "line": 98
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/pilot-signup-outreach-e2e.test.js",
+        "tests/unit/pilot-signup-outreach-service.test.js"
+      ]
     },
     {
       "id": "lib/services/SatisfactionService.js",
       "lines": 183,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "SatisfactionService",
+          "kind": "class",
+          "line": 14,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 15
+            },
+            {
+              "name": "sendSatisfactionPing",
+              "signature": "sendSatisfactionPing(opts)",
+              "line": 20
+            },
+            {
+              "name": "if",
+              "signature": "if(!agentSatisfactionPingEnabled)",
+              "line": 32
+            },
+            {
+              "name": "scheduleSatisfactionPing",
+              "signature": "scheduleSatisfactionPing(opts)",
+              "line": 106
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/integration/09a067f4-satisfaction-reply-recording.test.js",
+        "tests/integration/satisfaction-reply-recording.test.js"
+      ]
     },
     {
       "id": "lib/services/SequenceService.js",
       "lines": 185,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "SequenceService",
+          "kind": "class",
+          "line": 23,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 29
+            },
+            {
+              "name": "if",
+              "signature": "if(!this._db)",
+              "line": 35
+            },
+            {
+              "name": "getInitialSendTime",
+              "signature": "getInitialSendTime(sequenceType)",
+              "line": 46
+            },
+            {
+              "name": "findLeadByFubId",
+              "signature": "findLeadByFubId(fubId)",
+              "line": 56
+            },
+            {
+              "name": "findLeadByPhone",
+              "signature": "findLeadByPhone(phone)",
+              "line": 78
+            },
+            {
+              "name": "hasActiveSequence",
+              "signature": "hasActiveSequence(leadId, sequenceType)",
+              "line": 101
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/sequence-service.test.js"
+      ]
+    },
+    {
+      "id": "lib/services/StripeService.js",
+      "lines": 50,
+      "type": "lib",
+      "exports": [
+        {
+          "name": "StripeService",
+          "kind": "class",
+          "line": 8,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 9
+            },
+            {
+              "name": "createPromoCode",
+              "signature": "createPromoCode({ code, discountPercent, expiryDays, tier, metadata = {} })",
+              "line": 17
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/integration/upgrade-offer-endpoint.test.js"
+      ]
     },
     {
       "id": "lib/services/StuckPilotsService.js",
       "lines": 167,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "StuckPilotsService",
+          "kind": "function",
+          "line": 165,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(dbPool, botToken, options = {})",
+              "line": 7
+            },
+            {
+              "name": "sendTelegramMessage",
+              "signature": "sendTelegramMessage(text, chatId, topicId)",
+              "line": 19
+            },
+            {
+              "name": "if",
+              "signature": "if(!this.botToken)",
+              "line": 20
+            },
+            {
+              "name": "getStuckPilots",
+              "signature": "getStuckPilots()",
+              "line": 75
+            },
+            {
+              "name": "markPilotAlerted",
+              "signature": "markPilotAlerted(pilotId)",
+              "line": 98
+            },
+            {
+              "name": "buildAlertMessage",
+              "signature": "buildAlertMessage(pilot, dashboardUrl)",
+              "line": 102
+            }
+          ]
+        },
+        {
+          "name": "createDefaultStuckPilotsService",
+          "kind": "function",
+          "line": 166,
+          "signature": "createDefaultStuckPilotsService()"
+        }
+      ],
+      "test_files": [
+        "tests/unit/stuck-pilots-service.node.test.js",
+        "tests/unit/stuck-pilots-service.test.js"
+      ]
     },
     {
       "id": "lib/services/SystemStatusService.js",
       "lines": 24,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "SystemStatusService",
+          "kind": "class",
+          "line": 1,
+          "methods": [
+            {
+              "name": "getRootStatus",
+              "signature": "getRootStatus()",
+              "line": 2
+            },
+            {
+              "name": "getHealthStatus",
+              "signature": "getHealthStatus()",
+              "line": 13
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "lib/services/TrialActivationService.js",
       "lines": 301,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "TrialActivationService",
+          "kind": "class",
+          "line": 49,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 50
+            },
+            {
+              "name": "isDbConfigured",
+              "signature": "isDbConfigured()",
+              "line": 56
+            },
+            {
+              "name": "isEmailConfigured",
+              "signature": "isEmailConfigured()",
+              "line": 60
+            },
+            {
+              "name": "findPendingPilots",
+              "signature": "findPendingPilots(minAgeMinutes = 5)",
+              "line": 64
+            },
+            {
+              "name": "getAgent",
+              "signature": "getAgent(agentId)",
+              "line": 80
+            },
+            {
+              "name": "hasEmailBeenSent",
+              "signature": "hasEmailBeenSent(pilotId)",
+              "line": 94
+            },
+            {
+              "name": "sendTrialCTA",
+              "signature": "sendTrialCTA(agent, pilot)",
+              "line": 109
+            },
+            {
+              "name": "if",
+              "signature": "if(!sendResult.success)",
+              "line": 128
+            },
+            {
+              "name": "createLeadSimulation",
+              "signature": "createLeadSimulation(agentId)",
+              "line": 141
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/TrialActivationService.test.js"
+      ]
     },
     {
       "id": "lib/services/TwilioService.js",
       "lines": 669,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "TwilioService",
+          "kind": "function",
+          "line": 665,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(options = {})",
+              "line": 80
+            },
+            {
+              "name": "getPlatformTwilioClient",
+              "signature": "getPlatformTwilioClient()",
+              "line": 106
+            },
+            {
+              "name": "if",
+              "signature": "if(accountSid && authToken)",
+              "line": 112
+            },
+            {
+              "name": "resolveTwilioContext",
+              "signature": "resolveTwilioContext(agentId, toNumber, market)",
+              "line": 141
+            }
+          ]
+        },
+        {
+          "name": "DeliveryStatus",
+          "kind": "function",
+          "line": 666
+        },
+        {
+          "name": "TwilioErrorCodes",
+          "kind": "function",
+          "line": 667
+        },
+        {
+          "name": "A2P_ERROR_CODE_SET",
+          "kind": "function",
+          "line": 668
+        }
+      ],
+      "test_files": [
+        "tests/unit/platform-twilio-provisioning.test.js"
+      ]
     },
     {
       "id": "lib/services/WeeklyPerformanceService.js",
       "lines": 582,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "WeeklyPerformanceService",
+          "kind": "class",
+          "line": 578,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(dbClient, emailService)",
+              "line": 16
+            },
+            {
+              "name": "if",
+              "signature": "if(!apiUrl || !apiKey)",
+              "line": 25
+            },
+            {
+              "name": "sendEmail",
+              "signature": "sendEmail(payload)",
+              "line": 34
+            },
+            {
+              "name": "isSupabaseConfigured",
+              "signature": "isSupabaseConfigured()",
+              "line": 76
+            },
+            {
+              "name": "isResendConfigured",
+              "signature": "isResendConfigured()",
+              "line": 80
+            },
+            {
+              "name": "getPreviousWeekRange",
+              "signature": "getPreviousWeekRange()",
+              "line": 84
+            },
+            {
+              "name": "getEligibleAgents",
+              "signature": "getEligibleAgents(weekStarting)",
+              "line": 104
+            }
+          ]
+        },
+        {
+          "name": "createDefaultWeeklyPerformanceService",
+          "kind": "function",
+          "line": 578
+        }
+      ],
+      "test_files": [
+        "tests/unit/weekly-performance-service.node.test.js",
+        "tests/unit/weekly-performance.test.js"
+      ]
     },
     {
       "id": "lib/middleware/rate-limiter.js",
       "lines": 29,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "webhookLimiter",
+          "kind": "function",
+          "line": 28
+        },
+        {
+          "name": "adminLimiter",
+          "kind": "function",
+          "line": 28
+        }
+      ]
     },
     {
       "id": "lib/middleware/require-api-key.js",
@@ -129,17 +1608,125 @@
     {
       "id": "lib/utils/circuit-breaker.js",
       "lines": 142,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "CircuitBreaker",
+          "kind": "class",
+          "line": 141,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(name, options = {})",
+              "line": 12
+            },
+            {
+              "name": "execute",
+              "signature": "execute(fn)",
+              "line": 22
+            },
+            {
+              "name": "if",
+              "signature": "if(this.state === 'OPEN')",
+              "line": 23
+            },
+            {
+              "name": "getMetrics",
+              "signature": "getMetrics()",
+              "line": 53
+            },
+            {
+              "name": "getState",
+              "signature": "getState()",
+              "line": 64
+            },
+            {
+              "name": "for",
+              "signature": "for(let attempt = 0; attempt <= maxRetries; attempt++)",
+              "line": 101
+            }
+          ]
+        },
+        {
+          "name": "breakers",
+          "kind": "function",
+          "line": 141
+        },
+        {
+          "name": "withRetry",
+          "kind": "function",
+          "line": 141,
+          "signature": "withRetry(fn, options = {})"
+        },
+        {
+          "name": "getAllBreakerMetrics",
+          "kind": "function",
+          "line": 141,
+          "signature": "getAllBreakerMetrics()"
+        }
+      ]
     },
     {
       "id": "lib/utils/dead-letter-replay.js",
       "lines": 130,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "DeadLetterReplay",
+          "kind": "class",
+          "line": 129,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(pool, options = {})",
+              "line": 19
+            },
+            {
+              "name": "registerHandler",
+              "signature": "registerHandler(source, handler)",
+              "line": 31
+            },
+            {
+              "name": "getEligibleItems",
+              "signature": "getEligibleItems()",
+              "line": 35
+            },
+            {
+              "name": "replayItem",
+              "signature": "replayItem(item)",
+              "line": 54
+            },
+            {
+              "name": "if",
+              "signature": "if(!handler)",
+              "line": 67
+            },
+            {
+              "name": "run",
+              "signature": "run()",
+              "line": 107
+            },
+            {
+              "name": "for",
+              "signature": "for(const item of items)",
+              "line": 118
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "lib/utils/dead-letter.js",
       "lines": 29,
-      "type": "lib"
+      "type": "lib",
+      "exports": [
+        {
+          "name": "writeDeadLetter",
+          "kind": "function",
+          "line": 28,
+          "signature": "writeDeadLetter(source, eventType, payload, errorMessage)"
+        }
+      ]
     },
     {
       "id": "routes/billing.js",
@@ -166,360 +1753,628 @@
     {
       "source": "lib/index.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger",
+        "requestLogger"
+      ]
     },
     {
       "source": "lib/index.js",
       "target": "lib/types/index.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "types"
+      ]
     },
     {
       "source": "lib/logger.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "requestContext"
+      ]
     },
     {
       "source": "lib/services/ActivationService.js",
       "target": "lib/services/EmailService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "EmailService"
+      ]
     },
     {
       "source": "lib/services/BillingService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/BillingService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/BillingService.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers"
+      ]
     },
     {
       "source": "lib/services/BillingService.js",
       "target": "lib/config/index.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "TRIAL_PERIOD_DAYS",
+        "stripe",
+        "app"
+      ]
     },
     {
       "source": "lib/services/BookingLinkService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/BookingLinkService.js",
       "target": "lib/services/CalcomClient.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "CalcomClient"
+      ]
     },
     {
       "source": "lib/services/BookingLinkService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/CalcomClient.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers"
+      ]
     },
     {
       "source": "lib/services/CalcomClient.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getRequestId"
+      ]
     },
     {
       "source": "lib/services/CalcomClient.js",
       "target": "lib/config/index.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "config"
+      ]
     },
     {
       "source": "lib/services/CalcomEventProcessor.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/CalcomEventProcessor.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "withRetry"
+      ]
     },
     {
       "source": "lib/services/CalcomEventProcessor.js",
       "target": "lib/services/SequenceService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createLeadSequence"
+      ]
     },
     {
       "source": "lib/services/CalcomEventProcessor.js",
       "target": "lib/services/TwilioService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "TwilioService"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookHandler.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookHandler.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookHandler.js",
       "target": "lib/config/index.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "config"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookHandler.js",
       "target": "lib/services/SequenceService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createLeadSequence"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookHandler.js",
       "target": "lib/services/CalcomEventProcessor.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "CalcomEventProcessor"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookHandler.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "withRetry"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookManagement.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookManagement.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/CalcomWebhookManagement.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers"
+      ]
     },
     {
       "source": "lib/services/EmailService.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getRequestId"
+      ]
     },
     {
       "source": "lib/services/EmailService.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers",
+        "withRetry"
+      ]
     },
     {
       "source": "lib/services/FUBService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/FUBService.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers",
+        "withRetry"
+      ]
     },
     {
       "source": "lib/services/FUBService.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getRequestId"
+      ]
     },
     {
       "source": "lib/services/FUBService.js",
       "target": "lib/services/TwilioService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "TwilioService"
+      ]
     },
     {
       "source": "lib/services/FUBService.js",
       "target": "lib/services/SatisfactionService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "SatisfactionService"
+      ]
     },
     {
       "source": "lib/services/FUBService.js",
       "target": "lib/services/SequenceService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "SequenceService"
+      ]
     },
     {
       "source": "lib/services/PilotConversionService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/PilotConversionService.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers",
+        "withRetry"
+      ]
+    },
+    {
+      "source": "lib/services/PilotSignupOutreachService.js",
+      "target": "lib/services/EmailService.js",
+      "type": "require",
+      "methods": [
+        "EmailService"
+      ]
     },
     {
       "source": "lib/services/SatisfactionService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/SequenceService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/SequenceService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
+    },
+    {
+      "source": "lib/services/StripeService.js",
+      "target": "lib/config/index.js",
+      "type": "require",
+      "methods": [
+        "stripe"
+      ]
+    },
+    {
+      "source": "lib/services/StripeService.js",
+      "target": "lib/logger.js",
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/StuckPilotsService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getPool"
+      ]
     },
     {
       "source": "lib/services/TrialActivationService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/TrialActivationService.js",
       "target": "lib/templates/trial-cta-email.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "buildTrialCTAEmail"
+      ]
     },
     {
       "source": "lib/services/TwilioService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/TwilioService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/TwilioService.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers"
+      ]
     },
     {
       "source": "lib/services/TwilioService.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getRequestId"
+      ]
     },
     {
       "source": "lib/services/TwilioService.js",
       "target": "lib/config/index.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "config"
+      ]
     },
     {
       "source": "lib/services/WeeklyPerformanceService.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "createClient"
+      ]
     },
     {
       "source": "lib/services/WeeklyPerformanceService.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/services/WeeklyPerformanceService.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "breakers",
+        "withRetry"
+      ]
     },
     {
       "source": "lib/utils/circuit-breaker.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/utils/circuit-breaker.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getRequestId"
+      ]
     },
     {
       "source": "lib/utils/dead-letter-replay.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "lib/utils/dead-letter-replay.js",
       "target": "lib/request-context.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getRequestId"
+      ]
     },
     {
       "source": "lib/utils/dead-letter.js",
       "target": "lib/db.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getPool"
+      ]
     },
     {
       "source": "lib/utils/dead-letter.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "routes/billing.js",
       "target": "lib/services/BillingService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "BillingService"
+      ]
     },
     {
       "source": "routes/billing.js",
       "target": "lib/middleware/require-api-key.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "requireApiKey"
+      ]
     },
     {
       "source": "routes/billing.js",
       "target": "lib/utils/dead-letter.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "writeDeadLetter"
+      ]
     },
     {
       "source": "routes/billing.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "routes/billing.js",
       "target": "lib/errors.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "ValidationError"
+      ]
     },
     {
       "source": "routes/calcom-webhook.js",
       "target": "lib/services/CalcomWebhookHandler.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "CalcomWebhookHandler"
+      ]
     },
     {
       "source": "routes/calcom-webhook.js",
       "target": "lib/services/CalcomWebhookManagement.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "CalcomWebhookManagement"
+      ]
     },
     {
       "source": "routes/calcom-webhook.js",
       "target": "lib/middleware/require-api-key.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "requireApiKey"
+      ]
     },
     {
       "source": "routes/calcom-webhook.js",
       "target": "lib/utils/dead-letter.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "writeDeadLetter"
+      ]
     },
     {
       "source": "routes/calcom-webhook.js",
       "target": "lib/logger.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "logger"
+      ]
     },
     {
       "source": "routes/calcom-webhook.js",
       "target": "lib/errors.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "ValidationError"
+      ]
     },
     {
       "source": "routes/system.js",
       "target": "lib/services/SystemStatusService.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "SystemStatusService"
+      ]
     },
     {
       "source": "routes/system.js",
       "target": "lib/utils/circuit-breaker.js",
-      "type": "require"
+      "type": "require",
+      "methods": [
+        "getAllBreakerMetrics"
+      ]
     }
   ],
   "state_access": [],
   "db_access": [],
+  "cross_project": [
+    {
+      "source": "lib/services/ActivationService.js",
+      "target": "vercel:customer-dashboard",
+      "type": "url_reference"
+    },
+    {
+      "source": "lib/services/EmailService.js",
+      "target": "vercel:customer-dashboard",
+      "type": "url_reference"
+    },
+    {
+      "source": "lib/services/PilotConversionService.js",
+      "target": "vercel:customer-dashboard",
+      "type": "url_reference"
+    },
+    {
+      "source": "lib/services/PilotSignupOutreachService.js",
+      "target": "vercel:customer-dashboard",
+      "type": "url_reference"
+    },
+    {
+      "source": "lib/services/TrialActivationService.js",
+      "target": "vercel:customer-dashboard",
+      "type": "url_reference"
+    }
+  ],
   "issues": {
     "circular_deps": [],
     "hub_modules": [
-      "lib/logger.js (17)",
+      "lib/logger.js (18)",
       "lib/utils/circuit-breaker.js (11)",
       "lib/db.js (10)"
     ],
@@ -529,6 +2384,8 @@
       "lib/services/BookingLinkService.js",
       "lib/services/FUBService.js",
       "lib/services/PilotConversionService.js",
+      "lib/services/PilotSignupOutreachService.js",
+      "lib/services/StripeService.js",
       "lib/services/StuckPilotsService.js",
       "lib/services/TrialActivationService.js",
       "lib/services/WeeklyPerformanceService.js",
