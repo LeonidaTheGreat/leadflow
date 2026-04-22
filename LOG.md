@@ -928,3 +928,1849 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - Dashboard updated
 - Report prepared for topic 10788
 - **Errors (1):** Product sync: null value in column "id" of relation "system_components" violates not-null constraint
+
+### 2026-04-21 19:24:57
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":112,"inProgress":0,"blocked":0,"done":3362,"total":4387}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Codebase health: 1 issue(s) detected
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+- **Errors (1):** Codebase: ARCHITECTURE.md drift: on disk but undocumented: lib/services/StripeService.js, lib/services/TrialActivationService.js
+
+### 2026-04-21 19:26:23
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":118,"inProgress":0,"blocked":0,"done":3362,"total":4393}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:30:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":123,"inProgress":0,"blocked":0,"done":3362,"total":4398}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:30:55
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":128,"inProgress":0,"blocked":0,"done":3362,"total":4403}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:32:19
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":133,"inProgress":0,"blocked":0,"done":3362,"total":4408}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:35:03
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":138,"inProgress":0,"blocked":0,"done":3362,"total":4413}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:35:54
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":143,"inProgress":0,"blocked":0,"done":3362,"total":4418}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:39:55
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":148,"inProgress":0,"blocked":0,"done":3362,"total":4423}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:40:47
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":153,"inProgress":0,"blocked":0,"done":3362,"total":4428}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:45:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":158,"inProgress":0,"blocked":0,"done":3362,"total":4433}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:45:53
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":163,"inProgress":0,"blocked":0,"done":3362,"total":4438}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:47:26
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":168,"inProgress":0,"blocked":0,"done":3362,"total":4443}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:50:05
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":173,"inProgress":0,"blocked":0,"done":3362,"total":4448}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:51:27
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":178,"inProgress":0,"blocked":0,"done":3362,"total":4453}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:55:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":183,"inProgress":0,"blocked":0,"done":3362,"total":4458}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 19:56:36
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":188,"inProgress":0,"blocked":0,"done":3362,"total":4463}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:00:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":193,"inProgress":0,"blocked":0,"done":3362,"total":4468}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:15:06
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":198,"inProgress":0,"blocked":0,"done":3362,"total":4473}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:18:59
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":203,"inProgress":0,"blocked":0,"done":3362,"total":4478}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:20:05
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":208,"inProgress":0,"blocked":0,"done":3362,"total":4483}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:21:40
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":213,"inProgress":0,"blocked":0,"done":3362,"total":4488}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:25:04
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":218,"inProgress":0,"blocked":0,"done":3362,"total":4493}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:26:43
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":223,"inProgress":0,"blocked":0,"done":3362,"total":4498}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:30:00
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":228,"inProgress":0,"blocked":0,"done":3362,"total":4503}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:31:24
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":233,"inProgress":0,"blocked":0,"done":3362,"total":4508}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:35:07
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":238,"inProgress":0,"blocked":0,"done":3362,"total":4513}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:35:59
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":243,"inProgress":0,"blocked":0,"done":3362,"total":4518}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:40:07
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":248,"inProgress":0,"blocked":0,"done":3362,"total":4523}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:41:43
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":253,"inProgress":0,"blocked":0,"done":3362,"total":4528}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:45:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":258,"inProgress":0,"blocked":0,"done":3362,"total":4533}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:46:40
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":263,"inProgress":0,"blocked":0,"done":3362,"total":4538}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:49:57
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":268,"inProgress":0,"blocked":0,"done":3362,"total":4543}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:51:23
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":273,"inProgress":0,"blocked":0,"done":3362,"total":4548}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:58:07
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":278,"inProgress":0,"blocked":0,"done":3362,"total":4553}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 20:59:52
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":283,"inProgress":0,"blocked":0,"done":3362,"total":4558}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:03:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":288,"inProgress":0,"blocked":0,"done":3362,"total":4563}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- E2E: 1 critical failures → fix task
+- E2E: 11/12 passed, 1 failed
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:05:19
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":293,"inProgress":0,"blocked":0,"done":3363,"total":4569}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:08:07
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":298,"inProgress":0,"blocked":0,"done":3363,"total":4574}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:09:47
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":303,"inProgress":0,"blocked":0,"done":3363,"total":4579}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:13:08
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":308,"inProgress":0,"blocked":0,"done":3363,"total":4584}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:14:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":313,"inProgress":0,"blocked":0,"done":3363,"total":4589}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:18:14
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":318,"inProgress":0,"blocked":0,"done":3363,"total":4594}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:19:37
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":323,"inProgress":0,"blocked":0,"done":3363,"total":4599}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:23:12
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":328,"inProgress":0,"blocked":0,"done":3363,"total":4604}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:24:52
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":333,"inProgress":0,"blocked":0,"done":3363,"total":4609}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:28:07
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":338,"inProgress":0,"blocked":0,"done":3363,"total":4614}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:28:58
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":343,"inProgress":0,"blocked":0,"done":3363,"total":4619}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:33:14
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":348,"inProgress":0,"blocked":0,"done":3363,"total":4624}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:34:07
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":353,"inProgress":0,"blocked":0,"done":3363,"total":4629}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:37:43
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":358,"inProgress":0,"blocked":0,"done":3363,"total":4634}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:42:52
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":363,"inProgress":0,"blocked":0,"done":3363,"total":4639}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:48:15
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":368,"inProgress":0,"blocked":0,"done":3363,"total":4644}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:49:08
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":373,"inProgress":0,"blocked":0,"done":3363,"total":4649}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:53:17
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":378,"inProgress":0,"blocked":0,"done":3363,"total":4654}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:54:54
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":383,"inProgress":0,"blocked":0,"done":3363,"total":4659}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:58:16
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":388,"inProgress":0,"blocked":0,"done":3363,"total":4664}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 21:59:40
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":393,"inProgress":0,"blocked":0,"done":3363,"total":4669}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:02:54
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":398,"inProgress":0,"blocked":0,"done":3363,"total":4674}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:08:14
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":403,"inProgress":0,"blocked":0,"done":3363,"total":4679}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:09:08
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":408,"inProgress":0,"blocked":0,"done":3363,"total":4684}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:13:04
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":413,"inProgress":0,"blocked":0,"done":3363,"total":4689}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:28:18
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":418,"inProgress":0,"blocked":0,"done":3363,"total":4694}
+- Re-triggered 2 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:29:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":423,"inProgress":0,"blocked":0,"done":3363,"total":4699}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:33:00
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":428,"inProgress":0,"blocked":0,"done":3363,"total":4704}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:38:21
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":433,"inProgress":0,"blocked":0,"done":3363,"total":4709}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:39:10
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":438,"inProgress":0,"blocked":0,"done":3363,"total":4714}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:45:00
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":443,"inProgress":0,"blocked":0,"done":3363,"total":4719}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Product review triggered: Fix Distribution Loop — Wave 8 Investigation
+- Orchestrator strategic review triggered
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 22:53:22
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":448,"inProgress":0,"blocked":0,"done":3365,"total":4726}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:09:00
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":452,"inProgress":1,"blocked":0,"done":3365,"total":4731}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:09:53
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":457,"inProgress":1,"blocked":0,"done":3365,"total":4736}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:14:03
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":462,"inProgress":0,"blocked":0,"done":3366,"total":4741}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Backfilled PR #1269 for dev/6f13c2f7-write-tests-for-untested-hub-request-con
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:15:33
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":467,"inProgress":1,"blocked":0,"done":3366,"total":4747}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:20:12
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":472,"inProgress":0,"blocked":0,"done":3367,"total":4752}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Tests: 541/573 passed (94%)
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:21:03
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":477,"inProgress":0,"blocked":0,"done":3367,"total":4757}
+- Synced 1 stale code reviews
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:23:55
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":482,"inProgress":0,"blocked":0,"done":3367,"total":4762}
+- Pipeline health: 1 issue(s) detected
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+- **Errors (1):** Pipeline: 6 ready tasks, 0 active for 3 consecutive heartbeats
+
+### 2026-04-21 23:25:32
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":487,"inProgress":0,"blocked":0,"done":3367,"total":4767}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:28:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":492,"inProgress":0,"blocked":0,"done":3367,"total":4772}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:29:33
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":497,"inProgress":0,"blocked":0,"done":3367,"total":4777}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:33:44
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":502,"inProgress":0,"blocked":0,"done":3367,"total":4782}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:38:58
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":507,"inProgress":0,"blocked":0,"done":3367,"total":4787}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:40:34
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":512,"inProgress":0,"blocked":0,"done":3367,"total":4792}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:43:54
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":517,"inProgress":0,"blocked":0,"done":3367,"total":4797}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:44:45
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":522,"inProgress":0,"blocked":0,"done":3367,"total":4802}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:49:01
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":527,"inProgress":0,"blocked":0,"done":3367,"total":4807}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:50:25
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":532,"inProgress":0,"blocked":0,"done":3367,"total":4812}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Genome self-assessment: score 79/100, 1 breaches
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:53:56
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":538,"inProgress":0,"blocked":0,"done":3367,"total":4818}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:54:48
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":543,"inProgress":0,"blocked":0,"done":3367,"total":4823}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-21 23:58:54
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":548,"inProgress":0,"blocked":0,"done":3367,"total":4828}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:00:30
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":553,"inProgress":0,"blocked":0,"done":3367,"total":4833}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:03:59
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":558,"inProgress":0,"blocked":0,"done":3367,"total":4838}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:05:34
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":563,"inProgress":0,"blocked":0,"done":3367,"total":4843}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:11:39
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":568,"inProgress":0,"blocked":0,"done":3367,"total":4848}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:12:28
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":573,"inProgress":0,"blocked":0,"done":3367,"total":4853}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:16:44
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":578,"inProgress":0,"blocked":0,"done":3367,"total":4858}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:17:38
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":583,"inProgress":0,"blocked":0,"done":3367,"total":4863}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:21:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":588,"inProgress":0,"blocked":0,"done":3367,"total":4868}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:22:38
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":593,"inProgress":0,"blocked":0,"done":3367,"total":4873}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:26:45
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":598,"inProgress":0,"blocked":0,"done":3367,"total":4878}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:28:20
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":603,"inProgress":0,"blocked":0,"done":3367,"total":4883}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): feat-revenue-funnel-visibility
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:31:38
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":608,"inProgress":0,"blocked":0,"done":3367,"total":4888}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:32:27
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":613,"inProgress":0,"blocked":0,"done":3367,"total":4893}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:34:32
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":618,"inProgress":0,"blocked":0,"done":3367,"total":4898}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:36:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":623,"inProgress":0,"blocked":0,"done":3367,"total":4903}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:51:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":628,"inProgress":0,"blocked":0,"done":3367,"total":4908}
+- Re-triggered 1 stuck spawn(s)
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:53:14
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":633,"inProgress":0,"blocked":0,"done":3367,"total":4913}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:56:46
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":638,"inProgress":0,"blocked":0,"done":3367,"total":4918}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
+
+### 2026-04-22 00:57:39
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":643,"inProgress":0,"blocked":0,"done":3367,"total":4923}
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Mission metrics: 14 collected for genome
+- UC completed (sweep): feat-subscription-funnel-tracking
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line
+- UC completed (sweep): uc-marketing-campaign-launch
+- UC completed (sweep): fix-lasttaskcreated-not-set-in-qc-dev-escalation-path-
+- UC completed (sweep): feat-revenue-funnel-visibility
+- Audit: 5 UCs → needs_merge (no merged PR)
+- Audit: 41 unmerged UCs pending (throttled)
+- Dashboard updated
+- Report prepared for topic 10788
