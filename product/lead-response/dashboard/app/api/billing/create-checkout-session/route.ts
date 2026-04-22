@@ -14,7 +14,7 @@ const stripe = process.env.STRIPE_SECRET_KEY
 function getPriceIdForPlan(planId: string): string | null {
   const priceIdMap: Record<string, string> = {
     starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
+    pro: process.env.STRIPE_PRICE_PRO_MONTHLY || '',
     team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
   return priceIdMap[planId] || null
 }
