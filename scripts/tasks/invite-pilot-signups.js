@@ -5,7 +5,7 @@
  *
  * Converts all pilot_signups without invites to pilot_invites by:
  * 1. Reading pilot_signups where no pilot_invite exists
- * 2. Creating pilot_invites with hashed token, 7-day expiry, status='pending'
+ * 2. Creating pilot_invites with hashed token, 7-day expiry, status='invited'
  * 3. Creating/updating real_estate_agents records
  * 4. Sending invite emails via Resend
  * 5. Tracking results
@@ -16,7 +16,7 @@
  *   node scripts/tasks/invite-pilot-signups.js [--dry-run]
  *
  * Acceptance Criteria:
- * ✓ Creates >= 20 pilot_invites with status='pending'
+ * ✓ Creates >= 20 pilot_invites with status='invited'
  * ✓ Each email receives invite within 5 minutes
  * ✓ No duplicate invites if run twice
  * ✓ Token expires in 7 days
