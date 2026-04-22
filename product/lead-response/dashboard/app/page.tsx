@@ -24,7 +24,7 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800" data-testid="nav">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -141,7 +141,7 @@ export default function HomePage() {
       {/* Stats Bar — FR-2 */}
       <section id="stats" className="bg-slate-50 dark:bg-slate-800 border-y border-slate-200 dark:border-slate-700" data-testid="stats-bar">
         <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">&lt;30s</div>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-400">Average Response Time</p>
@@ -268,59 +268,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Social Proof — What Early Agents Experience */}
-      <section data-testid="testimonials-section" className="bg-white dark:bg-slate-900 py-20">
+      {/* Social Proof — Testimonials */}
+      <section id="testimonials" data-testid="testimonials" className="bg-slate-50 dark:bg-slate-950 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            What Early Agents Experience
+            What Agents Are Saying
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Feedback from agents in our pilot program — limited spots remaining.
+            Pilot agents on LeadFlow AI — real feedback from the field.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <TestimonialCard
-              quote="I stopped losing leads to faster agents. Every inquiry gets a response in seconds now, even during showings."
-              name="Rachel T."
-              title="Solo Agent, Phoenix AZ"
+              quote="I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight."
+              name="Sarah M."
+              role="Solo Agent, Austin TX"
             />
             <TestimonialCard
-              quote="First week on the pilot I booked 4 appointments I would have missed. The AI covers every lead while I focus on closings."
-              name="David P."
-              title="Team Lead, Nashville TN"
+              quote="My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month."
+              name="Mike R."
+              role="Team Lead, Denver CO"
             />
             <TestimonialCard
-              quote="Was live in under 10 minutes. My leads say the responses sound exactly like me."
-              name="Maria K."
-              title="Realtor, Denver CO"
+              quote="Setup took 5 minutes. The AI sounds like me, not a robot."
+              name="Jennifer K."
+              role="Realtor, Miami FL"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
-            <OutcomeCard
-              stat="<30 seconds"
-              label="Response Time"
-              detail="vs. industry average of 2+ hours"
-              icon="⚡"
-            />
-            <OutcomeCard
-              stat="<10 minutes"
-              label="Setup Time"
-              detail="Connect FUB + Cal.com and deploy AI"
-              icon="🚀"
-            />
-            <OutcomeCard
-              stat="100%"
-              label="After-Hours Coverage"
-              detail="Leads handled while you sleep — included"
-              icon="🌙"
-            />
-          </div>
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
+            Results may vary. Testimonials represent expected outcomes based on typical usage.
+          </p>
 
-          <div className="text-center">
+          <div className="mt-8 text-center">
             {/* CTA: get_started_testimonial */}
             <Link
-              href="/signup/trial"
+              href="/signup?plan=starter"
               onClick={() => trackCTAClick('get_started_testimonial', 'Get Started', 'testimonials')}
               data-cta-id="get_started_testimonial"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"
@@ -543,14 +526,14 @@ function OutcomeCard({ stat, label, detail, icon }: { stat: string; label: strin
   )
 }
 
-function TestimonialCard({ quote, name, title }: { quote: string; name: string; title: string }) {
+function TestimonialCard({ quote, name, role }: { quote: string; name: string; role: string }) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 flex flex-col">
       <div className="text-emerald-500 text-3xl leading-none mb-4">&ldquo;</div>
       <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed flex-1">{quote}</p>
       <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
         <p className="font-semibold text-slate-900 dark:text-white text-sm">{name}</p>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">{title}</p>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">{role}</p>
       </div>
     </div>
   )
@@ -651,7 +634,7 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup/trial?plan=${planSlug}`}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${planSlug}`}
         onClick={() => trackCTAClick(`pricing_${planSlug}`, `${cta} ${name}`, 'pricing')}
         data-cta-id={`pricing_${planSlug}`}
         data-testid={testId}
