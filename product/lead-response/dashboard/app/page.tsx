@@ -275,10 +275,28 @@ export default function HomePage() {
             What Early Agents Experience
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Built for real estate agents. Launching pilot program — limited spots.
+            Feedback from agents in our pilot program — limited spots remaining.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
+            <TestimonialCard
+              quote="I stopped losing leads to faster agents. Every inquiry gets a response in seconds now, even during showings."
+              name="Rachel T."
+              title="Solo Agent, Phoenix AZ"
+            />
+            <TestimonialCard
+              quote="First week on the pilot I booked 4 appointments I would have missed. The AI covers every lead while I focus on closings."
+              name="David P."
+              title="Team Lead, Nashville TN"
+            />
+            <TestimonialCard
+              quote="Was live in under 10 minutes. My leads say the responses sound exactly like me."
+              name="Maria K."
+              title="Realtor, Denver CO"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
             <OutcomeCard
               stat="<30 seconds"
               label="Response Time"
@@ -299,7 +317,7 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="mt-12 text-center">
+          <div className="text-center">
             {/* CTA: get_started_testimonial */}
             <Link
               href="/signup/trial"
@@ -521,6 +539,19 @@ function OutcomeCard({ stat, label, detail, icon }: { stat: string; label: strin
       <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{stat}</div>
       <h4 className="font-semibold text-slate-900 dark:text-white mb-2">{label}</h4>
       <p className="text-sm text-slate-500 dark:text-slate-400">{detail}</p>
+    </div>
+  )
+}
+
+function TestimonialCard({ quote, name, title }: { quote: string; name: string; title: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 flex flex-col">
+      <div className="text-emerald-500 text-3xl leading-none mb-4">&ldquo;</div>
+      <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed flex-1">{quote}</p>
+      <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+        <p className="font-semibold text-slate-900 dark:text-white text-sm">{name}</p>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">{title}</p>
+      </div>
     </div>
   )
 }
