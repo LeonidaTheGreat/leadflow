@@ -94,6 +94,7 @@ test('sms-delivery-monitor.ts exists and exports expected functions', () => {
   const content = fs.readFileSync(monitorPath, 'utf8')
   assert.ok(content.includes('checkSmsDeliveryHealth'), 'missing checkSmsDeliveryHealth export')
   assert.ok(content.includes('getA2pRegistrationStatus'), 'missing getA2pRegistrationStatus export')
+  assert.ok(content.includes('messagingServiceConfigured'), 'missing messagingServiceConfigured registration flag')
   assert.ok(content.includes('DEGRADED_THRESHOLD'), 'missing DEGRADED_THRESHOLD constant')
   assert.ok(content.includes('CRITICAL_THRESHOLD'), 'missing CRITICAL_THRESHOLD constant')
 })
@@ -106,6 +107,7 @@ test('A2P status API route exists', () => {
   assert.ok(content.includes('getA2pRegistrationStatus'), 'route should call getA2pRegistrationStatus')
   assert.ok(content.includes('isAdminUser'), 'route should enforce admin auth')
   assert.ok(content.includes('riskLevel'), 'route should return riskLevel')
+  assert.ok(content.includes('registration: registrationStatus'), 'route should return registration payload')
 })
 
 test('twilio.ts exports isA2pBlockedError and A2P_ERROR_CODES', () => {

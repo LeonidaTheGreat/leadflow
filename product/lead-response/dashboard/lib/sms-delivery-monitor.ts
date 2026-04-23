@@ -148,9 +148,22 @@ export function getA2pRegistrationStatus(): {
   registered: boolean
   status: 'registered' | 'pending' | 'not_started' | 'unknown'
   daysPending: number | null
+  messagingServiceConfigured: boolean
 } {
-  const status = (process.env.A2P_REGISTRATION_STATUS || 'pending') as string
   const submittedAt = process.env.A2P_REGISTRATION_SUBMITTED_AT
+  const rawStatus = process.env.A2P_REGISTRATION_STATUS
+  const messagingServiceConfigured = Boolean(process.env.TWILIO_MESSAGING_SERVICE_SID)
+
+  const normalizedStatus = rawStatus === 'registered'
+    || rawStatus === 'pending'
+    || rawStatus === 'not_started'
+    || rawStatus === 'unknown'
+    ? rawStatus
+    : rawStatus
+      ? 'unknown'
+      : submittedAt
+        ? 'pending'
+        : 'not_started'
 
   let daysPending: number | null = null
   if (submittedAt) {
@@ -159,8 +172,9 @@ export function getA2pRegistrationStatus(): {
   }
 
   return {
-    registered: status === 'registered',
-    status: status as 'registered' | 'pending' | 'not_started' | 'unknown',
+    registered: normalizedStatus === 'registered',
+    status: normalizedStatus,
     daysPending,
+    messagingServiceConfigured,
   }
 }
