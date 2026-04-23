@@ -17,3 +17,9 @@
 - `leads.sms_opt_out` exists in schema history from `011_twilio_sms_integration.sql`, but current app code does not read or write it.
 - For outbound SMS eligibility and STOP handling, follow the existing pattern: check `lead.dnc || !lead.consent_sms`, and set `dnc = true` plus `consent_sms = false` on opt-out.
 
+## 2025-02-14 - GA4 instrumentation is present but orphaned
+
+- `frontend/src/lib/ga4.ts` defines the GA4 helper functions, but there are no imports or usage sites elsewhere in `frontend/src`.
+- In the current repo snapshot, the frontend source tree only exposes `frontend/src/lib/ga4.ts` plus an unrelated component test, with no visible app entrypoint initializing analytics.
+- Treat current GA4 sessions / bounce / time-on-page conclusions as unreliable until the GA4 helper is actually wired into the production app.
+
