@@ -19,8 +19,8 @@ const supabase = createClient(dbUrl, dbKey)
 const JWT_SECRET = process.env.NPS_SURVEY_JWT_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-in-production'
 const TOKEN_EXPIRY_DAYS = 7
 
-// Survey timing configuration
-const FIRST_SURVEY_DAYS = 14
+// Survey timing configuration — 7 days for faster PMF signal during pilot
+const FIRST_SURVEY_DAYS = 7
 const RECURRING_SURVEY_DAYS = 90
 const PROMPT_DISMISSAL_DAYS = 30
 

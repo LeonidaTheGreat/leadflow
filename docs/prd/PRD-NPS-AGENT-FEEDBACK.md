@@ -1,9 +1,30 @@
 # PRD: NPS / Feedback Survey Mechanism for Real Estate Agents
 **ID:** PRD-NPS-AGENT-FEEDBACK  
-**Status:** draft  
-**Version:** 1.0  
+**Status:** active  
+**Version:** 1.1  
 **Author:** Product Manager  
-**Date:** 2026-07-17  
+**Date:** 2026-04-22 (v1.1 root-cause update)  
+
+---
+
+## 0. Root Cause Analysis (v1.1 — 2026-04-22)
+
+**Metric state:** NPS Score = null in `mission_metrics`. Target = 50. Gap = 50.
+
+**Why null:**
+1. `collection_method = 'manual'` — `MissionMetricCollector` never auto-queries `agent_nps_responses`. Nobody runs a manual update, so it stays null every heartbeat.
+2. Zero responses in `agent_nps_responses` — no agent has submitted a score.
+3. All accounts in `real_estate_agents` are test/synthetic (`@example.com`). No real users have activated.
+4. First survey window was T+14 days — even real pilots wouldn't receive a survey until 2 weeks post-signup.
+
+**Infrastructure status:** ✅ Complete. Tables exist, cron job is in `vercel.json` (runs at 11am daily), `initializeSurveySchedule()` fires on trial-signup, in-app `NPSPrompt` component is wired. The system is ready to collect — it has no users to collect from.
+
+**Fixes applied in v1.1:**
+- `FIRST_SURVEY_DAYS`: 14 → 7 (faster PMF signal during pilot)
+- `mission_metrics.collection_method`: 'manual' → 'nps_collector' (auto-collected each heartbeat)
+- UC created: `MissionMetricCollector: add nps_collector` (genome dev task)
+
+**Remaining gap:** NPS score will stay null until real agents activate and reach the 7-day mark. The NPS gap is a lagging indicator of the activation gap. Close activation first.
 
 ---
 
@@ -33,10 +54,10 @@ LeadFlow AI has no structured way to measure whether paying real estate agents (
 ## 3. User Stories
 
 ### US-1: Automated NPS Survey (Email or In-App)
-> As a real estate agent, I receive an NPS survey 14 days after signup and every 90 days thereafter, so LeadFlow can understand my satisfaction without me having to seek out a feedback channel.
+> As a real estate agent, I receive an NPS survey 7 days after signup and every 90 days thereafter, so LeadFlow can understand my satisfaction without me having to seek out a feedback channel.
 
 **Acceptance Criteria:**
-- Triggered automatically at T+14 days (first survey) and T+90 days intervals.
+- Triggered automatically at T+7 days (first survey) and T+90 days intervals.
 - Survey contains: "How likely are you to recommend LeadFlow AI to another agent?" (0–10 scale).
 - Optional follow-up open field: "What's the #1 thing we could improve?"
 - Survey works via email (primary) and as an in-app prompt (secondary, shown on next dashboard login after trigger fires).
@@ -108,7 +129,7 @@ LeadFlow AI has no structured way to measure whether paying real estate agents (
 ```sql
 CREATE TABLE agent_nps_responses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  agent_id UUID REFERENCES agents(id),
+  agent_id UUID REFERENCES real_estate_agents(id),
   score INTEGER NOT NULL CHECK (score >= 0 AND score <= 10),
   open_text TEXT,
   survey_trigger TEXT NOT NULL, -- 'auto_14d' | 'auto_90d' | 'manual'
@@ -121,7 +142,7 @@ CREATE TABLE agent_nps_responses (
 ### `agent_survey_schedule`
 ```sql
 CREATE TABLE agent_survey_schedule (
-  agent_id UUID PRIMARY KEY REFERENCES agents(id),
+  agent_id UUID PRIMARY KEY REFERENCES real_estate_agents(id),
   next_survey_at TIMESTAMPTZ NOT NULL,
   last_survey_at TIMESTAMPTZ,
   survey_count INTEGER DEFAULT 0,
@@ -143,12 +164,13 @@ CREATE TABLE agent_survey_schedule (
 
 ## 8. Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Survey response rate | ≥ 40% within 7 days of send |
-| NPS score (pilot phase) | ≥ 30 (good for early SaaS) |
-| Churn risk response time | PM reviews detractor within 48h |
-| Feedback submissions (any time) | ≥ 2 per agent per month |
+| Metric | Target | Note |
+|--------|--------|------|
+| Survey response rate | ≥ 40% within 7 days of send | |
+| NPS score (pilot phase) | ≥ 30 (good for early SaaS) | Target 50 is long-term; 30 is pilot gate |
+| Churn risk response time | PM reviews detractor within 48h | |
+| Feedback submissions (any time) | ≥ 2 per agent per month | |
+| Time to first NPS data point | ≤ 7 days post first real activation | Currently null — no real users activated |
 
 ---
 
