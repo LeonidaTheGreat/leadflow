@@ -337,5 +337,38 @@
     "metadata": {},
     "created_at": "2026-02-24T21:25:08.458Z",
     "completed_at": "2026-02-25T16:42:33.983Z"
+  },
+  {
+    "id": "local-1776912288717-c4fa9f26",
+    "title": "Annual Billing Plan PRD",
+    "description": "Create the first workflow task for use case feat-annual-billing-plan. Define the annual billing offer (2 months free, cash upfront), required pricing page copy, Stripe annual price/checkout requirements, dashboard billing entry points, analytics, migration/rollout constraints, and acceptance criteria so implementation can move through PM > Dev > QC.",
+    "project_id": "leadflow",
+    "agent_id": "product",
+    "model": "sonnet",
+    "status": "ready",
+    "priority": 1,
+    "estimated_cost_usd": 2,
+    "estimated_hours": 1,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Document the annual billing use case with clear PRD scope and success metric.",
+      "Specify UX surfaces: pricing page, checkout, and billing/settings entry points.",
+      "Define Stripe/product constraints for annual pricing and cash-upfront billing.",
+      "List engineering acceptance criteria and non-goals for Dev and QC handoff."
+    ],
+    "tags": [
+      "P1",
+      "product",
+      "billing",
+      "stripe",
+      "annual-plan"
+    ],
+    "metadata": {
+      "use_case_id": "feat-annual-billing-plan",
+      "gap_type": "uc_no_tasks",
+      "workflow": "PM > Dev > QC",
+      "created_from_task_id": "c4fa9f26-22d7-4e56-bd25-86ed99f97429"
+    },
+    "created_at": "2026-04-23T02:54:11Z"
   }
 ]
