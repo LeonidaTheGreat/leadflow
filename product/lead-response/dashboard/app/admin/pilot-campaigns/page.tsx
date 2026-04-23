@@ -1,3 +1,22 @@
+/**
+ * Spec
+ * What:
+ * - Update `product/lead-response/dashboard/app/admin/pilot-campaigns/page.tsx`
+ *   to document the task scope and preserve the existing send-invite UI behavior.
+ * - Update `product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts`
+ *   so `POST` returns the generated `inviteUrl` that the admin page already expects
+ *   for immediate outreach/copy flow after sending an invite.
+ * Verify:
+ * - `npm run build` from `product/lead-response/dashboard` completes successfully.
+ * - `grep -n "inviteUrl" product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts`
+ *   shows the API now returns the invite URL in both fresh-send and resend paths.
+ * - In `/admin/pilot-campaigns`, clicking "Send Invite" should mark the target contacted
+ *   and reveal a copyable invite link instead of an undefined value.
+ * Boundaries:
+ * - Do not change invite email copy, database schema, or unrelated admin pages/routes.
+ * - Do not alter campaign selection/filtering logic beyond what is required for invite send flow.
+ * - Do not touch unrelated modified files in the repo.
+ */
 'use client'
 
 import { useEffect, useState } from 'react'
