@@ -370,5 +370,39 @@
       "created_from_task_id": "c4fa9f26-22d7-4e56-bd25-86ed99f97429"
     },
     "created_at": "2026-04-23T02:54:11Z"
+  },
+  {
+    "id": "local-1776912298717-bb4a52ee",
+    "title": "Lapsed Trial Reactivation PRD",
+    "description": "Create the first workflow task for use case feat-lapsed-trial-reactivation. Define the reactivation audience query, admin trigger endpoint, Resend email template requirements, session or magic-link return path, analytics and admin funnel reporting, send logging, rollout safeguards, and acceptance criteria so implementation can move through PM > Dev > QC.",
+    "project_id": "leadflow",
+    "agent_id": "product",
+    "model": "sonnet",
+    "status": "ready",
+    "priority": 1,
+    "estimated_cost_usd": 2,
+    "estimated_hours": 1,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Document the lapsed-trial reactivation use case with audience definition, goal, and success metric.",
+      "Specify product requirements for the admin campaign trigger, email content, and return-to-dashboard flow.",
+      "Define data, tracking, and reporting requirements for sent, opened, and re-activated agents.",
+      "List engineering acceptance criteria, constraints, and non-goals for Dev and QC handoff."
+    ],
+    "tags": [
+      "P1",
+      "product",
+      "reactivation",
+      "email",
+      "resend",
+      "admin"
+    ],
+    "metadata": {
+      "use_case_id": "feat-lapsed-trial-reactivation",
+      "gap_type": "uc_no_tasks",
+      "workflow": "PM > Dev > QC",
+      "created_from_task_id": "bb4a52ee-8585-4162-8351-7cbb6ebcc216"
+    },
+    "created_at": "2026-04-23T02:54:58Z"
   }
 ]
