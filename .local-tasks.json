@@ -404,5 +404,39 @@
       "created_from_task_id": "bb4a52ee-8585-4162-8351-7cbb6ebcc216"
     },
     "created_at": "2026-04-23T02:54:58Z"
+  },
+  {
+    "id": "local-1776913709109-f8149ea0",
+    "title": "NPS Metric Auto-Collection PRD",
+    "description": "Create the first workflow task for use case uc-c740b281-2c54-4f6d-8bd2-e2d346c28e98. Define how the nps_collector workflow identifies eligible completed conversations, issues and validates survey tokens, sends or schedules NPS survey outreach, records responses into NPS metric storage, tracks collection health, and documents rollout safeguards and acceptance criteria so implementation can move through PM > Dev > QC.",
+    "project_id": "leadflow",
+    "agent_id": "product",
+    "model": "sonnet",
+    "status": "ready",
+    "priority": 1,
+    "estimated_cost_usd": 2,
+    "estimated_hours": 1,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Document the NPS auto-collection use case with trigger conditions, owner, goal, and success metric.",
+      "Specify product requirements for survey token generation, outreach timing/channel, and response capture via nps_collector.",
+      "Define data, observability, and reporting requirements for sent surveys, collected responses, and NPS rollups.",
+      "List engineering acceptance criteria, rollout safeguards, constraints, and non-goals for Dev and QC handoff."
+    ],
+    "tags": [
+      "P1",
+      "product",
+      "nps",
+      "metrics",
+      "automation",
+      "nps-collector"
+    ],
+    "metadata": {
+      "use_case_id": "uc-c740b281-2c54-4f6d-8bd2-e2d346c28e98",
+      "gap_type": "uc_no_tasks",
+      "workflow": "PM > Dev > QC",
+      "created_from_task_id": "f8149ea0-8c2e-413b-abbf-519e00097815"
+    },
+    "created_at": "2026-04-23T03:08:29Z"
   }
 ]
