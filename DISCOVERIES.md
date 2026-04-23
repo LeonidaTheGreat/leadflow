@@ -20,6 +20,7 @@
 ## 2025-02-14 - GA4 instrumentation is present but orphaned
 
 - `frontend/src/lib/ga4.ts` defines the GA4 helper functions, but there are no imports or usage sites elsewhere in `frontend/src`.
+- GA4 utility exists but is not imported anywhere in the current `frontend/src` tree.
 - In the current repo snapshot, the frontend source tree only exposes `frontend/src/lib/ga4.ts` plus an unrelated component test, with no visible app entrypoint initializing analytics.
 - Treat current GA4 sessions / bounce / time-on-page conclusions as unreliable until the GA4 helper is actually wired into the production app.
 
