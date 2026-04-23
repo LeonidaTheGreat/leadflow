@@ -1,19 +1,16 @@
 /**
  * Spec
  * What:
- * - Keep the billing checkout audit write in `product/lead-response/dashboard/app/api/billing/create-checkout/route.ts`
- *   inside the `POST` handler, and ensure upgrade attempts are logged to `checkout_sessions`.
- * - Add a regression test in `product/lead-response/dashboard/tests/fix-subscription-attempts-table-does-not-exist.test.ts`
- *   that verifies this route only writes audit data to `checkout_sessions` with the expected
- *   column mapping.
+ * - Change `isValidPriceId()` in `product/lead-response/dashboard/app/api/billing/create-checkout/route.ts`
+ *   so Stripe Price IDs are validated with the intended alphanumeric length range instead of the
+ *   broken `{14 }` quantifier that rejects valid IDs.
  * Verify:
- * - Run `npm test -- --runInBand tests/fix-subscription-attempts-table-does-not-exist.test.js` from
- *   `product/lead-response/dashboard` and expect all assertions to pass.
- * - Run a grep for the missing-table name against this route and expect no matches.
+ * - Run a targeted regex check from `product/lead-response/dashboard` with Node and expect
+ *   `price_1QvIEf2eZvKYlo2CkuDLQABG => true` plus invalid placeholders returning `false`.
+ * - Grep this file for `^price_[A-Za-z0-9]{14,30}$` and confirm the validator now uses that pattern.
  * Boundaries:
- * - Do not change Stripe price configuration, success/cancel redirects, or unrelated billing routes.
- * - Do not modify database schema/migrations for this fix; reroute stays within the existing
- *   `checkout_sessions` table.
+ * - Do not change Stripe checkout flow, tier/env mappings, redirects, database writes, or unrelated routes.
+ * - Do not modify schema, migrations, or pricing configuration for this hotfix.
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
@@ -51,7 +48,7 @@ const PRICE_ID_ENV_MAP: Record<string, string> = {
  * This rejects placeholder values like price_starter_49, price_pro_149, price_team_399.
  */
 function isValidPriceId(id: string | undefined): id is string {
-  return typeof id === 'string' && /^price_[A-Za-z0-9]{14 }$/.test(id)
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,30}$/.test(id)
 }
 
 /** Validate a UUID v4 format */
