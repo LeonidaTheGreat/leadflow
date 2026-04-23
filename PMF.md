@@ -181,21 +181,34 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ---
 
-## 8. Current Status (Day 79 of 90 — 2026-04-08)
+## 8. Current Status (Day 67 of 180 — 2026-04-23)
 
 | Component | Status | Note |
 |-----------|--------|------|
 | MVP Features | ✅ Complete | None |
-| Registered Agents | ✅ 363 agents | 344 trial, 11 pilot, 0 paying |
-| Paying Subscribers | ❌ 0 | Critical — 11 days to Day 90 |
-| $20K MRR Goal | ⚠️ Deferred to Day 180 | Mathematically unreachable by Day 90 |
-| **Near-term Milestone** | **First paying customer by Day 90** | **Priority #1** |
+| Real Agents in DB | ⚠️ 3 | All owner test accounts — 0 real customers |
+| Test/QA Accounts | 21 | Created 2026-04-21, polluting funnel metrics |
+| Phantom Subscriptions | ⚠️ 3 | sub_test_schema_alignment_* (test data, must delete) |
+| Paying Subscribers | ❌ 0 | Critical |
+| MRR | ❌ $0 | Phantom $597 from test subs — real is $0 |
+| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 112 days remaining |
+| **Near-term Milestone** | **First paying customer ASAP** | **Priority #1** |
 
-**Reality check (Day 79):** 363 agents registered, $0 MRR. Reaching $20K MRR (requires ~134 Pro
-subscribers) in 11 days is not achievable. Goal redefined: convert 1 pilot agent to a paying
-customer before Day 90 (2026-05-15). $20K MRR target moved to Day 180 (2026-08-13).
+**Reality check (2026-04-23):** DB shows 0 real customers. Earlier "363 agents" figure is stale/incorrect — the local PostgreSQL (production DB) has only 24 agents, 21 of which are test/QA data inserted 2026-04-21. No real humans have completed onboarding.
 
-**Next action:** Personal outreach to top 3 most active pilot agents this week.
+**Funnel state:** Acquisition = 0. Conversion optimization is irrelevant until there are real users.
+
+**Next actions (priority order):**
+1. Stojan: direct personal outreach to 5-10 real estate agent contacts this week (no code needed)
+2. Merge `uc-marketing-campaign-launch` (needs_merge, P0) to activate traffic channels
+3. Start `feat-conversion-call-booking` (P0) — add demo call CTA to pricing/billing pages
+4. Execute `fix-phantom-mrr-test-data-polluting-metric` (P0, ready) — clean test subscriptions
+
+**Priority changes (2026-04-23):**
+- `feat-conversion-call-booking`: P1 → **P0** (fastest path to first paying customer)
+- `fix-phantom-mrr-test-data-polluting-metric`: P1 → **P0** (metrics are corrupted)
+- `feat-annual-billing-plan`: P1 → P2 (premature with 0 paying customers)
+- `feat-lapsed-trial-reactivation`: P1 → P2 (premise invalid — no real lapsed users in DB)
 
 ---
 
