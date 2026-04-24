@@ -93,7 +93,6 @@ export async function POST(
         success: true,
         agentId: (existingInvite as any).agent_id,
         expiresAt: (existingInvite as any).token_expires_at,
-        inviteUrl,
         emailSent,
         note: 'Existing invite refreshed and resent' })
     }
@@ -176,7 +175,6 @@ export async function POST(
       success: true,
       agentId,
       expiresAt: expiresAt.toISOString(),
-      inviteUrl,
       emailSent })
   } catch (error: any) {
     logger.error('Error in target invite endpoint:', error)
