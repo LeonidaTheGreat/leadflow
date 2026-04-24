@@ -482,29 +482,5 @@
       "mission": "Subscription Funnel Tracking: Apply Migration + Checkout Abandonment Recovery",
       "task_kind": "workflow-task"
     }
-  },
-  {
-    "id": "feat-revenue-funnel-visibility-workflow-task",
-    "title": "Implement revenue funnel dashboard visibility and conversion alerts",
-    "status": "pending",
-    "priority": "high",
-    "type": "feature",
-    "created_at": "2026-04-29",
-    "owner": "dev",
-    "use_case_id": "feat-revenue-funnel-visibility",
-    "spec_path": "docs/task-specs/feat-revenue-funnel-visibility-workflow-task.md",
-    "tags": [
-      "analytics",
-      "funnel",
-      "mrr",
-      "alerts",
-      "dashboard"
-    ],
-    "metadata": {
-      "origin": "project-graph-gap",
-      "gap_type": "uc_no_tasks",
-      "mission": "Revenue Funnel Dashboard — Track Signups to MRR with Alerts",
-      "task_kind": "workflow-task"
-    }
   }
 ]
