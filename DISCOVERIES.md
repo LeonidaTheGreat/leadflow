@@ -23,3 +23,9 @@
 - In the current repo snapshot, the frontend source tree only exposes `frontend/src/lib/ga4.ts` plus an unrelated component test, with no visible app entrypoint initializing analytics.
 - Treat current GA4 sessions / bounce / time-on-page conclusions as unreliable until the GA4 helper is actually wired into the production app.
 
+## 2026-04-24 — stale uc_no_tasks signal for lapsed trial reactivation
+
+- The use case `feat-lapsed-trial-reactivation` already has a kickoff workflow task in `.local-tasks.json`: `Lapsed Trial Reactivation PRD` (`local-1776912298717-bb4a52ee`), assigned to `agent_id: product`.
+- If genome/project-graph reports `uc_no_tasks` for this use case again, verify the existing task record before appending a duplicate; the gap signal can lag behind task creation.
+- The canonical handoff spec for that kickoff task is `docs/task-specs/feat-lapsed-trial-reactivation-workflow-task.md`.
+
