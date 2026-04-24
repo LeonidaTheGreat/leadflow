@@ -181,34 +181,45 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ---
 
-## 8. Current Status (Day 67 of 180 — 2026-04-23)
+## 8. Current Status (Day 68 of 180 — 2026-04-24)
 
 | Component | Status | Note |
 |-----------|--------|------|
 | MVP Features | ✅ Complete | None |
 | Real Agents in DB | ⚠️ 3 | All owner test accounts — 0 real customers |
 | Test/QA Accounts | 21 | Created 2026-04-21, polluting funnel metrics |
-| Phantom Subscriptions | ⚠️ 3 | sub_test_schema_alignment_* (test data, must delete) |
+| Phantom Subscriptions | ⚠️ 3 | sub_test_schema_alignment_* (test data, not real revenue) |
 | Paying Subscribers | ❌ 0 | Critical |
 | MRR | ❌ $0 | Phantom $597 from test subs — real is $0 |
-| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 112 days remaining |
+| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 111 days remaining |
 | **Near-term Milestone** | **First paying customer ASAP** | **Priority #1** |
 
-**Reality check (2026-04-23):** DB shows 0 real customers. Earlier "363 agents" figure is stale/incorrect — the local PostgreSQL (production DB) has only 24 agents, 21 of which are test/QA data inserted 2026-04-21. No real humans have completed onboarding.
+### Funnel Bottleneck Analysis (2026-04-24)
 
-**Funnel state:** Acquisition = 0. Conversion optimization is irrelevant until there are real users.
+The entire funnel is broken at Stage 1 — Acquisition. With 0 real users in the system, every downstream optimization (conversion, retention, NPS) is irrelevant.
+
+| Stage | Status | Blocker |
+|-------|--------|---------|
+| **Acquisition** | ❌ Dead | `uc-marketing-campaign-launch` stuck in needs_merge; no traffic channels live |
+| **Signup → Trial** | ⚠️ Functional but untested | Email delivery broken (Resend domain not verified) — activation emails not sent |
+| **Trial → Aha Moment** | ✅ Built | Lead Simulator works; A2P 10DLC incomplete for real SMS |
+| **Aha → Upgrade** | ⚠️ Built, not started | `feat-conversion-call-booking` P0 but not_started — no demo CTA in product |
+| **Paid** | ❌ $0 | Stripe checkout built but untested with real users |
+
+**Core constraint:** No real humans have ever touched the product. The funnel has never been exercised by a real user. All code quality improvements and feature work are irrelevant until this changes.
 
 **Next actions (priority order):**
-1. Stojan: direct personal outreach to 5-10 real estate agent contacts this week (no code needed)
-2. Merge `uc-marketing-campaign-launch` (needs_merge, P0) to activate traffic channels
-3. Start `feat-conversion-call-booking` (P0) — add demo call CTA to pricing/billing pages
-4. Execute `fix-phantom-mrr-test-data-polluting-metric` (P0, ready) — clean test subscriptions
+1. **Stojan: direct outreach this week** — 5-10 personal contacts, no code needed. Fastest path to first paying customer.
+2. **Unblock email delivery** — `fix-email-delivery-resend-from-domain-not-verified` (promoted to P0). Without this, no trial activation emails land.
+3. **Merge `uc-marketing-campaign-launch`** (needs_merge, P0) — activates traffic channels. Do not let this stay blocked.
+4. **Start `feat-conversion-call-booking`** (P0, not_started) — "Book a demo" CTA on billing page. Fastest in-product conversion path.
+5. **Clean phantom test data** — `fix-phantom-mrr-test-data-polluting-metric` (P0, ready) — metrics are unreadable until test subs are purged.
 
-**Priority changes (2026-04-23):**
-- `feat-conversion-call-booking`: P1 → **P0** (fastest path to first paying customer)
-- `fix-phantom-mrr-test-data-polluting-metric`: P1 → **P0** (metrics are corrupted)
-- `feat-annual-billing-plan`: P1 → P2 (premature with 0 paying customers)
-- `feat-lapsed-trial-reactivation`: P1 → P2 (premise invalid — no real lapsed users in DB)
+**Priority changes (2026-04-24):**
+- `fix-email-delivery-resend-from-domain-not-verified`: P1 → **P0** (hard acquisition blocker — no activation emails land without it)
+- `feat-annual-billing-plan`: P2 → **P3** (no paying customers to offer annual billing to)
+- `feat-lapsed-trial-reactivation`: P2 → **P3** (no real lapsed users exist)
+- `c740b281` NPS Auto-Collection: P2 → **P3** (no real users to survey)
 
 ---
 
