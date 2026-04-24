@@ -458,5 +458,29 @@
       "auto_created_by": "genome-layer-2",
       "task_kind": "implementation"
     }
+  },
+  {
+    "id": "feat-subscription-funnel-tracking-workflow-task",
+    "title": "Implement subscription funnel tracking migration and checkout abandonment recovery",
+    "status": "pending",
+    "priority": "high",
+    "type": "feature",
+    "created_at": "2026-04-18",
+    "owner": "dev",
+    "use_case_id": "feat-subscription-funnel-tracking",
+    "spec_path": "docs/task-specs/feat-subscription-funnel-tracking-workflow-task.md",
+    "tags": [
+      "billing",
+      "stripe",
+      "analytics",
+      "checkout",
+      "recovery"
+    ],
+    "metadata": {
+      "origin": "project-graph-gap",
+      "gap_type": "uc_no_tasks",
+      "mission": "Subscription Funnel Tracking: Apply Migration + Checkout Abandonment Recovery",
+      "task_kind": "workflow-task"
+    }
   }
 ]
