@@ -499,9 +499,10 @@ export async function sendPasswordResetEmail(
     </html>
   `
 
+  // Don't log the reset URL with token to database — only store agent name
   return sendEmail(agentEmail, subject, html, agentId, 'password_reset', {
     agentName: data.agentName,
-    resetUrl: data.resetUrl,
+    // Note: resetUrl is NOT logged — it contains the raw token which must not be stored in database
   })
 }
 
@@ -779,10 +780,11 @@ export async function sendPilotInviteEmail(
     </html>
   `
 
+  // Don't log the invite URL with token to database — only store email address and agent name
   return sendEmail(agentEmail, subject, html, agentId, 'pilot_invite', {
     agentName: data.agentName,
     message: data.message,
-    inviteUrl: data.inviteUrl,
+    // Note: inviteUrl is NOT logged — it contains the raw token which must not be stored in database
   })
 }
 
