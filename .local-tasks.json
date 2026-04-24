@@ -438,5 +438,38 @@
       "created_from_task_id": "f8149ea0-8c2e-413b-abbf-519e00097815"
     },
     "created_at": "2026-04-23T03:08:29Z"
+  },
+  {
+    "id": "local-1777044140567-e76d4483",
+    "title": "Real Pilot Recruitment Campaign Brief",
+    "description": "Create the first workflow task for use case fix-zero-real-pilots-recruited. Turn the existing pilot recruitment strategy into an executable campaign brief that defines the pilot target profile, sourcing channels, outreach sequencing, weekly contact goals, conversion checkpoints, success metrics, and the exact operational or product handoffs needed for Dev and QC to support pilot invite execution and signup tracking.",
+    "project_id": "leadflow",
+    "agent_id": "marketing",
+    "model": "sonnet",
+    "status": "ready",
+    "priority": 1,
+    "estimated_cost_usd": 2,
+    "estimated_hours": 1,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Document the ideal real-estate-agent pilot profile, market constraints, and minimum qualification bar for a real pilot.",
+      "Define the outreach plan across manual outreach, referrals or partners, and the existing invite or signup flow surfaces.",
+      "Set weekly funnel goals from identified prospects to contacted, responded, invited, activated, and recruited pilots, including source-of-truth metrics.",
+      "List required Dev and QC follow-up work for tooling, invite flow support, tracking, and admin visibility, plus explicit non-goals."
+    ],
+    "tags": [
+      "P1",
+      "marketing",
+      "pilot-recruitment",
+      "activation",
+      "growth"
+    ],
+    "metadata": {
+      "use_case_id": "fix-zero-real-pilots-recruited",
+      "gap_type": "uc_no_tasks",
+      "workflow": "Marketing > Dev > QC",
+      "created_from_task_id": "e76d4483-f21a-403c-86e7-f5c23179f143"
+    },
+    "created_at": "2026-04-24T00:15:40Z"
   }
 ]
