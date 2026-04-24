@@ -438,5 +438,41 @@
       "created_from_task_id": "f8149ea0-8c2e-413b-abbf-519e00097815"
     },
     "created_at": "2026-04-23T03:08:29Z"
+  },
+  {
+    "id": "local-1776995055922-3507c881",
+    "title": "Implement Pilot Signup Follow-Up Sequence",
+    "description": "Create the first implementation workflow task for use case fix-pilot-outreach-has-not-happened-11-days-left. Build the approved pilot signup follow-up sequence from docs/prd/PRD-PILOT-SIGNUP-FOLLOW-UP-SEQUENCE.md, including the 11-day-left outreach trigger, enrollment and dedupe rules, outreach sequencing, observability, rollout safeguards, and test coverage so the PM > Dev > QC workflow can start execution.",
+    "project_id": "leadflow",
+    "agent_id": "dev",
+    "model": "sonnet",
+    "status": "ready",
+    "priority": 1,
+    "estimated_cost_usd": 4,
+    "estimated_hours": 4,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Implement the pilot follow-up trigger logic for agents who have not started outreach with 11 days left in the pilot window.",
+      "Add enrollment, suppression, and dedupe rules so the sequence runs only for eligible pilot accounts and avoids duplicate outreach.",
+      "Wire the approved outreach sequence, tracking, and observability requirements from the PRD into the implementation plan and code changes.",
+      "Add or update tests and documentation needed for QC to verify the follow-up workflow safely."
+    ],
+    "tags": [
+      "P1",
+      "dev",
+      "pilot",
+      "follow-up",
+      "automation",
+      "retention"
+    ],
+    "metadata": {
+      "use_case_id": "fix-pilot-outreach-has-not-happened-11-days-left",
+      "gap_type": "uc_no_tasks",
+      "workflow": "PM > Dev > QC",
+      "prd_path": "docs/prd/PRD-PILOT-SIGNUP-FOLLOW-UP-SEQUENCE.md",
+      "spec_doc": "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md",
+      "created_from_task_id": "3507c881-f6dd-4053-b185-a47af40f8973"
+    },
+    "created_at": "2026-04-24T01:44:15Z"
   }
 ]
