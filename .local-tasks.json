@@ -458,5 +458,40 @@
       "auto_created_by": "genome-layer-2",
       "task_kind": "implementation"
     }
+  },
+  {
+    "id": "local-1777063221708-c11057d4",
+    "title": "Conversion Call Booking PRD",
+    "description": "Create the first workflow task for use case feat-conversion-call-booking. Define the PM-ready PRD for adding a high-intent \u201cBook a 15-min demo / Talk to a human\u201d CTA across pricing-adjacent surfaces, confirm the Cal.com booking destination and copy strategy, specify GA4 tracking requirements, decide whether the 24-hour checkout-abandonment follow-up email is in v1 or explicitly deferred, and document acceptance criteria, rollout constraints, and non-goals so implementation can move cleanly through PM > Dev > QC.",
+    "project_id": "leadflow",
+    "agent_id": "product",
+    "model": "sonnet",
+    "status": "ready",
+    "priority": 1,
+    "estimated_cost_usd": 2,
+    "estimated_hours": 1,
+    "parent_task_id": null,
+    "acceptance_criteria": [
+      "Document the conversion-call-booking use case with target audience, goal, and success metric tied to trial-to-paid conversion.",
+      "Specify the required product surfaces and CTA variants for /pricing, /settings/billing, and /dashboard/trial-expired.",
+      "Define the Cal.com destination, event tracking payloads, and source taxonomy for CTA click analytics.",
+      "Clarify v1 scope versus deferred scope for checkout-abandonment follow-up email and any implementation constraints.",
+      "Provide engineering-ready acceptance criteria, dependencies, and non-goals for Dev and QC handoff."
+    ],
+    "tags": [
+      "P1",
+      "product",
+      "conversion",
+      "pricing",
+      "calcom",
+      "analytics"
+    ],
+    "metadata": {
+      "use_case_id": "feat-conversion-call-booking",
+      "gap_type": "uc_no_tasks",
+      "workflow": "PM > Dev > QC",
+      "created_from_task_id": "c11057d4-79df-4a55-91be-cc2d709d4e65"
+    },
+    "created_at": "2026-04-24T20:00:21Z"
   }
 ]
