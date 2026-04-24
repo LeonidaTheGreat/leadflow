@@ -33,13 +33,26 @@ API_URL="${LEADFLOW_API_URL:-https://api.imagineapi.org/rest/v1}"
 API_KEY="${LEADFLOW_API_KEY:-}"
 VERBOSE=false
 JSON_OUTPUT=false
+SKIP_WATCHDOG=false
 
 for arg in "$@"; do
   case $arg in
     --verbose) VERBOSE=true ;;
     --json) JSON_OUTPUT=true ;;
+    --skip-watchdog) SKIP_WATCHDOG=true ;;
   esac
 done
+
+# ── Infrastructure preflight ─────────────────────────────────────────────────
+# Ensure cloudflared and api-server are up before running tests that depend on
+# the public API URL (api.imagineapi.org → Cloudflare tunnel → port 8788).
+# The watchdog starts them silently if down; failures are reported per-test.
+if ! $SKIP_WATCHDOG; then
+  _WATCHDOG="$_SCRIPT_DIR/infra-watchdog.sh"
+  if [ -x "$_WATCHDOG" ]; then
+    "$_WATCHDOG" --quiet || true  # best-effort; individual tests report specific failures
+  fi
+fi
 
 PASSED=0
 FAILED=0
