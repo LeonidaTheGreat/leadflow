@@ -438,5 +438,25 @@
       "created_from_task_id": "f8149ea0-8c2e-413b-abbf-519e00097815"
     },
     "created_at": "2026-04-23T03:08:29Z"
+  },
+  {
+    "id": "4a974372-43f2-4560-b073-c66a98f956d2",
+    "title": "Add urgency and scarcity to landing page conversion flow",
+    "agent_id": "dev",
+    "status": "pending",
+    "created_at": "2025-02-14T00:00:00.000Z",
+    "priority": "high",
+    "description": "Implement credible urgency and scarcity messaging on the landing page so visitors have a clear reason to sign up now. Update the landing page in product/lead-response/dashboard/app/page.tsx and extend landing-page verification coverage.",
+    "metadata": {
+      "workflow": "Dev > QC",
+      "origin": "project-graph-gap",
+      "gap_type": "uc_no_tasks",
+      "use_case_id": "fix-no-urgency-or-scarcity-mechanism",
+      "use_case_title": "No urgency or scarcity mechanism",
+      "task_spec": "docs/task-specs/fix-no-urgency-or-scarcity-mechanism-workflow-task.md",
+      "implementation_target": "product/lead-response/dashboard/app/page.tsx",
+      "auto_created_by": "genome-layer-2",
+      "task_kind": "implementation"
+    }
   }
 ]
