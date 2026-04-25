@@ -1,0 +1,93 @@
+{
+  "date": "2026-04-25",
+  "genome_score": 52,
+  "score_rationale": "E2E 12/12 and 0 codebase violations are strong positives (+35). Offset by: 45 dev agent failures dominated by 'no commits on branch' pattern (-18), 4 P0 UCs stuck in needs_merge (-8), Day 79 with $0 MRR (-10), 3 pilot recruitment UCs burning cycles on inherently human tasks (-7).",
+
+  "priority_changes": [
+    {
+      "uc_id": "fix-email-delivery-resend-from-domain-not-verified",
+      "to": 0,
+      "reason": "Email delivery is blocked by unverified Resend domain. No conversion emails, trial onboarding emails, or campaign emails can be sent. This is a direct blocker to first paying customer."
+    },
+    {
+      "uc_id": "fix-zero-conversions-no-paying-customers-from-landing-",
+      "to": 0,
+      "reason": "Zero conversions from landing page is the mission-critical gap. Promoting to P0 alongside email delivery — both must be resolved before Day 90."
+    }
+  ],
+
+  "cancellations": [],
+
+  "action_items": [
+    {
+      "type": "fix",
+      "description": "Retry: Fix Email Delivery — Resend Test Domain Blocks All Outgoing Emails. Previous attempt FAILED because test file was placed in product/lead-response/dashboard/tests/ instead of tests/. HARD CONSTRAINT: ALL test files must be in project-root tests/ directory (tests/e2e/, tests/integration/, or tests/unit/). Scope: update Resend sender config to use verified domain or a working test fallback. Expected: emails successfully delivered from the system; no 'domain not verified' errors in logs.",
+      "priority": 0,
+      "reason": "P1 → P0 escalation. Previous failure was a test path error, not a code problem. Retrying with explicit constraint."
+    },
+    {
+      "type": "fix",
+      "description": "Retry: Zero conversions — no paying customers from landing page. Previous attempt failed with API syntax error. Narrow scope: audit ONLY the Stripe checkout flow — find the broken link between 'Start Trial' button and Stripe session creation. Check: correct price IDs in env, checkout API route syntax, redirect URLs. Do NOT rewrite the landing page. Expected: clicking 'Start Trial' initiates a Stripe checkout session without 4xx/5xx errors.",
+      "priority": 0,
+      "reason": "Day 79/90. Zero paying customers. This is the mission-critical fix. Retrying with tighter scope to prevent another syntax-error failure."
+    },
+    {
+      "type": "fix",
+      "description": "Verify and close UC fix-no-urgency-or-scarcity-mechanism: Commit ba14031e ('Improve: uc_no_tasks — fix-no-urgency-or-scarcity-mechanism #1302') appears to have implemented the fix. Read that commit diff, confirm acceptance criteria from the UC are met (urgency banner visible on landing page, scarcity signal present), then mark UC as done if verified. If criteria are NOT met, reopen with specific gap description.",
+      "priority": 2,
+      "reason": "UC is still in_progress but a commit with this UC's name was merged. Verify before retrying — avoid duplicating work that was already done."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add rule: TEST FILE PLACEMENT — ALL test files MUST be placed under the project-root tests/ directory: tests/e2e/, tests/integration/, or tests/unit/. NEVER place test files in product/lead-response/dashboard/tests/ or any subdirectory outside of tests/. After writing a test file, verify the path starts with tests/ before committing. Verification will reject any test file outside tests/ and fail the task.",
+      "priority": 1,
+      "reason": "3+ consecutive dev tasks failed in the last 7 days because test files were placed in product/lead-response/dashboard/tests/ instead of tests/. This is a repeated, preventable failure pattern."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add rule: COMMIT VERIFICATION — Before reporting task completion, run 'git log --oneline HEAD -1' and confirm your commit is present. 'No commits on branch' is the #1 cause of task failure (majority of 45 failures this week). If you have nothing to commit (task was already done, or no changes needed), say so explicitly in your completion report with evidence — do NOT exit silently without committing or explaining.",
+      "priority": 1,
+      "reason": "45 dev failures this week. The dominant failure mode is agents spawning, running, then exiting without committing. Adding an explicit self-check step will surface this before verification fails."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "product",
+      "description": "Add rule: DEDUP CHECK — Before creating any task, query: SELECT id, status FROM tasks WHERE use_case_id = '<uc_id>' AND agent_id = '<agent>' AND status IN ('done','in_progress','ready') ORDER BY created_at DESC LIMIT 1. If a recent completed or active task exists for this UC+agent combination, do NOT create a new task — report the existing task ID in your completion report instead.",
+      "priority": 2,
+      "reason": "Product agent creating duplicate tasks for UCs that already have completed tasks, causing 'Archived: duplicate' failures and wasted compute."
+    },
+    {
+      "type": "mission_proposal",
+      "description": "Mark 3 pilot recruitment UCs as blocked_human and stop burning agent cycles on them: fix-zero-real-pilots-recruited, fix-pilot-outreach-has-not-happened-11-days-left, fix-30-pilot-campaign-stalled-at-day-8. These require Stojan to personally reach out to real estate agents — no agent can perform direct human outreach. Update implementation_status to 'blocked' with blocked_reason='blocked_human' and surface them as human action items instead. Cancel any pending retry tasks for these UCs.",
+      "priority": 1,
+      "reason": "These UCs have exhausted 3+ retry cycles. Marketing agent cannot recruit real humans. Every retry cycle ($2-5) is wasted compute. The path forward is human action, not more agent retries."
+    }
+  ],
+
+  "human_action_items": [
+    {
+      "description": "Resend domain verification: Log into Resend.com and verify the production sending domain (imagineapi.org or leadflowai.com). Until verified, ALL outbound emails are blocked — trial onboarding, conversion campaigns, and follow-ups fail silently. This is blocking the email delivery UC and all email-dependent conversion paths.",
+      "can_eliminate": false,
+      "elimination_proposal": "DNS verification must be performed by domain owner. Cannot be automated. However, once done it is permanent — one-time 10-minute task."
+    },
+    {
+      "description": "A2P 10DLC registration: Complete the Twilio A2P 10DLC registration in the Twilio console (twilio.com/console). No agent can submit this form — it requires human business details and campaign description. Without completion, outbound SMS to non-trial numbers is blocked, killing the core product flow.",
+      "can_eliminate": false,
+      "elimination_proposal": "External regulatory requirement. Must be completed by a human. Estimated 30 minutes to complete the form."
+    },
+    {
+      "description": "Pilot outreach — 21 days left to Day 90: fix-zero-real-pilots-recruited, fix-pilot-outreach-has-not-happened-11-days-left, and fix-30-pilot-campaign-stalled-at-day-8 are all blocked on human outreach. Use the invite-pilot-signups.js script (scripts/tasks/) to identify candidates, then reach out directly via DM, phone, or email. Target: 5 pilots onboarded before Day 85.",
+      "can_eliminate": false,
+      "elimination_proposal": "Personal outreach cannot be fully automated. However, once A2P is complete and email is verified, automated follow-up sequences can run. First contact still requires human touch."
+    },
+    {
+      "description": "4 P0/P3 UCs in needs_merge state: feat-revenue-funnel-visibility, feat-subscription-funnel-tracking, uc-marketing-campaign-launch (P0), fix-lasttaskcreated-not-set-in-dev-dev-retry-path-line, fix-lasttaskcreated-not-set-in-qc-dev-escalation-path- (P3). Check GitHub PR status. If QC-approved and CI passes, the orchestrator merge loop should auto-merge within 1 heartbeat. If stuck, check CI failure reason and unblock manually.",
+      "can_eliminate": true,
+      "elimination_proposal": "If the orchestrator's checkPRReviews() loop is functioning correctly, these should resolve automatically. Verify the loop is running and CI is green on these PRs."
+    }
+  ],
+
+  "focus_today": "Unblock email delivery (domain verification by Stojan) and retry the zero-conversions checkout fix with narrowed scope — these are the last technical blockers before any conversion from the existing 363 trial agents is possible."
+}
