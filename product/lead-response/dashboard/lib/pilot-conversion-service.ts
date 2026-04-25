@@ -31,23 +31,38 @@ const FROM_NAME = 'LeadFlow';
 const STRIPE_PRICE_PRO = process.env.STRIPE_PRICE_PRO;
 
 /**
- * Milestone configuration
+ * Milestone configuration (90-day pilot: PILOT_TRIAL_DAYS = 90)
  */
 export const MILESTONES = {
   day_30: {
     days: 30,
-    subject: '{{firstName}}, you\'re halfway through your pilot — here\'s what you\'ve achieved 🚀',
+    subject: '{{firstName}}, you\'re 1/3 through your pilot — here\'s what you\'ve achieved 🚀',
     template: 'day30_midpoint'
   },
   day_45: {
     days: 45,
-    subject: '{{firstName}}, only 15 days left — don\'t lose your AI advantage ⏰',
+    subject: '{{firstName}}, halfway through your pilot — keep your AI advantage ⏰',
     template: 'day45_urgent'
   },
   day_55: {
     days: 55,
-    subject: '{{firstName}}, 5 days left: Secure your Pro access now ⚠️',
-    template: 'day55_final'
+    subject: '{{firstName}}, 35 days left — time to lock in your results ⏰',
+    template: 'day55_warning'
+  },
+  day_75: {
+    days: 75,
+    subject: '{{firstName}}, only 15 days left — your AI lead response is almost gone ⚠️',
+    template: 'day75_urgent'
+  },
+  day_79: {
+    days: 79,
+    subject: '{{firstName}}, 11 days left — don\'t let your AI advantage expire 🚨',
+    template: 'day79_critical'
+  },
+  day_85: {
+    days: 85,
+    subject: '{{firstName}}, FINAL NOTICE: 5 days to keep your Pro access ⛔',
+    template: 'day85_final'
   }
 } as const;
 
