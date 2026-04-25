@@ -458,5 +458,34 @@
       "auto_created_by": "genome-layer-2",
       "task_kind": "implementation"
     }
+  },
+  {
+    "id": "a2f25a5a-555c-4fb3-aebc-66253f6acd63",
+    "title": "Fix phantom MRR test data polluting metric",
+    "description": "Audit the billing MRR snapshot path and exclude Stripe test/smoke subscription records from reported MRR without impacting legitimate live subscriptions. Add regression coverage that proves tagged test subscriptions do not inflate the metric.",
+    "status": "pending",
+    "priority": "high",
+    "agent_id": "dev",
+    "created_at": "2025-02-14T00:00:00.000Z",
+    "updated_at": "2025-02-14T00:00:00.000Z",
+    "metadata": {
+      "use_case_id": "fix-phantom-mrr-test-data-polluting-metric",
+      "task_type": "workflow_task",
+      "task_spec_path": "docs/task-specs/fix-phantom-mrr-test-data-polluting-metric-workflow-task.md",
+      "implementation_targets": [
+        "product/lead-response/dashboard/app/api/billing/mrr-snapshot/route.ts",
+        "product/lead-response/dashboard/app/api/smoke/stripe-checkout-e2e/route.ts",
+        "tests/integration/stripe-subscription-schema-alignment.test.js"
+      ],
+      "verification_commands": [
+        "npm test -- tests/integration/stripe-subscription-schema-alignment.test.js",
+        "python3 -c 'import json; json.load(open(\".local-tasks.json\"))'"
+      ],
+      "boundaries": [
+        "Do not implement unrelated billing metric changes",
+        "Do not modify dashboard UI for this task-creation step",
+        "Do not add schema migrations during workflow-task creation"
+      ]
+    }
   }
 ]
