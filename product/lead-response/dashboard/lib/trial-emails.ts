@@ -6,10 +6,12 @@ const supabase = supabaseAdmin
 // Lazy init — Resend throws if API key is missing at import time, which crashes Next.js build in CI
 let _resend: Resend | null = null
 function getResend(): Resend {
-  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY?.trim())
   return _resend
 }
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
+const FROM_DISPLAY = `LeadFlow AI <${FROM_EMAIL}>`
 
 interface TrialAgent {
   id: string
@@ -70,7 +72,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: FROM_DISPLAY,
       to: agent.email,
       subject: 'Welcome to LeadFlow AI — your first lead response in 30 seconds',
       html: `
@@ -147,7 +149,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: FROM_DISPLAY,
       to: agent.email,
       subject: 'This is what your leads experience when you use LeadFlow',
       html: `
@@ -224,7 +226,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: FROM_DISPLAY,
       to: agent.email,
       subject: '3 days in — how many leads have you responded to?',
       html: `
@@ -295,7 +297,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: FROM_DISPLAY,
       to: agent.email,
       subject: '7 days left — don\'t lose your leads',
       html: `
@@ -370,7 +372,7 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: FROM_DISPLAY,
       to: agent.email,
       subject: 'Your LeadFlow trial has ended — leads are going unanswered',
       html: `
@@ -445,7 +447,7 @@ async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolea
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: FROM_DISPLAY,
       to: agent.email,
       subject: `${agentName}, this is the last email from LeadFlow`,
       html: `

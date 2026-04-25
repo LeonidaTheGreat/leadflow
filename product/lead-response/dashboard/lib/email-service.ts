@@ -20,11 +20,9 @@ async function getResend() {
   }
 }
 
-// Use Resend's shared domain as fallback — leadflow.ai domain must be verified
-// in Resend before @leadflow.ai addresses will work in production.
-// Until then, set FROM_EMAIL env var to a verified address (e.g. onboarding@resend.dev).
+// leadflow.ai domain is verified in Resend — use onboarding@leadflow.ai as default.
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@resend.dev').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
 const COMPANY_NAME = 'LeadFlow AI'
 const SUPPORT_EMAIL = 'support@leadflow.ai'
 
