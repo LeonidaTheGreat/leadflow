@@ -60,7 +60,9 @@ COMMENT ON FUNCTION get_pilot_agents_for_milestone IS
   'Get pilot agents eligible for a specific conversion milestone (day_30, day_45, day_55, day_75, day_79, day_85)';
 
 -- 3. Update the view to include new milestone columns
-CREATE OR REPLACE VIEW pilot_conversion_sequence_status AS
+-- Must DROP first: CREATE OR REPLACE VIEW cannot change column names or add columns.
+DROP VIEW IF EXISTS pilot_conversion_sequence_status CASCADE;
+CREATE VIEW pilot_conversion_sequence_status AS
 SELECT
     a.id AS agent_id,
     a.email AS agent_email,

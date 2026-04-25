@@ -1,3 +1,18 @@
+-- taskSpec
+-- What:
+-- - Update SQL in /sql/pilot-conversion-email-schema.sql and /sql/add-pilot-conversion-milestones-v2.sql
+--   so both migrations execute cleanly against the active PostgreSQL schema.
+-- - Keep the schema contract required by PilotConversionService:
+--   pilot_conversion_email_logs + get_pilot_agents_for_milestone + pilot_conversion_sequence_status.
+-- Verify:
+-- - psql "$LOCAL_PG_URL" -f sql/pilot-conversion-email-schema.sql succeeds.
+-- - psql "$LOCAL_PG_URL" -f sql/add-pilot-conversion-milestones-v2.sql succeeds.
+-- - information_schema confirms pilot_conversion_email_logs exists and milestone constraint includes:
+--   day_30/day_45/day_55/day_75/day_79/day_85.
+-- Boundaries:
+-- - Do not alter PilotConversionService business logic or milestone cadence.
+-- - Do not touch unrelated tables/services/routes.
+-- - Do not change dashboard/tailscale infrastructure config.
 -- Pilot-to-Paid Conversion Email Sequence Schema
 -- Tracks email sends for pilot conversion sequence at day 30, 45, 55
 
@@ -6,7 +21,7 @@
 -- ============================================
 CREATE TABLE IF NOT EXISTS pilot_conversion_email_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    agent_id UUID NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+    agent_id UUID NOT NULL REFERENCES real_estate_agents(id) ON DELETE CASCADE,
     milestone VARCHAR(20) NOT NULL CHECK (milestone IN ('day_30', 'day_45', 'day_55')),
     template_key VARCHAR(50) NOT NULL,
     template_version VARCHAR(10) DEFAULT '1.0',
@@ -46,11 +61,12 @@ CREATE INDEX IF NOT EXISTS idx_pilot_conversion_logs_created_at ON pilot_convers
 -- ============================================
 -- VIEW: Pilot Conversion Sequence Status
 -- ============================================
+DROP VIEW IF EXISTS pilot_conversion_sequence_status;
 CREATE OR REPLACE VIEW pilot_conversion_sequence_status AS
 SELECT 
     a.id as agent_id,
     a.email as agent_email,
-    a.name as agent_name,
+    a.first_name as agent_name,
     a.plan_tier,
     a.pilot_started_at,
     CASE 
@@ -69,13 +85,13 @@ SELECT
     -- Overall sequence progress
     COUNT(CASE WHEN pcl.status = 'sent' THEN 1 END) as emails_sent_count,
     MAX(pcl.sent_at) as last_email_sent_at
-FROM agents a
+FROM real_estate_agents a
 LEFT JOIN pilot_conversion_email_logs d30 ON d30.agent_id = a.id AND d30.milestone = 'day_30'
 LEFT JOIN pilot_conversion_email_logs d45 ON d45.agent_id = a.id AND d45.milestone = 'day_45'
 LEFT JOIN pilot_conversion_email_logs d55 ON d55.agent_id = a.id AND d55.milestone = 'day_55'
 LEFT JOIN pilot_conversion_email_logs pcl ON pcl.agent_id = a.id
 WHERE a.plan_tier = 'pilot' OR pcl.agent_id IS NOT NULL
-GROUP BY a.id, a.email, a.name, a.plan_tier, a.pilot_started_at,
+GROUP BY a.id, a.email, a.first_name, a.last_name, a.plan_tier, a.pilot_started_at,
          d30.status, d30.sent_at, d45.status, d45.sent_at, d55.status, d55.sent_at;
 
 COMMENT ON VIEW pilot_conversion_sequence_status IS 'Current status of conversion sequence for all pilot agents';
@@ -83,6 +99,7 @@ COMMENT ON VIEW pilot_conversion_sequence_status IS 'Current status of conversio
 -- ============================================
 -- FUNCTION: Get agents eligible for milestone
 -- ============================================
+DROP FUNCTION IF EXISTS get_pilot_agents_for_milestone(VARCHAR);
 CREATE OR REPLACE FUNCTION get_pilot_agents_for_milestone(p_milestone VARCHAR(20))
 RETURNS TABLE (
     agent_id UUID,
@@ -110,10 +127,10 @@ BEGIN
     SELECT 
         a.id as agent_id,
         a.email as agent_email,
-        a.name as agent_name,
+        a.first_name as agent_name,
         a.pilot_started_at,
         EXTRACT(DAY FROM NOW() - a.pilot_started_at)::INTEGER as days_since_start
-    FROM agents a
+    FROM real_estate_agents a
     WHERE a.plan_tier = 'pilot'
       AND a.pilot_started_at IS NOT NULL
       AND EXTRACT(DAY FROM NOW() - a.pilot_started_at)::INTEGER >= v_target_days
@@ -134,8 +151,22 @@ COMMENT ON FUNCTION get_pilot_agents_for_milestone IS 'Get pilot agents eligible
 ALTER TABLE pilot_conversion_email_logs ENABLE ROW LEVEL SECURITY;
 
 -- Service role can manage all records
-CREATE POLICY "Service role can manage pilot conversion logs" ON pilot_conversion_email_logs
-    FOR ALL USING (auth.role() = 'service_role');
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM pg_namespace n
+        JOIN pg_proc p ON p.pronamespace = n.oid
+        WHERE n.nspname = 'auth'
+          AND p.proname = 'role'
+    ) THEN
+        DROP POLICY IF EXISTS "Service role can manage pilot conversion logs" ON pilot_conversion_email_logs;
+        EXECUTE $policy$
+            CREATE POLICY "Service role can manage pilot conversion logs" ON pilot_conversion_email_logs
+            FOR ALL USING (auth.role() = 'service_role')
+        $policy$;
+    END IF;
+END $$;
 
 -- ============================================
 -- TRIGGER: Auto-update updated_at
