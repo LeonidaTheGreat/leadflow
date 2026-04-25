@@ -15,8 +15,9 @@ function generateInviteToken(): { rawToken: string; tokenHash: string } {
 function checkAdminAuth(request: NextRequest): boolean {
   const adminToken = request.headers.get('x-admin-token')
   const expectedToken = process.env.ADMIN_SECRET
-  if (!expectedToken) return false
-  return adminToken === expectedToken
+  if (!expectedToken || !adminToken) return false
+  // Use constant-time comparison to prevent timing attacks on the admin secret
+  return crypto.timingSafeEqual(Buffer.from(adminToken), Buffer.from(expectedToken))
 }
 
 /**
