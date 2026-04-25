@@ -326,56 +326,178 @@ Best,
 Stojan
 Founder, LeadFlow`
     },
-    day55_final: {
+    day55_warning: {
       html: `<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Final Notice: 5 Days Left</title>
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>35 Days Left</title></head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: #dc3545; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
-    <h1 style="color: white; margin: 0; font-size: 24px;">⚠️ Final Notice: 5 Days Left</h1>
+  <div style="background: #d97706; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 24px;">⏰ 35 Days Left — Lock In Your Results</h1>
   </div>
   <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
     <p style="font-size: 16px; margin-bottom: 20px;">Hi ${firstName},</p>
-    <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; margin: 20px 0;">
-      <p style="margin: 0; font-size: 18px; font-weight: bold; color: #721c24;">Your pilot expires in 5 days</p>
-      <p style="margin: 10px 0 0 0; color: #721c24;">After that, your AI lead response will be paused.</p>
-    </div>
-    <p>Your pilot stats:</p>
+    <p>55 days in — only <strong>35 days left</strong>. Your pilot stats:</p>
     <ul>
       <li><strong>${stats.leadsResponded}</strong> leads responded</li>
-      <li><strong>${stats.avgResponseTime}</strong> avg response</li>
+      <li><strong>${stats.avgResponseTime}</strong> avg response time</li>
       <li><strong>${stats.appointmentsBooked}</strong> appointments booked</li>
     </ul>
-    <p>Don't let this slip away. Upgrade to Pro in the next 5 days:</p>
+    <p>Don't let this momentum slip. Upgrade before your pilot ends.</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${checkoutUrl}" style="background: #dc3545; color: white; padding: 18px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 18px; display: inline-block;">Secure Pro Access →</a>
+      <a href="${checkoutUrl}" style="background: #d97706; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Upgrade to Pro →</a>
     </div>
-    <p style="font-size: 14px; color: #666; text-align: center;">This is your final reminder. Secure your Pro access now.</p>
     <p style="margin-top: 30px;">Best,<br>Stojan<br>Founder, LeadFlow</p>
   </div>
-</body>
-</html>`,
-      text: `⚠️ FINAL NOTICE: 5 DAYS LEFT
+</body></html>`,
+      text: `Hi ${firstName},
+
+55 days in — only 35 days left. Your pilot stats:
+• ${stats.leadsResponded} leads responded
+• ${stats.avgResponseTime} avg response time
+• ${stats.appointmentsBooked} appointments booked
+
+Don't let this momentum slip. Upgrade before your pilot ends.
+
+Upgrade to Pro: ${checkoutUrl}
+
+Best,
+Stojan
+Founder, LeadFlow`
+    },
+    day75_urgent: {
+      html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Only 15 Days Left</title></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: #f59e0b; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 24px;">⚠️ Only 15 Days Left</h1>
+  </div>
+  <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
+    <p style="font-size: 16px; margin-bottom: 20px;">Hi ${firstName},</p>
+    <p>75 days in. Only <strong>15 days left</strong> before your pilot expires.</p>
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+      <p style="margin: 0; font-weight: bold;">Your 75-day results:</p>
+      <ul style="margin: 10px 0;">
+        <li>${stats.leadsResponded} leads responded to automatically</li>
+        <li>${stats.avgResponseTime} average response time</li>
+        <li>${stats.appointmentsBooked} appointments booked</li>
+      </ul>
+    </div>
+    <p>After Day 90, your AI lead response pauses. Don't lose this edge.</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${checkoutUrl}" style="background: #f59e0b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Upgrade Now — Keep Your Lead Advantage →</a>
+    </div>
+    <p style="margin-top: 30px;">Best,<br>Stojan<br>Founder, LeadFlow</p>
+  </div>
+</body></html>`,
+      text: `Hi ${firstName},
+
+⚠️ Only 15 days left in your LeadFlow pilot.
+
+Your 75-day results:
+• ${stats.leadsResponded} leads responded to automatically
+• ${stats.avgResponseTime} average response time
+• ${stats.appointmentsBooked} appointments booked
+
+After Day 90, your AI lead response pauses. Don't lose this edge.
+
+Upgrade Now: ${checkoutUrl}
+
+Best,
+Stojan
+Founder, LeadFlow`
+    },
+    day79_critical: {
+      html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>11 Days Left — Critical</title></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: #dc2626; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 24px;">🚨 11 Days Left — Don't Let This Expire</h1>
+  </div>
+  <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
+    <p style="font-size: 16px; margin-bottom: 20px;">Hi ${firstName},</p>
+    <div style="background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <p style="margin: 0; font-size: 18px; font-weight: bold; color: #991b1b;">Your pilot expires in 11 days</p>
+      <p style="margin: 10px 0 0 0; color: #7f1d1d;">After that, your AI lead response is paused and every new lead waits.</p>
+    </div>
+    <p>Your 79-day results — everything you stand to lose:</p>
+    <ul>
+      <li><strong>${stats.leadsResponded}</strong> leads responded to automatically</li>
+      <li><strong>${stats.avgResponseTime}</strong> average response time</li>
+      <li><strong>${stats.appointmentsBooked}</strong> appointments booked without lifting a finger</li>
+    </ul>
+    <p>This is your critical window. Upgrade now to keep uninterrupted AI-powered lead response.</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${checkoutUrl}" style="background: #dc2626; color: white; padding: 18px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 18px; display: inline-block;">Upgrade to Pro — Keep Your Edge</a>
+    </div>
+    <p style="font-size: 14px; color: #666;">Questions? Reply to this email — I'll personally help you get set up.</p>
+    <p style="margin-top: 30px;">Best,<br>Stojan<br>Founder, LeadFlow</p>
+  </div>
+</body></html>`,
+      text: `Hi ${firstName},
+
+🚨 Your LeadFlow pilot expires in 11 DAYS.
+
+Your 79-day results — everything you stand to lose:
+• ${stats.leadsResponded} leads responded to automatically
+• ${stats.avgResponseTime} average response time
+• ${stats.appointmentsBooked} appointments booked
+
+After Day 90, your AI lead response is PAUSED. Every new lead goes back to waiting for manual follow-up.
+
+This is your critical window. Upgrade now: ${checkoutUrl}
+
+Questions? Reply to this email — I'll personally help you get set up.
+
+Best,
+Stojan
+Founder, LeadFlow`
+    },
+    day85_final: {
+      html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Final Notice: 5 Days Left</title></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: #991b1b; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 24px;">⛔ FINAL NOTICE: 5 Days Left</h1>
+  </div>
+  <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
+    <p style="font-size: 16px; margin-bottom: 20px;">Hi ${firstName},</p>
+    <div style="background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <p style="margin: 0; font-size: 20px; font-weight: bold; color: #991b1b;">Your pilot ends in 5 days</p>
+      <p style="margin: 10px 0 0 0; color: #7f1d1d;">After that, your AI lead response is paused.</p>
+    </div>
+    <p>What you lose on Day 90:</p>
+    <ul>
+      <li>Instant AI responses to every new lead</li>
+      <li>Automatic appointment booking</li>
+      <li>The speed advantage: ${stats.leadsResponded} responses, ${stats.appointmentsBooked} bookings</li>
+    </ul>
+    <p>Don't let 85 days of momentum end here. This is your final chance to upgrade.</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${checkoutUrl}" style="background: #991b1b; color: white; padding: 18px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 18px; display: inline-block;">Secure Pro Access Now →</a>
+    </div>
+    <p style="font-size: 14px; color: #666; text-align: center;">After 5 days, your account reverts to free tier. Upgrade now to avoid any interruption.</p>
+    <p style="margin-top: 30px;">Best,<br>Stojan<br>Founder, LeadFlow</p>
+  </div>
+</body></html>`,
+      text: `⛔ FINAL NOTICE: 5 DAYS LEFT
 
 Hi ${firstName},
 
-Your LeadFlow pilot expires in 5 DAYS.
-After that, your AI lead response will be PAUSED.
+Your LeadFlow pilot ends in 5 DAYS.
 
-Your pilot stats:
-• ${stats.leadsResponded} leads responded
-• ${stats.avgResponseTime} avg response
-• ${stats.appointmentsBooked} appointments booked
+What you lose on Day 90:
+• Instant AI responses to every new lead
+• Automatic appointment booking
+• The speed advantage: ${stats.leadsResponded} responses, ${stats.appointmentsBooked} bookings
 
-Don't let this slip away. Upgrade to Pro in the next 5 days:
+Don't let 85 days of momentum end here.
 
-Secure Pro Access: ${checkoutUrl}
+Secure Pro Access now (final chance): ${checkoutUrl}
 
-This is your final reminder.
+After 5 days, your account reverts to free tier.
 
 Best,
 Stojan
@@ -668,12 +790,15 @@ export async function runConversionSequence(): Promise<{
     milestones: {
       day_30: { milestone: 'day_30', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] },
       day_45: { milestone: 'day_45', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] },
-      day_55: { milestone: 'day_55', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] }
+      day_55: { milestone: 'day_55', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] },
+      day_75: { milestone: 'day_75', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] },
+      day_79: { milestone: 'day_79', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] },
+      day_85: { milestone: 'day_85', processed: 0, sent: 0, skipped: 0, failed: 0, errors: [] }
     }
   };
 
   // Process each milestone
-  for (const milestone of ['day_30', 'day_45', 'day_55'] as MilestoneKey[]) {
+  for (const milestone of ['day_30', 'day_45', 'day_55', 'day_75', 'day_79', 'day_85'] as MilestoneKey[]) {
     results.milestones[milestone] = await processMilestone(milestone);
   }
 
