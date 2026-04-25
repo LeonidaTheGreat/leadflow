@@ -1,3 +1,22 @@
+/**
+ * TASK SPEC (7f073104-06e5-4076-8bf7-d160f6dfef7a)
+ * What:
+ * - Update `product/lead-response/dashboard/app/api/admin/gtm-status/route.ts`:
+ *   - Include non-resolved action items (not only `WAITING`) in blocker evaluation.
+ *   - Mark GTM execution as `blocked` when outreach targets exist but zero have been contacted while pending action items remain.
+ *   - Return a blocker summary that explicitly calls out stalled pilot outreach and required owner action.
+ * - Add focused API-route tests in `product/lead-response/dashboard/__tests__/gtm-status-route.test.ts`.
+ *
+ * Verify:
+ * - Run `cd product/lead-response/dashboard && npm test -- --runInBand __tests__/gtm-status-route.test.ts`.
+ * - Run `npm test` at repo root.
+ * - Run `cd product/lead-response/dashboard && npm run build`.
+ *
+ * Boundaries:
+ * - Do not modify outreach blast endpoints, campaign CRUD routes, or DB schema/migrations.
+ * - Do not change unrelated admin UI routes/components outside GTM status behavior.
+ * - Do not alter protected auto-generated docs/config files.
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { isAdminUser } from '@/lib/services/AuthService'
 import { postgrestAdmin } from '@/lib/db'
@@ -20,10 +39,15 @@ function deriveExecutionStatus(input: {
   contactedCount: number
   pilotCount: number
   pendingActionItems: number
+  outreachBlocked: boolean
   a2pStatus: 'registered' | 'pending' | 'not_started' | 'unknown'
 }): 'not_started' | 'blocked' | 'in_progress' | 'ready_to_scale' {
   if (input.targetCount === 0 && input.contactedCount === 0 && input.pilotCount === 0) {
     return input.pendingActionItems > 0 ? 'blocked' : 'not_started'
+  }
+
+  if (input.outreachBlocked) {
+    return 'blocked'
   }
 
   if (input.a2pStatus === 'not_started' && input.pilotCount === 0) {
@@ -52,6 +76,11 @@ function computeCompletionPercent(input: {
   if (input.a2pStatus === 'registered') percent += 5
 
   return Math.min(percent, 100)
+}
+
+function isActionItemPending(item: ActionItem): boolean {
+  const status = String(item.status || '').trim().toLowerCase()
+  return status !== 'resolved' && status !== 'closed' && status !== 'done'
 }
 
 export async function GET(request: NextRequest) {
@@ -89,9 +118,8 @@ export async function GET(request: NextRequest) {
       postgrestAdmin
         .from('action_items')
         .select('id,title,type,priority,status,awaiting_input,action_needed,created_at')
-        .eq('status', 'WAITING')
         .order('priority', { ascending: true })
-        .limit(5),
+        .limit(20),
       checkSmsDeliveryHealth(),
     ])
 
@@ -108,7 +136,8 @@ export async function GET(request: NextRequest) {
     const invites = invitesResult.data || []
     const verifiedAgents = verifiedAgentsResult.data || []
     const pilots = pilotsResult.data || []
-    const pendingActionItems = (actionItemsResult.error ? [] : actionItemsResult.data || []) as ActionItem[]
+    const pendingActionItemsRaw = (actionItemsResult.error ? [] : actionItemsResult.data || []) as ActionItem[]
+    const pendingActionItems = pendingActionItemsRaw.filter(isActionItemPending).slice(0, 5)
 
     const activeCampaign =
       campaigns.find((campaign: any) => campaign.status === 'active') ||
@@ -134,12 +163,14 @@ export async function GET(request: NextRequest) {
     const uncontactedVerifiedCount = verifiedAgents.filter((agent: any) => !targetedAgentIds.has(agent.id)).length
     const pilotCount = pilots.length
     const stuckPilotCount = pilots.filter((pilot: any) => pilot.stuck_since).length
+    const outreachBlocked = targetCount > 0 && contactedCount === 0 && pendingActionItems.length > 0
 
     const executionStatus = deriveExecutionStatus({
       targetCount,
       contactedCount,
       pilotCount,
       pendingActionItems: pendingActionItems.length,
+      outreachBlocked,
       a2pStatus: a2pRegistration.status })
 
     return NextResponse.json({
@@ -155,7 +186,9 @@ export async function GET(request: NextRequest) {
           executionStatus === 'not_started'
             ? 'No GTM execution has started yet. Add recruitment targets, begin outreach, and start A2P registration.'
             : executionStatus === 'blocked'
-              ? 'GTM work exists but execution is blocked by pending approvals or A2P compliance.'
+              ? outreachBlocked
+                ? 'Pilot outreach has not happened yet: targets exist but zero have been contacted. Stojan action is required immediately.'
+                : 'GTM work exists but execution is blocked by pending approvals or A2P compliance.'
               : executionStatus === 'ready_to_scale'
                 ? 'Pilot recruitment is active and ready to scale into broader distribution.'
                 : 'GTM execution is underway. Keep outreach, onboarding, and compliance moving in parallel.' },
