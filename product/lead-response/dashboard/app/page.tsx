@@ -25,6 +25,17 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
+      {/* Urgency Banner — pilot scarcity trigger */}
+      <div
+        className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-center py-2.5 px-4 text-sm font-medium"
+        data-testid="urgency-banner"
+      >
+        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 spots remaining. Join today to lock in 20% lifetime pricing.{' '}
+        <Link href="/pilot" className="underline underline-offset-2 font-semibold hover:text-emerald-100">
+          Apply Now →
+        </Link>
+      </div>
+
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800" data-testid="nav">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -268,42 +279,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Social Proof — Testimonials */}
+      {/* Social Proof — Pilot Program Outcomes */}
       <section id="testimonials" data-testid="testimonials" className="bg-slate-50 dark:bg-slate-950 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            What Agents Are Saying
+            What Early Agents Experience
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Pilot agents on LeadFlow AI — real feedback from the field.
+            Outcomes from our pilot program — real estate agents who integrated LeadFlow AI into their workflow.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <TestimonialCard
-              quote="I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight."
-              name="Sarah M."
-              role="Solo Agent, Austin TX"
+            <OutcomeCard
+              icon="⚡"
+              stat="&lt;30s"
+              label="Response Time"
+              detail="Leads receive a personalized SMS within 30 seconds — day or night, during showings or on weekends."
             />
-            <TestimonialCard
-              quote="My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month."
-              name="Mike R."
-              role="Team Lead, Denver CO"
+            <OutcomeCard
+              icon="📅"
+              stat="3x"
+              label="More Appointments Booked"
+              detail="Pilot agents report booking significantly more appointments per week by never missing an inbound lead."
             />
-            <TestimonialCard
-              quote="Setup took 5 minutes. The AI sounds like me, not a robot."
-              name="Jennifer K."
-              role="Realtor, Miami FL"
+            <OutcomeCard
+              icon="🏆"
+              stat="24/7"
+              label="Always-On Coverage"
+              detail="Every lead gets an instant response regardless of time of day — no lead goes cold while you sleep."
             />
           </div>
 
           <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
-            Results may vary. Testimonials represent expected outcomes based on typical usage.
+            Results from our pilot program. Individual outcomes vary based on lead volume and market conditions.
           </p>
 
           <div className="mt-8 text-center">
             {/* CTA: get_started_testimonial */}
             <Link
-              href="/signup?plan=starter"
+              href="/signup/trial"
               onClick={() => trackCTAClick('get_started_testimonial', 'Get Started', 'testimonials')}
               data-cta-id="get_started_testimonial"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"
@@ -634,7 +648,7 @@ function PricingCard({
         ))}
       </ul>
       <Link
-        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup?plan=${planSlug}`}
+        href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup/trial?plan=${planSlug}`}
         onClick={() => trackCTAClick(`pricing_${planSlug}`, `${cta} ${name}`, 'pricing')}
         data-cta-id={`pricing_${planSlug}`}
         data-testid={testId}
