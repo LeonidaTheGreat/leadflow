@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Check, Minus, ArrowRight, Loader2 } from 'lucide-react'
+import { trackEvent } from '@/lib/analytics/ga4'
 
 type BillingInterval = 'monthly' | 'annual'
 
@@ -159,6 +160,7 @@ export default function PricingPage() {
   const [selectedTier, setSelectedTier] = useState<string | null>(null)
   const [loadingTier, setLoadingTier] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const DEMO_BOOKING_URL = process.env.NEXT_PUBLIC_DEMO_BOOKING_URL || 'https://cal.com'
 
   const handleSelectPlan = async (tier: string) => {
     setCheckoutError(null)
@@ -389,6 +391,22 @@ export default function PricingPage() {
               {checkoutError}
             </div>
           )}
+
+          {/* Demo Booking CTA */}
+          <div className="mb-16 text-center">
+            <p className="text-slate-300 mb-4 text-lg">Not sure which plan is right for you?</p>
+            <a
+              href={DEMO_BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="demo-call-cta-pricing"
+              onClick={() => trackEvent('demo_call_cta_click', { source: 'pricing_page' })}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-blue-300 hover:text-blue-200 font-semibold rounded-xl transition-all text-lg"
+            >
+              Book a free 15-min demo <ArrowRight className="w-5 h-5" />
+            </a>
+            <p className="text-slate-500 text-sm mt-3">No commitment. Talk directly with Stojan.</p>
+          </div>
 
           {/* Feature Comparison Table */}
           <div className="mb-16">

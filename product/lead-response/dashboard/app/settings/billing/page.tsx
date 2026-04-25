@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Check, Clock, Loader } from 'lucide-react'
+import { trackEvent } from '@/lib/analytics/ga4'
 
 function getDaysRemaining(trialEndsAt: string): number {
   const end = new Date(trialEndsAt).getTime()
@@ -134,6 +135,7 @@ function BillingPageContent() {
     }
   }
 
+  const DEMO_BOOKING_URL = process.env.NEXT_PUBLIC_DEMO_BOOKING_URL || 'https://cal.com'
   const daysRemaining = trialEndsAt ? getDaysRemaining(trialEndsAt) : null
   const isUrgent = daysRemaining !== null && daysRemaining <= 7
 
@@ -281,6 +283,21 @@ function BillingPageContent() {
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Demo Booking CTA */}
+      <div className="mt-8 mb-4 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Have questions before upgrading?</p>
+        <a
+          href={DEMO_BOOKING_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="demo-call-cta-billing"
+          onClick={() => trackEvent('demo_call_cta_click', { source: 'billing_page' })}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/40 text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-semibold rounded-lg transition-all text-sm"
+        >
+          Book a free 15-min demo <ArrowRight className="w-4 h-4" />
+        </a>
       </div>
 
       <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
