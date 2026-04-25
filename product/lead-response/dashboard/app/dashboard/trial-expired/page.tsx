@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, ArrowRight } from 'lucide-react'
+import { trackEvent } from '@/lib/analytics/ga4'
 import { useRouter } from 'next/navigation'
 
 export default function TrialExpiredPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
+  const DEMO_BOOKING_URL = process.env.NEXT_PUBLIC_DEMO_BOOKING_URL || 'https://cal.com'
 
   useEffect(() => {
     const checkTrialStatus = async () => {
@@ -87,10 +89,21 @@ export default function TrialExpiredPage() {
           </a>
 
           <a
-            href="mailto:support@leadflow.ai"
-            className="block w-full px-4 py-3 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg transition-colors text-center"
+            href={DEMO_BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="demo-call-cta-trial-expired"
+            onClick={() => trackEvent('demo_call_cta_click', { source: 'trial_expired' })}
+            className="block w-full px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold rounded-lg transition-colors text-center"
           >
-            Contact Support
+            Talk to us before you lose your leads
+          </a>
+
+          <a
+            href="mailto:support@leadflow.ai"
+            className="block w-full px-4 py-3 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 font-medium rounded-lg transition-colors text-center text-sm"
+          >
+            Email Support
           </a>
         </div>
 
