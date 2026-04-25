@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>ai.leadflow.pilot-conversion-cron</string>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/clawdbot/projects/leadflow</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>API_KEY=$(sed -n 's/^LEADFLOW_API_KEY=//p' "$HOME/.env"); export NEXT_PUBLIC_API_URL="http://127.0.0.1:8788/rest/v1"; export API_SECRET_KEY="$API_KEY"; cd /Users/clawdbot/projects/leadflow &amp;&amp; /usr/bin/env node scripts/pilot-conversion-cron.js</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/clawdbot/projects/leadflow/logs/pilot-conversion-cron.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/clawdbot/projects/leadflow/logs/pilot-conversion-cron.error.log</string>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>KeepAlive</key>
+  <false/>
+</dict>
+</plist>
