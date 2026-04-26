@@ -87,6 +87,7 @@ budget-dashboard.js
 *.log
 spawn-logs/
 completion-reports/
+.completion-reports-archive/
 reports/
 
 # OpenClaw / Claude workspace
