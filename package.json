@@ -23,6 +23,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "no_direct_db": "node scripts/no-direct-db.js",
     "test": "node integrations/test-e2e-flow.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
