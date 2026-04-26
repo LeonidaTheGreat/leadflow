@@ -7,7 +7,8 @@ const path = require('path');
 
 const {
   enforceCompletionReportRetention,
-  listCompletionReportFiles
+  listCompletionReportFiles,
+  resolveProjectDir
 } = require('../../scripts/tasks/completion-reports-retention');
 
 function createTempDir() {
@@ -74,6 +75,31 @@ function writeCompletionFile(dir, index) {
     fs.existsSync(path.join(reportsDir, 'ORCHESTRATOR-DECISIONS.json')),
     'non-completion reports should remain untouched'
   );
+
+  const unrelatedCwd = createTempDir();
+  const originalCwd = process.cwd();
+  try {
+    process.chdir(unrelatedCwd);
+
+    const resolvedDir = resolveProjectDir({
+      projectDirResolver: () => projectDir
+    });
+    assert.strictEqual(resolvedDir, projectDir, 'resolver should prefer injected canonical project directory');
+
+    const resolverResult = enforceCompletionReportRetention({
+      projectDirResolver: () => projectDir,
+      maxReports: 3,
+      reportsDir: 'completion-reports',
+      archiveDir: '.completion-reports-archive'
+    });
+    assert.strictEqual(
+      resolverResult.afterCount,
+      3,
+      'retention should still target the canonical project directory when cwd differs'
+    );
+  } finally {
+    process.chdir(originalCwd);
+  }
 
   console.log('PASS: completion report retention archives overflow and preserves newest files');
 })();
