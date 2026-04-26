@@ -14,6 +14,8 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 
+const PROJECT_ID = 'leadflow';
+
 // Email patterns that identify test-created records
 const TEST_EMAIL_PATTERNS = [
   '%@leadflow-test.com',
@@ -43,6 +45,18 @@ const CHILD_TABLES = [
 
 const ORPHAN_AGENT_TABLES = [
   { table: 'agent_survey_schedule', fk: 'agent_id' },
+];
+
+// Subscription IDs that are test-only (inserted by integration tests, not real Stripe objects).
+// These pollute MRR metrics if left behind after a failed test run.
+const TEST_SUBSCRIPTION_ID_PATTERNS = [
+  'sub_test%',
+  'sub_mock%',
+];
+
+const TEST_SUBSCRIPTION_CUSTOMER_PATTERNS = [
+  'cus_test%',
+  'cus_mock%',
 ];
 
 function buildEmailFilter(alias = '') {
@@ -114,6 +128,41 @@ async function cleanupTestData({ client, dryRun, log = console.log }) {
       } else {
         const result = await client.query(orphanDeleteSql);
         if (result.rowCount > 0) log(`  Deleted ${result.rowCount} orphan rows from ${orphan.table} (via ${orphan.fk})`);
+      }
+    }
+
+    // Clean up test subscription rows by ID/customer patterns.
+    // These rows don't belong to a real agent email — they're inserted by integration tests
+    // and left behind when a test crashes before its finally-block cleanup runs.
+    // Leaving them active pollutes MRR metrics.
+    const subIdFilter = TEST_SUBSCRIPTION_ID_PATTERNS.map((_, i) => `stripe_subscription_id LIKE $${i + 1}`).join(' OR ')
+    const subCustFilter = TEST_SUBSCRIPTION_CUSTOMER_PATTERNS.map((_, i) => `stripe_customer_id LIKE $${TEST_SUBSCRIPTION_ID_PATTERNS.length + i + 1}`).join(' OR ')
+    const subParams = [...TEST_SUBSCRIPTION_ID_PATTERNS, ...TEST_SUBSCRIPTION_CUSTOMER_PATTERNS]
+
+    const subCountResult = await client.query(
+      `SELECT count(*) FROM subscriptions WHERE (${subIdFilter}) OR (${subCustFilter})`,
+      subParams
+    )
+    const subCount = parseInt(subCountResult.rows[0].count, 10)
+
+    if (dryRun) {
+      if (subCount > 0) log(`  Would delete ${subCount} test subscription rows from subscriptions`)
+    } else {
+      if (subCount > 0) {
+        const delResult = await client.query(
+          `DELETE FROM subscriptions WHERE (${subIdFilter}) OR (${subCustFilter})`,
+          subParams
+        )
+        log(`  Deleted ${delResult.rowCount} test subscription rows from subscriptions`)
+
+        // Reset revenue_metrics rows whose mrr_cents came from these test subscriptions.
+        // The phantom $597 (59700 cents) from 3 test subs (starter+pro+team) should be zeroed.
+        // We identify stale rows as those with active_subscribers=0 but non-zero mrr_cents.
+        const resetResult = await client.query(
+          `UPDATE revenue_metrics SET mrr_cents = 0 WHERE project_id = $1 AND active_subscribers = 0 AND mrr_cents > 0`,
+          [PROJECT_ID]
+        )
+        if (resetResult.rowCount > 0) log(`  Reset ${resetResult.rowCount} stale revenue_metrics rows to mrr_cents=0`)
       }
     }
 

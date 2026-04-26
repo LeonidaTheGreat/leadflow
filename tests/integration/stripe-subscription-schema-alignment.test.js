@@ -17,6 +17,13 @@ async function run() {
   const testStripeCustomerId = 'cus_test_schema_alignment';
   const testStripeSubId = 'sub_test_schema_alignment';
 
+  // Pre-cleanup: remove any leftover data from previous runs so this test is idempotent.
+  // This mirrors the finally-block cleanup — if a prior run crashed before cleanup, this
+  // ensures we start clean and don't leave phantom "active" subscriptions that pollute MRR.
+  await client.query(`DELETE FROM subscription_events WHERE user_id = $1`, [testUserId]);
+  await client.query(`DELETE FROM payments WHERE user_id = $1`, [testUserId]);
+  await client.query(`DELETE FROM subscriptions WHERE stripe_customer_id = $1`, [testStripeCustomerId]);
+
   try {
     // --- Test 1: subscriptions accepts all product tiers ---
     for (const tier of ['starter', 'pro', 'team']) {
