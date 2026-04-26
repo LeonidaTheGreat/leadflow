@@ -37,6 +37,7 @@
     "test:browser": "npx playwright install chromium && npx playwright test --config=playwright.config.js",
     "test:browser:headed": "npx playwright install chromium && npx playwright test --config=playwright.config.js --headed",
     "test:browser:local": "npx playwright install chromium && PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --config=playwright.config.js",
+    "clean_worktree": "node scripts/clean-worktree.js",
     "db:cleanup-test-data": "node scripts/db/cleanup-test-data.js",
     "db:cleanup-test-data:apply": "node scripts/db/cleanup-test-data.js --apply",
     "no_direct_db": "node scripts/no-direct-db.js",
