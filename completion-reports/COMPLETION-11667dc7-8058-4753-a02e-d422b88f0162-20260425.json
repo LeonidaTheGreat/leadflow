@@ -1,0 +1,114 @@
+{
+  "task_id": "11667dc7-8058-4753-a02e-d422b88f0162",
+  "task_type": "pm_revenue_gap_analysis",
+  "completed_at": "2026-04-25T00:00:00Z",
+  "status": "success",
+
+  "product_state": {
+    "day": 79,
+    "day_target": 90,
+    "days_remaining": 11,
+    "paying_customers": 0,
+    "real_mrr": 0,
+    "real_estate_agents_in_db": 4,
+    "all_inactive": true,
+    "phase": "pilot_to_conversion_push"
+  },
+
+  "gaps_identified": [
+    {
+      "id": "gap-needs-merge-pipeline-blocked",
+      "severity": "critical",
+      "description": "3 critical revenue UCs stuck in needs_merge and never deployed: uc-marketing-campaign-launch (no acquisition channels active), feat-revenue-funnel-visibility (no funnel tracking), feat-subscription-funnel-tracking (no checkout abandonment recovery). All were built but never merged due to merge conflicts.",
+      "impact": "Zero traffic entering funnel. Cannot measure conversion. Abandoned checkouts silently lost."
+    },
+    {
+      "id": "gap-no-conversion-sprint-operationalized",
+      "severity": "critical",
+      "description": "All conversion tools are built (personal upgrade offer, conversion call booking, trial email sequences) but no coordinated sales sprint has been executed. 11 days remain to first paying customer milestone with 0 real users.",
+      "impact": "Tools ready, campaign not running. First paying customer requires human activation, not more features."
+    },
+    {
+      "id": "gap-email-delivery-still-broken",
+      "severity": "critical",
+      "description": "fix-email-delivery-resend-from-domain-not-verified is in_progress at P1. PMF promoted to P0 on 2026-04-24 but DB priority not updated. Without email delivery, trial activation emails do not land.",
+      "impact": "Every signup fails silently — users cannot activate their trial."
+    },
+    {
+      "id": "gap-no-fub-marketplace-listing",
+      "severity": "high",
+      "description": "LeadFlow has no listing on the FUB Partner Marketplace. FUB is the core integration and primary ICP signal. Agents actively search the FUB partner directory for tools. No UC existed for this $0 CAC channel.",
+      "impact": "Missing highest-quality organic acquisition channel with zero customer acquisition cost."
+    },
+    {
+      "id": "gap-a2p-10dlc-incomplete",
+      "severity": "high",
+      "description": "A2P 10DLC registration incomplete (in_progress, P2). Without A2P registration, SMS delivery from Twilio to real agents is at risk. SMS is the core product value — if SMS fails, no aha moment.",
+      "impact": "Real users who sign up cannot experience the core value proposition."
+    }
+  ],
+
+  "ucs_created": [
+    {
+      "id": "fix-unblock-needs-merge-revenue-pipeline",
+      "name": "Unblock Needs-Merge Revenue Pipeline — Merge 3 Critical Stuck PRs",
+      "priority": 0,
+      "revenue_impact": "critical",
+      "rationale": "No existing UC covered resolving the merge conflicts on 3 stuck PRs. These must ship before acquisition can start. Targets: uc-marketing-campaign-launch, feat-revenue-funnel-visibility, feat-subscription-funnel-tracking."
+    },
+    {
+      "id": "feat-first-paying-customer-conversion-sprint",
+      "name": "First Paying Customer Conversion Sprint — Operationalize Upgrade Tools into Closed Deal",
+      "priority": 0,
+      "revenue_impact": "critical",
+      "rationale": "All tools exist but no campaign has run. Marketing agent creates outreach scripts + Stripe promo code; dev verifies promo code creation. Targets 5+ direct contacts, 1+ booking, 1 conversion."
+    },
+    {
+      "id": "feat-fub-partner-marketplace-listing",
+      "name": "FUB Partner Marketplace Listing — Organic ICP Discovery at $0 CAC",
+      "priority": 1,
+      "revenue_impact": "high",
+      "rationale": "Not covered by any existing UC. PMF phase 2 channel. Agents already using FUB are exact ICP. Zero cost, inbound, organic. Requires /integrations/fub page + partner application submission."
+    }
+  ],
+
+  "ucs_reprioritized": [
+    {
+      "id": "fix-email-delivery-resend-from-domain-not-verified",
+      "name": "Fix Email Delivery — Resend Test Domain Blocks All Outgoing Emails",
+      "old_priority": 1,
+      "new_priority": 0,
+      "reason": "PMF.md promoted to P0 on 2026-04-24 but DB not updated. Without email delivery, no trial activations land. Hard blocker for all acquisition."
+    },
+    {
+      "id": "fix-a2p-10dlc-registration-incomplete",
+      "name": "A2P 10DLC registration incomplete",
+      "old_priority": 2,
+      "new_priority": 1,
+      "reason": "SMS delivery is the core product. A2P failure means real agents cannot receive AI responses. Must be resolved before any real user can experience the product."
+    }
+  ],
+
+  "recommended_focus": "Merge the 3 needs_merge revenue features (fix-unblock-needs-merge-revenue-pipeline) + fix email delivery (fix-email-delivery-resend-from-domain-not-verified). These two actions unblock the entire funnel — acquisition channels go live and trial activation emails land. Everything else is secondary until real humans are in the product.",
+
+  "funnel_assessment": {
+    "acquisition": "DEAD — uc-marketing-campaign-launch stuck in needs_merge; zero organic or paid channels active",
+    "signup_to_trial": "BROKEN — email delivery in_progress; activation emails not delivering",
+    "trial_to_aha": "BUILT but untested with real users; A2P 10DLC incomplete blocks real SMS",
+    "aha_to_upgrade": "IN PROGRESS — conversion call booking still building",
+    "payment": "BUILT — Stripe checkout complete and tested with phantom data"
+  },
+
+  "tests": {
+    "passed": 5,
+    "total": 5,
+    "pass_rate": 1.0,
+    "checks": [
+      "3 new UCs inserted and verified in DB",
+      "All 3 UCs have correct priority, workflow, revenue_impact",
+      "fix-email-delivery-resend-from-domain-not-verified promoted to priority 0",
+      "fix-a2p-10dlc-registration-incomplete promoted to priority 1",
+      "No duplicate UCs created (verified all IDs unique)"
+    ]
+  }
+}
