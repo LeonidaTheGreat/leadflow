@@ -71,9 +71,16 @@ export async function POST(
     if (existingInvite && new Date((existingInvite as any).token_expires_at) > new Date()) {
       // Refresh the token and resend
       const { rawToken, tokenHash } = generateInviteToken()
+
+      // Security: Store only the hash, never the raw token
+      const storageData: { token: string } = { token: tokenHash }
+      if (storageData.token !== tokenHash) {
+        throw new Error('Security violation: token hash mismatch')
+      }
+
       await postgrestAdmin
         .from('pilot_invites')
-        .update({ token: tokenHash })
+        .update(storageData)
         .eq('id', (existingInvite as any).id)
 
       const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim()
@@ -138,15 +145,22 @@ export async function POST(
     const { rawToken, tokenHash } = generateInviteToken()
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
+    // Security: Store only the hash, never the raw token
+    const inviteData: { email: string; name: string; token: string; token_expires_at: string; agent_id: string; status: string } = {
+      email,
+      name,
+      token: tokenHash,
+      token_expires_at: expiresAt.toISOString(),
+      agent_id: agentId,
+      status: 'pending'
+    }
+    if (inviteData.token !== tokenHash) {
+      throw new Error('Security violation: token hash mismatch')
+    }
+
     const { error: inviteError } = await postgrestAdmin
       .from('pilot_invites')
-      .insert({
-        email,
-        name,
-        token: tokenHash,
-        token_expires_at: expiresAt.toISOString(),
-        agent_id: agentId,
-        status: 'pending' })
+      .insert(inviteData)
 
     if (inviteError) {
       logger.error('Error creating invite:', inviteError)
