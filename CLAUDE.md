@@ -82,6 +82,15 @@ All agents point to this directory. Active agents:
 - Database is local PostgreSQL (`LOCAL_PG_URL`). Supabase has been fully removed.
 - TaskStore has a self-healing fallback chain: `process.env` → `__dirname/.env` → `__dirname/.env.local` → `~/.env`
 
+## Quality Bar (enforced by genome)
+Every task must pass these gates before completion:
+1. **Build** — `npm run build` (root) AND `cd product/lead-response/dashboard && npm run build` must exit 0
+2. **Lint** — `npm run lint` must produce 0 errors
+3. **Tests** — `npm test` must exit 0 (0 failures)
+4. **Security** — `npm audit --audit-level=high` must show 0 high/critical
+5. **File size** — no source file over 1500 lines
+If any gate fails, fix it before marking done. The genome runs `quality-audit.js` on this project every heartbeat and auto-creates fix tasks for violations.
+
 ## Orchestration (Genome — extracted to `~/.openclaw/genome/`)
 The orchestration engine ("Genome") has been extracted to its own repo: `LeonidaTheGreat/openclaw-genome`.
 All heartbeat, spawning, learning, health, and dashboard generation code now lives in `~/.openclaw/genome/`.
