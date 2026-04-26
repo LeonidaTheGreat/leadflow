@@ -18,6 +18,7 @@ interface ApiResponse {
   inviteUrl?: string
   agentId?: string
   expiresAt?: string
+  emailSent?: boolean
   error?: string
 }
 
@@ -35,6 +36,7 @@ export default function AdminInvitePage() {
   const [success, setSuccess] = useState(false)
   const [inviteUrl, setInviteUrl] = useState<string | null>(null)
   const [expiresAt, setExpiresAt] = useState<string | null>(null)
+  const [emailSent, setEmailSent] = useState<boolean | null>(null)
   const [copiedUrl, setCopiedUrl] = useState(false)
 
   const [invites, setInvites] = useState<PilotInvite[]>([])
@@ -129,6 +131,7 @@ export default function AdminInvitePage() {
       setSuccess(true)
       setInviteUrl(data.inviteUrl || null)
       setExpiresAt(data.expiresAt || null)
+      setEmailSent(data.emailSent ?? true)
 
       // Clear form
       setEmail('')
@@ -254,9 +257,16 @@ export default function AdminInvitePage() {
                 )}
 
                 {/* Success */}
-                {success && inviteUrl && (
+                {success && emailSent === true && (
                   <div className="bg-emerald-500/10 border border-emerald-500/20 rounded p-3">
                     <p className="text-sm text-emerald-400">✅ Invite sent! Email is on its way.</p>
+                  </div>
+                )}
+
+                {/* Email Failed - Manual Delivery Required */}
+                {success && emailSent === false && (
+                  <div className="bg-orange-500/10 border border-orange-500/20 rounded p-3">
+                    <p className="text-sm text-orange-400">⚠️ Email delivery failed — send this invite link manually to {name}:</p>
                   </div>
                 )}
 
@@ -275,13 +285,13 @@ export default function AdminInvitePage() {
 
           {/* Results & Invite List */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Invite URL Result */}
-            {success && inviteUrl && (
-              <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-emerald-400 mb-3">Magic Link Generated</h3>
+            {/* Invite URL Result - Email Failed, Show Manual Link */}
+            {success && emailSent === false && inviteUrl && (
+              <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-orange-400 mb-3">Manual Invite Link</h3>
                 <div className="space-y-3">
                   <div className="bg-slate-800 rounded p-3">
-                    <p className="text-xs text-slate-400 mb-2">Copy this for manual delivery (WhatsApp, SMS, etc.):</p>
+                    <p className="text-xs text-slate-400 mb-2">Send this link to {name} via WhatsApp, SMS, or any communication channel:</p>
                     <div className="flex gap-2">
                       <code className="flex-1 text-xs text-slate-300 break-all font-mono">{inviteUrl}</code>
                       <button
