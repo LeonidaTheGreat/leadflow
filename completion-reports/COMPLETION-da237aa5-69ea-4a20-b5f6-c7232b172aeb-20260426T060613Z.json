@@ -1,0 +1,66 @@
+{
+  "taskId": "da237aa5-69ea-4a20-b5f6-c7232b172aeb",
+  "status": "failed",
+  "taskSpec": {
+    "what": [
+      "Rebase branch dev/b883cbeb-improve-uc-no-tasks-uc-marketing-campaig onto origin/main and push with --force-with-lease",
+      "Rebase branch dev/d9da03d7-dev-feat-revenue-funnel-visibility-reven onto origin/main and push with --force-with-lease",
+      "Rebase branch feat-subscription-funnel-tracking onto origin/main, resolve conflicts, and push with --force-with-lease",
+      "Validate PR state for the three UCs and attempt reopen/update where existing PRs are closed"
+    ],
+    "verify": [
+      "git merge-base --is-ancestor <branch> origin/main (pre-rebase baseline)",
+      "git rebase origin/main in branch-specific worktree and confirm completion",
+      "git push --force-with-lease for each branch head",
+      "gh pr view/gh pr list to confirm PR status",
+      "npm run build (expected by task, but script missing in this repo)",
+      "npm test (executed; failed due missing dotenv module in worktree deps)"
+    ],
+    "boundaries": [
+      "No feature refactors or behavior changes outside merge-conflict resolution",
+      "No edits to protected auto-generated files beyond conflict resolution strategy",
+      "No merge-to-main action executed from this task branch"
+    ]
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "PR lifecycle step could not be completed: existing PRs #1289 and #1262 are CLOSED and cannot be reopened by current token permissions; feat-subscription-funnel-tracking has no PR to update.",
+    "why": "The needs_merge backlog is partially stale/misaligned with current GitHub state (branch names drifted from UC names, one UC branch has no PR record, and reopen is blocked by repository policy/permissions).",
+    "fix": "Rebased and force-pushed all three branch heads onto latest origin/main, resolved real conflict on feat-subscription-funnel-tracking by keeping mainline generated docs and preserving functional test changes, then surfaced PR-state blockers for orchestrator/manual PR handling."
+  },
+  "error": "Unable to satisfy acceptance criterion 'All 3 branches merged to main and deployed' within this runtime because PR reopen/create/merge/deploy is blocked by policy/permissions and missing PR mapping for one branch.",
+  "retryRecommendation": "manual_intervention",
+  "diagnosis": {
+    "rebasedBranches": [
+      "dev/b883cbeb-improve-uc-no-tasks-uc-marketing-campaig",
+      "dev/d9da03d7-dev-feat-revenue-funnel-visibility-reven",
+      "feat-subscription-funnel-tracking"
+    ],
+    "pushedHeads": {
+      "dev/b883cbeb-improve-uc-no-tasks-uc-marketing-campaig": "a7f93881",
+      "dev/d9da03d7-dev-feat-revenue-funnel-visibility-reven": "3d77a242",
+      "feat-subscription-funnel-tracking": "e2a49338"
+    },
+    "prStatus": {
+      "uc-marketing-campaign-launch": "PR #1289 closed (mergeState DIRTY), reopen denied",
+      "feat-revenue-funnel-visibility": "PR #1262 closed (mergeState BLOCKED), reopen denied",
+      "feat-subscription-funnel-tracking": "no PR found for head feat-subscription-funnel-tracking"
+    },
+    "verificationAttempts": [
+      "Attempt 1: direct remote branch match for uc-marketing-campaign-launch failed; located mapped branch by partial-name search",
+      "Attempt 2: queried all PRs by head/title patterns to map UCs to PRs",
+      "Attempt 3: explicit gh pr reopen on mapped PRs returned GraphQL reopenPullRequest denial"
+    ],
+    "buildCheck": "npm run build failed because package.json has no build script",
+    "testCheck": "npm test failed in worktrees with MODULE_NOT_FOUND: dotenv"
+  },
+  "testResults": {
+    "passed": 0,
+    "total": 3,
+    "passRate": 0
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-da237aa5-69ea-4a20-b5f6-c7232b172aeb-20260426T060613Z.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": null
+}
