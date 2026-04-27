@@ -3,33 +3,56 @@
 /**
  * taskSpec
  * What:
- * - Add /Users/clawdbot/projects/leadflow/scripts/tasks/completion-reports-retention.js
- *   with enforceCompletionReportRetention(), listCompletionReportFiles(), and runCli()
- *   to cap COMPLETION-* files under completion-reports/ at 500 by archiving oldest files.
- * - Update /Users/clawdbot/projects/leadflow/package.json scripts to add
- *   "completion_reports": "node scripts/tasks/completion-reports-retention.js".
- * - Add /Users/clawdbot/projects/leadflow/tests/unit/completion-reports-retention.test.js
- *   to verify overflow files are archived and newest files are retained.
+ * - Update /Users/clawdbot/projects/leadflow/scripts/tasks/completion-reports-retention.js
+ *   resolveProjectDir() and enforceCompletionReportRetention() so retention targets the
+ *   canonical project directory from project-config-loader instead of temporary worktree cwd.
+ * - Update /Users/clawdbot/projects/leadflow/tests/unit/completion-reports-retention.test.js
+ *   to verify retention can resolve the intended project directory independently of cwd.
  * Verify:
- * - npm run completion_reports exits 0 and prints post-run count <= 500.
+ * - npm run completion_reports exits 0 and reports after<=500 on the canonical project path.
  * - node tests/unit/completion-reports-retention.test.js exits 0.
  * - npm run build exits 0.
  * - npm run lint exits 0.
  * - npm test exits 0.
  * - npm audit --audit-level=high exits 0.
  * Boundaries:
- * - Do not modify routes/, lib/services/, database schema, or runtime business logic.
- * - Do not delete completion reports; only move overflow reports to .completion-reports-archive/.
- * - Do not change orchestration engine code under ~/.openclaw/genome/.
+ * - Do not modify routes/, lib/services/, schema, or runtime product business logic.
+ * - Do not change report file naming or archival behavior beyond project-directory resolution.
+ * - Do not modify orchestration engine code under ~/.openclaw/genome/.
  */
 
 const fs = require('fs');
 const path = require('path');
+const { getProjectDir } = require('../../project-config-loader');
 
 const DEFAULT_MAX_REPORTS = 500;
 const DEFAULT_REPORTS_DIR = 'completion-reports';
 const DEFAULT_ARCHIVE_DIR = '.completion-reports-archive';
 const REPORT_PREFIX = 'COMPLETION-';
+
+function resolveProjectDir(options = {}) {
+  if (options.projectDir) {
+    return options.projectDir;
+  }
+
+  if (typeof options.projectDirResolver === 'function') {
+    const resolvedDir = options.projectDirResolver();
+    if (resolvedDir) {
+      return resolvedDir;
+    }
+  }
+
+  try {
+    const configuredProjectDir = getProjectDir();
+    if (configuredProjectDir) {
+      return configuredProjectDir;
+    }
+  } catch (_) {
+    // Fall back to cwd when config loader is unavailable.
+  }
+
+  return process.cwd();
+}
 
 function listCompletionReportFiles(reportsDir) {
   if (!fs.existsSync(reportsDir)) {
@@ -67,7 +90,7 @@ function moveToArchive(fullPath, archiveDir) {
 }
 
 function enforceCompletionReportRetention(options = {}) {
-  const projectDir = options.projectDir || process.cwd();
+  const projectDir = resolveProjectDir(options);
   const maxReports = options.maxReports || DEFAULT_MAX_REPORTS;
   const reportsDir = path.join(projectDir, options.reportsDir || DEFAULT_REPORTS_DIR);
   const archiveDir = path.join(projectDir, options.archiveDir || DEFAULT_ARCHIVE_DIR);
@@ -134,6 +157,7 @@ if (require.main === module) {
 
 module.exports = {
   DEFAULT_MAX_REPORTS,
+  resolveProjectDir,
   listCompletionReportFiles,
   enforceCompletionReportRetention
 };
