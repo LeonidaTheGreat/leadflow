@@ -69,7 +69,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | StripeService | `lib/services/StripeService.js` | Creates a Stripe coupon + promo code for a personal upgrade offer. |
 | StuckPilotsService | `lib/services/StuckPilotsService.js` | — |
 | SystemStatusService | `lib/services/SystemStatusService.js` | — |
-| TrialActivationService | `lib/services/TrialActivationService.js` | TrialActivationService — Sends trial CTA email to signed-up pilots and transitions them to 'trial_started' stage |
+| TrialActivationService | `lib/services/TrialActivationService.js` | Note: trial_email_logs table doesn't have pilot_progress_id, so we check via pilot_progress.trial_cta_sent instead |
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
 <!-- /AUTO-GENERATED services -->

@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-16T04:21:07.938Z | Source: `lib/services/`
+> Generated: 2026-04-27T05:17:51.548Z | Source: `lib/services/`
 
-**16 services across 16 files**
+**19 services across 19 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
@@ -17,10 +17,13 @@
 | [EmailService](#emailservice) | `EmailService.js` | 7 | request-context, circuit-breaker |
 | [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, logger… |
 | [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | logger, circuit-breaker |
+| [PilotSignupOutreachService](#pilotsignupoutreachservice) | `PilotSignupOutreachService.js` | 3 | EmailService |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
 | [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db, logger |
+| [StripeService](#stripeservice) | `StripeService.js` | 1 | stripe, config, logger |
 | [StuckPilotsService](#stuckpilotsservice) | `StuckPilotsService.js` | 6 | https, db |
 | [SystemStatusService](#systemstatusservice) | `SystemStatusService.js` | 2 | - |
+| [TrialActivationService](#trialactivationservice) | `TrialActivationService.js` | 11 | logger, trial-cta-email |
 | [TwilioService](#twilioservice) | `TwilioService.js` | 11 | twilio, db, logger, circuit-breaker… |
 | [WeeklyPerformanceService](#weeklyperformanceservice) | `WeeklyPerformanceService.js` | 13 | db, logger, circuit-breaker |
 
@@ -301,6 +304,24 @@
 
 ---
 
+## PilotSignupOutreachService
+
+**File:** `lib/services/PilotSignupOutreachService.js`
+
+**Dependencies:** `EmailService`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `getSignupsForStep()` | `step` | - |
+| `sendStepEmail()` | `signup`, `step` | - |
+| `runSequence()` | - | - |
+
+---
+
 ## SatisfactionService
 
 **File:** `lib/services/SatisfactionService.js`
@@ -341,6 +362,22 @@
 
 ---
 
+## StripeService
+
+**File:** `lib/services/StripeService.js`
+
+**Dependencies:** `stripe`, `config`, `logger`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `createPromoCode()` | `{ code`, `discountPercent`, `expiryDays`, `tier`, `metadata` | Creates a Stripe coupon + promo code for a personal upgrade offer. |
+
+---
+
 ## StuckPilotsService
 
 **File:** `lib/services/StuckPilotsService.js`
@@ -372,6 +409,32 @@
 |--------|--------|-------------|
 | `getRootStatus()` | - | - |
 | `getHealthStatus()` | - | - |
+
+---
+
+## TrialActivationService
+
+**File:** `lib/services/TrialActivationService.js`
+
+**Dependencies:** `logger`, `trial-cta-email`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `isDbConfigured()` | - | - |
+| `isEmailConfigured()` | - | - |
+| `findPendingPilots()` | `minAgeMinutes` | - |
+| `getAgent()` | `agentId` | - |
+| `hasEmailBeenSent()` | `pilotId` | - |
+| `sendTrialCTA()` | `agent`, `pilot` | - |
+| `createLeadSimulation()` | `agentId` | - |
+| `updatePilotProgress()` | `pilotId` | - |
+| `updateAgentPilotStartDate()` | `agentId` | - |
+| `activatePilot()` | `pilot`, `agent` | - |
+| `processActivations()` | - | - |
 
 ---
 
