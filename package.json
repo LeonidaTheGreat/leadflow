@@ -25,7 +25,7 @@
     "dev": "nodemon server.js",
     "build": "cd product/lead-response/dashboard && npx next build",
     "lint": "eslint .",
-    "test": "node tests/unit/db.test.js && node integrations/test-e2e-flow.js",
+    "test": "node tests/db.test.js && node integrations/test-e2e-flow.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
     "test:stripe-smoke": "node tests/integrated/stripe-production-smoke.test.js",
