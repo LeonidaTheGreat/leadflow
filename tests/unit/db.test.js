@@ -7,12 +7,11 @@
  *   WHAT: lib/db.js — createClient(), getPool(), and the internal QueryBuilder class
  *         Tests cover URL construction, header building, HTTP response handling,
  *         the rpc() method, auth stubs, and the pg Pool singleton.
- *   VERIFY: node tests/unit/db.test.js → all pass, exit 0
+ *   VERIFY: npx jest tests/unit/db.test.js --no-coverage → all pass, exit 0
  *   BOUNDARIES: Only tests lib/db.js public API. Does not touch routes, services,
  *               or any other file. Does not make real HTTP calls or DB connections.
  */
 
-const assert = require('assert');
 const path = require('path');
 
 const DB_PATH = path.resolve(__dirname, '../../lib/db');
@@ -20,55 +19,31 @@ const DB_PATH = path.resolve(__dirname, '../../lib/db');
 // ─── Fetch mock helpers ──────────────────────────────────────────────────────
 
 function mockFetch(overrides = {}) {
-  const defaults = {
+  const cfg = {
     ok: true,
     status: 200,
-    statusText: 'OK',
     body: JSON.stringify([{ id: 1 }]),
-    headers: new Map(),
+    headers: {},
+    ...overrides,
   };
-  const cfg = { ...defaults, ...overrides };
 
-  global.fetch = async (url, opts) => {
+  global.fetch = jest.fn(async (url, opts) => {
     global.fetch._lastUrl = url;
     global.fetch._lastOpts = opts;
     return {
       ok: cfg.ok,
       status: cfg.status,
-      headers: {
-        get: (name) => cfg.headers.get ? cfg.headers.get(name) : (cfg.headers[name] || null),
-      },
+      headers: { get: (name) => cfg.headers[name] || null },
       text: async () => cfg.body,
       json: async () => JSON.parse(cfg.body),
     };
-  };
-}
-
-function restoreFetch(original) {
-  global.fetch = original;
-}
-
-// ─── Test runner ─────────────────────────────────────────────────────────────
-
-let passed = 0;
-let failed = 0;
-
-async function check(name, fn) {
-  try {
-    await fn();
-    console.log(`  PASS: ${name}`);
-    passed++;
-  } catch (err) {
-    console.log(`  FAIL: ${name}`);
-    console.log(`        ${err.message}`);
-    failed++;
-  }
+  });
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function freshDb() {
-  // Return a fresh require of lib/db (isolated from module cache changes)
+  delete require.cache[require.resolve(DB_PATH)];
   return require(DB_PATH);
 }
 
@@ -78,651 +53,491 @@ function qbFor(table, url = 'http://api.test', key = 'sk') {
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
-async function run() {
-  console.log('\n=== lib/db.js unit tests ===\n');
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
-  // ── createClient() factory ─────────────────────────────────────────────────
-  console.log('--- createClient ---');
-
-  await check('returns object with from, rpc, auth', () => {
+describe('createClient()', () => {
+  it('returns object with from, rpc, auth', () => {
     const client = freshDb().createClient('http://api.test', 'key');
-    assert.strictEqual(typeof client.from, 'function');
-    assert.strictEqual(typeof client.rpc, 'function');
-    assert.ok(client.auth);
-    assert.strictEqual(typeof client.auth.getUser, 'function');
-    assert.strictEqual(typeof client.auth.getSession, 'function');
+    expect(typeof client.from).toBe('function');
+    expect(typeof client.rpc).toBe('function');
+    expect(client.auth).toBeTruthy();
+    expect(typeof client.auth.getUser).toBe('function');
+    expect(typeof client.auth.getSession).toBe('function');
   });
 
-  await check('from(table) returns thenable QueryBuilder', () => {
+  it('from(table) returns thenable QueryBuilder', () => {
     const qb = qbFor('leads');
-    assert.strictEqual(typeof qb.then, 'function');
-    assert.strictEqual(typeof qb.select, 'function');
-    assert.strictEqual(typeof qb.eq, 'function');
+    expect(typeof qb.then).toBe('function');
+    expect(typeof qb.select).toBe('function');
+    expect(typeof qb.eq).toBe('function');
   });
 
-  await check('uses NEXT_PUBLIC_API_URL env var when url omitted', () => {
+  it('uses NEXT_PUBLIC_API_URL env var when url omitted', () => {
     process.env.NEXT_PUBLIC_API_URL = 'http://envtest.test';
     const { createClient } = freshDb();
-    const qb = createClient(undefined, 'k').from('t');
-    const url = qb._buildUrl();
+    const url = createClient(undefined, 'k').from('t')._buildUrl();
     delete process.env.NEXT_PUBLIC_API_URL;
-    assert.ok(url.startsWith('http://envtest.test/'));
+    expect(url.startsWith('http://envtest.test/')).toBe(true);
   });
 
-  await check('uses API_SECRET_KEY env var when key omitted', () => {
+  it('uses API_SECRET_KEY env var when key omitted', () => {
     process.env.API_SECRET_KEY = 'env-secret';
     const { createClient } = freshDb();
-    const headers = createClient('http://x', undefined)._buildHeaders
-      ? createClient('http://x', undefined).from('t')._buildHeaders()
-      : createClient('http://x', undefined).from('t')._buildHeaders();
+    const headers = createClient('http://x', undefined).from('t')._buildHeaders();
     delete process.env.API_SECRET_KEY;
-    assert.strictEqual(headers.apikey, 'env-secret');
+    expect(headers.apikey).toBe('env-secret');
   });
 
-  await check('uses LEADFLOW_API_KEY when API_SECRET_KEY absent', () => {
+  it('uses LEADFLOW_API_KEY when API_SECRET_KEY absent', () => {
     delete process.env.API_SECRET_KEY;
     process.env.LEADFLOW_API_KEY = 'lf-key';
     const { createClient } = freshDb();
     const headers = createClient('http://x', undefined).from('t')._buildHeaders();
     delete process.env.LEADFLOW_API_KEY;
-    assert.strictEqual(headers.apikey, 'lf-key');
+    expect(headers.apikey).toBe('lf-key');
   });
 
-  await check('auth.getUser() returns stub', async () => {
+  it('auth.getUser() returns stub', async () => {
     const client = freshDb().createClient('http://api.test', 'key');
     const result = await client.auth.getUser();
-    assert.deepStrictEqual(result, { data: { user: null }, error: null });
+    expect(result).toEqual({ data: { user: null }, error: null });
   });
 
-  await check('auth.getSession() returns stub', async () => {
+  it('auth.getSession() returns stub', async () => {
     const client = freshDb().createClient('http://api.test', 'key');
     const result = await client.auth.getSession();
-    assert.deepStrictEqual(result, { data: { session: null }, error: null });
+    expect(result).toEqual({ data: { session: null }, error: null });
   });
+});
 
-  // ── createClient().rpc() ───────────────────────────────────────────────────
-  console.log('\n--- createClient().rpc() ---');
-
-  await check('rpc() posts to /rpc/<name> with params', async () => {
-    const original = global.fetch;
+describe('createClient().rpc()', () => {
+  it('posts to /rpc/<name> with params', async () => {
     mockFetch({ body: JSON.stringify({ result: 42 }) });
     const client = freshDb().createClient('http://api.test', 'mykey');
     const { data, error } = await client.rpc('my_func', { x: 1 });
-    const calledUrl = global.fetch._lastUrl;
-    const calledOpts = global.fetch._lastOpts;
-    restoreFetch(original);
-    assert.strictEqual(data.result, 42);
-    assert.strictEqual(error, null);
-    assert.ok(calledUrl.endsWith('/rpc/my_func'), `URL should end with /rpc/my_func, got: ${calledUrl}`);
-    assert.strictEqual(calledOpts.method, 'POST');
-    assert.strictEqual(JSON.parse(calledOpts.body).x, 1);
+    expect(data.result).toBe(42);
+    expect(error).toBe(null);
+    expect(global.fetch._lastUrl.endsWith('/rpc/my_func')).toBe(true);
+    expect(global.fetch._lastOpts.method).toBe('POST');
+    expect(JSON.parse(global.fetch._lastOpts.body).x).toBe(1);
   });
 
-  await check('rpc() sends apikey + Authorization headers', async () => {
-    const original = global.fetch;
+  it('sends apikey + Authorization headers', async () => {
     mockFetch({ body: '{}' });
     const client = freshDb().createClient('http://api.test', 'rpc-key');
     await client.rpc('func');
     const headers = global.fetch._lastOpts.headers;
-    restoreFetch(original);
-    assert.strictEqual(headers.apikey, 'rpc-key');
-    assert.strictEqual(headers.Authorization, 'Bearer rpc-key');
+    expect(headers.apikey).toBe('rpc-key');
+    expect(headers.Authorization).toBe('Bearer rpc-key');
   });
 
-  await check('rpc() returns error on HTTP failure', async () => {
-    const original = global.fetch;
+  it('returns error on HTTP failure', async () => {
     mockFetch({ ok: false, body: 'permission denied' });
     const client = freshDb().createClient('http://api.test', 'k');
     const { data, error } = await client.rpc('boom');
-    restoreFetch(original);
-    assert.strictEqual(data, null);
-    assert.ok(error.message.includes('permission denied'), `Expected error message, got: ${error.message}`);
+    expect(data).toBe(null);
+    expect(error.message).toContain('permission denied');
   });
 
-  await check('rpc() returns error on network failure', async () => {
-    const original = global.fetch;
-    global.fetch = async () => { throw new Error('ECONNREFUSED'); };
+  it('returns error on network failure', async () => {
+    global.fetch = jest.fn(async () => { throw new Error('ECONNREFUSED'); });
     const client = freshDb().createClient('http://api.test', 'k');
     const { data, error } = await client.rpc('fn');
-    restoreFetch(original);
-    assert.strictEqual(data, null);
-    assert.ok(error.message.includes('ECONNREFUSED'));
+    expect(data).toBe(null);
+    expect(error.message).toContain('ECONNREFUSED');
   });
 
-  // ── QueryBuilder URL building ──────────────────────────────────────────────
-  console.log('\n--- QueryBuilder URL building ---');
-
-  await check('_buildUrl() includes base URL and table name', () => {
-    const url = qbFor('leads', 'http://api.test', 'k')._buildUrl();
-    assert.ok(url.startsWith('http://api.test/leads'), `Got: ${url}`);
-  });
-
-  await check('select() sets ?select= param', () => {
-    const url = qbFor('t').select('id,name')._buildUrl();
-    assert.ok(url.includes('select=id%2Cname') || url.includes('select=id,name'), `Got: ${url}`);
-  });
-
-  await check('select(*) sets ?select=* param', () => {
-    const url = qbFor('t').select()._buildUrl();
-    assert.ok(url.includes('select=*'), `Got: ${url}`);
-  });
-
-  await check('eq() → ?col=eq.val', () => {
-    const url = qbFor('t').eq('status', 'active')._buildUrl();
-    assert.ok(url.includes('status=eq.active'), `Got: ${url}`);
-  });
-
-  await check('neq() → ?col=neq.val', () => {
-    const url = qbFor('t').neq('status', 'deleted')._buildUrl();
-    assert.ok(url.includes('status=neq.deleted'), `Got: ${url}`);
-  });
-
-  await check('gt() → ?col=gt.val', () => {
-    const url = qbFor('t').gt('age', 18)._buildUrl();
-    assert.ok(url.includes('age=gt.18'), `Got: ${url}`);
-  });
-
-  await check('gte() → ?col=gte.val', () => {
-    const url = qbFor('t').gte('score', 100)._buildUrl();
-    assert.ok(url.includes('score=gte.100'), `Got: ${url}`);
-  });
-
-  await check('lt() → ?col=lt.val', () => {
-    const url = qbFor('t').lt('price', 50)._buildUrl();
-    assert.ok(url.includes('price=lt.50'), `Got: ${url}`);
-  });
-
-  await check('lte() → ?col=lte.val', () => {
-    const url = qbFor('t').lte('count', 10)._buildUrl();
-    assert.ok(url.includes('count=lte.10'), `Got: ${url}`);
-  });
-
-  await check('in() → ?col=in.("a","b")', () => {
-    const raw = qbFor('t').in('role', ['admin', 'user'])._buildUrl();
-    const url = decodeURIComponent(raw);
-    assert.ok(url.includes('role=in.('), `Got: ${url}`);
-    assert.ok(url.includes('"admin"'), `Got: ${url}`);
-    assert.ok(url.includes('"user"'), `Got: ${url}`);
-  });
-
-  await check('is(null) → ?col=is.null', () => {
-    const url = qbFor('t').is('deleted_at', null)._buildUrl();
-    assert.ok(url.includes('deleted_at=is.null'), `Got: ${url}`);
-  });
-
-  await check('is(value) → ?col=is.true', () => {
-    const url = qbFor('t').is('active', true)._buildUrl();
-    assert.ok(url.includes('active=is.true'), `Got: ${url}`);
-  });
-
-  await check('not(key, val) [2 args] → ?col=not.val', () => {
-    const url = qbFor('t').not('status', 'deleted')._buildUrl();
-    assert.ok(url.includes('status=not.deleted'), `Got: ${url}`);
-  });
-
-  await check('not(key, "is", null) → ?col=not.is.null', () => {
-    const url = qbFor('t').not('deleted_at', 'is', null)._buildUrl();
-    assert.ok(url.includes('deleted_at=not.is.null'), `Got: ${url}`);
-  });
-
-  await check('not(key, "eq", val) → ?col=not.eq.val', () => {
-    const url = qbFor('t').not('role', 'eq', 'guest')._buildUrl();
-    assert.ok(url.includes('role=not.eq.guest'), `Got: ${url}`);
-  });
-
-  await check('or() → ?or=(filterStr)', () => {
-    const url = qbFor('t').or('status.eq.active,role.eq.admin')._buildUrl();
-    assert.ok(url.includes('or='), `Got: ${url}`);
-    assert.ok(url.includes('status.eq.active') || url.includes('status'), `Got: ${url}`);
-  });
-
-  await check('order(col, ascending:true) → ?order=col.asc', () => {
-    const url = qbFor('t').order('created_at', { ascending: true })._buildUrl();
-    assert.ok(url.includes('order=created_at.asc'), `Got: ${url}`);
-  });
-
-  await check('order(col, ascending:false) → ?order=col.desc', () => {
-    const url = qbFor('t').order('created_at', { ascending: false })._buildUrl();
-    assert.ok(url.includes('order=created_at.desc'), `Got: ${url}`);
-  });
-
-  await check('order() default is ascending', () => {
-    const url = qbFor('t').order('name')._buildUrl();
-    assert.ok(url.includes('order=name.asc'), `Got: ${url}`);
-  });
-
-  await check('limit() → ?limit=N', () => {
-    const url = qbFor('t').limit(25)._buildUrl();
-    assert.ok(url.includes('limit=25'), `Got: ${url}`);
-  });
-
-  await check('range(0, 9) → ?offset=0&limit=10', () => {
-    const url = qbFor('t').range(0, 9)._buildUrl();
-    assert.ok(url.includes('offset=0'), `Got: ${url}`);
-    assert.ok(url.includes('limit=10'), `Got: ${url}`);
-  });
-
-  await check('multiple filters chain correctly', () => {
-    const url = qbFor('t').eq('status', 'active').neq('role', 'guest').limit(5)._buildUrl();
-    assert.ok(url.includes('status=eq.active'), `Got: ${url}`);
-    assert.ok(url.includes('role=neq.guest'), `Got: ${url}`);
-    assert.ok(url.includes('limit=5'), `Got: ${url}`);
-  });
-
-  // ── QueryBuilder header building ───────────────────────────────────────────
-  console.log('\n--- QueryBuilder header building ---');
-
-  await check('GET includes Content-Type and Accept', () => {
-    const headers = qbFor('t')._buildHeaders();
-    assert.strictEqual(headers['Content-Type'], 'application/json');
-    assert.strictEqual(headers['Accept'], 'application/json');
-  });
-
-  await check('GET includes apikey and Authorization when key set', () => {
-    const headers = qbFor('t', 'http://x', 'my-api-key')._buildHeaders();
-    assert.strictEqual(headers.apikey, 'my-api-key');
-    assert.strictEqual(headers.Authorization, 'Bearer my-api-key');
-  });
-
-  await check('GET does not include apikey when no key', () => {
-    const headers = qbFor('t', 'http://x', '')._buildHeaders();
-    assert.ok(!headers.apikey);
-    assert.ok(!headers.Authorization);
-  });
-
-  await check('POST (insert) without select — no Prefer header', () => {
-    const qb = qbFor('t');
-    qb.insert({ name: 'test' });
-    const headers = qb._buildHeaders();
-    assert.ok(!headers['Prefer'], `Expected no Prefer, got: ${headers['Prefer']}`);
-  });
-
-  await check('POST (insert) with select → Prefer: return=representation', () => {
-    const qb = qbFor('t');
-    qb.insert({ name: 'test' }).select('*');
-    const headers = qb._buildHeaders();
-    assert.ok(headers['Prefer'] && headers['Prefer'].includes('return=representation'), `Got: ${headers['Prefer']}`);
-    assert.ok(!headers['Prefer'].includes('merge-duplicates'), `Got: ${headers['Prefer']}`);
-  });
-
-  await check('PATCH (update) with select → Prefer: return=representation', () => {
-    const qb = qbFor('t');
-    qb.update({ name: 'new' }).select('id');
-    const headers = qb._buildHeaders();
-    assert.ok(headers['Prefer'] && headers['Prefer'].includes('return=representation'), `Got: ${headers['Prefer']}`);
-  });
-
-  await check('upsert with select → Prefer includes merge-duplicates and return=representation', () => {
-    const qb = qbFor('t');
-    qb.upsert({ id: 1, name: 'x' }).select('*');
-    const headers = qb._buildHeaders();
-    assert.ok(headers['Prefer'] && headers['Prefer'].includes('resolution=merge-duplicates'), `Got: ${headers['Prefer']}`);
-    assert.ok(headers['Prefer'].includes('return=representation'), `Got: ${headers['Prefer']}`);
-  });
-
-  await check('upsert without select → Prefer: resolution=merge-duplicates', () => {
-    const qb = qbFor('t');
-    qb.upsert({ id: 1 });
-    const headers = qb._buildHeaders();
-    assert.ok(headers['Prefer'] && headers['Prefer'].includes('resolution=merge-duplicates'), `Got: ${headers['Prefer']}`);
-    assert.ok(!headers['Prefer'].includes('return=representation'), `Got: ${headers['Prefer']}`);
-  });
-
-  await check('count mode appends count=exact to Prefer', () => {
-    const qb = qbFor('t');
-    qb.select('*', { count: 'exact' });
-    const headers = qb._buildHeaders();
-    assert.ok(headers['Prefer'] && headers['Prefer'].includes('count=exact'), `Got: ${headers['Prefer']}`);
-  });
-
-  // ── QueryBuilder builder method chains ────────────────────────────────────
-  console.log('\n--- QueryBuilder builder method chains ---');
-
-  await check('select() returns this', () => {
-    const qb = qbFor('t');
-    assert.strictEqual(qb.select('*'), qb);
-  });
-
-  await check('eq() returns this', () => {
-    const qb = qbFor('t');
-    assert.strictEqual(qb.eq('id', 1), qb);
-  });
-
-  await check('order() returns this', () => {
-    const qb = qbFor('t');
-    assert.strictEqual(qb.order('id'), qb);
-  });
-
-  await check('limit() returns this', () => {
-    const qb = qbFor('t');
-    assert.strictEqual(qb.limit(10), qb);
-  });
-
-  await check('single() returns this', () => {
-    const qb = qbFor('t');
-    assert.strictEqual(qb.single(), qb);
-  });
-
-  await check('maybeSingle() returns this', () => {
-    const qb = qbFor('t');
-    assert.strictEqual(qb.maybeSingle(), qb);
-  });
-
-  await check('insert() sets method to POST', () => {
-    const qb = qbFor('t').insert({ x: 1 });
-    assert.strictEqual(qb._httpMethod, 'POST');
-    assert.deepStrictEqual(qb._bodyData, { x: 1 });
-  });
-
-  await check('update() sets method to PATCH', () => {
-    const qb = qbFor('t').update({ x: 2 });
-    assert.strictEqual(qb._httpMethod, 'PATCH');
-    assert.deepStrictEqual(qb._bodyData, { x: 2 });
-  });
-
-  await check('delete() sets method to DELETE', () => {
-    const qb = qbFor('t').delete();
-    assert.strictEqual(qb._httpMethod, 'DELETE');
-  });
-
-  await check('upsert() sets method to POST and wraps object in array', () => {
-    const qb = qbFor('t').upsert({ id: 1 });
-    assert.strictEqual(qb._httpMethod, 'POST');
-    assert.ok(Array.isArray(qb._bodyData), 'body should be array');
-    assert.strictEqual(qb._bodyData[0].id, 1);
-    assert.strictEqual(qb._isUpsert, true);
-  });
-
-  await check('upsert() accepts array directly', () => {
-    const qb = qbFor('t').upsert([{ id: 1 }, { id: 2 }]);
-    assert.ok(Array.isArray(qb._bodyData));
-    assert.strictEqual(qb._bodyData.length, 2);
-  });
-
-  await check('upsert() sets onConflict from opts', () => {
-    const qb = qbFor('t').upsert({ id: 1 }, { onConflict: 'id' });
-    assert.strictEqual(qb._upsertConflictColumn, 'id');
-  });
-
-  // ── QueryBuilder._execute() — HTTP behavior ────────────────────────────────
-  console.log('\n--- QueryBuilder._execute() ---');
-
-  await check('successful GET returns { data, error: null, count: null }', async () => {
-    const original = global.fetch;
-    mockFetch({ body: JSON.stringify([{ id: 1, name: 'Alice' }]) });
-    const result = await qbFor('leads').select('*');
-    restoreFetch(original);
-    assert.deepStrictEqual(result.error, null);
-    assert.ok(Array.isArray(result.data));
-    assert.strictEqual(result.data[0].id, 1);
-    assert.strictEqual(result.count, null);
-  });
-
-  await check('HTTP error response returns { data: null, error }', async () => {
-    const original = global.fetch;
-    mockFetch({ ok: false, status: 403, body: JSON.stringify({ message: 'Forbidden', code: '42501' }) });
-    const result = await qbFor('leads').select('*');
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.ok(result.error);
-    assert.ok(result.error.message.includes('Forbidden'), `Got: ${result.error.message}`);
-    assert.strictEqual(result.error.code, '42501');
-    assert.strictEqual(result.error.status, 403);
-  });
-
-  await check('HTTP error with non-JSON body returns error with raw text', async () => {
-    const original = global.fetch;
-    mockFetch({ ok: false, status: 500, body: 'Internal Server Error' });
-    const result = await qbFor('leads').select('*');
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.ok(result.error.message.includes('Internal Server Error'), `Got: ${result.error.message}`);
-  });
-
-  await check('network error returns { data: null, error }', async () => {
-    const original = global.fetch;
-    global.fetch = async () => { throw new Error('Network unreachable'); };
-    const result = await qbFor('leads').select('*');
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.ok(result.error.message.includes('Network unreachable'), `Got: ${result.error.message}`);
-    assert.strictEqual(result.count, null);
-  });
-
-  await check('single() with array response returns first element', async () => {
-    const original = global.fetch;
-    mockFetch({ body: JSON.stringify([{ id: 1 }, { id: 2 }]) });
-    const result = await qbFor('leads').select('*').single();
-    restoreFetch(original);
-    assert.strictEqual(result.error, null);
-    assert.strictEqual(result.data.id, 1);
-  });
-
-  await check('single() with empty array returns PGRST116 error', async () => {
-    const original = global.fetch;
-    mockFetch({ body: JSON.stringify([]) });
-    const result = await qbFor('leads').select('*').single();
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.ok(result.error);
-    assert.strictEqual(result.error.code, 'PGRST116');
-  });
-
-  await check('maybeSingle() with array returns first element', async () => {
-    const original = global.fetch;
-    mockFetch({ body: JSON.stringify([{ id: 5 }]) });
-    const result = await qbFor('leads').select('*').maybeSingle();
-    restoreFetch(original);
-    assert.strictEqual(result.data.id, 5);
-    assert.strictEqual(result.error, null);
-  });
-
-  await check('maybeSingle() with empty array returns null data, no error', async () => {
-    const original = global.fetch;
-    mockFetch({ body: JSON.stringify([]) });
-    const result = await qbFor('leads').select('*').maybeSingle();
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.strictEqual(result.error, null);
-  });
-
-  await check('DELETE without select → data is null', async () => {
-    const original = global.fetch;
-    mockFetch({ body: '' });
-    const result = await qbFor('leads').delete().eq('id', 1);
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.strictEqual(result.error, null);
-  });
-
-  await check('count mode reads count from content-range header', async () => {
-    const original = global.fetch;
-    const headerMap = { 'content-range': '0-9/42' };
-    global.fetch = async () => ({
-      ok: true,
-      status: 200,
-      headers: { get: (name) => headerMap[name] || null },
-      text: async () => JSON.stringify([]),
-    });
-    const result = await qbFor('leads').select('*', { count: 'exact' });
-    restoreFetch(original);
-    assert.strictEqual(result.count, 42);
-  });
-
-  await check('count stays null when content-range has wildcard total', async () => {
-    const original = global.fetch;
-    global.fetch = async () => ({
-      ok: true,
-      status: 200,
-      headers: { get: (name) => (name === 'content-range' ? '0-9/*' : null) },
-      text: async () => JSON.stringify([]),
-    });
-    const result = await qbFor('leads').select('*', { count: 'exact' });
-    restoreFetch(original);
-    assert.strictEqual(result.count, null);
-  });
-
-  await check('then() caches the promise (executes only once)', async () => {
-    const original = global.fetch;
-    let callCount = 0;
-    global.fetch = async () => {
-      callCount++;
-      return {
-        ok: true, status: 200,
-        headers: { get: () => null },
-        text: async () => JSON.stringify([{ id: 1 }]),
-      };
-    };
-    const qb = qbFor('leads').select('*');
-    // Await twice — should only call fetch once
-    await qb;
-    await qb;
-    restoreFetch(original);
-    assert.strictEqual(callCount, 1, `Expected 1 fetch call, got ${callCount}`);
-  });
-
-  // ── getPool() ──────────────────────────────────────────────────────────────
-  console.log('\n--- getPool() ---');
-
-  await check('getPool() throws when LOCAL_PG_URL is not set', () => {
-    // Reset db module so _pool is null
-    delete require.cache[require.resolve(DB_PATH)];
-    const savedUrl = process.env.LOCAL_PG_URL;
-    delete process.env.LOCAL_PG_URL;
-
-    let threw = false;
-    try {
-      require(DB_PATH).getPool();
-    } catch (err) {
-      threw = true;
-      assert.ok(err.message.includes('LOCAL_PG_URL'), `Expected LOCAL_PG_URL in error, got: ${err.message}`);
-    } finally {
-      if (savedUrl !== undefined) process.env.LOCAL_PG_URL = savedUrl;
-      // Restore module cache (re-require with env restored)
-      delete require.cache[require.resolve(DB_PATH)];
-    }
-    assert.ok(threw, 'Expected getPool() to throw when LOCAL_PG_URL is not set');
-  });
-
-  await check('getPool() creates a Pool with the connection string', () => {
-    // Mock pg.Pool before requiring db fresh
-    delete require.cache[require.resolve(DB_PATH)];
-    const pgPath = require.resolve('pg');
-    const originalPg = require.cache[pgPath];
-
-    const createdConfigs = [];
-    function MockPool(config) { createdConfigs.push(config); }
-    require.cache[pgPath] = { ...originalPg, exports: { Pool: MockPool } };
-
-    process.env.LOCAL_PG_URL = 'postgresql://user:pass@localhost/testdb';
-    let pool;
-    try {
-      pool = require(DB_PATH).getPool();
-    } finally {
-      delete process.env.LOCAL_PG_URL;
-      require.cache[pgPath] = originalPg;
-      delete require.cache[require.resolve(DB_PATH)];
-    }
-
-    assert.ok(pool instanceof MockPool, 'Should return a Pool instance');
-    assert.strictEqual(createdConfigs[0].connectionString, 'postgresql://user:pass@localhost/testdb');
-    assert.strictEqual(createdConfigs[0].max, 10);
-  });
-
-  await check('getPool() returns same pool on repeated calls (singleton)', () => {
-    delete require.cache[require.resolve(DB_PATH)];
-    const pgPath = require.resolve('pg');
-    const originalPg = require.cache[pgPath];
-
-    let callCount = 0;
-    function MockPool(config) { callCount++; }
-    require.cache[pgPath] = { ...originalPg, exports: { Pool: MockPool } };
-
-    process.env.LOCAL_PG_URL = 'postgresql://localhost/test';
-    let pool1, pool2;
-    try {
-      const db = require(DB_PATH);
-      pool1 = db.getPool();
-      pool2 = db.getPool();
-    } finally {
-      delete process.env.LOCAL_PG_URL;
-      require.cache[pgPath] = originalPg;
-      delete require.cache[require.resolve(DB_PATH)];
-    }
-
-    assert.strictEqual(pool1, pool2, 'Should return same Pool instance on repeated calls');
-    assert.strictEqual(callCount, 1, `Pool constructor should be called once, got ${callCount}`);
-  });
-
-  // ── Additional edge cases ─────────────────────────────────────────────────
-  console.log('\n--- Edge cases ---');
-
-  await check('no select() call → no select param in URL', () => {
-    const url = qbFor('t').eq('id', 1)._buildUrl();
-    assert.ok(!url.includes('select='), `Expected no select param, got: ${url}`);
-  });
-
-  await check('limit() then range() → range takes precedence', () => {
-    const url = qbFor('t').limit(5).range(10, 19)._buildUrl();
-    assert.ok(url.includes('offset=10'), `Got: ${url}`);
-    assert.ok(url.includes('limit=10'), `Got: ${url}`);
-  });
-
-  await check('multiple order() calls → all columns in URL', () => {
-    const raw = qbFor('t').order('name').order('created_at', { ascending: false })._buildUrl();
-    const url = decodeURIComponent(raw);
-    assert.ok(url.includes('name.asc'), `Got: ${url}`);
-    assert.ok(url.includes('created_at.desc'), `Got: ${url}`);
-  });
-
-  await check('DELETE with select set → data returned from response body', async () => {
-    const original = global.fetch;
-    mockFetch({ body: JSON.stringify([{ id: 1 }]) });
-    const result = await qbFor('leads').delete().select('id').eq('id', 1);
-    restoreFetch(original);
-    assert.strictEqual(result.error, null);
-    assert.ok(Array.isArray(result.data), `Expected data array, got: ${JSON.stringify(result.data)}`);
-  });
-
-  await check('GET with empty response body → data is null', async () => {
-    const original = global.fetch;
-    mockFetch({ body: '' });
-    const result = await qbFor('leads').select('*').eq('id', 999);
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.strictEqual(result.error, null);
-  });
-
-  await check('rpc() with no params sends empty object body', async () => {
-    const original = global.fetch;
+  it('sends empty object body when params omitted', async () => {
     mockFetch({ body: '{}' });
     const client = freshDb().createClient('http://api.test', 'k');
     await client.rpc('fn_no_params');
-    const sentBody = JSON.parse(global.fetch._lastOpts.body);
-    restoreFetch(original);
-    assert.deepStrictEqual(sentBody, {});
+    expect(JSON.parse(global.fetch._lastOpts.body)).toEqual({});
+  });
+});
+
+describe('QueryBuilder URL building', () => {
+  it('_buildUrl() includes base URL and table name', () => {
+    const url = qbFor('leads', 'http://api.test', 'k')._buildUrl();
+    expect(url.startsWith('http://api.test/leads')).toBe(true);
   });
 
-  await check('non-Error thrown from fetch → stringified in error message', async () => {
-    const original = global.fetch;
-    global.fetch = async () => { throw 'connection reset'; };
+  it('select() sets ?select= param', () => {
+    const url = decodeURIComponent(qbFor('t').select('id,name')._buildUrl());
+    expect(url).toMatch(/select=id,name/);
+  });
+
+  it('select() with no args defaults to *', () => {
+    const url = qbFor('t').select()._buildUrl();
+    expect(url).toContain('select=*');
+  });
+
+  it('eq() → ?col=eq.val', () => {
+    expect(qbFor('t').eq('status', 'active')._buildUrl()).toContain('status=eq.active');
+  });
+
+  it('neq() → ?col=neq.val', () => {
+    expect(qbFor('t').neq('status', 'deleted')._buildUrl()).toContain('status=neq.deleted');
+  });
+
+  it('gt() → ?col=gt.val', () => {
+    expect(qbFor('t').gt('age', 18)._buildUrl()).toContain('age=gt.18');
+  });
+
+  it('gte() → ?col=gte.val', () => {
+    expect(qbFor('t').gte('score', 100)._buildUrl()).toContain('score=gte.100');
+  });
+
+  it('lt() → ?col=lt.val', () => {
+    expect(qbFor('t').lt('price', 50)._buildUrl()).toContain('price=lt.50');
+  });
+
+  it('lte() → ?col=lte.val', () => {
+    expect(qbFor('t').lte('count', 10)._buildUrl()).toContain('count=lte.10');
+  });
+
+  it('in() → ?col=in.("a","b")', () => {
+    const url = decodeURIComponent(qbFor('t').in('role', ['admin', 'user'])._buildUrl());
+    expect(url).toContain('role=in.(');
+    expect(url).toContain('"admin"');
+    expect(url).toContain('"user"');
+  });
+
+  it('is(null) → ?col=is.null', () => {
+    expect(qbFor('t').is('deleted_at', null)._buildUrl()).toContain('deleted_at=is.null');
+  });
+
+  it('is(true) → ?col=is.true', () => {
+    expect(qbFor('t').is('active', true)._buildUrl()).toContain('active=is.true');
+  });
+
+  it('not(key, val) [2 args] → ?col=not.val', () => {
+    expect(qbFor('t').not('status', 'deleted')._buildUrl()).toContain('status=not.deleted');
+  });
+
+  it('not(key, "is", null) → ?col=not.is.null', () => {
+    expect(qbFor('t').not('deleted_at', 'is', null)._buildUrl()).toContain('deleted_at=not.is.null');
+  });
+
+  it('not(key, "eq", val) → ?col=not.eq.val', () => {
+    expect(qbFor('t').not('role', 'eq', 'guest')._buildUrl()).toContain('role=not.eq.guest');
+  });
+
+  it('or() → ?or=(filterStr)', () => {
+    const url = decodeURIComponent(qbFor('t').or('status.eq.active,role.eq.admin')._buildUrl());
+    expect(url).toContain('or=');
+    expect(url).toContain('status.eq.active');
+  });
+
+  it('order(col, ascending:true) → ?order=col.asc', () => {
+    expect(qbFor('t').order('created_at', { ascending: true })._buildUrl()).toContain('order=created_at.asc');
+  });
+
+  it('order(col, ascending:false) → ?order=col.desc', () => {
+    expect(qbFor('t').order('created_at', { ascending: false })._buildUrl()).toContain('order=created_at.desc');
+  });
+
+  it('order() defaults to ascending', () => {
+    expect(qbFor('t').order('name')._buildUrl()).toContain('order=name.asc');
+  });
+
+  it('limit() → ?limit=N', () => {
+    expect(qbFor('t').limit(25)._buildUrl()).toContain('limit=25');
+  });
+
+  it('range(0, 9) → ?offset=0&limit=10', () => {
+    const url = qbFor('t').range(0, 9)._buildUrl();
+    expect(url).toContain('offset=0');
+    expect(url).toContain('limit=10');
+  });
+
+  it('multiple filters chain correctly', () => {
+    const url = qbFor('t').eq('status', 'active').neq('role', 'guest').limit(5)._buildUrl();
+    expect(url).toContain('status=eq.active');
+    expect(url).toContain('role=neq.guest');
+    expect(url).toContain('limit=5');
+  });
+
+  it('no select() call omits select param', () => {
+    const url = qbFor('t').eq('id', 1)._buildUrl();
+    expect(url).not.toContain('select=');
+  });
+
+  it('multiple order() calls include all columns', () => {
+    const url = decodeURIComponent(qbFor('t').order('name').order('created_at', { ascending: false })._buildUrl());
+    expect(url).toContain('name.asc');
+    expect(url).toContain('created_at.desc');
+  });
+});
+
+describe('QueryBuilder header building', () => {
+  it('GET includes Content-Type and Accept', () => {
+    const headers = qbFor('t')._buildHeaders();
+    expect(headers['Content-Type']).toBe('application/json');
+    expect(headers['Accept']).toBe('application/json');
+  });
+
+  it('GET includes apikey and Authorization when key set', () => {
+    const headers = qbFor('t', 'http://x', 'my-api-key')._buildHeaders();
+    expect(headers.apikey).toBe('my-api-key');
+    expect(headers.Authorization).toBe('Bearer my-api-key');
+  });
+
+  it('GET omits apikey when key is empty', () => {
+    const headers = qbFor('t', 'http://x', '')._buildHeaders();
+    expect(headers.apikey).toBeFalsy();
+    expect(headers.Authorization).toBeFalsy();
+  });
+
+  it('POST insert without select — no Prefer header', () => {
+    const qb = qbFor('t');
+    qb.insert({ name: 'test' });
+    expect(qb._buildHeaders()['Prefer']).toBeFalsy();
+  });
+
+  it('POST insert with select → Prefer: return=representation', () => {
+    const qb = qbFor('t');
+    qb.insert({ name: 'test' }).select('*');
+    const prefer = qb._buildHeaders()['Prefer'];
+    expect(prefer).toContain('return=representation');
+    expect(prefer).not.toContain('merge-duplicates');
+  });
+
+  it('PATCH update with select → Prefer: return=representation', () => {
+    const qb = qbFor('t');
+    qb.update({ name: 'new' }).select('id');
+    expect(qb._buildHeaders()['Prefer']).toContain('return=representation');
+  });
+
+  it('upsert with select → Prefer includes merge-duplicates and return=representation', () => {
+    const qb = qbFor('t');
+    qb.upsert({ id: 1, name: 'x' }).select('*');
+    const prefer = qb._buildHeaders()['Prefer'];
+    expect(prefer).toContain('resolution=merge-duplicates');
+    expect(prefer).toContain('return=representation');
+  });
+
+  it('upsert without select → Prefer: resolution=merge-duplicates only', () => {
+    const qb = qbFor('t');
+    qb.upsert({ id: 1 });
+    const prefer = qb._buildHeaders()['Prefer'];
+    expect(prefer).toContain('resolution=merge-duplicates');
+    expect(prefer).not.toContain('return=representation');
+  });
+
+  it('count mode appends count=exact to Prefer', () => {
+    const qb = qbFor('t');
+    qb.select('*', { count: 'exact' });
+    expect(qb._buildHeaders()['Prefer']).toContain('count=exact');
+  });
+});
+
+describe('QueryBuilder builder method chains', () => {
+  it('select() returns this', () => { const qb = qbFor('t'); expect(qb.select('*')).toBe(qb); });
+  it('eq() returns this', () => { const qb = qbFor('t'); expect(qb.eq('id', 1)).toBe(qb); });
+  it('order() returns this', () => { const qb = qbFor('t'); expect(qb.order('id')).toBe(qb); });
+  it('limit() returns this', () => { const qb = qbFor('t'); expect(qb.limit(10)).toBe(qb); });
+  it('single() returns this', () => { const qb = qbFor('t'); expect(qb.single()).toBe(qb); });
+  it('maybeSingle() returns this', () => { const qb = qbFor('t'); expect(qb.maybeSingle()).toBe(qb); });
+
+  it('insert() sets method to POST and stores body', () => {
+    const qb = qbFor('t').insert({ x: 1 });
+    expect(qb._httpMethod).toBe('POST');
+    expect(qb._bodyData).toEqual({ x: 1 });
+  });
+
+  it('update() sets method to PATCH and stores body', () => {
+    const qb = qbFor('t').update({ x: 2 });
+    expect(qb._httpMethod).toBe('PATCH');
+    expect(qb._bodyData).toEqual({ x: 2 });
+  });
+
+  it('delete() sets method to DELETE', () => {
+    expect(qbFor('t').delete()._httpMethod).toBe('DELETE');
+  });
+
+  it('upsert() sets POST, wraps object in array, marks isUpsert', () => {
+    const qb = qbFor('t').upsert({ id: 1 });
+    expect(qb._httpMethod).toBe('POST');
+    expect(Array.isArray(qb._bodyData)).toBe(true);
+    expect(qb._bodyData[0].id).toBe(1);
+    expect(qb._isUpsert).toBe(true);
+  });
+
+  it('upsert() accepts array without wrapping', () => {
+    const qb = qbFor('t').upsert([{ id: 1 }, { id: 2 }]);
+    expect(qb._bodyData.length).toBe(2);
+  });
+
+  it('upsert() stores onConflict column', () => {
+    expect(qbFor('t').upsert({ id: 1 }, { onConflict: 'id' })._upsertConflictColumn).toBe('id');
+  });
+});
+
+describe('QueryBuilder._execute() HTTP behavior', () => {
+  it('successful GET returns { data, error: null, count: null }', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 1, name: 'Alice' }]) });
     const result = await qbFor('leads').select('*');
-    restoreFetch(original);
-    assert.strictEqual(result.data, null);
-    assert.ok(result.error.message.includes('connection reset'), `Got: ${result.error.message}`);
+    expect(result.error).toBe(null);
+    expect(Array.isArray(result.data)).toBe(true);
+    expect(result.data[0].id).toBe(1);
+    expect(result.count).toBe(null);
   });
 
-  // ── Summary ────────────────────────────────────────────────────────────────
-  const total = passed + failed;
-  console.log(`\n=== Results: ${passed}/${total} passed ===\n`);
-  if (failed > 0) process.exit(1);
-}
-
-if (require.main === module) {
-  run().catch(err => {
-    console.error('Unexpected error:', err);
-    process.exit(1);
+  it('HTTP 403 returns { data: null, error with code and status }', async () => {
+    mockFetch({ ok: false, status: 403, body: JSON.stringify({ message: 'Forbidden', code: '42501' }) });
+    const result = await qbFor('leads').select('*');
+    expect(result.data).toBe(null);
+    expect(result.error.message).toContain('Forbidden');
+    expect(result.error.code).toBe('42501');
+    expect(result.error.status).toBe(403);
   });
-}
 
-module.exports = { run };
+  it('HTTP error with non-JSON body returns raw text in error message', async () => {
+    mockFetch({ ok: false, status: 500, body: 'Internal Server Error' });
+    const result = await qbFor('leads').select('*');
+    expect(result.data).toBe(null);
+    expect(result.error.message).toContain('Internal Server Error');
+  });
+
+  it('network error returns { data: null, error, count: null }', async () => {
+    global.fetch = jest.fn(async () => { throw new Error('Network unreachable'); });
+    const result = await qbFor('leads').select('*');
+    expect(result.data).toBe(null);
+    expect(result.error.message).toContain('Network unreachable');
+    expect(result.count).toBe(null);
+  });
+
+  it('single() with multi-row response returns first element', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 1 }, { id: 2 }]) });
+    const result = await qbFor('leads').select('*').single();
+    expect(result.error).toBe(null);
+    expect(result.data.id).toBe(1);
+  });
+
+  it('single() with empty response returns PGRST116 error', async () => {
+    mockFetch({ body: JSON.stringify([]) });
+    const result = await qbFor('leads').select('*').single();
+    expect(result.data).toBe(null);
+    expect(result.error.code).toBe('PGRST116');
+  });
+
+  it('maybeSingle() with rows returns first element, no error', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 5 }]) });
+    const result = await qbFor('leads').select('*').maybeSingle();
+    expect(result.data.id).toBe(5);
+    expect(result.error).toBe(null);
+  });
+
+  it('maybeSingle() with empty response returns null data, no error', async () => {
+    mockFetch({ body: JSON.stringify([]) });
+    const result = await qbFor('leads').select('*').maybeSingle();
+    expect(result.data).toBe(null);
+    expect(result.error).toBe(null);
+  });
+
+  it('DELETE without select returns data: null, error: null', async () => {
+    mockFetch({ body: '' });
+    const result = await qbFor('leads').delete().eq('id', 1);
+    expect(result.data).toBe(null);
+    expect(result.error).toBe(null);
+  });
+
+  it('DELETE with select returns response body as data', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 1 }]) });
+    const result = await qbFor('leads').delete().select('id').eq('id', 1);
+    expect(result.error).toBe(null);
+    expect(Array.isArray(result.data)).toBe(true);
+  });
+
+  it('GET with empty response body returns data: null', async () => {
+    mockFetch({ body: '' });
+    const result = await qbFor('leads').select('*').eq('id', 999);
+    expect(result.data).toBe(null);
+    expect(result.error).toBe(null);
+  });
+
+  it('count mode reads total from content-range header', async () => {
+    global.fetch = jest.fn(async () => ({
+      ok: true, status: 200,
+      headers: { get: (n) => n === 'content-range' ? '0-9/42' : null },
+      text: async () => JSON.stringify([]),
+    }));
+    const result = await qbFor('leads').select('*', { count: 'exact' });
+    expect(result.count).toBe(42);
+  });
+
+  it('count stays null when content-range total is wildcard', async () => {
+    global.fetch = jest.fn(async () => ({
+      ok: true, status: 200,
+      headers: { get: (n) => n === 'content-range' ? '0-9/*' : null },
+      text: async () => JSON.stringify([]),
+    }));
+    const result = await qbFor('leads').select('*', { count: 'exact' });
+    expect(result.count).toBe(null);
+  });
+
+  it('then() caches the promise so fetch is called only once', async () => {
+    let callCount = 0;
+    global.fetch = jest.fn(async () => {
+      callCount++;
+      return { ok: true, status: 200, headers: { get: () => null }, text: async () => JSON.stringify([{ id: 1 }]) };
+    });
+    const qb = qbFor('leads').select('*');
+    await qb;
+    await qb;
+    expect(callCount).toBe(1);
+  });
+
+  it('non-Error thrown from fetch is stringified in error message', async () => {
+    global.fetch = jest.fn(async () => { throw 'connection reset'; });
+    const result = await qbFor('leads').select('*');
+    expect(result.data).toBe(null);
+    expect(result.error.message).toContain('connection reset');
+  });
+});
+
+describe('getPool()', () => {
+  it('throws when LOCAL_PG_URL is not set', () => {
+    const savedUrl = process.env.LOCAL_PG_URL;
+    delete process.env.LOCAL_PG_URL;
+    jest.isolateModules(() => {
+      const db = require('../../lib/db');
+      expect(() => db.getPool()).toThrow('LOCAL_PG_URL');
+    });
+    if (savedUrl !== undefined) process.env.LOCAL_PG_URL = savedUrl;
+  });
+
+  it('creates a Pool with the LOCAL_PG_URL connection string', () => {
+    const createdConfigs = [];
+    function MockPool(config) { createdConfigs.push(config); }
+
+    process.env.LOCAL_PG_URL = 'postgresql://user:pass@localhost/testdb';
+    jest.isolateModules(() => {
+      jest.doMock('pg', () => ({ Pool: MockPool }));
+      const db = require('../../lib/db');
+      const pool = db.getPool();
+      expect(pool instanceof MockPool).toBe(true);
+      expect(createdConfigs[0].connectionString).toBe('postgresql://user:pass@localhost/testdb');
+      expect(createdConfigs[0].max).toBe(10);
+    });
+    delete process.env.LOCAL_PG_URL;
+  });
+
+  it('returns the same Pool instance on repeated calls (singleton)', () => {
+    let callCount = 0;
+    function MockPool() { callCount++; }
+
+    process.env.LOCAL_PG_URL = 'postgresql://localhost/test';
+    jest.isolateModules(() => {
+      jest.doMock('pg', () => ({ Pool: MockPool }));
+      const db = require('../../lib/db');
+      const pool1 = db.getPool();
+      const pool2 = db.getPool();
+      expect(pool1).toBe(pool2);
+      expect(callCount).toBe(1);
+    });
+    delete process.env.LOCAL_PG_URL;
+  });
+});
