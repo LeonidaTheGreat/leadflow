@@ -23,6 +23,14 @@ function writeCompletionFile(dir, index) {
   return fullPath;
 }
 
+function writeOldCompletionFile(dir, name, daysOld) {
+  const fullPath = path.join(dir, name);
+  fs.writeFileSync(fullPath, JSON.stringify({ name, daysOld }), 'utf8');
+  const mtime = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000);
+  fs.utimesSync(fullPath, mtime, mtime);
+  return fullPath;
+}
+
 (function run() {
   console.log('\n=== completion-reports retention tests ===\n');
 
@@ -32,24 +40,28 @@ function writeCompletionFile(dir, index) {
 
   fs.mkdirSync(reportsDir, { recursive: true });
 
-  for (let i = 0; i < 6; i += 1) {
+  for (let i = 0; i < 5; i += 1) {
     writeCompletionFile(reportsDir, i);
   }
+  writeOldCompletionFile(reportsDir, 'COMPLETION-old-0000.json', 8);
+  writeOldCompletionFile(reportsDir, 'COMPLETION-old-0001.json', 9);
 
   fs.writeFileSync(path.join(reportsDir, 'ORCHESTRATOR-DECISIONS.json'), '{}', 'utf8');
 
   const before = listCompletionReportFiles(reportsDir);
-  assert.strictEqual(before.length, 6, 'should count only COMPLETION-* files before retention');
+  assert.strictEqual(before.length, 7, 'should count only COMPLETION-* files before retention');
 
   const result = enforceCompletionReportRetention({
     projectDir,
     maxReports: 3,
+    maxAgeDays: 7,
     reportsDir: 'completion-reports',
     archiveDir: '.completion-reports-archive'
   });
 
-  assert.strictEqual(result.beforeCount, 6, 'beforeCount should include all completion reports');
-  assert.strictEqual(result.archivedCount, 3, 'should archive overflow files only');
+  assert.strictEqual(result.beforeCount, 7, 'beforeCount should include all completion reports');
+  assert.strictEqual(result.deletedOldCount, 2, 'should delete only reports older than maxAgeDays');
+  assert.strictEqual(result.archivedCount, 2, 'should archive overflow files only after deleting old reports');
   assert.strictEqual(result.afterCount, 3, 'should keep maxReports files in completion-reports');
   assert.ok(fs.existsSync(archiveDir), 'archive directory should be created');
 
@@ -68,7 +80,13 @@ function writeCompletionFile(dir, index) {
     .readdirSync(archiveDir)
     .filter((name) => name.startsWith('COMPLETION-test-'))
     .length;
-  assert.strictEqual(archiveCount, 3, 'archive should contain overflow files');
+  assert.strictEqual(archiveCount, 2, 'archive should contain overflow files after old-report deletion');
+
+  assert.ok(
+    !fs.existsSync(path.join(reportsDir, 'COMPLETION-old-0000.json')) &&
+      !fs.existsSync(path.join(reportsDir, 'COMPLETION-old-0001.json')),
+    'reports older than maxAgeDays should be deleted from completion-reports'
+  );
 
   assert.ok(
     fs.existsSync(path.join(reportsDir, 'ORCHESTRATOR-DECISIONS.json')),

@@ -3,33 +3,35 @@
 /**
  * taskSpec
  * What:
- * - Add /Users/clawdbot/projects/leadflow/scripts/tasks/completion-reports-retention.js
- *   with enforceCompletionReportRetention(), listCompletionReportFiles(), and runCli()
- *   to cap COMPLETION-* files under completion-reports/ at 500 by archiving oldest files.
- * - Update /Users/clawdbot/projects/leadflow/package.json scripts to add
- *   "completion_reports": "node scripts/tasks/completion-reports-retention.js".
- * - Add /Users/clawdbot/projects/leadflow/tests/unit/completion-reports-retention.test.js
- *   to verify overflow files are archived and newest files are retained.
+ * - Update /Users/clawdbot/projects/leadflow/scripts/tasks/completion-reports-retention.js
+ *   to apply both retention rules in one pass:
+ *   1) delete COMPLETION-* files older than 7 days, then
+ *   2) archive oldest overflow files so completion-reports stays <= 500.
+ * - Update /Users/clawdbot/projects/leadflow/tests/unit/completion-reports-retention.test.js
+ *   to verify old files are deleted first and only remaining overflow files are archived.
  * Verify:
- * - npm run completion_reports exits 0 and prints post-run count <= 500.
- * - node tests/unit/completion-reports-retention.test.js exits 0.
- * - npm run build exits 0.
- * - npm run lint exits 0.
- * - npm test exits 0.
- * - npm audit --audit-level=high exits 0.
+ * - Run `find completion-reports/ -name "COMPLETION-*" -mtime +7 -delete`; if count remains >500,
+ *   run `npm run completion_reports` and confirm the script reports `after<=500`.
+ * - Run `find completion-reports/ -maxdepth 1 -name "COMPLETION-*" | wc -l` and confirm <=500.
+ * - Run `node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json`
+ *   and confirm `completion_reports` gate is `passed: true`.
+ * - Run `node tests/unit/completion-reports-retention.test.js` and confirm exit code 0.
+ * - Run `npm run build`, `npm run lint`, `npm test`, and `npm audit --audit-level=high`.
  * Boundaries:
- * - Do not modify routes/, lib/services/, database schema, or runtime business logic.
- * - Do not delete completion reports; only move overflow reports to .completion-reports-archive/.
- * - Do not change orchestration engine code under ~/.openclaw/genome/.
+ * - Do not modify product routes/services/database schema or runtime business logic.
+ * - Do not modify orchestration engine files under ~/.openclaw/genome/.
+ * - Keep changes scoped to completion report retention behavior and its unit tests.
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_MAX_REPORTS = 500;
+const DEFAULT_MAX_AGE_DAYS = 7;
 const DEFAULT_REPORTS_DIR = 'completion-reports';
 const DEFAULT_ARCHIVE_DIR = '.completion-reports-archive';
 const REPORT_PREFIX = 'COMPLETION-';
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function listCompletionReportFiles(reportsDir) {
   if (!fs.existsSync(reportsDir)) {
@@ -69,19 +71,28 @@ function moveToArchive(fullPath, archiveDir) {
 function enforceCompletionReportRetention(options = {}) {
   const projectDir = options.projectDir || process.cwd();
   const maxReports = options.maxReports || DEFAULT_MAX_REPORTS;
+  const maxAgeDays = options.maxAgeDays || DEFAULT_MAX_AGE_DAYS;
   const reportsDir = path.join(projectDir, options.reportsDir || DEFAULT_REPORTS_DIR);
   const archiveDir = path.join(projectDir, options.archiveDir || DEFAULT_ARCHIVE_DIR);
+  const retentionCutoffMs = Date.now() - maxAgeDays * MS_PER_DAY;
 
-  const reports = listCompletionReportFiles(reportsDir);
-  const overflow = reports.slice(maxReports);
+  const reportsBefore = listCompletionReportFiles(reportsDir);
+  const oldReports = reportsBefore.filter((entry) => entry.mtimeMs < retentionCutoffMs);
+  for (const report of oldReports) {
+    fs.unlinkSync(report.fullPath);
+  }
 
-  if (overflow.length === 0) {
+  const reportsAfterAgeDelete = listCompletionReportFiles(reportsDir);
+  const overflow = reportsAfterAgeDelete.slice(maxReports);
+
+  if (oldReports.length === 0 && overflow.length === 0) {
     return {
       reportsDir,
       archiveDir,
-      beforeCount: reports.length,
+      beforeCount: reportsBefore.length,
+      deletedOldCount: 0,
       archivedCount: 0,
-      afterCount: reports.length,
+      afterCount: reportsBefore.length,
       archivedFiles: []
     };
   }
@@ -104,7 +115,8 @@ function enforceCompletionReportRetention(options = {}) {
   return {
     reportsDir,
     archiveDir,
-    beforeCount: reports.length,
+    beforeCount: reportsBefore.length,
+    deletedOldCount: oldReports.length,
     archivedCount: overflow.length,
     afterCount: remainingCount,
     archivedFiles
@@ -115,6 +127,7 @@ function runCli() {
   const result = enforceCompletionReportRetention();
   const message = [
     `completion_reports: before=${result.beforeCount}`,
+    `deleted_old=${result.deletedOldCount}`,
     `archived=${result.archivedCount}`,
     `after=${result.afterCount}`,
     `limit=${DEFAULT_MAX_REPORTS}`
@@ -133,6 +146,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  DEFAULT_MAX_AGE_DAYS,
   DEFAULT_MAX_REPORTS,
   listCompletionReportFiles,
   enforceCompletionReportRetention
