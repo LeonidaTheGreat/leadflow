@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 import { supabaseAdmin, createLead } from '@/lib/supabase'
 import { normalizePhone } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
@@ -14,7 +15,10 @@ async function getDefaultAgent(): Promise<Agent | null> {
   return (agents?.[0] as Agent | undefined) ?? null
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   const logs: string[] = []
   const log = (msg: string) => {
     logger.info(msg)

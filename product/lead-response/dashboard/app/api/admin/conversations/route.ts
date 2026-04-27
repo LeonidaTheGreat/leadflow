@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 import { createClient } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
@@ -35,7 +36,9 @@ function deriveOutcome(status: string | null): 'booked' | 'in-progress' | 'opted
   return 'in-progress'
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
   try {
     const { searchParams } = new URL(request.url)
     const outcomeFilter = searchParams.get('outcome') || 'all'

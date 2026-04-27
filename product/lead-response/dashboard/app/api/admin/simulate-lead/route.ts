@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 import { createClient } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
@@ -53,7 +54,9 @@ function generateAiResponse(turn: number, leadName: string, propertyInterest: st
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
   try {
     const body = await request.json()
     const { leadName, leadPhone, propertyInterest } = body
