@@ -122,14 +122,21 @@ e2e-*-results*.json
 coverage/
 *.tsbuildinfo
 # Auto-generated orchestrator docs
+API.md
 DASHBOARD.md
 E2E_MAPPINGS.md
 JOURNEYS.md
+MODULE_INDEX.md
 ORCHESTRATOR-HEARTBEAT-LOG.md
 PRD_INDEX.md
+SCHEMA.md
+SERVICES.md
 USE_CASES.md
 .orchestrator-heartbeat
 CODE_GRAPH.json
 CODE_GRAPH.md
 PROJECT_GRAPH.json
 PROJECT_GRAPH.md
+ARCHITECTURE.md
+DISCOVERIES.md
+MODULE_INDEX.md.generated
