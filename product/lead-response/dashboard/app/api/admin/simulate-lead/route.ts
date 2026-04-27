@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 /**
  * POST /api/admin/simulate-lead
@@ -54,6 +55,9 @@ function generateAiResponse(turn: number, leadName: string, propertyInterest: st
 }
 
 export async function POST(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const body = await request.json()
     const { leadName, leadPhone, propertyInterest } = body

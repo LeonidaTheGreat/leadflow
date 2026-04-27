@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 const supabase = postgrestAdmin
 
@@ -14,6 +15,9 @@ const INVITE_EXPIRY_DAYS = 7
  * List all pending pilot signups (without invites)
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
@@ -63,6 +67,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  * Send invite email to a specific pilot signup
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const body = await request.json()
     const { email, name } = body

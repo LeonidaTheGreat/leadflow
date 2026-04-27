@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 /**
  * GET /api/admin/conversations
@@ -36,6 +37,9 @@ function deriveOutcome(status: string | null): 'booked' | 'in-progress' | 'opted
 }
 
 export async function GET(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const { searchParams } = new URL(request.url)
     const outcomeFilter = searchParams.get('outcome') || 'all'

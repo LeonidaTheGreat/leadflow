@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
 import Stripe from 'stripe'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
@@ -20,7 +21,10 @@ const stripe = stripeKey ? new Stripe(stripeKey) : null
  *
  * Returns { status: 'ok' | 'fail', steps: [...], duration_ms }
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   const startTime = Date.now()
   const steps: Array<{
     step: string

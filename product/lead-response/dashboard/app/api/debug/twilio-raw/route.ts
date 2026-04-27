@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 export async function POST(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   const headers: Record<string, string> = {}
   request.headers.forEach((value, key) => {
     headers[key] = value
@@ -56,7 +60,10 @@ export async function POST(request: Request) {
     headers: { 'Content-Type': 'text/xml' } })
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   // Get recent debug events
   const { data: events } = await supabaseAdmin
     .from('events')
