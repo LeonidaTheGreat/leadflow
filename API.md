@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-04-16T04:21:07.943Z | Source: `routes/`, `integration/`
+> Generated: 2026-04-27T05:17:51.550Z | Source: `routes/`, `integration/`
 
 **20 endpoints across 8 files**
 
