@@ -654,6 +654,64 @@ async function run() {
     assert.strictEqual(callCount, 1, `Pool constructor should be called once, got ${callCount}`);
   });
 
+  // ── Additional edge cases ─────────────────────────────────────────────────
+  console.log('\n--- Edge cases ---');
+
+  await check('no select() call → no select param in URL', () => {
+    const url = qbFor('t').eq('id', 1)._buildUrl();
+    assert.ok(!url.includes('select='), `Expected no select param, got: ${url}`);
+  });
+
+  await check('limit() then range() → range takes precedence', () => {
+    const url = qbFor('t').limit(5).range(10, 19)._buildUrl();
+    assert.ok(url.includes('offset=10'), `Got: ${url}`);
+    assert.ok(url.includes('limit=10'), `Got: ${url}`);
+  });
+
+  await check('multiple order() calls → all columns in URL', () => {
+    const raw = qbFor('t').order('name').order('created_at', { ascending: false })._buildUrl();
+    const url = decodeURIComponent(raw);
+    assert.ok(url.includes('name.asc'), `Got: ${url}`);
+    assert.ok(url.includes('created_at.desc'), `Got: ${url}`);
+  });
+
+  await check('DELETE with select set → data returned from response body', async () => {
+    const original = global.fetch;
+    mockFetch({ body: JSON.stringify([{ id: 1 }]) });
+    const result = await qbFor('leads').delete().select('id').eq('id', 1);
+    restoreFetch(original);
+    assert.strictEqual(result.error, null);
+    assert.ok(Array.isArray(result.data), `Expected data array, got: ${JSON.stringify(result.data)}`);
+  });
+
+  await check('GET with empty response body → data is null', async () => {
+    const original = global.fetch;
+    mockFetch({ body: '' });
+    const result = await qbFor('leads').select('*').eq('id', 999);
+    restoreFetch(original);
+    assert.strictEqual(result.data, null);
+    assert.strictEqual(result.error, null);
+  });
+
+  await check('rpc() with no params sends empty object body', async () => {
+    const original = global.fetch;
+    mockFetch({ body: '{}' });
+    const client = freshDb().createClient('http://api.test', 'k');
+    await client.rpc('fn_no_params');
+    const sentBody = JSON.parse(global.fetch._lastOpts.body);
+    restoreFetch(original);
+    assert.deepStrictEqual(sentBody, {});
+  });
+
+  await check('non-Error thrown from fetch → stringified in error message', async () => {
+    const original = global.fetch;
+    global.fetch = async () => { throw 'connection reset'; };
+    const result = await qbFor('leads').select('*');
+    restoreFetch(original);
+    assert.strictEqual(result.data, null);
+    assert.ok(result.error.message.includes('connection reset'), `Got: ${result.error.message}`);
+  });
+
   // ── Summary ────────────────────────────────────────────────────────────────
   const total = passed + failed;
   console.log(`\n=== Results: ${passed}/${total} passed ===\n`);
