@@ -25,7 +25,7 @@ const fs = require('fs');
 const path = require('path');
 const { getProjectDir } = require('../../project-config-loader');
 
-const DEFAULT_MAX_REPORTS = 500;
+const DEFAULT_MAX_REPORTS = 400;
 const DEFAULT_REPORTS_DIR = 'completion-reports';
 const DEFAULT_ARCHIVE_DIR = '.completion-reports-archive';
 const REPORT_PREFIX = 'COMPLETION-';
