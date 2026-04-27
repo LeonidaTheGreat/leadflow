@@ -197,6 +197,22 @@ test_dashboard_no_errors() {
     user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
   fi
 
+  # Last resort: use the dedicated smoke-test pilot account.
+  # Ensure onboarding_completed=true so middleware serves /dashboard (not /setup).
+  if [ -z "$user_id" ]; then
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&email=eq.smoketest@testlead.com&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    if [ -n "$user_id" ]; then
+      # Mark onboarding complete so middleware allows /dashboard access
+      curl -s --max-time 10 -X PATCH "$API_URL/real_estate_agents?id=eq.$user_id" \
+        -H "apikey: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"onboarding_completed":true}' >/dev/null 2>&1 || true
+    fi
+  fi
+
   [ -z "$user_id" ] && return 1
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
