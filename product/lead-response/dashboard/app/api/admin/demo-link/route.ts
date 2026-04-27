@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 import crypto from 'crypto'
 
 /**
@@ -42,6 +43,9 @@ function generateToken(): { rawToken: string; tokenHash: string } {
 }
 
 export async function POST(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const body = await request.json().catch(() => ({}))
     const label = body?.label || null
@@ -81,6 +85,9 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const { searchParams } = new URL(request.url)
     const rawToken = searchParams.get('token')

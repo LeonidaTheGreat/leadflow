@@ -4,6 +4,7 @@ import { normalizePhone } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
 import type { Lead, Agent } from '@/lib/types'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
@@ -15,6 +16,9 @@ async function getDefaultAgent(): Promise<Agent | null> {
 }
 
 export async function POST(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   const logs: string[] = []
   const log = (msg: string) => {
     logger.info(msg)

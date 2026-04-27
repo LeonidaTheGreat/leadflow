@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase-server'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   // Return sanitized environment info for debugging
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'NOT SET'
   

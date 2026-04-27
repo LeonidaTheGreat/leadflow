@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
 import { logger } from '@/lib/logger'
+import { requirePrivilegedRouteAuth } from '@/lib/security/privileged-route-auth'
 
 export async function POST(request: Request) {
+  const unauthorized = await requirePrivilegedRouteAuth(request)
+  if (unauthorized) return unauthorized
+
   try {
     const { phone } = await request.json()
     
