@@ -1,18 +1,18 @@
 #
 # Task Spec
 # What:
-# - Update `.gitignore` to include required clean-worktree gate artifacts:
-#   `CODE_GRAPH.json`, `CODE_GRAPH.md`, `PROJECT_GRAPH.json`, `PROJECT_GRAPH.md`.
-# - Keep ignore-list changes minimal and scoped to the failing quality gate.
-# - Add `clean_worktree` npm script wiring in `package.json` only if needed for command verification.
+# - Update `.gitignore` entries required by the clean_worktree quality gate:
+#   `CODE_GRAPH.json`, `CODE_GRAPH.md`, `PROJECT_GRAPH.json`, `PROJECT_GRAPH.md`,
+#   `ARCHITECTURE.md`, `DISCOVERIES.md`, and `MODULE_INDEX.md.generated`.
+# - Limit code changes to `.gitignore` only.
 # Verify:
-# - `node -e "const {evaluateCleanWorktree}=require('/Users/clawdbot/.openclaw/genome/core/clean-worktree-gate'); const r=evaluateCleanWorktree(process.cwd()); console.log(r); process.exit(r.passed?0:1)"` exits 0.
+# - `node -e "const {evaluateCleanWorktree}=require('/Users/clawdbot/.openclaw/genome/core/clean-worktree-gate'); const r=evaluateCleanWorktree(process.cwd()); console.log(JSON.stringify(r,null,2)); process.exit(r.passed?0:1)"` exits 0.
 # - `npm run clean_worktree` exits 0.
-# - `rg -n "^(CODE_GRAPH\\.json|CODE_GRAPH\\.md|PROJECT_GRAPH\\.json|PROJECT_GRAPH\\.md)$" .gitignore` returns all four entries.
+# - `rg -n "^(CODE_GRAPH\\.json|CODE_GRAPH\\.md|PROJECT_GRAPH\\.json|PROJECT_GRAPH\\.md|ARCHITECTURE\\.md|DISCOVERIES\\.md|MODULE_INDEX\\.md\\.generated)$" .gitignore` returns all required entries.
 # Boundaries:
-# - Do not modify application logic, services, routes, migrations, or tests for this fix.
-# - Do not alter unrelated `.gitignore` patterns beyond required clean-worktree entries.
-# - Do not change dependency versions or runtime behavior.
+# - Do not modify application logic, services, routes, migrations, schema, or tests.
+# - Do not change clean-worktree scripts or package scripts.
+# - Do not change ignore patterns outside the required missing entries for this gate.
 #
 
 # Dependencies
@@ -133,3 +133,6 @@ CODE_GRAPH.json
 CODE_GRAPH.md
 PROJECT_GRAPH.json
 PROJECT_GRAPH.md
+ARCHITECTURE.md
+DISCOVERIES.md
+MODULE_INDEX.md.generated
