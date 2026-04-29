@@ -510,6 +510,43 @@ describe('QueryBuilder._execute()', () => {
     await qb;
     expect(callCount).toBe(1);
   });
+
+  it('insert() sends POST with JSON body to fetch', async () => {
+    global.fetch = makeFetchMock({ body: JSON.stringify([{ id: 99, name: 'Bob' }]) });
+    const result = await qbFor('leads').insert({ name: 'Bob' }).select('*');
+    const [, opts] = global.fetch.mock.calls[0];
+    expect(opts.method).toBe('POST');
+    expect(JSON.parse(opts.body)).toEqual({ name: 'Bob' });
+    expect(result.error).toBeNull();
+    expect(result.data[0].name).toBe('Bob');
+  });
+
+  it('update() sends PATCH with JSON body and filter in URL', async () => {
+    global.fetch = makeFetchMock({ body: JSON.stringify([{ id: 5, status: 'closed' }]) });
+    const result = await qbFor('leads').update({ status: 'closed' }).eq('id', 5).select('*');
+    const [calledUrl, opts] = global.fetch.mock.calls[0];
+    expect(opts.method).toBe('PATCH');
+    expect(JSON.parse(opts.body)).toEqual({ status: 'closed' });
+    expect(calledUrl).toContain('id=eq.5');
+    expect(result.error).toBeNull();
+  });
+
+  it('upsert() sends POST with Prefer: resolution=merge-duplicates header to fetch', async () => {
+    global.fetch = makeFetchMock({ body: JSON.stringify([{ id: 1 }]) });
+    await qbFor('leads').upsert({ id: 1, name: 'Test' }).select('*');
+    const [, opts] = global.fetch.mock.calls[0];
+    expect(opts.method).toBe('POST');
+    expect(opts.headers['Prefer']).toMatch(/resolution=merge-duplicates/);
+    expect(opts.headers['Prefer']).toMatch(/return=representation/);
+  });
+
+  it('delete() sends DELETE and includes eq filter in URL', async () => {
+    global.fetch = makeFetchMock({ body: '' });
+    await qbFor('leads').delete().eq('id', 7);
+    const [calledUrl, opts] = global.fetch.mock.calls[0];
+    expect(opts.method).toBe('DELETE');
+    expect(calledUrl).toContain('id=eq.7');
+  });
 });
 
 // ─── getPool() ────────────────────────────────────────────────────────────────
