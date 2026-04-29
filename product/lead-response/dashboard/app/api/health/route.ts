@@ -1,5 +1,39 @@
+/**
+ * Task Spec (ac55e92e-980a-47b2-8644-5d0ccaf89439)
+ * What:
+ * - Update product/lead-response/dashboard/app/api/health/route.ts GET() to enforce a bounded timeout on the database probe.
+ * - Add a focused regression test in product/lead-response/dashboard/tests/health-route-timeout.test.ts for timeout fallback behavior.
+ * Verify:
+ * - cd product/lead-response/dashboard && npx jest tests/health-route-timeout.test.ts --runInBand should pass.
+ * - curl -m 5 https://leadflow-ai-five.vercel.app/api/health should return within 5 seconds.
+ * - npm run build, npm run lint, npm test, npm audit --audit-level=high should pass at repo root.
+ * Boundaries:
+ * - Do not modify unrelated routes/services/schema/migrations.
+ * - Do not change dashboard health response shape beyond timeout failure detail.
+ */
 import { NextResponse } from 'next/server'
 import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
+
+const DB_HEALTH_TIMEOUT_MS = 1500
+
+function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`timeout after ${timeoutMs}ms`))
+    }, timeoutMs)
+
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      }
+    )
+  })
+}
 
 /**
  * GET /api/health — Server-side health check for smoke tests
@@ -29,10 +63,15 @@ export async function GET() {
   // 2. Database connectivity via PostgREST
   if (isPostgrestConfigured()) {
     try {
-      const { error } = await postgrestAdmin
+      const dbCheckPromise = postgrestAdmin
         .from('real_estate_agents')
         .select('id')
-        .limit(1)
+        .limit(1) as PromiseLike<{ error: { message: string } | null }>
+
+      const { error } = await withTimeout(
+        dbCheckPromise,
+        DB_HEALTH_TIMEOUT_MS
+      )
       checks['database'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected' }
