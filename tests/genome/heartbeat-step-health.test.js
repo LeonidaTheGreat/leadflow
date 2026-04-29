@@ -74,4 +74,18 @@ describe('Genome step health regression — heartbeat timeout fixes (94ae0f36)',
     const maxHours = parseFloat(match[1])
     expect(maxHours).toBeGreaterThanOrEqual(1.5)
   })
+
+  test('health-loop.js getStepHealthStateDir passes this.config to resolveStatePath', () => {
+    // Regression guard for fix applied in task 94ae0f36:
+    // getStepHealthStateDir() must pass this.config to resolveStatePath() so the state
+    // directory is derived from the active project's config, not the global cached config.
+    // Without this fix, a multi-project heartbeat could resolve to the wrong state dir
+    // and report all critical steps as "missing", creating false-positive fix tasks.
+    const source = fs.readFileSync(HEALTH_LOOP_PATH, 'utf8')
+    const fnStart = source.indexOf('  getStepHealthStateDir() {')
+    expect(fnStart).toBeGreaterThan(0)
+    const fnBody = source.slice(fnStart, fnStart + 200)
+    // Must call resolveStatePath with this.config as second argument
+    expect(fnBody).toMatch(/resolveStatePath\([^)]+,\s*this\.config\s*\)/)
+  })
 })
