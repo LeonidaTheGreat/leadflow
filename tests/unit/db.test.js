@@ -13,9 +13,10 @@
  */
 
 const assert = require('assert');
-const path = require('path');
 
-const DB_PATH = path.resolve(__dirname, '../../lib/db');
+// Use static require path so code graph analysis detects test coverage for lib/db.js.
+// Cache is busted inside freshDb() before each require to allow env var isolation.
+const DB_MODULE_ID = require.resolve('../../lib/db');
 
 // ─── Fetch mock helpers ──────────────────────────────────────────────────────
 
@@ -68,8 +69,8 @@ async function check(name, fn) {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function freshDb() {
-  // Return a fresh require of lib/db (isolated from module cache changes)
-  return require(DB_PATH);
+  delete require.cache[DB_MODULE_ID];
+  return require('../../lib/db');
 }
 
 function qbFor(table, url = 'http://api.test', key = 'sk') {
@@ -586,27 +587,27 @@ async function run() {
 
   await check('getPool() throws when LOCAL_PG_URL is not set', () => {
     // Reset db module so _pool is null
-    delete require.cache[require.resolve(DB_PATH)];
+    delete require.cache[DB_MODULE_ID];
     const savedUrl = process.env.LOCAL_PG_URL;
     delete process.env.LOCAL_PG_URL;
 
     let threw = false;
     try {
-      require(DB_PATH).getPool();
+      require('../../lib/db').getPool();
     } catch (err) {
       threw = true;
       assert.ok(err.message.includes('LOCAL_PG_URL'), `Expected LOCAL_PG_URL in error, got: ${err.message}`);
     } finally {
       if (savedUrl !== undefined) process.env.LOCAL_PG_URL = savedUrl;
       // Restore module cache (re-require with env restored)
-      delete require.cache[require.resolve(DB_PATH)];
+      delete require.cache[DB_MODULE_ID];
     }
     assert.ok(threw, 'Expected getPool() to throw when LOCAL_PG_URL is not set');
   });
 
   await check('getPool() creates a Pool with the connection string', () => {
     // Mock pg.Pool before requiring db fresh
-    delete require.cache[require.resolve(DB_PATH)];
+    delete require.cache[DB_MODULE_ID];
     const pgPath = require.resolve('pg');
     const originalPg = require.cache[pgPath];
 
@@ -617,11 +618,11 @@ async function run() {
     process.env.LOCAL_PG_URL = 'postgresql://user:pass@localhost/testdb';
     let pool;
     try {
-      pool = require(DB_PATH).getPool();
+      pool = require('../../lib/db').getPool();
     } finally {
       delete process.env.LOCAL_PG_URL;
       require.cache[pgPath] = originalPg;
-      delete require.cache[require.resolve(DB_PATH)];
+      delete require.cache[DB_MODULE_ID];
     }
 
     assert.ok(pool instanceof MockPool, 'Should return a Pool instance');
@@ -630,7 +631,7 @@ async function run() {
   });
 
   await check('getPool() returns same pool on repeated calls (singleton)', () => {
-    delete require.cache[require.resolve(DB_PATH)];
+    delete require.cache[DB_MODULE_ID];
     const pgPath = require.resolve('pg');
     const originalPg = require.cache[pgPath];
 
@@ -641,13 +642,13 @@ async function run() {
     process.env.LOCAL_PG_URL = 'postgresql://localhost/test';
     let pool1, pool2;
     try {
-      const db = require(DB_PATH);
+      const db = require('../../lib/db');
       pool1 = db.getPool();
       pool2 = db.getPool();
     } finally {
       delete process.env.LOCAL_PG_URL;
       require.cache[pgPath] = originalPg;
-      delete require.cache[require.resolve(DB_PATH)];
+      delete require.cache[DB_MODULE_ID];
     }
 
     assert.strictEqual(pool1, pool2, 'Should return same Pool instance on repeated calls');
