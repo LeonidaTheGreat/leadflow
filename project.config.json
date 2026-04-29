@@ -29,6 +29,7 @@
     "framework": "nextjs",
     "deploy_mode": "github_integration",
     "health_endpoint": "/api/health",
+    "perf_endpoint": "/api/ping",
     "build_command": "npm run build",
     "verify_command": "bash scripts/e2e-flow-tests.sh --json",
     "browser_test_command": "npx playwright test tests/browser/pages.spec.js tests/browser/health.spec.js --reporter=json",
