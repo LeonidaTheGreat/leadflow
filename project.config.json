@@ -28,6 +28,7 @@
     "production_url": "https://leadflow-ai-five.vercel.app",
     "framework": "nextjs",
     "deploy_mode": "github_integration",
+    "perf_endpoint": "/api/ping",
     "health_endpoint": "/api/health",
     "build_command": "npm run build",
     "verify_command": "bash scripts/e2e-flow-tests.sh --json",
