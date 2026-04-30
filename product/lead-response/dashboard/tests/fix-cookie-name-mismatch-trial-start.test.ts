@@ -62,7 +62,8 @@ describe('TC-SIGNUP-AUTH-004: Cookie name consistency (auth-token hyphen)', () =
   })
 
   it('pilot-status reads cookie as auth-token (hyphen)', () => {
-    expect(pilotStatusSource).toMatch(/auth-token/)
+    // pilot-status uses getAuthUserId() which handles both auth-token and leadflow_session cookies
+    expect(pilotStatusSource).toContain('getAuthUserId')
     expect(pilotStatusSource).not.toMatch(/cookies\.get\(['"]auth_token['"]/)
   })
 
