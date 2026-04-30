@@ -181,45 +181,61 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ---
 
-## 8. Current Status (Day 68 of 180 — 2026-04-24)
+## 8. Current Status (Day 80 of 180 — 2026-04-30)
 
 | Component | Status | Note |
 |-----------|--------|------|
 | MVP Features | ✅ Complete | None |
-| Real Agents in DB | ⚠️ 3 | All owner test accounts — 0 real customers |
-| Test/QA Accounts | 21 | Created 2026-04-21, polluting funnel metrics |
-| Phantom Subscriptions | ⚠️ 3 | sub_test_schema_alignment_* (test data, not real revenue) |
+| Registered Agents | ⚠️ 363 | 344 trial, 11 pilot — mostly cold signups who never activated |
 | Paying Subscribers | ❌ 0 | Critical |
-| MRR | ❌ $0 | Phantom $597 from test subs — real is $0 |
-| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 111 days remaining |
-| **Near-term Milestone** | **First paying customer ASAP** | **Priority #1** |
+| MRR | ❌ $0 | Still $0 real revenue |
+| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 101 days remaining |
+| **Near-term Milestone** | **First paying customer this week** | **Priority #1** |
 
-### Funnel Bottleneck Analysis (2026-04-24)
+### Root Cause Analysis — Why 0 Paying Customers (2026-04-30)
 
-The entire funnel is broken at Stage 1 — Acquisition. With 0 real users in the system, every downstream optimization (conversion, retention, NPS) is irrelevant.
+Three independent blockers have combined to prevent any user from reaching checkout:
 
-| Stage | Status | Blocker |
-|-------|--------|---------|
-| **Acquisition** | ❌ Dead | `uc-marketing-campaign-launch` stuck in needs_merge; no traffic channels live |
-| **Signup → Trial** | ⚠️ Functional but untested | Email delivery broken (Resend domain not verified) — activation emails not sent |
-| **Trial → Aha Moment** | ✅ Built | Lead Simulator works; A2P 10DLC incomplete for real SMS |
-| **Aha → Upgrade** | ⚠️ Built, not started | `feat-conversion-call-booking` P0 but not_started — no demo CTA in product |
-| **Paid** | ❌ $0 | Stripe checkout built but untested with real users |
+**Blocker 1 (Highest Impact): Email delivery silently broken for all 344 trial users**
+All activation, trial, and conversion emails were sent from `onboarding@resend.dev` (Resend test domain) instead of `onboarding@leadflow.ai`. Every activation email for 344 trial signups was either blocked or landed in spam. These users signed up, received nothing, and never returned. Fix exists: PR #1343 is open with all CI and Vercel checks passing — it just needs to be merged.
 
-**Core constraint:** No real humans have ever touched the product. The funnel has never been exercised by a real user. All code quality improvements and feature work are irrelevant until this changes.
+**Blocker 2: No real acquisition — marketing channels not live**
+`uc-marketing-campaign-launch` has been stuck in `needs_merge` for multiple heartbeat cycles. No "interested but not ready" capture path exists either (PRD written, UC in-progress).
 
-**Next actions (priority order):**
-1. **Stojan: direct outreach this week** — 5-10 personal contacts, no code needed. Fastest path to first paying customer.
-2. **Unblock email delivery** — `fix-email-delivery-resend-from-domain-not-verified` (promoted to P0). Without this, no trial activation emails land.
-3. **Merge `uc-marketing-campaign-launch`** (needs_merge, P0) — activates traffic channels. Do not let this stay blocked.
-4. **Start `feat-conversion-call-booking`** (P0, not_started) — "Book a demo" CTA on billing page. Fastest in-product conversion path.
-5. **Clean phantom test data** — `fix-phantom-mrr-test-data-polluting-metric` (P0, ready) — metrics are unreadable until test subs are purged.
+**Blocker 3: A2P 10DLC incomplete — core product promise undeliverable**
+Real SMS cannot be sent until A2P registration completes. Pilot agents who do activate cannot see the product work end-to-end.
 
-**Priority changes (2026-04-24):**
-- `fix-email-delivery-resend-from-domain-not-verified`: P1 → **P0** (hard acquisition blocker — no activation emails land without it)
-- `feat-annual-billing-plan`: P2 → **P3** (no paying customers to offer annual billing to)
-- `feat-lapsed-trial-reactivation`: P2 → **P3** (no real lapsed users exist)
-- `c740b281` NPS Auto-Collection: P2 → **P3** (no real users to survey)
+### Funnel State (2026-04-30)
+
+| Stage | Status | Blocker | Fix |
+|-------|--------|---------|-----|
+| **Acquisition** | ❌ No channels live | `uc-marketing-campaign-launch` needs_merge | Spawn dev to re-implement |
+| **Signup** | ⚠️ Works but untested at scale | — | — |
+| **Activation** | ❌ 344 users got 0 emails | PR #1343 not merged (all checks pass) | **Merge PR #1343 now** |
+| **Aha Moment** | ❌ Real SMS blocked | A2P 10DLC incomplete | Stojan: resolve with Twilio |
+| **Upgrade CTA** | ⚠️ Built, awaiting QC | `feat-conversion-call-booking` QC task ready | Spawn QC |
+| **Checkout** | ✅ Built | Untested with real users | Unblocked once above resolved |
+| **Paid** | ❌ $0 | All of the above | — |
+
+### Immediate Actions (Priority Order)
+
+**Must happen today — zero code required:**
+1. **Merge PR #1343** — email domain fix, all CI green, both Vercel deployments verified. 344 trial users will start receiving emails. Re-activation campaigns become possible immediately after merge.
+2. **Stojan: direct personal outreach to 5-10 real estate contacts** — no code, no pipeline, no ads. One DM to a colleague. This is the single fastest path to first paying customer.
+
+**Must happen this sprint — pipeline unblocks:**
+3. **Spawn QC task for `feat-conversion-call-booking`** — dev work done, QC task `ready`. Ships "Book a Demo" CTA on billing/trial-expired pages.
+4. **Spawn Dev task for `fix-4-needs-merge-revenue-prs-blocked`** — task `ready`, unblocks 4 revenue features stuck in merge conflicts.
+5. **Resolve A2P 10DLC** — contact Twilio directly. No code change needed. Required to demo core product value.
+
+**Priority changes (2026-04-30):**
+- PR #1343 merge: **P0 blocker** — not a dev task, a human merge action. 344 users blocked.
+- `feat-conversion-call-booking` QC: **P0** — dev done, QC task `ready`, must ship before any real outreach.
+- `fix-4-needs-merge-revenue-prs-blocked`: **P0** — 4 revenue features stuck, dev task `ready`.
+- A2P 10DLC: **P0** — Stojan action required, blocks core value delivery.
+- `feat-lapsed-trial-reactivation`: **P2** — valid once email is fixed; 344 users can be re-activated.
+- `feat-annual-billing-plan`: **P3** — no paying customers yet.
+- NPS Auto-Collection: **P3** — no real users to survey yet.
 
 ---
 
