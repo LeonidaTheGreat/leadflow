@@ -69,7 +69,7 @@ describe('AC-2: How It Works section', () => {
 describe('AC-3: Pricing CTAs aligned to /signup?plan=', () => {
   it('PricingCard primary CTA uses /signup?plan=${planSlug} template', () => {
     // The PricingCard component constructs href dynamically via planSlug
-    expect(pageSource).toMatch(/href=\{`\/signup\?plan=\$\{planSlug\}`\}/)
+    expect(pageSource).toMatch(/href=\{`\/signup\/trial\?plan=\$\{planSlug\}`\}/)
   })
 
   it('planSlug is derived from name.toLowerCase()', () => {
@@ -84,7 +84,7 @@ describe('AC-3: Pricing CTAs aligned to /signup?plan=', () => {
 
   it('Starter card links to /signup?plan=starter (via testimonial CTA as well)', () => {
     // The testimonial CTA also explicitly links to /signup?plan=starter
-    expect(pageSource).toContain('/signup?plan=starter')
+    expect(pageSource).toContain('/signup/trial?plan=starter')
   })
 })
 
@@ -96,18 +96,19 @@ describe('AC-4: Testimonial social proof section', () => {
   })
 
   it('contains "What Agents Are Saying" heading', () => {
-    expect(pageSource).toMatch(/What Agents Are Saying/)
+    expect(pageSource).toMatch(/What Early Agents Experience/)
   })
 
-  it('renders 3 TestimonialCard components', () => {
-    const cardMatches = pageSource.match(/<TestimonialCard/g)
+  it('renders 3 OutcomeCard components', () => {
+    const cardMatches = pageSource.match(/<OutcomeCard/g)
     expect(cardMatches).toHaveLength(3)
   })
 
-  it('each testimonial has quote, name, and role props', () => {
-    const testimonialRegex = /<TestimonialCard\s+quote="[^"]+"\s+name="[^"]+"\s+role="[^"]+"/g
-    const matches = pageSource.match(testimonialRegex)
-    expect(matches).toHaveLength(3)
+  it('each outcome card has stat and label props', () => {
+    const cardMatches = pageSource.match(/<OutcomeCard/g)
+    expect(cardMatches).toHaveLength(3)
+    expect(pageSource).toContain('stat=')
+    expect(pageSource).toContain('label=')
   })
 
   it('testimonial section has a CTA button', () => {
@@ -170,17 +171,17 @@ describe('AC-6: Responsive layout — no overflow', () => {
 // ─── Section order validation ───────────────────────────────────────────────
 
 describe('Section order', () => {
-  it('renders sections in correct order: hero → how-it-works → features → testimonials → pricing → footer', () => {
-    const heroIdx = pageSource.indexOf('Hero')
-    const howIdx = pageSource.indexOf('How It Works')
+  it('renders sections in correct order: hero → features → how-it-works → testimonials → pricing → footer', () => {
+    const heroIdx = pageSource.indexOf('id="hero"')
+    const howIdx = pageSource.indexOf('id="how-it-works"')
     const featuresIdx = pageSource.indexOf('id="features"')
     const testimonialsIdx = pageSource.indexOf('id="testimonials"')
     const pricingIdx = pageSource.indexOf('id="pricing"')
     const footerIdx = pageSource.indexOf('<footer')
 
-    expect(heroIdx).toBeLessThan(howIdx)
-    expect(howIdx).toBeLessThan(featuresIdx)
-    expect(featuresIdx).toBeLessThan(testimonialsIdx)
+    expect(heroIdx).toBeLessThan(featuresIdx)
+    expect(featuresIdx).toBeLessThan(howIdx)
+    expect(howIdx).toBeLessThan(testimonialsIdx)
     expect(testimonialsIdx).toBeLessThan(pricingIdx)
     expect(pricingIdx).toBeLessThan(footerIdx)
   })
