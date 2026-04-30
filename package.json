@@ -23,7 +23,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "cd product/lead-response/dashboard && npx next build",
+    "build": "node scripts/build-dashboard.js",
     "lint": "eslint .",
     "test": "node integrations/test-e2e-flow.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
