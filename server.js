@@ -13,6 +13,7 @@ const weeklyPerformanceRouter = require('./routes/internal/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
+const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
 
@@ -47,6 +48,9 @@ app.use('/', deadLetterReplayRouter);
 
 // Admin: activation outreach (personal email to verified but unactivated signups)
 app.use('/', activationOutreachRouter);
+
+// Admin: lapsed trial reactivation campaign
+app.use('/', reactivationCampaignRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);
