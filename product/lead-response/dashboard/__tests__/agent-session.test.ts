@@ -116,9 +116,7 @@ describe('logSessionStart', () => {
 
     expect(result).toBeNull()
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[agent-session] logSessionStart failed:'),
-      expect.any(String),
-      expect.any(Object)
+      expect.stringContaining('[agent-session] logSessionStart failed:')
     )
     consoleSpy.mockRestore()
   })

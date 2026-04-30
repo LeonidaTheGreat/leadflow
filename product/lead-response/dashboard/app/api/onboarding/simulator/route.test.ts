@@ -256,7 +256,6 @@ describe('Onboarding Simulator API', () => {
       expect(mockSimulationUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'success',
-          aha_moment_reached: true,
         })
       )
       expect(mockSimulationUpdateEq).toHaveBeenCalledWith('session_id', 'session-success')

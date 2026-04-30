@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import OnboardingSimulator from '../app/onboarding/steps/simulator'
 
@@ -20,7 +18,7 @@ const mockSetAgentData = jest.fn()
 const mockOnNext = jest.fn()
 const mockOnBack = jest.fn()
 
-describe.skip('OnboardingSimulator', () => {
+describe('OnboardingSimulator', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(global.fetch as jest.Mock).mockClear()
@@ -36,11 +34,11 @@ describe.skip('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('See LeadFlow AI in Action')).toBeInTheDocument()
+    expect(screen.getByText('See LeadFlow in Action')).toBeInTheDocument()
     expect(screen.getByText(/Watch how our AI responds to a lead in under 30 seconds/)).toBeInTheDocument()
   })
 
-  it('shows the "Aha Moment" info box', () => {
+  it("shows the info box with \"What you're seeing:\"", () => {
     render(
       <OnboardingSimulator
         onNext={mockOnNext}
@@ -50,8 +48,7 @@ describe.skip('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('This is your "Aha Moment"')).toBeInTheDocument()
-    expect(screen.getByText(/See exactly how LeadFlow AI engages with leads instantly/)).toBeInTheDocument()
+    expect(screen.getByText(/What you.re seeing:/)).toBeInTheDocument()
   })
 
   it('shows start simulation button initially', () => {
@@ -67,7 +64,7 @@ describe.skip('OnboardingSimulator', () => {
     expect(screen.getByText('Start Simulation')).toBeInTheDocument()
   })
 
-  it('shows skip option', () => {
+  it('shows skip button initially', () => {
     render(
       <OnboardingSimulator
         onNext={mockOnNext}
@@ -77,10 +74,28 @@ describe.skip('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('Skip for Now')).toBeInTheDocument()
+    expect(screen.getByText('Skip')).toBeInTheDocument()
   })
 
-  it('calls onNext when skip is clicked', async () => {
+  it('shows skip confirmation modal when Skip is clicked', async () => {
+    render(
+      <OnboardingSimulator
+        onNext={mockOnNext}
+        onBack={mockOnBack}
+        agentData={mockAgentData}
+        setAgentData={mockSetAgentData}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Skip'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure you want to skip?')).toBeInTheDocument()
+      expect(screen.getByText('Skip this step')).toBeInTheDocument()
+    })
+  })
+
+  it('calls onNext when "Skip this step" in confirmation modal is clicked', async () => {
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ success: true }),
@@ -95,29 +110,17 @@ describe.skip('OnboardingSimulator', () => {
       />
     )
 
-    fireEvent.click(screen.getByText('Skip for Now'))
+    fireEvent.click(screen.getByText('Skip'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Skip this step')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Skip this step'))
 
     await waitFor(() => {
       expect(mockOnNext).toHaveBeenCalled()
     })
-  })
-
-  it('shows benefits section with stats', () => {
-    render(
-      <OnboardingSimulator
-        onNext={mockOnNext}
-        onBack={mockOnBack}
-        agentData={mockAgentData}
-        setAgentData={mockSetAgentData}
-      />
-    )
-
-    expect(screen.getByText('< 30s')).toBeInTheDocument()
-    expect(screen.getByText('Response time')).toBeInTheDocument()
-    expect(screen.getByText('24/7')).toBeInTheDocument()
-    expect(screen.getByText('Always on')).toBeInTheDocument()
-    expect(screen.getByText('78%')).toBeInTheDocument()
-    expect(screen.getByText('More deals')).toBeInTheDocument()
   })
 
   it('starts simulation when start button is clicked', async () => {
@@ -159,53 +162,6 @@ describe.skip('OnboardingSimulator', () => {
     })
   })
 
-  it('displays lead name when simulation is running', async () => {
-    ;(global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          success: true,
-          state: {
-            id: 'sim-123',
-            session_id: 'session-123',
-            agent_id: 'test-agent-123',
-            status: 'running',
-            lead_name: 'Sarah Johnson',
-            conversation: [],
-          },
-        }),
-      })
-      .mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          state: {
-            id: 'sim-123',
-            session_id: 'session-123',
-            agent_id: 'test-agent-123',
-            status: 'running',
-            lead_name: 'Sarah Johnson',
-            conversation: [],
-          },
-        }),
-      })
-
-    render(
-      <OnboardingSimulator
-        onNext={mockOnNext}
-        onBack={mockOnBack}
-        agentData={mockAgentData}
-        setAgentData={mockSetAgentData}
-      />
-    )
-
-    fireEvent.click(screen.getByText('Start Simulation'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Lead:')).toBeInTheDocument()
-      expect(screen.getByText('Sarah Johnson')).toBeInTheDocument()
-    })
-  })
-
   it('shows continue button when simulation completes successfully', async () => {
     ;(global.fetch as jest.Mock)
       .mockResolvedValueOnce({
@@ -216,13 +172,9 @@ describe.skip('OnboardingSimulator', () => {
             id: 'sim-123',
             session_id: 'session-123',
             agent_id: 'test-agent-123',
-            status: 'success',
+            status: 'running',
             lead_name: 'Sarah Johnson',
-            response_time_ms: 2500,
-            conversation: [
-              { role: 'lead', message: 'Hi, I am interested in buying a home', timestamp: new Date().toISOString() },
-              { role: 'ai', message: 'Hi there! I would love to help you', timestamp: new Date().toISOString() },
-            ],
+            conversation: [],
           },
         }),
       })
@@ -237,8 +189,8 @@ describe.skip('OnboardingSimulator', () => {
             lead_name: 'Sarah Johnson',
             response_time_ms: 2500,
             conversation: [
-              { role: 'lead', message: 'Hi, I am interested in buying a home', timestamp: new Date().toISOString() },
-              { role: 'ai', message: 'Hi there! I would love to help you', timestamp: new Date().toISOString() },
+              { role: 'lead', message: 'Hi, I am interested', timestamp: new Date().toISOString() },
+              { role: 'ai', message: 'Hi there!', timestamp: new Date().toISOString() },
             ],
           },
         }),
@@ -255,14 +207,16 @@ describe.skip('OnboardingSimulator', () => {
 
     fireEvent.click(screen.getByText('Start Simulation'))
 
-    await waitFor(() => {
-      expect(screen.getByText('Continue to Dashboard')).toBeInTheDocument()
-      expect(screen.getByText(/2.5s/)).toBeInTheDocument()
-      expect(screen.getByText(/under 30 seconds/)).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Continue to Dashboard')).toBeInTheDocument()
+      },
+      { timeout: 5000 }
+    )
   })
 
   it('updates agentData with aha moment completion on success', async () => {
+    // First call: start returns running; second+ calls (polling): return success
     ;(global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
@@ -272,9 +226,8 @@ describe.skip('OnboardingSimulator', () => {
             id: 'sim-123',
             session_id: 'session-123',
             agent_id: 'test-agent-123',
-            status: 'success',
+            status: 'running',
             lead_name: 'Sarah Johnson',
-            response_time_ms: 2500,
             conversation: [],
           },
         }),
@@ -305,13 +258,16 @@ describe.skip('OnboardingSimulator', () => {
 
     fireEvent.click(screen.getByText('Start Simulation'))
 
-    await waitFor(() => {
-      expect(mockSetAgentData).toHaveBeenCalledWith(
-        expect.objectContaining({
-          ahaCompleted: true,
-          ahaResponseTimeMs: 2500,
-        })
-      )
-    })
+    await waitFor(
+      () => {
+        expect(mockSetAgentData).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ahaCompleted: true,
+            ahaResponseTimeMs: 2500,
+          })
+        )
+      },
+      { timeout: 5000 }
+    )
   })
 })

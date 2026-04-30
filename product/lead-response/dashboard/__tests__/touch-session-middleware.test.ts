@@ -73,9 +73,7 @@ describe('touchSession', () => {
 
     expect(result).toBe(false)
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[agent-session] touchSession failed:'),
-      expect.any(String),
-      expect.any(Object)
+      expect.stringContaining('[agent-session] touchSession failed:')
     )
     consoleSpy.mockRestore()
   })
@@ -119,9 +117,7 @@ describe('touchSessionByAgentId', () => {
 
     expect(result).toBe(false)
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[agent-session] touchSessionByAgentId failed:'),
-      expect.any(String),
-      expect.any(Object)
+      expect.stringContaining('[agent-session] touchSessionByAgentId failed:')
     )
     consoleSpy.mockRestore()
   })

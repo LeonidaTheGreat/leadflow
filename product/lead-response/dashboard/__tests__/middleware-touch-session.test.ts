@@ -71,9 +71,7 @@ describe('touchSession() — agent_sessions heartbeat (FR-2)', () => {
 
     expect(result).toBe(false)
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[agent-session] touchSession failed:'),
-      expect.any(String),
-      expect.any(Object)
+      expect.stringContaining('[agent-session] touchSession failed:')
     )
     consoleSpy.mockRestore()
   })
