@@ -173,7 +173,7 @@ export async function getAgentsDueForSurvey(): Promise<
       real_estate_agents!inner(email, first_name, last_name)
     `)
     .lte('next_survey_at', now)
-    .eq('real_estate_agents.status', 'active')
+    .in('real_estate_agents.status', ['trial', 'pilot', 'active'])
 
   if (error || !data) {
     logger.error('Error fetching agents due for survey', error)
