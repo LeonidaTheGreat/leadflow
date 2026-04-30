@@ -62,6 +62,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
+| LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | — |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
