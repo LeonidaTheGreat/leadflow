@@ -1,8 +1,23 @@
-/**
- * NPS Survey Service
- * Handles NPS survey scheduling, token generation, and response processing
- * feat-nps-agent-feedback
- */
+/*
+Task Spec
+What:
+- Update product/lead-response/dashboard/lib/nps-service.ts in getAgentsDueForSurvey()
+  to include both onboarding and active agents in the real_estate_agents.status filter.
+- Validate NPS collector formula behavior in ~/.openclaw/genome/tests/mission-metric-collector.test.js
+  by adding a focused unit test for _collectNPSMetrics().
+- Execute orphan cleanup SQL in openclaw database for agent_survey_schedule rows with missing agents.
+
+Verify:
+- psql openclaw -c "SELECT COUNT(*) FROM agent_survey_schedule s LEFT JOIN real_estate_agents r ON s.agent_id = r.id WHERE r.id IS NULL" returns 0.
+- rg -n "real_estate_agents\\.status'.*onboarding|\\.in\\('real_estate_agents\\.status'" product/lead-response/dashboard/lib/nps-service.ts shows onboarding in filter.
+- npm test exits 0.
+- cd product/lead-response/dashboard && npx next build exits 0.
+
+Boundaries:
+- Do not change NPS token generation, schedule timing constants, or response submission behavior.
+- Do not modify unrelated routes/services/components.
+- Do not alter database schema/migrations.
+*/
 
 import { createClient } from '@/lib/db'
 import jwt from 'jsonwebtoken'
@@ -173,7 +188,7 @@ export async function getAgentsDueForSurvey(): Promise<
       real_estate_agents!inner(email, first_name, last_name)
     `)
     .lte('next_survey_at', now)
-    .eq('real_estate_agents.status', 'active')
+    .in('real_estate_agents.status', ['onboarding', 'active'])
 
   if (error || !data) {
     logger.error('Error fetching agents due for survey', error)
