@@ -1,17 +1,3 @@
-/**
- * Spec
- * What:
- * - Change `isValidPriceId()` in `product/lead-response/dashboard/app/api/billing/create-checkout/route.ts`
- *   so Stripe Price IDs are validated with the intended alphanumeric length range instead of the
- *   broken `{14 }` quantifier that rejects valid IDs.
- * Verify:
- * - Run a targeted regex check from `product/lead-response/dashboard` with Node and expect
- *   `price_1QvIEf2eZvKYlo2CkuDLQABG => true` plus invalid placeholders returning `false`.
- * - Grep this file for `^price_[A-Za-z0-9]{14,30}$` and confirm the validator now uses that pattern.
- * Boundaries:
- * - Do not change Stripe checkout flow, tier/env mappings, redirects, database writes, or unrelated routes.
- * - Do not modify schema, migrations, or pricing configuration for this hotfix.
- */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'

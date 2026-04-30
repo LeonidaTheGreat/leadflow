@@ -1,17 +1,3 @@
-/**
- * Spec:
- * What:
- * - Update product/lead-response/dashboard/app/api/metrics/roi/route.ts only.
- * - Change the GET() response-time query from the legacy sms_messages table to the canonical messages table.
- * - Align the outbound direction filter with messages.direction values used elsewhere in the app.
- * Verify:
- * - Run: npm run build
- * - Run: git grep -n "sms_messages\|outbound-api\|outbound-reply" -- product/lead-response/dashboard/app/api/metrics/roi/route.ts
- * - Expected: build succeeds, and the ROI route no longer references sms_messages/outbound-api/outbound-reply.
- * Boundaries:
- * - Do not change ROI formulas, auth behavior, booking queries, or unrelated message-writing code.
- * - Do not modify database schema, migrations, or other API routes.
- */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUserId } from '@/lib/services/AuthService'
