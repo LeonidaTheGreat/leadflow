@@ -23,6 +23,11 @@ const config: Config = {
     'onboarding-api.test.ts',
     'agents-onboard-utm.test.ts',
     'onboarding.components.test.tsx',
+    'email-verification.test.ts',
+    'uc11-subscription-lifecycle.test.ts',
+    'onboarding.integration.test.ts',
+    'accept-invite-flow.test.ts',
+    'subscription-funnel-tracking.test.ts',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
