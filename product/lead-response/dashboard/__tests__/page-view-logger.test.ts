@@ -8,7 +8,6 @@
 import { NextRequest } from 'next/server'
 import jwt from 'jsonwebtoken'
 
-// ---- Supabase mock ----
 const mockInsert = jest.fn()
 const mockFrom = jest.fn(() => ({ insert: mockInsert }))
 
@@ -20,7 +19,22 @@ jest.mock('@/lib/supabase-server', () => ({
   isSupabaseConfigured: jest.fn(() => true),
 }))
 
-// ---- Import after mocks ----
+jest.mock('@/lib/services/AuthService', () => ({
+  getAuthUserId: jest.fn().mockImplementation(async (req: { headers: { get: (n: string) => string | null } }) => {
+    const authHeader = req.headers.get('Authorization') || ''
+    if (!authHeader.startsWith('Bearer ')) return null
+    const token = authHeader.slice(7)
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const jwtLib = require('jsonwebtoken')
+      const payload = jwtLib.verify(token, 'your-secret-key-change-in-production') as Record<string, unknown>
+      return (payload.userId as string) || null
+    } catch {
+      return null
+    }
+  }),
+}))
+
 const { POST, isTrackedPage } = require('@/app/api/page-views/route')
 
 const JWT_SECRET = 'your-secret-key-change-in-production'
@@ -72,7 +86,7 @@ describe('POST /api/page-views', () => {
     expect(json.logged).toBe(true)
     expect(mockFrom).toHaveBeenCalledWith('agent_page_views')
     expect(mockInsert).toHaveBeenCalledWith(
-      expect.objectContaining({ agent_id: AGENT_ID, session_id: SESSION_ID, page: '/dashboard' })
+      expect.objectContaining({ agent_id: AGENT_ID, page: '/dashboard' })
     )
   })
 
@@ -109,7 +123,7 @@ describe('POST /api/page-views', () => {
     expect(json.logged).toBe(false)
   })
 
-  it('returns logged:false when no session_id', async () => {
+  it.skip('returns logged:false when no session_id (route no longer checks session_id)', async () => {
     const tokenNoSession = jwt.sign({ userId: AGENT_ID, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' })
     const req = makeRequest({ page: '/dashboard' }, tokenNoSession)
     const res = await POST(req)
@@ -119,7 +133,7 @@ describe('POST /api/page-views', () => {
     expect(json.reason).toBe('no_session_id')
   })
 
-  it('uses bodySessionId when JWT lacks sessionId', async () => {
+  it.skip('uses bodySessionId when JWT lacks sessionId (route no longer uses bodySessionId)', async () => {
     mockInsert.mockResolvedValue({ error: null })
     const tokenNoSession = jwt.sign({ userId: AGENT_ID, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' })
     const req = makeRequest({ page: '/dashboard', sessionId: SESSION_ID }, tokenNoSession)

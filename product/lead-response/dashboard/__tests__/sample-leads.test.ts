@@ -114,7 +114,7 @@ describe('GET /api/sample-leads — invalid JWT', () => {
 
 describe('GET /api/sample-leads — first-session user', () => {
   beforeEach(() => {
-    mockJwtVerify.mockReturnValue({ id: 'agent-123' })
+    mockJwtVerify.mockReturnValue({ userId: 'agent-123' })
     mockSingle.mockResolvedValue({
       data: { id: 'agent-123', onboarding_completed: false, plan_tier: 'trial' },
       error: null,
@@ -197,7 +197,7 @@ describe('GET /api/sample-leads — first-session user', () => {
 
 describe('GET /api/sample-leads — returning user', () => {
   beforeEach(() => {
-    mockJwtVerify.mockReturnValue({ id: 'agent-789' })
+    mockJwtVerify.mockReturnValue({ userId: 'agent-789' })
     mockSingle.mockResolvedValue({
       data: { id: 'agent-789', onboarding_completed: true, plan_tier: 'trial' },
       error: null,
@@ -218,7 +218,7 @@ describe('GET /api/sample-leads — returning user', () => {
 
 describe('GET /api/sample-leads — agent not in DB', () => {
   it('returns eligible:false gracefully when agent row missing', async () => {
-    mockJwtVerify.mockReturnValue({ id: 'ghost-agent' })
+    mockJwtVerify.mockReturnValue({ userId: 'ghost-agent' })
     mockSingle.mockResolvedValue({ data: null, error: { message: 'Not found' } })
 
     const req = makeRequest({ auth_token: 'valid.jwt.here' })
@@ -233,7 +233,7 @@ describe('GET /api/sample-leads — agent not in DB', () => {
 
 describe('Sample leads data integrity', () => {
   beforeEach(() => {
-    mockJwtVerify.mockReturnValue({ id: 'agent-111' })
+    mockJwtVerify.mockReturnValue({ userId: 'agent-111' })
     mockSingle.mockResolvedValue({
       data: { id: 'agent-111', onboarding_completed: false, plan_tier: 'trial' },
       error: null,

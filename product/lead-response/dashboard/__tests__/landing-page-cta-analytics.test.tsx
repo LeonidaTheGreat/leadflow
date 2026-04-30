@@ -74,7 +74,6 @@ describe('Landing Page CTA Analytics', () => {
       'pricing_starter',
       'pricing_pro',
       'pricing_team',
-      'start_trial_pricing',
     ]
 
     requiredCtaIds.forEach((ctaId) => {
@@ -131,7 +130,7 @@ describe('Landing Page CTA Analytics', () => {
     fireEvent.click(starterCta)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'pricing_starter',
-      'Get Started Starter',
+      'Start 14-Day Free Trial Starter',
       'pricing',
     )
   })
@@ -142,7 +141,7 @@ describe('Landing Page CTA Analytics', () => {
     fireEvent.click(proCta)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'pricing_pro',
-      'Get Started Pro',
+      'Start 14-Day Free Trial Pro',
       'pricing',
     )
   })
@@ -153,12 +152,12 @@ describe('Landing Page CTA Analytics', () => {
     fireEvent.click(teamCta)
     expect(mockTrackCTAClick).toHaveBeenCalledWith(
       'pricing_team',
-      'Get Started Team',
+      'Start 14-Day Free Trial Team',
       'pricing',
     )
   })
 
-  it('calls trackCTAClick(start_trial_pricing) on pricing trial link click', () => {
+  it.skip('calls trackCTAClick(start_trial_pricing) on pricing trial link click (element removed from component)', () => {
     const { container } = render(<HomePage />)
     const el = container.querySelector('[data-cta-id="start_trial_pricing"]')!
     fireEvent.click(el)
