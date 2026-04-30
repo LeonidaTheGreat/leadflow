@@ -1,16 +1,3 @@
-/**
- * Task Spec (ac55e92e-980a-47b2-8644-5d0ccaf89439)
- * What:
- * - Update product/lead-response/dashboard/app/api/health/route.ts GET() to enforce a bounded timeout on the database probe.
- * - Add a focused regression test in product/lead-response/dashboard/tests/health-route-timeout.test.ts for timeout fallback behavior.
- * Verify:
- * - cd product/lead-response/dashboard && npx jest tests/health-route-timeout.test.ts --runInBand should pass.
- * - curl -m 5 https://leadflow-ai-five.vercel.app/api/health should return within 5 seconds.
- * - npm run build, npm run lint, npm test, npm audit --audit-level=high should pass at repo root.
- * Boundaries:
- * - Do not modify unrelated routes/services/schema/migrations.
- * - Do not change dashboard health response shape beyond timeout failure detail.
- */
 import { NextResponse } from 'next/server'
 import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
 
