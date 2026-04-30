@@ -1,8 +1,8 @@
 /**
  * Tests for /api/feedback route (US-2: Persistent Give Feedback button)
+ * Route uses validateSession + leadflow_session cookie.
  */
 
-// Mock Next.js server modules
 jest.mock('next/server', () => ({
   NextRequest: jest.fn(),
   NextResponse: {
@@ -14,34 +14,30 @@ jest.mock('next/server', () => ({
   },
 }))
 
-// Mock jsonwebtoken
-jest.mock('jsonwebtoken', () => ({
-  verify: jest.fn(),
+const mockValidateSession = jest.fn()
+jest.mock('@/lib/services/AuthService', () => ({
+  validateSession: (...args: unknown[]) => mockValidateSession(...args),
 }))
 
-// Mock nps-service
 jest.mock('../lib/nps-service', () => ({
   submitProductFeedback: jest.fn(),
 }))
 
-import jwt from 'jsonwebtoken'
 import { submitProductFeedback } from '../lib/nps-service'
 import { NextResponse } from 'next/server'
 
-const mockJwtVerify = jwt.verify as jest.MockedFunction<typeof jwt.verify>
 const mockSubmitFeedback = submitProductFeedback as jest.MockedFunction<typeof submitProductFeedback>
 const mockNextResponseJson = NextResponse.json as jest.MockedFunction<typeof NextResponse.json>
 
-// Import route handler after mocks
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { POST } = require('../app/api/feedback/route')
 
-function makeRequest(body: Record<string, unknown>, authToken?: string): { cookies: { get: (name: string) => { value: string } | undefined }; json: () => Promise<Record<string, unknown>> } {
+function makeRequest(body: Record<string, unknown>, sessionToken?: string): { cookies: { get: (name: string) => { value: string } | undefined }; json: () => Promise<Record<string, unknown>> } {
   return {
     cookies: {
       get: (name: string) => {
-        if (name === 'auth-token' && authToken) {
-          return { value: authToken }
+        if (name === 'leadflow_session' && sessionToken) {
+          return { value: sessionToken }
         }
         return undefined
       },
@@ -53,7 +49,6 @@ function makeRequest(body: Record<string, unknown>, authToken?: string): { cooki
 describe('POST /api/feedback', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    // Default mock: NextResponse.json returns a mock response
     mockNextResponseJson.mockImplementation((body: unknown, init?: { status?: number }) => ({
       body,
       status: init?.status || 200,
@@ -61,27 +56,27 @@ describe('POST /api/feedback', () => {
     } as any))
   })
 
-  it('returns 401 when no auth cookie is present', async () => {
+  it('returns 401 when no session cookie is present', async () => {
     const req = makeRequest({ feedbackType: 'bug', content: 'test' })
     await POST(req as any)
     expect(mockNextResponseJson).toHaveBeenCalledWith(
-      { error: 'Not authenticated' },
+      { error: 'Unauthorized' },
       { status: 401 }
     )
   })
 
-  it('returns 401 when JWT is invalid', async () => {
-    mockJwtVerify.mockImplementation(() => { throw new Error('invalid token') })
+  it('returns 401 when session is invalid', async () => {
+    mockValidateSession.mockResolvedValueOnce(null)
     const req = makeRequest({ feedbackType: 'bug', content: 'test' }, 'bad-token')
     await POST(req as any)
     expect(mockNextResponseJson).toHaveBeenCalledWith(
-      { error: 'Not authenticated' },
+      { error: 'Unauthorized' },
       { status: 401 }
     )
   })
 
   it('returns 400 when feedbackType is missing', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+    mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
     const req = makeRequest({ content: 'test' }, 'valid-token')
     await POST(req as any)
     expect(mockNextResponseJson).toHaveBeenCalledWith(
@@ -91,7 +86,7 @@ describe('POST /api/feedback', () => {
   })
 
   it('returns 400 when content is missing', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+    mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
     const req = makeRequest({ feedbackType: 'idea' }, 'valid-token')
     await POST(req as any)
     expect(mockNextResponseJson).toHaveBeenCalledWith(
@@ -101,7 +96,7 @@ describe('POST /api/feedback', () => {
   })
 
   it('returns 400 for invalid feedback type', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+    mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
     const req = makeRequest({ feedbackType: 'unknown', content: 'test' }, 'valid-token')
     await POST(req as any)
     expect(mockNextResponseJson).toHaveBeenCalledWith(
@@ -111,7 +106,7 @@ describe('POST /api/feedback', () => {
   })
 
   it('returns 400 when content exceeds 500 chars', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+    mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
     const longContent = 'a'.repeat(501)
     const req = makeRequest({ feedbackType: 'praise', content: longContent }, 'valid-token')
     await POST(req as any)
@@ -122,7 +117,7 @@ describe('POST /api/feedback', () => {
   })
 
   it('returns 200 and success on valid submission', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+    mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
     mockSubmitFeedback.mockResolvedValue({ success: true, feedbackId: 'fb-456' })
 
     const req = makeRequest({ feedbackType: 'idea', content: 'Would love dark mode!' }, 'valid-token')
@@ -141,7 +136,7 @@ describe('POST /api/feedback', () => {
   })
 
   it('returns 500 when submitProductFeedback fails', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+    mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
     mockSubmitFeedback.mockResolvedValue({ success: false, error: 'DB error' })
 
     const req = makeRequest({ feedbackType: 'bug', content: 'Crash on load' }, 'valid-token')
@@ -153,13 +148,10 @@ describe('POST /api/feedback', () => {
   })
 
   it('accepts all valid feedback types', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
-    mockSubmitFeedback.mockResolvedValue({ success: true, feedbackId: 'fb-1' })
-
     const validTypes = ['praise', 'bug', 'idea', 'frustration']
     for (const type of validTypes) {
       jest.clearAllMocks()
-      mockJwtVerify.mockReturnValue({ userId: 'agent-123', email: 'a@b.com' } as any)
+      mockValidateSession.mockResolvedValueOnce({ userId: 'agent-123', email: 'a@b.com' })
       mockSubmitFeedback.mockResolvedValue({ success: true, feedbackId: 'fb-1' })
       mockNextResponseJson.mockImplementation((body: unknown, init?: { status?: number }) => ({
         body,
@@ -169,7 +161,6 @@ describe('POST /api/feedback', () => {
 
       const req = makeRequest({ feedbackType: type, content: 'test' }, 'valid-token')
       await POST(req as any)
-      // Should call submitProductFeedback without errors for valid types
       expect(mockSubmitFeedback).toHaveBeenCalledWith('agent-123', type, 'test', { submitted_via: 'dashboard' })
     }
   })
