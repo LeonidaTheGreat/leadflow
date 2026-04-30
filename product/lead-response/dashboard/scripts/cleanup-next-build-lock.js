@@ -22,10 +22,24 @@
 
 const fs = require('fs')
 const path = require('path')
+const { execSync } = require('child_process')
+
 function removeStaleNextBuildLock() {
   const lockPath = path.resolve(__dirname, '..', '.next', 'lock')
   if (!fs.existsSync(lockPath)) {
     return
+  }
+
+  // Check for an active next build process before removing the lock
+  // pgrep exits 1 (throws) when no match is found — that's the safe case
+  try {
+    const ps = execSync('pgrep -f "node_modules/.bin/next"', { encoding: 'utf8' })
+    if (ps.trim()) {
+      console.log('⏭ next build is already running — skipping lock cleanup')
+      return
+    }
+  } catch {
+    // pgrep exits 1 when no match — safe to remove
   }
 
   fs.rmSync(lockPath, { force: true })
