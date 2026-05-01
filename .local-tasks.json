@@ -506,5 +506,53 @@
       "mission": "Revenue Funnel Dashboard — Track Signups to MRR with Alerts",
       "task_kind": "workflow-task"
     }
+  },
+  {
+    "id": "uc-marketing-campaign-launch-workflow-task",
+    "title": "Re-implement marketing campaign launch from current main",
+    "status": "pending",
+    "priority": "high",
+    "type": "feature",
+    "created_at": "2026-04-30",
+    "owner": "dev",
+    "use_case_id": "uc-marketing-campaign-launch",
+    "spec_path": "docs/task-specs/uc-marketing-campaign-launch-workflow-task.md",
+    "tags": [
+      "marketing",
+      "acquisition",
+      "campaign",
+      "signup",
+      "revenue"
+    ],
+    "metadata": {
+      "origin": "project-graph-gap",
+      "gap_type": "needs_merge_reimplementation",
+      "mission": "Acquisition campaign launch re-implementation from main",
+      "task_kind": "workflow-task"
+    }
+  },
+  {
+    "id": "fix-zero-real-pilots-recruited-workflow-task",
+    "title": "Re-implement zero real pilots recruited fix from current main",
+    "status": "pending",
+    "priority": "high",
+    "type": "feature",
+    "created_at": "2026-04-30",
+    "owner": "dev",
+    "use_case_id": "fix-zero-real-pilots-recruited",
+    "spec_path": "docs/task-specs/fix-zero-real-pilots-recruited-workflow-task.md",
+    "tags": [
+      "pilot",
+      "recruitment",
+      "onboarding",
+      "conversion",
+      "revenue"
+    ],
+    "metadata": {
+      "origin": "project-graph-gap",
+      "gap_type": "needs_merge_reimplementation",
+      "mission": "Pilot recruitment fix re-implementation from main",
+      "task_kind": "workflow-task"
+    }
   }
 ]
