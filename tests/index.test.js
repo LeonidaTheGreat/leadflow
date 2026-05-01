@@ -38,12 +38,12 @@ describe('lib/config/index — stripe config group', () => {
     expect(config.stripe).toHaveProperty('prices');
   });
 
-  it('stripe.portalReturnUrl defaults to leadflow.ai/dashboard', () => {
+  it('stripe.portalReturnUrl defaults to landyourleads.com/dashboard', () => {
     const original = process.env.STRIPE_PORTAL_RETURN_URL;
     delete process.env.STRIPE_PORTAL_RETURN_URL;
     jest.resetModules();
     const fresh = require('../lib/config/index');
-    expect(fresh.stripe.portalReturnUrl).toBe('https://leadflow.ai/dashboard');
+    expect(fresh.stripe.portalReturnUrl).toBe('https://landyourleads.com/dashboard');
     if (original !== undefined) process.env.STRIPE_PORTAL_RETURN_URL = original;
   });
 
@@ -210,12 +210,12 @@ describe('lib/config/index — app config group', () => {
     delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
-  it('app.fromEmail defaults to stojan@leadflow.ai', () => {
+  it('app.fromEmail defaults to stojan@landyourleads.com', () => {
     const orig = process.env.FROM_EMAIL;
     delete process.env.FROM_EMAIL;
     jest.resetModules();
     const fresh = require('../lib/config/index');
-    expect(fresh.app.fromEmail).toBe('stojan@leadflow.ai');
+    expect(fresh.app.fromEmail).toBe('stojan@landyourleads.com');
     if (orig !== undefined) process.env.FROM_EMAIL = orig;
   });
 

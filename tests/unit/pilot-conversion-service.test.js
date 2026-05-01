@@ -208,7 +208,7 @@ check('constructor trims RESEND_API_KEY from env', async () => {
 });
 
 check('constructor trims FROM_EMAIL from env', async () => {
-  process.env.FROM_EMAIL = 'stojan@leadflow.ai\n';
+  process.env.FROM_EMAIL = 'stojan@landyourleads.com\n';
   const svc = new PilotConversionService({});
   assert.ok(!svc.fromEmail.includes('\n'), 'fromEmail should be trimmed');
   delete process.env.FROM_EMAIL;

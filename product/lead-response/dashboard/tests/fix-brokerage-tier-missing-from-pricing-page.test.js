@@ -87,7 +87,7 @@ async function main() {
     const content = fs.readFileSync(pagePath, 'utf-8');
     
     assert(content.includes('cta="Contact Sales"'), 'Contact Sales CTA not found');
-    assert(content.includes('mailto:sales@leadflow.ai'), 'Sales email link not found');
+    assert(content.includes('mailto:sales@landyourleads.com'), 'Sales email link not found');
   }));
   
   // Test 6: Verify Brokerage tier features

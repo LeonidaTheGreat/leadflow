@@ -63,7 +63,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   try {
     // Check if Resend is configured
     const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim()
-    const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
+    const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 
     if (!RESEND_API_KEY) {
       logger.info('[pilot-signup] RESEND_API_KEY not configured, skipping welcome email')
@@ -124,7 +124,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   
   <p style="font-size: 14px; color: #6b7280; text-align: center;">
     You're receiving this because you signed up for LeadFlow AI.<br>
-    Questions? Contact us at <a href="mailto:support@leadflow.ai" style="color: #6b7280;">support@leadflow.ai</a>
+    Questions? Contact us at <a href="mailto:support@landyourleads.com" style="color: #6b7280;">support@landyourleads.com</a>
   </p>
 </body>
 </html>

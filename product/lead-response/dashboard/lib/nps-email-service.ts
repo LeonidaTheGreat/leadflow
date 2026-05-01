@@ -21,11 +21,11 @@ async function getResend() {
   }
 }
 
-// Use Resend's shared domain as fallback — leadflow.ai must be verified on Resend first.
+// Use Resend's shared domain as fallback — landyourleads.com must be verified on Resend first.
 // .trim() guards against trailing whitespace/newlines in env var values
 const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@resend.dev').trim()
 const COMPANY_NAME = 'LeadFlow AI'
-const SUPPORT_EMAIL = 'support@leadflow.ai'
+const SUPPORT_EMAIL = 'support@landyourleads.com'
 const DASHBOARD_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
 // NPS Email Template

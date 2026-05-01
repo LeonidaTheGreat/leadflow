@@ -70,7 +70,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: 'LeadFlow AI <onboarding@landyourleads.com>',
       to: agent.email,
       subject: 'Welcome to LeadFlow AI — your first lead response in 30 seconds',
       html: `
@@ -147,7 +147,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: 'LeadFlow AI <onboarding@landyourleads.com>',
       to: agent.email,
       subject: 'This is what your leads experience when you use LeadFlow',
       html: `
@@ -224,7 +224,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: 'LeadFlow AI <onboarding@landyourleads.com>',
       to: agent.email,
       subject: '3 days in — how many leads have you responded to?',
       html: `
@@ -295,7 +295,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: 'LeadFlow AI <onboarding@landyourleads.com>',
       to: agent.email,
       subject: '7 days left — don\'t lose your leads',
       html: `
@@ -370,7 +370,7 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: 'LeadFlow AI <onboarding@landyourleads.com>',
       to: agent.email,
       subject: 'Your LeadFlow trial has ended — leads are going unanswered',
       html: `
@@ -445,7 +445,7 @@ async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolea
     const agentName = agent.first_name || 'there'
 
     const { error } = await getResend().emails.send({
-      from: 'LeadFlow AI <onboarding@leadflow.ai>',
+      from: 'LeadFlow AI <onboarding@landyourleads.com>',
       to: agent.email,
       subject: `${agentName}, this is the last email from LeadFlow`,
       html: `

@@ -76,7 +76,7 @@ describe('POST /api/admin/outreach/blast', () => {
 
   beforeAll(async () => {
     process.env.ADMIN_SECRET = 'test-secret'
-    process.env.NEXT_PUBLIC_APP_URL = 'https://app.leadflow.ai'
+    process.env.NEXT_PUBLIC_APP_URL = 'https://app.landyourleads.com'
     const mod = await import('@/app/api/admin/outreach/blast/route')
     POST = mod.POST
   })
@@ -234,7 +234,7 @@ describe('POST /api/admin/outreach/blast', () => {
       expect.objectContaining({
         firstName: 'Jennifer',
         location: 'Miami, FL',
-        demoLink: expect.stringContaining('https://app.leadflow.ai/demo/'),
+        demoLink: expect.stringContaining('https://app.landyourleads.com/demo/'),
       })
     )
   })

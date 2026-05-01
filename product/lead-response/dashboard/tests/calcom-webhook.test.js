@@ -29,7 +29,7 @@ const mockBookingCreatedEvent = {
       }
     ],
     organizer: {
-      email: 'agent@leadflow.ai',
+      email: 'agent@landyourleads.com',
       name: 'Sarah Chen',
       timeZone: 'America/Los_Angeles'
     },

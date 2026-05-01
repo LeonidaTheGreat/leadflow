@@ -24,7 +24,7 @@ const supabase: ReturnType<typeof createClient> | null = (apiUrl && apiKey) ? cr
 // Resend configuration
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
 const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim();
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'stojan@leadflow.ai').trim();
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'stojan@landyourleads.com').trim();
 const FROM_NAME = 'LeadFlow';
 
 // Stripe configuration for checkout links

@@ -29,7 +29,7 @@ describe('validateEmailConfig', () => {
 
   test('should pass validation when RESEND_API_KEY is present', () => {
     process.env.RESEND_API_KEY = 're_test_key_12345678901234567890';
-    process.env.FROM_EMAIL = 'test@leadflow.ai';
+    process.env.FROM_EMAIL = 'test@landyourleads.com';
 
     const result = validateEmailConfig();
 
@@ -64,7 +64,7 @@ describe('validateEmailConfig', () => {
     const result = validateEmailConfig();
 
     // Should have a warning about using default
-    expect(result.warnings.some(w => w.includes('stojan@leadflow.ai'))).toBe(true);
+    expect(result.warnings.some(w => w.includes('stojan@landyourleads.com'))).toBe(true);
   });
 
   test('should have multiple issues when configuration is incomplete', () => {

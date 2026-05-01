@@ -31,7 +31,7 @@ export function validateEmailConfig(): EmailConfigValidation {
 
   // Check FROM_EMAIL
   // .trim() guards against trailing whitespace/newlines in env var values
-  const fromEmail = (process.env.FROM_EMAIL || 'stojan@leadflow.ai').trim()
+  const fromEmail = (process.env.FROM_EMAIL || 'stojan@landyourleads.com').trim()
   if (!process.env.FROM_EMAIL) {
     warnings.push(
       `FROM_EMAIL not configured, using default: ${fromEmail}`

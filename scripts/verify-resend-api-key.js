@@ -3,7 +3,7 @@
  * Verify Resend API Key is Live
  * 
  * This script tests the production RESEND_API_KEY by sending a test email
- * from hello@leadflow.ai to a real inbox.
+ * from hello@landyourleads.com to a real inbox.
  * 
  * Usage: node scripts/verify-resend-api-key.js [test-email-address]
  */
@@ -12,8 +12,8 @@ const https = require('https');
 
 // Get the Resend API key from environment
 const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim();
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'hello@leadflow.ai').trim();
-const TO_EMAIL = process.argv[2] || 'stojan@leadflow.ai';
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'hello@landyourleads.com').trim();
+const TO_EMAIL = process.argv[2] || 'stojan@landyourleads.com';
 
 if (!RESEND_API_KEY) {
   console.error('❌ RESEND_API_KEY is not set in environment');
@@ -58,7 +58,7 @@ const emailData = {
   </div>
 
   <p style="font-size: 14px; color: #6b7280;">
-    If you received this email, the Resend API key is live and emails can be sent from hello@leadflow.ai.
+    If you received this email, the Resend API key is live and emails can be sent from hello@landyourleads.com.
   </p>
 </body>
 </html>

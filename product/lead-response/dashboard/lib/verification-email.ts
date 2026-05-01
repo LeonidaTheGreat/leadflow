@@ -27,10 +27,10 @@ async function getResend() {
 }
 
 // .trim() guards against trailing whitespace/newlines in env var values
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 const COMPANY_NAME = 'LeadFlow AI'
-const SUPPORT_EMAIL = 'support@leadflow.ai'
+const SUPPORT_EMAIL = 'support@landyourleads.com'
 
 interface VerificationEmailData {
   firstName: string

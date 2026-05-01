@@ -27,7 +27,7 @@
  *   - SUPABASE_URL
  *   - SUPABASE_SERVICE_ROLE_KEY
  *   - RESEND_API_KEY
- *   - FROM_EMAIL (optional, defaults to stojan@leadflow.ai)
+ *   - FROM_EMAIL (optional, defaults to stojan@landyourleads.com)
  * 
  * Scheduling (cron):
  *   0 9 * * * /usr/bin/node /path/to/scripts/pilot-conversion-cron.js

@@ -118,7 +118,7 @@ function makeBlastProcessor({ targets, existingTouchpoints = [], emailFails = fa
           continue;
         }
 
-        const demoLink = `https://app.leadflow.ai/demo/${rawToken}`;
+        const demoLink = `https://app.landyourleads.com/demo/${rawToken}`;
         const ok = await sendEmail(email, targetId, { firstName: name.split(' ')[0], location: target.location, painPoint: '', demoLink, isTeamLead: false });
 
         if (!ok) {

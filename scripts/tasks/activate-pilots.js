@@ -32,7 +32,7 @@ async function main() {
     // Initialize email service
     const emailService = new EmailService({
       apiKey: process.env.RESEND_API_KEY,
-      fromEmail: process.env.FROM_EMAIL || 'stojan@leadflow.ai',
+      fromEmail: process.env.FROM_EMAIL || 'stojan@landyourleads.com',
       fromName: 'LeadFlow',
     });
 
