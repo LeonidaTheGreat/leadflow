@@ -10,17 +10,15 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-const BRANCH_ROOT = '/private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-f3b7eea4-1b32-4acb-b051-da53e520201f';
-const PROJECT_ROOT = '/Users/clawdbot/projects/leadflow';
+const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
-// Resolve to branch — service only exists on the PR branch, not main
-function branchPath(rel) {
-  return path.join(BRANCH_ROOT, rel);
+function projectPath(rel) {
+  return path.join(PROJECT_ROOT, rel);
 }
 
 // ── Test 1: service correctly handles matching keys ──────────────────────────
 {
-  const { ApiKeyAuthService } = require(branchPath('lib/services/api-key-auth-service'));
+  const { ApiKeyAuthService } = require(projectPath('lib/services/api-key-auth-service'));
 
   assert.strictEqual(
     ApiKeyAuthService.isAuthorized({ expected: 'my-api-key', provided: 'my-api-key' }),
@@ -32,7 +30,7 @@ function branchPath(rel) {
 
 // ── Test 2: service rejects wrong key ────────────────────────────────────────
 {
-  const { ApiKeyAuthService } = require(branchPath('lib/services/api-key-auth-service'));
+  const { ApiKeyAuthService } = require(projectPath('lib/services/api-key-auth-service'));
 
   assert.strictEqual(
     ApiKeyAuthService.isAuthorized({ expected: 'my-api-key', provided: 'wrong-key' }),
@@ -44,7 +42,7 @@ function branchPath(rel) {
 
 // ── Test 3: service trims whitespace before comparing ────────────────────────
 {
-  const { ApiKeyAuthService } = require(branchPath('lib/services/api-key-auth-service'));
+  const { ApiKeyAuthService } = require(projectPath('lib/services/api-key-auth-service'));
 
   assert.strictEqual(
     ApiKeyAuthService.isAuthorized({ expected: 'my-api-key', provided: '  my-api-key  ' }),
@@ -56,7 +54,7 @@ function branchPath(rel) {
 
 // ── Test 4: service rejects empty keys ───────────────────────────────────────
 {
-  const { ApiKeyAuthService } = require(branchPath('lib/services/api-key-auth-service'));
+  const { ApiKeyAuthService } = require(projectPath('lib/services/api-key-auth-service'));
 
   assert.strictEqual(
     ApiKeyAuthService.isAuthorized({ expected: '', provided: 'some-key' }),
@@ -78,10 +76,8 @@ function branchPath(rel) {
 
 // ── Test 5: no .from() calls remain in the route ─────────────────────────────
 {
-  const routePath = branchPath('routes/admin/reactivation-campaign.js');
+  const routePath = projectPath('routes/admin/reactivation-campaign.js');
   const content = fs.readFileSync(routePath, 'utf8');
-  // The task spec check: rg -n "\.from\(" routes/admin/reactivation-campaign.js should return no matches
-  // We strip out comment lines before checking
   const codeLines = content.split('\n').filter(l => !l.trim().startsWith('*') && !l.trim().startsWith('//'));
   const fromMatches = codeLines.filter(l => /\.from\s*\(/.test(l));
   assert.strictEqual(
@@ -94,7 +90,7 @@ function branchPath(rel) {
 
 // ── Test 6: service is properly imported from the route ──────────────────────
 {
-  const routePath = branchPath('routes/admin/reactivation-campaign.js');
+  const routePath = projectPath('routes/admin/reactivation-campaign.js');
   const content = fs.readFileSync(routePath, 'utf8');
   assert.ok(
     content.includes("require('../../lib/services/api-key-auth-service')"),
@@ -109,7 +105,7 @@ function branchPath(rel) {
 
 // ── Test 7: no hardcoded secrets in the new service ──────────────────────────
 {
-  const servicePath = branchPath('lib/services/api-key-auth-service.js');
+  const servicePath = projectPath('lib/services/api-key-auth-service.js');
   const content = fs.readFileSync(servicePath, 'utf8');
   const secretPatterns = [/sk-[a-zA-Z0-9]{20,}/, /[A-Z0-9]{32,}/, /password\s*=\s*['"][^'"]+['"]/i];
   for (const pattern of secretPatterns) {
