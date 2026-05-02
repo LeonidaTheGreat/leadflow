@@ -1,9 +1,10 @@
-# PRD: Pilot Conversion Sprint — Direct Outreach to 11 Pilot Agents
+# PRD: Pilot Conversion Sprint — Direct Outreach to 15 Pilot Agents
 
 **Status:** Approved  
-**Version:** 1.0  
+**Version:** 2.0  
 **Use Case:** uc-pilot-conversion-sprint-direct-outreach  
 **Created:** 2026-05-02  
+**Updated:** 2026-05-02 — corrected agent count (11→15), data source, tool availability  
 **Owner:** Stojan (personal execution — no dev agent)
 
 ---
@@ -11,10 +12,13 @@
 ## Context
 
 Day 79 of 90. First paying customer deadline: 2026-05-15 (13 days).  
-MRR: $0. Pilot agents: 11. Conversion calls made: 0.
+MRR: $0.
 
-The upgrade tools are built. The email sequences exist. The promo code system is live.  
-**The missing piece is Stojan picking up the phone.**
+**Verified 2026-05-02 from `pilot_signups` table:**
+- 15 real agents submitted pilot applications
+- All 15 have email + phone on file
+- 0 conversion calls made
+- These agents are NOT yet in `real_estate_agents` — they are warm prospects
 
 This is not a code task. It is a 48-hour personal outreach sprint.
 
@@ -22,147 +26,178 @@ This is not a code task. It is a 48-hour personal outreach sprint.
 
 ## Goal
 
-Convert at least 1 pilot agent to a paid subscription before 2026-05-15 by personally contacting all 11 within 48 hours with a time-limited, personalized upgrade offer.
+Convert at least 1 pilot agent to a paying subscriber before 2026-05-15 by personally contacting all 15 within 48 hours with a personalized, time-limited upgrade offer.
 
 ---
 
-## What Already Exists (use these — no new code needed)
+## What Actually Exists (verified 2026-05-02)
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| Pilot dashboard | `leadflow-ai-five.vercel.app/admin/pilots` | See each pilot's stage, usage stats, last login |
-| Upgrade offer tool | `POST /api/admin/send-upgrade-offer` (auth: `LEADFLOW_API_KEY`) | Generate promo code + send branded email |
-| Promo code table | `promo_codes` (local PG) | Tracks generated codes, expiry, redemption |
-| Pilot progress | `pilot_progress` table | Tracks stage: `signed_up → aha_moment → trial_started → paid` |
+| Tool | Where | Status |
+|------|-------|--------|
+| Promo code engine | `StripeService.createPromoCode()` | ✅ Works |
+| Promo code table | `promo_codes` in local PG | ✅ Exists |
+| Pilot signup list | `pilot_signups` table (15 real agents) | ✅ All have email + phone |
+| Stripe Dashboard | dashboard.stripe.com | ✅ Manual promo code creation |
+| **Admin upgrade offer API** | `POST /api/admin/send-upgrade-offer` | ❌ Does NOT exist — use Stripe Dashboard instead |
+
+**Do NOT use `pilot_progress` table or `/admin/pilots` page** — they contain only test accounts.  
+**Do NOT use `real_estate_agents`** — only 1 real pilot-tier entry there (a smoke test).
+
+---
+
+## Call Sheet (pre-filled from `pilot_signups`)
+
+| # | Name | Email | Phone | City | Called? | Outcome | Code | Converted? |
+|---|------|-------|-------|------|---------|---------|------|------------|
+| 1 | Abha Sethi | abha@ahomenearaustin.com | (512) 636-7379 | Austin, TX | | | | |
+| 2 | Ajay Rai | ajayrairealtor@gmail.com | (512) 689-0218 | Austin, TX | | | | |
+| 3 | Alexandra Booth | alex@alexandrabooth.com | (512) 554-4147 | Austin, TX | | | | |
+| 4 | Natalie Freeman | nataliedfreeman@gmail.com | (512) 296-8805 | Austin, TX | | | | |
+| 5 | Talia Tovar | taliasellsdfw@gmail.com | (972) 375-5453 | Dallas, TX | | | | |
+| 6 | Amber English | amber@dealswithamber.com | (214) 771-1889 | Dallas, TX | | | | |
+| 7 | Alexandria Aymelek | alex@alexsellsdfw.com | (972) 890-5430 | Dallas, TX | | | | |
+| 8 | Alma Delia Lopez | dfw@realestatebyalma.com | (214) 753-9285 | Dallas, TX | | | | |
+| 9 | Jenny Wu | jenwurealestate@gmail.com | (678) 358-1698 | Atlanta, GA | | | | |
+| 10 | Dani Stewart | danistewart90@gmail.com | (404) 808-5462 | Atlanta, GA | | | | |
+| 11 | Ashli Taylor | ashlitaylor12@gmail.com | (770) 375-5881 | Atlanta, GA | | | | |
+| 12 | Bridget Strategos | bridgetstrategos@gmail.com | (678) 779-3119 | Atlanta, GA | | | | |
+| 13 | Ashley Misiuda | ashley@theagencycharlotte.com | (704) 249-9564 | Charlotte, NC | | | | |
+| 14 | Alivia Wright | alivia@theagencycharlotte.com | (980) 425-2273 | Charlotte, NC | | | | |
+| 15 | Pamela Manwaring | pamela@domidesert.com | (602) 515-3800 | Phoenix, AZ | | | | |
+
+Start with Austin (4 agents, same metro). Then Dallas, Atlanta, Charlotte, Phoenix.
 
 ---
 
 ## Execution Plan
 
-### Step 1 — Build the Call Sheet (before first call)
+### Step 1 — Generate Promo Codes Before Calls (~30 min)
 
-Access the admin pilots dashboard. For each of the 11 pilots, record:
+Since `POST /api/admin/send-upgrade-offer` does not exist, use **Stripe Dashboard**:
 
-| Field | Where to find |
-|-------|--------------|
-| Name, email, phone | `/admin/pilots` |
-| Stage | `pilot_progress.stage` |
-| Last login | `real_estate_agents.last_login_at` |
-| Aha moment reached? | Stage = `aha_moment` |
-| Response time (if leads responded to) | `sms_messages` for that agent |
+1. Go to **dashboard.stripe.com → Coupons → Create coupon**
+   - Discount: 50% off
+   - Duration: Once
+   - Max redemptions: 1
+   - Expiry: 3 days from today
 
-Prioritize outreach order:
-1. **Highest priority:** agents at `aha_moment` stage (they've seen the product work)
-2. **Second:** agents at `fub_connected` or `first_lead_responded`
-3. **Third:** agents at `signed_up` only (haven't activated yet — address that first)
+2. Name codes `PILOT-[FIRSTNAME]-50` (e.g., `PILOT-ABHA-50`). Create one per agent.
 
----
+3. Log each into local PG immediately after creating in Stripe:
 
-### Step 2 — Generate Personalized Promo Codes (before each call)
-
-For each pilot, generate a code via:
-
-```
-POST https://api.imagineapi.org/api/admin/send-upgrade-offer
-Authorization: Bearer <LEADFLOW_API_KEY>
-Content-Type: application/json
-
-{
-  "agent_id": "<agent UUID from dashboard>",
-  "discount_percent": 50,
-  "tier": "pro",
-  "expiry_days": 3,
-  "personal_note": "Hey [Name], this is just for you — 50% off Pro for your first month. Valid for 72 hours."
-}
+```sql
+INSERT INTO promo_codes (stripe_promo_code_id, stripe_coupon_id, code, discount_percent, tier, expiry_at, metadata)
+VALUES (
+  'prmo_xxxx',  -- from Stripe
+  'co_xxxx',    -- from Stripe
+  'PILOT-ABHA-50',
+  50,
+  'pro',
+  NOW() + INTERVAL '72 hours',
+  '{"pilot_name": "Abha Sethi", "source": "direct_call_sprint_2026_05"}'::jsonb
+);
 ```
 
-This creates a Stripe promo code (logged in `promo_codes`), sends a branded email with the code, and returns the code for use in the phone call.
-
-**Offer terms:** 50% off first month on Pro ($149 → ~$75). 72-hour expiry from time of call.
+> **Dev task created in parallel:** `uc-admin-upgrade-offer-tool` — build `POST /api/admin/send-upgrade-offer` to automate this in future sprints.
 
 ---
 
-### Step 3 — The Call Script
+### Step 2 — The Call Script
 
-**Opening (20 seconds):**
-> "Hey [Name], this is Stojan from LeadFlow AI — you signed up for our pilot program [X days] ago. I'm personally calling every pilot this week because I want to make sure you're getting value and I have something for you."
+**Opening (20 sec):**
+> "Hey [Name], this is Stojan — I'm the founder of LeadFlow AI. You submitted interest in our pilot a few weeks ago. I'm personally calling everyone this week because I have a one-time offer just for pilot members."
 
-**Transition (30 seconds):**
-> "Quick question — have you had a chance to [connect your FUB / see the AI respond to a lead]? I can see from our system [describe their actual usage — e.g., 'you had 3 leads come in last week' or 'you haven't connected FUB yet, let me help you do that right now in 2 minutes']."
+**Product pitch (20 sec):**
+> "LeadFlow responds to your leads in under 30 seconds via SMS, qualifies them, and books the appointment to your calendar. Integrates with Follow Up Boss."
 
-**The offer (30 seconds):**
-> "Here's why I'm calling: I'm giving all 11 pilot agents a personal deal — 50% off Pro for your first month. That's [~$75 vs $149]. I just sent you an email with your promo code. It's valid for 72 hours. I'd rather you pay $75 and see if it works for you than walk away without trying it properly."
+**The offer (30 sec):**
+> "I'm giving all pilot members 50% off their first month on Pro — that's $75 instead of $149. I'll email you a promo code right now. It's good for 72 hours."
 
-**Close options:**
+**If ready:**
+> "Great — sign up at leadflow-ai-five.vercel.app/signup and enter your code at checkout. I'll stay on while you do it."
 
-*If they're ready:*
-> "The upgrade link is in the email I just sent. It takes 2 minutes on Stripe. Any questions before you click it?"
+**If wants to think:**
+> "Fair. Code expires [date/time]. Can I book 15 minutes for a live demo? You'll know in 10 minutes whether it's worth paying for."
 
-*If they want to think:*
-> "Totally fair. The code in your email is good until [date]. One thing — if you want, I can book 15 minutes for us to go through your first lead together. Would that help?"
+**If hasn't tried it:**
+> "Let's get you set up before we talk paying. Can I do a 10-minute screen share now? Once you see a lead responded to in 30 seconds, you'll have what you need to decide."
 
-*If they haven't activated:*
-> "Before we talk about upgrading, let's get you connected. Can you share your screen with me for 10 minutes? I'll walk you through FUB setup right now. Once you see your first lead respond in 30 seconds, you'll know whether this is worth paying for."
-
-**Voicemail script:**
-> "Hey [Name], Stojan from LeadFlow AI. I'm calling personally — sent you an email with a 50% off offer just for pilot members. Good for 72 hours. Would love to catch up. Call me back at [number] or just reply to the email."
+**Voicemail:**
+> "Hey [Name], Stojan here — founder of LeadFlow AI. You submitted for our pilot. I have a 50% off offer just for pilot members — good 72 hours. Sending you an email with the code. Call back at [your number] or just reply."
 
 ---
 
-### Step 4 — Post-Call Actions
+### Step 3 — Send Promo Code Email (immediately after each call)
 
-After each call, within 5 minutes:
+Send from stojan@landyourleads.com:
 
-1. **Log the contact** in `/admin/pilots` → select agent → Log Contact (type: `phone`)  
-   Note the outcome: `interested`, `not_ready`, `need_activation_help`, `no_answer`, `declined`
+**Subject:** Your LeadFlow pilot code, [Name] — good 72h
 
-2. **If they want activation help:** book a 15-min screen share via Cal.com  
-   Use the conversion call booking link: `/admin/outreach`
+**Body:**
+```
+Hey [Name],
 
-3. **Update pilot_progress stage** if it changed (e.g., moved from `signed_up` to `aha_moment`)
+[Great talking / I just tried to reach you —] here's your personal offer:
+
+Code: PILOT-[FIRSTNAME]-50
+50% off your first month on Pro ($75 instead of $149)
+Expires: [date/time 72h from now]
+
+Sign up: https://leadflow-ai-five.vercel.app/signup
+Enter the code at checkout. Takes 5 minutes.
+
+Reply here if you hit anything.
+
+— Stojan
+Founder, LeadFlow AI
+```
 
 ---
 
-### Step 5 — Follow-Up (48 hours after call, if no conversion)
+### Step 4 — Post-Call Logging
 
-Send a personal text (via Twilio or iMessage — whichever feels right):
+After each call:
 
-> "Hey [Name], Stojan here. Just wanted to follow up — your LeadFlow promo code expires tomorrow. Happy to jump on a quick call if you have questions. [link to upgrade page]"
+1. Track outcome in call sheet: `reached` / `voicemail` / `interested` / `converted` / `declined`
+2. Mark follow-up sent in DB:
+   ```sql
+   UPDATE pilot_signups SET follow_up_sent = true WHERE email = 'agent@example.com';
+   ```
+3. When they sign up, link promo code to their new account:
+   ```sql
+   UPDATE promo_codes
+   SET agent_id = (SELECT id FROM real_estate_agents WHERE email = 'agent@example.com')
+   WHERE code = 'PILOT-XXX-50';
+   ```
 
 ---
 
-## Call Sheet Template
+### Step 5 — 24h Follow-Up
 
-| # | Name | Email | Phone | Stage | Last Login | Called? | Outcome | Code Sent? | Converted? |
-|---|------|-------|-------|-------|------------|---------|---------|------------|------------|
-| 1 | | | | | | | | | |
-| 2 | | | | | | | | | |
-| ... | | | | | | | | | |
+Text from personal phone to voicemails / no-converts:
 
-Fill this from `/admin/pilots` before starting. Track outcomes in real time.
+> "Hey [Name], Stojan from LeadFlow. Sent you a 50% pilot offer by email. Expires [date]. Happy to chat — reply here or call [your number]."
 
 ---
 
 ## Acceptance Criteria
 
-### AC-1: All 11 pilots contacted within 48h
-- Every pilot has an entry in `pilot_progress.last_contact_at` updated within 48h of PRD execution start
-- Contact type logged: `phone` (preferred), `sms`, or `email` (last resort)
+### AC-1: All 15 pilots contacted within 48h
+- Every agent in call sheet dialed or texted
+- Outcome logged for each
 
-### AC-2: Promo codes generated for all 11
-- 11 rows in `promo_codes` table with `agent_id` matching each pilot
-- `discount_percent = 50`, `tier = 'pro'`, `expiry_at` set to 72h from send time
-- Email sent flag: `email_events` has `email_type = 'upgrade_offer'` for each agent
+### AC-2: 15 promo codes created and emailed
+- 15 codes in Stripe Dashboard
+- 15 rows in `promo_codes` table
+- Promo email sent to every agent
 
-### AC-3: At least 1 conversion
-- At least 1 `promo_codes.redeemed = true` within the sprint window
+### AC-3: At least 1 conversion by 2026-05-15
+- At least 1 `promo_codes.redeemed = true`
 - Corresponding `real_estate_agents.subscription_status = 'active'`
-- `mrr_snapshots` updated
 
-### AC-4: Activation-blocked pilots unblocked
-- Any pilot at `signed_up` stage who hasn't connected FUB → either:  
-  (a) screen share booked (booking in Cal.com), or  
-  (b) marked `declined` with reason logged
+### AC-4: Retrospective completed within 72h of sprint end
+- 1-page summary: reach rate, objections heard, conversion count
+- PMF.md updated with objections
 
 ---
 
@@ -170,23 +205,35 @@ Fill this from `/admin/pilots` before starting. Track outcomes in real time.
 
 | Metric | Target |
 |--------|--------|
-| Pilots contacted | 11/11 within 48h |
-| Promo emails sent | 11/11 |
-| Reply/callback rate | ≥ 5/11 (45%) |
-| Conversion from sprint | ≥ 1 |
-| MRR from sprint | ≥ $75 (1× Pro at 50% off) |
+| Agents contacted | 15/15 within 48h |
+| Live answer rate | ≥ 6/15 (40%) |
+| Reply/callback rate | ≥ 8/15 (53%) |
+| Demos booked | ≥ 3/15 |
+| Conversion | ≥ 1 |
+| MRR gained | ≥ $75 (1× Pro at 50% off) |
 
 ---
 
-## Risk: What If Nobody Converts?
+## Risk: 0 Conversions After 15 Calls
 
-If 0 conversions after 11 calls:
-
-1. **Root cause audit within 24h:** Call back the 2-3 most engaged and ask directly: "What would need to be true for you to pay $75/month for this?"
-2. **Document objections:** Price? Missing feature? Doesn't trust it yet? Integration friction?
-3. **Escalate to PMF review:** If consistent objection to price → consider $29 starter offer. If consistent "not enough leads" → focus on activation, not conversion.
+1. Within 24h: Call back 2-3 most engaged — ask "What would need to be true for you to pay $75/month?"
+2. Document objections: price? integration friction? not enough leads? hasn't seen it work?
+3. PMF pivot signals:
+   - Consistent price objection → test $29 Starter tier
+   - Consistent "haven't tried it" → activation-first strategy before asking for money
+   - Consistent "not enough leads" → ICP recalibration toward higher-volume agents
 
 The sprint fails only if we don't learn something actionable.
+
+---
+
+## Dev Dependency (parallel, non-blocking)
+
+**UC:** `uc-admin-upgrade-offer-tool`  
+**What:** `POST /api/admin/send-upgrade-offer` — given `{agent_id, discount_percent, tier, expiry_days}`, creates Stripe promo code, sends branded email, logs to `promo_codes` + `email_events`  
+**Wire:** `StripeService.createPromoCode()` + `EmailService.sendUpgradeOffer()` (method needs building)  
+**Effort:** ~4-6h  
+**Priority:** P1 — required for next outreach sprint  
 
 ---
 
@@ -194,8 +241,8 @@ The sprint fails only if we don't learn something actionable.
 
 | Time | Action |
 |------|--------|
-| T+0 (now) | Pull call sheet from `/admin/pilots`, generate all 11 promo codes |
-| T+0 to T+24h | Call all 11 pilots. Aim for 5+ same day. |
-| T+24h to T+48h | Follow up on no-answers. Book activation help for stuck pilots. |
-| T+72h | Promo codes expire. Review outcomes. |
-| T+72h | Write 1-page retrospective: who converted, who didn't, why |
+| T+0 | Create 15 promo codes in Stripe Dashboard. Insert into `promo_codes` table. |
+| T+0 to T+24h | Call all 15. Aim 8+ same day. Start Austin (area code 512). |
+| T+24h to T+48h | Text follow-ups on voicemails. Book screen shares for interested. |
+| T+72h | Codes expire. |
+| T+72h | Write retrospective. Update PMF.md with objections heard. |
