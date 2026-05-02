@@ -12,6 +12,8 @@
  *               or any other file. Does not make real HTTP calls or DB connections.
  */
 
+jest.mock('pg', () => ({ Pool: jest.fn() }));
+
 const path = require('path');
 
 const DB_PATH = path.resolve(__dirname, '../../lib/db');
