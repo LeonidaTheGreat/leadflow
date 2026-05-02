@@ -541,7 +541,7 @@ async function testBookingCompletion() {
         }],
         organizer: {
           name: 'Test Agent',
-          email: 'agent@leadflow.ai',
+          email: 'agent@landyourleads.com',
           timeZone: 'America/Toronto'
         },
         metadata: {

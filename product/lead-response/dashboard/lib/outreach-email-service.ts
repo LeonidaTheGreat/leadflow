@@ -21,7 +21,7 @@ async function getResend() {
   }
 }
 
-const FROM_EMAIL = (process.env.OUTREACH_FROM_EMAIL || process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
+const FROM_EMAIL = (process.env.OUTREACH_FROM_EMAIL || process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 // From display name follows content brief: "Stojan Madjunkov" (not LeadFlow AI)
 const FROM_DISPLAY = `Stojan Madjunkov <${FROM_EMAIL}>`
 

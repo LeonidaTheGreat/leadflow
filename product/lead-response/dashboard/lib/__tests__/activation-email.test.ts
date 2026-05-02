@@ -34,8 +34,8 @@ describe('Activation email flow', () => {
     process.env = {
       ...originalEnv,
       RESEND_API_KEY: 're_test_key',
-      NEXT_PUBLIC_APP_URL: 'https://test.leadflow.ai',
-      FROM_EMAIL: 'onboarding@leadflow.ai',
+      NEXT_PUBLIC_APP_URL: 'https://test.landyourleads.com',
+      FROM_EMAIL: 'onboarding@landyourleads.com',
     }
   })
 
@@ -62,7 +62,7 @@ describe('Activation email flow', () => {
 
       expect(mockSend).toHaveBeenCalledTimes(1)
       const callArgs = mockSend.mock.calls[0][0]
-      expect(callArgs.html).toContain('https://test.leadflow.ai/onboarding')
+      expect(callArgs.html).toContain('https://test.landyourleads.com/onboarding')
       expect(callArgs.subject).toContain('ready')
     })
 

@@ -40,7 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_prt_agent_id ON password_reset_tokens(agent_id);
 - Subject: "Reset your LeadFlow AI password"
 - Greeting, context sentence, CTA button "Reset My Password" linking to /reset-password?token=<rawToken>
 - Security note: expires in 1 hour; if you didn't request this, ignore it
-- From: use FROM_EMAIL env var (support@leadflow.ai)
+- From: use FROM_EMAIL env var (support@landyourleads.com)
 
 ## Acceptance Criteria
 1. Clicking "Forgot password?" on /login navigates to /forgot-password (no alert)

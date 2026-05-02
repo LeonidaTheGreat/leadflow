@@ -26,7 +26,7 @@ async function getResend() {
 }
 
 // .trim() guards against trailing whitespace/newlines in env var values
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'stojan@leadflow.ai').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'stojan@landyourleads.com').trim()
 const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'https://leadflow-ai-five.vercel.app/pilot'
 const LANDING_URL = process.env.NEXT_PUBLIC_LANDING_URL || 'https://leadflow-ai-five.vercel.app'
 
@@ -89,7 +89,7 @@ function email1Html(firstName: string): string {
     </div>
     <div style="padding: 24px 40px; border-top: 1px solid #f1f5f9; text-align: center;">
       <p style="color: #94a3b8; font-size: 12px; margin: 0;">
-        You received this because you requested our playbook at <a href="${LANDING_URL}" style="color: #10b981;">leadflow.ai</a>.<br>
+        You received this because you requested our playbook at <a href="${LANDING_URL}" style="color: #10b981;">landyourleads.com</a>.<br>
         <a href="${LANDING_URL}/unsubscribe" style="color: #94a3b8;">Unsubscribe</a>
       </p>
     </div>

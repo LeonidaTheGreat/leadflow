@@ -333,8 +333,8 @@ async function runTests() {
     const config = await mockStripe.billingPortal.configurations.create({
       business_profile: {
         headline: 'LeadFlow AI',
-        privacy_policy_url: 'https://leadflow.ai/privacy',
-        terms_of_service_url: 'https://leadflow.ai/terms'
+        privacy_policy_url: 'https://landyourleads.com/privacy',
+        terms_of_service_url: 'https://landyourleads.com/terms'
       },
       features: {
         subscription_management: { enabled: true },
@@ -421,7 +421,7 @@ async function runTests() {
     
     // 1. Create customer
     const customer = await mockStripe.customers.create({
-      email: 'test@leadflow.ai',
+      email: 'test@landyourleads.com',
       name: 'Test Agent',
       metadata: { user_id: 'agent_123' }
     });

@@ -87,7 +87,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     let skipped = 0
     const errors: string[] = []
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://app.leadflow.ai').trim()
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://app.landyourleads.com').trim()
 
     for (const target of targets) {
       const targetId = target.id as string

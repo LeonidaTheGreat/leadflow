@@ -20,13 +20,13 @@ async function getResend() {
   }
 }
 
-// Use Resend's shared domain as fallback — leadflow.ai domain must be verified
-// in Resend before @leadflow.ai addresses will work in production.
+// Use Resend's shared domain as fallback — landyourleads.com domain must be verified
+// in Resend before @landyourleads.com addresses will work in production.
 // Until then, set FROM_EMAIL env var to a verified address (e.g. onboarding@resend.dev).
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
 const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@resend.dev').trim()
 const COMPANY_NAME = 'LeadFlow AI'
-const SUPPORT_EMAIL = 'support@leadflow.ai'
+const SUPPORT_EMAIL = 'support@landyourleads.com'
 
 // Email Templates
 const TEMPLATES = {
@@ -829,7 +829,7 @@ export async function sendPilotWelcomeEmail(
                   </p>
 
                   <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
-                    Questions? Reply to this email or reach me directly at stojan@leadflow.ai<br />
+                    Questions? Reply to this email or reach me directly at stojan@landyourleads.com<br />
                     <strong>I'm here to make sure this works perfectly for you.</strong>
                   </p>
                 </td>
@@ -895,7 +895,7 @@ export async function sendPilotSetupCompleteEmail(
                   </p>
 
                   <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
-                    Let me know how it goes! Email stojan@leadflow.ai or reply to this message.<br />
+                    Let me know how it goes! Email stojan@landyourleads.com or reply to this message.<br />
                     <strong>Excited to see your AI at work.</strong>
                   </p>
                 </td>
@@ -958,7 +958,7 @@ export async function sendPilotAhaMomentEmail(
 
                   <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
                     Ready to go live with paying leads? Let's talk about moving to a paid plan.<br />
-                    Reply to this email or email stojan@leadflow.ai anytime.
+                    Reply to this email or email stojan@landyourleads.com anytime.
                   </p>
                 </td>
               </tr>
@@ -1028,7 +1028,7 @@ export async function sendPilotTrialCTAEmail(
                   </p>
 
                   <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 24px 0 0;">
-                    Questions about plans or features? <a href="mailto:stojan@leadflow.ai" style="color: #0891b2;">Email me</a> directly.
+                    Questions about plans or features? <a href="mailto:stojan@landyourleads.com" style="color: #0891b2;">Email me</a> directly.
                   </p>
                 </td>
               </tr>

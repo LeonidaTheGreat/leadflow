@@ -202,7 +202,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       
       <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
         <strong>LeadFlow AI</strong><br>
-        <a href="https://leadflow.ai">https://leadflow.ai</a>
+        <a href="https://landyourleads.com">https://landyourleads.com</a>
       </p>
     </div>
     

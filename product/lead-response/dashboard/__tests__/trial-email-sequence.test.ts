@@ -152,39 +152,39 @@ describe('Trial Email Sequence', () => {
 
   describe('Email links', () => {
     it('should include correct onboarding URL in welcome email', () => {
-      const appUrl = 'https://test.leadflow.ai'
+      const appUrl = 'https://test.landyourleads.com'
       const expectedUrl = `${appUrl}/dashboard/onboarding`
-      expect(expectedUrl).toBe('https://test.leadflow.ai/dashboard/onboarding')
+      expect(expectedUrl).toBe('https://test.landyourleads.com/dashboard/onboarding')
     })
 
     it('should include correct demo URL in day 1 aha email', () => {
-      const appUrl = 'https://test.leadflow.ai'
+      const appUrl = 'https://test.landyourleads.com'
       const expectedUrl = `${appUrl}/dashboard/demo`
-      expect(expectedUrl).toBe('https://test.leadflow.ai/dashboard/demo')
+      expect(expectedUrl).toBe('https://test.landyourleads.com/dashboard/demo')
     })
 
     it('should include correct upgrade URL in day 3 upgrade email', () => {
-      const appUrl = 'https://test.leadflow.ai'
+      const appUrl = 'https://test.landyourleads.com'
       const expectedUrl = `${appUrl}/dashboard/upgrade?plan=pro`
-      expect(expectedUrl).toBe('https://test.leadflow.ai/dashboard/upgrade?plan=pro')
+      expect(expectedUrl).toBe('https://test.landyourleads.com/dashboard/upgrade?plan=pro')
     })
 
     it('should include correct upgrade URL in day 7 warning email', () => {
-      const appUrl = 'https://test.leadflow.ai'
+      const appUrl = 'https://test.landyourleads.com'
       const expectedUrl = `${appUrl}/dashboard/upgrade?plan=pro`
-      expect(expectedUrl).toBe('https://test.leadflow.ai/dashboard/upgrade?plan=pro')
+      expect(expectedUrl).toBe('https://test.landyourleads.com/dashboard/upgrade?plan=pro')
     })
 
     it('should include correct upgrade URL in day 14 expired email', () => {
-      const appUrl = 'https://test.leadflow.ai'
+      const appUrl = 'https://test.landyourleads.com'
       const expectedUrl = `${appUrl}/dashboard/upgrade?plan=pro`
-      expect(expectedUrl).toBe('https://test.leadflow.ai/dashboard/upgrade?plan=pro')
+      expect(expectedUrl).toBe('https://test.landyourleads.com/dashboard/upgrade?plan=pro')
     })
 
     it('should include correct upgrade URL with discount in day 15 final email', () => {
-      const appUrl = 'https://test.leadflow.ai'
+      const appUrl = 'https://test.landyourleads.com'
       const expectedUrl = `${appUrl}/dashboard/upgrade?plan=pro&discount=pilot15`
-      expect(expectedUrl).toBe('https://test.leadflow.ai/dashboard/upgrade?plan=pro&discount=pilot15')
+      expect(expectedUrl).toBe('https://test.landyourleads.com/dashboard/upgrade?plan=pro&discount=pilot15')
     })
   })
 })

@@ -132,7 +132,7 @@ describe('Email Service — sendWelcomeEmail', () => {
   beforeEach(() => {
     jest.resetModules()
     process.env.RESEND_API_KEY = 're_test_key_123'
-    process.env.FROM_EMAIL = 'onboarding@leadflow.ai'
+    process.env.FROM_EMAIL = 'onboarding@landyourleads.com'
     mockResendSend?.mockClear()
   })
 
@@ -254,7 +254,7 @@ describe('Email Config Validation', () => {
 
   it('reports valid when RESEND_API_KEY is set', async () => {
     process.env.RESEND_API_KEY = 're_test_key_123'
-    process.env.FROM_EMAIL = 'onboarding@leadflow.ai'
+    process.env.FROM_EMAIL = 'onboarding@landyourleads.com'
     const { validateEmailConfig } = await import('../lib/email-config-validation')
     const result = validateEmailConfig()
     expect(result.isValid).toBe(true)

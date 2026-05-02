@@ -141,7 +141,7 @@ console.log('\n[4] Brokerage (Contact Sales) flow')
 
 test('brokerage redirects to sales email', () => {
   assert.ok(
-    src.includes('mailto:sales@leadflow.ai') || src.includes('Contact Sales'),
+    src.includes('mailto:sales@landyourleads.com') || src.includes('Contact Sales'),
     'Brokerage plan missing contact sales redirect'
   )
 })

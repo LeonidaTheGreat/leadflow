@@ -36,7 +36,7 @@ function makeMockEmailService(sendResult) {
   const sends = [];
   return {
     sends,
-    fromEmail: 'test@leadflow.ai',
+    fromEmail: 'test@landyourleads.com',
     send: async (params) => {
       sends.push(params);
       return sendResult || { success: true, mock: true, id: `mock_${Date.now()}` };

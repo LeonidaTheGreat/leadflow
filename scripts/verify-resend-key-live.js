@@ -181,7 +181,7 @@ async function verifyResendKey() {
       log('✅ Email delivery confirmed - email sent to inbox', 'green');
       log('\n⚠️  NOTE: Domain verification required for full functionality', 'yellow');
       log('   Current: Can send to account owner (madzunkov@gmail.com)', 'cyan');
-      log('   To send to any recipient: Verify leadflow.ai at resend.com/domains', 'cyan');
+      log('   To send to any recipient: Verify landyourleads.com at resend.com/domains', 'cyan');
       log('\n✅ Pilots CAN be enrolled - email delivery is functional', 'green');
       log('='.repeat(60), 'blue');
       
@@ -199,8 +199,8 @@ async function verifyResendKey() {
       log('✅ API authentication successful', 'green');
       log('\n⚠️  Email delivery blocked: Domain verification required', 'yellow');
       log('   To send emails to any recipient:', 'cyan');
-      log('   1. Verify leadflow.ai domain at https://resend.com/domains', 'cyan');
-      log('   2. Update FROM_EMAIL to hello@leadflow.ai in Vercel', 'cyan');
+      log('   1. Verify landyourleads.com domain at https://resend.com/domains', 'cyan');
+      log('   2. Update FROM_EMAIL to hello@landyourleads.com in Vercel', 'cyan');
       log('\n⚠️  Pilots can be enrolled BUT emails will fail until domain is verified', 'yellow');
       log('='.repeat(60), 'blue');
       

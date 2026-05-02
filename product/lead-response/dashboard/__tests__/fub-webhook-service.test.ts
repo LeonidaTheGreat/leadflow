@@ -101,7 +101,7 @@ function makeDbAgent() {
   return {
     id: 'agent-1',
     name: 'Bob Agent',
-    email: 'bob@leadflow.ai',
+    email: 'bob@landyourleads.com',
     market: 'us-texas',
     timezone: 'America/Chicago',
     status: 'active',

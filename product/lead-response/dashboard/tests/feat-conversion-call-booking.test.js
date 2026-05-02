@@ -64,7 +64,7 @@ results.push(runTest('All pages import trackEvent from ga4', () => {
 // Test 6: Trial-expired page keeps email as secondary link
 results.push(runTest('Trial-expired page keeps email as secondary fallback', () => {
   const content = readFile('app/dashboard/trial-expired/page.tsx');
-  assert(content.includes('mailto:support@leadflow.ai'), 'Missing mailto fallback link');
+  assert(content.includes('mailto:support@landyourleads.com'), 'Missing mailto fallback link');
   assert(content.includes('Email Support'), 'Missing "Email Support" text');
 }));
 

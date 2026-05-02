@@ -46,7 +46,7 @@ describe('Landing Page Pricing Section', () => {
     const html = renderToString(React.createElement(HomePage))
     
     // Brokerage tier should link to sales email
-    expect(html).toContain('mailto:sales@leadflow.ai')
+    expect(html).toContain('mailto:sales@landyourleads.com')
   })
 
   it('should render Brokerage tier features', () => {
