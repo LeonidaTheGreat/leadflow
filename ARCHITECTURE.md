@@ -62,6 +62,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
+| LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | — |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
@@ -72,6 +73,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | TrialActivationService | `lib/services/TrialActivationService.js` | Note: trial_email_logs table doesn't have pilot_progress_id, so we check via pilot_progress.trial_cta_sent instead |
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
+| api-key-auth-service | `lib/services/api-key-auth-service.js` | — |
 <!-- /AUTO-GENERATED services -->
 
 > **If you're about to write a DB query or API call outside of lib/services/, STOP.** Find or create the right service first.
