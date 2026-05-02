@@ -54,6 +54,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 |---------|----------|---------------|
 | DB Client | `lib/db.js` | PostgreSQL connection pool |
 | ActivationService | `lib/services/ActivationService.js` | ActivationService — Admin outreach to verified-but-unactivated agents |
+| ApiKeyAuthService | `lib/services/api-key-auth-service.js` | Timing-safe API key comparison for admin/preview endpoint auth |
 | BillingService | `lib/services/BillingService.js` | — |
 | BookingLinkService | `lib/services/BookingLinkService.js` | BookingLinkService |
 | CalcomClient | `lib/services/CalcomClient.js` | Cal.com API Client |
@@ -62,6 +63,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
+| LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | Lapsed trial reactivation email campaigns for expired-trial agents |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
