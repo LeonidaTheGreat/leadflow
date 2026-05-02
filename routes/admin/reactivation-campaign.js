@@ -1,20 +1,19 @@
 /**
- * Task Spec — f3b7eea4-1b32-4acb-b051-da53e520201f
+ * Task Spec — 8f24f202-7f4a-4fa4-ab47-1bf4fedb79ca
  * What:
- * - Update routes/admin/reactivation-campaign.js to delegate API-key auth to a service class.
- * - Add lib/services/api-key-auth-service.js with ApiKeyAuthService.isAuthorized() that performs timing-safe key comparison.
- * - Keep route behavior and response statuses unchanged.
+ * - Update routes/admin/reactivation-campaign.js to keep POST /api/admin/reactivation-campaign aligned with the PM contract.
+ * - Verify route delegates campaign execution to lib/services/LapsedTrialReactivationService.js and keeps auth via lib/services/api-key-auth-service.js.
+ * - Ensure the admin key header path accepts LEADFLOW_API_KEY-formatted header names from clients.
  * Verify:
- * - node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json shows no `no_direct_db` failure.
- * - npm run lint
- * - npm test
- * - npm run build
- * - npm audit --audit-level=high
- * - rg -n "\\.from\\(" routes/admin/reactivation-campaign.js returns no matches.
+ * - npm run lint exits 0.
+ * - npm test exits 0.
+ * - npm run build exits 0.
+ * - npm audit --audit-level=high exits 0.
+ * - tests/unit/lapsed-trial-reactivation-service.test.js still verifies eligible query and reactivation email payload/UTM link behavior.
  * Boundaries:
- * - Do not change database schema, migrations, or LapsedTrialReactivationService behavior.
- * - Do not modify unrelated routes/services.
- * - Do not alter dashboard API route code.
+ * - Do not add or modify DB schema/migrations.
+ * - Do not touch checkout/Stripe routes.
+ * - Do not change unrelated admin endpoints.
  */
 'use strict';
 
@@ -31,7 +30,10 @@ const MAX_LIMIT = 500;
 
 function isAuthorized(req) {
   const expected = process.env.LEADFLOW_API_KEY || '';
-  const provided = req.headers.leadflow_api_key || req.headers['x-api-key'] || '';
+  const provided = req.headers.leadflow_api_key
+    || req.headers['leadflow-api-key']
+    || req.headers['x-api-key']
+    || '';
   return ApiKeyAuthService.isAuthorized({ expected, provided });
 }
 
