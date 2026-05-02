@@ -9,13 +9,23 @@ const assert = require('assert');
 
 const PG_URL = process.env.LOCAL_PG_URL || 'postgresql://clawdbot@localhost/openclaw';
 
+const testUserId = '00000000-0000-0000-0000-000000000001';
+const testStripeCustomerId = 'cus_test_schema_alignment';
+const testStripeSubId = 'sub_test_schema_alignment';
+
+async function cleanup(client) {
+  await client.query(`DELETE FROM subscription_events WHERE user_id = $1`, [testUserId]);
+  await client.query(`DELETE FROM payments WHERE user_id = $1`, [testUserId]);
+  // Belt-and-suspenders: match by both user_id and the known test prefix
+  await client.query(`DELETE FROM subscriptions WHERE user_id = $1 OR stripe_subscription_id LIKE 'sub_test_schema_alignment%'`, [testUserId]);
+}
+
 async function run() {
   const client = new Client({ connectionString: PG_URL });
   await client.connect();
 
-  const testUserId = '00000000-0000-0000-0000-000000000001';
-  const testStripeCustomerId = 'cus_test_schema_alignment';
-  const testStripeSubId = 'sub_test_schema_alignment';
+  // Pre-test cleanup: remove any data left by a previously interrupted run
+  await cleanup(client);
 
   try {
     // --- Test 1: subscriptions accepts all product tiers ---
@@ -76,12 +86,16 @@ async function run() {
     assert(paidRejected, 'payments table should reject status=paid');
     console.log('  PASS: payments table correctly rejects paid status');
 
-    console.log('\nPASS stripe-subscription-schema-alignment: all 6 checks passed');
+    // --- Test 7: no test subscriptions leaked into active subscriptions ---
+    const { rows } = await client.query(
+      `SELECT COUNT(*) AS count FROM subscriptions WHERE stripe_subscription_id LIKE 'sub_test_%' AND status = 'active' AND stripe_subscription_id NOT LIKE 'sub_test_schema_alignment%'`
+    );
+    assert(parseInt(rows[0].count) === 0, 'No other test subscriptions should be active');
+    console.log('  PASS: no unexpected test subscriptions in active state');
+
+    console.log('\nPASS stripe-subscription-schema-alignment: all 7 checks passed');
   } finally {
-    // Cleanup test data
-    await client.query(`DELETE FROM subscription_events WHERE user_id = $1`, [testUserId]);
-    await client.query(`DELETE FROM payments WHERE user_id = $1`, [testUserId]);
-    await client.query(`DELETE FROM subscriptions WHERE user_id = $1`, [testUserId]);
+    await cleanup(client);
     await client.end();
   }
 }
