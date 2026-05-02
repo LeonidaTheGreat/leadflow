@@ -1,27 +1,27 @@
 /**
- * Task Spec — 8f24f202-7f4a-4fa4-ab47-1bf4fedb79ca
+ * Task Spec — f3b7eea4-1b32-4acb-b051-da53e520201f
  * What:
- * - Add POST /api/admin/reactivation-campaign in routes/admin/reactivation-campaign.js.
- * - Add LapsedTrialReactivationService class in lib/services/LapsedTrialReactivationService.js.
- * - Extend EmailService with sendLapsedTrialReactivation() and template builder.
- * - Wire route in server.js and add unit test tests/unit/lapsed-trial-reactivation-service.test.js.
+ * - Update routes/admin/reactivation-campaign.js to delegate API-key auth to a service class.
+ * - Add lib/services/api-key-auth-service.js with ApiKeyAuthService.isAuthorized() that performs timing-safe key comparison.
+ * - Keep route behavior and response statuses unchanged.
  * Verify:
+ * - node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json shows no `no_direct_db` failure.
  * - npm run lint
  * - npm test
  * - npm run build
  * - npm audit --audit-level=high
- * - Unit test validates eligible query behavior + email payload + sent-flag update.
+ * - rg -n "\\.from\\(" routes/admin/reactivation-campaign.js returns no matches.
  * Boundaries:
- * - Do not modify DB schema/migrations.
- * - Do not touch checkout/Stripe route logic.
- * - Do not add unrelated endpoints or product UI changes.
+ * - Do not change database schema, migrations, or LapsedTrialReactivationService behavior.
+ * - Do not modify unrelated routes/services.
+ * - Do not alter dashboard API route code.
  */
 'use strict';
 
-const crypto = require('crypto');
 const express = require('express');
 const { getPool } = require('../../lib/db');
 const LapsedTrialReactivationService = require('../../lib/services/LapsedTrialReactivationService');
+const { ApiKeyAuthService } = require('../../lib/services/api-key-auth-service');
 const { logger } = require('../../lib/logger');
 
 const router = express.Router();
@@ -32,14 +32,7 @@ const MAX_LIMIT = 500;
 function isAuthorized(req) {
   const expected = process.env.LEADFLOW_API_KEY || '';
   const provided = req.headers.leadflow_api_key || req.headers['x-api-key'] || '';
-
-  if (!expected || !provided) return false;
-
-  const providedBuf = Buffer.from(String(provided).trim());
-  const expectedBuf = Buffer.from(String(expected).trim());
-
-  return providedBuf.length === expectedBuf.length
-    && crypto.timingSafeEqual(providedBuf, expectedBuf);
+  return ApiKeyAuthService.isAuthorized({ expected, provided });
 }
 
 function parseLimit(limitValue) {
