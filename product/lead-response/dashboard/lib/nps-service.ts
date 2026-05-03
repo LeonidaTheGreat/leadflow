@@ -170,9 +170,10 @@ export async function getAgentsDueForSurvey(): Promise<
     .select(`
       agent_id,
       survey_count,
-      real_estate_agents!inner(email, first_name, last_name)
+      real_estate_agents!inner(email, first_name, last_name, status)
     `)
     .lte('next_survey_at', now)
+    .in('real_estate_agents.status', ['active', 'onboarding', 'pilot'])
 
   if (error || !data) {
     logger.error('Error fetching agents due for survey', error)

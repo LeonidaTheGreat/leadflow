@@ -5,17 +5,15 @@ import {
 import { sendNPSSurveyEmail } from '@/lib/nps-email-service'
 import { logger } from '@/lib/logger'
 
-// Cron secret for authentication
-const CRON_SECRET = process.env.CRON_SECRET
-
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret — fail-closed
+    // Verify cron secret — fail-closed (read per-request, not at module level)
+    const cronSecret = process.env.CRON_SECRET
     const authHeader = request.headers.get('authorization')
-    if (!CRON_SECRET) {
+    if (!cronSecret) {
       return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 })
     }
-    if (authHeader !== `Bearer ${CRON_SECRET}`) {
+    if (authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
