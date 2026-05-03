@@ -26,6 +26,8 @@
     "build": "npm --prefix product/lead-response/dashboard run build",
     "lint": "eslint .",
     "test": "node integrations/test-e2e-flow.js",
+    "test:nps-eligibility": "npx jest tests/unit/nps-survey-eligibility.test.js --passWithNoTests",
+    "test:nps-e2e": "node tests/e2e/nps-trial-eligibility.test.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
     "test:stripe-smoke": "node tests/integrated/stripe-production-smoke.test.js",
