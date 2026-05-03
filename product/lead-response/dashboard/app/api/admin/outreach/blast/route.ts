@@ -1,3 +1,21 @@
+/**
+ * taskSpec
+ * What:
+ * - Modify product/lead-response/dashboard/app/api/admin/outreach/blast/route.ts
+ * - Update function POST() to perform explicit inline SHA-256 hashing at the demo_tokens insert site.
+ * - Remove helper generateDemoToken() after inlining to avoid ambiguous token-storage flow.
+ *
+ * Verify:
+ * - Run: cd /Users/clawdbot/projects/leadflow && npm test
+ * - Run: cd /Users/clawdbot/projects/leadflow/product/lead-response/dashboard && npx next build
+ * - Run grep check:
+ *   rg -n "from\\('demo_tokens'\\)\\s*\\.insert\\(\\{[^}]*token:\\s*rawToken" product/lead-response/dashboard/app/api/admin/outreach/blast/route.ts
+ *   Expected: no matches.
+ *
+ * Boundaries:
+ * - Do not change route auth behavior, target selection logic, email content logic, or DB schema.
+ * - Do not modify files outside this route unless verification requires it.
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
@@ -38,12 +56,6 @@ const PAIN_POINT_MAP: Record<string, string> = {
 
 // Segment B: team leads get a different body paragraph
 const TEAM_LEADS = new Set(['Daniel Jackson', 'David Park', 'Lisa Wong', 'Rachel Kim', 'Ryan Patel'])
-
-function generateDemoToken(): { rawToken: string; tokenHash: string } {
-  const rawToken = crypto.randomBytes(24).toString('hex')
-  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
-  return { rawToken, tokenHash }
-}
 
 /**
  * POST /api/admin/outreach/blast
@@ -114,8 +126,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           continue
         }
 
-        // 3. Generate a demo token
-        const { rawToken, tokenHash } = generateDemoToken()
+        // 3. Generate a demo token and hash it before storage
+        const rawToken = crypto.randomBytes(24).toString('hex')
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
         const { error: tokenError } = await postgrestAdmin
@@ -237,4 +250,3 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
