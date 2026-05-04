@@ -24,7 +24,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "npm --prefix product/lead-response/dashboard run build",
-    "lint": "eslint .",
+    "lint": "node scripts/run-eslint.js",
     "test": "node integrations/test-e2e-flow.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
