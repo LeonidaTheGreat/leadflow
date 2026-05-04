@@ -24,6 +24,7 @@ import type { NextRequest } from 'next/server'
 const PROTECTED_ROUTES = ['/admin', '/dashboard', '/settings', '/profile', '/integrations', '/setup']
 const AUTH_ROUTES = ['/login', '/signup']
 const EXPIRED_TRIAL_ALLOWED_ROUTES = ['/upgrade', '/dashboard/upgrade', '/pricing', '/settings/billing', '/login', '/logout']
+const PUBLIC_ROUTE_PREFIXES = ['/admin/simulator']
 
 function cleanEnv(value?: string): string {
   if (!value) return ''
@@ -154,7 +155,8 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 export async function proxy(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
-    const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+    const isPublicBypassRoute = PUBLIC_ROUTE_PREFIXES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+    const isProtectedRoute = !isPublicBypassRoute && PROTECTED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
     const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
 
     const hasAuthCookies = request.cookies.has('auth-token') || request.cookies.has('leadflow_session')
