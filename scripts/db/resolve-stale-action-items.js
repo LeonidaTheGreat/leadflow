@@ -1,4 +1,21 @@
 #!/usr/bin/env node
+'use strict';
+
+/*
+taskSpec
+What:
+- Update scripts/db/resolve-stale-action-items.js (resolveStaleActionItems) to scope reads/updates/verifications to the LeadFlow project and use canonical RESOLVED status for action_items.
+- Add regression tests in tests/unit/resolve-stale-action-items.test.js covering project scoping and status transition behavior.
+Verify:
+- node --test tests/unit/resolve-stale-action-items.test.js passes.
+- npm run lint passes with no errors.
+- npm run build succeeds.
+- npm test executes successfully.
+- npm audit --audit-level=high exits successfully with no high/critical findings.
+Boundaries:
+- Do not modify routes/, lib/services/, database schema files, or unrelated orchestration scripts.
+- Do not change task-store implementation or any migration SQL.
+*/
 
 /**
  * resolve-stale-action-items.js
@@ -15,11 +32,12 @@
  */
 
 const { TaskStore } = require('../../task-store.js');
+const LEADFLOW_PROJECT_ID = 'leadflow';
+const STALE_THRESHOLD_MS = 48 * 60 * 60 * 1000;
 
-async function resolveStaleActionItems() {
-  const store = new TaskStore();
+async function resolveStaleActionItems(options = {}) {
+  const store = options.store || new TaskStore();
   const now = Date.now();
-  const STALE_THRESHOLD_MS = 48 * 60 * 60 * 1000; // 48 hours
 
   try {
     console.log('[resolve-stale-action-items] Starting...\n');
@@ -28,6 +46,7 @@ async function resolveStaleActionItems() {
     const { data: waitingItems, error: fetchError } = await store.supabase
       .from('action_items')
       .select('id, title, status, created_at')
+      .eq('project_id', LEADFLOW_PROJECT_ID)
       .eq('status', 'WAITING');
 
     if (fetchError) {
@@ -60,7 +79,7 @@ async function resolveStaleActionItems() {
       const { error: updateError } = await store.supabase
         .from('action_items')
         .update({
-          status: 'resolved',
+          status: 'RESOLVED',
           resolved_date: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
@@ -81,6 +100,7 @@ async function resolveStaleActionItems() {
     const { data: remaining } = await store.supabase
       .from('action_items')
       .select('*')
+      .eq('project_id', LEADFLOW_PROJECT_ID)
       .eq('status', 'WAITING');
 
     console.log(`[resolve-stale-action-items] Remaining WAITING items: ${remaining.length}`);
