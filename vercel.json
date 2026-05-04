@@ -6,6 +6,7 @@
       "preview": false
     }
   },
+  "ignoreCommand": "[ \"$VERCEL_PROJECT_ID\" = \"prj_p9ZX952UhE1cl1PYZAgVW53FqVm9\" ] && exit 0 || exit 1",
   "builds": [
     {
       "src": "server.js",
