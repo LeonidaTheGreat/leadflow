@@ -10,24 +10,27 @@ describe('DashboardNav', () => {
     const { renderToStaticMarkup } = require('react-dom/server')
     const html = renderToStaticMarkup(<DashboardNav />)
 
-    // Default (non-admin) nav renders 6 items: Lead Feed, History, Analytics, Reports, Assignments, Settings
+    // Default (non-admin) nav renders 5 items: Lead Feed, History, Analytics, Reports (→analytics), Settings
     expect(html).toContain('href="/dashboard"')
     expect(html).toContain('data-testid="nav-link-lead-feed"')
 
     expect(html).toContain('href="/dashboard/history"')
     expect(html).toContain('data-testid="nav-link-history"')
 
-    expect(html).toContain('href="/dashboard/analytics"')
     expect(html).toContain('data-testid="nav-link-analytics"')
 
-    expect(html).toContain('href="/dashboard/reports"')
+    // Reports redirects to /dashboard/analytics (no dedicated reports page)
     expect(html).toContain('data-testid="nav-link-reports"')
+    expect(html).not.toContain('href="/dashboard/reports"')
 
-    expect(html).toContain('href="/dashboard/assignments"')
-    expect(html).toContain('data-testid="nav-link-assignments"')
+    // Assignments removed — no data model, single-agent architecture
+    expect(html).not.toContain('href="/dashboard/assignments"')
+    expect(html).not.toContain('data-testid="nav-link-assignments"')
 
-    expect(html).toContain('href="/dashboard/settings"')
+    // Settings lives at /settings, not /dashboard/settings
+    expect(html).toContain('href="/settings"')
     expect(html).toContain('data-testid="nav-link-settings"')
+    expect(html).not.toContain('href="/dashboard/settings"')
   })
 
   it('does not render admin-only items by default', () => {

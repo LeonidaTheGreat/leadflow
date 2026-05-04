@@ -2,7 +2,7 @@
 
 import type React from 'react'
 import { usePathname } from 'next/navigation'
-import { BarChart3, Clock, Home, Settings, FileText, UserCheck, Shield, Wrench } from 'lucide-react'
+import { BarChart3, Clock, Home, Settings, FileText, Shield, Wrench } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type DashboardNavItem = {
@@ -16,9 +16,8 @@ export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { href: '/dashboard', label: 'Lead Feed', icon: Home },
   { href: '/dashboard/history', label: 'History', icon: Clock },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/dashboard/reports', label: 'Reports', icon: FileText },
-  { href: '/dashboard/assignments', label: 'Assignments', icon: UserCheck },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+  { href: '/dashboard/analytics', label: 'Reports', icon: FileText },
+  { href: '/settings', label: 'Settings', icon: Settings },
   { href: '/dashboard/admin', label: 'Admin', icon: Shield, adminOnly: true },
   { href: '/dashboard/dev', label: 'Dev', icon: Wrench, adminOnly: true },
 ] as const
@@ -38,7 +37,7 @@ export function DashboardNav({ isAdmin = false }: { isAdmin?: boolean }) {
 
             return (
               <a
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 data-testid={`nav-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                 className={cn(

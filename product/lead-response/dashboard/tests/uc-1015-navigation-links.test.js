@@ -32,7 +32,10 @@ function run() {
 
   const hrefMatches = [...navBlock.matchAll(/href: '([^']+)'/g)].map((m) => m[1])
   assert(hrefMatches.length > 0, 'Expected at least one nav href')
-  assert.strictEqual(new Set(hrefMatches).size, hrefMatches.length, 'Dashboard nav hrefs must be unique')
+  // Reports intentionally redirects to /dashboard/analytics (no dedicated reports page), so hrefs are not all unique
+  assert(!navBlock.includes("href: '/dashboard/reports'"), 'Reports nav item must not point to /dashboard/reports (no page exists there)')
+  assert(!navBlock.includes("href: '/dashboard/assignments'"), 'Assignments nav item must be removed (no data model)')
+  assert(!navBlock.includes("href: '/dashboard/settings'"), 'Settings must use /settings not /dashboard/settings')
 
   console.log('PASS uc-1015-navigation-links.test.js')
 }
