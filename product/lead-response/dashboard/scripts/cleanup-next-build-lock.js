@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
-// A build running longer than this is stuck — kill and remove the lock regardless
+// A build running longer than this is considered stuck — force cleanup regardless
 const STALE_AGE_MS = 10 * 60 * 1000 // 10 minutes
 
 function isProcessAlive(pid) {
@@ -31,10 +31,13 @@ function getPPID(pid) {
 // typical build chain is: quality-audit -> npm run build -> next build.
 // A dead grandparent means the whole chain is abandoned even if npm run build
 // is still alive as a zombie child.
+// Uses "next build" pattern (not just "next") to avoid false-positives from
+// `next dev` or `next start` servers that are unrelated to the build.
 function isNextBuildRunning() {
   let pids
   try {
-    const out = execSync('pgrep -f "node_modules/.bin/next"', { encoding: 'utf8' })
+    // "node_modules/.bin/next build" is specific to build — excludes dev/start servers
+    const out = execSync('pgrep -f "node_modules/.bin/next build"', { encoding: 'utf8' })
     pids = out.trim().split('\n').filter(Boolean)
   } catch {
     return false // pgrep exits 1 when no match
@@ -44,12 +47,12 @@ function isNextBuildRunning() {
 
   for (const pid of pids) {
     const ppid = getPPID(Number(pid))
-    if (!ppid || !isProcessAlive(ppid)) continue // parent dead - orphaned
+    if (!ppid || !isProcessAlive(ppid)) continue // parent dead — orphaned
 
     const gppid = getPPID(ppid)
-    if (!gppid || !isProcessAlive(gppid)) continue // grandparent dead - orphaned chain
+    if (!gppid || !isProcessAlive(gppid)) continue // grandparent dead — orphaned chain
 
-    return true // both parent and grandparent alive - legitimate concurrent build
+    return true // both parent and grandparent alive — legitimate concurrent build
   }
 
   return false // all found processes are orphaned
@@ -62,23 +65,18 @@ function removeStaleNextBuildLock() {
   const lockStat = fs.statSync(lockPath)
   const lockAgeMs = Date.now() - lockStat.mtimeMs
 
+  // If a fresh, non-orphaned build is running, leave the lock alone
   if (lockAgeMs < STALE_AGE_MS && isNextBuildRunning()) {
-    console.log('next build is actively running - skipping lock cleanup')
+    console.log('⏭ next build is already running — skipping lock cleanup')
     return
   }
 
-  // Lock is stale (>10 min) or all matching processes are orphaned - clean up
-  try {
-    execSync("pkill -f 'node_modules/.bin/next'", { stdio: 'ignore' })
-  } catch {
-    // no process to kill
-  }
-
+  // Lock is stale (>10 min) or all matching processes are orphaned — remove it
   fs.rmSync(lockPath, { force: true })
   const ageDesc = lockAgeMs >= 60000
     ? `${Math.round(lockAgeMs / 60000)}m`
     : `${Math.round(lockAgeMs / 1000)}s`
-  console.log(`Removed stale .next/lock (age: ${ageDesc}) before build`)
+  console.log(`✅ Removed stale .next/lock (age: ${ageDesc}) before build`)
 }
 
 removeStaleNextBuildLock()
