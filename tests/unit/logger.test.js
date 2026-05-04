@@ -528,6 +528,161 @@ describe('logger', () => {
     });
   });
 
+  // ── Case-insensitive redaction ────────────────────────────────────────────────
+
+  describe('case-insensitive redaction', () => {
+    test('redacts PASSWORD (uppercase key)', () => {
+      logger.info('case test', 'Ctx', { PASSWORD: 'secret123', user: 'alice' });
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata.PASSWORD).toBe('[REDACTED]');
+      expect(entry.metadata.user).toBe('alice');
+    });
+
+    test('redacts ApiKey (mixed case key)', () => {
+      logger.info('mixed case', 'Ctx', { ApiKey: 'sk-xxx', mode: 'live' });
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata.ApiKey).toBe('[REDACTED]');
+      expect(entry.metadata.mode).toBe('live');
+    });
+
+    test('redacts AUTHORIZATION (all caps key)', () => {
+      logger.info('all caps', 'Ctx', { AUTHORIZATION: 'Bearer xyz', path: '/' });
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata.AUTHORIZATION).toBe('[REDACTED]');
+    });
+
+    test('redacts userToken (partial match, mixed case)', () => {
+      logger.info('partial mixed', 'Ctx', { userToken: 'tok_123', id: 5 });
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata.userToken).toBe('[REDACTED]');
+      expect(entry.metadata.id).toBe(5);
+    });
+  });
+
+  // ── Primitive and empty metadata ──────────────────────────────────────────────
+
+  describe('primitive and empty metadata', () => {
+    test('string metadata passes through unmodified', () => {
+      logger.info('string meta', 'Ctx', 'just a string');
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata).toBe('just a string');
+    });
+
+    test('number metadata passes through unmodified', () => {
+      logger.info('number meta', 'Ctx', 42);
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata).toBe(42);
+    });
+
+    test('boolean metadata passes through unmodified', () => {
+      logger.info('bool meta', 'Ctx', true);
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata).toBe(true);
+    });
+
+    test('empty object metadata is preserved', () => {
+      logger.info('empty obj', 'Ctx', {});
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata).toEqual({});
+    });
+
+    test('empty array metadata is preserved', () => {
+      logger.info('empty arr', 'Ctx', []);
+      const entry = firstEntry(consoleSpy.info);
+      expect(entry.metadata).toEqual([]);
+    });
+  });
+
+  // ── Error stack trace environment behavior ────────────────────────────────────
+
+  describe('error stack trace in log entries', () => {
+    test('error entry excludes stack in non-development environment (NODE_ENV=test)', () => {
+      const err = new Error('no stack leak');
+      logger.error('stack test', err, 'Ctx');
+      const entry = firstEntry(consoleSpy.error);
+      expect(entry.error.stack).toBeUndefined();
+    });
+
+    test('error entry includes error.name', () => {
+      class CustomError extends Error { constructor(msg) { super(msg); this.name = 'CustomError'; } }
+      const err = new CustomError('custom');
+      logger.error('custom err', err, 'Ctx');
+      const entry = firstEntry(consoleSpy.error);
+      expect(entry.error.name).toBe('CustomError');
+      expect(entry.error.message).toBe('custom');
+    });
+
+    test('error entry always includes name, message, and code fields', () => {
+      const err = new Error('full fields');
+      err.code = 'EFIELD';
+      logger.error('fields test', err, 'Ctx');
+      const entry = firstEntry(consoleSpy.error);
+      expect(entry.error).toEqual(expect.objectContaining({
+        name: 'Error',
+        message: 'full fields',
+        code: 'EFIELD',
+      }));
+    });
+  });
+
+  // ── requestLogger metadata detail ─────────────────────────────────────────────
+
+  describe('requestLogger metadata detail', () => {
+    function makeReq(overrides = {}) {
+      return {
+        method: 'GET',
+        url: '/test',
+        ip: '127.0.0.1',
+        headers: { 'x-request-id': 'req-meta-test', 'user-agent': 'TestAgent/1.0', ...overrides.headers },
+        ...overrides,
+      };
+    }
+
+    function makeRes(statusCode = 200) {
+      const handlers = {};
+      return {
+        statusCode,
+        setHeader: jest.fn(),
+        on(event, fn) { handlers[event] = fn; },
+        trigger(event) { if (handlers[event]) handlers[event](); },
+      };
+    }
+
+    test('request start log has context "HTTP"', () => {
+      requestLogger(makeReq(), makeRes(), () => {});
+      const entries = parseCalls(consoleSpy.info);
+      const started = entries.find((e) => e.message.includes('started'));
+      expect(started.context).toBe('HTTP');
+    });
+
+    test('request start log includes userAgent', () => {
+      requestLogger(makeReq(), makeRes(), () => {});
+      const entries = parseCalls(consoleSpy.info);
+      const started = entries.find((e) => e.message.includes('started'));
+      expect(started.metadata.userAgent).toBe('TestAgent/1.0');
+    });
+
+    test('completion log has context "HTTP"', () => {
+      const res = makeRes(200);
+      requestLogger(makeReq(), res, () => {});
+      consoleSpy.info.mockClear();
+      res.trigger('finish');
+      const entries = parseCalls(consoleSpy.info);
+      const completed = entries.find((e) => e.message.includes('completed'));
+      expect(completed.context).toBe('HTTP');
+    });
+
+    test('durationMs in completion is non-negative', () => {
+      const res = makeRes(200);
+      requestLogger(makeReq(), res, () => {});
+      consoleSpy.info.mockClear();
+      res.trigger('finish');
+      const entries = parseCalls(consoleSpy.info);
+      const completed = entries.find((e) => e.message.includes('completed'));
+      expect(completed.metadata.durationMs).toBeGreaterThanOrEqual(0);
+    });
+  });
+
   // ── Module exports ────────────────────────────────────────────────────────────
 
   describe('module exports', () => {
