@@ -667,3 +667,129 @@ describe('Edge cases', () => {
     expect(global.fetch._lastOpts.body).toBeUndefined();
   });
 });
+
+// ─── Additional edge cases (coverage gaps) ───────────────────────────────────
+
+describe('QueryBuilder edge cases — untested paths', () => {
+  test('not() with only key arg adds no filter', () => {
+    const qb = qbFor('t');
+    qb.not('status');
+    expect(qb._filters).toHaveLength(0);
+  });
+
+  test('in() with empty array produces in.()', () => {
+    const url = decodeURIComponent(qbFor('t').in('role', [])._buildUrl());
+    expect(url).toContain('role=in.()');
+  });
+
+  test('select("") treats empty string as falsy — sets *', () => {
+    const qb = qbFor('t');
+    qb.select('');
+    expect(qb._selectCols).toBe('*');
+  });
+
+  test('insert() with array data stores array body directly', () => {
+    const qb = qbFor('t').insert([{ id: 1 }, { id: 2 }]);
+    expect(qb._httpMethod).toBe('POST');
+    expect(Array.isArray(qb._bodyData)).toBe(true);
+    expect(qb._bodyData).toHaveLength(2);
+  });
+
+  test('is(key, false) → ?col=is.false', () => {
+    expect(qbFor('t').is('active', false)._buildUrl()).toContain('active=is.false');
+  });
+
+  test('range(0, 0) → single-item range (offset=0, limit=1)', () => {
+    const url = qbFor('t').range(0, 0)._buildUrl();
+    expect(url).toContain('offset=0');
+    expect(url).toContain('limit=1');
+  });
+
+  test('delete() _buildHeaders has no Prefer header', () => {
+    const qb = qbFor('t').delete();
+    expect(qb._buildHeaders()['Prefer']).toBeUndefined();
+  });
+
+  test('upsert with onConflict stores column but does not affect URL', () => {
+    const qb = qbFor('t').upsert({ id: 1 }, { onConflict: 'id' });
+    expect(qb._upsertConflictColumn).toBe('id');
+    expect(qb._buildUrl()).not.toContain('onConflict');
+  });
+
+  test('deeply chained query builds a valid URL', () => {
+    const url = qbFor('leads')
+      .select('id,name,status')
+      .eq('status', 'active')
+      .neq('role', 'guest')
+      .gt('score', 50)
+      .order('created_at', { ascending: false })
+      .limit(10)
+      ._buildUrl();
+    expect(url).toContain('select=');
+    expect(url).toContain('status=eq.active');
+    expect(url).toContain('role=neq.guest');
+    expect(url).toContain('score=gt.50');
+    expect(url).toContain('order=created_at.desc');
+    expect(url).toContain('limit=10');
+    expect(() => new URL(url)).not.toThrow();
+  });
+});
+
+describe('QueryBuilder._execute() — additional coverage', () => {
+  test('single() with non-array response passes through unchanged', async () => {
+    mockFetch({ body: JSON.stringify({ id: 1, name: 'Alice' }) });
+    const result = await qbFor('leads').select('*').single();
+    expect(result.error).toBeNull();
+    expect(result.data).toEqual({ id: 1, name: 'Alice' });
+  });
+
+  test('maybeSingle() with non-array response passes through unchanged', async () => {
+    mockFetch({ body: JSON.stringify({ id: 1 }) });
+    const result = await qbFor('leads').select('*').maybeSingle();
+    expect(result.error).toBeNull();
+    expect(result.data).toEqual({ id: 1 });
+  });
+
+  test('count mode with missing content-range header → count is null', async () => {
+    global.fetch = async () => ({
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      text: async () => JSON.stringify([{ id: 1 }]),
+    });
+    const result = await qbFor('leads').select('*', { count: 'exact' });
+    expect(result.count).toBeNull();
+    expect(result.data).toEqual([{ id: 1 }]);
+  });
+
+  test('POST with empty response body → data is null, no error', async () => {
+    mockFetch({ body: '' });
+    const result = await qbFor('leads').insert({ name: 'Bob' }).select('*');
+    expect(result.data).toBeNull();
+    expect(result.error).toBeNull();
+  });
+
+  test('PATCH with empty response body → data is null, no error', async () => {
+    mockFetch({ body: '' });
+    const result = await qbFor('leads').update({ name: 'New' }).eq('id', 1).select('*');
+    expect(result.data).toBeNull();
+    expect(result.error).toBeNull();
+  });
+
+  test('upsert _execute sends POST with array body', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 1, name: 'Upserted' }]) });
+    const result = await qbFor('leads').upsert({ id: 1, name: 'Upserted' }).select('*');
+    expect(result.error).toBeNull();
+    expect(global.fetch._lastOpts.method).toBe('POST');
+    const body = JSON.parse(global.fetch._lastOpts.body);
+    expect(Array.isArray(body)).toBe(true);
+  });
+
+  test('rpc() with non-Error throw returns stringified message', async () => {
+    global.fetch = async () => { throw 42; };
+    const client = require(DB_PATH).createClient('http://api.test', 'k');
+    const { data, error } = await client.rpc('fn');
+    expect(data).toBeNull();
+    expect(error.message).toBe('42');
+  });
+});
