@@ -24,26 +24,40 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
+// A build running longer than this is considered stuck — force cleanup regardless
+const STALE_AGE_MS = 10 * 60 * 1000 // 10 minutes
+
+function isNextBuildRunning() {
+  try {
+    // Match only "next build" processes, not "next dev" or "next start" servers.
+    // pgrep -f matches the full command line as a substring, so this is specific.
+    const out = execSync('pgrep -f "node_modules/.bin/next build"', { encoding: 'utf8' })
+    return out.trim().length > 0
+  } catch {
+    // pgrep exits 1 when no match found — no build running
+    return false
+  }
+}
+
 function removeStaleNextBuildLock() {
   const lockPath = path.resolve(__dirname, '..', '.next', 'lock')
-  if (!fs.existsSync(lockPath)) {
+  if (!fs.existsSync(lockPath)) return
+
+  const lockStat = fs.statSync(lockPath)
+  const lockAgeMs = Date.now() - lockStat.mtimeMs
+
+  // If a build is actively running and the lock is fresh, leave it alone
+  if (lockAgeMs < STALE_AGE_MS && isNextBuildRunning()) {
+    console.log('⏭ next build is already running — skipping lock cleanup')
     return
   }
 
-  // Check for an active next build process before removing the lock
-  // pgrep exits 1 (throws) when no match is found — that's the safe case
-  try {
-    const ps = execSync('pgrep -f "node_modules/.bin/next"', { encoding: 'utf8' })
-    if (ps.trim()) {
-      console.log('⏭ next build is already running — skipping lock cleanup')
-      return
-    }
-  } catch {
-    // pgrep exits 1 when no match — safe to remove
-  }
-
+  // Lock is stale (>10 min) or no matching build process found — remove it
   fs.rmSync(lockPath, { force: true })
-  console.log('✅ Removed stale .next/lock before build')
+  const ageDesc = lockAgeMs >= 60000
+    ? `${Math.round(lockAgeMs / 60000)}m`
+    : `${Math.round(lockAgeMs / 1000)}s`
+  console.log(`✅ Removed stale .next/lock (age: ${ageDesc}) before build`)
 }
 
 removeStaleNextBuildLock()
