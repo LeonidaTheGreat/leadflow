@@ -339,7 +339,8 @@ async function getSimulationStatus(agentId: string, sessionId: string) {
         ai_response_received_at: derived.ai_response_received_at,
         response_time_ms: derived.response_time_ms,
         conversation: derived.conversation,
-        outcome: 'completed' })
+        outcome: 'completed',
+        aha_moment_reached: true })
       .eq('session_id', sessionId)
 
     // Persist Aha telemetry on the agent record immediately when simulation succeeds.

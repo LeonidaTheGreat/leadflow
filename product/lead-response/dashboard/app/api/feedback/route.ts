@@ -1,22 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
+import jwt from 'jsonwebtoken'
 import { submitProductFeedback } from '@/lib/nps-service'
-import { validateSession } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+const VALID_FEEDBACK_TYPES = ['praise', 'bug', 'idea', 'frustration']
 
 export async function POST(request: NextRequest) {
   try {
     // ── Auth ─────────────────────────────────────────────────────────────
-    const sessionToken = request.cookies.get('leadflow_session')?.value
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const tokenCookie = request.cookies.get('auth-token')?.value || request.cookies.get('auth_token')?.value
+    if (!tokenCookie) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    const session = await validateSession(sessionToken)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    let agentId: string
+    try {
+      const payload = jwt.verify(tokenCookie, JWT_SECRET) as any
+      agentId = payload.userId || payload.id
+      if (!agentId) throw new Error('No userId in token')
+    } catch {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
-
-    const agentId = session.userId
 
     // ── Validate body ─────────────────────────────────────────────────────
     const body = await request.json()
@@ -29,10 +34,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate feedback type
-    const validTypes = ['praise', 'bug', 'idea', 'frustration']
-    if (!validTypes.includes(feedbackType)) {
+    if (!VALID_FEEDBACK_TYPES.includes(feedbackType)) {
       return NextResponse.json(
-        { error: 'Invalid feedback type. Must be one of: ' + validTypes.join(', ') },
+        { error: 'Invalid feedback type. Must be one of: ' + VALID_FEEDBACK_TYPES.join(', ') },
         { status: 400 }
       )
     }

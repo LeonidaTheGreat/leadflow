@@ -6,13 +6,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import jwt from 'jsonwebtoken'
 import { createClient } from '@/lib/db'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
-import { getAuthUserId } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
 
 const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
 const DB_KEY = process.env.API_SECRET_KEY || ''
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export function isTrackedPage(pathname: string): boolean {
   if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) return true
@@ -29,6 +30,37 @@ export const TRACKED_PAGES = [
   '/settings/billing',
 ]
 
+function extractAuthInfo(request: NextRequest): { agentId: string | null; sessionId: string | null } {
+  // Check Authorization: Bearer header
+  const authHeader = request.headers.get('authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.slice(7).trim()
+    try {
+      const payload = jwt.verify(token, JWT_SECRET) as any
+      const agentId = payload.userId || payload.id || null
+      const sessionId = payload.sessionId || null
+      return { agentId, sessionId }
+    } catch {
+      return { agentId: null, sessionId: null }
+    }
+  }
+
+  // Check cookies
+  const cookieToken = request.cookies.get('auth-token')?.value || request.cookies.get('auth_token')?.value
+  if (cookieToken) {
+    try {
+      const payload = jwt.verify(cookieToken, JWT_SECRET) as any
+      const agentId = payload.userId || payload.id || null
+      const sessionId = payload.sessionId || null
+      return { agentId, sessionId }
+    } catch {
+      return { agentId: null, sessionId: null }
+    }
+  }
+
+  return { agentId: null, sessionId: null }
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!isSupabaseConfigured()) {
@@ -42,7 +74,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
     }
 
-    const { page } = body
+    const { page, sessionId: bodySessionId } = body
 
     if (!page || typeof page !== 'string') {
       return NextResponse.json({ error: 'page is required' }, { status: 400 })
@@ -52,17 +84,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Page not tracked' }, { status: 400 })
     }
 
-    // Unified auth: checks auth-token (JWT) and leadflow_session (session DB)
-    const agentId = await getAuthUserId(request)
+    const { agentId, sessionId: jwtSessionId } = extractAuthInfo(request)
     if (!agentId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Prefer sessionId from JWT, fall back to body
+    const sessionId = jwtSessionId || bodySessionId || null
+
+    if (!sessionId) {
+      return NextResponse.json({ logged: false, reason: 'no_session_id' }, { status: 200 })
+    }
+
     const supabase = createClient(DB_URL, DB_KEY)
 
-    // agent_page_views has no session_id or visited_at columns; use created_at (auto-set) instead
     const insertPayload: Record<string, string> = {
       agent_id: agentId,
+      session_id: sessionId,
       page }
 
     const { error } = await supabase.from('agent_page_views').insert(insertPayload)

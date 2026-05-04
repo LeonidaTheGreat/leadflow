@@ -236,8 +236,21 @@ export class AuthService {
     if (jwtToken) {
       try {
         const payload = jwt.verify(jwtToken, this.jwtSecret) as JWTPayload
-        if (payload.userId) return payload.userId
+        const userId = payload.userId || (payload as any).id
+        if (userId) return userId
       } catch {}
+    }
+
+    const authHeader = (request.headers as any)?.get?.('authorization')
+    if (authHeader?.startsWith('Bearer ')) {
+      const bearerToken = authHeader.slice(7).trim()
+      if (bearerToken) {
+        try {
+          const payload = jwt.verify(bearerToken, this.jwtSecret) as JWTPayload
+          const userId = payload.userId || (payload as any).id
+          if (userId) return userId
+        } catch {}
+      }
     }
 
     const sessionToken = request.cookies.get('leadflow_session')?.value
