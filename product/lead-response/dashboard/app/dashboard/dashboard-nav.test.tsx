@@ -28,6 +28,8 @@ describe('DashboardNav', () => {
 
     expect(html).toContain('href="/dashboard/settings"')
     expect(html).toContain('data-testid="nav-link-settings"')
+    expect(html).toContain('data-testid="nav-link-logout"')
+    expect(html).toContain('Logout')
   })
 
   it('does not render admin-only items by default', () => {

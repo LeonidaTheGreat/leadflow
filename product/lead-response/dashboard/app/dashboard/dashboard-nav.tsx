@@ -1,8 +1,26 @@
 'use client'
+/*
+Task Spec
+What:
+- Change file: product/lead-response/dashboard/app/dashboard/dashboard-nav.tsx
+- Update function: DashboardNav
+- Add a minimal logout action at the bottom of the dashboard nav that POSTs to /api/auth/logout and then redirects to /login.
+
+Verify:
+- Run: grep -n "logout" product/lead-response/dashboard/app/dashboard/dashboard-nav.tsx
+- Expect: at least 1 match in the nav component.
+- Run: cd product/lead-response/dashboard && npm run build
+- Expect: build exits 0.
+
+Boundaries:
+- Do not modify app/api/auth/logout/route.ts.
+- Do not implement a full user/profile menu.
+- Keep the change minimal and limited to dashboard nav/logout behavior.
+*/
 
 import type React from 'react'
 import { usePathname } from 'next/navigation'
-import { BarChart3, Clock, Home, Settings, FileText, UserCheck, Shield, Wrench } from 'lucide-react'
+import { BarChart3, Clock, Home, LogOut, Settings, FileText, UserCheck, Shield, Wrench } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type DashboardNavItem = {
@@ -27,11 +45,19 @@ export function DashboardNav({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
 
   const navItems = DASHBOARD_NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin)
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } finally {
+      window.location.href = '/login'
+    }
+  }
 
   return (
     <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 overflow-x-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href))
             const Icon = item.icon
@@ -53,6 +79,16 @@ export function DashboardNav({ isAdmin = false }: { isAdmin?: boolean }) {
               </a>
             )
           })}
+          </div>
+          <button
+            type="button"
+            data-testid="nav-link-logout"
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
         </div>
       </div>
     </nav>
