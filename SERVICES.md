@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-04-27T05:17:51.548Z | Source: `lib/services/`
+> Generated: 2026-05-04T01:21:18.880Z | Source: `lib/services/`
 
-**19 services across 19 files**
+**21 services across 21 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
@@ -14,8 +14,9 @@
 | [CalcomEventProcessor](#calcomeventprocessor) | `CalcomEventProcessor.js` | 12 | logger, circuit-breaker, SequenceService, TwilioService |
 | [CalcomWebhookHandler](#calcomwebhookhandler) | `CalcomWebhookHandler.js` | 19 | crypto, db, logger, config… |
 | [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, logger, circuit-breaker… |
-| [EmailService](#emailservice) | `EmailService.js` | 7 | request-context, circuit-breaker |
+| [EmailService](#emailservice) | `EmailService.js` | 9 | request-context, circuit-breaker |
 | [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, logger… |
+| [LapsedTrialReactivationService](#lapsedtrialreactivationservice) | `LapsedTrialReactivationService.js` | 1 | EmailService |
 | [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | logger, circuit-breaker |
 | [PilotSignupOutreachService](#pilotsignupoutreachservice) | `PilotSignupOutreachService.js` | 3 | EmailService |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
@@ -26,6 +27,7 @@
 | [TrialActivationService](#trialactivationservice) | `TrialActivationService.js` | 11 | logger, trial-cta-email |
 | [TwilioService](#twilioservice) | `TwilioService.js` | 11 | twilio, db, logger, circuit-breaker… |
 | [WeeklyPerformanceService](#weeklyperformanceservice) | `WeeklyPerformanceService.js` | 13 | db, logger, circuit-breaker |
+| [ApiKeyAuthService](#apikeyauthservice) | `api-key-auth-service.js` | 1 | crypto |
 
 ---
 
@@ -242,6 +244,8 @@
 | `sendVerification()` | `params` | - |
 | `sendPilotConversion()` | `params` | - |
 | `sendActivationOutreach()` | `params` | - |
+| `sendLapsedTrialReactivation()` | `params` | - |
+| `buildLapsedTrialReactivationHtml()` | `firstName`, `dashboardUrl` | - |
 | `buildActivationOutreachHtml()` | `firstName`, `onboardingUrl` | - |
 | `getFetch()` | - | - |
 
@@ -274,6 +278,22 @@
 | `invalidateLeadCache()` | `leadId` | - |
 | `cacheLeadContext()` | `lead` | - |
 | `logFubEvent()` | `event`, `data` | - |
+
+---
+
+## LapsedTrialReactivationService
+
+**File:** `lib/services/LapsedTrialReactivationService.js`
+
+**Dependencies:** `EmailService`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `runCampaign()` | `{ dryRun`, `limit }` | - |
 
 ---
 
@@ -489,3 +509,17 @@
 | `sendWeeklyEmail()` | `agent`, `stats`, `weekRange` | - |
 | `logEmailSend()` | `agent`, `stats`, `weekRange`, `sendResult`, `status`, `errorMessage` | - |
 | `processWeeklyEmails()` | - | - |
+
+---
+
+## ApiKeyAuthService
+
+**File:** `lib/services/api-key-auth-service.js`
+
+**Dependencies:** `crypto`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `isAuthorized()` | `{ expected`, `provided }` | - |

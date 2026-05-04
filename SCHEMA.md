@@ -2,7 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-04-27T05:17:51.542Z | 94 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-05-04T01:21:18.865Z | 98 tables in local PostgreSQL (openclaw DB).
 
 ## Common Gotchas
 
@@ -19,23 +19,23 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `real_estate_agents` | 11 | |
+| `real_estate_agents` | 30 | |
 | `customers` | 0 | |
 | `profiles` | 0 | |
 | `agent_profiles` | 0 | |
 | `agent_settings` | 2 | |
-| `agent_integrations` | 0 | |
+| `agent_integrations` | 1 | |
 
 ### Product — Leads & Messages
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `leads` | 7 | |
+| `leads` | 24 | |
 | `messages` | 0 | |
 | `sms_messages` | 0 | |
 | `conversations` | 0 | |
 | `lead_sequences` | 0 | |
-| `lead_satisfaction_events` | 10 | |
+| `lead_satisfaction_events` | 24 | |
 | `lead_simulations` | 19 | |
 | `dnc_list` | 0 | |
 
@@ -52,8 +52,8 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `subscriptions` | 3 | |
-| `subscription_events` | 3 | |
+| `subscriptions` | 0 | |
+| `subscription_events` | 0 | |
 | `payments` | 0 | |
 | `checkout_sessions` | 0 | |
 | `mrr_snapshots` | 0 | |
@@ -67,9 +67,9 @@
 | `onboarding_events` | 1 | |
 | `onboarding_stuck_alerts` | 0 | |
 | `agent_onboarding_wizard` | 1 | |
-| `pilot_invites` | 23 | |
-| `pilot_signups` | 20 | |
-| `pilot_progress` | 4 | |
+| `pilot_invites` | 25 | |
+| `pilot_signups` | 35 | |
+| `pilot_progress` | 8 | |
 | `pilot_recruitment_campaigns` | 1 | |
 | `pilot_recruitment_targets` | 20 | |
 
@@ -77,8 +77,8 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `sessions` | 237 | |
-| `password_reset_tokens` | 77 | |
+| `sessions` | 264 | |
+| `password_reset_tokens` | 103 | |
 | `demo_tokens` | 9 | |
 
 ### Product — Analytics & Events
@@ -87,14 +87,14 @@
 |-------|------|---------|
 | `analytics_events` | 0 | |
 | `events` | 487 | |
-| `email_events` | 403 | |
+| `email_events` | 432 | |
 | `agent_page_views` | 3 | |
 | `agent_sessions` | 0 | |
 | `demo_runs` | 0 | |
 | `agent_nps_responses` | 0 | |
 | `nps_survey_tokens` | 0 | |
-| `nps_prompt_dismissals` | 0 | |
-| `agent_survey_schedule` | 12 | |
+| `nps_prompt_dismissals` | 1 | |
+| `agent_survey_schedule` | 32 | |
 | `inactivity_alerts` | 0 | |
 
 ### Product — Templates & Webhooks
@@ -117,35 +117,35 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `tasks` | 5514 | |
-| `task_dependencies` | 48 | |
+| `tasks` | 6046 | |
+| `task_dependencies` | 105 | |
 | `task_outcomes` | 0 | |
 | `completed_work` | 9 | |
-| `action_items` | 268 | |
+| `action_items` | 273 | |
 
 ### Orchestration — Product
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `use_cases` | 385 | |
-| `prds` | 155 | |
+| `use_cases` | 416 | |
+| `prds` | 164 | |
 | `e2e_test_specs` | 438 | |
-| `code_reviews` | 1243 | |
+| `code_reviews` | 1346 | |
 | `product_feedback` | 47 | |
-| `product_reviews` | 252 | |
+| `product_reviews` | 278 | |
 | `product_decisions` | 44 | |
 
 ### Orchestration — Metrics
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `metrics` | 49073 | |
+| `metrics` | 57858 | |
 | `revenue_metrics` | 1 | |
 | `distribution_channels` | 1 | |
 | `distribution_metrics` | 250 | |
 | `project_metadata` | 2 | |
 | `project_goals` | 2 | |
-| `system_components` | 22 | |
+| `system_components` | 23 | |
 
 ### System
 
@@ -159,24 +159,28 @@
 
 | Table | Rows |
 |-------|------|
-| `code_calls` | 400 |
-| `code_edges` | 669 |
-| `code_exports` | 641 |
-| `code_modules` | 1043 |
-| `heartbeat_step_metrics` | 23087 |
+| `code_calls` | 523 |
+| `code_edges` | 779 |
+| `code_exports` | 698 |
+| `code_modules` | 1142 |
+| `genome_graph_edges` | 3 |
+| `genome_graph_nodes` | 11 |
+| `genome_traces` | 138 |
+| `heartbeat_step_metrics` | 223237 |
 | `learning_insights` | 0 |
-| `learning_qc_findings` | 0 |
-| `learning_recovery_patterns` | 101 |
+| `learning_qc_findings` | 9 |
+| `learning_recovery_patterns` | 231 |
+| `market_intelligence` | 0 |
 | `mission_metrics` | 29 |
 | `phone_inventory` | 1 |
 | `pilot_conversion_email_logs` | 0 |
 | `pilot_recruitment_touchpoints` | 2 |
 | `project_missions` | 2 |
-| `promo_codes` | 2 |
+| `promo_codes` | 10 |
 | `qualifications` | 0 |
 | `subscription_attempts` | 0 |
-| `task_modules` | 24 |
-| `tool_usage` | 443 |
+| `task_modules` | 208 |
+| `tool_usage` | 1101 |
 | `webhook_dead_letters` | 0 |
 
 ---
