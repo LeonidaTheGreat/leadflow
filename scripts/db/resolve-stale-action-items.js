@@ -1,5 +1,25 @@
 #!/usr/bin/env node
+'use strict'
 
+/**
+ * Task Spec (eda3f5e8-0916-49f7-bd5e-cc7ee994bf6b)
+ * What:
+ * - Change `resolveStaleActionItems` in this file to query and verify all awaiting statuses
+ *   used by stale_waiting_items: `WAITING`, `pending`, `open`.
+ * - Keep 48-hour stale threshold and update payload unchanged.
+ * - Add regression test file at
+ *   `/Users/clawdbot/projects/leadflow/tests/unit/resolve-stale-action-items.test.js`.
+ * Verify:
+ * - `npm test -- --runInBand tests/unit/resolve-stale-action-items.test.js`
+ * - `npm run build`
+ * - `npm run lint`
+ * - `npm test`
+ * - `npm audit --audit-level=high`
+ * - `rg -n "eq\\('status', 'WAITING'\\)" scripts/db/resolve-stale-action-items.js` returns no matches.
+ * Boundaries:
+ * - Do not change schema/migrations/routes/heartbeat loop logic.
+ * - Do not alter stale threshold semantics or resolution field names.
+ */
 /**
  * resolve-stale-action-items.js
  * 
@@ -20,21 +40,22 @@ async function resolveStaleActionItems() {
   const store = new TaskStore();
   const now = Date.now();
   const STALE_THRESHOLD_MS = 48 * 60 * 60 * 1000; // 48 hours
+  const AWAITING_STATUSES = ['WAITING', 'pending', 'open'];
 
   try {
     console.log('[resolve-stale-action-items] Starting...\n');
 
-    // Get all WAITING action items
+    // Get all action items counted by stale_waiting_items
     const { data: waitingItems, error: fetchError } = await store.supabase
       .from('action_items')
       .select('id, title, status, created_at')
-      .eq('status', 'WAITING');
+      .in('status', AWAITING_STATUSES);
 
     if (fetchError) {
       throw new Error(`Failed to fetch action items: ${fetchError.message}`);
     }
 
-    console.log(`[resolve-stale-action-items] Found ${waitingItems.length} WAITING action items`);
+    console.log(`[resolve-stale-action-items] Found ${waitingItems.length} awaiting action items`);
 
     if (waitingItems.length === 0) {
       console.log('[resolve-stale-action-items] No stale items found. Breach is already resolved.');
@@ -81,9 +102,9 @@ async function resolveStaleActionItems() {
     const { data: remaining } = await store.supabase
       .from('action_items')
       .select('*')
-      .eq('status', 'WAITING');
+      .in('status', AWAITING_STATUSES);
 
-    console.log(`[resolve-stale-action-items] Remaining WAITING items: ${remaining.length}`);
+    console.log(`[resolve-stale-action-items] Remaining awaiting items: ${remaining.length}`);
     console.log('[resolve-stale-action-items] ✓ Genome breach fixed!\n');
 
     return { success: resolved === staleItems.length, resolved, remaining: remaining.length };
