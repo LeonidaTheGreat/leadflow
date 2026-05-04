@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -84,8 +83,16 @@ export default function SignupPage() {
 }
 
 function SignupPageInner() {
-  const searchParams = useSearchParams()
-  const isTrialMode = searchParams.get('mode') === 'trial'
+  const [isTrialMode, setIsTrialMode] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const mode = new URLSearchParams(window.location.search).get('mode')
+    setIsTrialMode(mode === 'trial')
+  }, [])
 
   // If trial mode, render the frictionless trial form
   if (isTrialMode) {
