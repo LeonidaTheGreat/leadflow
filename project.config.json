@@ -3,6 +3,7 @@
   "project_name": "LeadFlow AI",
   "project_dir": "/Users/clawdbot/projects/leadflow",
   "browser_tests": {
+    "enabled": true,
     "command": "npx playwright test tests/browser/ --reporter=json --project=chromium",
     "base_url": "https://leadflow-ai-five.vercel.app",
     "interval_hours": 6,
