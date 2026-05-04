@@ -96,7 +96,7 @@ async function runTests() {
 
   await test('getRequestId generates a synthetic bg id outside request scope', () => {
     const requestId = getRequestId();
-    assert.match(requestId, /^bg-\d+-[a-z0-9]{5}$/);
+    assert.match(requestId, /^bg-\d+-[a-f0-9]{6}$/);
   });
 
   await test('request context is preserved across async boundaries', async () => {
