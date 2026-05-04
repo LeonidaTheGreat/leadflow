@@ -1,7 +1,26 @@
+/**
+ * Task Spec — 1047cf7b-612b-4343-96a0-462a00d330d5
+ * What:
+ * - Change `product/lead-response/dashboard/app/signup/page.tsx`:
+ *   - `SignupPageInner`: replace search-params render-path dependency with a client-safe query parser.
+ *   - Remove unused navigation hook imports from `next/navigation`.
+ * - Add regression test in `product/lead-response/dashboard/tests/fix-signup-page-smoke-500.test.js`
+ *   to assert `/signup` no longer depends on `useSearchParams` for route rendering.
+ *
+ * Verify:
+ * - `cd product/lead-response/dashboard && npm run lint` exits 0
+ * - `cd product/lead-response/dashboard && npm test` exits 0
+ * - `cd product/lead-response/dashboard && npm run build` exits 0
+ * - `cd product/lead-response/dashboard && npm audit --audit-level=high` reports 0 vulnerabilities
+ *
+ * Boundaries:
+ * - Do not change API routes, DB schema, or auth service behavior.
+ * - Do not modify pricing/business rules, checkout tiers, or onboarding flows.
+ * - Keep existing signup UI/analytics behavior intact apart from query-mode detection hardening.
+ */
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -84,8 +103,16 @@ export default function SignupPage() {
 }
 
 function SignupPageInner() {
-  const searchParams = useSearchParams()
-  const isTrialMode = searchParams.get('mode') === 'trial'
+  const [isTrialMode, setIsTrialMode] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const mode = new URLSearchParams(window.location.search).get('mode')
+    setIsTrialMode(mode === 'trial')
+  }, [])
 
   // If trial mode, render the frictionless trial form
   if (isTrialMode) {
