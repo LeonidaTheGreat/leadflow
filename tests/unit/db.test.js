@@ -325,6 +325,22 @@ describe('QueryBuilder header building', () => {
     qb.select('*', { count: 'exact' });
     expect(qb._buildHeaders()['Prefer']).toContain('count=exact');
   });
+
+  test('insert + select + count mode → Prefer has return=representation AND count=exact', () => {
+    const qb = qbFor('t');
+    qb.insert({ name: 'test' }).select('*', { count: 'exact' });
+    const prefer = qb._buildHeaders()['Prefer'];
+    expect(prefer).toContain('return=representation');
+    expect(prefer).toContain('count=exact');
+  });
+
+  test('upsert + count mode → Prefer has merge-duplicates AND count=exact', () => {
+    const qb = qbFor('t');
+    qb.upsert({ id: 1 }).select('*', { count: 'exact' });
+    const prefer = qb._buildHeaders()['Prefer'];
+    expect(prefer).toContain('resolution=merge-duplicates');
+    expect(prefer).toContain('count=exact');
+  });
 });
 
 // ─── QueryBuilder builder method chains ───────────────────────────────────────
@@ -617,5 +633,37 @@ describe('Edge cases', () => {
     const result = await qbFor('leads').select('*');
     expect(result.data).toBeNull();
     expect(result.error.message).toContain('connection reset');
+  });
+
+  test('rpc() with no API key omits apikey and Authorization headers', async () => {
+    mockFetch({ body: '{}' });
+    const client = require(DB_PATH).createClient('http://api.test', '');
+    await client.rpc('fn');
+    const { headers } = global.fetch._lastOpts;
+    expect(headers.apikey).toBeUndefined();
+    expect(headers.Authorization).toBeUndefined();
+  });
+
+  test('insert()._execute() sends POST with JSON body', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 2, name: 'Bob' }]) });
+    const result = await qbFor('leads').insert({ name: 'Bob' }).select('*');
+    expect(global.fetch._lastOpts.method).toBe('POST');
+    expect(JSON.parse(global.fetch._lastOpts.body)).toEqual({ name: 'Bob' });
+    expect(result.error).toBeNull();
+  });
+
+  test('update()._execute() sends PATCH with JSON body', async () => {
+    mockFetch({ body: JSON.stringify([{ id: 1, status: 'active' }]) });
+    const result = await qbFor('leads').update({ status: 'active' }).eq('id', 1).select('id,status');
+    expect(global.fetch._lastOpts.method).toBe('PATCH');
+    expect(JSON.parse(global.fetch._lastOpts.body)).toEqual({ status: 'active' });
+    expect(result.error).toBeNull();
+  });
+
+  test('delete()._execute() sends DELETE with no body', async () => {
+    mockFetch({ body: '' });
+    await qbFor('leads').delete().eq('id', 1);
+    expect(global.fetch._lastOpts.method).toBe('DELETE');
+    expect(global.fetch._lastOpts.body).toBeUndefined();
   });
 });
