@@ -552,3 +552,68 @@ describe('getPool()', () => {
     expect(MockPool).toHaveBeenCalledTimes(1);
   });
 });
+
+// ─── Edge cases ───────────────────────────────────────────────────────────────
+
+describe('createClient() — empty-string fallback', () => {
+  it('empty-string URL falls back to NEXT_PUBLIC_API_URL env var', () => {
+    process.env.NEXT_PUBLIC_API_URL = 'http://fallback.test';
+    const { createClient } = freshDb();
+    const url = createClient('', 'k').from('t')._buildUrl();
+    delete process.env.NEXT_PUBLIC_API_URL;
+    expect(url).toMatch(/^http:\/\/fallback\.test\//);
+  });
+
+  it('empty-string key falls back to API_SECRET_KEY env var', () => {
+    process.env.API_SECRET_KEY = 'env-key';
+    const { createClient } = freshDb();
+    const headers = createClient('http://x', '').from('t')._buildHeaders();
+    delete process.env.API_SECRET_KEY;
+    expect(headers.apikey).toBe('env-key');
+  });
+});
+
+describe('QueryBuilder header building — combined modes', () => {
+  it('upsert + count mode → Prefer has merge-duplicates and count=exact', () => {
+    const prefer = qbFor('t').upsert({ id: 1 }).select('*', { count: 'exact' })._buildHeaders()['Prefer'];
+    expect(prefer).toMatch(/resolution=merge-duplicates/);
+    expect(prefer).toMatch(/return=representation/);
+    expect(prefer).toMatch(/count=exact/);
+  });
+});
+
+describe('QueryBuilder._execute() — additional edge cases', () => {
+  let originalFetch;
+  beforeEach(() => { originalFetch = global.fetch; });
+  afterEach(() => { global.fetch = originalFetch; });
+
+  it('GET request never sends a body even when bodyData is set internally', async () => {
+    global.fetch = makeFetchMock({ body: '[]' });
+    const qb = qbFor('leads').select('*');
+    qb._bodyData = { unexpected: true };
+    await qb;
+    const opts = global.fetch.mock.calls[0][1];
+    expect(opts.body).toBeUndefined();
+  });
+
+  it('201 Created response is treated as success', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 201,
+      headers: { get: () => null },
+      text: async () => JSON.stringify([{ id: 99 }]),
+    });
+    const result = await qbFor('leads').insert({ name: 'new' }).select('*');
+    expect(result.error).toBeNull();
+    expect(result.data[0].id).toBe(99);
+  });
+
+  it('rpc() without key sends no auth headers', async () => {
+    global.fetch = makeFetchMock({ body: '{}' });
+    const { createClient } = freshDb();
+    await createClient('http://api.test', '').rpc('fn', {});
+    const headers = global.fetch.mock.calls[0][1].headers;
+    expect(headers.apikey).toBeUndefined();
+    expect(headers.Authorization).toBeUndefined();
+  });
+});
