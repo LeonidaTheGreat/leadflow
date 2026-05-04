@@ -100,6 +100,16 @@ describe('predictive-engine', () => {
     expect(recommendation.alternatives[0]).toMatchObject({ reason: 'Budget-friendly alternative' })
   })
 
+  test('recommendModel includes stronger-model alternative for low-success task types', () => {
+    const engine = loadPredictiveEngineWithAccuracy({ total: 0, recentAccuracy: null })
+    const recommendation = engine.recommendModel({ title: 'Build dashboard analytics', estimated_hours: 2 }, 100)
+
+    expect(recommendation.recommended).toBe('codex')
+    expect(recommendation.withinBudget).toBe(true)
+    expect(recommendation.alternatives.some((alt) => alt.model === 'sonnet')).toBe(true)
+    expect(recommendation.alternatives.some((alt) => alt.reason === 'Higher success rate for this task type')).toBe(true)
+  })
+
   test('predictQueueExhaustion flags empty-soon queues', () => {
     const engine = loadPredictiveEngineWithAccuracy({ total: 0, recentAccuracy: null })
     const result = engine.predictQueueExhaustion([
@@ -113,6 +123,20 @@ describe('predictive-engine', () => {
     expect(result.recommendation).toContain('Create new tasks')
   })
 
+  test('predictQueueExhaustion reports healthy queue when enough ready tasks exist', () => {
+    const engine = loadPredictiveEngineWithAccuracy({ total: 0, recentAccuracy: null })
+    const result = engine.predictQueueExhaustion([
+      { status: 'ready' },
+      { status: 'ready' },
+      { status: 'ready' },
+      { status: 'ready' }
+    ], 2)
+
+    expect(result.willEmptySoon).toBe(false)
+    expect(result.estimatedEmptyTime).toBe('2 hours')
+    expect(result.recommendation).toBe('Queue healthy')
+  })
+
   test('predictBudgetExhaustion handles healthy and critical budgets', () => {
     const engine = loadPredictiveEngineWithAccuracy({ total: 0, recentAccuracy: null })
 
@@ -124,6 +148,15 @@ describe('predictive-engine', () => {
     const critical = engine.predictBudgetExhaustion(9, 10, 1)
     expect(critical.willExhaustToday).toBe(true)
     expect(critical.recommendation).toContain('Consider increasing budget')
+  })
+
+  test('predictBudgetExhaustion handles no-recent-spend forecast path', () => {
+    const engine = loadPredictiveEngineWithAccuracy({ total: 0, recentAccuracy: null })
+    const result = engine.predictBudgetExhaustion(3, 10, 0)
+
+    expect(result.estimatedExhaustion).toBe('N/A (no recent spend)')
+    expect(result.willExhaustToday).toBe(false)
+    expect(result.recommendation).toBe('Budget healthy')
   })
 
   test('formatPrediction renders summary with confidence markers', () => {
@@ -143,5 +176,17 @@ describe('predictive-engine', () => {
     expect(output).toContain('Prediction: 82% success probability')
     expect(output).toContain('Should Decompose: YES')
     expect(output).toContain('Recommended Model: codex')
+  })
+
+  test('exports threshold constants expected by dependent modules', () => {
+    const engine = loadPredictiveEngineWithAccuracy({ total: 0, recentAccuracy: null })
+
+    expect(engine.AVG_TASK_COMPLETION_HOURS).toBe(2.5)
+    expect(engine.QUEUE_EMPTY_THRESHOLD_HOURS).toBe(2)
+    expect(engine.BUDGET_EXHAUSTION_THRESHOLD_HOURS).toBe(4)
+    expect(engine.BUDGET_CRITICAL_PERCENT).toBe(0.2)
+    expect(engine.PREDICTION_HIGH_THRESHOLD).toBe(80)
+    expect(engine.PREDICTION_MEDIUM_THRESHOLD).toBe(60)
+    expect(engine.BUDGET_FORECAST_HOURS_THRESHOLD).toBe(2)
   })
 })
