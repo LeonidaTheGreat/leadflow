@@ -1,3 +1,18 @@
+/*
+Task Spec
+What:
+- Update integrations/test-e2e-flow.js to prevent test bootstrap failure when dotenv is not installed.
+- Add a safe dotenv loader used by this test entrypoint before env reads.
+
+Verify:
+- npm test exits 0 and no longer throws MODULE_NOT_FOUND for dotenv.
+- node ~/.openclaw/genome/scripts/quality-audit.js . --json shows tests gate passed.
+
+Boundaries:
+- Do not change route handlers, service classes, DB schema, or runtime business logic.
+- Do not modify npm scripts or unrelated test suites.
+*/
+
 /**
  * End-to-End Test Suite
  * Tests complete flow: Lead Created → AI SMS → Twilio Send
@@ -5,7 +20,11 @@
  * Usage: npm test integration/test-e2e-flow.js
  */
 
-require('dotenv').config();
+try {
+  require('dotenv').config();
+} catch (error) {
+  // Allow tests to run when devDependencies are omitted in CI/quality-gate environments.
+}
 const assert = require('assert');
 const axios = require('axios');
 const fs = require('fs');
