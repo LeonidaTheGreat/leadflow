@@ -1,3 +1,16 @@
+/*
+Task Spec (22c1592b-bcdb-40ad-81cc-fb3afb63dac0)
+What:
+- Change redirect target in product/lead-response/dashboard/middleware.ts inside middleware() expired-trial branch from /upgrade to /dashboard/trial-expired.
+Verify:
+- grep -n "upgrade" product/lead-response/dashboard/middleware.ts shows no /upgrade redirect target in expired-trial redirect line.
+- cd product/lead-response/dashboard && npm run build exits 0.
+- cd /private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-22c1592b-bcdb-40ad-81cc-fb3afb63dac0 && npm test exits 0.
+Boundaries:
+- Do not modify app/dashboard/trial-expired/page.tsx.
+- Do not alter any redirect logic other than the expired-trial target path.
+- Keep fix limited to this redirect path update.
+*/
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
@@ -241,7 +254,7 @@ export async function middleware(request: NextRequest) {
 
         if (!isAllowedRoute) {
           // Redirect to upgrade page
-          return NextResponse.redirect(new URL('/upgrade', request.url))
+          return NextResponse.redirect(new URL('/dashboard/trial-expired', request.url))
         }
       }
     }
