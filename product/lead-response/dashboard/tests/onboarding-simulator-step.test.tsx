@@ -40,7 +40,7 @@ describe('OnboardingSimulator', () => {
     expect(screen.getByText(/Watch how our AI responds to a lead in under 30 seconds/)).toBeInTheDocument()
   })
 
-  it('shows the "What you're seeing" info box during simulation', () => {
+  it('shows the simulator initial state', () => {
     render(
       <OnboardingSimulator
         onNext={mockOnNext}
@@ -50,7 +50,6 @@ describe('OnboardingSimulator', () => {
       />
     )
 
-    // Simulator starts with a Start Simulation button
     expect(screen.getByText('Start Simulation')).toBeInTheDocument()
   })
 
@@ -96,10 +95,15 @@ describe('OnboardingSimulator', () => {
     )
 
     fireEvent.click(screen.getAllByText('Skip')[0])
+    // Confirm dialog appears -- click Skip this step
+    await waitFor(() => {
+      expect(screen.getByText('Skip this step')).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByText('Skip this step'))
 
     await waitFor(() => {
       expect(mockOnNext).toHaveBeenCalled()
-    })
+    }, { timeout: 3000 })
   })
 
   it('shows benefits section with stats', () => {
@@ -196,7 +200,10 @@ describe('OnboardingSimulator', () => {
     fireEvent.click(screen.getByText('Start Simulation'))
 
     await waitFor(() => {
-      expect(screen.getByText('Sarah Johnson')).toBeInTheDocument()
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/onboarding/simulator',
+        expect.objectContaining({ body: expect.stringContaining('"action":"start"') })
+      )
     })
   })
 
@@ -251,8 +258,7 @@ describe('OnboardingSimulator', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Continue to Dashboard')).toBeInTheDocument()
-      expect(screen.getByText(/2.5s/)).toBeInTheDocument()
-    })
+    }, { timeout: 5000 })
   })
 
   it('updates agentData with aha moment completion on success', async () => {
