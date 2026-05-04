@@ -9,7 +9,7 @@ node_modules/
 
 # Build output
 .next/
-.vercel
+.vercel/output/
 dist/
 build/
 
