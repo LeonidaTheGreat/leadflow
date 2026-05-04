@@ -18,9 +18,9 @@ describe('Wizard Auto-Trigger Implementation', () => {
       
       // Verify the onboarding check is present
       expect(middlewareContent).toContain('onboarding_completed');
-      expect(middlewareContent).toContain(".from('real_estate_agents')");
-      expect(middlewareContent).toContain(".select('onboarding_completed')");
-      expect(middlewareContent).toContain("redirect(new URL('/setup', request.url))");
+      expect(middlewareContent).toContain('real_estate_agents');
+      expect(middlewareContent).toContain('select=onboarding_completed');
+      expect(middlewareContent).toContain("new URL('/setup', request.url)");
     });
 
     it('should check onboarding for protected routes', () => {
@@ -48,7 +48,7 @@ describe('Wizard Auto-Trigger Implementation', () => {
       
       // Verify the try-catch block exists
       expect(middlewareContent).toContain('try {');
-      expect(middlewareContent).toContain('// On error, allow access');
+      expect(middlewareContent).toContain('// On error or timeout, fail open (allow access)');
     });
   });
 
@@ -63,7 +63,7 @@ describe('Wizard Auto-Trigger Implementation', () => {
       const guardContent = fs.readFileSync(guardPath, 'utf-8');
       
       expect(guardContent).toContain('onboardingCompleted');
-      expect(guardContent).toContain("router.replace('/setup')");
+      expect(guardContent).toContain("router.replace('/dashboard/onboarding')");
     });
 
     it('should be included in dashboard layout', () => {
@@ -88,7 +88,7 @@ describe('Wizard Auto-Trigger Implementation', () => {
       const loginPagePath = path.join(dashboardDir, 'app', 'login', 'page.tsx');
       const loginContent = fs.readFileSync(loginPagePath, 'utf-8');
       
-      expect(loginContent).toContain("router.push('/setup')");
+      expect(loginContent).toContain("router.push('/dashboard/onboarding')");
       expect(loginContent).toContain('onboardingCompleted === false');
     });
   });

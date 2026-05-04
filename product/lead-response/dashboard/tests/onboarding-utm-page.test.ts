@@ -68,7 +68,8 @@ describe('OnboardingPage UTM param capture', () => {
 
     it('sends agentData (including UTM) to the backend', () => {
       // The POST body is JSON.stringify(agentData) which contains UTM fields
-      expect(pageSource).toContain('JSON.stringify(agentData)');
+      const hasJsonStringify = pageSource.includes('JSON.stringify(data)') || pageSource.includes('JSON.stringify(agentData)')
+      expect(hasJsonStringify).toBe(true)
     });
   });
 

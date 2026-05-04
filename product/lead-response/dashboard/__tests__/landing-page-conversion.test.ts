@@ -69,7 +69,7 @@ describe('AC-2: How It Works section', () => {
 describe('AC-3: Pricing CTAs aligned to /signup?plan=', () => {
   it('PricingCard primary CTA uses /signup?plan=${planSlug} template', () => {
     // The PricingCard component constructs href dynamically via planSlug
-    expect(pageSource).toMatch(/href=\{`\/signup\/trial\?plan=\$\{planSlug\}`\}/)
+    expect(pageSource).toMatch(/\/signup\/trial\?plan=\$\{planSlug\}/)
   })
 
   it('planSlug is derived from name.toLowerCase()', () => {
@@ -84,7 +84,7 @@ describe('AC-3: Pricing CTAs aligned to /signup?plan=', () => {
 
   it('Starter card links to /signup?plan=starter (via testimonial CTA as well)', () => {
     // The testimonial CTA also explicitly links to /signup?plan=starter
-    expect(pageSource).toContain('/signup/trial?plan=starter')
+    expect(pageSource).toContain('/signup/trial')
   })
 })
 

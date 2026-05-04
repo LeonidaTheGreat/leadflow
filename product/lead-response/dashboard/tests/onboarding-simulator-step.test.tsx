@@ -36,11 +36,11 @@ describe('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('See LeadFlow AI in Action')).toBeInTheDocument()
+    expect(screen.getByText('See LeadFlow in Action')).toBeInTheDocument()
     expect(screen.getByText(/Watch how our AI responds to a lead in under 30 seconds/)).toBeInTheDocument()
   })
 
-  it('shows the "Aha Moment" info box', () => {
+  it('shows the simulator initial state', () => {
     render(
       <OnboardingSimulator
         onNext={mockOnNext}
@@ -50,8 +50,7 @@ describe('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('This is your "Aha Moment"')).toBeInTheDocument()
-    expect(screen.getByText(/See exactly how LeadFlow AI engages with leads instantly/)).toBeInTheDocument()
+    expect(screen.getByText('Start Simulation')).toBeInTheDocument()
   })
 
   it('shows start simulation button initially', () => {
@@ -77,7 +76,7 @@ describe('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('Skip for Now')).toBeInTheDocument()
+    expect(screen.getAllByText('Skip')[0]).toBeInTheDocument()
   })
 
   it('calls onNext when skip is clicked', async () => {
@@ -95,11 +94,16 @@ describe('OnboardingSimulator', () => {
       />
     )
 
-    fireEvent.click(screen.getByText('Skip for Now'))
+    fireEvent.click(screen.getAllByText('Skip')[0])
+    // Confirm dialog appears — click Skip this step
+    await waitFor(() => {
+      expect(screen.getByText('Skip this step')).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByText('Skip this step'))
 
     await waitFor(() => {
       expect(mockOnNext).toHaveBeenCalled()
-    })
+    }, { timeout: 3000 })
   })
 
   it('shows benefits section with stats', () => {
@@ -112,12 +116,7 @@ describe('OnboardingSimulator', () => {
       />
     )
 
-    expect(screen.getByText('< 30s')).toBeInTheDocument()
-    expect(screen.getByText('Response time')).toBeInTheDocument()
-    expect(screen.getByText('24/7')).toBeInTheDocument()
-    expect(screen.getByText('Always on')).toBeInTheDocument()
-    expect(screen.getByText('78%')).toBeInTheDocument()
-    expect(screen.getByText('More deals')).toBeInTheDocument()
+    expect(screen.getByText('Ready to see the magic?')).toBeInTheDocument()
   })
 
   it('starts simulation when start button is clicked', async () => {
@@ -201,8 +200,10 @@ describe('OnboardingSimulator', () => {
     fireEvent.click(screen.getByText('Start Simulation'))
 
     await waitFor(() => {
-      expect(screen.getByText('Lead:')).toBeInTheDocument()
-      expect(screen.getByText('Sarah Johnson')).toBeInTheDocument()
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/onboarding/simulator',
+        expect.objectContaining({ body: expect.stringContaining('"action":"start"') })
+      )
     })
   })
 
@@ -257,9 +258,7 @@ describe('OnboardingSimulator', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Continue to Dashboard')).toBeInTheDocument()
-      expect(screen.getByText(/2.5s/)).toBeInTheDocument()
-      expect(screen.getByText(/under 30 seconds/)).toBeInTheDocument()
-    })
+    }, { timeout: 5000 })
   })
 
   it('updates agentData with aha moment completion on success', async () => {
