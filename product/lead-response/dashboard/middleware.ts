@@ -1,3 +1,16 @@
+/**
+ * Task Spec (148a959d-a14c-40ef-b217-9acfccc38b22)
+ * What:
+ * - Update product/lead-response/dashboard/middleware.ts:
+ *   - Add explicit public-route bypass for /admin/simulator so it does not require auth.
+ *   - Ensure protected-route detection excludes this simulator path while keeping other /admin routes protected.
+ * Verify:
+ * - curl -I https://leadflow-ai-five.vercel.app/admin/simulator should return 200 after deploy (no redirect to /login).
+ * - Local static checks: npm run lint, npm test, npm run build (dashboard + repo gates).
+ * - grep check for the new bypass constant usage in middleware.ts.
+ * Boundaries:
+ * - Do not modify login page implementation, auth service internals, DB schema, or non-simulator route behavior.
+ */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
@@ -18,6 +31,11 @@ const PROTECTED_ROUTES = [
 const AUTH_ROUTES = [
   '/login',
   '/signup',
+]
+
+// Simulator smoke endpoint must be reachable without auth to avoid redirecting into login flow.
+const PUBLIC_ROUTE_PREFIXES = [
+  '/admin/simulator',
 ]
 
 // Routes that are always allowed even for expired trials
@@ -177,8 +195,12 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
 
+    const isPublicBypassRoute = PUBLIC_ROUTE_PREFIXES.some(prefix =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`)
+    )
+
     // Check if current path is protected
-    const isProtectedRoute = PROTECTED_ROUTES.some(route =>
+    const isProtectedRoute = !isPublicBypassRoute && PROTECTED_ROUTES.some(route =>
       pathname === route || pathname.startsWith(`${route}/`)
     )
 
