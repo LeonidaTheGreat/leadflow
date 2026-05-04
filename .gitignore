@@ -1,20 +1,3 @@
-#
-# Task Spec
-# What:
-# - Update `.gitignore` entries required by the clean_worktree quality gate:
-#   `CODE_GRAPH.json`, `CODE_GRAPH.md`, `PROJECT_GRAPH.json`, `PROJECT_GRAPH.md`,
-#   `ARCHITECTURE.md`, `DISCOVERIES.md`, and `MODULE_INDEX.md.generated`.
-# - Limit code changes to `.gitignore` only.
-# Verify:
-# - `node -e "const {evaluateCleanWorktree}=require('/Users/clawdbot/.openclaw/genome/core/clean-worktree-gate'); const r=evaluateCleanWorktree(process.cwd()); console.log(JSON.stringify(r,null,2)); process.exit(r.passed?0:1)"` exits 0.
-# - `npm run clean_worktree` exits 0.
-# - `rg -n "^(CODE_GRAPH\\.json|CODE_GRAPH\\.md|PROJECT_GRAPH\\.json|PROJECT_GRAPH\\.md|ARCHITECTURE\\.md|DISCOVERIES\\.md|MODULE_INDEX\\.md\\.generated)$" .gitignore` returns all required entries.
-# Boundaries:
-# - Do not modify application logic, services, routes, migrations, schema, or tests.
-# - Do not change clean-worktree scripts or package scripts.
-# - Do not change ignore patterns outside the required missing entries for this gate.
-#
-
 # Dependencies
 node_modules/
 
@@ -121,6 +104,10 @@ e2e-*-results*.json
 *.log
 coverage/
 *.tsbuildinfo
+test-results/
+playwright-report/
+playwright-report.json
+.completion-reports-archive/
 # Auto-generated orchestrator docs
 DASHBOARD.md
 E2E_MAPPINGS.md
