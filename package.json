@@ -23,8 +23,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "prebuild": "node scripts/ensure-deps.js dashboard",
     "build": "npm --prefix product/lead-response/dashboard run build",
+    "prelint": "node scripts/ensure-deps.js root",
     "lint": "eslint .",
+    "pretest": "node scripts/ensure-deps.js root",
     "test": "node integrations/test-e2e-flow.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
