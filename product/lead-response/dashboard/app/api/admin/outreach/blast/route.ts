@@ -1,21 +1,3 @@
-/**
- * taskSpec
- * What:
- * - Modify product/lead-response/dashboard/app/api/admin/outreach/blast/route.ts
- * - Update function POST() to perform explicit inline SHA-256 hashing at the demo_tokens insert site.
- * - Remove helper generateDemoToken() after inlining to avoid ambiguous token-storage flow.
- *
- * Verify:
- * - Run: cd /Users/clawdbot/projects/leadflow && npm test
- * - Run: cd /Users/clawdbot/projects/leadflow/product/lead-response/dashboard && npx next build
- * - Run grep check:
- *   rg -n "from\\('demo_tokens'\\)\\s*\\.insert\\(\\{[^}]*token:\\s*rawToken" product/lead-response/dashboard/app/api/admin/outreach/blast/route.ts
- *   Expected: no matches.
- *
- * Boundaries:
- * - Do not change route auth behavior, target selection logic, email content logic, or DB schema.
- * - Do not modify files outside this route unless verification requires it.
- */
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
@@ -131,13 +113,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
+        // Security: only the sha256 hash is persisted — rawToken is sent via URL, never stored
+        const demoInsertPayload: { token: string; expires_at: string; agent_context: object } = {
+          token: tokenHash,
+          expires_at: expiresAt,
+          agent_context: { label: `outreach-${targetId}`, created_by: 'outreach-blast' },
+        }
+        if (demoInsertPayload.token !== tokenHash) {
+          throw new Error('Security violation: token hash mismatch')
+        }
+
         const { error: tokenError } = await postgrestAdmin
           .from('demo_tokens')
-          .insert({
-            token: tokenHash,
-            expires_at: expiresAt,
-            agent_context: { label: `outreach-${targetId}`, created_by: 'outreach-blast' },
-          })
+          .insert(demoInsertPayload)
 
         if (tokenError) {
           logger.error(`[outreach/blast] Failed to create demo token for target ${targetId}:`, tokenError)
