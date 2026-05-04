@@ -26,6 +26,10 @@ const AUTH_ROUTES = ['/login', '/signup']
 const EXPIRED_TRIAL_ALLOWED_ROUTES = ['/upgrade', '/dashboard/upgrade', '/pricing', '/settings/billing', '/login', '/logout']
 const PUBLIC_ROUTE_PREFIXES = ['/admin/simulator']
 
+function matchesRoutePrefix(pathname: string, route: string): boolean {
+  return pathname === route || pathname.startsWith(`${route}/`)
+}
+
 function cleanEnv(value?: string): string {
   if (!value) return ''
   return value.replace(/\\n/g, '').trim()
@@ -155,9 +159,19 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 export async function proxy(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
-    const isPublicBypassRoute = PUBLIC_ROUTE_PREFIXES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
-    const isProtectedRoute = !isPublicBypassRoute && PROTECTED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
-    const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+    // Keep the lead experience simulator reachable for smoke checks and demo links
+    // without requiring an authenticated session.
+    if (pathname === '/admin/simulator' || pathname.startsWith('/admin/simulator/')) {
+      const response = NextResponse.next()
+      response.headers.set('X-Frame-Options', 'DENY')
+      response.headers.set('X-Content-Type-Options', 'nosniff')
+      response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+      return response
+    }
+
+    const isPublicBypassRoute = PUBLIC_ROUTE_PREFIXES.some((route) => matchesRoutePrefix(pathname, route))
+    const isProtectedRoute = !isPublicBypassRoute && PROTECTED_ROUTES.some((route) => matchesRoutePrefix(pathname, route))
+    const isAuthRoute = AUTH_ROUTES.some((route) => matchesRoutePrefix(pathname, route))
 
     const hasAuthCookies = request.cookies.has('auth-token') || request.cookies.has('leadflow_session')
     let userId: string | null = null
@@ -191,7 +205,7 @@ export async function proxy(request: NextRequest) {
     if (userId && isProtectedRoute) {
       const isExpired = await isTrialExpired(userId)
       if (isExpired) {
-        const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+        const isAllowedRoute = EXPIRED_TRIAL_ALLOWED_ROUTES.some((route) => matchesRoutePrefix(pathname, route))
         if (!isAllowedRoute) {
           return NextResponse.redirect(new URL('/upgrade', request.url))
         }
