@@ -26,8 +26,8 @@ yarn-error.log*
 .env*.local
 .env
 
-# Vercel
-.vercel
+# Vercel (only ignore build output, not project.json linking config)
+.vercel/output/
 
 # TypeScript
 *.tsbuildinfo
