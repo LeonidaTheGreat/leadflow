@@ -1,4 +1,31 @@
 #!/usr/bin/env node
+'use strict';
+
+/*
+taskSpec:
+What:
+- Update /Users/clawdbot/projects/leadflow/scripts/db/resolve-stale-action-items.js
+  - function: resolveStaleActionItems()
+  - change stale item update payload status from lowercase 'resolved' to canonical uppercase 'RESOLVED'
+- Validate with existing unit coverage in /Users/clawdbot/projects/leadflow/tests/unit/stale-waiting-items-action-items.test.js
+
+Verify:
+- node tests/unit/stale-waiting-items-action-items.test.js
+  - expected: PASS stale-waiting-items-action-items
+- npm run lint
+  - expected: 0 lint errors
+- npm test
+  - expected: exit 0, no failing tests
+- npm run build
+  - expected: exit 0
+- npm audit --audit-level=high
+  - expected: 0 high/critical vulnerabilities
+
+Boundaries:
+- Do not modify database schema or migrations
+- Do not change route/service architecture
+- Do not alter unrelated status handling outside resolve-stale-action-items script
+*/
 
 /**
  * resolve-stale-action-items.js
@@ -60,7 +87,7 @@ async function resolveStaleActionItems() {
       const { error: updateError } = await store.supabase
         .from('action_items')
         .update({
-          status: 'resolved',
+          status: 'RESOLVED',
           resolved_date: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
