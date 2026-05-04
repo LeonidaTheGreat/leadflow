@@ -1,6 +1,6 @@
 # PRD-UPTIME-METRIC-ROLLING-WINDOW
 
-## Status: approved
+## Status: implemented
 ## Version: 1.0
 ## Priority: P2 (infrastructure improvement — no paying customers affected)
 
