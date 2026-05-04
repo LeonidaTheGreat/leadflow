@@ -71,6 +71,27 @@ function writeCompletionFile(dir, index) {
     .length;
   assert.strictEqual(archiveCount, 3, 'archive should contain overflow files');
 
+  const collisionSource = path.join(reportsDir, 'COMPLETION-collision-test.json');
+  fs.writeFileSync(collisionSource, JSON.stringify({ collision: true }), 'utf8');
+  fs.writeFileSync(path.join(archiveDir, 'COMPLETION-collision-test.json'), JSON.stringify({ existing: true }), 'utf8');
+
+  const originalRandom = Math.random;
+  Math.random = () => {
+    throw new Error('Math.random should not be called');
+  };
+
+  try {
+    const collisionResult = enforceCompletionReportRetention({
+      projectDir,
+      maxReports: 2,
+      reportsDir: 'completion-reports',
+      archiveDir: '.completion-reports-archive'
+    });
+    assert.strictEqual(collisionResult.afterCount, 2, 'retention should still complete when archive name collision occurs');
+  } finally {
+    Math.random = originalRandom;
+  }
+
   assert.ok(
     fs.existsSync(path.join(reportsDir, 'ORCHESTRATOR-DECISIONS.json')),
     'non-completion reports should remain untouched'
@@ -94,7 +115,7 @@ function writeCompletionFile(dir, index) {
     });
     assert.strictEqual(
       resolverResult.afterCount,
-      3,
+      2,
       'retention should still target the canonical project directory when cwd differs'
     );
   } finally {

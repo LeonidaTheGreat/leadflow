@@ -23,6 +23,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { getProjectDir } = require('../../project-config-loader');
 
 const DEFAULT_MAX_REPORTS = 400;
@@ -81,7 +82,7 @@ function moveToArchive(fullPath, archiveDir) {
   let targetPath = path.join(archiveDir, baseName);
 
   if (fs.existsSync(targetPath)) {
-    const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const suffix = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
     targetPath = path.join(archiveDir, `${baseName}.${suffix}`);
   }
 

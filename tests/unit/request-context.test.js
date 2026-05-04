@@ -96,7 +96,20 @@ async function runTests() {
 
   await test('getRequestId generates a synthetic bg id outside request scope', () => {
     const requestId = getRequestId();
-    assert.match(requestId, /^bg-\d+-[a-z0-9]{5}$/);
+    assert.match(requestId, /^bg-\d+-[a-f0-9]{8}$/);
+  });
+
+  await test('getRequestId does not depend on Math.random outside request scope', () => {
+    const originalRandom = Math.random;
+    Math.random = () => {
+      throw new Error('Math.random should not be called');
+    };
+    try {
+      const requestId = getRequestId();
+      assert.match(requestId, /^bg-\d+-[a-f0-9]{8}$/);
+    } finally {
+      Math.random = originalRandom;
+    }
   });
 
   await test('request context is preserved across async boundaries', async () => {

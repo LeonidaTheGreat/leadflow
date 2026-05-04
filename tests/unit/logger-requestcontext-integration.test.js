@@ -110,8 +110,31 @@ describe('requestLogger + request-context integration', () => {
     });
     try {
       await makeRequest(server, '/no-header');
-      expect(capturedId).toMatch(/^req-\d+-[a-z0-9]+$/);
+      expect(capturedId).toMatch(/^req-\d+-[a-f0-9]{16}$/);
     } finally {
+      server.close();
+    }
+  });
+
+  test('fallback request id generation does not depend on Math.random()', async () => {
+    const originalRandom = Math.random;
+    Math.random = () => {
+      throw new Error('Math.random should not be called');
+    };
+
+    let capturedId = null;
+    const server = await startServer((req, res) => {
+      requestLogger(req, res, () => {
+        capturedId = getRequestId();
+        res.writeHead(200);
+        res.end('ok');
+      });
+    });
+    try {
+      await makeRequest(server, '/no-math-random');
+      expect(capturedId).toMatch(/^req-\d+-[a-f0-9]{16}$/);
+    } finally {
+      Math.random = originalRandom;
       server.close();
     }
   });
