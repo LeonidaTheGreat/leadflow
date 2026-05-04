@@ -1,16 +1,3 @@
-/**
- * Task Spec (148a959d-a14c-40ef-b217-9acfccc38b22)
- * What:
- * - Update product/lead-response/dashboard/middleware.ts:
- *   - Add explicit public-route bypass for /admin/simulator so it does not require auth.
- *   - Ensure protected-route detection excludes this simulator path while keeping other /admin routes protected.
- * Verify:
- * - curl -I https://leadflow-ai-five.vercel.app/admin/simulator should return 200 after deploy (no redirect to /login).
- * - Local static checks: npm run lint, npm test, npm run build (dashboard + repo gates).
- * - grep check for the new bypass constant usage in middleware.ts.
- * Boundaries:
- * - Do not modify login page implementation, auth service internals, DB schema, or non-simulator route behavior.
- */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
