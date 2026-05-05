@@ -54,7 +54,6 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 |---------|----------|---------------|
 | DB Client | `lib/db.js` | PostgreSQL connection pool |
 | ActivationService | `lib/services/ActivationService.js` | ActivationService — Admin outreach to verified-but-unactivated agents |
-| ApiKeyAuthService | `lib/services/api-key-auth-service.js` | Timing-safe API key comparison for admin/preview endpoint auth |
 | BillingService | `lib/services/BillingService.js` | — |
 | BookingLinkService | `lib/services/BookingLinkService.js` | BookingLinkService |
 | CalcomClient | `lib/services/CalcomClient.js` | Cal.com API Client |
@@ -63,7 +62,8 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
-| LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | Lapsed trial reactivation email campaigns for expired-trial agents |
+| LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | — |
+| PaymentLinkService | `lib/services/PaymentLinkService.js` | — |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
@@ -74,6 +74,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | TrialActivationService | `lib/services/TrialActivationService.js` | Note: trial_email_logs table doesn't have pilot_progress_id, so we check via pilot_progress.trial_cta_sent instead |
 | TwilioService | `lib/services/TwilioService.js` | TwilioService — SMS sending, status tracking, and analytics via Twilio. |
 | WeeklyPerformanceService | `lib/services/WeeklyPerformanceService.js` | — |
+| api-key-auth-service | `lib/services/api-key-auth-service.js` | — |
 <!-- /AUTO-GENERATED services -->
 
 > **If you're about to write a DB query or API call outside of lib/services/, STOP.** Find or create the right service first.
