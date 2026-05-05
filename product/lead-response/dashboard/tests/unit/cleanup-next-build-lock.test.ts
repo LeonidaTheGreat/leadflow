@@ -6,11 +6,15 @@ jest.mock('child_process', () => ({
 
 const mockedExecSync = execSync as jest.MockedFunction<typeof execSync>
 
-const scriptPath = '../../scripts/cleanup-next-build-lock.js'
+// Require the script once at module load time. jest.mock is already active (it is
+// hoisted above imports), so the execSync inside the script and mockedExecSync are
+// the same jest.fn() instance. No resetModules() needed — the script has a
+// require.main guard so there are no module-level side effects to isolate.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const script = require('../../scripts/cleanup-next-build-lock.js')
 
 describe('cleanup-next-build-lock', () => {
   beforeEach(() => {
-    jest.resetModules()
     mockedExecSync.mockReset()
   })
 
@@ -24,8 +28,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     expect(script.getActiveNextBuildPids()).toEqual([])
   })
 
@@ -39,8 +41,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     script.getActiveNextBuildPids()
 
     expect(mockedExecSync).toHaveBeenCalledWith(
@@ -59,8 +59,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     expect(script.getActiveNextBuildPids()).toEqual([100])
   })
 
@@ -74,8 +72,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     expect(script.getActiveNextBuildPids()).toEqual([])
   })
 
@@ -93,8 +89,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     const remaining = await script.waitForBuildsToFinish(20, 1)
     expect(remaining).toEqual([])
   })
