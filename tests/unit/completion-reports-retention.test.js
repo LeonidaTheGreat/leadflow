@@ -6,8 +6,10 @@ const os = require('os');
 const path = require('path');
 
 const {
+  DEFAULT_MAX_TOTAL_FILES,
   enforceCompletionReportRetention,
   listCompletionReportFiles,
+  listAllFiles,
   resolveProjectDir
 } = require('../../scripts/tasks/completion-reports-retention');
 
@@ -100,6 +102,31 @@ function writeCompletionFile(dir, index) {
   } finally {
     process.chdir(originalCwd);
   }
+
+  const gateProjectDir = createTempDir();
+  const gateReportsDir = path.join(gateProjectDir, 'completion-reports');
+  fs.mkdirSync(gateReportsDir, { recursive: true });
+
+  for (let i = 0; i < 400; i += 1) {
+    writeCompletionFile(gateReportsDir, i);
+  }
+  for (let i = 0; i < 120; i += 1) {
+    fs.writeFileSync(path.join(gateReportsDir, `TASK-note-${String(i).padStart(3, '0')}.md`), 'note', 'utf8');
+  }
+
+  const gateResult = enforceCompletionReportRetention({
+    projectDir: gateProjectDir,
+    maxReports: 400,
+    maxTotalFiles: DEFAULT_MAX_TOTAL_FILES,
+    reportsDir: 'completion-reports',
+    archiveDir: '.completion-reports-archive'
+  });
+  assert.strictEqual(gateResult.beforeCount, 400, 'completion count starts at configured cap');
+  assert.strictEqual(gateResult.beforeTotalCount, 520, 'total file count starts above gate max');
+  assert.strictEqual(gateResult.archivedCount, 20, 'retention archives oldest completion reports to satisfy total cap');
+  assert.strictEqual(gateResult.afterCount, 380, 'completion count is reduced to satisfy total-file gate');
+  assert.strictEqual(gateResult.afterTotalCount, 500, 'total file count should satisfy max total file gate');
+  assert.strictEqual(listAllFiles(gateReportsDir).length, 500, 'reports directory total files should be capped at 500');
 
   console.log('PASS: completion report retention archives overflow and preserves newest files');
 })();
