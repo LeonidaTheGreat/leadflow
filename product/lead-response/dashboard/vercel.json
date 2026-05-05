@@ -37,6 +37,10 @@
     {
       "path": "/api/cron/pilot-stuck-check",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/pilot-recruitment-outreach",
+      "schedule": "0 12 * * *"
     }
   ]
 }
