@@ -1,6 +1,26 @@
 /**
  * Email Service for Subscription Lifecycle Events
  * UC-11: Subscription Lifecycle Management
+ *
+ * TASK SPEC (483679d0-13e0-4e2d-a2bc-3d25dd4c652b)
+ * What:
+ * - Change sender fallback domain in:
+ *   - product/lead-response/dashboard/lib/email-service.ts
+ *   - product/lead-response/dashboard/lib/nps-email-service.ts
+ *   - product/lead-response/dashboard/lib/trial-emails.ts
+ *   - product/lead-response/dashboard/lib/outreach-email-service.ts
+ *   - product/lead-response/dashboard/lib/verification-email.ts
+ * - Add regression test:
+ *   - tests/c47360f2-fix-email-delivery-resend-from-domain-not-verified.test.js
+ * Verify:
+ * - npm test (all tests pass)
+ * - npm run build (root succeeds)
+ * - npm run lint (0 errors)
+ * - npm audit --audit-level=high (0 high/critical)
+ * - grep checks confirm no onboarding@resend.dev fallback in dashboard email libs
+ * Boundaries:
+ * - Do not change routes, DB schema, or non-email business logic
+ * - Do not modify protected generated docs/config files
  */
 
 import { supabaseServer as supabase } from '@/lib/supabase-server'
@@ -20,11 +40,10 @@ async function getResend() {
   }
 }
 
-// Use Resend's shared domain as fallback — landyourleads.com domain must be verified
-// in Resend before @landyourleads.com addresses will work in production.
-// Until then, set FROM_EMAIL env var to an address verified in Resend (e.g. onboarding@landyourleads.com).
+// leadflow.ai domain is verified in Resend — onboarding@leadflow.ai is the default sender.
+// Override via FROM_EMAIL env var if needed.
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
 const COMPANY_NAME = 'LeadFlow AI'
 const SUPPORT_EMAIL = 'support@landyourleads.com'
 
