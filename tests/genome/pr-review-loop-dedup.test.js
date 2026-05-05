@@ -15,43 +15,45 @@
  * Run: cd ~/.openclaw/genome && npm test -- tests/pr-review-loop-dedup.test.js
  */
 
+// Paths are hardcoded in jest.mock() calls below — jest.mock() is hoisted before const declarations.
 const GENOME_ROOT = '/Users/clawdbot/.openclaw/genome'
 
 jest.mock('child_process', () => ({ execSync: jest.fn().mockReturnValue('') }))
 
-jest.mock(`${GENOME_ROOT}/core/project-config-loader`, () => ({
+// eslint-disable-next-line no-undef
+jest.mock('/Users/clawdbot/.openclaw/genome/core/project-config-loader', () => ({
   getProjectDir: () => '/tmp/test-project',
   getConfigForProject: () => ({ project_dir: '/tmp/test-project' }),
   getAllProjectIds: () => [],
   resolveStatePath: (f) => `/tmp/${f}`
 }))
 
-jest.mock(`${GENOME_ROOT}/core/workflow-engine`, () => ({
+jest.mock('/Users/clawdbot/.openclaw/genome/core/workflow-engine', () => ({
   createPRForTask: jest.fn(),
   escalateModel: jest.fn((m) => m),
   chainTask: jest.fn()
 }))
 
-jest.mock(`${GENOME_ROOT}/core/git-worktree`, () => ({
+jest.mock('/Users/clawdbot/.openclaw/genome/core/git-worktree', () => ({
   rebaseInWorktree: jest.fn().mockReturnValue({ success: false, error: 'mock' })
 }))
 
-jest.mock(`${GENOME_ROOT}/intelligence/orchestrator-decision-tracker`, () => ({
+jest.mock('/Users/clawdbot/.openclaw/genome/intelligence/orchestrator-decision-tracker', () => ({
   recordOutcome: jest.fn()
 }))
 
-jest.mock(`${GENOME_ROOT}/core/reflexes/stale-pr-close`, () => ({
+jest.mock('/Users/clawdbot/.openclaw/genome/core/reflexes/stale-pr-close', () => ({
   decide: jest.fn().mockReturnValue([])
 }))
 
-jest.mock(`${GENOME_ROOT}/core/sensors/pr-state`, () => ({
+jest.mock('/Users/clawdbot/.openclaw/genome/core/sensors/pr-state', () => ({
   sense: jest.fn().mockResolvedValue({ reviews: [] })
 }))
 
 const mockParkTask = jest.fn().mockResolvedValue(undefined)
 const mockFailTask = jest.fn().mockResolvedValue(undefined)
 const mockCancelTask = jest.fn().mockResolvedValue(undefined)
-jest.mock(`${GENOME_ROOT}/core/actuators/task-transitions`, () => ({
+jest.mock('/Users/clawdbot/.openclaw/genome/core/actuators/task-transitions', () => ({
   parkTask: (...args) => mockParkTask(...args),
   failTask: (...args) => mockFailTask(...args),
   cancelTask: (...args) => mockCancelTask(...args)
