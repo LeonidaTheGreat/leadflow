@@ -1,20 +1,18 @@
 /**
- * Task Spec (deb536e3-2e80-4078-834d-32aa91aff57b)
+ * Task Spec (23c79465-4c96-495b-8c2b-36f1723df8f6)
  * What:
- * - Change file: server.js
- * - Remove stale require target: require('./routes/admin/payment-links')
- * - Remove corresponding route registration: app.use('/', paymentLinksRouter)
+ * - Change file: server.js (header spec/comment cleanup only).
+ * - Remove stale text that mentions a deleted admin payment-links module path.
  * Verify:
- * - node -e "require('./server'); console.log('server import ok')" should print "server import ok" without MODULE_NOT_FOUND
- * - npm run build exits 0
- * - npm run lint exits 0
- * - npm test exits 0
- * - npm audit --audit-level=high reports 0 high/critical vulnerabilities
- * - rg -n "payment-links|paymentLinksRouter" server.js routes returns no `payment-links` import/reference in server.js
+ * - node -e "const { CodebaseHealth } = require('/Users/clawdbot/.openclaw/genome/health/codebase-health'); const c = new CodebaseHealth(); console.log(c.checkBrokenImports().ok);" prints true.
+ * - npm run build exits 0.
+ * - npm run lint exits 0.
+ * - npm test exits 0.
+ * - npm audit --audit-level=high shows 0 high/critical vulnerabilities.
  * Boundaries:
- * - Do not modify any route module implementation
- * - Do not add new feature behavior for payment links
- * - Do not touch unrelated files beyond task report output
+ * - Do not modify route wiring behavior.
+ * - Do not add/remove endpoint handlers.
+ * - Do not modify files outside this targeted import-health fix and completion report.
  */
 /**
  * FUB Webhook Server (Vercel Serverless)
