@@ -317,7 +317,7 @@ export default function HomePage() {
           <div className="mt-8 text-center">
             {/* CTA: get_started_testimonial */}
             <Link
-              href="/signup/trial"
+              href="/signup/trial?plan=starter"
               onClick={() => trackCTAClick('get_started_testimonial', 'Get Started', 'testimonials')}
               data-cta-id="get_started_testimonial"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"

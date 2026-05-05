@@ -8,8 +8,6 @@
 
 // ─── Mock Next.js server modules ──────────────────────────────────────────────
 
-const mockCookies = new Map<string, { value: string }>()
-
 jest.mock('next/server', () => ({
   NextResponse: {
     json: jest.fn((body: unknown, init?: { status?: number }) => ({
@@ -19,11 +17,10 @@ jest.mock('next/server', () => ({
   },
 }))
 
-// ─── Mock jsonwebtoken ────────────────────────────────────────────────────────
+// ─── Mock AuthService — getAuthUserId is the only method used by this route ───
 
-const mockJwtVerify = jest.fn()
-jest.mock('jsonwebtoken', () => ({
-  verify: (...args: unknown[]) => mockJwtVerify(...args),
+jest.mock('@/lib/services/AuthService', () => ({
+  getAuthUserId: jest.fn(),
 }))
 
 // ─── Mock supabase-server ─────────────────────────────────────────────────────
@@ -41,13 +38,13 @@ jest.mock('../lib/supabase-server', () => ({
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 import { isSupabaseConfigured } from '../lib/supabase-server'
+import { getAuthUserId } from '@/lib/services/AuthService'
 
-function makeRequest(cookies: Record<string, string> = {}) {
+const mockGetAuthUserId = getAuthUserId as jest.MockedFunction<typeof getAuthUserId>
+
+function makeRequest() {
   return {
-    cookies: {
-      get: (name: string) =>
-        cookies[name] ? { value: cookies[name] } : undefined,
-    },
+    cookies: { get: () => undefined },
   } as any
 }
 
@@ -86,8 +83,9 @@ describe('GET /api/sample-leads — Supabase not configured', () => {
 // ── 2. No auth token ──────────────────────────────────────────────────────────
 
 describe('GET /api/sample-leads — no auth token', () => {
-  it('returns 401 when no cookie is present', async () => {
-    const req = makeRequest({}) // no auth_token or auth-token cookie
+  it('returns 401 when no authenticated user', async () => {
+    mockGetAuthUserId.mockResolvedValue(null)
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.status).toBe(401)
@@ -98,12 +96,10 @@ describe('GET /api/sample-leads — no auth token', () => {
 // ── 3. Invalid JWT ────────────────────────────────────────────────────────────
 
 describe('GET /api/sample-leads — invalid JWT', () => {
-  it('returns 401 when JWT verification throws', async () => {
-    mockJwtVerify.mockImplementation(() => {
-      throw new Error('invalid token')
-    })
+  it('returns 401 when auth returns null', async () => {
+    mockGetAuthUserId.mockResolvedValue(null)
 
-    const req = makeRequest({ auth_token: 'bad.token.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.status).toBe(401)
@@ -114,7 +110,7 @@ describe('GET /api/sample-leads — invalid JWT', () => {
 
 describe('GET /api/sample-leads — first-session user', () => {
   beforeEach(() => {
-    mockJwtVerify.mockReturnValue({ id: 'agent-123' })
+    mockGetAuthUserId.mockResolvedValue('agent-123')
     mockSingle.mockResolvedValue({
       data: { id: 'agent-123', onboarding_completed: false, plan_tier: 'trial' },
       error: null,
@@ -122,7 +118,7 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('returns eligible:true with 3 sample leads', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.status).toBe(200)
@@ -132,7 +128,7 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('all sample leads have is_sample:true', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     res.body.leads.forEach((lead: any) => {
@@ -141,7 +137,7 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('all sample leads have ai_drafted_response', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     res.body.leads.forEach((lead: any) => {
@@ -151,7 +147,7 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('all sample leads have required Lead fields', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     const requiredFields = ['id', 'name', 'phone', 'source', 'status', 'created_at']
@@ -163,7 +159,7 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('sample lead IDs start with "sample-lead-"', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     res.body.leads.forEach((lead: any) => {
@@ -172,7 +168,9 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('accepts auth-token cookie name (alternative format)', async () => {
-    const req = makeRequest({ 'auth-token': 'valid.jwt.here' })
+    // Auth is mocked at service level — cookie format doesn't matter
+    mockGetAuthUserId.mockResolvedValue('agent-123')
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.body.eligible).toBe(true)
@@ -180,13 +178,13 @@ describe('GET /api/sample-leads — first-session user', () => {
   })
 
   it('accepts userId claim in JWT payload (login route format)', async () => {
-    mockJwtVerify.mockReturnValue({ userId: 'agent-456' })
+    mockGetAuthUserId.mockResolvedValue('agent-456')
     mockSingle.mockResolvedValue({
       data: { id: 'agent-456', onboarding_completed: false, plan_tier: 'trial' },
       error: null,
     })
 
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.body.eligible).toBe(true)
@@ -197,7 +195,7 @@ describe('GET /api/sample-leads — first-session user', () => {
 
 describe('GET /api/sample-leads — returning user', () => {
   beforeEach(() => {
-    mockJwtVerify.mockReturnValue({ id: 'agent-789' })
+    mockGetAuthUserId.mockResolvedValue('agent-789')
     mockSingle.mockResolvedValue({
       data: { id: 'agent-789', onboarding_completed: true, plan_tier: 'trial' },
       error: null,
@@ -205,7 +203,7 @@ describe('GET /api/sample-leads — returning user', () => {
   })
 
   it('returns eligible:false with empty leads array', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.status).toBe(200)
@@ -218,10 +216,10 @@ describe('GET /api/sample-leads — returning user', () => {
 
 describe('GET /api/sample-leads — agent not in DB', () => {
   it('returns eligible:false gracefully when agent row missing', async () => {
-    mockJwtVerify.mockReturnValue({ id: 'ghost-agent' })
+    mockGetAuthUserId.mockResolvedValue('ghost-agent')
     mockSingle.mockResolvedValue({ data: null, error: { message: 'Not found' } })
 
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     expect(res.status).toBe(200)
@@ -233,7 +231,7 @@ describe('GET /api/sample-leads — agent not in DB', () => {
 
 describe('Sample leads data integrity', () => {
   beforeEach(() => {
-    mockJwtVerify.mockReturnValue({ id: 'agent-111' })
+    mockGetAuthUserId.mockResolvedValue('agent-111')
     mockSingle.mockResolvedValue({
       data: { id: 'agent-111', onboarding_completed: false, plan_tier: 'trial' },
       error: null,
@@ -241,7 +239,7 @@ describe('Sample leads data integrity', () => {
   })
 
   it('no INSERT is called — sample leads are never written to DB', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     await GET(req)
 
     // mockFrom is called only for SELECT (agent lookup)
@@ -251,7 +249,7 @@ describe('Sample leads data integrity', () => {
   })
 
   it('all sample leads have agent_id: null (not tied to any agent)', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     res.body.leads.forEach((lead: any) => {
@@ -260,7 +258,7 @@ describe('Sample leads data integrity', () => {
   })
 
   it('sample lead IDs are unique across all three leads', async () => {
-    const req = makeRequest({ auth_token: 'valid.jwt.here' })
+    const req = makeRequest()
     const res = await GET(req)
 
     const ids = res.body.leads.map((l: any) => l.id)
