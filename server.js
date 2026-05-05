@@ -1,20 +1,4 @@
 /**
- * Task Spec (23c79465-4c96-495b-8c2b-36f1723df8f6)
- * What:
- * - Change file: server.js (header spec/comment cleanup only).
- * - Remove stale text that mentions a deleted admin payment-links module path.
- * Verify:
- * - node -e "const { CodebaseHealth } = require('/Users/clawdbot/.openclaw/genome/health/codebase-health'); const c = new CodebaseHealth(); console.log(c.checkBrokenImports().ok);" prints true.
- * - npm run build exits 0.
- * - npm run lint exits 0.
- * - npm test exits 0.
- * - npm audit --audit-level=high shows 0 high/critical vulnerabilities.
- * Boundaries:
- * - Do not modify route wiring behavior.
- * - Do not add/remove endpoint handlers.
- * - Do not modify files outside this targeted import-health fix and completion report.
- */
-/**
  * FUB Webhook Server (Vercel Serverless)
  * Receives real-time lead events from Follow Up Boss
  */
