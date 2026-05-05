@@ -170,18 +170,32 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ## 7. Competitive Positioning
 
-| Competitor | Their Price | Our Edge |
-|------------|-------------|----------|
-| **Structurely** | $299+/mo | Better FUB integration, faster setup |
-| **LionDesk** | $25-99/mo | Better AI, true 2-way SMS |
-| **Follow Up Boss** | $69-800/mo | Add-on, not replacement |
-| **Kunversion** | $199+/mo | No lock-in, month-to-month |
+| Competitor | Their Price | Our Edge | Risk Level |
+|------------|-------------|----------|------------|
+| **Structurely** | $299+/mo | Better FUB integration, faster setup, lower price | Medium |
+| **LionDesk** | $25-99/mo | Better AI, true 2-way SMS | Low |
+| **Follow Up Boss** | $69-800/mo | Add-on, not replacement | Low |
+| **Kunversion** | $199+/mo | No lock-in, month-to-month | Low |
+| **Ylopo** | $300-1,000+/mo | Too expensive for solo agents; we win on price | Low |
+| **Verse.ai** | Enterprise | Hybrid human+AI, targets teams/brokerages — different buyer | Low |
+| **Mod Ai Automation** | Unknown | FUB-native, voice+SMS, "built by agents for agents" — FUB Marketplace listed | **HIGH** |
+| **Inside Real Estate Streams** | Unknown | AI mobile app (March 2026), 3x more conversations in beta, large brokerage install base | **Watch** |
 
 **Positioning:** "The AI lead response that actually works with your FUB"
 
+### Competitive Watch Log
+
+**2026-05-04 — Bi-Weekly Reaffirmation:**
+- **Market verdict: STABLE** — no positioning pivot required
+- **Mod Ai Automation** (HIGH risk): FUB Marketplace listing, voice+SMS, targets solo agents. Most direct analog to LeadFlow. Counter: be first to convert FUB pilots; speed to value matters more than features at this stage.
+- **Inside Real Estate Streams** (Watch): Launched March 2026, backed by IRE brokerage platform. Not targeting solo agents yet but has large distribution advantage. Monitor quarterly.
+- **Structural tailwind**: 82% of agents now use AI tools (RPR 2026), but automated lead response for solos remains underpenetrated — market timing still favorable.
+- **Real Brokerage/RE/MAX $880M acquisition** (April 2026): AI-native brokerages consolidating traditional networks. Long-term could commoditize brokerage-level lead response; solo agent segment remains fragmented for 12-18+ months.
+- **Pricing**: Our $49-$149 range sits correctly below all enterprise competitors. No price adjustment needed.
+
 ---
 
-## 8. Current Status (Day 68 of 180 — 2026-04-24)
+## 8. Current Status (Day 79 of 180 — 2026-05-04)
 
 | Component | Status | Note |
 |-----------|--------|------|
