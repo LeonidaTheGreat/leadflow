@@ -152,7 +152,8 @@ async function runTests() {
       'product/lead-response/dashboard/app/api/admin/pilot-campaigns/[id]/stats/route.ts',
       'product/lead-response/dashboard/app/api/admin/pilot-campaigns/[id]/targets/route.ts',
       'product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/route.ts',
-      'product/lead-response/dashboard/app/api/admin/outreach-candidates/route.ts'
+      'product/lead-response/dashboard/app/api/admin/outreach-candidates/route.ts',
+      'product/lead-response/dashboard/app/api/cron/pilot-recruitment-outreach/route.ts'
     ];
     
     for (const route of routes) {
@@ -207,6 +208,15 @@ async function runTests() {
     // Check that the initial campaign has goal_count of 30
     assert.ok(content.includes('30') && content.includes('goal_count'), 'Migration should set goal to 30 pilots');
     assert.ok(content.includes('30 days') || content.includes("INTERVAL '30 days'"), 'Migration should set 30 day timeframe');
+  });
+
+  // Test 13: Verify outreach cron is scheduled
+  await test('Pilot recruitment outreach cron is configured', async () => {
+    const fs = require('fs');
+    const path = require('path');
+    const vercelPath = path.join(__dirname, '../../product/lead-response/dashboard/vercel.json');
+    const content = fs.readFileSync(vercelPath, 'utf8');
+    assert.ok(content.includes('/api/cron/pilot-recruitment-outreach'), 'Vercel cron path for pilot recruitment outreach must be configured');
   });
 
   console.log(`\n📊 Results: ${passed} passed, ${failed} failed`);
