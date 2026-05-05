@@ -64,6 +64,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
 | LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | Lapsed trial reactivation email campaigns for expired-trial agents |
+| PaymentLinkService | `lib/services/PaymentLinkService.js` | PaymentLinkService — Stripe checkout session generation for tiered subscription upgrades |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
