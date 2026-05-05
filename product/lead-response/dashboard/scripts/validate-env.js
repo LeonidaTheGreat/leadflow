@@ -48,6 +48,17 @@ const isProductionBuild = process.env.NODE_ENV === 'production' || isVercel
 const errors = []
 const warnings = []
 
+// Guard: detect when this Next.js dashboard is being built as a Node.js serverless
+// function from the repo root (wrong Vercel project context). This catches the case
+// where `vercel --prod` runs from root and deploys server.js to leadflow-ai.
+if (isVercel && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+  const expectedUrl = 'leadflow-ai-five.vercel.app'
+  const actualUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  if (actualUrl && !actualUrl.includes('leadflow-ai') && !actualUrl.includes('landyourleads')) {
+    errors.push(`WRONG_PROJECT: This build is running under Vercel project "${actualUrl}" but expected "leadflow-ai". Aborting to prevent deploying the wrong app.`)
+  }
+}
+
 for (const key of REQUIRED) {
   const val = process.env[key]
 
@@ -116,7 +127,11 @@ if (errors.length > 0) {
   console.error('\n❌ ENV VALIDATION FAILED:\n')
   errors.forEach(e => console.error(`  ${e}`))
   console.error('\nFix the environment variables and redeploy.\n')
-  process.exit(1)
+  if (require.main === module) {
+    process.exit(1)
+  }
 } else {
   console.log(`✅ Env validation passed (${REQUIRED.length} vars checked${warnings.length > 0 ? `, ${warnings.length} warnings` : ''})`)
 }
+
+module.exports = { errors, warnings }
