@@ -1,5 +1,30 @@
 'use client'
 
+/*
+Task Spec
+What:
+- Update product/lead-response/dashboard/components/trial-signup-form.tsx (TrialSignupForm.handleSubmit)
+  to emit non-blocking backend funnel events (`trial_cta_clicked`, `trial_signup_started`)
+  via POST /api/events/track before signup API call.
+- Keep existing GA4 client tracking intact and do not send PII in event payloads.
+- Verify and align product/lead-response/dashboard/app/api/auth/trial-signup/route.ts event insert
+  column naming with the live `events` schema (`event_data`).
+
+Verify:
+- npm test
+- npm run build
+- npm run lint
+- npm audit --audit-level=high
+- Grep checks:
+  - rg -n "event_data:" product/lead-response/dashboard/app/api/auth/trial-signup/route.ts
+  - rg -n "trial_signup_started|trial_cta_clicked|/api/events/track" product/lead-response/dashboard/components/trial-signup-form.tsx
+
+Boundaries:
+- Do not change auth/session cookie behavior.
+- Do not change pricing, CTA copy, or onboarding redirect destinations.
+- Do not modify DB schema or unrelated analytics/event routes.
+*/
+
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -10,6 +35,16 @@ interface TrialSignupFormProps {
   compact?: boolean
   className?: string
   onSubmitClick?: () => void
+}
+
+function fireAndForgetFunnelEvent(event: 'trial_cta_clicked' | 'trial_signup_started', properties: Record<string, unknown>) {
+  void fetch('/api/events/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, properties }),
+  }).catch(() => {
+    // Non-critical analytics path; never block signup UX
+  })
 }
 
 export default function TrialSignupForm({ compact = false, className = '', onSubmitClick }: TrialSignupFormProps) {
@@ -36,6 +71,17 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
     const section = searchParams.get('source') === 'pricing' ? 'pricing' : 'hero'
     const ctaId = compact ? 'start_trial_form' : 'get_started_hero'
     trackCTAClick(ctaId, 'Start Free Trial', section)
+    fireAndForgetFunnelEvent('trial_cta_clicked', {
+      cta_id: ctaId,
+      section,
+      source: 'landing_page',
+      form_variant: compact ? 'compact' : 'full',
+    })
+    fireAndForgetFunnelEvent('trial_signup_started', {
+      source: 'landing_page',
+      form_variant: compact ? 'compact' : 'full',
+    })
+    trackFormEvent('form_submit_attempt', 'pilot_signup', { source: 'landing_page' })
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
@@ -73,6 +119,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
         }
         setError(errorMessage)
         setLoading(false)
+        trackFormEvent('form_submit_error', 'pilot_signup', { source: 'landing_page' })
         return
       }
 
@@ -92,10 +139,12 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           // ignore storage errors
         }
       }
+      trackFormEvent('pilot_signup_complete', 'pilot_signup', { source: 'landing_page' })
       router.push(data.redirectTo || '/dashboard/onboarding')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
+      trackFormEvent('form_submit_error', 'pilot_signup', { source: 'landing_page' })
     }
   }
 

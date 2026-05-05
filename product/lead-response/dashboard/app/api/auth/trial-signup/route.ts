@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
         await supabase.from('events').insert({
           event_type: 'trial_signup_completed',
           agent_id: agent.id,
-          properties: {
+          event_data: {
             source: 'trial_cta',
             utm_source: utm_source || null,
             utm_medium: utm_medium || null,
@@ -132,6 +132,16 @@ export async function POST(request: NextRequest) {
             has_name: !!name
           },
           created_at: new Date().toISOString()
+        })
+        await supabase.from('events').insert({
+          event_type: 'trial_started',
+          agent_id: agent.id,
+          event_data: {
+            source: 'trial_cta',
+            plan_tier: 'trial',
+            trial_days: 14,
+          },
+          created_at: new Date().toISOString(),
         })
       } catch (err: unknown) {
         logger.error('Failed to log trial_signup_completed event:', err)
