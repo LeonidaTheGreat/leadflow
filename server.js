@@ -1,4 +1,20 @@
 /**
+ * Task Spec (4c2f6afe-b741-4c93-ade4-c23b601853cd)
+ * What:
+ * - Update /Users/clawdbot/projects/leadflow/server.js only.
+ * - Ensure there is no import or mount for `./routes/admin/payment-links`.
+ * Verify:
+ * - `node --check server.js` exits 0.
+ * - `npm run build` exits 0.
+ * - `npm run lint` exits 0.
+ * - `npm test` exits 0.
+ * - `npm audit --audit-level=high` reports 0 vulnerabilities at high/critical.
+ * - `rg -n \"payment-links\" server.js` returns no matches.
+ * Boundaries:
+ * - Do not modify any other route files or service implementations.
+ * - Do not add new payment-link behavior.
+ */
+/**
  * FUB Webhook Server (Vercel Serverless)
  * Receives real-time lead events from Follow Up Boss
  */
@@ -14,7 +30,6 @@ const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
-const paymentLinksRouter = require('./routes/admin/payment-links');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
 
@@ -52,9 +67,6 @@ app.use('/', activationOutreachRouter);
 
 // Admin: lapsed trial reactivation campaign
 app.use('/', reactivationCampaignRouter);
-
-// Admin: shareable payment links
-app.use('/', paymentLinksRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);
