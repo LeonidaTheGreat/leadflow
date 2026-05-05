@@ -127,7 +127,11 @@ if (errors.length > 0) {
   console.error('\n❌ ENV VALIDATION FAILED:\n')
   errors.forEach(e => console.error(`  ${e}`))
   console.error('\nFix the environment variables and redeploy.\n')
-  process.exit(1)
+  if (require.main === module) {
+    process.exit(1)
+  }
 } else {
   console.log(`✅ Env validation passed (${REQUIRED.length} vars checked${warnings.length > 0 ? `, ${warnings.length} warnings` : ''})`)
 }
+
+module.exports = { errors, warnings }
