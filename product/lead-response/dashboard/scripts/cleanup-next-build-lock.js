@@ -5,18 +5,9 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
-const STALE_AGE_MS = 10 * 60 * 1000 // 10 minutes: lock older than this is always stale
-const WAIT_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes max to wait for a concurrent build
-const POLL_INTERVAL_MS = 2000 // 2 seconds between polls
-
-function isProcessAlive(pid) {
-  try {
-    execSync(`kill -0 ${pid}`, { stdio: 'ignore' })
-    return true
-  } catch {
-    return false
-  }
-}
+const STALE_AGE_MS = 10 * 60 * 1000 // lock older than this is unconditionally stale
+const WAIT_TIMEOUT_MS = 5 * 60 * 1000 // max time to wait for a concurrent build
+const POLL_INTERVAL_MS = 2000 // poll interval while waiting
 
 function getPPID(pid) {
   try {
@@ -27,43 +18,48 @@ function getPPID(pid) {
   }
 }
 
-// Returns PIDs of non-orphaned `next build` processes.
-// Orphaned = parent or grandparent is dead (chain: quality-audit → npm run build → next build).
+function isProcessAlive(pid) {
+  try {
+    execSync(`kill -0 ${pid}`, { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Returns PIDs of genuine (non-orphaned) `next build` processes.
+// Uses "next build" not just "next" to avoid matching the Next.js dev server.
+// Orphaned = parent or grandparent is dead (chain: quality-audit -> npm -> next build).
 function getActiveNextBuildPids() {
-  let pids
+  let rawPids
   try {
     const out = execSync('pgrep -f "node_modules/.bin/next build"', { encoding: 'utf8' })
-    pids = out.trim().split('\n').filter(Boolean)
+    rawPids = out.trim().split('\n').filter(Boolean).map(Number)
   } catch {
     return [] // pgrep exits 1 when no match
   }
 
-  if (pids.length === 0) return []
-
-  const active = []
-  for (const pidStr of pids) {
-    const pid = Number(pidStr)
+  return rawPids.filter(pid => {
     const ppid = getPPID(pid)
-    if (!ppid || !isProcessAlive(ppid)) continue // parent dead — orphaned
+    if (!ppid || !isProcessAlive(ppid)) return false
 
     const gppid = getPPID(ppid)
-    if (!gppid || !isProcessAlive(gppid)) continue // grandparent dead — orphaned chain
+    if (!gppid || !isProcessAlive(gppid)) return false
 
-    active.push(pid)
-  }
-  return active
+    return true
+  })
 }
 
 // Polls until no active build PIDs remain or maxWaitMs elapses.
-// Returns the still-active PIDs when done (empty = all finished).
-async function waitForBuildsToFinish(maxWaitMs = WAIT_TIMEOUT_MS, pollIntervalMs = POLL_INTERVAL_MS) {
+// Returns any still-running PIDs when done (empty = all finished or orphaned).
+async function waitForBuildsToFinish(maxWaitMs, pollIntervalMs) {
   const deadline = Date.now() + maxWaitMs
-  let active = getActiveNextBuildPids()
-  while (active.length > 0 && Date.now() < deadline) {
+  while (Date.now() < deadline) {
+    const remaining = getActiveNextBuildPids()
+    if (remaining.length === 0) return []
     await new Promise(resolve => setTimeout(resolve, pollIntervalMs))
-    active = getActiveNextBuildPids()
   }
-  return active
+  return getActiveNextBuildPids()
 }
 
 async function removeStaleNextBuildLock() {
@@ -74,34 +70,45 @@ async function removeStaleNextBuildLock() {
   const lockAgeMs = Date.now() - lockStat.mtimeMs
 
   if (lockAgeMs >= STALE_AGE_MS) {
-    // Lock is old enough to be unconditionally stale — kill and remove
-    try { execSync("pkill -f 'node_modules/.bin/next'", { stdio: 'ignore' }) } catch {}
+    // Lock is old enough to be unconditionally stale
+    try { execSync("pkill -f 'node_modules/.bin/next build'", { stdio: 'ignore' }) } catch {}
     fs.rmSync(lockPath, { force: true })
     console.log(`Removed stale .next/lock (age: ${Math.round(lockAgeMs / 60000)}m) before build`)
     return
   }
 
-  // Lock is fresh — wait for any legitimate concurrent build to finish
-  const remaining = await waitForBuildsToFinish()
-
-  if (remaining.length > 0) {
-    // Build timed out — force-remove so our build can proceed
-    try { execSync("pkill -f 'node_modules/.bin/next'", { stdio: 'ignore' }) } catch {}
+  // Lock is fresh -- check for a concurrent build
+  const activePids = getActiveNextBuildPids()
+  if (activePids.length === 0) {
+    // No active build -- lock is a leftover from a crashed build
     fs.rmSync(lockPath, { force: true })
-    console.log('Removed stuck .next/lock (concurrent build timed out) before build')
-  } else {
-    // All builds finished (or were orphaned) — safe to remove the leftover lock
-    fs.rmSync(lockPath, { force: true })
-    console.log(`Removed .next/lock (age: ${Math.round(lockAgeMs / 1000)}s, builds done) before build`)
+    const ageDesc = lockAgeMs >= 60000
+      ? `${Math.round(lockAgeMs / 60000)}m`
+      : `${Math.round(lockAgeMs / 1000)}s`
+    console.log(`Removed orphaned .next/lock (age: ${ageDesc}, no active build) before build`)
+    return
   }
+
+  // A concurrent build is running -- wait for it to finish
+  const remaining = await waitForBuildsToFinish(WAIT_TIMEOUT_MS, POLL_INTERVAL_MS)
+
+  // Re-check: build may have cleaned up its own lock on success
+  if (!fs.existsSync(lockPath)) return
+
+  // Lock still exists -- the concurrent build crashed or timed out
+  if (remaining.length > 0) {
+    try { execSync("pkill -f 'node_modules/.bin/next build'", { stdio: 'ignore' }) } catch {}
+  }
+  fs.rmSync(lockPath, { force: true })
+  const reason = remaining.length > 0 ? 'timed out' : 'crashed'
+  console.log(`Removed .next/lock (concurrent build ${reason}) before build`)
 }
 
 module.exports = { getActiveNextBuildPids, waitForBuildsToFinish }
 
-// Only run side effects when executed directly (not required by tests)
 if (require.main === module) {
   removeStaleNextBuildLock().catch(err => {
-    console.error('cleanup-next-build-lock error:', err.message)
+    console.error('cleanup-next-build-lock:', err.message)
     process.exit(1)
   })
 }
