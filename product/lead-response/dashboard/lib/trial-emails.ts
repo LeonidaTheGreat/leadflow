@@ -10,7 +10,7 @@ function getResend(): Resend {
   return _resend
 }
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 const FROM_DISPLAY = `LeadFlow AI <${FROM_EMAIL}>`
 
 interface TrialAgent {

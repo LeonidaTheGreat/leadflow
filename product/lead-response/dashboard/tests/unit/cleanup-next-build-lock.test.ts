@@ -10,7 +10,6 @@ const scriptPath = '../../scripts/cleanup-next-build-lock.js'
 
 describe('cleanup-next-build-lock', () => {
   beforeEach(() => {
-    jest.resetModules()
     mockedExecSync.mockReset()
   })
 

@@ -17,7 +17,7 @@
  * - npm run build (root succeeds)
  * - npm run lint (0 errors)
  * - npm audit --audit-level=high (0 high/critical)
- * - grep checks confirm no onboarding@resend.dev fallback in dashboard email libs
+ * - grep checks confirm no test domain fallback in dashboard email libs
  * Boundaries:
  * - Do not change routes, DB schema, or non-email business logic
  * - Do not modify protected generated docs/config files
@@ -40,10 +40,10 @@ async function getResend() {
   }
 }
 
-// leadflow.ai domain is verified in Resend — onboarding@leadflow.ai is the default sender.
+// landyourleads.com domain is verified in Resend — onboarding@landyourleads.com is the default sender.
 // Override via FROM_EMAIL env var if needed.
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 const COMPANY_NAME = 'LeadFlow AI'
 const SUPPORT_EMAIL = 'support@landyourleads.com'
 
