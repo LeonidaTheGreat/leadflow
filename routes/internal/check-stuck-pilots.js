@@ -14,7 +14,11 @@ const requireCronSecret = require('../../lib/middleware/require-cron-secret');
 const { createDefaultStuckPilotsService } = require('../../lib/services/StuckPilotsService');
 const { logger } = require('../../lib/logger');
 const log = logger.child('check-stuck-pilots');
-const stuckPilotsService = createDefaultStuckPilotsService();
+
+// Lazy-initialized: getPool() throws if LOCAL_PG_URL is not set at module load time.
+// Deferring initialization to the first request prevents startup crashes in environments
+// where LOCAL_PG_URL is intentionally absent (e.g., preview deployments, Next.js builds).
+let stuckPilotsService = null;
 
 /**
  * GET /api/cron/check-stuck-pilots
@@ -26,6 +30,9 @@ router.get('/api/cron/check-stuck-pilots', requireCronSecret, async (req, res) =
   log.info('Cron triggered');
 
   try {
+    if (!stuckPilotsService) {
+      stuckPilotsService = createDefaultStuckPilotsService();
+    }
     const result = await stuckPilotsService.checkAndAlertStuckPilots();
 
     log.info('Done', result);
