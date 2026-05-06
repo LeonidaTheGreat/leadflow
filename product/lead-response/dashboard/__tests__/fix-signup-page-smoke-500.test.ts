@@ -10,4 +10,12 @@ describe('fix-signup-page-smoke-500', () => {
     expect(source).toMatch(/new URLSearchParams\(window\.location\.search\)/)
     expect(source).toMatch(/setIsTrialMode\(mode === 'trial'\)/)
   })
+
+  it('middleware avoids jose import in auth token path', () => {
+    const middlewarePath = path.join(process.cwd(), 'middleware.ts')
+    const source = fs.readFileSync(middlewarePath, 'utf8')
+
+    expect(source).not.toMatch(/from 'jose'/)
+    expect(source).toMatch(/verifyHs256Jwt/)
+  })
 })

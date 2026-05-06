@@ -129,21 +129,16 @@ const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
 const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 
 /**
- * Extract userId from either JWT (auth-token) or session token (leadflow_session)
- * Uses Edge-compatible jose library for JWT verification.
- * For session tokens, queries the sessions table via PostgREST (pure fetch, Edge-safe).
+ * Extract userId from either JWT (auth-token) or session token (leadflow_session).
+ * Uses Edge-native Web Crypto HS256 verification for JWT, then PostgREST for sessions.
  */
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   // Try JWT token first (from trial-signup)
   const jwtToken = request.cookies.get('auth-token')?.value
   if (jwtToken) {
-    try {
-      const payload = await verifyHs256Jwt(jwtToken, JWT_SECRET)
-      if (payload && payload.userId) {
-        return payload.userId as string
-      }
-    } catch {
-      // JWT validation failed, try session token
+    const payload = await verifyHs256Jwt(jwtToken, JWT_SECRET)
+    if (payload && payload.userId) {
+      return payload.userId as string
     }
   }
 
