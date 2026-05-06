@@ -1,20 +1,3 @@
-/**
- * Task Spec — 8f24f202-7f4a-4fa4-ab47-1bf4fedb79ca
- * What:
- * - Update routes/admin/reactivation-campaign.js to keep POST /api/admin/reactivation-campaign aligned with the PM contract.
- * - Verify route delegates campaign execution to lib/services/LapsedTrialReactivationService.js and keeps auth via lib/services/api-key-auth-service.js.
- * - Ensure the admin key header path accepts LEADFLOW_API_KEY-formatted header names from clients.
- * Verify:
- * - npm run lint exits 0.
- * - npm test exits 0.
- * - npm run build exits 0.
- * - npm audit --audit-level=high exits 0.
- * - tests/unit/lapsed-trial-reactivation-service.test.js still verifies eligible query and reactivation email payload/UTM link behavior.
- * Boundaries:
- * - Do not add or modify DB schema/migrations.
- * - Do not touch checkout/Stripe routes.
- * - Do not change unrelated admin endpoints.
- */
 'use strict';
 
 const express = require('express');
@@ -59,6 +42,22 @@ function validateBody(body) {
 
   return { ok: true, limit };
 }
+
+router.get('/api/admin/reactivation-campaign/stats', async (req, res) => {
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const service = new LapsedTrialReactivationService({ pool: getPool() });
+
+  try {
+    const stats = await service.getStats();
+    return res.json(stats);
+  } catch (err) {
+    log.error('Reactivation stats failed', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.post('/api/admin/reactivation-campaign', async (req, res) => {
   if (!isAuthorized(req)) {

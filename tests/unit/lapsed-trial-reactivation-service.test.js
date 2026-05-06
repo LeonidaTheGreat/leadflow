@@ -62,6 +62,7 @@ describe('LapsedTrialReactivationService', () => {
 
     const eligibilitySql = pool.query.mock.calls[1][0];
     expect(eligibilitySql).toContain('trial_ends_at < NOW()');
+    expect(eligibilitySql).toContain("COALESCE(aha_completed, false) = false");
     expect(eligibilitySql).toContain("COALESCE(subscription_status, 'inactive') != 'active'");
     expect(eligibilitySql).toContain('COALESCE(trial_email_expired_sent, false) = false');
   });
@@ -99,5 +100,20 @@ describe('LapsedTrialReactivationService', () => {
     expect(result.sent_count).toBe(1);
     expect(result.failed_count).toBe(0);
     expect(result.sent[0].resend_id).toBe('re_123');
+  });
+
+  it('getStats returns campaign funnel metrics', async () => {
+    pool.query
+      .mockResolvedValueOnce({ rows: [{ count: 10 }] })
+      .mockResolvedValueOnce({ rows: [{ sent: 3, opened_via_utm: 1, reactivated: 0 }] });
+
+    const stats = await service.getStats();
+
+    expect(stats).toEqual({
+      eligible: 10,
+      sent: 3,
+      opened_via_utm: 1,
+      reactivated: 0,
+    });
   });
 });

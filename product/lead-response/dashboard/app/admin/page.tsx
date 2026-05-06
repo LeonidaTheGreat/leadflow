@@ -271,6 +271,20 @@ export default function AdminCommandCenterPage() {
                   Review funnel data <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
+
+              <Link
+                href="/admin/reactivation"
+                className="rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:border-rose-500"
+              >
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Win-Back</p>
+                <p className="mt-2 text-lg font-medium text-white">Lapsed trial reactivation</p>
+                <p className="mt-2 text-sm text-slate-400">
+                  Campaign stats for expired-trial agents who never hit the aha moment.
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm text-rose-300">
+                  View reactivation funnel <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
             </div>
           </div>
 
