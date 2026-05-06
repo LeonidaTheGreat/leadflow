@@ -1,4 +1,21 @@
 # LeadFlow AI — Project Context
+<!--
+TASK SPEC (7f62e37e-167a-4ffb-8e2f-91ee9f4a1de3)
+What:
+- Change file: CLAUDE.md
+- Section: "## Current Status"
+- Replace stale "Registered agents" metric line with counts sourced from local PostgreSQL (openclaw DB), and clarify what each count represents.
+
+Verify:
+- Run: rg -n "Registered agents|pilot_signups|Source:" CLAUDE.md
+- Run: psql "$LOCAL_PG_URL" -c "SELECT COUNT(*) FROM real_estate_agents; SELECT COUNT(*) FROM pilot_signups;"
+- Confirm CLAUDE.md numbers match query output and include source/date context to reduce future drift ambiguity.
+
+Boundaries:
+- Do not modify application code, routes, services, migrations, or tests.
+- Do not edit SCHEMA.md auto-generated content in this task.
+- Do not change any other KPI lines besides stale agent count context in CLAUDE.md.
+-->
 
 ## What is LeadFlow
 Real estate AI lead response service. Responds to leads via SMS in <30 seconds,
@@ -9,7 +26,7 @@ integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
 ## Current Status
 - MVP: ✅ Complete
 - Phase: Pilot → Conversion Push (Day 79 of 90)
-- Registered agents: 363 (344 trial, 11 pilot, 0 paying)
+- Registered agents (local PostgreSQL `openclaw` as of 2026-05-06): 61 `real_estate_agents`; pilot intake: 35 `pilot_signups`
 - Deployed on Vercel
 
 ## Key Directories
@@ -178,4 +195,3 @@ The following .md files are **auto-generated** from the database by `scripts/gen
 Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifying a PRD doc, update the `prds` table (`file_path`, `status`, `version`).
 
 Journey definitions live in `project.config.json` → `journeys[]`. The PM agent is responsible for reviewing and maintaining these — adding new journeys as the product evolves, updating steps when flows change, and triggering manual reviews via `!journey-review`.
-
