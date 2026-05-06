@@ -1,19 +1,23 @@
 /*
-Task Spec (22c1592b-bcdb-40ad-81cc-fb3afb63dac0)
+Task Spec (45bfe698-b528-44ce-832a-483bf5bd6c50)
 What:
-- Change redirect target in product/lead-response/dashboard/middleware.ts inside middleware() expired-trial branch from /upgrade to /dashboard/trial-expired.
+- Update product/lead-response/dashboard/middleware.ts:
+  - Remove jose dependency usage in middleware auth-token validation path.
+  - Add Edge-native HS256 JWT verification helper using Web Crypto and base64url parsing.
+  - Keep existing redirect/onboarding/trial behavior unchanged.
 Verify:
-- grep -n "upgrade" product/lead-response/dashboard/middleware.ts shows no /upgrade redirect target in expired-trial redirect line.
+- curl -i https://leadflow-ai-five.vercel.app/signup returns HTTP 200 after deploy.
+- cd product/lead-response/dashboard && npm run lint exits 0.
 - cd product/lead-response/dashboard && npm run build exits 0.
-- cd /private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-22c1592b-bcdb-40ad-81cc-fb3afb63dac0 && npm test exits 0.
+- cd product/lead-response/dashboard && npm test exits 0.
+- cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-45bfe698-b528-44ce-832a-483bf5bd6c50 && npm run build && npm run lint && npm test && npm audit --audit-level=high exit 0.
 Boundaries:
-- Do not modify app/dashboard/trial-expired/page.tsx.
-- Do not alter any redirect logic other than the expired-trial target path.
-- Keep fix limited to this redirect path update.
+- Do not modify signup page UI/components/routes.
+- Do not change protected/auth route lists or redirect destinations.
+- Do not touch database schema, migrations, or API handlers.
 */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { jwtVerify } from 'jose'
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -50,6 +54,64 @@ const EXPIRED_TRIAL_ALLOWED_ROUTES = [
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
+function base64UrlToUint8Array(input: string): Uint8Array {
+  const normalized = input.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=')
+  const decoded = atob(padded)
+  const bytes = new Uint8Array(decoded.length)
+  for (let i = 0; i < decoded.length; i += 1) {
+    bytes[i] = decoded.charCodeAt(i)
+  }
+  return bytes
+}
+
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
+}
+
+async function verifyHs256Jwt(token: string, secret: string): Promise<Record<string, unknown> | null> {
+  const parts = token.split('.')
+  if (parts.length !== 3) return null
+
+  const [encodedHeader, encodedPayload, encodedSignature] = parts
+
+  try {
+    const headerJson = new TextDecoder().decode(base64UrlToUint8Array(encodedHeader))
+    const header = JSON.parse(headerJson) as { alg?: string; typ?: string }
+    if (header.alg !== 'HS256') return null
+
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    )
+
+    const signatureBytes = base64UrlToUint8Array(encodedSignature)
+    const verified = await crypto.subtle.verify(
+      'HMAC',
+      key,
+      toArrayBuffer(signatureBytes),
+      new TextEncoder().encode(`${encodedHeader}.${encodedPayload}`)
+    )
+
+    if (!verified) return null
+
+    const payloadJson = new TextDecoder().decode(base64UrlToUint8Array(encodedPayload))
+    const payload = JSON.parse(payloadJson) as Record<string, unknown>
+
+    const exp = payload.exp
+    if (typeof exp === 'number' && Date.now() >= exp * 1000) {
+      return null
+    }
+
+    return payload
+  } catch {
+    return null
+  }
+}
+
 /**
  * Hash a session token using SHA-256 (Web Crypto API — Edge-compatible).
  * Must match the hashToken() in lib/services/AuthService.ts which uses Node crypto.
@@ -76,9 +138,8 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
   const jwtToken = request.cookies.get('auth-token')?.value
   if (jwtToken) {
     try {
-      const secret = new TextEncoder().encode(JWT_SECRET)
-      const { payload } = await jwtVerify(jwtToken, secret)
-      if (payload.userId) {
+      const payload = await verifyHs256Jwt(jwtToken, JWT_SECRET)
+      if (payload && payload.userId) {
         return payload.userId as string
       }
     } catch {
