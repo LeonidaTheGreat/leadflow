@@ -31,4 +31,10 @@ describe('Frictionless demo onboarding redirects', () => {
     expect(pilotSource).toContain("router.push(data.redirectTo || '/dashboard/onboarding')")
     expect(pilotSource).not.toContain("router.push(data.redirectTo || '/setup')")
   })
+
+  it('middleware redirects incomplete users to /dashboard/onboarding', () => {
+    const source = read('middleware.ts')
+    expect(source).toContain("pathname.startsWith('/dashboard/onboarding')")
+    expect(source).toContain("new URL('/dashboard/onboarding', request.url)")
+  })
 })
