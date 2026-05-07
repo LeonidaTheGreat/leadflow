@@ -1,20 +1,25 @@
 /*
-Task Spec (45bfe698-b528-44ce-832a-483bf5bd6c50)
+Task Spec (d729a061-43b0-421f-892a-e919ac0f5044)
 What:
 - Update product/lead-response/dashboard/middleware.ts:
-  - Remove jose dependency usage in middleware auth-token validation path.
-  - Add Edge-native HS256 JWT verification helper using Web Crypto and base64url parsing.
-  - Keep existing redirect/onboarding/trial behavior unchanged.
+  - Preserve protected-route onboarding enforcement.
+  - Treat /dashboard/onboarding as the allowed onboarding destination.
+  - Redirect incomplete users to /dashboard/onboarding (not /setup) for protected routes.
+- Update product/lead-response/dashboard/tests/frictionless-demo-onboarding-redirects.test.ts:
+  - Assert middleware onboarding redirect target is /dashboard/onboarding.
 Verify:
-- curl -i https://leadflow-ai-five.vercel.app/signup returns HTTP 200 after deploy.
-- cd product/lead-response/dashboard && npm run lint exits 0.
-- cd product/lead-response/dashboard && npm run build exits 0.
-- cd product/lead-response/dashboard && npm test exits 0.
-- cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-45bfe698-b528-44ce-832a-483bf5bd6c50 && npm run build && npm run lint && npm test && npm audit --audit-level=high exit 0.
+- Reproduce before fix:
+  - POST https://leadflow-ai-five.vercel.app/api/auth/trial-signup (new email) returns redirectTo=/dashboard/onboarding.
+  - GET https://leadflow-ai-five.vercel.app/dashboard/onboarding with signup cookies returns 307 Location: /setup (failure).
+- Validate after fix (code-level + tests):
+  - cd product/lead-response/dashboard && npm test -- tests/frictionless-demo-onboarding-redirects.test.ts
+  - Confirm middleware source now contains redirect('/dashboard/onboarding') behavior.
+- Quality gates:
+  - cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-d729a061-43b0-421f-892a-e919ac0f5044 && npm run build && npm run lint && npm test && npm audit --audit-level=high
 Boundaries:
-- Do not modify signup page UI/components/routes.
-- Do not change protected/auth route lists or redirect destinations.
-- Do not touch database schema, migrations, or API handlers.
+- Do not modify signup API route payload shape/cookie behavior.
+- Do not change onboarding page components or setup wizard implementation.
+- Do not touch database schema, migrations, or non-onboarding middleware behaviors.
 */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
@@ -292,14 +297,16 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
-    // Check if onboarding is required and redirect to setup (AC-3)
-    // Skip this check for /setup and /onboarding routes
+    // Check if onboarding is required and redirect to onboarding wizard
+    // Skip this check for setup/onboarding destinations themselves.
     if (userId && isProtectedRoute) {
-      const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/onboarding')
+      const isSetupRoute = pathname.startsWith('/setup')
+        || pathname.startsWith('/onboarding')
+        || pathname.startsWith('/dashboard/onboarding')
       if (!isSetupRoute) {
         const onboardingCompleted = await isOnboardingCompleted(userId)
         if (!onboardingCompleted) {
-          return NextResponse.redirect(new URL('/setup', request.url))
+          return NextResponse.redirect(new URL('/dashboard/onboarding', request.url))
         }
       }
     }
