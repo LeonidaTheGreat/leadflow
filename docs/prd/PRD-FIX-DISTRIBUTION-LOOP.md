@@ -1,4 +1,23 @@
 # PRD: Fix Distribution Health Check Loop
+<!--
+TASK SPEC (eb5ef675-2276-4dbd-a86b-a68822452c02)
+What:
+- Change file: docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md
+- Update stale dedup/cooldown window values in sections: "Fix 2", "Fix 3", "Acceptance Criteria", and "E2E Test Specs".
+- Align wording to current implementation in Genome:
+  - /Users/clawdbot/.openclaw/genome/scripts/distribution-collector.js
+  - /Users/clawdbot/.openclaw/genome/core/task-store-base.js
+
+Verify:
+- Run: rg -n "24 hours|4 hours|7 days|24h cooldown|dedup window|Loop detector 24h guard" docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md
+- Run: rg -n "7 \\* 24 \\* 60 \\* 60 \\* 1000|24 \\* 60 \\* 60 \\* 1000|24h cooldown|Dedup guard: skip if equivalent task created in last 7 days" /Users/clawdbot/.openclaw/genome/scripts/distribution-collector.js /Users/clawdbot/.openclaw/genome/core/task-store-base.js
+- Quality gates: npm run build, npm run lint, npm test, npm audit --audit-level=high
+
+Boundaries:
+- Do not modify product/runtime code in routes/, lib/, server.js, or Genome core/scripts.
+- Do not modify other PRDs or auto-generated docs.
+- Do not change behavior; documentation alignment only.
+-->
 
 **ID:** PRD-FIX-DISTRIBUTION-LOOP  
 **Status:** approved  
@@ -91,18 +110,18 @@ Additionally, add error handling in `checkDistributionHealth()` so a table-not-f
 **File:** `~/.openclaw/genome/scripts/distribution-collector.js`  
 **Function:** `createDistributionTasks()`
 
-Before calling `store.createTask()`, check for an existing non-cancelled, non-failed task with the same title that was created within the last 24 hours:
+Before calling `store.createTask()`, check for an existing non-cancelled, non-failed task with the same title that was created within the last 7 days:
 
 ```js
 // Dedup: skip if a task with this title already exists and is recent
-const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 const { data: existingTask } = await store.supabase
   .from('tasks')
   .select('id, status, created_at')
   .eq('project_id', store.projectId)
   .eq('title', title)
   .not('status', 'in', '("cancelled","failed")')
-  .gte('created_at', twentyFourHoursAgo)
+  .gte('created_at', sevenDaysAgo)
   .limit(1)
 
 if (existingTask && existingTask.length > 0) {
@@ -111,24 +130,24 @@ if (existingTask && existingTask.length > 0) {
 }
 ```
 
-The dedup window should be **24 hours** — long enough that heartbeats don't re-spawn the same distribution task every 10 minutes, but short enough that if a real distribution regression occurs the next day, it will be actioned.
+The dedup window should be **7 days** — long enough to prevent repeated task churn from persistent distribution issues across many heartbeats, while still allowing a fresh task after a full week if the issue remains unresolved.
 
 ### Fix 3 — Extend loop detector guard to cover recently-done tasks
 
 **File:** `~/.openclaw/genome/core/task-store.js`  
 **Location:** Loop detection block (~line 147)
 
-Change the guard from checking only "not done/failed/cancelled" to also checking "created within the last 4 hours":
+Change the guard from checking only "not done/failed/cancelled" to also checking "created within the last 24 hours":
 
 ```js
 // Guard: skip if a loop-investigation task was already created recently (open OR just completed)
-const fourHoursAgo = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
+const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 const { data: existingInv } = await this.supabase
   .from('tasks')
   .select('id')
   .eq('project_id', this.projectId)
   .eq('title', invTitle)
-  .gte('created_at', fourHoursAgo)
+  .gte('created_at', twentyFourHoursAgo)
   .limit(1)
 
 if (existingInv && existingInv.length > 0) {
@@ -147,8 +166,8 @@ This prevents the loop detector itself from looping when investigation tasks com
 2. After fix is deployed, no new "PM: Loop detected — PM: Distribution — Create Landing Page" tasks are created (secondary loop stopped).
 3. `distribution_channels` table exists and has an active `landing_page` row for project `leadflow`.
 4. If `distribution_channels` table is dropped/missing, `checkDistributionHealth()` returns `[]` (no issues) and logs a warning — it does NOT create tasks.
-5. The dedup window for distribution tasks is exactly 24 hours.
-6. The loop detector guard covers tasks created within the last 4 hours (open OR completed).
+5. The dedup window for distribution tasks is exactly 7 days.
+6. The loop detector guard covers tasks created within the last 24 hours (open OR completed).
 
 ---
 
@@ -170,9 +189,9 @@ This prevents the loop detector itself from looping when investigation tasks com
 - **Trigger:** Rename `distribution_channels` table, run `checkDistributionHealth()`
 - **Expected:** Returns `[]`, logs warning, no tasks created
 
-### Test 3: Loop detector 4h guard
+### Test 3: Loop detector 24h guard
 - **Trigger:** Mark all "PM: Loop detected" tasks done, then re-trigger loop detection
-- **Expected:** If most recent done task is < 4h old, no new investigation task is created
+- **Expected:** If most recent done task is < 24h old, no new investigation task is created
 
 ---
 
