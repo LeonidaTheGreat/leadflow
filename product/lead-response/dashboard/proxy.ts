@@ -1,20 +1,19 @@
 /*
-Task Spec (45bfe698-b528-44ce-832a-483bf5bd6c50)
+Task Spec (921c639b-4cca-47cd-a862-73a6870f6869)
 What:
-- Update product/lead-response/dashboard/middleware.ts:
-  - Remove jose dependency usage in middleware auth-token validation path.
-  - Add Edge-native HS256 JWT verification helper using Web Crypto and base64url parsing.
-  - Keep existing redirect/onboarding/trial behavior unchanged.
+- Replace Next.js deprecated runtime entrypoint by moving
+  product/lead-response/dashboard/middleware.ts -> product/lead-response/dashboard/proxy.ts
+  while preserving existing auth/onboarding/trial gating behavior and exported matcher config.
+- Keep the same function body and helper behavior; only runtime entrypoint migration.
 Verify:
-- curl -i https://leadflow-ai-five.vercel.app/signup returns HTTP 200 after deploy.
 - cd product/lead-response/dashboard && npm run lint exits 0.
-- cd product/lead-response/dashboard && npm run build exits 0.
-- cd product/lead-response/dashboard && npm test exits 0.
-- cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-45bfe698-b528-44ce-832a-483bf5bd6c50 && npm run build && npm run lint && npm test && npm audit --audit-level=high exit 0.
+- cd product/lead-response/dashboard && npm run build exits 0 (no middleware deprecation warning, proxy listed).
+- cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-921c639b-4cca-47cd-a862-73a6870f6869 && npm run build && npm run lint && npm test && npm audit --audit-level=high all exit 0.
+- After deploy: curl -I https://leadflow-ai-five.vercel.app/login returns HTTP 200.
 Boundaries:
-- Do not modify signup page UI/components/routes.
-- Do not change protected/auth route lists or redirect destinations.
-- Do not touch database schema, migrations, or API handlers.
+- Do not modify login/signup page UI/components.
+- Do not change auth logic, redirects, cookie names, or DB query behavior.
+- Do not touch migrations/schema or unrelated API routes/services.
 */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
@@ -252,7 +251,7 @@ async function isTrialExpired(userId: string): Promise<boolean> {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
 
