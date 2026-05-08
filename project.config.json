@@ -392,6 +392,7 @@
       }
     }
   },
+  "phase": "pre-launch",
   "reporting": {
     "day_zero": "2026-02-15",
     "day_target": 90,
