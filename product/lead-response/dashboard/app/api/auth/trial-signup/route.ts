@@ -13,7 +13,17 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name, firstName: firstNameParam, lastName: lastNameParam, utm_source, utm_medium, utm_campaign } = await request.json()
+    const {
+      email,
+      password,
+      name,
+      firstName: firstNameParam,
+      lastName: lastNameParam,
+      source,
+      utm_source,
+      utm_medium,
+      utm_campaign
+    } = await request.json()
 
     // Validate required fields (only email + password required for frictionless trial)
     if (!email || !password) {
@@ -74,6 +84,7 @@ export async function POST(request: NextRequest) {
     // Calculate trial end date (14 days from now)
     const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
     const now = new Date().toISOString()
+    const signupSource = typeof source === 'string' && source.trim() ? source.trim() : 'trial_cta'
 
     // Create agent record with trial tier
     const { data: agent, error: createError } = await supabase
@@ -87,7 +98,7 @@ export async function POST(request: NextRequest) {
         plan_tier: 'trial',
         trial_ends_at: trialEndsAt,
         mrr: 0,
-        source: 'trial_cta',
+        source: signupSource,
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
@@ -123,7 +134,7 @@ export async function POST(request: NextRequest) {
           event_type: 'trial_signup_completed',
           agent_id: agent.id,
           properties: {
-            source: 'trial_cta',
+            source: signupSource,
             utm_source: utm_source || null,
             utm_medium: utm_medium || null,
             utm_campaign: utm_campaign || null,
