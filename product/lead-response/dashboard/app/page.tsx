@@ -23,6 +23,19 @@ export default function HomePage() {
     return cleanup
   }, [])
 
+  useEffect(() => {
+    void fetch('/api/events/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'landing_page_viewed',
+        properties: { page: 'home' },
+      }),
+    }).catch(() => {
+      // Non-blocking analytics.
+    })
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-x-hidden">
       {/* Urgency Banner — pilot scarcity trigger */}

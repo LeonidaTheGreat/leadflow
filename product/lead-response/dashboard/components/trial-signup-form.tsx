@@ -1,10 +1,37 @@
+/**
+ * TASK SPEC (f84b4d24-95dd-485c-a5ec-fcc9d40264e9)
+ * What:
+ * - Update product/lead-response/dashboard/components/trial-signup-form.tsx (TrialSignupForm.handleSubmit)
+ *   to send explicit attribution source + emit funnel diagnostics events.
+ * - Update product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (POST)
+ *   to persist request source on new real_estate_agents rows and event properties.
+ * - Update product/lead-response/dashboard/app/api/events/track/route.ts (VALID_EVENTS)
+ *   to accept new landing funnel diagnostics event names.
+ * - Update product/lead-response/dashboard/app/page.tsx (HomePage/useEffect)
+ *   to emit a landing page view event.
+ * - Add tests/e2e/f84b4d24-landing-funnel-attribution.test.js to verify attribution + event wiring.
+ *
+ * Verify:
+ * - npm test
+ * - npm run lint
+ * - npm run build
+ * - npm audit --audit-level=high
+ * - grep checks:
+ *   rg -n "landing_page_viewed|trial_signup_validation_failed|trial_signup_api_failed" product/lead-response/dashboard
+ *   rg -n "source: signupSource" product/lead-response/dashboard/app/api/auth/trial-signup/route.ts
+ *
+ * Boundaries:
+ * - Do not modify database schema/migrations.
+ * - Do not change pricing/checkout business logic.
+ * - Do not alter unrelated onboarding/dashboard behavior.
+ */
 'use client'
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { trackCTAClick, trackFormEvent } from '@/lib/analytics/ga4'
+import { trackCTAClick } from '@/lib/analytics/ga4'
 
 interface TrialSignupFormProps {
   compact?: boolean
@@ -23,6 +50,24 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDuplicateEmailError, setIsDuplicateEmailError] = useState(false)
+  const signupSource = searchParams.get('source') || 'landing_page'
+  const trackFunnelEvent = async (event: string, properties?: Record<string, unknown>) => {
+    try {
+      await fetch('/api/events/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event,
+          properties: {
+            source: signupSource,
+            ...(properties || {}),
+          },
+        }),
+      })
+    } catch {
+      // Diagnostics events are non-blocking.
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,14 +81,17 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
     const section = searchParams.get('source') === 'pricing' ? 'pricing' : 'hero'
     const ctaId = compact ? 'start_trial_form' : 'get_started_hero'
     trackCTAClick(ctaId, 'Start Free Trial', section)
+    void trackFunnelEvent('trial_signup_started', { section, compact })
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       setError('Please enter a valid email address')
+      void trackFunnelEvent('trial_signup_validation_failed', { reason: 'invalid_email' })
       return
     }
     if (password.length < 8) {
       setError('Password must be at least 8 characters')
+      void trackFunnelEvent('trial_signup_validation_failed', { reason: 'weak_password' })
       return
     }
 
@@ -57,6 +105,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           email,
           password,
           name: name || undefined,
+          source: signupSource,
           utm_source: searchParams.get('utm_source') || undefined,
           utm_medium: searchParams.get('utm_medium') || undefined,
           utm_campaign: searchParams.get('utm_campaign') || undefined,
@@ -71,10 +120,13 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
         if (response.status === 409 || errorMessage.toLowerCase().includes('already exists')) {
           setIsDuplicateEmailError(true)
         }
+        void trackFunnelEvent('trial_signup_api_failed', { status: response.status })
         setError(errorMessage)
         setLoading(false)
         return
       }
+
+      void trackFunnelEvent('trial_signup_completed', { redirectTo: data.redirectTo || '/dashboard/onboarding' })
 
       // Store auth token + user in localStorage BEFORE navigation (FR-2)
       // This ensures /dashboard/onboarding can render without calling /api/auth/me
@@ -95,6 +147,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
       router.push(data.redirectTo || '/dashboard/onboarding')
     } catch {
       setError('Something went wrong. Please try again.')
+      void trackFunnelEvent('trial_signup_api_failed', { status: 'network_error' })
       setLoading(false)
     }
   }

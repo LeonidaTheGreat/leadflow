@@ -10,7 +10,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 const VALID_EVENTS = new Set([
   'trial_cta_clicked',
   'trial_signup_started',
+  'trial_signup_validation_failed',
+  'trial_signup_api_failed',
   'trial_signup_completed',
+  'landing_page_viewed',
   'dashboard_first_paint',
   'sample_data_rendered',
   'wizard_started',
