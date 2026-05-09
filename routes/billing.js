@@ -14,7 +14,7 @@
 
 const express = require('express');
 const router = express.Router();
-const BillingService = require('../lib/services/BillingService');
+const billing = require('../lib/services/BillingService');
 const requireApiKey = require('../lib/middleware/require-api-key');
 const { writeDeadLetter } = require('../lib/utils/dead-letter');
 const { logger } = require('../lib/logger');
@@ -23,8 +23,6 @@ const log = logger.child('billing');
 
 const VALID_TIERS = ['starter', 'professional', 'enterprise'];
 const VALID_INTERVALS = ['month', 'year'];
-
-const billing = new BillingService();
 
 // ─── POST /webhook/stripe ─────────────────────────────────────────────────────
 // NOTE: express.raw() must be applied to this path in server.js BEFORE express.json()
