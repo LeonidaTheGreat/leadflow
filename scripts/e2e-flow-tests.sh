@@ -217,17 +217,31 @@ test_dashboard_no_errors() {
   session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
   [ -z "$session_id" ] && return 1
 
-  # Load dashboard with raw token in cookie — server hashes it to validate
-  local html
-  html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
-    -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
-  local exit_code=$?
+  # Load dashboard with raw token in cookie — server hashes it to validate.
+  # Retry once on failure: Vercel cold starts + middleware makes 3 sequential
+  # PostgREST queries (each with 5s timeout) = up to 15s before SSR even starts.
+  local html http_code attempt_ok
+  attempt_ok=false
+  for _attempt in 1 2; do
+    http_code=$(curl -s --max-time 20 -o /tmp/e2e-dash-html -w '%{http_code}' \
+      "$BASE_URL/dashboard" \
+      -H "Cookie: leadflow_session=$raw_token" 2>/dev/null) || true
+
+    if [ "$http_code" = "200" ]; then
+      html=$(cat /tmp/e2e-dash-html 2>/dev/null)
+      attempt_ok=true
+      break
+    fi
+    # Brief pause before retry — lets Vercel cold start finish
+    [ "$_attempt" -eq 1 ] && sleep 3
+  done
+  rm -f /tmp/e2e-dash-html
 
   # Clean up test session regardless of outcome
   curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
     -H "apikey: $API_KEY" >/dev/null 2>&1 || true
 
-  [ $exit_code -ne 0 ] && return 1
+  $attempt_ok || return 1
 
   # Should not contain PostgREST error patterns
   echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error' && return 1
