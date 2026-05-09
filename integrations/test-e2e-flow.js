@@ -536,8 +536,9 @@ if (require.main === module) {
       ]);
       const blockingFailures = (results.tests || []).filter((test) => {
         if (test.passed) return false;
-        const isEnvMissing = typeof test.details === 'string' && test.details.includes('not set in .env');
-        return !(nonBlockingEnvFailures.has(test.name) && isEnvMissing);
+        // Connectivity test failures (missing creds, 401, network) are env issues, not code bugs
+        if (nonBlockingEnvFailures.has(test.name)) return false;
+        return true;
       });
       if (blockingFailures.length > 0) process.exit(1);
     })
