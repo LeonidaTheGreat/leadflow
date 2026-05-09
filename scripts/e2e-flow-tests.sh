@@ -218,19 +218,24 @@ test_dashboard_no_errors() {
   [ -z "$session_id" ] && return 1
 
   # Load dashboard with raw token in cookie — server hashes it to validate
-  local html
-  html=$(curl -s --max-time 15 "$BASE_URL/dashboard" \
+  # Capture HTTP status code alongside body to detect deployment failures (e.g. 500 FUNCTION_INVOCATION_FAILED)
+  local html http_status _tmp_dash
+  _tmp_dash=$(mktemp)
+  http_status=$(curl -s --max-time 15 -o "$_tmp_dash" -w "%{http_code}" "$BASE_URL/dashboard" \
     -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
   local exit_code=$?
+  html=$(cat "$_tmp_dash" 2>/dev/null); rm -f "$_tmp_dash"
 
   # Clean up test session regardless of outcome
   curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
     -H "apikey: $API_KEY" >/dev/null 2>&1 || true
 
   [ $exit_code -ne 0 ] && return 1
+  # HTTP 5xx = server/deployment failure (e.g. wrong Vercel deploy directory)
+  [[ "$http_status" == 5* ]] && return 1
 
-  # Should not contain PostgREST error patterns
-  echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error' && return 1
+  # Should not contain PostgREST or Vercel error patterns
+  echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error\|FUNCTION_INVOCATION_FAILED' && return 1
   # Should contain dashboard content
   echo "$html" | grep -q 'Lead Feed' || return 1
   return 0
