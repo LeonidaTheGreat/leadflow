@@ -1,9 +1,31 @@
 # PRD: NPS / Feedback Survey Mechanism for Real Estate Agents
 **ID:** PRD-NPS-AGENT-FEEDBACK  
-**Status:** draft  
-**Version:** 1.0  
+**Status:** implementation — blocked on ops  
+**Version:** 1.1  
 **Author:** Product Manager  
-**Date:** 2026-07-17  
+**Date:** 2026-05-08  
+
+## Pipeline Status (2026-05-08)
+
+**NPS Score: null** — no surveys have ever been sent.
+
+| Component | Status | Detail |
+|-----------|--------|--------|
+| `agent_nps_responses` table | ✅ exists | 0 rows |
+| `agent_survey_schedule` table | ✅ exists | 39 rows (10 orphaned, 29 valid, 34 agents missing) |
+| Status filter bug | ✅ fixed | `active`-only filter removed — merged commit `0a3743cc` |
+| Cron configured in vercel.json | ✅ done | `/api/cron/nps-surveys` at 11am daily |
+| **CRON_SECRET in Vercel** | 🔴 **BLOCKED** | Env var not set → all 9 crons return 503 |
+| Orphan cleanup (10 rows) | 🔴 not merged | Dev done, QC cancelled, never merged |
+| Schedule backfill (34 agents) | 🔴 not done | 34 of 63 agents have no schedule entry |
+| Agents overdue for surveys | ⚠️ 4 agents | Earliest overdue since 2026-03-24 |
+
+**Critical path to first NPS score:**
+1. **Human**: `vercel env add CRON_SECRET production` (action_item `0496e77b` created)
+2. **Dev**: orphan cleanup + backfill 34 missing schedule entries (UC `c740b281`)
+3. **Verify**: next 11am cron sends email to 4 overdue agents → first responses appear → metric_collector updates NPS Score
+
+---
 
 ---
 
