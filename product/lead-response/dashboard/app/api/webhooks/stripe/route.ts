@@ -59,7 +59,10 @@ function getPlanDisplayName(tier: string): string {
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   if (!stripe) return
 
-  const userId = session.client_reference_id
+  // Support admin-generated payment links: metadata.agent_id is set when the
+  // checkout was created via POST /api/admin/generate-payment-link without a
+  // logged-in session (no client_reference_id).
+  const userId = session.client_reference_id || (session.metadata && session.metadata.agent_id) || null
   const subscriptionId = session.subscription as string
 
   if (!userId || !subscriptionId) return
