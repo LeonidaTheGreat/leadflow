@@ -1,0 +1,125 @@
+{
+  "genome_score": 38,
+  "genome_score_rationale": "E2E 92% + 0 lint violations = technical baseline healthy. But 15 stuck UCs, 50+ agent failures this week, 0 paying customers with Day 90 in 7 days, and core conversion pipeline not delivering. Score reflects pipeline churn with no revenue output.",
+
+  "priority_changes": [
+    {
+      "uc_id": "feat-admin-force-trial-activation",
+      "to": 0,
+      "reason": "Day 90 in 7 days, 35 pilot signups, agents stuck at email verification. This directly unblocks Stojan closing pilots manually. Bump to P0."
+    },
+    {
+      "uc_id": "feat-annual-billing-plan",
+      "to": 4,
+      "reason": "0 paying customers. Annual billing is irrelevant without monthly subscribers. Defer indefinitely."
+    },
+    {
+      "uc_id": "feat-pricing-page-social-proof",
+      "to": 4,
+      "reason": "0 customers to provide testimonials. Cannot do social proof at zero MRR. Defer until first 5 paying customers."
+    }
+  ],
+
+  "cancellations": [
+    {
+      "task_id": "fix-prd-file-missing-from-disk",
+      "reason": "P3 housekeeping, 16d stale, 0 revenue impact. Dev repeatedly cancels. Not worth further budget. Cancel UC."
+    },
+    {
+      "task_id": "fix-ac4-unmet-missing-table-error-handling-in-checkdis",
+      "reason": "P3 edge-case error handling in distribution health check, 16d stale. Non-blocking. Dev repeatedly cancels. Cancel UC; reopen only if distribution health becomes a live incident."
+    },
+    {
+      "task_id": "fix-30-pilot-campaign-stalled-at-day-8",
+      "reason": "Marketing task done, dev task failed. Recruiting pilots is a human sales activity — dev agents cannot send personal emails or make calls. Cancelling dev track; routing to human action item."
+    },
+    {
+      "task_id": "fix-nps-cron-pipeline-broken-cron-secret-missing-and-status-filter",
+      "reason": "3 dev tasks marked done. UC still in_progress — status not swept. Cancelling to reset; work is complete."
+    },
+    {
+      "task_id": "fix-zero-conversions-no-paying-customers-from-landing-",
+      "reason": "Dev task done. Landing page conversion improvements were implemented. UC status stale in_progress. Cancelling to reset; the dev work is done."
+    }
+  ],
+
+  "action_items": [
+    {
+      "type": "feature",
+      "description": "feat-shareable-stripe-payment-link-admin: Retry with narrow scope. Admin API endpoint POST /api/admin/stripe-link?agentId=X returns a pre-filled Stripe Checkout URL for that agent. Use Stripe Checkout Sessions API (mode=payment or subscription). No UI needed — JSON response. Stojan calls this endpoint, sends link directly via SMS/email to pilot agents.",
+      "priority": 0,
+      "reason": "Day 90 in 7 days, 0 paying customers. This is the single fastest path to $49 — Stojan sends a link, pilot clicks, pays. Previous dev task failed; retry with explicit minimal scope."
+    },
+    {
+      "type": "feature",
+      "description": "feat-admin-force-trial-activation: Retry with narrow scope. Admin API endpoint POST /api/admin/activate?agentId=X manually sets agent status to trial_active, bypassing email verification. Returns success + agent email. Stojan calls this when a pilot is stuck. No UI, JSON only.",
+      "priority": 0,
+      "reason": "35 pilot signups potentially stuck at email verification. Each stuck agent is a lost conversion. Narrow the scope — one endpoint, one action, done."
+    },
+    {
+      "type": "feature",
+      "description": "feat-lapsed-trial-reactivation: Retry with narrow scope. Script (not endpoint) that queries agents with status=trial_expired or created >14d ago with no activity, then sends them a Twilio SMS: 'Hey [name], your LeadFlow trial is waiting — reply YES to reactivate or visit [link]'. One-time trigger via Stojan running node scripts/reactivate-lapsed.js. No cron, no UI.",
+      "priority": 0,
+      "reason": "35 pilot signups. Even 10% reactivation = 3-4 conversations. SMS bypasses email deliverability issues. Previous dev tasks all cancelled — simpler script approach avoids cron complexity."
+    },
+    {
+      "type": "feature",
+      "description": "feat-landing-page-pre-signup-capture: Retry with minimal scope. Add email capture field to landing page (product/lead-response/dashboard) with submit handler that POSTs to /api/waitlist (creates row in pilot_signups with source=landing_organic). Show 'We'll reach out soon' confirmation. No magic link, no Stripe, no onboarding flow.",
+      "priority": 0,
+      "reason": "Landing page sends traffic away. Even basic capture of interested visitors gives Stojan a list to personally follow up. Keep it simple to avoid dev agent failure."
+    },
+    {
+      "type": "fix",
+      "description": "fix-signup-activated-rate-metric-collection: Retry. Query: SELECT COUNT(*) as signups, COUNT(CASE WHEN status IN ('trial_active','paid') THEN 1 END) as activated FROM real_estate_agents WHERE created_at > NOW() - INTERVAL '30 days'. Write result to metrics table (domain='funnel', metric_type='signup_to_activated_rate'). One script, runs on cron. No new tables.",
+      "priority": 1,
+      "reason": "Top metric gap per mission. Without this metric we're blind on the most critical funnel step."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add to dev RULES.md: Before implementing a feature, run 'git log --oneline --all | grep <uc-id-keyword>' to check if the same work exists on a recent branch. If the feature is already merged into main, verify it works (run the relevant test or grep for the function) and report success without re-implementing. Also: when a task description says 'retry', search completion-reports/ for the UC ID to understand what previous attempts tried and why they failed — then take a different approach.",
+      "priority": 1,
+      "reason": "33 dev failures this week. Pattern 'pre-spawn dedup: identical task completed recently' means dev tasks complete but UCs don't sweep to done, causing re-spawn loops. Dev agents need to detect and report on already-done work rather than re-implementing."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "qc",
+      "description": "Add to QC RULES.md: Before reviewing a PR, check its current state: run 'gh pr view <PR#> --json state,mergeable,reviews'. If state is MERGED, mark the QC task done immediately — the code is already in main. If state is CLOSED, report the closure reason and mark done. Only perform full review for OPEN PRs with no prior approved code_review entry in the DB.",
+      "priority": 1,
+      "reason": "13 QC failures including 'pre-spawn dedup: identical task completed recently'. QC agents are re-reviewing already-merged PRs. Need explicit check for PR state before starting review."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "product",
+      "description": "Add to PM RULES.md: Before starting a UC analysis, search completion-reports/ for your UC ID: `ls /Users/clawdbot/projects/leadflow/completion-reports/ | grep <uc-id>`. If a COMPLETION report for this UC already exists and was successful, check if anything material changed (git log since that date) — if not, reference the prior analysis and mark done without repeating the work.",
+      "priority": 2,
+      "reason": "4 PM failures including 'pre-spawn dedup: identical task completed recently'. PM agents redoing already-completed product analysis wastes budget."
+    },
+    {
+      "type": "mission_proposal",
+      "description": "Add metric: 'Pilots Contacted' — count of pilot_signups where Stojan has sent a direct personal outreach (email/SMS/call). Target: 35 by 2026-05-10. This tracks the human sales activity that agents cannot replace. Without tracking it, we can't see if the bottleneck is outreach volume or conversion rate.",
+      "priority": 1,
+      "reason": "0 paying customers with 35 pilot signups and Day 90 in 7 days. The gap is clearly in human outreach execution, not product gaps. We need to measure it."
+    }
+  ],
+
+  "human_action_items": [
+    {
+      "description": "URGENT (Day 90 = 2026-05-15, 7 days): Personally contact all 35 pilot signups this weekend. Priority: anyone who signed up in the last 30 days. Script: 'Hey [name], I'm Stojan from LeadFlow. You signed up for our AI lead response pilot — I'd love to get you set up this week. Takes 10 min. When works for you?' Send via SMS if you have their number, email otherwise.",
+      "can_eliminate": false,
+      "elimination_proposal": "Cannot eliminate — this is human sales activity. Agents can't close pilots. Stojan must do this personally."
+    },
+    {
+      "description": "FUB Partner Marketplace: Submit the listing manually at partners.followupboss.com. PM and dev work is done — the listing content exists. This requires a human login to the FUB partner portal and form submission.",
+      "can_eliminate": false,
+      "elimination_proposal": "Cannot automate partner portal submissions. Must be done by Stojan with FUB partner credentials."
+    },
+    {
+      "description": "Merge fix-zero-real-pilots-recruited PR: The dev task is done and UC is in needs_merge state. Run: gh pr list --search 'fix-zero-real-pilots-recruited' to find the PR number, then gh pr merge <#> --merge.",
+      "can_eliminate": true,
+      "elimination_proposal": "Genome should auto-merge approved PRs in needs_merge state. This is a gap in the merge pipeline — the orchestrator should detect UC in needs_merge with approved PR and auto-trigger merge."
+    }
+  ],
+
+  "focus_today": "Close the first paying customer: deploy shareable Stripe payment link endpoint + admin force-activation endpoint, then Stojan personally contacts 35 pilot signups with the payment link."
+}
