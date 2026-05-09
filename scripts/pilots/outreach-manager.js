@@ -1,6 +1,26 @@
 #!/usr/bin/env node
+'use strict';
 
 /**
+ * TASK SPEC (553dca1e-11c0-493b-bd66-75b45e633998)
+ * What:
+ * - Update scripts/pilots/outreach-manager.js functions: markContacted, markResponse, generateEmail.
+ * - Add a shared resolver that accepts either full UUID or unique short UUID prefix from CLI examples.
+ * - Add regression test coverage in tests/integration/pilot-outreach-manager-short-id.test.js.
+ *
+ * Verify:
+ * - Run: node --test tests/integration/pilot-outreach-manager-short-id.test.js
+ * - Run: npm test
+ * - Run: npm run build
+ * - Run: npm run lint
+ * - Run: npm audit --audit-level=high
+ * - Expected: short-id contact command succeeds and updates target status to contacted.
+ *
+ * Boundaries:
+ * - Do not modify DB schema, migrations, routes, or service architecture.
+ * - Do not change campaign business logic, only CLI target ID resolution behavior.
+ * - Do not touch unrelated pilot workflows.
+ *
  * Pilot Outreach Manager
  * 
  * Manages manual outreach to 20 target agents for 3 pilot spots.
@@ -28,6 +48,7 @@ if (!DATABASE_URL) {
 }
 
 const pool = new Pool({ connectionString: DATABASE_URL });
+const UUID_V4_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // Email templates for outreach
 const OUTREACH_TEMPLATES = {
@@ -125,6 +146,41 @@ If not, no worries at all — best of luck with your business!
 Stojan`
   }
 };
+
+async function resolveTargetById(inputId, selectedColumns) {
+  const columns = Array.isArray(selectedColumns) && selectedColumns.length > 0
+    ? selectedColumns.join(', ')
+    : 'id, name, email, status';
+
+  let query;
+  let params;
+
+  if (UUID_V4_LIKE.test(inputId)) {
+    query = `SELECT ${columns} FROM pilot_recruitment_targets WHERE id = $1`;
+    params = [inputId];
+  } else {
+    query = `
+      SELECT ${columns}
+      FROM pilot_recruitment_targets
+      WHERE id::text LIKE $1
+      ORDER BY created_at ASC
+      LIMIT 2
+    `;
+    params = [`${inputId}%`];
+  }
+
+  const result = await pool.query(query, params);
+
+  if (result.rows.length === 0) {
+    throw new Error(`Target not found: ${inputId}`);
+  }
+
+  if (result.rows.length > 1) {
+    throw new Error(`Ambiguous target id prefix: ${inputId}. Provide more characters.`);
+  }
+
+  return result.rows[0];
+}
 
 /**
  * List all outreach targets
@@ -243,23 +299,14 @@ async function addTarget(name, email, source = 'manual', options = {}) {
  * Mark a target as contacted
  */
 async function markContacted(targetId, channel = 'email', template = 'initial') {
-  const result = await pool.query(`
-    SELECT id, name, email, status FROM pilot_recruitment_targets WHERE id = $1
-  `, [targetId]);
-  
-  if (result.rows.length === 0) {
-    console.error(`❌ Target not found: ${targetId}`);
-    process.exit(1);
-  }
-  
-  const target = result.rows[0];
+  const target = await resolveTargetById(targetId, ['id', 'name', 'email', 'status']);
   
   // Create touchpoint
   await pool.query(`
     INSERT INTO pilot_recruitment_touchpoints 
       (target_id, channel, touch_type, sent_at)
     VALUES ($1, $2, $3, NOW())
-  `, [targetId, channel, template]);
+  `, [target.id, channel, template]);
   
   // Update target status if still identified
   if (target.status === 'identified') {
@@ -267,7 +314,7 @@ async function markContacted(targetId, channel = 'email', template = 'initial') 
       UPDATE pilot_recruitment_targets 
       SET status = 'contacted', updated_at = NOW()
       WHERE id = $1
-    `, [targetId]);
+    `, [target.id]);
   }
   
   console.log(`✅ Marked as contacted: ${target.name}`);
@@ -286,29 +333,20 @@ async function markResponse(targetId, status, notes = '') {
     process.exit(1);
   }
   
-  const result = await pool.query(`
-    SELECT id, name, email FROM pilot_recruitment_targets WHERE id = $1
-  `, [targetId]);
-  
-  if (result.rows.length === 0) {
-    console.error(`❌ Target not found: ${targetId}`);
-    process.exit(1);
-  }
-  
-  const target = result.rows[0];
+  const target = await resolveTargetById(targetId, ['id', 'name', 'email']);
   
   await pool.query(`
     UPDATE pilot_recruitment_targets 
     SET status = $1, notes = COALESCE(notes || E'\n' || $2, $2), updated_at = NOW()
     WHERE id = $3
-  `, [status, notes, targetId]);
+  `, [status, notes, target.id]);
   
   // Record the response touchpoint
   await pool.query(`
     INSERT INTO pilot_recruitment_touchpoints 
       (target_id, channel, touch_type, responded_at, response_notes)
     VALUES ($1, 'email', 'response', NOW(), $2)
-  `, [targetId, notes]);
+  `, [target.id, notes]);
   
   console.log(`✅ Updated status: ${target.name} → ${status}`);
 }
@@ -427,16 +465,7 @@ async function generateEmail(targetId, templateName = 'email') {
     process.exit(1);
   }
   
-  const result = await pool.query(`
-    SELECT name, email FROM pilot_recruitment_targets WHERE id = $1
-  `, [targetId]);
-  
-  if (result.rows.length === 0) {
-    console.error(`❌ Target not found: ${targetId}`);
-    process.exit(1);
-  }
-  
-  const target = result.rows[0];
+  const target = await resolveTargetById(targetId, ['id', 'name', 'email']);
   const firstName = target.name.split(' ')[0];
   
   // Get current signed up count for spots remaining
