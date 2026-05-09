@@ -17,7 +17,7 @@
  * - npm run build (root succeeds)
  * - npm run lint (0 errors)
  * - npm audit --audit-level=high (0 high/critical)
- * - grep checks confirm no onboarding@resend.dev fallback in dashboard email libs
+ * - grep checks confirm no resend.dev test-domain fallback in dashboard email libs
  * Boundaries:
  * - Do not change routes, DB schema, or non-email business logic
  * - Do not modify protected generated docs/config files

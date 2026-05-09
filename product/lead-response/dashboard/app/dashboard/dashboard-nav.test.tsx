@@ -10,7 +10,8 @@ describe('DashboardNav', () => {
     const { renderToStaticMarkup } = require('react-dom/server')
     const html = renderToStaticMarkup(<DashboardNav />)
 
-    // Default (non-admin) nav renders 6 items: Lead Feed, History, Analytics, Reports, Assignments, Settings
+    // Default (non-admin) nav renders 5 items: Lead Feed, History, Analytics, Reports, Settings
+    // (Reports redirects to /dashboard/analytics; Assignments removed in nav simplification)
     expect(html).toContain('href="/dashboard"')
     expect(html).toContain('data-testid="nav-link-lead-feed"')
 
@@ -20,13 +21,11 @@ describe('DashboardNav', () => {
     expect(html).toContain('href="/dashboard/analytics"')
     expect(html).toContain('data-testid="nav-link-analytics"')
 
-    expect(html).toContain('href="/dashboard/reports"')
     expect(html).toContain('data-testid="nav-link-reports"')
 
-    expect(html).toContain('href="/dashboard/assignments"')
-    expect(html).toContain('data-testid="nav-link-assignments"')
+    expect(html).not.toContain('data-testid="nav-link-assignments"')
 
-    expect(html).toContain('href="/dashboard/settings"')
+    expect(html).toContain('href="/settings"')
     expect(html).toContain('data-testid="nav-link-settings"')
   })
 

@@ -61,6 +61,9 @@ window.IntersectionObserver = jest.fn().mockImplementation(() => ({
 describe('Landing Page CTA Analytics', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // global.fetch is a jest.fn() (set in jest.setup.ts) that returns undefined by default.
+    // The landing page calls fetch(...).catch(...) in a useEffect, so we need it to return a Promise.
+    ;(global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) })
   })
 
   it('renders all PRD-specified data-cta-id attributes', () => {

@@ -10,7 +10,9 @@ const scriptPath = '../../scripts/cleanup-next-build-lock.js'
 
 describe('cleanup-next-build-lock', () => {
   beforeEach(() => {
-    jest.resetModules()
+    // Do NOT call jest.resetModules() here: it creates a new mock instance
+    // for child_process, making mockedExecSync (captured at file scope) a
+    // stale reference that the re-required script never calls.
     mockedExecSync.mockReset()
   })
 

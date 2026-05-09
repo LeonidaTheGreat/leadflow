@@ -20,7 +20,7 @@ describe('Wizard Auto-Trigger Implementation', () => {
       expect(middlewareContent).toContain('onboarding_completed');
       expect(middlewareContent).toContain('real_estate_agents');
       expect(middlewareContent).toContain('select=onboarding_completed');
-      expect(middlewareContent).toContain("new URL('/setup', request.url)");
+      expect(middlewareContent).toContain("new URL('/dashboard/onboarding', request.url)");
     });
 
     it('should check onboarding for protected routes', () => {
