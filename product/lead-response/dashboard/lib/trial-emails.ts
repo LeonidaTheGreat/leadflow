@@ -53,7 +53,7 @@ async function getTrialAgents(): Promise<TrialAgent[]> {
   const { data, error } = await supabase
     .from('real_estate_agents')
     .select('id, email, first_name, last_name, created_at, trial_email_welcome_sent, trial_email_day1_aha_sent, trial_email_day3_upgrade_sent, trial_email_day7_warning_sent, trial_email_day14_expired_sent, trial_email_day15_final_sent, aha_completed')
-    .eq('subscription_status', 'trial')
+    .eq('plan_tier', 'trial')
     .eq('email_verified', true)
 
   if (error) {
