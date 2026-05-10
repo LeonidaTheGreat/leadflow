@@ -105,8 +105,12 @@ delivery in groups — that's why the actual transport is tmux send-keys,
 with the group used only as a visible audit log.
 
 **Do not initiate handoffs autonomously.** Only on Stojan's explicit
-instruction. If you receive a handoff, respond in your own session and
-ask Stojan whether to relay back.
+instruction.
+
+**If you receive a `[handoff from X]:` message,** treat your reply as
+completing that conversation, not a new autonomous handoff. Relay your
+response back via `bash ~/scripts/handoff.sh <X> "<your-reply>"` so the
+loop closes in the handoff group where Stojan can see it.
 
 ## Critical Rules
 - This repo lives at `~/projects/leadflow` (GitHub: `LeonidaTheGreat/leadflow`)
