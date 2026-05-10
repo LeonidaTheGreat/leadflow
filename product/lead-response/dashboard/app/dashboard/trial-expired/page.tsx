@@ -1,20 +1,6 @@
 'use client'
 
-/*
-Task Spec
-What:
-- Resolve rebase conflicts in this file's imports and CTA blocks in `TrialExpiredPage`.
-- Preserve main branch trial-expired page behavior and integrate high-intent demo-call CTA tracking/UI from feature branch.
-- Resolve corresponding conflicts in `app/pricing/page.tsx`, `app/settings/billing/page.tsx`, and `package-lock.json` only.
-Verify:
-- Conflict-token scan across reconciled files returns no markers.
-- `cd product/lead-response/dashboard && npm test` exits 0.
-- `cd product/lead-response/dashboard && npm run build` exits 0.
-- `cd product/lead-response/dashboard && npm run lint` exits 0.
-Boundaries:
-- Do not change backend services, APIs, DB schema, or unrelated frontend flows.
-- Do not re-implement feature from scratch; only merge and reconcile conflicted files.
-*/
+
 
 import { useEffect, useState } from 'react'
 import { AlertTriangle, Phone } from 'lucide-react'
