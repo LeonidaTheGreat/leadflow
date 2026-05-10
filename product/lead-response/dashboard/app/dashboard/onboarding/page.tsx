@@ -34,6 +34,16 @@ const SetupComplete = OnboardingConfirm
 
 type OnboardingStep = 'welcome' | 'try-ai' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
+const STEP_FROM_DB: Record<number, OnboardingStep> = {
+  1: 'welcome',
+  2: 'try-ai',
+  3: 'agent-info',
+  4: 'calendar',
+  5: 'sms',
+  6: 'simulator',
+  7: 'confirmation',
+}
+
 function getFromStorage(key: string): string | null {
   try {
     return localStorage.getItem(key) || sessionStorage.getItem(key) || null
@@ -87,75 +97,120 @@ function DashboardOnboardingInner() {
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  // Auth check on mount
+  // Auth check + restore saved onboarding progress on mount
   useEffect(() => {
-    async function checkAuth() {
+    async function checkAuthAndRestoreProgress() {
+      let authenticated = false
+
       // Fast path: localStorage is populated (happy path after signup)
       const userRaw = getFromStorage('leadflow_user')
       if (userRaw) {
         try {
           const user: StoredUser = JSON.parse(userRaw)
-          // Pre-populate agentData from stored user
           setAgentData((prev) => ({
             ...prev,
             email: user.email || '',
             firstName: user.firstName || '',
             lastName: user.lastName || '',
           }))
-          setAuthChecked(true)
-          return
+          authenticated = true
         } catch {
           // Malformed JSON — fall through to API check
         }
       }
 
-      // Fallback: ask the server (cookie-based auth)
-      try {
-        const res = await fetch('/api/auth/me', { credentials: 'include' })
-        if (res.ok) {
-          const user = await res.json()
-          // Persist to localStorage so subsequent page loads skip this fetch
-          const token = getFromStorage('leadflow_token')
-          if (token) {
-            setToStorage('leadflow_token', token)
+      if (!authenticated) {
+        // Fallback: ask the server (cookie-based auth)
+        try {
+          const res = await fetch('/api/auth/me', { credentials: 'include' })
+          if (res.ok) {
+            const user = await res.json()
+            const token = getFromStorage('leadflow_token')
+            if (token) {
+              setToStorage('leadflow_token', token)
+            }
+            setToStorage(
+              'leadflow_user',
+              JSON.stringify({
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                onboardingCompleted: user.onboardingCompleted,
+              })
+            )
+            setAgentData((prev) => ({
+              ...prev,
+              email: user.email || '',
+              firstName: user.firstName || '',
+              lastName: user.lastName || '',
+            }))
+            authenticated = true
+          } else {
+            router.replace('/login')
+            return
           }
-          setToStorage(
-            'leadflow_user',
-            JSON.stringify({
-              id: user.id,
-              email: user.email,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              onboardingCompleted: user.onboardingCompleted,
-            })
-          )
-          // Pre-populate agentData
-          setAgentData((prev) => ({
-            ...prev,
-            email: user.email || '',
-            firstName: user.firstName || '',
-            lastName: user.lastName || '',
-          }))
-          setAuthChecked(true)
-        } else {
-          // 401 — unauthenticated
+        } catch {
           router.replace('/login')
+          return
         }
-      } catch {
-        // Network error — redirect to login to be safe
-        router.replace('/login')
       }
+
+      // Restore saved onboarding step from server
+      if (authenticated) {
+        try {
+          const token = getFromStorage('leadflow_token')
+          const res = await fetch('/api/auth/trial-status', {
+            credentials: 'include',
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          })
+          if (res.ok) {
+            const status = await res.json()
+            if (status.onboardingCompleted) {
+              router.replace('/dashboard')
+              return
+            }
+            const dbStep = status.onboardingStep
+            if (typeof dbStep === 'number' && dbStep > 0 && dbStep < 99 && STEP_FROM_DB[dbStep]) {
+              setCurrentStep(STEP_FROM_DB[dbStep])
+            }
+          }
+        } catch {
+          // Non-blocking — start from beginning if status fetch fails
+        }
+      }
+
+      setAuthChecked(true)
     }
 
-    checkAuth()
+    checkAuthAndRestoreProgress()
   }, [router])
 
   const steps: OnboardingStep[] = ['welcome', 'try-ai', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStepIndex = steps.indexOf(currentStep)
 
+  const saveStepProgress = async (stepName: OnboardingStep) => {
+    try {
+      const token = getFromStorage('leadflow_token')
+      await fetch('/api/setup/progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ step: stepName }),
+      })
+    } catch {
+      // Non-blocking — don't break wizard if progress save fails
+    }
+  }
+
   const nextStep = () => {
     if (currentStepIndex < steps.length - 1) {
-      setCurrentStep(steps[currentStepIndex + 1])
+      const next = steps[currentStepIndex + 1]
+      setCurrentStep(next)
+      void saveStepProgress(next)
     }
   }
 
@@ -169,6 +224,7 @@ function DashboardOnboardingInner() {
     setIsLoading(true)
     try {
       const token = getFromStorage('leadflow_token')
+      const completedSteps = steps.slice(0, currentStepIndex + 1)
       const response = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: {
@@ -180,7 +236,7 @@ function DashboardOnboardingInner() {
           completionPayload: {
             ahaCompleted: agentData.ahaCompleted,
             ahaResponseTimeMs: agentData.ahaResponseTimeMs,
-            stepsCompleted: ['welcome', 'try-ai', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation'],
+            stepsCompleted: completedSteps,
           },
         }),
       })
@@ -234,7 +290,7 @@ function DashboardOnboardingInner() {
           <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center">
-                <span className="text-emerald-400 font-bold text-sm">▶</span>
+                <span className="text-emerald-400 font-bold text-sm">&#9654;</span>
               </div>
               <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
             </div>
@@ -321,6 +377,18 @@ function DashboardOnboardingInner() {
                 onNext={completeOnboarding}
                 agentData={agentData}
               />
+            )}
+
+            {currentStepIndex >= 2 && currentStep !== 'confirmation' && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={completeOnboarding}
+                  disabled={isLoading}
+                  className="text-sm text-slate-500 hover:text-emerald-400 transition-colors underline underline-offset-2"
+                >
+                  {isLoading ? 'Finishing...' : 'Skip to Dashboard — finish setup later'}
+                </button>
+              </div>
             )}
           </div>
         </main>

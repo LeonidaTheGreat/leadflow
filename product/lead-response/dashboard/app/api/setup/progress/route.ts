@@ -25,8 +25,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Map step name to integer (DB column is integer, frontend sends string)
-    const stepMap: Record<string, number> = { fub: 1, sms: 2, simulator: 3, complete: 4 }
+    const stepMap: Record<string, number> = {
+      welcome: 1, 'try-ai': 2, 'agent-info': 3, calendar: 4,
+      sms: 5, simulator: 6, confirmation: 7, fub: 1, complete: 99,
+    }
     const stepNum = typeof step === 'number' ? step : (stepMap[step] ?? 0)
 
     // Update agent's onboarding step

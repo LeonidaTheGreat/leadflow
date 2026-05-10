@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
   const updateData: Record<string, any> = {
     onboarding_completed: true,
     onboarding_completed_at: new Date().toISOString(),
+    onboarding_step: 99,
     updated_at: new Date().toISOString() }
 
   if (completionPayload) {
