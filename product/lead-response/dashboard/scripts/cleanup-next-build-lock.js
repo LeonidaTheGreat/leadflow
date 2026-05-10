@@ -68,12 +68,19 @@ async function main() {
   const lockStat = fs.statSync(lockPath)
   const lockAgeMs = Date.now() - lockStat.mtimeMs
 
-  // If lock is fresh, check for a genuinely running build first
+  // If lock is fresh, wait for any genuinely running build to finish before proceeding
   if (lockAgeMs < STALE_AGE_MS) {
     const activePids = getActiveNextBuildPids()
     if (activePids.length > 0) {
-      console.log('next build is actively running — skipping lock cleanup')
-      return
+      console.log(`next build running (pid ${activePids.join(',')}), waiting up to 5m…`)
+      const remaining = await waitForBuildsToFinish(5 * 60 * 1000, 5000)
+      if (remaining.length > 0) {
+        console.log(`build still running after 5m wait — treating lock as stuck, removing`)
+      } else if (!fs.existsSync(lockPath)) {
+        // Build finished and cleaned up its own lock
+        return
+      }
+      // Build finished but lock persists — fall through to remove it
     }
   }
 

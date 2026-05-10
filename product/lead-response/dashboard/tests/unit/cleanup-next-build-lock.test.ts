@@ -1,17 +1,30 @@
 import { execSync } from 'child_process'
+import fs from 'fs'
 
 jest.mock('child_process', () => ({
   execSync: jest.fn(),
 }))
 
-const mockedExecSync = execSync as jest.MockedFunction<typeof execSync>
+jest.mock('fs', () => ({
+  existsSync: jest.fn(),
+  statSync: jest.fn(),
+  rmSync: jest.fn(),
+}))
 
-const scriptPath = '../../scripts/cleanup-next-build-lock.js'
+const mockedExecSync = execSync as jest.MockedFunction<typeof execSync>
+const mockedFs = fs as jest.Mocked<typeof fs>
+
+// Load once — the script captures execSync at module load time; resetting modules
+// per-test would create new jest.fn() instances that mockedExecSync no longer tracks.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const script = require('../../scripts/cleanup-next-build-lock.js')
 
 describe('cleanup-next-build-lock', () => {
   beforeEach(() => {
-    jest.resetModules()
     mockedExecSync.mockReset()
+    mockedFs.existsSync.mockReset()
+    mockedFs.statSync.mockReset()
+    mockedFs.rmSync.mockReset()
   })
 
   it('returns no active builds when pgrep finds nothing', () => {
@@ -24,8 +37,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     expect(script.getActiveNextBuildPids()).toEqual([])
   })
 
@@ -39,8 +50,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     script.getActiveNextBuildPids()
 
     expect(mockedExecSync).toHaveBeenCalledWith(
@@ -59,8 +68,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     expect(script.getActiveNextBuildPids()).toEqual([100])
   })
 
@@ -74,8 +81,6 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     expect(script.getActiveNextBuildPids()).toEqual([])
   })
 
@@ -93,9 +98,31 @@ describe('cleanup-next-build-lock', () => {
       return ''
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const script = require(scriptPath)
     const remaining = await script.waitForBuildsToFinish(20, 1)
     expect(remaining).toEqual([])
+  })
+
+  it('polls until build exits, then confirms no remaining pids', async () => {
+    let pgrepCalls = 0
+    mockedExecSync.mockImplementation((command: string) => {
+      if (command.includes('pgrep -f')) {
+        pgrepCalls++
+        // First call: build running. Second call onward: build finished.
+        if (pgrepCalls === 1) return '100\n'
+        const err = new Error('no match') as Error & { status?: number }
+        err.status = 1
+        throw err
+      }
+      if (command.includes('ps -o ppid= -p 100')) return '10'
+      if (command.includes('ps -o ppid= -p 10')) return '1'
+      if (command.includes('kill -0 10')) return ''
+      if (command.includes('kill -0 1')) return ''
+      return ''
+    })
+
+    const remaining = await script.waitForBuildsToFinish(100, 5)
+
+    expect(remaining).toEqual([])
+    expect(pgrepCalls).toBeGreaterThan(1)
   })
 })
