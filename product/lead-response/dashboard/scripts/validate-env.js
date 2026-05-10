@@ -14,6 +14,27 @@
 const fs = require('fs')
 const path = require('path')
 
+const buildDir = process.cwd()
+const hasNextConfig = fs.existsSync(path.join(buildDir, 'next.config.ts')) ||
+  fs.existsSync(path.join(buildDir, 'next.config.js')) ||
+  fs.existsSync(path.join(buildDir, 'next.config.mjs'))
+const hasRootServer = fs.existsSync(path.join(buildDir, 'server.js')) &&
+  !fs.existsSync(path.join(buildDir, 'app'))
+
+if (hasRootServer && !hasNextConfig) {
+  console.error('\n❌ BUILD CONTEXT ERROR: Running from repo root instead of dashboard directory.')
+  console.error('  This will deploy server.js as a Lambda instead of the Next.js dashboard.')
+  console.error('  Fix: cd product/lead-response/dashboard && vercel --prod\n')
+  process.exit(1)
+}
+
+if (!hasNextConfig && require.main === module) {
+  console.error('\n❌ BUILD CONTEXT ERROR: No next.config found in build directory.')
+  console.error(`  Current directory: ${buildDir}`)
+  console.error('  Expected: product/lead-response/dashboard/\n')
+  process.exit(1)
+}
+
 // Load required vars from project.config.json (multi-project support)
 let config = {}
 const configPaths = [
