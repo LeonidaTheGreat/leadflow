@@ -20,6 +20,9 @@ Two of five use plain `===` comparison instead of `crypto.timingSafeEqual` — t
 **Pattern 3 — LEADFLOW_API_KEY inline Bearer check:** 3 routes  
 All three use plain `===` comparison — timing-attack vulnerable.
 
+**Pattern 4 — `isAdmin()` inline, API_SECRET_KEY:** 1 route  
+`app/api/admin/nps/route.ts` checks `Authorization: Bearer` against `API_SECRET_KEY` (an alias for `LEADFLOW_API_KEY` in `lib/config/index.js`). Plain `===` — timing-attack vulnerable.
+
 Express routes (`routes/admin/`) already use `requireApiKey` middleware correctly. No changes needed there.
 
 ---
@@ -39,8 +42,9 @@ import crypto from 'crypto'
  * Returns null if the request is authorized (proceed).
  * Returns a 401 NextResponse if unauthorized.
  *
- * Accepts the LEADFLOW_API_KEY via either:
+ * Accepts the LEADFLOW_API_KEY via any of:
  *   x-api-key: <key>
+ *   x-admin-token: <key>    ← backward-compat for existing admin UI pages
  *   Authorization: Bearer <key>
  *
  * Uses timing-safe comparison to prevent timing attacks.
@@ -52,9 +56,11 @@ export function requireAdmin(request: NextRequest): NextResponse | null {
   }
 
   const apiKeyHeader = request.headers.get('x-api-key')
+  const adminTokenHeader = request.headers.get('x-admin-token')
   const authHeader = request.headers.get('authorization')
   const provided =
     apiKeyHeader ||
+    adminTokenHeader ||
     (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null)
 
   if (!provided) {
@@ -74,6 +80,8 @@ export function requireAdmin(request: NextRequest): NextResponse | null {
   return null
 }
 ```
+
+**Why accept `x-admin-token`:** Three admin UI pages (`outreach/page.tsx`, `invite/page.tsx`, `pilot-campaigns/page.tsx`) already send `x-admin-token` from `localStorage.getItem('admin_token')`. Accepting this header avoids a frontend change. The admin simply updates their localStorage value from `ADMIN_SECRET` → `LEADFLOW_API_KEY` once.
 
 ### Migration Pattern
 
@@ -141,6 +149,26 @@ export async function GET(request: NextRequest) {
 - `product/lead-response/dashboard/app/api/admin/funnel/trial-activation/route.ts`
 - `product/lead-response/dashboard/app/api/admin/metrics/aha-moment/route.ts`
 
+### MODIFY — inline API_SECRET_KEY route (1 file)
+- `product/lead-response/dashboard/app/api/admin/nps/route.ts` — remove `isAdmin()` inline function, replace with `requireAdmin`
+
+### MODIFY — frontend admin UI pages (2 files that currently rely on session auth)
+These pages call `isAdminUser` routes without sending any auth header — they relied on session cookies.  
+After migration the routes will require a token. Update both pages to read `admin_token` from localStorage and send as `x-admin-token` (same pattern as `outreach/page.tsx` already uses):
+
+```ts
+const token = localStorage.getItem('admin_token')
+if (!token) {
+  // show error: 'Admin token required — run localStorage.setItem("admin_token", <LEADFLOW_API_KEY>) in console'
+  return
+}
+// in all fetch calls to /api/admin/* routes:
+headers: { 'x-admin-token': token }
+```
+
+- `product/lead-response/dashboard/app/admin/page.tsx` — fetch at line ~116 to `/api/admin/gtm-status`
+- `product/lead-response/dashboard/app/admin/pilots/page.tsx` — fetches at lines ~62, ~95, ~128 to `/api/admin/pilots` and `/api/admin/pilots/[agentId]`
+
 ### MODIFY — env docs
 - `product/lead-response/dashboard/.env.example` or root `.env.example` — remove `ADMIN_EMAIL`, `ADMIN_SECRET`
 
@@ -169,13 +197,13 @@ grep -r "isAdminUser" product/lead-response/dashboard/app/api/ | wc -l
 grep -r "x-admin-token\|ADMIN_SECRET\|checkAdminAuth" product/lead-response/dashboard/app/api/ | wc -l
 # Expected: 0
 
-# Inline verifyAdminAuth eliminated:
-grep -r "verifyAdminAuth" product/lead-response/dashboard/app/api/ | wc -l
+# Inline verifyAdminAuth / isAdmin eliminated:
+grep -r "verifyAdminAuth\|isAdmin" product/lead-response/dashboard/app/api/ | wc -l
 # Expected: 0
 
 # requireAdmin used in all admin routes:
 grep -r "requireAdmin" product/lead-response/dashboard/app/api/admin/ --include="route.ts" | wc -l
-# Expected: ≥ 12
+# Expected: ≥ 13
 
 # No plain-equality token comparison in admin routes:
 grep -r "=== expectedToken\|adminToken ===\|=== adminToken\|Bearer \${" product/lead-response/dashboard/app/api/ | wc -l
@@ -199,7 +227,7 @@ npm audit --audit-level=high
 ## Security Notes for Dev
 
 1. The new `requireAdmin()` MUST use `crypto.timingSafeEqual` — this is the entire point of the migration.
-2. Accept both `x-api-key` header and `Authorization: Bearer` header — some routes currently use one, some the other. Callers that use `ADMIN_SECRET` will need to switch to `LEADFLOW_API_KEY`.
+2. Accept three headers: `x-api-key`, `x-admin-token`, and `Authorization: Bearer`. The `x-admin-token` header is accepted for backward compat — existing admin UI pages already use it via `localStorage.getItem('admin_token')`. The admin updates their localStorage value from `ADMIN_SECRET` → `LEADFLOW_API_KEY` once.
 3. Do NOT log the API key value in any error or warning message.
 4. If `LEADFLOW_API_KEY` is not set, return 500 (misconfiguration), not 401 — this helps operators diagnose missing env vars.
 
@@ -207,10 +235,28 @@ npm audit --audit-level=high
 
 ## Test Coverage
 
-After migration, the existing tests that pass `x-admin-token` or `ADMIN_SECRET` will break — they need to be updated to send `x-api-key: <LEADFLOW_API_KEY>` instead. The dev agent must update those tests.
+After migration, the existing tests that pass `x-admin-token` or `ADMIN_SECRET` will break — they need to be updated to send `x-api-key: <LEADFLOW_API_KEY>` (or `x-admin-token` which is also accepted). The dev agent must update those tests.
 
 Existing test files to review for updates:
 - `tests/e2e/admin-token-verify.test.js`
 - `tests/e2e/admin-pilots-auth.test.js`
 - `product/lead-response/dashboard/__tests__/pilot-outreach-blast.test.ts`
 - `product/lead-response/dashboard/__tests__/outreach-targets-route.test.ts`
+
+---
+
+## Out-of-Scope Security Gap: 9 Unprotected Admin Routes (P1 — needs separate UC)
+
+**Critical finding:** The Next.js middleware excludes `/api/` routes from its auth check (`matcher: '/((?!api|...).*)'`). This means all `/api/admin/` routes must enforce their own auth. **9 routes have zero auth:**
+
+- `app/api/admin/conversations/route.ts` — returns anonymized SMS conversation data
+- `app/api/admin/demo-link/route.ts`
+- `app/api/admin/pilot-campaigns/route.ts` — exposes campaign data
+- `app/api/admin/pilot-campaigns/[id]/stats/route.ts`
+- `app/api/admin/pilot-campaigns/[id]/targets/route.ts`
+- `app/api/admin/pilot-targets/[id]/route.ts`
+- `app/api/admin/simulate-lead/route.ts` — runs lead simulations
+- `app/api/admin/triage-use-cases/route.ts`
+- `app/api/admin/pilot-signups/invite/route.ts`
+
+These are **not in scope for this task** — adding auth to 9 more routes risks scope creep and merge conflicts. Raise a separate UC: `uc-admin-unprotected-routes-security-fix`. Estimated: add `requireAdmin()` to each file (same pattern as this task), update corresponding frontend pages.
