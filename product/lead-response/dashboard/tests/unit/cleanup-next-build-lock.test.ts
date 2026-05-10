@@ -125,4 +125,32 @@ describe('cleanup-next-build-lock', () => {
     expect(remaining).toEqual([])
     expect(pgrepCalls).toBeGreaterThan(1)
   })
+
+  it('getAllNextBuildPids returns orphaned pids without parent check', () => {
+    mockedExecSync.mockImplementation((command: string) => {
+      if (command.includes('pgrep -f')) return '300\n'
+      return ''
+    })
+
+    expect(script.getAllNextBuildPids()).toEqual([300])
+  })
+
+  it('waitForAllBuildsToFinish waits for orphaned builds to exit', async () => {
+    let pgrepCalls = 0
+    mockedExecSync.mockImplementation((command: string) => {
+      if (command.includes('pgrep -f')) {
+        pgrepCalls++
+        if (pgrepCalls === 1) return '300\n'
+        const err = new Error('no match') as Error & { status?: number }
+        err.status = 1
+        throw err
+      }
+      return ''
+    })
+
+    const remaining = await script.waitForAllBuildsToFinish(100, 5)
+
+    expect(remaining).toEqual([])
+    expect(pgrepCalls).toBeGreaterThan(1)
+  })
 })
