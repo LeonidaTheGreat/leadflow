@@ -49,11 +49,36 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Allow GET for health checks
+/**
+ * GET /api/cron/send-trial-emails
+ * Vercel Cron sends GET requests — this handler runs the same sequence.
+ */
 export async function GET(request: NextRequest) {
-  return NextResponse.json({
-    message: 'Trial email cron endpoint',
-    method: 'POST',
-    description: 'Sends active trial conversion email sequence (Day 0, 1, 3, 7, 14, 15)'
-  })
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 })
+  }
+
+  const authHeader = request.headers.get('authorization')
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    logger.info('Running active trial email sequence (cron GET)...')
+
+    const results = await sendActiveTrialSequence()
+
+    return NextResponse.json({
+      success: true,
+      message: 'Active trial email sequence processed',
+      results
+    })
+  } catch (error) {
+    logger.error('Trial email cron job error:', error)
+    return NextResponse.json(
+      { success: false, error: 'Trial email cron job failed' },
+      { status: 500 }
+    )
+  }
 }
