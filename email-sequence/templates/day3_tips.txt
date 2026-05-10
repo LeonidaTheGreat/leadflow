@@ -17,7 +17,7 @@ Import your leads:
 {{dashboardUrl}}/leads/import
 
 3️⃣ SET UP THEIR FIRST AUTOMATION
-Even a simple "welcome" email sequence can re-engage old leads. One agent recovered a $2.1M listing from a lead they hadn't contacted in 8 months!
+Even a simple "welcome" email sequence can re-engage older leads and reduce manual follow-up work. Start with one automation, then iterate based on reply rates and booked calls.
 
 Create automation:
 {{dashboardUrl}}/automations
