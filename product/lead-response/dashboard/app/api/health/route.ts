@@ -106,6 +106,9 @@ export async function GET() {
   return NextResponse.json(
     {
       status: allOk ? 'ok' : 'degraded',
+      // Deployment identity — lets smoke tests verify this is the Next.js dashboard,
+      // not a wrong-directory server.js deploy (which would 404 this endpoint entirely).
+      app: 'leadflow-dashboard',
       checks,
       ...(criticalFailed.length > 0 && { errors: criticalFailed }),
       ...(warningFailed.length > 0 && { warnings: warningFailed }) },

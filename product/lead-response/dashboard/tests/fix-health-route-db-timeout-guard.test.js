@@ -43,5 +43,9 @@ test('database errors still flow into check detail', () => {
   assert.ok(source.includes('detail: error ? `query failed: ${error.message}` : \'connected\''), 'expected query failed detail handling')
 })
 
+test('includes app identity field in response', () => {
+  assert.ok(source.includes("app: 'leadflow-dashboard'"), 'missing app identity field — needed to detect wrong-directory Vercel deploys')
+})
+
 console.log(`\nResults: ${passed} passed, ${failed} failed`)
 if (failed > 0) process.exit(1)
