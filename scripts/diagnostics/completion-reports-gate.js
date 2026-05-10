@@ -31,8 +31,8 @@ const completionDir = path.join(projectDir, 'completion-reports');
 const archiveDir = path.join(projectDir, '.completion-reports-archive');
 const docsReportsDir = path.join(projectDir, 'docs', 'reports');
 
-const MAX_COUNT = 500;
-const TARGET_COUNT = 450;
+const MAX_COUNT = 400;
+const TARGET_COUNT = 380;
 
 function listCompletionFiles(dir) {
   if (!fs.existsSync(dir)) return [];
