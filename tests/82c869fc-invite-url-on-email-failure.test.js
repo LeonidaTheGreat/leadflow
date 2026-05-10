@@ -1,35 +1,25 @@
 'use strict'
 
-/*
-TASK SPEC (f060922a-c687-43cf-aee5-8893ab89501a)
-What:
-- Resolve rebase conflict in tests/82c869fc-invite-url-on-email-failure.test.js
-- Preserve both sides' intent by keeping Jest-structured test suite while retaining full scenario coverage added in conflicting commit.
-
-Verify:
-- git status --short shows conflict resolved after git add
-- npm test exits 0
-- npm run build exits 0
-- npm run lint exits 0
-- npm audit --audit-level=high exits 0 high/critical
-
-Boundaries:
-- Do not change route/service/business logic implementation for pilot recruitment in this conflict-resolve task.
-- Do not modify unrelated tests/files unless required by rebase conflict resolution.
-*/
-
 /**
  * E2E test for: invite-pilot endpoint returns inviteUrl when email fails
  * PR #1321 — dev/82c869fc-dev-fix-zero-real-pilots-recruited-retur
  *
- * Coverage:
- * 1) emailSent=false includes inviteUrl
- * 2) emailSent=true omits inviteUrl
- * 3) frontend defaults missing emailSent to true (emailSent ?? true)
- * 4) UI conditional logic stays coherent
+ * Spec:
+ * What:
+ * - Resolve rebase conflict in tests/82c869fc-invite-url-on-email-failure.test.js only.
+ * - Keep Jest-style tests while preserving detailed behavior coverage from both conflict sides.
+ * Verify:
+ * - git rebase --continue completes with no conflicts.
+ * - npm run build exits 0.
+ * - npm run lint exits 0.
+ * - npm test exits 0.
+ * - npm audit --audit-level=high exits 0.
+ * Boundaries:
+ * - Do not modify application routes/services for this re-merge conflict task.
+ * - Do not change unrelated files or alter product behavior outside this test conflict.
  */
 
-// Simulate the API route response-building logic
+// ── Simulate the API route response-building logic ──────────────────────────
 function buildInviteResponse({ emailSent, inviteUrl }) {
   const response = {
     success: true,
@@ -45,12 +35,12 @@ function buildInviteResponse({ emailSent, inviteUrl }) {
   return response
 }
 
-// Simulate frontend emailSent state resolution
+// ── Simulate the frontend emailSent state resolution ─────────────────────────
 function resolveEmailSent(apiEmailSent) {
   return apiEmailSent ?? true
 }
 
-// Simulate UI conditional visibility
+// ── Simulate UI conditional visibility ───────────────────────────────────────
 function getUIState(success, emailSent, inviteUrl) {
   return {
     showSuccessBanner: success && emailSent === true,
