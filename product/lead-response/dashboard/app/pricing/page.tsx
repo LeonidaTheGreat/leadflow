@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Minus, ArrowRight, Loader2 } from 'lucide-react'
+import { Check, Minus, ArrowRight, Loader2, Phone } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics/ga4'
 
 type BillingInterval = 'monthly' | 'annual'
@@ -392,20 +392,20 @@ export default function PricingPage() {
             </div>
           )}
 
-          {/* Demo Booking CTA */}
-          <div className="mb-16 text-center">
-            <p className="text-slate-300 mb-4 text-lg">Not sure which plan is right for you?</p>
+          {/* Demo Call CTA */}
+          <div className="mb-16 text-center" data-testid="demo-call-section">
+            <p className="text-slate-300 mb-3 text-sm">Not sure which plan fits your business?</p>
             <a
               href={DEMO_BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
-              data-testid="demo-call-cta-pricing"
+              data-testid="demo-call-cta"
               onClick={() => trackEvent('demo_call_cta_click', { source: 'pricing_page' })}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-blue-300 hover:text-blue-200 font-semibold rounded-xl transition-all text-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:text-blue-200 font-semibold rounded-lg transition-all"
             >
-              Book a free 15-min demo <ArrowRight className="w-5 h-5" />
+              <Phone className="w-4 h-4" />
+              Questions? Book a 15-min demo
             </a>
-            <p className="text-slate-500 text-sm mt-3">No commitment. Talk directly with Stojan.</p>
           </div>
 
           {/* Feature Comparison Table */}
@@ -533,12 +533,24 @@ export default function PricingPage() {
           {/* Bottom CTA */}
           <div className="mt-16 text-center">
             <p className="text-slate-300 mb-4">Questions? We're here to help.</p>
-            <a
-              href="mailto:support@leadflow.ai"
-              className="text-emerald-400 hover:text-emerald-300 font-medium"
-            >
-              Contact our sales team
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href={DEMO_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('demo_call_cta_click', { source: 'pricing_page' })}
+                className="text-blue-400 hover:text-blue-300 font-medium"
+              >
+                Book a 15-min demo call
+              </a>
+              <span className="hidden sm:inline text-slate-600">·</span>
+              <a
+                href="mailto:support@leadflow.ai"
+                className="text-emerald-400 hover:text-emerald-300 font-medium"
+              >
+                Contact our sales team
+              </a>
+            </div>
           </div>
         </main>
       </div>

@@ -1,9 +1,25 @@
 'use client'
 
+/*
+Task Spec
+What:
+- Resolve rebase conflicts in this file's imports and CTA blocks in `TrialExpiredPage`.
+- Preserve main branch trial-expired page behavior and integrate high-intent demo-call CTA tracking/UI from feature branch.
+- Resolve corresponding conflicts in `app/pricing/page.tsx`, `app/settings/billing/page.tsx`, and `package-lock.json` only.
+Verify:
+- Conflict-token scan across reconciled files returns no markers.
+- `cd product/lead-response/dashboard && npm test` exits 0.
+- `cd product/lead-response/dashboard && npm run build` exits 0.
+- `cd product/lead-response/dashboard && npm run lint` exits 0.
+Boundaries:
+- Do not change backend services, APIs, DB schema, or unrelated frontend flows.
+- Do not re-implement feature from scratch; only merge and reconcile conflicted files.
+*/
+
 import { useEffect, useState } from 'react'
-import { AlertTriangle, ArrowRight } from 'lucide-react'
-import { trackEvent } from '@/lib/analytics/ga4'
+import { AlertTriangle, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { trackEvent } from '@/lib/analytics/ga4'
 
 export default function TrialExpiredPage() {
   const router = useRouter()
@@ -92,10 +108,11 @@ export default function TrialExpiredPage() {
             href={DEMO_BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
-            data-testid="demo-call-cta-trial-expired"
+            data-testid="trial-expired-demo-call-cta"
             onClick={() => trackEvent('demo_call_cta_click', { source: 'trial_expired' })}
-            className="block w-full px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold rounded-lg transition-colors text-center"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors text-center"
           >
+            <Phone className="w-4 h-4" />
             Talk to us before you lose your leads
           </a>
 
