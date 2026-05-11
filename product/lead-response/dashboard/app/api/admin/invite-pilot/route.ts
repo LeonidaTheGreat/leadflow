@@ -4,25 +4,13 @@ import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 import { logger } from '@/lib/logger'
+import { requireAdmin } from '@/lib/services/AuthService'
 
 function generateInviteToken(): { rawToken: string; tokenHash: string } {
   const rawToken = crypto.randomBytes(32).toString('hex')
   const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
 
   return { rawToken, tokenHash }
-}
-
-// Admin auth check - verify X-Admin-Token header
-function checkAdminAuth(request: NextRequest): boolean {
-  const adminToken = request.headers.get('x-admin-token')
-  const expectedToken = process.env.ADMIN_SECRET
-
-  if (!expectedToken) {
-    logger.warn('ADMIN_SECRET not configured in environment')
-    return false
-  }
-
-  return adminToken === expectedToken
 }
 
 interface InviteRequest {
@@ -47,12 +35,12 @@ interface InviteResponse {
  * Accepts: email (required), name (required), message (optional)
  * Returns: invite metadata + agent ID
  *
- * Auth: X-Admin-Token header (must match ADMIN_SECRET)
+ * Auth: LEADFLOW_API_KEY via Bearer token or x-api-key header
  */
 export async function POST(request: NextRequest): Promise<NextResponse<InviteResponse>> {
   try {
     // 1. Check admin auth
-    if (!checkAdminAuth(request)) {
+    if (!await requireAdmin(request)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized - invalid or missing admin token' },
         { status: 401 }
@@ -218,7 +206,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     // Check admin auth
-    if (!checkAdminAuth(request)) {
+    if (!await requireAdmin(request)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

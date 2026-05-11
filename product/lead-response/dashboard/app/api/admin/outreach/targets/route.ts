@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
-
-function checkAdminAuth(request: NextRequest): boolean {
-  const adminToken = request.headers.get('x-admin-token')
-  const expectedToken = process.env.ADMIN_SECRET
-  if (!expectedToken) return false
-  return adminToken === expectedToken
-}
+import { requireAdmin } from '@/lib/services/AuthService'
 
 /**
  * GET /api/admin/outreach/targets
@@ -17,7 +11,7 @@ function checkAdminAuth(request: NextRequest): boolean {
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    if (!checkAdminAuth(request)) {
+    if (!await requireAdmin(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

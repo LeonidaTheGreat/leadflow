@@ -2,21 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ProspectWaitlistService } from '@/lib/services/ProspectWaitlistService'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
-import crypto from 'crypto'
-
-function checkAdminAuth(request: NextRequest): boolean {
-  const adminToken = request.headers.get('x-admin-token')
-  const expectedToken = process.env.ADMIN_SECRET
-  if (!expectedToken || !adminToken) return false
-  return crypto.timingSafeEqual(
-    Buffer.from(adminToken),
-    Buffer.from(expectedToken)
-  )
-}
+import { requireAdmin } from '@/lib/services/AuthService'
 
 export async function GET(request: NextRequest) {
   try {
-    if (!checkAdminAuth(request)) {
+    if (!await requireAdmin(request)) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 

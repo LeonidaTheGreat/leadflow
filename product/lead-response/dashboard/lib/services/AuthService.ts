@@ -262,29 +262,32 @@ export class AuthService {
     return session?.userId || null
   }
 
-  async isAdminUser(request: NextRequest): Promise<boolean> {
-    const adminEmail = process.env.ADMIN_EMAIL
-    if (!adminEmail) {
-      logger.warn('ADMIN_EMAIL not configured in environment')
+  async requireAdmin(request: NextRequest): Promise<boolean> {
+    const apiKey = process.env.LEADFLOW_API_KEY
+    if (!apiKey) {
+      logger.warn('LEADFLOW_API_KEY not configured')
       return false
     }
 
-    const userId = await this.getAuthUserId(request)
-    if (!userId) {
-      return false
+    const authHeader = request.headers.get('authorization')
+    const xApiKey = request.headers.get('x-api-key')
+
+    let provided: string | null = null
+    if (authHeader?.startsWith('Bearer ')) {
+      provided = authHeader.slice(7).trim() || null
+    } else if (xApiKey) {
+      provided = xApiKey.trim() || null
     }
 
-    try {
-      const { data: agent } = await this.db
-        .from('real_estate_agents')
-        .select('email')
-        .eq('id', userId)
-        .single()
+    if (!provided) return false
 
-      return agent?.email?.toLowerCase() === adminEmail.toLowerCase()
-    } catch {
-      return false
-    }
+    const expectedBuf = Buffer.from(apiKey)
+    const providedBuf = Buffer.from(provided)
+
+    return (
+      providedBuf.length === expectedBuf.length &&
+      crypto.timingSafeEqual(providedBuf, expectedBuf)
+    )
   }
 
   async auth(request: NextRequest): Promise<AuthResult> {
@@ -388,8 +391,8 @@ export async function getAuthUserId(request: NextRequest): Promise<string | null
   return authService.getAuthUserId(request)
 }
 
-export async function isAdminUser(request: NextRequest): Promise<boolean> {
-  return authService.isAdminUser(request)
+export async function requireAdmin(request: NextRequest): Promise<boolean> {
+  return authService.requireAdmin(request)
 }
 
 export async function auth(request: NextRequest): Promise<AuthResult> {

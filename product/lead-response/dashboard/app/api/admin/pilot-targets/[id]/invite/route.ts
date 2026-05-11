@@ -4,6 +4,7 @@ import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 import { logger } from '@/lib/logger'
+import { requireAdmin } from '@/lib/services/AuthService'
 
 function generateInviteToken(): { rawToken: string; tokenHash: string } {
   const rawToken = crypto.randomBytes(32).toString('hex')
@@ -12,28 +13,20 @@ function generateInviteToken(): { rawToken: string; tokenHash: string } {
   return { rawToken, tokenHash }
 }
 
-function checkAdminAuth(request: NextRequest): boolean {
-  const adminToken = request.headers.get('x-admin-token')
-  const expectedToken = process.env.ADMIN_SECRET
-  if (!expectedToken || !adminToken) return false
-  // Use constant-time comparison to prevent timing attacks on the admin secret
-  return crypto.timingSafeEqual(Buffer.from(adminToken), Buffer.from(expectedToken))
-}
-
 /**
  * POST /api/admin/pilot-targets/[id]/invite
  *
  * Send a pilot invite to a recruitment target and mark them as "contacted".
  * Requires target to have an email address.
  *
- * Auth: X-Admin-Token header (must match ADMIN_SECRET)
+ * Auth: LEADFLOW_API_KEY via Bearer token or x-api-key header
  */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    if (!checkAdminAuth(request)) {
+    if (!await requireAdmin(request)) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
