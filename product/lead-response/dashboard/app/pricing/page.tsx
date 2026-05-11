@@ -4,98 +4,21 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Check, Minus, ArrowRight, Loader2 } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics/ga4'
+import { PLANS } from '@/lib/plans'
 
 type BillingInterval = 'monthly' | 'annual'
 
-/**
- * Maps pricing page tier to the API's base tier key.
- * Canonical tier names are shared between the pricing page and checkout API:
- *   starter    → starter_monthly / starter_annual
- *   pro        → pro_monthly / pro_annual
- *   team       → team_monthly / team_annual
- *   brokerage  → contact sales (no checkout flow)
- *
- * The billing interval is appended by handleSelectPlan: `${tier}_${interval}`
- */
-const TIER_KEY_MAP: Record<string, string | null> = {
-  starter:   'starter',
-  pro:       'pro',
-  team:      'team',
-  brokerage: null, // contact sales — no direct checkout
-}
-
-const PRICING_PLANS = [
-  {
-    name: 'Starter',
-    tier: 'starter',
-    monthlyPrice: 49,
-    annualPrice: 490,
-    description: 'Perfect for testing the waters',
-    features: [
-      '100 SMS/month',
-      'Basic AI responses',
-      'Basic qualification',
-      'Dashboard access',
-      'FUB integration',
-      'Email support',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Pro',
-    tier: 'pro',
-    monthlyPrice: 149,
-    annualPrice: 1490,
-    description: 'Most popular for working agents',
-    features: [
-      'Unlimited SMS',
-      'Full AI (Claude)',
-      'Cal.com booking',
-      'Lead qualification',
-      'Priority chat + email',
-      'Full analytics',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: true,
-  },
-  {
-    name: 'Team',
-    tier: 'team',
-    monthlyPrice: 399,
-    annualPrice: 3990,
-    description: 'For small teams (up to 5 agents)',
-    features: [
-      'Everything in Pro',
-      'Unlimited SMS',
-      'Full AI (Claude)',
-      'Lead routing',
-      'Team analytics',
-      '5 agents included',
-      'Priority support',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Brokerage',
-    tier: 'brokerage',
-    monthlyPrice: 999,
-    annualPrice: 9990,
-    description: 'White-label for large brokerages',
-    features: [
-      'Unlimited everything',
-      'Custom AI training',
-      'White-label options',
-      'SLA (99.9% uptime)',
-      'Dedicated account manager',
-      'Compliance reporting',
-    ],
-    cta: 'Contact Sales',
-    highlighted: false,
-    contactSales: true,
-  },
-]
+const PRICING_PLANS = PLANS.map(p => ({
+  name: p.name,
+  tier: p.id,
+  monthlyPrice: p.monthlyPrice,
+  annualPrice: p.annualPrice,
+  description: p.description,
+  features: p.features,
+  cta: p.cta,
+  highlighted: p.highlighted,
+  contactSales: p.contactSales ?? false,
+}))
 
 // Feature comparison data
 const FEATURE_CATEGORIES = [
@@ -199,11 +122,12 @@ export default function PricingPage() {
     }
 
     // Map pricing-page tier + billing interval → API tier key
-    const baseTierKey = TIER_KEY_MAP[tier]
-    if (!baseTierKey) {
+    const plan = PRICING_PLANS.find(p => p.tier === tier)
+    if (!plan || plan.contactSales) {
       setCheckoutError('This plan requires contacting sales. Please email sales@leadflow.ai.')
       return
     }
+    const baseTierKey = tier
     const apiTier = `${baseTierKey}_${interval}` // e.g. "pro_monthly", "team_annual"
 
     setLoadingTier(tier)
