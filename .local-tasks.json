@@ -506,5 +506,25 @@
       "mission": "Revenue Funnel Dashboard — Track Signups to MRR with Alerts",
       "task_kind": "workflow-task"
     }
+  },
+  {
+    "id": "9ec779c4-71bf-4622-a4ea-6f47f4d11ef6",
+    "title": "Fix phantom MRR by excluding test subscription data from metric snapshots",
+    "agent_id": "dev",
+    "status": "pending",
+    "created_at": "2026-05-11T00:00:00.000Z",
+    "priority": "high",
+    "description": "Audit the MRR snapshot pipeline and ensure Stripe test/smoke subscription rows are excluded from reported MRR while preserving real paid subscriptions. Add and run regression coverage to prevent future metric pollution.",
+    "metadata": {
+      "workflow": "Dev > QC",
+      "origin": "project-graph-gap",
+      "gap_type": "uc_no_tasks",
+      "use_case_id": "fix-phantom-mrr-test-data-polluting-metric",
+      "use_case_title": "Fix: Phantom MRR from test subscription data",
+      "task_spec": "docs/task-specs/fix-phantom-mrr-test-data-polluting-metric-workflow-task.md",
+      "implementation_target": "product/lead-response/dashboard/app/api/billing/mrr-snapshot/route.ts",
+      "auto_created_by": "genome-layer-2",
+      "task_kind": "workflow-task"
+    }
   }
 ]
