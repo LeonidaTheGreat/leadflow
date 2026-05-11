@@ -2,10 +2,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAgentById, getLeadById } from '@/lib/supabase'
 import { generateBookingLink, getAgentBookingLink } from '@/lib/calcom'
 import { validateSession } from '@/lib/services/AuthService'
+import { supabaseServer } from '@/lib/supabase-server'
+import { canUseCalcom } from '@/lib/feature-gates'
 import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - API routes should never be static
 export const dynamic = 'force-dynamic'
+
+async function getAgentTier(agentId: string): Promise<string> {
+  try {
+    const { data } = await supabaseServer
+      .from('real_estate_agents')
+      .select('plan_tier')
+      .eq('id', agentId)
+      .limit(1)
+      .single()
+    return (data as any)?.plan_tier ?? 'starter'
+  } catch {
+    return 'starter'
+  }
+}
 
 // ============================================
 // BOOKING LINK API
@@ -31,6 +47,15 @@ export async function GET(request: NextRequest) {
 
   // The authenticated agent's ID — used for all data queries
   const agentId = session.userId
+
+  const tier = await getAgentTier(agentId)
+  const gate = canUseCalcom(tier)
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, requiredTier: gate.requiredTier, upgradeUrl: '/pricing' },
+      { status: 403 }
+    )
+  }
 
   try {
     const { searchParams } = new URL(request.url)
@@ -110,6 +135,15 @@ export async function POST(request: NextRequest) {
   }
 
   const sessionAgentId = session.userId
+
+  const agentTier = await getAgentTier(sessionAgentId)
+  const gate = canUseCalcom(agentTier)
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, requiredTier: gate.requiredTier, upgradeUrl: '/pricing' },
+      { status: 403 }
+    )
+  }
 
   try {
     const body = await request.json()

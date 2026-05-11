@@ -1,12 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { canUseCalcom } from '@/lib/feature-gates'
 import { logger } from '@/lib/logger'
+
+async function getAgentTier(agentId: string): Promise<string> {
+  try {
+    const { data } = await supabase
+      .from('real_estate_agents')
+      .select('plan_tier')
+      .eq('id', agentId)
+      .limit(1)
+      .single()
+    return (data as any)?.plan_tier ?? 'starter'
+  } catch {
+    return 'starter'
+  }
+}
 
 // Store Cal.com link
 export async function POST(request: NextRequest) {
   try {
     const { calcomLink } = await request.json()
     const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
+
+    const tier = await getAgentTier(agentId)
+    const gate = canUseCalcom(tier)
+    if (!gate.allowed) {
+      return NextResponse.json(
+        { error: gate.message, requiredTier: gate.requiredTier, upgradeUrl: '/pricing' },
+        { status: 403 }
+      )
+    }
 
     if (!calcomLink) {
       return NextResponse.json(
@@ -56,6 +80,15 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
+
+    const tier = await getAgentTier(agentId)
+    const gate = canUseCalcom(tier)
+    if (!gate.allowed) {
+      return NextResponse.json(
+        { error: gate.message, requiredTier: gate.requiredTier, upgradeUrl: '/pricing' },
+        { status: 403 }
+      )
+    }
 
     const { error } = await supabase
       .from('agent_integrations')
