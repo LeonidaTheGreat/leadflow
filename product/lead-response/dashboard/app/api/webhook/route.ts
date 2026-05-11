@@ -3,6 +3,7 @@ import { createLead, getLeadByPhone, updateLead, createMessage, logEvent, getAge
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone } from '@/lib/twilio'
 import type { Lead, Agent } from '@/lib/types'
+import { realEstateAgentRowToAgent } from '@/lib/agent-mapper'
 import { logger } from '@/lib/logger'
 
 // Force dynamic rendering - webhook must handle runtime requests
@@ -69,9 +70,9 @@ export async function POST(request: NextRequest) {
       const { data: agents } = await supabaseAdmin
         .from('real_estate_agents')
         .select('*')
-        .eq('is_active', true)
+        .eq('status', 'active')
         .limit(1)
-      agent = agents?.[0] || null
+      agent = agents?.[0] ? realEstateAgentRowToAgent(agents[0]) : null
     }
 
     if (!agent) {

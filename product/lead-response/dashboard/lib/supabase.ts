@@ -7,6 +7,7 @@
 
 import { postgrestAdmin, postgrestPublic } from './db'
 import { logger } from '@/lib/logger'
+import { realEstateAgentRowToAgent } from '@/lib/agent-mapper'
 import type { 
   Lead, 
   Agent, 
@@ -218,7 +219,7 @@ export async function getAgentById(id: string): Promise<{ data: Agent | null; er
     .single()
     .execute()
 
-  return { data, error }
+  return { data: data ? realEstateAgentRowToAgent(data) : null, error }
 }
 
 export async function getAgentByEmail(email: string): Promise<{ data: Agent | null; error: any }> {
@@ -229,17 +230,17 @@ export async function getAgentByEmail(email: string): Promise<{ data: Agent | nu
     .single()
     .execute()
 
-  return { data, error }
+  return { data: data ? realEstateAgentRowToAgent(data) : null, error }
 }
 
 export async function getActiveAgents(): Promise<{ data: Agent[]; error: any }> {
   const { data, error } = await postgrestAdmin
     .from('real_estate_agents')
     .select('*')
-    .eq('is_active', true)
+    .eq('status', 'active')
     .execute()
 
-  return { data: data || [], error }
+  return { data: (data || []).map(realEstateAgentRowToAgent), error }
 }
 
 // ============================================
