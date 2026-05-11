@@ -271,6 +271,20 @@ export default function AdminCommandCenterPage() {
                   Review funnel data <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
+
+              <Link
+                href="/admin/pilot-signups"
+                className="rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:border-violet-500"
+              >
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Research</p>
+                <p className="mt-2 text-lg font-medium text-white">Pilot signups</p>
+                <p className="mt-2 text-sm text-slate-400">
+                  {data.recruitment.signedUpCount} signups collected. Review and send invites.
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm text-violet-300">
+                  View signups <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
             </div>
           </div>
 
