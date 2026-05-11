@@ -1,5 +1,31 @@
 'use client'
 
+/*
+TASK SPEC (61d47e0b-b81c-4c12-9c85-03945a31ee98)
+What:
+- Change file: product/lead-response/dashboard/app/page.tsx
+- Function: HomePage()
+- Update stale feature copy that claims an outdated Claude model name to model-agnostic text aligned with AI_MODEL-driven runtime behavior.
+- Change file: product/lead-response/dashboard/lib/ai.ts
+- Functions/constants: getModelClient(), qualifyLead(), Anthropic fallback constant usage
+- Upgrade Anthropic fallback model from "claude-3-haiku-20240307" to "claude-haiku-4-5" and remove stale Sonnet reference in qualification docstring.
+
+Verify:
+- Run: rg -n "Claude 3\\.5 Sonnet" product/lead-response/dashboard/app/
+- Expect: no matches.
+- Run: npm run lint
+- Run: npm test
+- Run: npm run build
+- Run: npm audit --audit-level=high
+- Run: cd product/lead-response/dashboard && npx next build
+- Expect all commands exit 0.
+
+Boundaries:
+- Do not change routes/services outside product/lead-response/dashboard/lib/ai.ts.
+- Do not alter pricing/content unrelated to the AI model copy claim.
+- Do not modify database schema, migrations, or non-dashboard modules.
+*/
+
 import Link from 'next/link'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
@@ -198,7 +224,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard
             title="AI Qualification"
-            description="Claude 3.5 Sonnet analyzes leads to extract intent, budget, timeline, and property preferences."
+            description="Your configured AI model analyzes leads to extract intent, budget, timeline, and property preferences."
             icon="🤖"
           />
           <FeatureCard
