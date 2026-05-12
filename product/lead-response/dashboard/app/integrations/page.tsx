@@ -170,7 +170,7 @@ export default function IntegrationsPage() {
           })
           break
         case 'calcom':
-          response = await fetch('/api/integrations/cal-com/verify', {
+          response = await fetch('/api/integrations/cal-com/connect', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ calcomLink: integration.config.bookingLink }),

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
+import { auth } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
 
 // Store Cal.com link
 export async function POST(request: NextRequest) {
+  const { user } = await auth(request)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const agentId = user.id
+
   try {
     const { calcomLink } = await request.json()
-    const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
 
     if (!calcomLink) {
       return NextResponse.json(
@@ -54,8 +58,11 @@ export async function POST(request: NextRequest) {
 
 // Disconnect Cal.com
 export async function DELETE(request: NextRequest) {
+  const { user } = await auth(request)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const agentId = user.id
+
   try {
-    const agentId = request.headers.get('x-agent-id') || 'test-agent-id'
 
     const { error } = await supabase
       .from('agent_integrations')

@@ -384,6 +384,23 @@ export function subscribeToLeads(callback: (payload: any) => void) {
   }
 }
 
+// ============================================
+// AGENT INTEGRATIONS
+// ============================================
+
+export async function getAgentCalcomLink(
+  agentId: string
+): Promise<{ data: string | null; error: any }> {
+  const { data, error } = await postgrestAdmin
+    .from('agent_integrations')
+    .select('cal_com_link')
+    .eq('agent_id', agentId)
+    .single()
+    .execute()
+
+  return { data: data?.cal_com_link ?? null, error }
+}
+
 export function subscribeToMessages(leadId: string, callback: (payload: any) => void) {
   // PostgREST does not support realtime subscriptions
   // You would need to implement polling or WebSocket-based updates

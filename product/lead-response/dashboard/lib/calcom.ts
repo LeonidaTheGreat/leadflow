@@ -81,6 +81,35 @@ export function getAgentBookingLink(agent: Agent, lead?: Lead): string {
   })
 }
 
+export interface BookingLinkPrefillOptions {
+  leadName?: string
+  leadEmail?: string
+  leadPhone?: string
+}
+
+/**
+ * Append lead prefill params and UTM tracking to an existing Cal.com booking URL.
+ * Preserves any existing path segments (username + event slug) in the stored link.
+ */
+export function generateBookingLinkFromUrl(
+  calComUrl: string,
+  options: BookingLinkPrefillOptions = {}
+): string {
+  const { leadName, leadEmail, leadPhone } = options
+
+  // Strip existing query string — we rebuild params cleanly
+  const [base] = calComUrl.split('?')
+  const params = new URLSearchParams()
+
+  if (leadName) params.set('name', leadName)
+  if (leadEmail) params.set('email', leadEmail)
+  if (leadPhone) params.set('phone', leadPhone)
+  params.set('utm_source', 'ai-lead-response')
+  params.set('utm_medium', 'sms')
+
+  return `${base}?${params.toString()}`
+}
+
 // ============================================
 // BOOKING OPERATIONS
 // ============================================

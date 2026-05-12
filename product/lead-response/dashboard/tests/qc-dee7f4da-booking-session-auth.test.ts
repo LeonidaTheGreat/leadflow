@@ -19,20 +19,22 @@ const LEAD_OWN = 'lead-belongs-to-a'
 const LEAD_OTHER = 'lead-belongs-to-b'
 
 jest.mock('@/lib/services/AuthService', () => ({ validateSession: jest.fn() }))
-jest.mock('@/lib/supabase', () => ({ getAgentById: jest.fn(), getLeadById: jest.fn() }))
+jest.mock('@/lib/supabase', () => ({ getAgentById: jest.fn(), getLeadById: jest.fn(), getAgentCalcomLink: jest.fn() }))
 jest.mock('@/lib/calcom', () => ({
   generateBookingLink: jest.fn(() => 'https://cal.com/link'),
   getAgentBookingLink: jest.fn((a: any) => `https://cal.com/${a.calcom_username}`),
+  generateBookingLinkFromUrl: jest.fn((url: string) => `${url}?utm_source=ai-lead-response&utm_medium=sms`),
 }))
 
 import { validateSession } from '@/lib/services/AuthService'
-import { getAgentById, getLeadById } from '@/lib/supabase'
+import { getAgentById, getLeadById, getAgentCalcomLink } from '@/lib/supabase'
 import { GET, POST } from '../app/api/booking/route'
 import { NextRequest } from 'next/server'
 
 const mockValidateSession = validateSession as jest.Mock
 const mockGetAgentById = getAgentById as jest.Mock
 const mockGetLeadById = getLeadById as jest.Mock
+const mockGetAgentCalcomLink = getAgentCalcomLink as jest.Mock
 
 function req(method: 'GET' | 'POST', params: Record<string, string> = {}, cookie = 'leadflow_session=tok', body?: any) {
   const url = new URL('http://localhost/api/booking')
@@ -47,7 +49,8 @@ function req(method: 'GET' | 'POST', params: Record<string, string> = {}, cookie
 beforeEach(() => {
   jest.clearAllMocks()
   mockValidateSession.mockResolvedValue({ userId: AGENT_A })
-  mockGetAgentById.mockResolvedValue({ data: { id: AGENT_A, calcom_username: 'agent-a-cal' } })
+  mockGetAgentById.mockResolvedValue({ data: { id: AGENT_A } })
+  mockGetAgentCalcomLink.mockResolvedValue({ data: 'https://cal.com/agent-a-cal/30min', error: null })
   mockGetLeadById.mockResolvedValue({ data: { id: LEAD_OWN, agent_id: AGENT_A } })
 })
 
@@ -69,9 +72,17 @@ describe('GET /api/booking', () => {
     // Even if attacker passes a different agent_id in query string, session agent must be used
     const r = await GET(req('GET', { agent_id: AGENT_B }))
     expect(r.status).toBe(200)
-    // Must have been called with session agent, not attacker's agent
-    expect(mockGetAgentById).toHaveBeenCalledWith(AGENT_A)
-    expect(mockGetAgentById).not.toHaveBeenCalledWith(AGENT_B)
+    // Cal.com link must be fetched for session agent, not attacker's agent
+    expect(mockGetAgentCalcomLink).toHaveBeenCalledWith(AGENT_A)
+    expect(mockGetAgentCalcomLink).not.toHaveBeenCalledWith(AGENT_B)
+  })
+
+  it('400 — agent has no Cal.com configured', async () => {
+    mockGetAgentCalcomLink.mockResolvedValue({ data: null, error: null })
+    const r = await GET(req('GET'))
+    expect(r.status).toBe(400)
+    const body = await r.json()
+    expect(body.error).toMatch(/Cal\.com/i)
   })
 
   it('403 — lead belongs to different agent', async () => {
