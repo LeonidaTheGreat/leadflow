@@ -197,6 +197,32 @@ test_dashboard_no_errors() {
     user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
   fi
 
+  # Fallback: use the E2E test agent created by test_trial_signup_flow (has active trial, needs
+  # onboarding completed). This handles the case where no production agent meets all criteria
+  # (e.g. all onboarding-complete agents have expired trials). The test agent is cleaned up by
+  # cleanup_test_accounts after all tests run.
+  if [ -z "$user_id" ] && [ -n "${E2E_TOKEN:-}" ]; then
+    # Mark onboarding complete for the test agent so middleware won't redirect to /dashboard/onboarding
+    curl -s --max-time 10 -X POST "$BASE_URL/api/onboarding/complete" \
+      -H "Content-Type: application/json" \
+      -H "Cookie: auth-token=$E2E_TOKEN" \
+      -d '{}' >/dev/null 2>&1 || true
+
+    # Load dashboard using JWT cookie — middleware accepts auth-token for JWT sessions
+    local html http_status _tmp_dash
+    _tmp_dash=$(mktemp)
+    http_status=$(curl -s --max-time 15 -o "$_tmp_dash" -w "%{http_code}" "$BASE_URL/dashboard" \
+      -H "Cookie: auth-token=$E2E_TOKEN" 2>/dev/null)
+    local exit_code=$?
+    html=$(cat "$_tmp_dash" 2>/dev/null); rm -f "$_tmp_dash"
+
+    [ $exit_code -ne 0 ] && return 1
+    [[ "$http_status" == 5* ]] && return 1
+    echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error\|FUNCTION_INVOCATION_FAILED' && return 1
+    echo "$html" | grep -q 'Lead Feed' || return 1
+    return 0
+  fi
+
   [ -z "$user_id" ] && return 1
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
