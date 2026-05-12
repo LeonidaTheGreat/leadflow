@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Check, Loader2 } from 'lucide-react'
+import { ArrowRight, Check, Eye, EyeOff, Lock, Loader2, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -127,6 +127,7 @@ function PaidSignupFlow() {
   const [selectedPlan, setSelectedPlan] = useState<typeof PLANS[0] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
   
   const [formData, setFormData] = useState({
     email: '',
@@ -400,18 +401,22 @@ function PaidSignupFlow() {
                     {/* Email — full-width vertical stack matching login layout */}
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-slate-200">Email Address *</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="you@example.com"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
-                        required
-                        disabled={loading}
-                        data-testid="signup-email-input"
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="you@example.com"
+                          className="h-12 w-full pl-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                          required
+                          disabled={loading}
+                          autoComplete="email"
+                          data-testid="signup-email-input"
+                        />
+                      </div>
                     </div>
 
                     {/* Full Name — full-width vertical stack */}
@@ -449,19 +454,32 @@ function PaidSignupFlow() {
                     {/* Password — full-width vertical stack matching login layout */}
                     <div className="space-y-2">
                       <Label htmlFor="password" className="text-slate-200">Password *</Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        placeholder="Create a strong password (min 8 characters)"
-                        className="h-12 w-full bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
-                        required
-                        disabled={loading}
-                        minLength={8}
-                        data-testid="signup-password-input"
-                      />
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <Input
+                          id="password"
+                          name="password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          placeholder="Create a strong password (min 8 characters)"
+                          className="h-12 w-full pl-10 pr-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                          required
+                          disabled={loading}
+                          minLength={8}
+                          autoComplete="new-password"
+                          data-testid="signup-password-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                          tabIndex={-1}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
 
                     {error && (

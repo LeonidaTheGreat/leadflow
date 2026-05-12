@@ -30,7 +30,9 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { Loader2, ArrowRight, Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { trackCTAClick } from '@/lib/analytics/ga4'
 
 interface TrialSignupFormProps {
@@ -230,30 +232,32 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
           No credit card required · 14 days free
         </p>
 
-        <div className="space-y-2">
-          <div>
-            <label htmlFor="trial-email" className="text-slate-200">
-              Email address
-            </label>
-            <input
-              id="trial-email"
-              type="email"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(null) }}
-              placeholder="you@example.com"
-              required
-              disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              aria-describedby={error ? 'trial-error' : undefined}
-            />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="trial-email" className="text-slate-200">Email address</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Input
+                id="trial-email"
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setError(null) }}
+                placeholder="you@example.com"
+                required
+                disabled={loading}
+                className="h-12 w-full pl-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                aria-describedby={error ? 'trial-error' : undefined}
+                autoComplete="email"
+                data-testid="trial-signup-email-input"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="trial-password" className="text-slate-200">
-              Password
-            </label>
+            <Label htmlFor="trial-password" className="text-slate-200">Password</Label>
             <div className="relative">
-              <input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Input
                 id="trial-password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
@@ -262,12 +266,14 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
                 required
                 minLength={8}
                 disabled={loading}
-                className="w-full px-4 py-3 pr-10 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="h-12 w-full pl-10 pr-10 bg-slate-900 border-slate-600 text-base text-white placeholder:text-slate-500"
+                autoComplete="new-password"
+                data-testid="trial-signup-password-input"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
                 tabIndex={-1}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
@@ -276,10 +282,10 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
             </div>
           </div>
 
-          <div>
-            <label htmlFor="trial-name" className="text-slate-200">
+          <div className="space-y-2">
+            <Label htmlFor="trial-name" className="text-slate-200">
               Your name <span className="text-slate-400">(optional)</span>
-            </label>
+            </Label>
             <input
               id="trial-name"
               type="text"
@@ -287,7 +293,7 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               disabled={loading}
-              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="h-12 w-full px-4 rounded-lg border border-slate-600 bg-slate-900 text-base text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>
