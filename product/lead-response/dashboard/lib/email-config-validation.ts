@@ -5,6 +5,10 @@
 
 import { logger } from '@/lib/logger'
 
+// Domains not verified in Resend — sending from these causes silent delivery failures.
+// landyourleads.com was the original default but was never added to the Resend account.
+const UNVERIFIED_DOMAINS = ['landyourleads.com']
+
 export interface EmailConfigValidation {
   isValid: boolean
   issues: string[]
@@ -45,8 +49,6 @@ export function validateEmailConfig(): EmailConfigValidation {
   }
 
   // Guard against domains known to be unverified in Resend — they cause silent delivery failures.
-  // landyourleads.com was the original default but was never added to the Resend account.
-  const UNVERIFIED_DOMAINS = ['landyourleads.com']
   const fromDomain = fromEmail.split('@')[1]?.toLowerCase()
   if (fromDomain && UNVERIFIED_DOMAINS.includes(fromDomain)) {
     issues.push(

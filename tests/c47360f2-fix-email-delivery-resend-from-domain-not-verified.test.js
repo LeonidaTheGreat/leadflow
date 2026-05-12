@@ -68,5 +68,24 @@ for (const file of files) {
   })
 }
 
+// Verify email-config-validation.ts has a guard that explicitly blocks unverified domains.
+// This prevents silent delivery failures if FROM_EMAIL is set to an unverified domain.
+const validationSrc = fs.readFileSync(
+  path.join(__dirname, '..', 'product', 'lead-response', 'dashboard', 'lib', 'email-config-validation.ts'),
+  'utf-8'
+)
+
+test('email-config-validation.ts: UNVERIFIED_DOMAINS guard blocks landyourleads.com', () => {
+  assert.ok(validationSrc.includes('UNVERIFIED_DOMAINS'), 'Missing UNVERIFIED_DOMAINS guard')
+  assert.ok(validationSrc.includes('landyourleads.com'), 'landyourleads.com not in UNVERIFIED_DOMAINS list')
+})
+
+test('email-config-validation.ts: guard produces an issue (not just a warning)', () => {
+  assert.ok(
+    validationSrc.includes('issues.push') && validationSrc.includes('UNVERIFIED_DOMAINS'),
+    'Unverified domain check must push to issues (hard error), not warnings'
+  )
+})
+
 console.log(`Results: ${passed}/${total} passed`)
 if (passed !== total) process.exit(1)

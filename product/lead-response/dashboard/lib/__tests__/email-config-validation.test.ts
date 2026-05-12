@@ -29,7 +29,7 @@ describe('validateEmailConfig', () => {
 
   test('should pass validation when RESEND_API_KEY is present', () => {
     process.env.RESEND_API_KEY = 're_test_key_12345678901234567890';
-    process.env.FROM_EMAIL = 'test@landyourleads.com';
+    process.env.FROM_EMAIL = 'test@leadflow.ai';
 
     const result = validateEmailConfig();
 
@@ -55,6 +55,16 @@ describe('validateEmailConfig', () => {
 
     expect(result.isValid).toBe(false);
     expect(result.issues.some(i => i.includes('FROM_EMAIL appears invalid'))).toBe(true);
+  });
+
+  test('should fail validation for unverified sender domains', () => {
+    process.env.RESEND_API_KEY = 're_test_key_12345678901234567890';
+    process.env.FROM_EMAIL = 'onboarding@landyourleads.com';
+
+    const result = validateEmailConfig();
+
+    expect(result.isValid).toBe(false);
+    expect(result.issues.some(i => i.includes('not verified with Resend'))).toBe(true);
   });
 
   test('should use default FROM_EMAIL when not configured', () => {
