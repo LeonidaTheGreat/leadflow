@@ -10,12 +10,27 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
-// Plan → Stripe price ID mapping.
-// In production these are set via Vercel env vars.
-const PLAN_PRICE_IDS: Record<string, string> = {
-  starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
-  pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
-  team: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly' }
+// Plan + interval → Stripe price ID env var names.
+// Annual = pay 10 months upfront, 2 months free.
+const PLAN_PRICE_ENV: Record<string, { monthly: string; annual: string }> = {
+  starter: {
+    monthly: 'STRIPE_PRICE_STARTER_MONTHLY',
+    annual:  'STRIPE_PRICE_STARTER_ANNUAL',
+  },
+  pro: {
+    monthly: 'STRIPE_PRICE_PRO_MONTHLY',
+    annual:  'STRIPE_PRICE_PRO_ANNUAL',
+  },
+  team: {
+    monthly: 'STRIPE_PRICE_TEAM_MONTHLY',
+    annual:  'STRIPE_PRICE_TEAM_ANNUAL',
+  },
+}
+
+function getPriceId(plan: string, interval: 'monthly' | 'annual'): string | undefined {
+  const envKey = PLAN_PRICE_ENV[plan]?.[interval]
+  return envKey ? process.env[envKey] : undefined
+}
 
 /**
  * POST /api/stripe/upgrade-checkout
@@ -23,7 +38,8 @@ const PLAN_PRICE_IDS: Record<string, string> = {
  * Creates a Stripe Checkout session for an authenticated pilot agent who
  * wants to upgrade to a paid plan. Requires a valid auth-token cookie.
  *
- * Body: { plan: 'starter' | 'pro' | 'team' }
+ * Body: { plan: 'starter' | 'pro' | 'team', interval?: 'monthly' | 'annual' }
+ *   interval defaults to 'monthly'. Annual = 2 months free, billed upfront.
  *
  * Returns: { url: string }  — the Stripe-hosted checkout URL (redirect there)
  */
@@ -43,14 +59,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ── 3. Parse + validate plan ──────────────────────────────────────────────
+    // ── 3. Parse + validate plan + interval ───────────────────────────────────
     const body = await request.json()
-    const { plan } = body
+    const { plan, interval = 'monthly' } = body
 
-    if (!plan || !PLAN_PRICE_IDS[plan]) {
+    const validPlans = Object.keys(PLAN_PRICE_ENV)
+    if (!plan || !validPlans.includes(plan)) {
       return NextResponse.json(
-        { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_PRICE_IDS).join(', ')}` },
+        { error: `Invalid plan. Choose one of: ${validPlans.join(', ')}` },
         { status: 400 }
+      )
+    }
+
+    if (interval !== 'monthly' && interval !== 'annual') {
+      return NextResponse.json(
+        { error: 'Invalid interval. Must be "monthly" or "annual".' },
+        { status: 400 }
+      )
+    }
+
+    const priceId = getPriceId(plan, interval)
+    if (!priceId) {
+      logger.error(`Missing Stripe price ID for plan="${plan}" interval="${interval}"`)
+      return NextResponse.json(
+        { error: `Billing not configured for ${plan} ${interval}. Contact support.`, code: 'PRICE_NOT_CONFIGURED' },
+        { status: 503 }
       )
     }
 
@@ -88,12 +121,13 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: agent.id,
-      line_items: [{ price: PLAN_PRICE_IDS[plan], quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       subscription_data: {
         metadata: {
           agent_id: agent.id,
           plan: plan,
+          interval: interval,
           upgraded_from: 'pilot' } },
       // After payment, return to dashboard. Banner disappears because plan_tier is no longer 'trial'.
       success_url: `${baseUrl}/dashboard?upgrade=success`,
@@ -106,6 +140,7 @@ export async function POST(request: NextRequest) {
       await supabase.from('subscription_attempts').insert({
         agent_id: agent.id,
         tier: plan,
+        interval: interval,
         stripe_session_id: session.id,
         status: 'session_created',
         created_at: new Date().toISOString() })
@@ -114,7 +149,7 @@ export async function POST(request: NextRequest) {
       logger.warn('Failed to log subscription attempt:', logError)
     }
 
-    logger.info(`✅ Upgrade checkout session ${session.id} created for pilot agent ${agent.id} → ${plan}`)
+    logger.info(`✅ Upgrade checkout session ${session.id} created for pilot agent ${agent.id} → ${plan} (${interval})`)
 
     return NextResponse.json({ url: session.url, sessionId: session.id })
   } catch (error: any) {

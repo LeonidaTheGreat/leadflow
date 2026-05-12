@@ -8,15 +8,20 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20' as any })
   : null
 
+const VALID_PLANS = ['starter', 'pro', 'team'] as const
+type PlanId = typeof VALID_PLANS[number]
+type BillingInterval = 'monthly' | 'annual'
+
 /**
- * Map plan ID to Stripe price ID from environment variables
+ * Map plan ID + interval to Stripe price ID from environment variables.
+ * Annual price IDs use the _ANNUAL suffix; monthly use _MONTHLY.
+ * Pro maps to PROFESSIONAL for backward compatibility with legacy env vars.
  */
-function getPriceIdForPlan(planId: string): string | null {
-  const priceIdMap: Record<string, string> = {
-    starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
-    team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
-  return priceIdMap[planId] || null
+function getPriceIdForPlan(planId: PlanId, interval: BillingInterval): string | null {
+  const envKey = planId === 'pro' ? 'PROFESSIONAL' : planId.toUpperCase()
+  const intervalKey = interval === 'annual' ? 'ANNUAL' : 'MONTHLY'
+  const envVar = `STRIPE_PRICE_${envKey}_${intervalKey}`
+  return process.env[envVar] || null
 }
 
 export async function POST(request: NextRequest) {
@@ -36,16 +41,23 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { planId } = body
+    const { planId, interval = 'monthly' } = body
 
-    if (!planId || !['starter', 'pro', 'team'].includes(planId)) {
+    if (!planId || !VALID_PLANS.includes(planId as PlanId)) {
       return NextResponse.json(
         { error: 'Invalid or missing planId' },
         { status: 400 }
       )
     }
 
-    const priceId = getPriceIdForPlan(planId)
+    if (!['monthly', 'annual'].includes(interval)) {
+      return NextResponse.json(
+        { error: 'Invalid interval — must be monthly or annual' },
+        { status: 400 }
+      )
+    }
+
+    const priceId = getPriceIdForPlan(planId as PlanId, interval as BillingInterval)
     if (!priceId || priceId.startsWith('price_replace')) {
       return NextResponse.json(
         { error: 'Price not configured for this plan' },
@@ -91,7 +103,8 @@ export async function POST(request: NextRequest) {
       cancel_url: `${new URL(request.url).origin}/settings/billing?upgrade=cancelled`,
       metadata: {
         agent_id: agent.id,
-        plan_id: planId } })
+        plan_id: planId,
+        interval } })
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
