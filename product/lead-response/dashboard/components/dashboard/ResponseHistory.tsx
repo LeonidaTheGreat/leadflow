@@ -72,14 +72,14 @@ export function ResponseHistory() {
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
           Message History ({messages.length})
         </h2>
-        <select 
+        <select
           value={filter}
           onChange={(e) => setFilter(e.target.value as any)}
-          className="text-sm px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          className="w-full sm:w-auto text-sm px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         >
           <option value="all">All Messages</option>
           <option value="outbound">Outbound Only</option>
@@ -141,8 +141,8 @@ function MessageRow({ message }: { message: MessageWithLead }) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-medium text-slate-900 dark:text-white">
                 {message.lead.name || 'Unknown'}
               </span>
@@ -159,7 +159,7 @@ function MessageRow({ message }: { message: MessageWithLead }) {
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <span>{formattedDate}</span>
               {message.status && statusIcons[message.status as keyof typeof statusIcons]}
             </div>
@@ -170,13 +170,13 @@ function MessageRow({ message }: { message: MessageWithLead }) {
           </p>
 
           {/* Meta */}
-          <div className="mt-2 flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
             <span>{formatPhone(message.lead.phone)}</span>
             {message.ai_confidence && (
               <span>AI Confidence: {Math.round(message.ai_confidence * 100)}%</span>
             )}
             {message.twilio_sid && (
-              <span className="font-mono">SID: {message.twilio_sid.slice(0, 20)}...</span>
+              <span className="font-mono break-all">SID: {message.twilio_sid.slice(0, 20)}...</span>
             )}
           </div>
         </div>

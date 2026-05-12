@@ -29,7 +29,7 @@ export function DashboardNav({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="flex items-center gap-2 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory pb-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href))
             const Icon = item.icon
@@ -40,7 +40,7 @@ export function DashboardNav({ isAdmin = false }: { isAdmin?: boolean }) {
                 href={item.href}
                 data-testid={`nav-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap',
+                  'flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap min-h-10 snap-start',
                   isActive
                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800'

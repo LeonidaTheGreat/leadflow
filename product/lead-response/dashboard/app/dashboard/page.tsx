@@ -1,5 +1,25 @@
 'use client'
 
+/*
+TASK SPEC (29231e1a-97a6-40e7-9ce8-4bed02fbaaea)
+What:
+- Update product/lead-response/dashboard/app/dashboard/page.tsx (DashboardPage, SendTestLeadCard) for mobile-safe stacking of heading controls and action inputs.
+- Update product/lead-response/dashboard/app/dashboard/dashboard-nav.tsx (DashboardNav) for touch-friendly horizontal nav behavior.
+- Update product/lead-response/dashboard/components/dashboard/ResponseHistory.tsx (ResponseHistory, MessageRow) for mobile wrapping to prevent horizontal overflow.
+- Update product/lead-response/dashboard/components/ui/table.tsx (Table) to improve small-screen table overflow containment with touch scrolling.
+- Update product/lead-response/dashboard/app/dashboard/dashboard-nav.test.tsx to assert current nav links and mobile classes.
+
+Verify:
+- cd product/lead-response/dashboard && npm test
+- cd product/lead-response/dashboard && npx next build
+- rg -n "overflow-x-auto|touch-pan-x|snap-x|flex-col sm:flex-row|break-all" product/lead-response/dashboard/app/dashboard product/lead-response/dashboard/components/dashboard product/lead-response/dashboard/components/ui/table.tsx
+
+Boundaries:
+- Do not change API route behavior, DB schema, service logic, or onboarding/business rules.
+- Do not modify files outside dashboard UI and directly related tests for this responsiveness task.
+- Do not introduce new dependencies or restructure routing/navigation information architecture.
+*/
+
 import { Suspense, useState } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { SmsAnalyticsCards } from '@/components/dashboard/SmsAnalyticsCards'
@@ -87,7 +107,7 @@ function SendTestLeadCard() {
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <input
                 type="tel"
                 value={phoneNumber}
@@ -99,7 +119,7 @@ function SendTestLeadCard() {
               <button
                 onClick={handleSend}
                 disabled={status === 'loading' || !phoneNumber.trim()}
-                className="px-3 py-1.5 text-sm font-medium rounded-md bg-amber-600 hover:bg-amber-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className="w-full sm:w-auto px-3 py-1.5 text-sm font-medium rounded-md bg-amber-600 hover:bg-amber-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {status === 'loading' ? 'Sending...' : 'Send Test Lead'}
               </button>
@@ -150,16 +170,16 @@ export default function DashboardPage() {
         <RoiMetricsWidget />
       </Suspense>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Lead Feed</h1>
-        <div className="flex gap-2">
-          <select className="px-3 py-2 rounded-md text-sm border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">
+          <select className="w-full px-3 py-2 rounded-md text-sm border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
             <option value="all">All Leads</option>
             <option value="new">New</option>
             <option value="qualified">Qualified</option>
             <option value="responded">Responded</option>
           </select>
-          <select className="px-3 py-2 rounded-md text-sm border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+          <select className="w-full px-3 py-2 rounded-md text-sm border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
             <option value="today">Today</option>
             <option value="week">This Week</option>
             <option value="month">This Month</option>
