@@ -197,6 +197,27 @@ test_dashboard_no_errors() {
     user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
   fi
 
+  # Last resort: use the E2E test account from trial-signup-flow and mark it onboarded.
+  # This ensures the test is self-contained when no pre-existing active agent exists.
+  # cleanup_test_accounts() removes e2e-flow-* accounts after all tests run.
+  if [ -z "$user_id" ] && [ -n "${E2E_EMAIL:-}" ]; then
+    local e2e_agent_resp future_trial
+    e2e_agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&email=eq.$E2E_EMAIL&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || true
+    user_id=$(echo "$e2e_agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    if [ -n "$user_id" ]; then
+      # Extend trial + mark onboarding complete so middleware routes to /dashboard not /upgrade or /setup
+      future_trial=$(date -u -v+30d +"%Y-%m-%dT%H:%M:%SZ")
+      curl -s --max-time 10 -X PATCH \
+        "$API_URL/real_estate_agents?id=eq.$user_id" \
+        -H "apikey: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -H "Prefer: return=minimal" \
+        -d "{\"onboarding_completed\":true,\"trial_ends_at\":\"$future_trial\"}" >/dev/null 2>&1 || true
+    fi
+  fi
+
   [ -z "$user_id" ] && return 1
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
