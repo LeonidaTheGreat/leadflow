@@ -76,10 +76,8 @@ console.log(`\n=== Test Summary ===`);
 console.log(`Passed: ${passed}/${total}`);
 console.log(`Pass Rate: ${(passed / total * 100).toFixed(0)}%`);
 
-if (passed === total) {
-  console.log('\n✅ All tests passed!');
-  process.exit(0);
-} else {
-  console.log('\n❌ Some tests failed!');
-  process.exit(1);
+if (require.main === module) {
+  process.exit(passed === total ? 0 : 1);
 }
+
+module.exports = { results, passed, total };
