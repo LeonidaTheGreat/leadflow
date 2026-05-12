@@ -193,7 +193,8 @@ routes/
 ├── billing.js                   ← POST /webhook/stripe, /api/billing/*
 ├── calcom-webhook.js            ← POST /webhook/calcom, /api/calcom/*
 ├── admin/
-│   └── activation-outreach.js   ← GET/POST /api/admin/*
+│   ├── activation-outreach.js   ← GET/POST /api/admin/activation-outreach
+│   └── reactivation-campaign.js ← POST /api/admin/reactivation-campaign
 └── internal/
     ├── check-stuck-pilots.js    ← GET /api/cron/check-stuck-pilots (cron)
     ├── weekly-performance.js    ← GET /api/cron/weekly-performance (cron)
@@ -213,36 +214,114 @@ The customer-facing dashboard is a separate Next.js app deployed to Vercel (`lea
 
 ### Dashboard API Routes (`app/api/`)
 
-| Route | Purpose | Auth |
-|-------|---------|------|
+| Route group | Purpose | Auth |
+|-------------|---------|------|
 | `webhook/twilio/` | Inbound SMS + status callbacks | `twilio.validateRequest()` (X-Twilio-Signature) |
 | `webhook/fub/` | FUB lead events | HMAC-SHA256 (`timingSafeEqual`) |
 | `webhook/calcom/` | Cal.com booking events | HMAC-SHA256 |
 | `webhooks/stripe/` | Stripe subscription events | `stripe.webhooks.constructEvent()` |
-| `cron/follow-up/` | Follow-up cron job | CRON_SECRET Bearer token |
-| `cron/inactivity-alerts/` | Inactivity alert cron | CRON_SECRET Bearer token |
-| `auth/pilot-signup/` | Pilot signup flow | Public |
-| `onboarding/` | Onboarding wizard | Session auth |
-| `stripe/` | Checkout + portal sessions | Session auth |
-| `admin/` | Admin operations | API key auth |
+| `auth/` | Login, logout, signup, password reset, email verify, session, pilot/trial status | Public / Session |
+| `agents/` | Agent profile, onboarding wizard sub-steps, satisfaction ping | Session auth |
+| `onboarding/` | Onboarding flow (legacy path), FUB config, phone provisioning | Session auth |
+| `integrations/` | FUB / Cal.com / Twilio connect + verify + disconnect | Session auth |
+| `leads/` | Lead list, individual lead messages | Session auth |
+| `dashboard/` | Dashboard stats, lead list, session analytics | Session auth |
+| `analytics/` | Event tracking, SMS stats, dashboard metrics | Session auth |
+| `nps/` | NPS prompt, submit, dismiss, verify | Session auth |
+| `sequences/` | Follow-up sequence CRUD, pause/resume | Session auth |
+| `satisfaction/` | Satisfaction events + stats | Session auth |
+| `sms/` | Manual send, AI suggest, status | Session auth |
+| `billing/` | Checkout session creation, MRR snapshot | Session auth |
+| `stripe/` | Checkout + portal sessions (upgrade flow) | Session auth |
+| `booking/` | Booking link management | Session auth |
+| `referrals/` | Referral link generation + stats | Session auth |
+| `metrics/` | ROI metrics | Session auth |
+| `setup/` | Setup wizard progress, test SMS, status | Session auth |
+| `trial/` | Trial start, status, nudge | Session auth |
+| `cron/follow-up/` | Follow-up sequence cron | CRON_SECRET |
+| `cron/inactivity-alerts/` | Inactivity alert cron | CRON_SECRET |
+| `cron/inactivity-check/` | Inactivity check cron | CRON_SECRET |
+| `cron/expire-trials/` | Trial expiry cron | CRON_SECRET |
+| `cron/nps-surveys/` | NPS survey send cron | CRON_SECRET |
+| `cron/send-trial-emails/` | Trial email sequence cron | CRON_SECRET |
+| `cron/pilot-trial-cta/` | Pilot trial CTA email cron | CRON_SECRET |
+| `cron/pilot-recruitment-outreach/` | Pilot recruitment outreach cron | CRON_SECRET |
+| `cron/pilot-stuck-check/` | Stuck pilot detection cron | CRON_SECRET |
+| `cron/check-stuck-agents/` | Stuck agent detection cron | CRON_SECRET |
+| `admin/` | Admin operations (pilots, signups, outreach, simulate, triage, funnels) | API key auth |
+| `internal/` | Internal ops (pilot usage, activation emails) | API key auth |
+| `demo/` | Demo flow (generate response, run, status, aha SMS) | Public / Internal |
+| `health/` | Dashboard health check | Public |
+| `ping/` | Liveness ping | Public |
+| `prospects/` | Prospect capture | Public |
+| `pilot-signup/` | Pilot signup (legacy path) | Public |
+| `lead-capture/` | Lead capture form | Public |
+| `page-views/` | Page view tracking | Public |
+| `events/track/` | Analytics event ingestion | Public |
+| `debug/` | Development debug endpoints | Internal |
+| `smoke/` | Smoke test endpoints | Internal |
 
 ### Dashboard Libraries (`lib/`)
 
+**Database client:**
+
 | Module | Purpose |
 |--------|---------|
-| `lib/supabase.ts` | Supabase client (PostgREST) for dashboard DB access |
+| `lib/db.ts` | Primary PostgREST client (`postgrestAdmin`, `postgrestPublic`). All dashboard DB access goes here. |
+| `lib/supabase.ts` | Backward-compat re-exports from `lib/db.ts`. Kept so existing imports don't break. |
+| `lib/supabase-server.ts` | Server-side re-export of `lib/db.ts` with build-safe initialization. |
+
+**Core services (`lib/services/`):**
+
+| Module | Purpose |
+|--------|---------|
+| `lib/services/AuthService.ts` | JWT-based session auth: token generation, validation, cookie management |
+| `lib/services/inbound-sms-service.ts` | Inbound SMS business logic (extracted from webhook route) |
+| `lib/services/fub-webhook-service.ts` | FUB webhook event processing business logic |
+| `lib/services/AnalyticsService.js` | Analytics event recording and aggregation |
+| `lib/services/ProspectWaitlistService.ts` | Prospect capture and waitlist management |
+| `lib/services/encryption-service.ts` | Symmetric encryption for sensitive fields (e.g. API keys at rest) |
+| `lib/services/pilot-outreach-blast-service.ts` | Pilot outreach bulk email blast |
+
+**Other lib modules:**
+
+| Module | Purpose |
+|--------|---------|
 | `lib/twilio.ts` | Twilio SMS client + phone normalization |
 | `lib/fub.ts` | FUB API client + webhook verification |
 | `lib/calcom.ts` | Cal.com booking link management |
 | `lib/ai.ts` | AI SMS response generation |
 | `lib/logger.ts` | Structured JSON logger for Vercel function logs |
 | `lib/satisfaction.ts` | Satisfaction ping system |
+| `lib/email-service.ts` | Transactional email dispatch (Resend) |
+| `lib/nps-service.ts` | NPS survey scheduling + response recording |
+| `lib/nps-email-service.ts` | NPS email delivery |
+| `lib/sequences.ts` | Follow-up sequence state machine |
+| `lib/trial.ts` | Trial activation + expiry logic |
+| `lib/trial-emails.ts` | Trial email sequence templates + dispatch |
+| `lib/pilot-status.ts` | Pilot status checks and lifecycle helpers |
+| `lib/pilot-conversion-service.ts` | Pilot-to-paid conversion email logic |
+| `lib/outreach-email-service.ts` | Outreach blast email service |
+| `lib/agent-mapper.ts` | Maps DB `real_estate_agents` shape to typed `Agent` domain object |
+| `lib/agent-session.ts` | Agent session state helpers |
+| `lib/session-analytics.ts` | Session-scoped analytics helpers |
+| `lib/onboarding-api.ts` | Onboarding API helper functions |
+| `lib/onboarding-validation.ts` | Onboarding input validators |
+| `lib/sms-templates.ts` | SMS response template library |
+| `lib/sms-delivery-monitor.ts` | Twilio delivery status tracking |
+| `lib/telegram-service.ts` | Internal Telegram notifications |
+| `lib/rate-limit.ts` | In-memory rate limiter for dashboard API routes |
+| `lib/error-handler.ts` | Centralized error response formatting |
+| `lib/config.ts` | Dashboard env var resolution and constants |
+| `lib/utils.ts` | Shared utility functions |
+| `lib/types/` | Shared TypeScript interfaces (`Lead`, `Agent`, `Message`, etc.) |
+| `lib/analytics/` | GA4 + PostHog analytics client wrappers |
 
 ### Dashboard Rules
 - All webhook routes use fail-closed signature verification
 - Structured logging via `@/lib/logger` (no raw `console.*`)
-- Supabase client for all DB access (PostgREST, not raw SQL)
-- Business logic belongs in `lib/` services, not in route handlers
+- PostgREST client (`lib/db.ts`) for all DB access — not raw SQL, not the Supabase SDK
+- Business logic belongs in `lib/services/` or dedicated `lib/` modules, not in route handlers
 
 ---
 
