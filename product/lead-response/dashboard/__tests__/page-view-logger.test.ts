@@ -21,7 +21,8 @@ jest.mock('@/lib/supabase-server', () => ({
 }))
 
 // ---- Import after mocks ----
-const { POST, isTrackedPage } = require('@/app/api/page-views/route')
+const { POST } = require('@/app/api/page-views/route')
+const { isTrackedPage } = require('@/lib/tracked-pages')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 const AGENT_ID = '703b59fe-e16c-4dc6-8afa-a802db8c33d4'

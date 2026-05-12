@@ -1,4 +1,20 @@
 /**
+ * TASK SPEC (843487a9-a6c0-4fbf-93d7-c9d10d3977e1)
+ * What:
+ * - Change `app/api/page-views/route.ts` to export only valid Next.js Route handlers/config.
+ * - Add `lib/tracked-pages.ts` containing `isTrackedPage` and `TRACKED_PAGES`.
+ * - Update `__tests__/page-view-logger.test.ts` to import `isTrackedPage` from `lib/tracked-pages`.
+ *
+ * Verify:
+ * - `cd product/lead-response/dashboard && npx next build --webpack` exits 0.
+ * - `cd product/lead-response/dashboard && npm test -- --runInBand __tests__/page-view-logger.test.ts` passes.
+ * - `rg -n "export function isTrackedPage|export const TRACKED_PAGES" app/api/page-views/route.ts` returns no matches.
+ *
+ * Boundaries:
+ * - Do not change onboarding simulator flow/components.
+ * - Do not modify API behavior or DB payload shape for page view inserts.
+ * - Do not refactor unrelated routes/services/tests.
+ *
  * POST /api/page-views
  *
  * Logs a page view to the agent_page_views table.
@@ -9,26 +25,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { createClient } from '@/lib/db'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
+import { isTrackedPage } from '@/lib/tracked-pages'
 import { logger } from '@/lib/logger'
 
 const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
 const DB_KEY = process.env.API_SECRET_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-export function isTrackedPage(pathname: string): boolean {
-  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) return true
-  if (pathname === '/settings' || pathname.startsWith('/settings/')) return true
-  return false
-}
-
-export const TRACKED_PAGES = [
-  '/dashboard',
-  '/dashboard/conversations',
-  '/dashboard/settings',
-  '/dashboard/billing',
-  '/settings',
-  '/settings/billing',
-]
 
 function extractAuthInfo(request: NextRequest): { agentId: string | null; sessionId: string | null } {
   // Check Authorization: Bearer header
