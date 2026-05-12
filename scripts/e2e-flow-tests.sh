@@ -179,17 +179,26 @@ test_dashboard_no_errors() {
   # Use a real user who has completed onboarding AND has an active (non-expired) plan.
   # Must exclude agents on expired trials — the middleware redirects them to /upgrade
   # before the dashboard can render, causing the test to fail with no 'Lead Feed' content.
-  # Strategy: prefer paid/pilot agents; fall back to trial agents with future trial_ends_at.
+  # Strategy: stable fixture agent first, then paid/pilot agents, then active trial agents.
   local agent_resp user_id now_iso
   now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-  # First: try a paid or pilot agent (plan_tier != 'trial')
+  # Primary: use the stable E2E fixture agent (pilot plan, onboarding done, no expiry concern).
+  # ensure_e2e_fixture_agent() guarantees this row exists before the test suite runs.
   agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
+    "$API_URL/real_estate_agents?select=id&email=eq.e2e-stable-dashboard%40leadflow-test.com&onboarding_completed=eq.true&limit=1" \
     -H "apikey: $API_KEY" 2>/dev/null) || return 1
   user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
 
-  # Fallback: find a trial agent whose trial has NOT yet expired
+  # Fallback 1: any non-trial agent with onboarding completed (paid or pilot accounts)
+  if [ -z "$user_id" ]; then
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+  fi
+
+  # Fallback 2: trial agent whose trial has NOT yet expired
   if [ -z "$user_id" ]; then
     agent_resp=$(curl -s --max-time 10 \
       "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
@@ -279,6 +288,40 @@ test_sms_stats_no_crash() {
   return 0
 }
 
+# Ensure the stable E2E fixture agent exists (idempotent upsert).
+# This agent is pilot plan + onboarding_completed so dashboard tests always have
+# a valid user regardless of real trial expiry or onboarding state in the DB.
+# Email pattern 'e2e-stable-*' is intentionally excluded from cleanup_test_accounts.
+ensure_e2e_fixture_agent() {
+  local pg_url="${LOCAL_PG_URL:-}"
+  if [ -z "$pg_url" ]; then
+    local _proj_env="$_SCRIPT_DIR/../.env"
+    [ -f "$_proj_env" ] && pg_url=$(grep '^LOCAL_PG_URL=' "$_proj_env" | head -1 | cut -d'=' -f2-)
+  fi
+  if [ -z "$pg_url" ]; then
+    [ -f "$HOME/.env" ] && pg_url=$(grep '^LOCAL_PG_URL=' "$HOME/.env" | head -1 | cut -d'=' -f2-)
+  fi
+  [ -z "$pg_url" ] && return 0
+
+  # password_hash is a valid bcrypt-formatted placeholder — this account never authenticates
+  # via password (sessions are created directly via PostgREST in the test).
+  psql -q "$pg_url" <<'SQL' 2>/dev/null || true
+INSERT INTO real_estate_agents (
+  email, password_hash, first_name, last_name,
+  plan_tier, onboarding_completed, status
+) VALUES (
+  'e2e-stable-dashboard@leadflow-test.com',
+  '$2b$10$e2eFixtureAgent000000uZr7lkS8qYvN3gH2pT4mX1dWcBsAoRnEi',
+  'E2E', 'Fixture',
+  'pilot', true, 'active'
+)
+ON CONFLICT (email) DO UPDATE SET
+  onboarding_completed = true,
+  plan_tier = 'pilot',
+  status = 'active';
+SQL
+}
+
 # Cleanup test accounts created by this script
 cleanup_test_accounts() {
   local pg_url="${LOCAL_PG_URL:-}"
@@ -319,6 +362,8 @@ $VERBOSE && echo "================================"
 
 E2E_TOKEN=""
 E2E_EMAIL=""
+
+ensure_e2e_fixture_agent
 
 run_test "health-api-connectivity" "Health: API connectivity" "critical" "test_health_connectivity"
 run_test "login-rejects-bad"       "Auth: login rejects bad creds" "critical" "test_login_rejects_bad"
