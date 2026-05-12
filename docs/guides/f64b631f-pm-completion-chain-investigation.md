@@ -1,18 +1,19 @@
 <!--
 TASK SPEC (f64b631f-db0d-4387-945e-56e9a35c2034)
 What:
-- Create docs/reports/f64b631f-pm-completion-chain-investigation.md to document verified runtime behavior, exact failure point, and minimal corrective change location in Genome dispatcher/completion path.
-- No production code changes in this repo because Genome runtime sources are external at ~/.openclaw/genome and are not present in this checkout.
+- Update docs/guides/f64b631f-pm-completion-chain-investigation.md with verified 2026-05-12 runtime evidence from local DB + dispatcher logs.
+- Correct stale assumptions (`tasks.child_count`, missing `task_events`) and document exact failure path in `intelligence/completion-handler.js`.
+- Keep this task as investigation-only in leadflow repo; no runtime patch in this branch.
 
 Verify:
-- Reproduce with SQL against local Postgres: PM/product tasks in status='done' missing metadata.completion_processed and with no chained child tasks.
-- Confirm dispatcher logs contain repeated "Rate limited — skipping done event for <task-id>" during the same windows.
-- Confirm chain code path is never reached for affected tasks (absence of chain log + no child task creation).
+- SQL: show PM/product `done` tasks with `metadata->>'completion_processed' IS NULL` and relational child count via `COUNT(*) FROM tasks c WHERE c.parent_task_id=t.id`.
+- SQL: verify schema (`tasks` has no `child_count`; there is no `task_events` table in this environment).
+- Logs: confirm `onTaskCompleted error ... Connection terminated due to connection timeout` and `Rate limited — skipping done event ...` exist in realtime dispatcher logs.
+- Code: verify `CompletionHandler.process()` returns early on rate limit and only sets `completion_processed` at the end of the method.
 
 Boundaries:
-- Do not modify product routes/services in this repo.
-- Do not modify generated/protected files.
-- Do not patch ~/.openclaw/genome in this task checkout; this task is investigation-only evidence in assigned branch.
+- Do not modify product routes/services or generated/protected files.
+- Do not patch `~/.openclaw/genome` runtime sources in this task branch.
 -->
 
 # Investigation: PM completion not chaining to dev / UC status not advancing
@@ -22,30 +23,56 @@ Investigated why PM/product task completion does not reliably chain to dev or up
 
 ## Reproduction and verification
 
-1. DB evidence of unprocessed PM completions:
-- Recent PM/product tasks were in `status='done'` with `metadata->>'completion_processed' IS NULL`.
-- Same tasks had `child_count=0` (no chained dev task).
+1. DB evidence of incomplete completion processing (local PostgreSQL `openclaw`):
+- `tasks` has no `child_count` column in this schema; child chain evidence must be computed from `tasks.parent_task_id`.
+- As of 2026-05-12, PM/product done-task totals:
+  - `total_pm_done`: 919
+  - `pm_done_unprocessed` (`completion_processed` null): 735
+  - `unprocessed_with_uc`: 215
+  - `unprocessed_with_uc_no_children`: 198
+  - `unprocessed_with_uc_has_children`: 17
+- This proves a large backlog of PM completions that never reached final completion-marking.
 
 2. Dispatcher log evidence:
-- During the same time windows, dispatcher repeatedly logged `Rate limited — skipping done event for <task-id>`.
-- Completion handler logs (`Task <id> actual cost ...`, `Chained: ...`) were absent for those PM tasks.
+- Repeated hard failures in completion handler:
+  - `onTaskCompleted error for <task-id>: Connection terminated due to connection timeout`
+  - Multiple occurrences on 2026-05-12 in `state/leadflow/.realtime-dispatcher.log`.
+- Repeated done-event drops also present:
+  - `Rate limited — skipping done event for <task-id>`
+  - Same log stream shows bursts of skipped done events under high activity.
 
 3. Code-path verification:
-- `CompletionHandler.process()` returns immediately when rate-limited:
+- `CompletionHandler.process()` can fail before chaining and before marking completion:
+  - Outer `try/catch` wraps entire method.
+  - Any DB timeout inside the flow logs `onTaskCompleted error...` and exits without writing `metadata.completion_processed`.
+- `CompletionHandler.process()` also returns immediately when rate-limited:
   - `if (this._isRateLimited()) { ... return }`
-- Both event-triggered and poll-triggered done handling call the same rate-limited `process()` path, so done events are repeatedly dropped under sustained load.
-- Because `completion_processed` is only set at the end of `process()`, dropped tasks remain permanently eligible but can continue starving when rate-limited.
+- Both NOTIFY-triggered and polling-triggered done handling call this same `process()` path.
+- `completion_processed` is written only at the end of `process()`. Any early return (rate limit) or fatal error (timeout) prevents that write.
 
 ## Root cause
-The completion pipeline applies a shared global rate limiter to `done` events. Under heavy ready/done traffic, PM `done` events are skipped before chaining and before `completion_processed` is written. This prevents:
+Primary:
+- `onTaskCompleted` DB connection timeouts terminate completion processing before chain + final completion marker write.
+
+Secondary (amplifier):
+- Shared global dispatcher rate limiting drops some `done` events before processing.
+
+Combined effect:
 - `chainTask()` execution (no PM->dev chaining), and
-- UC status progression updates inside chaining flow.
+- UC workflow progression / status updates that depend on successful completion handling.
 
 ## Minimal correct fix location (Genome runtime)
 Outside this repo checkout, in `~/.openclaw/genome`:
-- `intelligence/completion-handler.js`: do not hard-drop done events under rate-limit; defer or prioritize completion processing.
-- Optionally differentiate limiter buckets for `ready` vs `done` so completion cannot starve behind spawn traffic.
+- `intelligence/completion-handler.js`:
+  - Add retry/defer behavior for transient DB timeout failures in `process()` so completion work is not dropped on first timeout.
+  - Ensure completion-marker write (`metadata.completion_processed`) is resilient after successful chain path.
+- `core/actuators/realtime-dispatcher.js`:
+  - Separate or prioritize `done` event budget from `ready` event rate limiting.
+  - Prevent starvation of completion handling during high ready-event bursts.
 
 ## Notes
 - The issue is real and reproducible.
-- No in-repo production code change was possible here because the affected runtime source modules are not present in this task checkout.
+- Two stale assumptions were invalid in current schema/runtime evidence:
+  - `tasks.child_count` does not exist.
+  - `task_events` table does not exist in this local DB.
+- No in-repo production code change was made in this branch because the executable runtime module is in `~/.openclaw/genome`.
