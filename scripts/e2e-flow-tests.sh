@@ -172,32 +172,49 @@ test_lead_capture() {
   return 0
 }
 
-# Test 10: Dashboard loads without client-side errors (needs session or JWT)
+# Test 10: Dashboard loads without errors (uses E2E trial user from test_trial_signup_flow)
 test_dashboard_no_errors() {
   [ -z "${API_KEY:-}" ] && return 1
 
-  # Use a real user who has completed onboarding AND has an active (non-expired) plan.
-  # Must exclude agents on expired trials — the middleware redirects them to /upgrade
-  # before the dashboard can render, causing the test to fail with no 'Lead Feed' content.
-  # Strategy: prefer paid/pilot agents; fall back to trial agents with future trial_ends_at.
-  local agent_resp user_id now_iso
+  local user_id="" now_iso
   now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-  # First: try a paid or pilot agent (plan_tier != 'trial')
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
-  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-
-  # Fallback: find a trial agent whose trial has NOT yet expired
-  if [ -z "$user_id" ]; then
+  # Preferred path: use the E2E trial user created in test_trial_signup_flow (14-day valid trial).
+  # That user starts with onboarding_completed=false, so we patch it to true here — the middleware
+  # redirects un-onboarded users to /dashboard/onboarding before the dashboard can render.
+  if [ -n "${E2E_EMAIL:-}" ]; then
+    local agent_resp
     agent_resp=$(curl -s --max-time 10 \
-      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
-      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+      "$API_URL/real_estate_agents?select=id&email=eq.$E2E_EMAIL&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || true
     user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    if [ -n "$user_id" ]; then
+      # Mark onboarding complete so the middleware allows dashboard access
+      curl -s --max-time 10 -X PATCH \
+        "$API_URL/real_estate_agents?id=eq.$user_id" \
+        -H "apikey: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"onboarding_completed":true}' >/dev/null 2>&1 || true
+    fi
   fi
 
-  [ -z "$user_id" ] && return 1
+  # Fallback: find a paid/pilot agent or a non-expired-trial agent with onboarding complete.
+  # This path runs when test_trial_signup_flow was skipped or failed.
+  if [ -z "$user_id" ]; then
+    local agent_resp
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+
+    if [ -z "$user_id" ]; then
+      agent_resp=$(curl -s --max-time 10 \
+        "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
+        -H "apikey: $API_KEY" 2>/dev/null) || return 1
+      user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    fi
+    [ -z "$user_id" ] && return 1
+  fi
 
   # Create a fresh session: generate raw token, store SHA-256 hash in DB.
   # The DB stores only the hash (since PR #1026). The cookie must hold the raw token —
