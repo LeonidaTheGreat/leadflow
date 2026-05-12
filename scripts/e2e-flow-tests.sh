@@ -29,6 +29,14 @@ if [ -f "$_ENV_LOCAL_FILE" ]; then
   [ -n "$_ENV_LOCAL_API_KEY" ] && LEADFLOW_API_KEY="$_ENV_LOCAL_API_KEY"
 fi
 
+# Final fallback: load LEADFLOW_API_KEY from ~/.env (system-level PostgREST key).
+# API_SECRET_KEY in dashboard .env files is the Next.js internal route secret — it may
+# differ from the PostgREST key. LEADFLOW_API_KEY in ~/.env is always the PostgREST key.
+if [ -f "$HOME/.env" ]; then
+  _HOME_LEADFLOW_KEY=$(grep '^LEADFLOW_API_KEY=' "$HOME/.env" | head -1 | cut -d'=' -f2-)
+  [ -n "$_HOME_LEADFLOW_KEY" ] && LEADFLOW_API_KEY="$_HOME_LEADFLOW_KEY"
+fi
+
 API_URL="${LEADFLOW_API_URL:-https://api.imagineapi.org/rest/v1}"
 API_KEY="${LEADFLOW_API_KEY:-}"
 VERBOSE=false
