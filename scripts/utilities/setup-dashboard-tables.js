@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS model_performance (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id VARCHAR(50) NOT NULL,
   model_name VARCHAR(50) NOT NULL,
-  success_rate_percent INT,
+  success_rate INT,
   tasks_count INT DEFAULT 0,
   cost_per_task_usd NUMERIC(10,2),
   avg_quality_rating NUMERIC(3,1),
@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS model_performance (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(project_id, model_name)
 );
+ALTER TABLE model_performance ADD COLUMN IF NOT EXISTS success_rate INT;
+UPDATE model_performance SET success_rate = COALESCE(success_rate, success_rate_percent) WHERE success_rate IS NULL;
 
 -- Extend agents
 ALTER TABLE agents ADD COLUMN IF NOT EXISTS tasks_completed INT DEFAULT 0;
@@ -79,14 +81,14 @@ CREATE TABLE IF NOT EXISTS model_selection_log (
 );
 
 -- Insert data
-INSERT INTO model_performance (project_id, model_name, success_rate_percent, tasks_count, cost_per_task_usd, avg_quality_rating, avg_tokens, total_cost_usd)
+INSERT INTO model_performance (project_id, model_name, success_rate, tasks_count, cost_per_task_usd, avg_quality_rating, avg_tokens, total_cost_usd)
 VALUES 
   ('bo2026', 'Qwen3-Next', 85, 12, 0, 4.0, 35000, 0),
   ('bo2026', 'Haiku', 92, 5, 0.50, 4.2, 28000, 0.12),
   ('bo2026', 'Sonnet', 95, 3, 2.00, 4.5, 42000, 1.35),
   ('bo2026', 'Kimi', 88, 8, 0.30, 4.1, 38000, 0.45)
 ON CONFLICT (project_id, model_name) DO UPDATE SET
-  success_rate_percent = EXCLUDED.success_rate_percent,
+  success_rate = EXCLUDED.success_rate,
   tasks_count = EXCLUDED.tasks_count;
 
 INSERT INTO roadmap_phases (project_id, phase_number, title, status, date_range, progress_percent, target, display_order)
@@ -128,10 +130,10 @@ async function run() {
   
   // Insert model performance
   const models = [
-    { model_name: 'Qwen3-Next', success_rate_percent: 85, tasks_count: 12, cost_per_task_usd: 0, avg_quality_rating: 4.0, avg_tokens: 35000, total_cost_usd: 0 },
-    { model_name: 'Haiku', success_rate_percent: 92, tasks_count: 5, cost_per_task_usd: 0.50, avg_quality_rating: 4.2, avg_tokens: 28000, total_cost_usd: 0.12 },
-    { model_name: 'Sonnet', success_rate_percent: 95, tasks_count: 3, cost_per_task_usd: 2.00, avg_quality_rating: 4.5, avg_tokens: 42000, total_cost_usd: 1.35 },
-    { model_name: 'Kimi', success_rate_percent: 88, tasks_count: 8, cost_per_task_usd: 0.30, avg_quality_rating: 4.1, avg_tokens: 38000, total_cost_usd: 0.45 }
+    { model_name: 'Qwen3-Next', success_rate: 85, tasks_count: 12, cost_per_task_usd: 0, avg_quality_rating: 4.0, avg_tokens: 35000, total_cost_usd: 0 },
+    { model_name: 'Haiku', success_rate: 92, tasks_count: 5, cost_per_task_usd: 0.50, avg_quality_rating: 4.2, avg_tokens: 28000, total_cost_usd: 0.12 },
+    { model_name: 'Sonnet', success_rate: 95, tasks_count: 3, cost_per_task_usd: 2.00, avg_quality_rating: 4.5, avg_tokens: 42000, total_cost_usd: 1.35 },
+    { model_name: 'Kimi', success_rate: 88, tasks_count: 8, cost_per_task_usd: 0.30, avg_quality_rating: 4.1, avg_tokens: 38000, total_cost_usd: 0.45 }
   ];
   
   for (const m of models) {

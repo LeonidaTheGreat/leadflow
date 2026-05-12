@@ -1,3 +1,16 @@
+-- TASK SPEC (7d2969fe-a8cd-4c15-b18f-275a205d0827)
+-- What:
+-- - Update model_performance schema/data scripts to use success_rate for Genome metric compatibility.
+-- - Files: scripts/db/add-dashboard-tables.sql, scripts/db/setup-dashboard-tables.js, scripts/utilities/setup-dashboard-tables.js.
+-- Verify:
+-- - rg -n "success_rate_percent|success_rate" scripts/db/add-dashboard-tables.sql scripts/db/setup-dashboard-tables.js scripts/utilities/setup-dashboard-tables.js
+-- - npm test
+-- - npm run build
+-- Boundaries:
+-- - Do not change runtime services/routes or non-model_performance dashboard behavior.
+-- - Do not modify extracted Genome core files outside this repository.
+-- - Keep scope limited to schema/seed naming fix for model_performance success rate.
+--
 -- Add tables for dashboard.html full Supabase integration
 -- Run this in Supabase SQL Editor
 
@@ -6,7 +19,7 @@ CREATE TABLE IF NOT EXISTS model_performance (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id VARCHAR(50) NOT NULL REFERENCES project_metadata(project_id) ON DELETE CASCADE,
   model_name VARCHAR(50) NOT NULL,
-  success_rate_percent INT,
+  success_rate INT,
   tasks_count INT DEFAULT 0,
   cost_per_task_usd NUMERIC(10,2),
   avg_quality_rating NUMERIC(3,1),
@@ -16,6 +29,11 @@ CREATE TABLE IF NOT EXISTS model_performance (
   
   UNIQUE(project_id, model_name)
 );
+
+ALTER TABLE model_performance ADD COLUMN IF NOT EXISTS success_rate INT;
+UPDATE model_performance
+SET success_rate = COALESCE(success_rate, success_rate_percent)
+WHERE success_rate IS NULL;
 
 -- ==================== AGENT PERFORMANCE DETAIL ====================
 -- Extend agents table with performance metrics
@@ -98,14 +116,14 @@ CREATE INDEX IF NOT EXISTS idx_model_selection_log_project ON model_selection_lo
 -- ==================== INSERT SAMPLE DATA ====================
 
 -- Model Performance (from hardcoded dashboard values)
-INSERT INTO model_performance (project_id, model_name, success_rate_percent, tasks_count, cost_per_task_usd, avg_quality_rating, avg_tokens, total_cost_usd)
+INSERT INTO model_performance (project_id, model_name, success_rate, tasks_count, cost_per_task_usd, avg_quality_rating, avg_tokens, total_cost_usd)
 VALUES 
   ('bo2026', 'Qwen3-Next', 85, 12, 0, 4.0, 35000, 0),
   ('bo2026', 'Haiku', 92, 5, 0.50, 4.2, 28000, 0.12),
   ('bo2026', 'Sonnet', 95, 3, 2.00, 4.5, 42000, 1.35),
   ('bo2026', 'Kimi', 88, 8, 0.30, 4.1, 38000, 0.45)
 ON CONFLICT (project_id, model_name) DO UPDATE SET
-  success_rate_percent = EXCLUDED.success_rate_percent,
+  success_rate = EXCLUDED.success_rate,
   tasks_count = EXCLUDED.tasks_count,
   updated_at = CURRENT_TIMESTAMP;
 
@@ -161,4 +179,3 @@ VALUES
   ('bo2026', NOW() - INTERVAL '2 hours', 'Fix outbound storage', 6, 'Qwen3-Next', 'Sonnet', 1, 'success'),
   ('bo2026', NOW() - INTERVAL '3 hours', 'Dashboard update', 3, 'Qwen3-Next', 'Qwen3-Next', 0, 'success')
 ON CONFLICT DO NOTHING;
-
