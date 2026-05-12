@@ -1,5 +1,23 @@
 'use client'
 
+/*
+TASK SPEC (56f70de6-cc41-47af-881a-a8bbbdea1220)
+What:
+- Update product/lead-response/dashboard/app/page.tsx in HomePage() urgency banner copy to match scarcity/deadline mechanism from prototype.
+- Update product/lead-response/dashboard/tests/feat-landing-page-conversion-cleanup.test.js with a regression check for urgency banner deadline + scarcity text.
+
+Verify:
+- Run: cd product/lead-response/dashboard && node tests/feat-landing-page-conversion-cleanup.test.js
+- Run: cd product/lead-response/dashboard && npm run build
+- Run: cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-56f70de6-cc41-47af-881a-a8bbbdea1220 && npm test
+- Run: cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-56f70de6-cc41-47af-881a-a8bbbdea1220 && npm run build
+- Grep check: rg -n "Only 10 spots remaining for Q1 2026|20% lifetime pricing" product/lead-response/dashboard/app/page.tsx
+
+Boundaries:
+- Do not change signup/pricing flows, analytics hooks, or backend services/routes.
+- Do not modify prototype HTML file, database schema, or unrelated marketing pages/components.
+*/
+
 import Link from 'next/link'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
@@ -43,7 +61,7 @@ export default function HomePage() {
         className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-center py-2.5 px-4 text-sm font-medium"
         data-testid="urgency-banner"
       >
-        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 spots remaining. Join today to lock in 20% lifetime pricing.{' '}
+        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 spots remaining for Q1 2026. Join today to lock in 20% lifetime pricing.{' '}
         <Link href="/pilot" className="underline underline-offset-2 font-semibold hover:text-emerald-100">
           Apply Now →
         </Link>

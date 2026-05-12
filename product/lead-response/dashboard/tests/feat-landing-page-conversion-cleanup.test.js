@@ -62,6 +62,12 @@ test('No Free pilot wording on landing pricing cards', () => {
   assert(!/free pilot/i.test(landing), 'Landing contains conflicting "Free pilot" language')
 })
 
+test('Urgency banner includes scarcity and deadline trigger', () => {
+  assert(landing.includes('Limited Pilot Spots:'), 'Urgency banner label missing')
+  assert(landing.includes('Only 10 spots remaining for Q1 2026'), 'Urgency deadline/scarcity copy missing')
+  assert(landing.includes('20% lifetime pricing'), 'Urgency pricing incentive missing')
+})
+
 if (process.exitCode) {
   console.error('E2E RESULT: FAILED')
   process.exit(process.exitCode)
