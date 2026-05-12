@@ -10,12 +10,29 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
-// Plan → Stripe price ID mapping.
-// In production these are set via Vercel env vars.
-const PLAN_PRICE_IDS: Record<string, string> = {
-  starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
-  pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
-  team: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly' }
+// Plan → env var name for Stripe price ID.
+// Canonical env var names match create-checkout/route.ts and fix-stripe-price-ids-placeholder.test.ts.
+// No fallback to invalid placeholder strings — missing price IDs return 503 before hitting Stripe.
+const PLAN_PRICE_ENV_MAP: Record<string, string> = {
+  starter: 'STRIPE_PRICE_STARTER_MONTHLY',
+  pro:     'STRIPE_PRICE_PRO_MONTHLY',
+  team:    'STRIPE_PRICE_TEAM_MONTHLY' }
+
+/**
+ * Validate a Stripe Price ID looks correct.
+ * Real Stripe price IDs: price_1QvIEf2eZvKYlo2CkuDLQABG
+ * Rejects placeholder values like price_starter_monthly, price_pro_149, etc.
+ */
+function isValidPriceId(id: string | undefined): id is string {
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,30}$/.test(id)
+}
+
+function getPriceIdForPlan(plan: string): string | null {
+  const envVarName = PLAN_PRICE_ENV_MAP[plan]
+  if (!envVarName) return null
+  const priceId = process.env[envVarName]
+  return isValidPriceId(priceId) ? priceId : null
+}
 
 /**
  * POST /api/stripe/upgrade-checkout
@@ -47,10 +64,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { plan } = body
 
-    if (!plan || !PLAN_PRICE_IDS[plan]) {
+    if (!plan || !PLAN_PRICE_ENV_MAP[plan]) {
       return NextResponse.json(
-        { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_PRICE_IDS).join(', ')}` },
+        { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_PRICE_ENV_MAP).join(', ')}` },
         { status: 400 }
+      )
+    }
+
+    // ── 3b. Resolve price ID from env vars — fail fast before any DB/Stripe calls ──
+    const priceId = getPriceIdForPlan(plan)
+    if (!priceId) {
+      const envVarName = PLAN_PRICE_ENV_MAP[plan]
+      logger.error(
+        `Missing or invalid Stripe Price ID for plan "${plan}". ` +
+        `Set ${envVarName} in Vercel environment variables to a valid price_... ID.`
+      )
+      return NextResponse.json(
+        {
+          error: `Billing is not configured for the "${plan}" plan. Contact support.`,
+          code: 'PRICE_NOT_CONFIGURED',
+          envVar: envVarName },
+        { status: 503 }
       )
     }
 
@@ -88,7 +122,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: agent.id,
-      line_items: [{ price: PLAN_PRICE_IDS[plan], quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       subscription_data: {
         metadata: {

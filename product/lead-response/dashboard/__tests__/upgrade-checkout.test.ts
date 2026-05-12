@@ -14,9 +14,11 @@ process.env.STRIPE_SECRET_KEY = 'sk_test_fake'
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
 process.env.API_SECRET_KEY = 'test-service-role-key'
 process.env.JWT_SECRET = 'test-secret'
-process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_starter_monthly_test'
-process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY = 'price_pro_monthly_test'
-process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY = 'price_team_monthly_test'
+// Canonical env var names — must match PLAN_PRICE_ENV_MAP in upgrade-checkout/route.ts
+// Price IDs use valid format (price_ + 14+ alphanumeric chars) so isValidPriceId() passes
+process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_1TestStarterABC1234'
+process.env.STRIPE_PRICE_PRO_MONTHLY = 'price_1TestProMonthlyXYZ'
+process.env.STRIPE_PRICE_TEAM_MONTHLY = 'price_1TestTeamMonthlyABC'
 
 // ── Mock next/server ──────────────────────────────────────────────────────────
 
@@ -255,6 +257,51 @@ describe('POST /api/stripe/upgrade-checkout', () => {
       expect.objectContaining({
         cancel_url: expect.stringContaining('/dashboard'),
       })
+    )
+  })
+
+  // ── Price ID configuration ────────────────────────────────────────────────
+
+  it('returns 503 with PRICE_NOT_CONFIGURED when STRIPE_PRICE_PRO_MONTHLY is not set', async () => {
+    const original = process.env.STRIPE_PRICE_PRO_MONTHLY
+    delete process.env.STRIPE_PRICE_PRO_MONTHLY
+    const req = makeRequest({ plan: 'pro' })
+    await POST(req)
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'PRICE_NOT_CONFIGURED', envVar: 'STRIPE_PRICE_PRO_MONTHLY' }),
+      expect.objectContaining({ status: 503 })
+    )
+    process.env.STRIPE_PRICE_PRO_MONTHLY = original
+  })
+
+  it('returns 503 with PRICE_NOT_CONFIGURED when STRIPE_PRICE_TEAM_MONTHLY contains a placeholder', async () => {
+    const original = process.env.STRIPE_PRICE_TEAM_MONTHLY
+    process.env.STRIPE_PRICE_TEAM_MONTHLY = 'price_team_monthly'  // invalid placeholder
+    const req = makeRequest({ plan: 'team' })
+    await POST(req)
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'PRICE_NOT_CONFIGURED', envVar: 'STRIPE_PRICE_TEAM_MONTHLY' }),
+      expect.objectContaining({ status: 503 })
+    )
+    process.env.STRIPE_PRICE_TEAM_MONTHLY = original
+  })
+
+  it('uses STRIPE_PRICE_PRO_MONTHLY (canonical) not STRIPE_PRICE_PROFESSIONAL_MONTHLY for pro plan', async () => {
+    // Regression guard: confirm the route uses the canonical env var name, not the old non-canonical one
+    const req = makeRequest({ plan: 'pro' })
+    await POST(req)
+    // If the route used STRIPE_PRICE_PROFESSIONAL_MONTHLY (which is not set), it would return 503.
+    // Since STRIPE_PRICE_PRO_MONTHLY IS set (in beforeEach / top-level), the checkout should succeed.
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ url: 'https://checkout.stripe.com/test/abc123' })
+    )
+  })
+
+  it('uses STRIPE_PRICE_TEAM_MONTHLY (canonical) not STRIPE_PRICE_ENTERPRISE_MONTHLY for team plan', async () => {
+    const req = makeRequest({ plan: 'team' })
+    await POST(req)
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ url: 'https://checkout.stripe.com/test/abc123' })
     )
   })
 

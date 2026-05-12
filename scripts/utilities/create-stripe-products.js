@@ -9,16 +9,22 @@
  *   STRIPE_SECRET_KEY=sk_test_... node scripts/utilities/create-stripe-products.js
  *   STRIPE_SECRET_KEY=sk_live_... node scripts/utilities/create-stripe-products.js --live
  *
- * After running, set these in Vercel:
- *   vercel env add STRIPE_PRICE_STARTER_MONTHLY production
- *   vercel env add STRIPE_PRICE_PROFESSIONAL_MONTHLY production
- *   vercel env add STRIPE_PRICE_ENTERPRISE_MONTHLY production
+ * After running, set in Vercel (use printf to avoid trailing newline):
+ *   printf '%s' 'price_...' | vercel env add STRIPE_PRICE_STARTER_MONTHLY production
+ *   printf '%s' 'price_...' | vercel env add STRIPE_PRICE_PRO_MONTHLY production
+ *   printf '%s' 'price_...' | vercel env add STRIPE_PRICE_TEAM_MONTHLY production
+ *   printf '%s' 'price_...' | vercel env add STRIPE_PRICE_STARTER_ANNUAL production
+ *   printf '%s' 'price_...' | vercel env add STRIPE_PRICE_PRO_ANNUAL production
+ *   printf '%s' 'price_...' | vercel env add STRIPE_PRICE_TEAM_ANNUAL production
  *
  * Env vars required for create-checkout/route.ts to work:
- *   STRIPE_SECRET_KEY              - Stripe secret key (sk_live_... or sk_test_...)
- *   STRIPE_PRICE_STARTER_MONTHLY   - price_... from this script
- *   STRIPE_PRICE_PROFESSIONAL_MONTHLY
- *   STRIPE_PRICE_ENTERPRISE_MONTHLY
+ *   STRIPE_SECRET_KEY             - Stripe secret key (sk_live_... or sk_test_...)
+ *   STRIPE_PRICE_STARTER_MONTHLY  - price_... from this script
+ *   STRIPE_PRICE_PRO_MONTHLY
+ *   STRIPE_PRICE_TEAM_MONTHLY
+ *   STRIPE_PRICE_STARTER_ANNUAL   - (optional, required for annual billing)
+ *   STRIPE_PRICE_PRO_ANNUAL
+ *   STRIPE_PRICE_TEAM_ANNUAL
  */
 
 'use strict'
@@ -70,33 +76,66 @@ const stripe = new Stripe(stripeKey)
 
 const MODE = isLiveMode ? 'LIVE' : 'TEST'
 
-// Plans to create — must match PRICING_TIERS in create-checkout/route.ts
+// Canonical plan names — MUST match PRICE_ID_ENV_MAP in create-checkout/route.ts
+// Product names in Stripe: 'Starter', 'Pro', 'Team' (short form, not 'LeadFlow AI - Starter')
 const PLANS = [
   {
-    envVar:      'STRIPE_PRICE_STARTER_MONTHLY',
-    productName: 'LeadFlow AI - Starter',
+    envMonthly:  'STRIPE_PRICE_STARTER_MONTHLY',
+    envAnnual:   'STRIPE_PRICE_STARTER_ANNUAL',
+    productName: 'Starter',
     description: 'Up to 100 SMS/month. Basic AI responses. For individual agents.',
-    amount:      4900,   // $49.00
-    nickname:    'Starter Monthly',
-    metadata:    { tier: 'starter', interval: 'monthly' },
+    monthlyAmt:  4900,   // $49.00/mo
+    annualAmt:   49000,  // $490.00/yr
   },
   {
-    envVar:      'STRIPE_PRICE_PROFESSIONAL_MONTHLY',
-    productName: 'LeadFlow AI - Professional',
-    description: 'Unlimited SMS. Full AI with SMS & email. For power users.',
-    amount:      14900,  // $149.00
-    nickname:    'Professional Monthly',
-    metadata:    { tier: 'professional', interval: 'monthly' },
+    envMonthly:  'STRIPE_PRICE_PRO_MONTHLY',
+    envAnnual:   'STRIPE_PRICE_PRO_ANNUAL',
+    productName: 'Pro',
+    description: 'Unlimited SMS. Full AI (Claude). Cal.com booking. For working agents.',
+    monthlyAmt:  14900,  // $149.00/mo
+    annualAmt:   149000, // $1,490.00/yr
   },
   {
-    envVar:      'STRIPE_PRICE_ENTERPRISE_MONTHLY',
-    productName: 'LeadFlow AI - Enterprise',
+    envMonthly:  'STRIPE_PRICE_TEAM_MONTHLY',
+    envAnnual:   'STRIPE_PRICE_TEAM_ANNUAL',
+    productName: 'Team',
     description: 'Up to 5 agents. Team dashboard. Lead routing & distribution.',
-    amount:      39900,  // $399.00
-    nickname:    'Enterprise Monthly',
-    metadata:    { tier: 'enterprise', interval: 'monthly' },
+    monthlyAmt:  39900,  // $399.00/mo
+    annualAmt:   399000, // $3,990.00/yr
   },
 ]
+
+async function findOrCreateProduct(name, description) {
+  const existing = await stripe.products.search({
+    query: `name:'${name}' AND active:'true'`,
+  }).catch(() => ({ data: [] }))
+  if (existing.data.length > 0) {
+    console.log(`  ✓ Product exists: ${existing.data[0].id} (${name})`)
+    return existing.data[0]
+  }
+  const product = await stripe.products.create({ name, description })
+  console.log(`  ✓ Product created: ${product.id} (${name})`)
+  return product
+}
+
+async function findOrCreatePrice(productId, amount, interval, nickname) {
+  const prices = await stripe.prices.list({ product: productId, active: true, currency: 'usd' })
+  const match = prices.data.find(p =>
+    p.unit_amount === amount &&
+    p.recurring?.interval === interval &&
+    p.recurring?.interval_count === 1
+  )
+  if (match) {
+    console.log(`  ✓ Price exists: ${match.id} ($${(amount / 100).toFixed(2)}/${interval})`)
+    return match
+  }
+  const price = await stripe.prices.create({
+    product: productId, unit_amount: amount, currency: 'usd',
+    recurring: { interval }, nickname,
+  })
+  console.log(`  ✓ Price created: ${price.id} ($${(amount / 100).toFixed(2)}/${interval})`)
+  return price
+}
 
 async function run() {
   console.log(`\n================================================`)
@@ -108,54 +147,11 @@ async function run() {
 
   for (const plan of PLANS) {
     console.log(`\nProcessing: ${plan.productName}`)
-
-    // Check if product already exists
-    const existing = await stripe.products.search({
-      query: `name:'${plan.productName}' AND active:'true'`,
-    }).catch(() => ({ data: [] }))
-
-    let product
-    if (existing.data.length > 0) {
-      product = existing.data[0]
-      console.log(`  ✓ Product exists: ${product.id}`)
-    } else {
-      product = await stripe.products.create({
-        name:        plan.productName,
-        description: plan.description,
-        metadata:    plan.metadata,
-      })
-      console.log(`  ✓ Product created: ${product.id}`)
-    }
-
-    // Check if active price already exists for this product at this amount
-    const prices = await stripe.prices.list({
-      product:  product.id,
-      active:   true,
-      currency: 'usd',
-    })
-    const matchingPrice = prices.data.find(
-      p => p.unit_amount === plan.amount &&
-           p.recurring?.interval === 'month' &&
-           p.recurring?.interval_count === 1
-    )
-
-    let price
-    if (matchingPrice) {
-      price = matchingPrice
-      console.log(`  ✓ Price exists: ${price.id} ($${(price.unit_amount / 100).toFixed(2)}/mo)`)
-    } else {
-      price = await stripe.prices.create({
-        product:    product.id,
-        unit_amount: plan.amount,
-        currency:   'usd',
-        recurring:  { interval: 'month' },
-        nickname:   plan.nickname,
-        metadata:   plan.metadata,
-      })
-      console.log(`  ✓ Price created: ${price.id} ($${(price.unit_amount / 100).toFixed(2)}/mo)`)
-    }
-
-    results[plan.envVar] = price.id
+    const product = await findOrCreateProduct(plan.productName, plan.description)
+    const monthly = await findOrCreatePrice(product.id, plan.monthlyAmt, 'month', `${plan.productName} Monthly`)
+    const annual  = await findOrCreatePrice(product.id, plan.annualAmt,  'year',  `${plan.productName} Annual`)
+    results[plan.envMonthly] = monthly.id
+    results[plan.envAnnual]  = annual.id
   }
 
   // Output results
@@ -163,23 +159,17 @@ async function run() {
   console.log('  Price IDs created successfully!')
   console.log('================================================\n')
 
-  console.log('Set these in Vercel production:')
-  console.log('--------------------------------')
+  console.log('Set these in Vercel production (use printf to avoid trailing newline):')
+  console.log('----------------------------------------------------------------------')
   for (const [envVar, priceId] of Object.entries(results)) {
-    console.log(`  ${envVar}=${priceId}`)
-  }
-
-  console.log('\nRun these Vercel CLI commands:')
-  console.log('--------------------------------')
-  for (const [envVar, priceId] of Object.entries(results)) {
-    console.log(`  echo "${priceId}" | vercel env add ${envVar} production`)
+    console.log(`  printf '%s' '${priceId}' | vercel env add ${envVar} production`)
   }
 
   console.log('\n⚠️  Also ensure these are set in Vercel:')
   console.log('  STRIPE_SECRET_KEY     (the same key you used to run this script)')
   console.log('  STRIPE_WEBHOOK_SECRET (from Stripe Dashboard → Webhooks)')
   console.log('\nAfter setting env vars, redeploy:')
-  console.log('  vercel --prod')
+  console.log('  cd product/lead-response/dashboard && vercel --prod')
 
   // Also write to a temp file for easy reference
   const outPath = path.join(__dirname, '../../config/stripe-price-ids.json')
