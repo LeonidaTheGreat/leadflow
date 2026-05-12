@@ -117,7 +117,6 @@ export async function POST(request: NextRequest) {
         .insert({
           agent_id: agent.id,
           cal_com_link: data.calcomLink || null,
-          calcom_username: extractCalcomUsername(data.calcomLink),
           twilio_phone_number: data.smsPhoneNumber || null,
           created_at: new Date().toISOString() });
 
@@ -200,15 +199,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-/**
- * Extract Cal.com username from link
- */
-function extractCalcomUsername(link?: string): string | null {
-  if (!link) return null;
-  const match = link.match(/cal\.com\/([^\/]+)/);
-  return match ? match[1] : null;
 }
 
 /**
