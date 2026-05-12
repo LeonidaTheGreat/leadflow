@@ -103,20 +103,28 @@ export default function OnboardingConfirm({
                   {agentData.smsPhoneNumber ? '✓ Connected' : '○ Skipped'}
                 </span>
               </div>
-              {/* Aha Moment status */}
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚡</span>
-                  <span className="text-slate-300">AI Demo Response</span>
-                </div>
-                <span className={`text-sm font-medium ${
-                  agentData.ahaCompleted ? 'text-emerald-400' : 'text-slate-500'
-                }`}>
-                  {agentData.ahaCompleted
-                    ? `✓ Saw AI respond in ${formatResponseTime(agentData.ahaResponseTimeMs)}`
-                    : '⊘ Skipped for now'}
-                </span>
-              </div>
+              {/* Aha Moment Simulator status */}
+              {(() => {
+                const simulatorCompleted = agentData.ahaCompleted
+                const simulatorSkipped = agentData.ahaSkipped
+                return (
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">⚡</span>
+                      <span className="text-slate-300">AI Demo Response</span>
+                    </div>
+                    <span className={`text-sm font-medium ${
+                      simulatorCompleted ? 'text-emerald-400' : 'text-slate-500'
+                    }`}>
+                      {simulatorCompleted
+                        ? `✓ Saw AI respond in ${formatResponseTime(agentData.ahaResponseTimeMs)}`
+                        : simulatorSkipped
+                        ? '⊘ Skipped for now'
+                        : '⊘ Not started'}
+                    </span>
+                  </div>
+                )
+              })()}
             </div>
           </div>
 

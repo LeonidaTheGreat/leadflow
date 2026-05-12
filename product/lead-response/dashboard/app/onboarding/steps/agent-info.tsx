@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Phone, MapPin, AlertCircle, Globe } from 'lucide-react'
-import OnboardingButton from '../components/button'
+import { User, Phone, MapPin, Globe } from 'lucide-react'
+import FormField from '../components/form-field'
+import FormInput from '../components/form-input'
+import FormSelect from '../components/form-select'
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware',
@@ -11,18 +13,18 @@ const US_STATES = [
   'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico',
   'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
   'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming',
 ]
 
 const CANADIAN_PROVINCES = [
   'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
   'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island',
-  'Quebec', 'Saskatchewan', 'Yukon'
+  'Quebec', 'Saskatchewan', 'Yukon',
 ]
 
-const COUNTRIES = [
-  { code: 'us', name: 'United States', flag: '🇺🇸' },
-  { code: 'ca', name: 'Canada', flag: '🇨🇦' }
+const COUNTRY_OPTIONS = [
+  { value: 'us', label: '🇺🇸 United States' },
+  { value: 'ca', label: '🇨🇦 Canada' },
 ]
 
 export default function OnboardingAgentInfo({
@@ -43,10 +45,7 @@ export default function OnboardingAgentInfo({
   const [state, setState] = useState(agentData.state || '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const validatePhone = (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, '')
-    return cleanPhone.length === 10
-  }
+  const validatePhone = (phone: string) => phone.replace(/\D/g, '').length === 10
 
   const formatPhone = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '')
@@ -83,6 +82,11 @@ export default function OnboardingAgentInfo({
     onNext()
   }
 
+  const regionOptions =
+    country === 'ca'
+      ? CANADIAN_PROVINCES.map((p) => ({ value: p, label: p }))
+      : US_STATES.map((s) => ({ value: s, label: s }))
+
   return (
     <div className="animate-in fade-in-up duration-500">
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-8 md:p-12">
@@ -92,161 +96,98 @@ export default function OnboardingAgentInfo({
         </div>
 
         <div className="space-y-5 mb-8">
-          {/* First Name */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              First Name
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="John"
-                className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition ${
-                  errors.firstName ? 'border-red-500/50' : 'border-slate-600/50'
-                }`}
-              />
-            </div>
-            {errors.firstName && (
-              <div className="flex items-center gap-2 mt-1 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.firstName}
-              </div>
-            )}
-          </div>
-
-          {/* Last Name */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              Last Name
-            </label>
-            <input
+          <FormField label="First Name" htmlFor="agent-first-name" error={errors.firstName}>
+            <FormInput
+              id="agent-first-name"
               type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Smith"
-              className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition ${
-                errors.lastName ? 'border-red-500/50' : 'border-slate-600/50'
-              }`}
+              autoComplete="given-name"
+              value={firstName}
+              onChange={(e) => {
+                setFirstName(e.target.value)
+                setErrors((p) => ({ ...p, firstName: '' }))
+              }}
+              placeholder="John"
+              hasError={!!errors.firstName}
+              icon={<User className="w-5 h-5" />}
             />
-            {errors.lastName && (
-              <div className="flex items-center gap-2 mt-1 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.lastName}
-              </div>
-            )}
-          </div>
+          </FormField>
 
-          {/* Phone Number */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              Phone Number
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
-              <input
-                type="tel"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(formatPhone(e.target.value))}
-                placeholder="(555) 123-4567"
-                maxLength={12}
-                className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition ${
-                  errors.phoneNumber ? 'border-red-500/50' : 'border-slate-600/50'
-                }`}
-              />
-            </div>
-            {errors.phoneNumber && (
-              <div className="flex items-center gap-2 mt-1 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.phoneNumber}
-              </div>
-            )}
-          </div>
+          <FormField label="Last Name" htmlFor="agent-last-name" error={errors.lastName}>
+            <FormInput
+              id="agent-last-name"
+              type="text"
+              autoComplete="family-name"
+              value={lastName}
+              onChange={(e) => {
+                setLastName(e.target.value)
+                setErrors((p) => ({ ...p, lastName: '' }))
+              }}
+              placeholder="Smith"
+              hasError={!!errors.lastName}
+            />
+          </FormField>
 
-          {/* Country */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              Country
-            </label>
-            <div className="relative">
-              <Globe className="absolute left-3 top-3 text-slate-500 w-5 h-5 pointer-events-none" />
-              <select
-                value={country}
-                onChange={(e) => {
-                  setCountry(e.target.value)
-                  setState('') // Reset state when country changes
-                }}
-                className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition appearance-none ${
-                  errors.country ? 'border-red-500/50' : 'border-slate-600/50'
-                }`}
-              >
-                {COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag} {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {errors.country && (
-              <div className="flex items-center gap-2 mt-1 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.country}
-              </div>
-            )}
-          </div>
+          <FormField label="Phone Number" htmlFor="agent-phone" error={errors.phoneNumber}>
+            <FormInput
+              id="agent-phone"
+              type="tel"
+              autoComplete="tel"
+              value={phoneNumber}
+              onChange={(e) => {
+                setPhoneNumber(formatPhone(e.target.value))
+                setErrors((p) => ({ ...p, phoneNumber: '' }))
+              }}
+              placeholder="(555) 123-4567"
+              maxLength={12}
+              hasError={!!errors.phoneNumber}
+              icon={<Phone className="w-5 h-5" />}
+            />
+          </FormField>
 
-          {/* State/Province */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              {country === 'ca' ? 'Operating Province' : 'Operating State'}
-            </label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-3 text-slate-500 w-5 h-5 pointer-events-none" />
-              <select
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition appearance-none ${
-                  errors.state ? 'border-red-500/50' : 'border-slate-600/50'
-                }`}
-              >
-                <option value="">
-                  {country === 'ca' ? 'Select your province...' : 'Select your state...'}
-                </option>
-                {country === 'ca'
-                  ? CANADIAN_PROVINCES.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))
-                  : US_STATES.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-              </select>
-            </div>
-            {errors.state && (
-              <div className="flex items-center gap-2 mt-1 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.state}
-              </div>
-            )}
-          </div>
+          <FormField label="Country" htmlFor="agent-country">
+            <FormSelect
+              id="agent-country"
+              value={country}
+              onChange={(e) => {
+                setCountry(e.target.value)
+                setState('')
+              }}
+              options={COUNTRY_OPTIONS}
+              icon={<Globe className="w-5 h-5" />}
+            />
+          </FormField>
+
+          <FormField
+            label={country === 'ca' ? 'Operating Province' : 'Operating State'}
+            htmlFor="agent-region"
+            error={errors.state}
+          >
+            <FormSelect
+              id="agent-region"
+              value={state}
+              onChange={(e) => {
+                setState(e.target.value)
+                setErrors((p) => ({ ...p, state: '' }))
+              }}
+              placeholder={country === 'ca' ? 'Select your province...' : 'Select your state...'}
+              options={regionOptions}
+              hasError={!!errors.state}
+              icon={<MapPin className="w-5 h-5" />}
+            />
+          </FormField>
         </div>
 
         {/* Buttons */}
         <div className="flex gap-3">
           <button
             onClick={onBack}
-            className="flex-1 px-4 py-3 border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
+            className="flex-1 px-4 py-3 min-h-[44px] border border-slate-600/50 text-slate-300 font-semibold rounded-lg hover:bg-slate-700/30 transition-all duration-200"
           >
             ← Back
           </button>
           <button
             onClick={handleContinue}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-3 min-h-[44px] bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
             Continue →
           </button>

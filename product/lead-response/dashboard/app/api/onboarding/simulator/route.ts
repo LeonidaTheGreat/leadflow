@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
     const authenticatedId = await getAuthUserId(request)
     const effectiveAgentId = authenticatedId || agentId
 
-    if (!action || !effectiveAgentId) {
+    if (!action || !agentId) {
       return NextResponse.json(
         { error: 'Missing required fields: action, agentId' },
         { status: 400 }

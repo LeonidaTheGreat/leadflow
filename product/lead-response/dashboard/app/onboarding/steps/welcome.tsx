@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { Mail, AlertCircle } from 'lucide-react'
+import FormField from '../components/form-field'
+import FormInput from '../components/form-input'
+import FormPasswordInput from '../components/form-password'
 
 export default function OnboardingWelcome({
   onNext,
@@ -18,30 +21,24 @@ export default function OnboardingWelcome({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isValidating, setIsValidating] = useState(false)
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return re.test(email)
-  }
+  const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
   const handleContinue = async () => {
     setErrors({})
     const newErrors: Record<string, string> = {}
 
-    // Validate email
     if (!email.trim()) {
       newErrors.email = 'Email is required'
     } else if (!validateEmail(email)) {
       newErrors.email = 'Please enter a valid email address'
     }
 
-    // Validate password
     if (!password) {
       newErrors.password = 'Password is required'
     } else if (password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters'
     }
 
-    // Validate confirmation
     if (password !== confirmPassword) {
       newErrors.confirm = 'Passwords do not match'
     }
@@ -52,8 +49,6 @@ export default function OnboardingWelcome({
     }
 
     setIsValidating(true)
-    
-    // Check if email exists
     try {
       const response = await fetch('/api/agents/check-email', {
         method: 'POST',
@@ -62,22 +57,15 @@ export default function OnboardingWelcome({
       })
 
       const data = await response.json()
-      
+
       if (!data.available) {
         setErrors({ email: 'Email is already registered' })
         return
       }
 
-      // Save data and proceed
-      setAgentData({
-        ...agentData,
-        email: email.toLowerCase(),
-        password,
-      })
-
+      setAgentData({ ...agentData, email: email.toLowerCase(), password })
       onNext()
-    } catch (error) {
-      console.error('Validation error:', error)
+    } catch {
       setErrors({ submit: 'Failed to validate email. Please try again.' })
     } finally {
       setIsValidating(false)
@@ -97,7 +85,6 @@ export default function OnboardingWelcome({
         <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
           Start Your Free Pilot
         </h2>
-
         <p className="text-center text-slate-300 text-lg mb-4">
           Never miss a lead again. Respond to prospects in under 30 seconds.
         </p>
@@ -111,78 +98,53 @@ export default function OnboardingWelcome({
 
         {/* Form */}
         <div className="space-y-4 mb-8">
-          {/* Email Field */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition ${
-                  errors.email ? 'border-red-500/50' : 'border-slate-600/50'
-                }`}
-              />
-            </div>
-            {errors.email && (
-              <div className="flex items-center gap-2 mt-2 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.email}
-              </div>
-            )}
-          </div>
+          <FormField label="Email Address" htmlFor="welcome-email" error={errors.email}>
+            <FormInput
+              id="welcome-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setErrors((p) => ({ ...p, email: '' }))
+              }}
+              placeholder="you@example.com"
+              hasError={!!errors.email}
+              icon={<Mail className="w-5 h-5" />}
+            />
+          </FormField>
 
-          {/* Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
+          <FormField label="Password" htmlFor="welcome-password" error={errors.password}>
+            <FormPasswordInput
+              id="welcome-password"
+              autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setErrors((p) => ({ ...p, password: '' }))
+              }}
               placeholder="At least 8 characters"
-              className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition ${
-                errors.password ? 'border-red-500/50' : 'border-slate-600/50'
-              }`}
+              hasError={!!errors.password}
             />
-            {errors.password && (
-              <div className="flex items-center gap-2 mt-2 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.password}
-              </div>
-            )}
-          </div>
+          </FormField>
 
-          {/* Confirm Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
+          <FormField label="Confirm Password" htmlFor="welcome-confirm" error={errors.confirm}>
+            <FormPasswordInput
+              id="welcome-confirm"
+              autoComplete="new-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value)
+                setErrors((p) => ({ ...p, confirm: '' }))
+              }}
               placeholder="Confirm your password"
-              className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition ${
-                errors.confirm ? 'border-red-500/50' : 'border-slate-600/50'
-              }`}
+              hasError={!!errors.confirm}
             />
-            {errors.confirm && (
-              <div className="flex items-center gap-2 mt-2 text-sm text-red-400">
-                <AlertCircle className="w-4 h-4" />
-                {errors.confirm}
-              </div>
-            )}
-          </div>
+          </FormField>
 
           {errors.submit && (
             <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="w-4 h-4 shrink-0" />
               {errors.submit}
             </div>
           )}
@@ -192,7 +154,7 @@ export default function OnboardingWelcome({
         <button
           onClick={handleContinue}
           disabled={isValidating}
-          className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 min-h-[44px] bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isValidating ? (
             <>
