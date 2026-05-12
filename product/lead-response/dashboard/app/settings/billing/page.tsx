@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { ArrowRight, Check, Clock, Loader } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics/ga4'
 
