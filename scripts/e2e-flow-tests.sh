@@ -204,20 +204,28 @@ test_dashboard_no_errors() {
     user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
   fi
 
-  # Last resort: use the E2E trial user created by test_trial_signup_flow (fresh trial, not expired).
-  # PATCH onboarding_completed=true so middleware doesn't redirect to /dashboard/onboarding.
-  # Cleanup is handled by cleanup_test_accounts() at the end of the suite.
-  if [ -z "$user_id" ] && [ -n "${E2E_EMAIL:-}" ]; then
-    agent_resp=$(curl -s --max-time 10 \
-      "$API_URL/real_estate_agents?select=id&email=eq.${E2E_EMAIL}&limit=1" \
-      -H "apikey: $API_KEY" 2>/dev/null) || return 1
-    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-    if [ -n "$user_id" ]; then
-      curl -s --max-time 10 -X PATCH "$API_URL/real_estate_agents?id=eq.${user_id}" \
-        -H "apikey: $API_KEY" \
-        -H "Content-Type: application/json" \
-        -d '{"onboarding_completed": true}' >/dev/null 2>&1 || true
-    fi
+  # Last resort: create a fresh E2E trial account with onboarding complete.
+  # This is self-contained — does not depend on other tests setting E2E_EMAIL.
+  # Email matches the e2e-flow-% pattern so cleanup_test_accounts() removes it.
+  if [ -z "$user_id" ]; then
+    local signup_ts signup_email signup_resp signup_agent_id
+    signup_ts=$(date +%s)
+    signup_email="e2e-flow-dash-${signup_ts}@leadflow-test.com"
+
+    signup_resp=$(curl -s --max-time 15 -X POST "$BASE_URL/api/auth/trial-signup" \
+      -H "Content-Type: application/json" \
+      -d "{\"email\":\"$signup_email\",\"password\":\"E2eTest123!\",\"firstName\":\"E2E\",\"lastName\":\"Dash\"}" 2>/dev/null) || return 1
+
+    signup_agent_id=$(echo "$signup_resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agentId',''))" 2>/dev/null) || true
+    [ -z "$signup_agent_id" ] && return 1
+
+    # Mark onboarding complete so the dashboard renders Lead Feed instead of redirecting to onboarding
+    curl -s --max-time 10 -X PATCH "$API_URL/real_estate_agents?id=eq.$signup_agent_id" \
+      -H "apikey: $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"onboarding_completed":true}' >/dev/null 2>&1 || return 1
+
+    user_id="$signup_agent_id"
   fi
 
   [ -z "$user_id" ] && return 1
@@ -315,7 +323,7 @@ cleanup_test_accounts() {
     [ -f "$HOME/.env" ] && pg_url=$(grep '^LOCAL_PG_URL=' "$HOME/.env" | head -1 | cut -d'=' -f2-)
   fi
   if [ -n "$pg_url" ]; then
-    # Delete leads belonging to e2e-flow test agents, then delete the agents
+    # Delete all rows referencing e2e-flow test agents, then delete the agents
     psql -q "$pg_url" <<'SQL' 2>/dev/null || true
 DELETE FROM messages WHERE lead_id IN (
   SELECT l.id FROM leads l JOIN real_estate_agents a ON l.agent_id = a.id
@@ -325,6 +333,15 @@ DELETE FROM leads WHERE agent_id IN (
   SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
 );
 DELETE FROM pilot_progress WHERE agent_id IN (
+  SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
+);
+DELETE FROM sessions WHERE user_id IN (
+  SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
+);
+DELETE FROM events WHERE agent_id IN (
+  SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
+);
+DELETE FROM agent_survey_schedule WHERE agent_id IN (
   SELECT id FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com'
 );
 DELETE FROM real_estate_agents WHERE email LIKE 'e2e-flow-%@leadflow-test.com';
