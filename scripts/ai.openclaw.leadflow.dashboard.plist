@@ -16,7 +16,7 @@
     </array>
     
     <key>WorkingDirectory</key>
-    <string>/Users/clawdbot/projects/leadflow</string>
+    <string>$HOME/projects/leadflow</string>
     
     <key>RunAtLoad</key>
     <true/>

@@ -3,7 +3,8 @@
 # spawn-orchestrator.sh
 # Spawns the LeadFlow Orchestrator agent
 
-cd /Users/clawdbot/projects/leadflow
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 echo "🚀 Spawning LeadFlow Orchestrator..."
 

@@ -8,7 +8,7 @@
  *   used by stale_waiting_items: `WAITING`, `pending`, `open`.
  * - Keep 48-hour stale threshold and update payload unchanged.
  * - Add regression test file at
- *   `/Users/clawdbot/projects/leadflow/tests/unit/resolve-stale-action-items.test.js`.
+ *   `PROJECT_ROOT/tests/unit/resolve-stale-action-items.test.js`.
  * Verify:
  * - `npm test -- --runInBand tests/unit/resolve-stale-action-items.test.js`
  * - `npm run build`

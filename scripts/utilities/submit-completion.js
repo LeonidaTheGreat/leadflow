@@ -1,4 +1,4 @@
-const { reportSuccess } = require('/Users/clawdbot/projects/leadflow/subagent-completion-report');
+const { reportSuccess } = require('../../subagent-completion-report');
 
 // Task: fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign
 // Status: COMPLETE

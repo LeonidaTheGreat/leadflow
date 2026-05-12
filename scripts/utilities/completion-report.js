@@ -1,4 +1,4 @@
-const { reportSuccess, reportFailure } = require('/Users/clawdbot/projects/leadflow/subagent-completion-report');
+const { reportSuccess, reportFailure } = require('../../subagent-completion-report');
 
 const testResults = {
   passed: 15,

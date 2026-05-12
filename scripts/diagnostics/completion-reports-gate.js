@@ -3,10 +3,10 @@
 /*
 Task Spec (Task ID: 452b83c3-05f7-4f91-a827-4d7bc0b34065)
 What:
-- Add /Users/clawdbot/projects/leadflow/scripts/diagnostics/completion-reports-gate.js
+- Add PROJECT_ROOT/scripts/diagnostics/completion-reports-gate.js
   to enforce the completion report quality gate by checking report counts and rotating
   old completion JSON files from completion-reports/ into .completion-reports-archive/.
-- Update /Users/clawdbot/projects/leadflow/package.json scripts with "completion_reports"
+- Update PROJECT_ROOT/package.json scripts with "completion_reports"
   to run this gate directly.
 
 Verify:

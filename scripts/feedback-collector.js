@@ -8,7 +8,7 @@
  *   3. Manual pilot user feedback (already stored directly)
  *
  * Run daily via cron:
- *   0 6 * * * cd /Users/clawdbot/projects/leadflow && node scripts/feedback-collector.js
+ *   0 6 * * * cd PROJECT_ROOT && node scripts/feedback-collector.js
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })

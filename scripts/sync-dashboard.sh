@@ -3,7 +3,8 @@
 # Run this automatically via cron or heartbeat
 # Updates dashboard with latest progress without manual intervention
 
-cd /Users/clawdbot/projects/leadflow/product/lead-response/dashboard || exit 1
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$(cd "$SCRIPT_DIR/.." && pwd)/product/lead-response/dashboard" || exit 1
 
 echo "🔄 BO2026 Dashboard Auto-Sync"
 echo "=============================="

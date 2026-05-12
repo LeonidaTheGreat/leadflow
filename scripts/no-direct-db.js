@@ -3,12 +3,12 @@
 /*
 Task Spec (f5ead7ff-a668-4628-bac6-20d40e511899)
 What:
-- Add /Users/clawdbot/projects/leadflow/scripts/no-direct-db.js with a route-layer guard that scans backend route files and fails if database-style `.from()` calls are present.
-- Update /Users/clawdbot/projects/leadflow/package.json scripts to expose `npm run no_direct_db`.
+- Add PROJECT_ROOT/scripts/no-direct-db.js with a route-layer guard that scans backend route files and fails if database-style `.from()` calls are present.
+- Update PROJECT_ROOT/package.json scripts to expose `npm run no_direct_db`.
 
 Verify:
 - Run `npm run no_direct_db` and expect exit code 0 plus a pass message when no backend route violations exist.
-- Run `node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json` and confirm the current no_direct_db failure source is dashboard `app/api` files, while backend routes remain clean.
+- Run `node ~/.openclaw/genome/scripts/quality-audit.js PROJECT_ROOT --json` and confirm the current no_direct_db failure source is dashboard `app/api` files, while backend routes remain clean.
 - Run project quality gates: `npm run build`, `npm run lint`, `npm test`, `npm audit --audit-level=high` and expect success.
 
 Boundaries:

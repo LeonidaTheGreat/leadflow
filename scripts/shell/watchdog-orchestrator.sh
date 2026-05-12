@@ -4,7 +4,8 @@
 # Checks if orchestrator is alive, respawns if dead
 # Run this every 5 minutes via cron
 
-cd /Users/clawdbot/projects/leadflow
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 HEARTBEAT_FILE=".orchestrator-heartbeat"
 MAX_AGE_MINUTES=10

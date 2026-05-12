@@ -5,7 +5,8 @@
  * Inserts 4 new use cases that drive trial-to-paid conversion
  */
 
-require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
+const { resolveFromProjectRoot } = require('./project-root');
+require('dotenv').config({ path: resolveFromProjectRoot('.env') });
 
 const { createClient } = require('../lib/db');
 

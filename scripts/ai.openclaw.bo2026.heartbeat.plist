@@ -8,11 +8,11 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/clawdbot/projects/leadflow/scripts/heartbeat.sh</string>
+        <string>$HOME/projects/leadflow/scripts/heartbeat.sh</string>
     </array>
     
     <key>WorkingDirectory</key>
-    <string>/Users/clawdbot/projects/leadflow</string>
+    <string>$HOME/projects/leadflow</string>
     
     <key>StartInterval</key>
     <integer>1800</integer>

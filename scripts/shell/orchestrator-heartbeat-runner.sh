@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PROJECT_ROOT="/Users/clawdbot/projects/leadflow"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TASKS_FILE="$PROJECT_ROOT/.local-tasks.json"
 PROJECT_FILE="$PROJECT_ROOT/.project.json"
 STATE_FILE="$PROJECT_ROOT/.orchestrator-state.json"

@@ -5,7 +5,7 @@
  * Task ID: 6dd45e69-1e98-4b9f-b156-71afd644f8ef
  */
 
-const { reportSuccess } = require('/Users/clawdbot/projects/leadflow/subagent-completion-report');
+const { reportSuccess } = require('../../subagent-completion-report');
 
 const taskId = '6dd45e69-1e98-4b9f-b156-71afd644f8ef';
 

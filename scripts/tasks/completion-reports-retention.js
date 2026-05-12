@@ -3,10 +3,10 @@
 /**
  * taskSpec
  * What:
- * - Update /Users/clawdbot/projects/leadflow/scripts/tasks/completion-reports-retention.js
+ * - Update PROJECT_ROOT/scripts/tasks/completion-reports-retention.js
  *   resolveProjectDir() and enforceCompletionReportRetention() so retention targets the
  *   canonical project directory from project-config-loader instead of temporary worktree cwd.
- * - Update /Users/clawdbot/projects/leadflow/tests/unit/completion-reports-retention.test.js
+ * - Update PROJECT_ROOT/tests/unit/completion-reports-retention.test.js
  *   to verify retention can resolve the intended project directory independently of cwd.
  * Verify:
  * - npm run completion_reports exits 0 and reports after<=500 on the canonical project path.
