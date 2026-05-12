@@ -10,25 +10,11 @@ import jwt from 'jsonwebtoken'
 import { createClient } from '@/lib/db'
 import { isSupabaseConfigured } from '@/lib/supabase-server'
 import { logger } from '@/lib/logger'
+import { isTrackedPage } from '@/lib/page-tracking'
 
 const DB_URL = process.env.NEXT_PUBLIC_API_URL || ''
 const DB_KEY = process.env.API_SECRET_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-
-export function isTrackedPage(pathname: string): boolean {
-  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) return true
-  if (pathname === '/settings' || pathname.startsWith('/settings/')) return true
-  return false
-}
-
-export const TRACKED_PAGES = [
-  '/dashboard',
-  '/dashboard/conversations',
-  '/dashboard/settings',
-  '/dashboard/billing',
-  '/settings',
-  '/settings/billing',
-]
 
 function extractAuthInfo(request: NextRequest): { agentId: string | null; sessionId: string | null } {
   // Check Authorization: Bearer header
