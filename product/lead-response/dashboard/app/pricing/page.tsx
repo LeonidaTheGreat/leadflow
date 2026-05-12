@@ -331,6 +331,13 @@ export default function PricingPage() {
                       </div>
                     )}
 
+                    {/* 2 months free badge — annual plans only, not brokerage */}
+                    {interval === 'annual' && plan.tier !== 'brokerage' && (
+                      <div className="inline-block mb-4 px-3 py-1 bg-amber-400/20 border border-amber-400/50 text-amber-300 text-xs font-semibold rounded-full">
+                        2 Months Free
+                      </div>
+                    )}
+
                     <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
                     <p className="text-slate-300 text-sm mb-6">{plan.description}</p>
 
