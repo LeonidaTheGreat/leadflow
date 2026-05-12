@@ -22,7 +22,6 @@ const config: Config = {
     'landing-page-api-table-removal.test.ts',
     'onboarding-api.test.ts',
     'agents-onboard-utm.test.ts',
-    'onboarding.components.test.tsx',
     'email-verification.test.ts',
     'uc11-subscription-lifecycle.test.ts',
     'onboarding.integration.test.ts',

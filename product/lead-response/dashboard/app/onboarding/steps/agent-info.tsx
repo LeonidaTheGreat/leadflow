@@ -99,6 +99,7 @@ export default function OnboardingAgentInfo({
           <FormField label="First Name" htmlFor="agent-first-name" error={errors.firstName}>
             <FormInput
               id="agent-first-name"
+              data-testid="first-name"
               type="text"
               autoComplete="given-name"
               value={firstName}
@@ -115,6 +116,7 @@ export default function OnboardingAgentInfo({
           <FormField label="Last Name" htmlFor="agent-last-name" error={errors.lastName}>
             <FormInput
               id="agent-last-name"
+              data-testid="last-name"
               type="text"
               autoComplete="family-name"
               value={lastName}
@@ -130,6 +132,7 @@ export default function OnboardingAgentInfo({
           <FormField label="Phone Number" htmlFor="agent-phone" error={errors.phoneNumber}>
             <FormInput
               id="agent-phone"
+              data-testid="phone"
               type="tel"
               autoComplete="tel"
               value={phoneNumber}
@@ -147,6 +150,7 @@ export default function OnboardingAgentInfo({
           <FormField label="Country" htmlFor="agent-country">
             <FormSelect
               id="agent-country"
+              data-testid="country"
               value={country}
               onChange={(e) => {
                 setCountry(e.target.value)
@@ -164,6 +168,7 @@ export default function OnboardingAgentInfo({
           >
             <FormSelect
               id="agent-region"
+              data-testid="state"
               value={state}
               onChange={(e) => {
                 setState(e.target.value)

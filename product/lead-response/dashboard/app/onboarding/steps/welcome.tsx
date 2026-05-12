@@ -101,6 +101,7 @@ export default function OnboardingWelcome({
           <FormField label="Email Address" htmlFor="welcome-email" error={errors.email}>
             <FormInput
               id="welcome-email"
+              data-testid="email"
               type="email"
               autoComplete="email"
               value={email}
@@ -117,6 +118,7 @@ export default function OnboardingWelcome({
           <FormField label="Password" htmlFor="welcome-password" error={errors.password}>
             <FormPasswordInput
               id="welcome-password"
+              data-testid="password"
               autoComplete="new-password"
               value={password}
               onChange={(e) => {
@@ -131,6 +133,7 @@ export default function OnboardingWelcome({
           <FormField label="Confirm Password" htmlFor="welcome-confirm" error={errors.confirm}>
             <FormPasswordInput
               id="welcome-confirm"
+              data-testid="confirm-password"
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => {

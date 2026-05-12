@@ -106,6 +106,7 @@ export default function OnboardingSMS({
               <Phone className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
               <input
                 type="tel"
+                data-testid="sms-phone"
                 value={smsPhoneNumber}
                 onChange={(e) => {
                   setSmsPhoneNumber(formatPhone(e.target.value))

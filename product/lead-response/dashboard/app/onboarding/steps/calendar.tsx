@@ -94,6 +94,7 @@ export default function OnboardingCalendar({
               <Calendar className="absolute left-3 top-3 text-slate-500 w-5 h-5" />
               <input
                 type="url"
+                data-testid="calcom-link"
                 value={calcomLink}
                 onChange={(e) => {
                   setCalcomLink(e.target.value)
@@ -119,6 +120,7 @@ export default function OnboardingCalendar({
           {/* Verify Button */}
           {calcomLink.trim() && !verified && (
             <button
+              data-testid="verify-btn"
               onClick={handleVerifyLink}
               disabled={isVerifying}
               className="w-full py-3 px-4 bg-blue-500/20 border border-blue-500/50 text-blue-300 hover:bg-blue-500/30 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
