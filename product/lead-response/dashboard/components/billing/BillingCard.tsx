@@ -57,8 +57,10 @@ export function BillingCard({ agentId, className = '' }: BillingCardProps) {
     if (!tier) return 'No Plan'
     const names: Record<string, string> = {
       starter: 'Starter Plan',
-      professional: 'Professional Plan',
-      enterprise: 'Enterprise Plan',
+      pro: 'Pro Plan',
+      team: 'Team Plan',
+      professional: 'Pro Plan',
+      enterprise: 'Team Plan',
     }
     return names[tier] || `${tier.charAt(0).toUpperCase() + tier.slice(1)} Plan`
   }
@@ -129,11 +131,9 @@ export function BillingCard({ agentId, className = '' }: BillingCardProps) {
               <p className="text-base font-semibold text-slate-900 dark:text-white mt-0.5">
                 {getPlanDisplayName(billingInfo?.planTier ?? null)}
               </p>
-              {billingInfo?.planTier && (
+              {billingInfo?.mrr != null && billingInfo.mrr > 0 && (
                 <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
-                  {billingInfo.planTier === 'starter' && '$49/month'}
-                  {billingInfo.planTier === 'professional' && '$149/month'}
-                  {billingInfo.planTier === 'enterprise' && '$399/month'}
+                  ${billingInfo.mrr.toFixed(2)}/month effective
                 </p>
               )}
             </div>

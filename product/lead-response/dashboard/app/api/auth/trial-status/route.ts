@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Fetch agent's trial status
     const { data: agent, error } = await supabase
       .from('real_estate_agents')
-      .select('plan_tier, trial_ends_at, pilot_started_at, pilot_expires_at, onboarding_completed, onboarding_step')
+      .select('email, plan_tier, trial_ends_at, pilot_started_at, pilot_expires_at, onboarding_completed, onboarding_step')
       .eq('id', userId)
       .single()
 
@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       agentId: userId,
+      email: agent.email,
       isTrial,
       isPilot,
       planTier: agent.plan_tier,

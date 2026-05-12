@@ -15,13 +15,20 @@ type BillingInterval = 'monthly' | 'annual'
 /**
  * Map plan ID + interval to Stripe price ID from environment variables.
  * Annual price IDs use the _ANNUAL suffix; monthly use _MONTHLY.
- * Pro maps to PROFESSIONAL for backward compatibility with legacy env vars.
+ * For 'pro', tries canonical STRIPE_PRICE_PRO_* first, then legacy STRIPE_PRICE_PROFESSIONAL_*.
  */
 function getPriceIdForPlan(planId: PlanId, interval: BillingInterval): string | null {
-  const envKey = planId === 'pro' ? 'PROFESSIONAL' : planId.toUpperCase()
   const intervalKey = interval === 'annual' ? 'ANNUAL' : 'MONTHLY'
-  const envVar = `STRIPE_PRICE_${envKey}_${intervalKey}`
-  return process.env[envVar] || null
+  const canonicalEnvVar = `STRIPE_PRICE_${planId.toUpperCase()}_${intervalKey}`
+  const canonicalValue = process.env[canonicalEnvVar]
+  if (canonicalValue) return canonicalValue
+
+  // Legacy fallback for 'pro' plan (old env var name)
+  if (planId === 'pro') {
+    const legacyMonthly = process.env[`STRIPE_PRICE_PROFESSIONAL_${intervalKey}`]
+    if (legacyMonthly) return legacyMonthly
+  }
+  return null
 }
 
 export async function POST(request: NextRequest) {
