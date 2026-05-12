@@ -1,4 +1,27 @@
 'use client'
+/*
+TASK SPEC (6e0fadeb-d465-4823-851e-e35c9c0e9775)
+What:
+- Update `product/lead-response/dashboard/app/dashboard/page.tsx` (`DashboardPage`) to render a project metadata header at the top of dashboard content.
+- Add `product/lead-response/dashboard/components/dashboard/ProjectMetadataHeader.tsx` to fetch and display project metadata values.
+- Add `product/lead-response/dashboard/app/api/dashboard/project-metadata/route.ts` (`GET`) to query `project_metadata` and return project name, goal, current day, deadline, and overall status.
+- Add tests:
+  - `product/lead-response/dashboard/tests/dashboard-project-metadata-route.test.ts` for route behavior and value derivation.
+  - `product/lead-response/dashboard/tests/dashboard-project-metadata-header.test.tsx` for header rendering and fetch integration.
+
+Verify:
+- `cd product/lead-response/dashboard && npm test -- --runInBand tests/dashboard-project-metadata-route.test.ts tests/dashboard-project-metadata-header.test.tsx`
+- `cd product/lead-response/dashboard && npm test`
+- `npm test`
+- `cd product/lead-response/dashboard && npx next build`
+- `npm run build`
+- `rg -n "ProjectMetadataHeader|/api/dashboard/project-metadata|TASK SPEC \\(6e0fadeb-d465-4823-851e-e35c9c0e9775\\)" product/lead-response/dashboard`
+
+Boundaries:
+- Do not modify database schema/migrations or seed scripts.
+- Do not change unrelated dashboard widgets, auth flows, or API endpoints.
+- Do not touch orchestrator docs/heartbeat-generated files.
+*/
 
 import { Suspense, useState } from 'react'
 import { StatsCards } from '@/components/dashboard/StatsCards'
@@ -13,6 +36,7 @@ import { OnboardingWizardLauncher } from '@/components/dashboard/OnboardingWizar
 import { UpgradeSuccessToast } from '@/components/dashboard/UpgradeSuccessToast'
 import { AhaMomentBanner } from '@/components/dashboard/AhaMomentBanner'
 import { RoiMetricsWidget } from '@/components/dashboard/RoiMetricsWidget'
+import { ProjectMetadataHeader } from '@/components/dashboard/ProjectMetadataHeader'
 
 // ---------------------------------------------------------------------------
 // Send Test Lead Card — lets agents fire a real SMS through the full pipeline
@@ -122,6 +146,8 @@ function SendTestLeadCard() {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
+      <ProjectMetadataHeader />
+
       {/* Success toast -- shown after returning from Stripe checkout (?upgrade=success) */}
       <Suspense fallback={null}>
         <UpgradeSuccessToast />
