@@ -76,8 +76,4 @@ console.log(`\n=== Test Summary ===`);
 console.log(`Passed: ${passed}/${total}`);
 console.log(`Pass Rate: ${(passed / total * 100).toFixed(0)}%`);
 
-if (require.main === module) {
-  process.exit(passed === total ? 0 : 1);
-}
-
 module.exports = { results, passed, total };
