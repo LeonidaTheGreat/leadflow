@@ -267,3 +267,133 @@ The customer-facing dashboard is a separate Next.js app deployed to Vercel (`lea
 ├── docs/                        ← PRDs, design specs, reports
 └── config/                      ← Strategy configs, runtime configs
 ```
+
+---
+
+## Diagrams
+
+### 1. Request Lifecycle — FUB Lead Webhook
+
+End-to-end flow from a new lead arriving via Follow Up Boss to the AI SMS response being sent.
+
+```mermaid
+sequenceDiagram
+    participant FUB as Follow Up Boss
+    participant CF as Cloudflare Tunnel<br/>(api.imagineapi.org)
+    participant API as server.js<br/>(Express)
+    participant RL as Rate Limiter
+    participant WH as fub-webhook-listener.js
+    participant FUBS as FUBService
+    participant AI as AI Qualification
+    participant TWL as TwilioService
+    participant SEQ as SequenceService
+    participant DB as PostgreSQL
+
+    FUB->>CF: POST /webhook/fub (HMAC-SHA256 sig)
+    CF->>API: forward
+    API->>RL: 120 req/min check
+    RL-->>API: pass
+    API->>WH: route handler
+    WH->>WH: timingSafeEqual signature verify
+    WH->>FUBS: handleWebhookPayload()
+    FUBS->>FUBS: emit lead.created event
+    FUBS->>AI: qualify lead
+    AI-->>FUBS: response text
+    FUBS->>TWL: sendSms() — AI response
+    TWL-->>FUB: SMS delivered to lead (< 30s)
+    FUBS->>SEQ: createLeadSequence()
+    SEQ->>DB: persist lead + follow-up schedule
+    FUBS->>DB: log interaction
+    WH-->>FUB: 200 OK
+```
+
+### 2. Service Interaction Map — `lib/services/`
+
+Dependencies between core backend services (from `CODE_GRAPH.json`). Arrows show "calls / depends on."
+
+```mermaid
+flowchart LR
+    subgraph Webhooks["Webhook Entry Points"]
+        FWL[fub-webhook-listener]
+        RCW[routes/calcom-webhook]
+        RBL[routes/billing]
+        RDL[routes/internal/dead-letter-replay]
+    end
+
+    subgraph CoreServices["Core Services (lib/services/)"]
+        FUBS[FUBService]
+        TWL[TwilioService]
+        SEQ[SequenceService]
+        SAT[SatisfactionService]
+        CAL[CalcomWebhookHandler]
+        CEP[CalcomEventProcessor]
+        CC[CalcomClient]
+        BLK[BookingLinkService]
+        BIL[BillingService]
+        STR[StripeService]
+        EML[EmailService]
+        ACT[ActivationService]
+        SYS[SystemStatusService]
+    end
+
+    subgraph External["External APIs"]
+        FUBA[(Follow Up Boss)]
+        TWLA[(Twilio)]
+        CALA[(Cal.com)]
+        STRA[(Stripe)]
+        RSND[(Resend)]
+    end
+
+    DB[(PostgreSQL)]
+
+    FWL --> FUBS
+    RCW --> CAL
+    RBL --> BIL
+    RDL --> FUBS & BIL & CAL
+
+    FUBS --> TWL & SEQ & SAT
+    CAL --> CEP & SEQ
+    CEP --> TWL & SEQ
+    ACT --> EML
+    BLK --> CC
+
+    FUBS --> FUBA
+    TWL --> TWLA
+    CC --> CALA
+    BIL --> STRA
+    STR --> STRA
+    EML --> RSND
+
+    FUBS & BIL & SEQ & SAT & CAL --> DB
+```
+
+### 3. Data Lifecycle — Lead to Appointment to Billing
+
+How lead data moves through the system from first contact to a paid subscription.
+
+```mermaid
+flowchart TD
+    A[Lead submits contact form] --> B[FUB creates person record]
+    B --> C[POST /webhook/fub]
+    C --> D{HMAC-SHA256\nverification}
+    D -->|fail| E[401 Rejected → dead-letter queue]
+    D -->|pass| F[FUBService.handleWebhookPayload]
+
+    F --> G[AI lead qualification]
+    G --> H[TwilioService.sendSms\nAI response in < 30s]
+    G --> I[SequenceService.createLeadSequence\nfollow-up schedule stored in DB]
+
+    H --> J[Lead replies / clicks booking link]
+    J --> K[POST /webhook/calcom]
+    K --> L[CalcomWebhookHandler]
+    L --> M[CalcomEventProcessor]
+    M --> N[Appointment confirmed in DB]
+    M --> O[TwilioService — booking confirmation SMS]
+
+    N --> P[Agent activates trial\nTrialActivationService]
+    P --> Q[Stripe trial subscription created\nBillingService]
+    Q --> R{Trial converts?}
+    R -->|yes| S[Stripe subscription active\nPOST /webhooks/stripe]
+    R -->|no — lapsed| T[LapsedTrialReactivationService\nre-engagement email via EmailService]
+    S --> U[Agent on paid plan\ndata in real_estate_agents table]
+```
