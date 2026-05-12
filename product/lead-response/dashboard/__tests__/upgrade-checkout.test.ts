@@ -15,8 +15,11 @@ process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
 process.env.API_SECRET_KEY = 'test-service-role-key'
 process.env.JWT_SECRET = 'test-secret'
 process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_starter_monthly_test'
-process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY = 'price_pro_monthly_test'
-process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY = 'price_team_monthly_test'
+process.env.STRIPE_PRICE_PRO_MONTHLY     = 'price_pro_monthly_test'
+process.env.STRIPE_PRICE_TEAM_MONTHLY    = 'price_team_monthly_test'
+process.env.STRIPE_PRICE_STARTER_ANNUAL  = 'price_starter_annual_test'
+process.env.STRIPE_PRICE_PRO_ANNUAL      = 'price_pro_annual_test'
+process.env.STRIPE_PRICE_TEAM_ANNUAL     = 'price_team_annual_test'
 
 // ── Mock next/server ──────────────────────────────────────────────────────────
 
@@ -254,6 +257,55 @@ describe('POST /api/stripe/upgrade-checkout', () => {
     expect(mockCheckoutCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         cancel_url: expect.stringContaining('/dashboard'),
+      })
+    )
+  })
+
+  // ── Annual billing interval ───────────────────────────────────────────────
+
+  it('returns 400 for an invalid interval value', async () => {
+    const req = makeRequest({ plan: 'pro', interval: 'quarterly' })
+    await POST(req)
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.stringMatching(/invalid interval/i) }),
+      expect.objectContaining({ status: 400 })
+    )
+  })
+
+  it('creates annual checkout session when interval=annual', async () => {
+    const req = makeRequest({ plan: 'pro', interval: 'annual' })
+    await POST(req)
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://checkout.stripe.com/test/abc123',
+        sessionId: 'cs_test_abc123',
+      })
+    )
+    expect(mockCheckoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: 'price_pro_annual_test', quantity: 1 }],
+      })
+    )
+  })
+
+  it('includes interval in subscription_data metadata', async () => {
+    const req = makeRequest({ plan: 'starter', interval: 'annual' })
+    await POST(req)
+    expect(mockCheckoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subscription_data: expect.objectContaining({
+          metadata: expect.objectContaining({ interval: 'annual' }),
+        }),
+      })
+    )
+  })
+
+  it('defaults to monthly when interval is not provided', async () => {
+    const req = makeRequest({ plan: 'starter' })
+    await POST(req)
+    expect(mockCheckoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: 'price_starter_monthly_test', quantity: 1 }],
       })
     )
   })
