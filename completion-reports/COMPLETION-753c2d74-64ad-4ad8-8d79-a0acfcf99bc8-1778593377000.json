@@ -1,0 +1,83 @@
+{
+  "taskId": "753c2d74-64ad-4ad8-8d79-a0acfcf99bc8",
+  "taskTitle": "PM: Investigate circuit breaker — uc-leadflow-maintenance",
+  "status": "completed",
+  "completedAt": "2026-05-12T13:56:17Z",
+  "recommendation": "CANCEL",
+
+  "triageOutcome": {
+    "action": "cancel",
+    "ucId": "uc-leadflow-maintenance",
+    "ucName": "LeadFlow Maintenance",
+    "description": "Cancel this catch-all maintenance UC. Its only real work (backlog audit, PR #1569) is already merged. Human-blocked tasks should be tracked as blocked items, not active UC work. Future maintenance tasks need specific targeted UCs.",
+    "reason": "catch_all_anti_pattern_with_no_remaining_agent_executable_work"
+  },
+
+  "investigation": {
+    "circuitBreakerTrigger": {
+      "reportedCost": 15.28,
+      "actualSpend": 0.52,
+      "costBasis": "Circuit breaker summed estimated_cost_usd across 21 tasks — not actual spend. This is a false alarm: real spend was $0.52 (two QC reviews).",
+      "taskCount": 21,
+      "taskCountLimit": 23
+    },
+
+    "rootCause": "uc-leadflow-maintenance is a kitchen-sink catch-all that accumulated tasks from 4 distinct sources over 6 weeks: (1) manual human-created backlog items for operator tasks, (2) auto-generated 'Improve: uc_no_tasks' tasks from the genome, (3) QC reviews that should reference their own UCs, (4) a now-completed backlog audit. No single deliverable or acceptance criterion ties these together.",
+
+    "taskBreakdown": {
+      "done": ["Create the PRD file on disk", "Update PRD spec to match implemented dedup windows", "Set Twilio credentials in local .env", "Confirm Stripe price IDs in Vercel env"],
+      "mergedAlreadyDone": ["Backlog audit: verify each backlog task against reality (PR #1569 MERGED — DB still shows awaiting_merge, needs sync)"],
+      "humanBlocked": [
+        "Complete A2P 10DLC registration (x2 duplicates)",
+        "Approve pilot agent recruitment",
+        "Replace GA4 placeholder with real measurement ID in Vercel env",
+        "Run a live Stripe test checkout to verify webhook to subscriptions table",
+        "Verify Twilio console webhook URL after decommission"
+      ],
+      "infraFailures": [
+        "Improve: uc_no_tasks — feat-lapsed-trial-reactivation (session file lock / gemma4:31b low ctx)",
+        "Improve: uc_no_tasks — fix-phantom-mrr-test-data-polluting-metric (zombie, context overflow)",
+        "Improve: uc_no_tasks — feat-conversion-call-booking (max retries, spawn failure)",
+        "Improve: uc_no_tasks — feat-subscription-funnel-tracking (max retries, spawn failure)"
+      ],
+      "misrouted": ["QC Review: PR #1570 (belongs to uc-genome-architecture-diagrams, not maintenance)"],
+      "staleBacklog": ["Update CLAUDE.md agent counts — stale data", "Test full trial signup end-to-end"]
+    }
+  },
+
+  "actionItems": [
+    {
+      "priority": "immediate",
+      "action": "Sync backlog audit task (5ddcd363) to done — PR #1569 is already merged"
+    },
+    {
+      "priority": "immediate",
+      "action": "Mark human-blocked tasks (A2P x2, GA4, pilot approval, Stripe checkout, Twilio verify) as blocked with blocked_human category — they cannot progress without operator action"
+    },
+    {
+      "priority": "immediate",
+      "action": "Remove duplicate A2P task — 'Complete A2P 10DLC registration' appears twice (c148ff85 and 6ef64d0c)"
+    },
+    {
+      "priority": "genome",
+      "action": "Circuit breaker should use actual_cost_usd, not sum of estimated_cost_usd. Current approach fires false alarms when many low-value tasks accumulate. Actual spend was $0.52, not $15.28.",
+      "file": "~/.openclaw/genome/core/heartbeat-executor.js"
+    },
+    {
+      "priority": "genome",
+      "action": "Stop routing 'Improve: uc_no_tasks' tasks to uc-leadflow-maintenance. Each 'Improve' task needs a specific UC or should be held for PM triage, not parked in a catch-all bucket.",
+      "file": "~/.openclaw/genome/core/workflow-engine.js"
+    }
+  ],
+
+  "genomeSelfAssessment": {
+    "detectionGap": "Circuit breaker cost calculation uses estimated costs — inflates apparent spend 29x in this case ($0.52 actual vs $15.28 reported). Genome needs a fix task for this.",
+    "routingGap": "Auto-generated 'Improve: uc_no_tasks' tasks were parked in a catch-all UC instead of being PM-triaged. This masks real work in noise."
+  },
+
+  "tests": {
+    "passed": 0,
+    "total": 0,
+    "passRate": 1
+  }
+}
