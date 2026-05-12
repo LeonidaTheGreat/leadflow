@@ -15,97 +15,54 @@
 
 'use strict';
 
-const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-let passed = 0;
-let failed = 0;
+describe('Fix: E2E flow test failures (1 critical) — Task e8c721a2', () => {
+    test('CalcomClient.js has no syntax error and loads cleanly', () => {
+        const CalcomClient = require('../../lib/services/CalcomClient.js');
+        expect(typeof CalcomClient).toBe('function');
+    });
 
-function pass(name) {
-  console.log(`  PASS: ${name}`);
-  passed++;
-}
+    test('CalcomClient instantiates with getMe method', () => {
+        const CalcomClient = require('../../lib/services/CalcomClient.js');
+        const client = new CalcomClient({});
+        expect(typeof client.getMe).toBe('function');
+    });
 
-function fail(name, reason) {
-  console.log(`  FAIL: ${name} — ${reason}`);
-  failed++;
-}
+    test('CalcomClient.getMe catch block: logger.error precedes return {}', () => {
+        const filePath = path.resolve(__dirname, '../../lib/services/CalcomClient.js');
+        const src = fs.readFileSync(filePath, 'utf8');
 
-// ── Test 1: CalcomClient.js loads without a SyntaxError ─────────────────────
-try {
-  const CalcomClient = require('../../lib/services/CalcomClient.js');
-  assert.strictEqual(typeof CalcomClient, 'function', 'CalcomClient should be a constructor');
-  pass('CalcomClient.js has no syntax error and loads cleanly');
-} catch (e) {
-  fail('CalcomClient.js loads cleanly', e.message);
-}
+        const catchBlock = src.match(/async getMe[\s\S]+?catch \(error\) \{([\s\S]+?)\}/);
+        expect(catchBlock).toBeTruthy();
+        const catchBody = catchBlock[1];
 
-// ── Test 2: CalcomClient can be instantiated ─────────────────────────────────
-try {
-  const CalcomClient = require('../../lib/services/CalcomClient.js');
-  const client = new CalcomClient({});
-  assert.strictEqual(typeof client.getMe, 'function', 'getMe should be a method');
-  pass('CalcomClient instantiates with getMe method');
-} catch (e) {
-  fail('CalcomClient instantiates', e.message);
-}
+        const loggerPos = catchBody.indexOf('this.logger.error');
+        const returnPos = catchBody.indexOf('return {');
+        expect(loggerPos).not.toBe(-1);
+        expect(returnPos).not.toBe(-1);
+        expect(loggerPos).toBeLessThan(returnPos);
+    });
 
-// ── Test 3: getMe catch block logs then returns (not SyntaxError from bad literal) ──
-try {
-  const CalcomClient = require('../../lib/services/CalcomClient.js');
-  const filePath = path.resolve(__dirname, '../../lib/services/CalcomClient.js');
-  const src = fs.readFileSync(filePath, 'utf8');
+    test('test-e2e-flow.js handles FUB 401 gracefully', () => {
+        const flowPath = path.resolve(__dirname, '../../integrations/test-e2e-flow.js');
+        const src = fs.readFileSync(flowPath, 'utf8');
 
-  // Find the getMe catch block
-  const catchBlock = src.match(/async getMe[\s\S]+?catch \(error\) \{([\s\S]+?)\}/);
-  assert.ok(catchBlock, 'Should find catch block in getMe');
-  const catchBody = catchBlock[1];
+        const handles401 =
+            src.includes("'Unauthorised (401)'") || src.includes('"Unauthorised (401)"') ||
+            src.includes('status === 401') || src.includes('httpStatus === 401');
+        expect(handles401).toBe(true);
+    });
 
-  // logger.error must come BEFORE return {
-  const loggerPos = catchBody.indexOf('this.logger.error');
-  const returnPos = catchBody.indexOf('return {');
-  assert.ok(loggerPos !== -1, 'logger.error call must exist in catch block');
-  assert.ok(returnPos !== -1, 'return { must exist in catch block');
-  assert.ok(loggerPos < returnPos, 'logger.error must appear before return { in catch block');
-
-  pass('CalcomClient.getMe catch block: logger.error precedes return {}');
-} catch (e) {
-  fail('CalcomClient.getMe catch block structure', e.message);
-}
-
-// ── Test 4: test-e2e-flow.js handles FUB 401 gracefully ──────────────────────
-try {
-  const flowPath = path.resolve(__dirname, '../../integrations/test-e2e-flow.js');
-  const src = fs.readFileSync(flowPath, 'utf8');
-
-  assert.ok(
-    src.includes("'Unauthorised (401)'") || src.includes('"Unauthorised (401)"') ||
-    src.includes("status === 401") || src.includes('httpStatus === 401'),
-    'test-e2e-flow.js should handle FUB 401 responses gracefully'
-  );
-  pass('test-e2e-flow.js handles FUB 401 gracefully');
-} catch (e) {
-  fail('test-e2e-flow.js 401 handling', e.message);
-}
-
-// ── Test 5: Full E2E suite passes (re-run programmatically) ──────────────────
-try {
-  const { execSync } = require('child_process');
-  const result = execSync('node integrations/test-e2e-flow.js', {
-    cwd: path.resolve(__dirname, '../..'),
-    timeout: 30000,
-    encoding: 'utf8'
-  });
-  assert.ok(result.includes('ALL TESTS PASSED') || result.includes('Success Rate: 100%'),
-    'E2E suite should report all tests passed');
-  pass('Full E2E suite passes (100% success rate)');
-} catch (e) {
-  fail('Full E2E suite', e.stdout || e.message);
-}
-
-console.log(`\nResults: ${passed} passed, ${failed} failed`);
-
-if (failed > 0) {
-  process.exit(1);
-}
+    test('Full E2E suite passes (100% success rate)', () => {
+        const { execSync } = require('child_process');
+        const result = execSync('node integrations/test-e2e-flow.js', {
+            cwd: path.resolve(__dirname, '../..'),
+            timeout: 30000,
+            encoding: 'utf8'
+        });
+        const passed = result.includes('ALL TESTS PASSED') || result.includes('Success Rate: 100%');
+        expect(passed).toBe(true);
+    }, 35000);
+});

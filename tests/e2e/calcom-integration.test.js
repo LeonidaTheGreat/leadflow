@@ -38,7 +38,7 @@ const results = {
     tests: []
 };
 
-async function test(name, fn) {
+async function runCheck(name, fn) {
     try {
         await fn();
         results.passed++;
@@ -76,36 +76,36 @@ async function runTests() {
 
     console.log('\n📅 Cal.com API Client Tests\n');
 
-    await test('isConfigured returns true when API key is set', () => {
+    await runCheck('isConfigured returns true when API key is set', () => {
         assertEqual(calcom.isConfigured(), true, 'Should be configured');
     });
 
-    await test('isConfigured returns false when API key is missing', () => {
+    await runCheck('isConfigured returns false when API key is missing', () => {
         const originalKey = process.env.CAL_API_KEY;
         delete process.env.CAL_API_KEY;
         assertEqual(calcom.isConfigured(), false, 'Should not be configured');
         process.env.CAL_API_KEY = originalKey;
     });
 
-    await test('generateBookingUrl creates correct URL', () => {
+    await runCheck('generateBookingUrl creates correct URL', () => {
         const url = calcom.generateBookingUrl('discovery-call', 'testagent');
         assertEqual(url, 'https://cal.com/testagent/discovery-call', 'URL should match expected format');
     });
 
-    await test('generateBookingUrl uses env username when not provided', () => {
+    await runCheck('generateBookingUrl uses env username when not provided', () => {
         process.env.CAL_USERNAME = 'envuser';
         const url = calcom.generateBookingUrl('consultation', null);
         assertEqual(url, 'https://cal.com/envuser/consultation', 'Should use env username');
     });
 
-    await test('generateBookingUrl returns null without username', () => {
+    await runCheck('generateBookingUrl returns null without username', () => {
         delete process.env.CAL_USERNAME;
         const url = calcom.generateBookingUrl('discovery-call', null);
         assertEqual(url, null, 'Should return null without username');
         process.env.CAL_USERNAME = 'testagent';
     });
 
-    await test('CAL_API_BASE_URL is correct', () => {
+    await runCheck('CAL_API_BASE_URL is correct', () => {
         assertEqual(calcom.CAL_API_BASE_URL, 'https://api.cal.com/v2', 'Base URL should be v2 API');
     });
 
@@ -113,13 +113,13 @@ async function runTests() {
 
     console.log('\n🔗 Booking Link Service Tests\n');
 
-    await test('SCENARIOS contains expected event types', () => {
+    await runCheck('SCENARIOS contains expected event types', () => {
         assertEqual(bookingService.SCENARIOS.DISCOVERY, 'discovery-call', 'Should have discovery scenario');
         assertEqual(bookingService.SCENARIOS.CONSULTATION, 'consultation', 'Should have consultation scenario');
         assertEqual(bookingService.SCENARIOS.PROPERTY_TOUR, 'property-tour', 'Should have property tour scenario');
     });
 
-    await test('generateAgentBookingLink validates required parameters', async () => {
+    await runCheck('generateAgentBookingLink validates required parameters', async () => {
         try {
             await bookingService.generateAgentBookingLink(null, 'discovery-call');
             throw new Error('Should have thrown error for missing agentId');
@@ -129,7 +129,7 @@ async function runTests() {
         }
     });
 
-    await test('getQuickBookingLink returns error for invalid scenario', async () => {
+    await runCheck('getQuickBookingLink returns error for invalid scenario', async () => {
         try {
             await bookingService.getQuickBookingLink('agent-123', 'invalid-scenario');
             // May fail for different reasons in test env, that's ok
@@ -143,7 +143,7 @@ async function runTests() {
 
     console.log('\n📨 Webhook Handler Tests\n');
 
-    await test('verifyWebhookSignature requires secret in production', () => {
+    await runCheck('verifyWebhookSignature requires secret in production', () => {
         const originalEnv = process.env.NODE_ENV;
         const originalSecret = process.env.CAL_WEBHOOK_SECRET;
         
@@ -157,7 +157,7 @@ async function runTests() {
         process.env.CAL_WEBHOOK_SECRET = originalSecret;
     });
 
-    await test('verifyWebhookSignature passes in development without secret', () => {
+    await runCheck('verifyWebhookSignature passes in development without secret', () => {
         const originalEnv = process.env.NODE_ENV;
         const originalSecret = process.env.CAL_WEBHOOK_SECRET;
         
@@ -171,7 +171,7 @@ async function runTests() {
         process.env.CAL_WEBHOOK_SECRET = originalSecret;
     });
 
-    await test('handleBookingCreated processes booking data correctly', async () => {
+    await runCheck('handleBookingCreated processes booking data correctly', async () => {
         const mockBooking = {
             uid: 'test-booking-123',
             id: 12345,
@@ -201,7 +201,7 @@ async function runTests() {
         }
     });
 
-    await test('handleBookingCreated handles missing attendees', async () => {
+    await runCheck('handleBookingCreated handles missing attendees', async () => {
         const mockBooking = {
             uid: 'test-booking-456',
             attendees: []
@@ -216,7 +216,7 @@ async function runTests() {
         }
     });
 
-    await test('handleBookingRescheduled processes reschedule data', async () => {
+    await runCheck('handleBookingRescheduled processes reschedule data', async () => {
         const mockBooking = {
             uid: 'test-booking-123',
             startTime: '2026-03-16T15:00:00Z',
@@ -239,7 +239,7 @@ async function runTests() {
         }
     });
 
-    await test('handleBookingCancelled processes cancellation', async () => {
+    await runCheck('handleBookingCancelled processes cancellation', async () => {
         const mockBooking = {
             uid: 'test-booking-123',
             cancellationReason: 'Schedule conflict',
@@ -260,7 +260,7 @@ async function runTests() {
         }
     });
 
-    await test('handleMeetingEnded processes meeting completion', async () => {
+    await runCheck('handleMeetingEnded processes meeting completion', async () => {
         const mockBooking = {
             uid: 'test-booking-123',
             attendees: [{
@@ -280,7 +280,7 @@ async function runTests() {
         }
     });
 
-    await test('handleCalWebhook routes booking.created events', async () => {
+    await runCheck('handleCalWebhook routes booking.created events', async () => {
         const mockEvent = {
             triggerEvent: 'BOOKING_CREATED',
             payload: {
@@ -305,7 +305,7 @@ async function runTests() {
         }
     });
 
-    await test('handleCalWebhook routes booking.rescheduled events', async () => {
+    await runCheck('handleCalWebhook routes booking.rescheduled events', async () => {
         const mockEvent = {
             triggerEvent: 'BOOKING_RESCHEDULED',
             payload: {
@@ -326,7 +326,7 @@ async function runTests() {
         }
     });
 
-    await test('handleCalWebhook routes booking.cancelled events', async () => {
+    await runCheck('handleCalWebhook routes booking.cancelled events', async () => {
         const mockEvent = {
             triggerEvent: 'BOOKING_CANCELLED',
             payload: {
@@ -347,7 +347,7 @@ async function runTests() {
         }
     });
 
-    await test('handleCalWebhook handles unknown event types gracefully', async () => {
+    await runCheck('handleCalWebhook handles unknown event types gracefully', async () => {
         const mockEvent = {
             triggerEvent: 'UNKNOWN_EVENT',
             payload: {}
@@ -358,7 +358,7 @@ async function runTests() {
         assertEqual(result.type, 'UNKNOWN_EVENT', 'Should return unknown type');
     });
 
-    await test('handleCalWebhook handles legacy event type format', async () => {
+    await runCheck('handleCalWebhook handles legacy event type format', async () => {
         const mockEvent = {
             type: 'booking.created',
             data: {
@@ -379,7 +379,7 @@ async function runTests() {
 
     console.log('\n🔍 Data Validation Tests\n');
 
-    await test('Booking data extraction handles missing metadata', async () => {
+    await runCheck('Booking data extraction handles missing metadata', async () => {
         const mockBooking = {
             uid: 'test-123',
             attendees: [{
@@ -400,7 +400,7 @@ async function runTests() {
         }
     });
 
-    await test('Booking data extraction handles partial attendee data', async () => {
+    await runCheck('Booking data extraction handles partial attendee data', async () => {
         const mockBooking = {
             uid: 'test-123',
             attendees: [{
@@ -421,7 +421,7 @@ async function runTests() {
 
     console.log('\n🎭 Mock Data Tests\n');
 
-    await test('getEventTypes returns mock data when unconfigured', async () => {
+    await runCheck('getEventTypes returns mock data when unconfigured', async () => {
         const originalKey = process.env.CAL_API_KEY;
         delete process.env.CAL_API_KEY;
         
@@ -435,7 +435,7 @@ async function runTests() {
         process.env.CAL_API_KEY = originalKey;
     });
 
-    await test('createBooking returns mock booking when unconfigured', async () => {
+    await runCheck('createBooking returns mock booking when unconfigured', async () => {
         const originalKey = process.env.CAL_API_KEY;
         delete process.env.CAL_API_KEY;
         
@@ -457,7 +457,7 @@ async function runTests() {
         process.env.CAL_API_KEY = originalKey;
     });
 
-    await test('getAvailableSlots returns mock data when unconfigured', async () => {
+    await runCheck('getAvailableSlots returns mock data when unconfigured', async () => {
         const originalKey = process.env.CAL_API_KEY;
         delete process.env.CAL_API_KEY;
         
@@ -476,7 +476,7 @@ async function runTests() {
         process.env.CAL_API_KEY = originalKey;
     });
 
-    await test('getMe returns mock profile when unconfigured', async () => {
+    await runCheck('getMe returns mock profile when unconfigured', async () => {
         const originalKey = process.env.CAL_API_KEY;
         process.env.CAL_USERNAME = 'mockuser';
         delete process.env.CAL_API_KEY;
@@ -493,7 +493,7 @@ async function runTests() {
 
     console.log('\n⚠️ Error Handling Tests\n');
 
-    await test('createBooking validates required fields', async () => {
+    await runCheck('createBooking validates required fields', async () => {
         const originalKey = process.env.CAL_API_KEY;
         process.env.CAL_API_KEY = 'test_key';
         
@@ -511,7 +511,7 @@ async function runTests() {
         process.env.CAL_API_KEY = originalKey;
     });
 
-    await test('getAvailableSlots validates date parameters', async () => {
+    await runCheck('getAvailableSlots validates date parameters', async () => {
         try {
             await calcom.getAvailableSlots({
                 eventTypeId: 1
@@ -527,7 +527,7 @@ async function runTests() {
         }
     });
 
-    await test('generateBookingUrl handles missing parameters', () => {
+    await runCheck('generateBookingUrl handles missing parameters', () => {
         delete process.env.CAL_USERNAME;
         const url = calcom.generateBookingUrl('discovery-call', null);
         assertEqual(url, null, 'Should return null for missing username');
@@ -538,14 +538,14 @@ async function runTests() {
 
     console.log('\n🔄 Retry Logic Tests\n');
 
-    await test('sleep function delays execution', async () => {
+    await runCheck('sleep function delays execution', async () => {
         const start = Date.now();
         await sleep(50);
         const elapsed = Date.now() - start;
         assertTrue(elapsed >= 45, `Should delay at least 45ms, got ${elapsed}ms`);
     });
 
-    await test('calculateBackoffDelay returns base delay on first attempt', () => {
+    await runCheck('calculateBackoffDelay returns base delay on first attempt', () => {
         const delay = calculateBackoffDelay(0);
         const expectedBase = RETRY_CONFIG.baseDelayMs;
         // Allow for jitter (±25%)
@@ -553,7 +553,7 @@ async function runTests() {
         assertTrue(delay <= expectedBase * 1.25, `Delay ${delay} should be <= ${expectedBase * 1.25}`);
     });
 
-    await test('calculateBackoffDelay increases exponentially', () => {
+    await runCheck('calculateBackoffDelay increases exponentially', () => {
         const delay0 = calculateBackoffDelay(0);
         const delay1 = calculateBackoffDelay(1);
         const delay2 = calculateBackoffDelay(2);
@@ -563,14 +563,14 @@ async function runTests() {
         assertTrue(delay2 > delay1 * 0.8, 'Third attempt delay should be greater than second');
     });
 
-    await test('calculateBackoffDelay respects max delay cap', () => {
+    await runCheck('calculateBackoffDelay respects max delay cap', () => {
         // Test with high attempt number
         const delay = calculateBackoffDelay(10);
         assertTrue(delay <= RETRY_CONFIG.maxDelayMs * 1.25, 
             `Delay ${delay} should not exceed max ${RETRY_CONFIG.maxDelayMs * 1.25} by much`);
     });
 
-    await test('calculateBackoffDelay adds jitter', () => {
+    await runCheck('calculateBackoffDelay adds jitter', () => {
         // Collect multiple delays to verify jitter is applied
         const delays = [];
         for (let i = 0; i < 10; i++) {
@@ -582,7 +582,7 @@ async function runTests() {
         assertTrue(uniqueDelays.size > 1, 'Jitter should produce varying delays');
     });
 
-    await test('withRetry succeeds on first attempt', async () => {
+    await runCheck('withRetry succeeds on first attempt', async () => {
         let attempts = 0;
         const result = await withRetry(async () => {
             attempts++;
@@ -593,7 +593,7 @@ async function runTests() {
         assertEqual(attempts, 1, 'Should only attempt once on success');
     });
 
-    await test('withRetry retries on failure and succeeds', async () => {
+    await runCheck('withRetry retries on failure and succeeds', async () => {
         let attempts = 0;
         const result = await withRetry(async () => {
             attempts++;
@@ -607,7 +607,7 @@ async function runTests() {
         assertEqual(attempts, 3, 'Should retry until success');
     });
 
-    await test('withRetry throws after max retries exceeded', async () => {
+    await runCheck('withRetry throws after max retries exceeded', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -621,7 +621,7 @@ async function runTests() {
         }
     });
 
-    await test('withRetry does not retry on non-retryable errors (400)', async () => {
+    await runCheck('withRetry does not retry on non-retryable errors (400)', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -635,7 +635,7 @@ async function runTests() {
         }
     });
 
-    await test('withRetry does not retry on non-retryable errors (401)', async () => {
+    await runCheck('withRetry does not retry on non-retryable errors (401)', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -649,7 +649,7 @@ async function runTests() {
         }
     });
 
-    await test('withRetry does not retry on non-retryable errors (403)', async () => {
+    await runCheck('withRetry does not retry on non-retryable errors (403)', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -663,7 +663,7 @@ async function runTests() {
         }
     });
 
-    await test('withRetry does not retry on foreign key violation', async () => {
+    await runCheck('withRetry does not retry on foreign key violation', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -677,7 +677,7 @@ async function runTests() {
         }
     });
 
-    await test('withRetry does not retry on unique constraint violation', async () => {
+    await runCheck('withRetry does not retry on unique constraint violation', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -691,7 +691,7 @@ async function runTests() {
         }
     });
 
-    await test('withRetry retries on transient errors', async () => {
+    await runCheck('withRetry retries on transient errors', async () => {
         let attempts = 0;
         const result = await withRetry(async () => {
             attempts++;
@@ -707,14 +707,14 @@ async function runTests() {
         assertEqual(attempts, 2, 'Should retry on transient error');
     });
 
-    await test('RETRY_CONFIG has expected defaults', () => {
+    await runCheck('RETRY_CONFIG has expected defaults', () => {
         assertEqual(RETRY_CONFIG.maxRetries, 3, 'Should have maxRetries of 3');
         assertEqual(RETRY_CONFIG.baseDelayMs, 1000, 'Should have baseDelayMs of 1000');
         assertEqual(RETRY_CONFIG.maxDelayMs, 10000, 'Should have maxDelayMs of 10000');
         assertEqual(RETRY_CONFIG.backoffMultiplier, 2, 'Should have backoffMultiplier of 2');
     });
 
-    await test('withRetry uses custom maxRetries', async () => {
+    await runCheck('withRetry uses custom maxRetries', async () => {
         let attempts = 0;
         try {
             await withRetry(async () => {
@@ -730,7 +730,7 @@ async function runTests() {
 
     console.log('\n🔗 Webhook Integration with Retry Tests\n');
 
-    await test('handleBookingCreated uses retry for database operations', async () => {
+    await runCheck('handleBookingCreated uses retry for database operations', async () => {
         const mockBooking = {
             uid: 'test-retry-booking-123',
             id: 99999,
@@ -759,7 +759,7 @@ async function runTests() {
         }
     });
 
-    await test('handleBookingRescheduled uses retry logic', async () => {
+    await runCheck('handleBookingRescheduled uses retry logic', async () => {
         const mockBooking = {
             uid: 'test-retry-reschedule-123',
             startTime: '2026-03-16T15:00:00Z',
@@ -781,7 +781,7 @@ async function runTests() {
         }
     });
 
-    await test('handleBookingCancelled uses retry logic', async () => {
+    await runCheck('handleBookingCancelled uses retry logic', async () => {
         const mockBooking = {
             uid: 'test-retry-cancel-123',
             cancellationReason: 'Testing retry logic',
@@ -802,7 +802,7 @@ async function runTests() {
         }
     });
 
-    await test('handleMeetingEnded uses retry logic', async () => {
+    await runCheck('handleMeetingEnded uses retry logic', async () => {
         const mockBooking = {
             uid: 'test-retry-complete-123',
             attendees: [{
@@ -829,19 +829,18 @@ async function runTests() {
     console.log('='.repeat(50) + '\n');
 
     if (results.failed > 0) {
-        console.log('Failed tests:');
-        results.tests
+        const failures = results.tests
             .filter(t => t.status === '❌ FAIL')
-            .forEach(t => console.log(`  - ${t.name}: ${t.error}`));
-        process.exit(1);
+            .map(t => `  - ${t.name}: ${t.error}`)
+            .join('\n');
+        throw new Error(`${results.failed} Cal.com integration test(s) failed:\n${failures}`);
     } else {
         console.log('✅ All tests passed!');
-        process.exit(0);
     }
 }
 
-// Run tests
-runTests().catch(error => {
-    console.error('Test runner error:', error);
-    process.exit(1);
-});
+// Jest wrapper — runTests() accumulates results internally and throws on failure
+// Generous timeout because retry tests include real sleep/backoff delays
+test('Cal.com integration suite', async () => {
+    await runTests();
+}, 120000);
