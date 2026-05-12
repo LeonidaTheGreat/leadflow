@@ -1,3 +1,18 @@
+/*
+taskSpec:
+- What:
+  - Update product/lead-response/dashboard/tests/feat-landing-page-conversion-cleanup.test.js:
+    - Fix stale pricing CTA assertion to match `/signup/trial?plan=...` links emitted by `PricingCard`.
+    - Fix stale social-proof assertion to validate actual `OutcomeCard` usage.
+    - Keep pricing consistency assertion aligned with current Starter pricing (`$49` landing / `49` signup).
+- Verify:
+  - `cd product/lead-response/dashboard && node tests/feat-landing-page-conversion-cleanup.test.js` exits 0.
+  - `cd product/lead-response/dashboard && npm run build` exits 0.
+- Boundaries:
+  - Do not modify landing/signup page runtime behavior.
+  - Do not touch backend services/routes/db schema.
+*/
+
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
@@ -31,20 +46,20 @@ test('How It Works has exactly 3 steps', () => {
 })
 
 test('Pricing CTAs deep-link to /signup?plan=starter|pro|team', () => {
-  assert(/href=\{`\/signup\?plan=\$\{planSlug\}`\}/.test(landing), 'Missing plan deep-link template')
+  assert(/`\/signup\/trial\?plan=\$\{planSlug\}`/.test(landing), 'Missing plan deep-link template')
   assert(landing.includes('name="Starter"'), 'Missing Starter plan')
   assert(landing.includes('name="Pro"'), 'Missing Pro plan')
   assert(landing.includes('name="Team"'), 'Missing Team plan')
 })
 
-test('Testimonials include quote + attribution', () => {
-  const cards = landing.match(/<TestimonialCard/g) || []
-  assert(cards.length >= 1, 'Expected at least one testimonial card')
-  assert(/quote="[^"]+"\s+name="[^"]+"\s+role="[^"]+"/.test(landing), 'Missing testimonial quote/name/role attribution')
+test('Social proof section includes pilot outcome cards', () => {
+  const cards = landing.match(/<OutcomeCard/g) || []
+  assert(cards.length >= 3, `Expected at least 3 outcome cards, got ${cards.length}`)
+  assert(landing.includes('What Early Agents Experience'), 'Social proof section heading missing')
 })
 
 test('Pricing + trial messaging is consistent between landing and signup', () => {
-  assert(landing.includes('price="$49"'), 'Landing page Starter price is not $49')
+  assert(landing.includes("price={pricingPeriod === 'monthly' ? '$49' : '$490'}"), 'Landing page Starter pricing config mismatch')
   assert(signup.includes('price: 49'), 'Signup Starter price is not 49')
 
   const landingTrial = landing.match(/(\d+)-day free trial/i)
