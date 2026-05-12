@@ -25,21 +25,21 @@ Investigated why PM/product task completion does not reliably chain to dev or up
 
 1. DB evidence of incomplete completion processing (local PostgreSQL `openclaw`):
 - `tasks` has no `child_count` column in this schema; child chain evidence must be computed from `tasks.parent_task_id`.
-- As of 2026-05-12, PM/product done-task totals:
-  - `total_pm_done`: 919
-  - `pm_done_unprocessed` (`completion_processed` null): 735
-  - `unprocessed_with_uc`: 215
-  - `unprocessed_with_uc_no_children`: 198
+- As of 2026-05-12 20:26 UTC, PM/product done-task totals:
+  - `total_pm_done`: 930
+  - `pm_done_unprocessed` (`completion_processed` null): 743
+  - `unprocessed_with_uc`: 216
+  - `unprocessed_with_uc_no_children`: 199
   - `unprocessed_with_uc_has_children`: 17
 - This proves a large backlog of PM completions that never reached final completion-marking.
 
 2. Dispatcher log evidence:
 - Repeated hard failures in completion handler:
   - `onTaskCompleted error for <task-id>: Connection terminated due to connection timeout`
-  - Multiple occurrences on 2026-05-12 in `state/leadflow/.realtime-dispatcher.log`.
+  - Confirmed at concrete timestamps on 2026-05-12, including `19:27:44Z`, `19:39:07Z`, `20:04:19Z`, and `20:26:16Z` in `state/leadflow/.realtime-dispatcher.log`.
 - Repeated done-event drops also present:
   - `Rate limited — skipping done event for <task-id>`
-  - Same log stream shows bursts of skipped done events under high activity.
+  - Confirmed burst at `2026-05-12T19:29:56.514Z` (multiple skipped done events in same millisecond).
 
 3. Code-path verification:
 - `CompletionHandler.process()` can fail before chaining and before marking completion:
