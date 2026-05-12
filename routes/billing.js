@@ -21,7 +21,7 @@ const { logger } = require('../lib/logger');
 const { ValidationError } = require('../lib/errors');
 const log = logger.child('billing');
 
-const VALID_TIERS = ['starter', 'professional', 'enterprise'];
+const VALID_TIERS = ['starter', 'pro', 'team', 'brokerage', 'professional', 'enterprise'];
 const VALID_INTERVALS = ['month', 'year'];
 
 // ─── POST /webhook/stripe ─────────────────────────────────────────────────────

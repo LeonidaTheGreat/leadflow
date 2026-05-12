@@ -36,14 +36,20 @@ function calculateMRR(subscription: Stripe.Subscription): number {
 
 /**
  * Map Stripe price ID to plan tier
- * Matches against environment variables for price IDs
+ * Matches both monthly and annual price IDs against environment variables
  */
 function getTierFromPriceId(priceId: string): string {
   const tierMap: Record<string, string> = {
     [process.env.STRIPE_PRICE_STARTER_MONTHLY || '']: 'starter',
+    [process.env.STRIPE_PRICE_STARTER_ANNUAL  || '']: 'starter',
     [process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '']: 'pro',
-    [process.env.STRIPE_PRICE_TEAM_MONTHLY || '']: 'team' }
-  return tierMap[priceId] || 'professional'
+    [process.env.STRIPE_PRICE_PRO_ANNUAL       || '']: 'pro',
+    [process.env.STRIPE_PRICE_TEAM_MONTHLY     || '']: 'team',
+    [process.env.STRIPE_PRICE_TEAM_ANNUAL      || '']: 'team',
+  }
+  // Remove the empty-string key that appears when env vars are unset
+  delete tierMap['']
+  return tierMap[priceId] || 'pro'
 }
 
 function getPlanDisplayName(tier: string): string {
@@ -150,7 +156,19 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     if (agent && resend) {
       const planName = getPlanDisplayName(tier)
       const agentFirstName = agent.first_name || 'there'
-      
+      const billingInterval = lineItem.price?.recurring?.interval || 'month'
+      const isAnnual = billingInterval === 'year'
+
+      // Build price display: annual shows total/yr + monthly equivalent; monthly shows /month
+      const annualPrices: Record<string, number> = { starter: 490, pro: 1490, team: 3990 }
+      const monthlyPrices: Record<string, number> = { starter: 49, pro: 149, team: 399 }
+      const annualTotal = annualPrices[tier]
+      const monthlyEquiv = monthlyPrices[tier]
+      const priceDisplay = isAnnual && annualTotal
+        ? `$${annualTotal}/year ($${monthlyEquiv ? monthlyEquiv.toFixed(2) : (mrr).toFixed(2)}/mo equivalent)`
+        : `$${mrr.toFixed(2)}/month`
+      const billingLabel = isAnnual ? 'Annual — billed once per year' : 'Monthly — billed each month'
+
       try {
         await resend.emails.send({
           from: 'LeadFlow AI <support@leadflowai.com>',
@@ -168,6 +186,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     .footer { background: #f3f4f6; padding: 20px; border-radius: 0 0 8px 8px; font-size: 12px; color: #6b7280; text-align: center; }
     .plan-box { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #d1fae5; }
     .button { display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 10px; }
+    .savings-badge { display: inline-block; background: #d1fae5; color: #065f46; font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 9999px; margin-left: 8px; }
     h1 { margin-top: 0; }
     .price-highlight { font-size: 24px; font-weight: bold; color: #059669; }
   </style>
@@ -178,34 +197,35 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       <h1>🎉 Welcome to LeadFlow ${planName}!</h1>
       <p>Your upgrade is complete — here's what you need to know</p>
     </div>
-    
+
     <div class="content">
       <p>Hi ${agentFirstName},</p>
-      
+
       <p>Thank you for upgrading your LeadFlow account! Your payment has been processed and your new plan is now active.</p>
-      
+
       <div class="plan-box">
         <h3>Your Plan Details</h3>
-        <p><strong>Plan:</strong> LeadFlow ${planName}</p>
-        <p><strong>Price:</strong> <span class="price-highlight">$${mrr}/month</span></p>
-        <p><strong>Next Billing Date:</strong> ${nextBillingDate}</p>
+        <p><strong>Plan:</strong> LeadFlow ${planName}${isAnnual ? ' <span class="savings-badge">ANNUAL — 2 MONTHS FREE</span>' : ''}</p>
+        <p><strong>Billing:</strong> ${billingLabel}</p>
+        <p><strong>Price:</strong> <span class="price-highlight">${priceDisplay}</span></p>
+        <p><strong>Next Renewal Date:</strong> ${nextBillingDate}</p>
       </div>
-      
+
       <p>You now have access to all ${planName} features. Your dashboard has been updated with your new plan tier.</p>
-      
+
       <h3>Need Help?</h3>
       <p>If you have any questions about your plan or need support, please reply to this email or contact us at <a href="mailto:support@leadflowai.com">support@leadflowai.com</a>.</p>
-      
+
       <p>You can manage your subscription, update your payment method, or cancel at any time from your account settings.</p>
-      
+
       <a href="https://leadflow-ai-five.vercel.app/settings/billing" class="button">View Billing Settings</a>
-      
+
       <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
         <strong>LeadFlow AI</strong><br>
         <a href="https://landyourleads.com">https://landyourleads.com</a>
       </p>
     </div>
-    
+
     <div class="footer">
       <p>&copy; 2026 LeadFlow AI. All rights reserved.</p>
       <p>This email was sent to ${agent.email} because you upgraded your LeadFlow subscription.</p>
