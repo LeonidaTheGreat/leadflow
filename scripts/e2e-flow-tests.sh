@@ -28,6 +28,13 @@ if [ -f "$_ENV_LOCAL_FILE" ]; then
   [ -n "$_ENV_LOCAL_API_URL" ] && LEADFLOW_API_URL="$_ENV_LOCAL_API_URL"
   [ -n "$_ENV_LOCAL_API_KEY" ] && LEADFLOW_API_KEY="$_ENV_LOCAL_API_KEY"
 fi
+# API_SECRET_KEY in dashboard env files is a Next.js internal route-protection secret —
+# it is NOT the PostgREST API key. LEADFLOW_API_KEY in ~/.env is the correct PostgREST key.
+# Always override with the system-level key so DB queries authenticate correctly.
+if [ -f "$HOME/.env" ]; then
+  _HOME_LEADFLOW_KEY=$(grep '^LEADFLOW_API_KEY=' "$HOME/.env" | head -1 | cut -d'=' -f2-)
+  [ -n "$_HOME_LEADFLOW_KEY" ] && LEADFLOW_API_KEY="$_HOME_LEADFLOW_KEY"
+fi
 
 API_URL="${LEADFLOW_API_URL:-https://api.imagineapi.org/rest/v1}"
 API_KEY="${LEADFLOW_API_KEY:-}"
@@ -195,6 +202,22 @@ test_dashboard_no_errors() {
       "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
       -H "apikey: $API_KEY" 2>/dev/null) || return 1
     user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+  fi
+
+  # Last resort: use the E2E trial user created by test_trial_signup_flow (fresh trial, not expired).
+  # PATCH onboarding_completed=true so middleware doesn't redirect to /dashboard/onboarding.
+  # Cleanup is handled by cleanup_test_accounts() at the end of the suite.
+  if [ -z "$user_id" ] && [ -n "${E2E_EMAIL:-}" ]; then
+    agent_resp=$(curl -s --max-time 10 \
+      "$API_URL/real_estate_agents?select=id&email=eq.${E2E_EMAIL}&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) || return 1
+    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    if [ -n "$user_id" ]; then
+      curl -s --max-time 10 -X PATCH "$API_URL/real_estate_agents?id=eq.${user_id}" \
+        -H "apikey: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"onboarding_completed": true}' >/dev/null 2>&1 || true
+    fi
   fi
 
   [ -z "$user_id" ] && return 1
