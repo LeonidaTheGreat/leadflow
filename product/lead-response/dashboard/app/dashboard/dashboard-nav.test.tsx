@@ -5,6 +5,11 @@ Object.assign(globalThis, { MessageChannel })
 
 jest.mock('@/components/dashboard/trial-badge', () => () => <div data-testid="trial-badge" />)
 
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/dashboard',
+  useRouter: () => ({ push: jest.fn(), refresh: jest.fn() }),
+}))
+
 describe('DashboardNav', () => {
   it('renders navigation links with correct hrefs and data-testid attributes', () => {
     const { renderToStaticMarkup } = require('react-dom/server')
