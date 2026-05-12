@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger'
 
 const supabase = postgrestAdmin
 
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
 const FRONTEND_URL = process.env.NEXT_PUBLIC_URL || 'https://leadflow-ai-five.vercel.app'
 const INVITE_EXPIRY_DAYS = 7
 

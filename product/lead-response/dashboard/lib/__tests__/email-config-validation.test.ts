@@ -64,7 +64,7 @@ describe('validateEmailConfig', () => {
     const result = validateEmailConfig();
 
     // Should have a warning about using default
-    expect(result.warnings.some(w => w.includes('stojan@landyourleads.com'))).toBe(true);
+    expect(result.warnings.some(w => w.includes('onboarding@leadflow.ai'))).toBe(true);
   });
 
   test('should have multiple issues when configuration is incomplete', () => {

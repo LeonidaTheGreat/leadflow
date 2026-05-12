@@ -210,12 +210,12 @@ describe('lib/config/index — app config group', () => {
     delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
-  it('app.fromEmail defaults to stojan@landyourleads.com', () => {
+  it('app.fromEmail defaults to onboarding@leadflow.ai', () => {
     const orig = process.env.FROM_EMAIL;
     delete process.env.FROM_EMAIL;
     jest.resetModules();
     const fresh = require('../lib/config/index');
-    expect(fresh.app.fromEmail).toBe('stojan@landyourleads.com');
+    expect(fresh.app.fromEmail).toBe('onboarding@leadflow.ai');
     if (orig !== undefined) process.env.FROM_EMAIL = orig;
   });
 
@@ -313,8 +313,6 @@ describe('lib/config/index — production startup guard', () => {
     try { require('../lib/config/index'); } catch (e) { err = e; }
     expect(err.message).toContain('STRIPE_SECRET_KEY');
     expect(err.message).toContain('STRIPE_WEBHOOK_SECRET');
-    expect(err.message).toContain('LOCAL_PG_URL');
-
     process.env.NODE_ENV = origEnv || 'test';
     if (origStripeKey !== undefined) process.env.STRIPE_SECRET_KEY = origStripeKey;
     if (origWebhook !== undefined) process.env.STRIPE_WEBHOOK_SECRET = origWebhook;

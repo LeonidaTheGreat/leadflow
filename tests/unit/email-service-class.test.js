@@ -31,6 +31,20 @@ async function run() {
     assert.strictEqual(service.fromEmail, 'x@y.com');
   });
 
+  await check('constructor defaults fromEmail to onboarding@leadflow.ai', async () => {
+    const originalFromEmail = process.env.FROM_EMAIL;
+    delete process.env.FROM_EMAIL;
+
+    try {
+      const service = new EmailService({ apiKey: '' });
+      assert.strictEqual(service.fromEmail, 'onboarding@leadflow.ai');
+    } finally {
+      if (originalFromEmail !== undefined) {
+        process.env.FROM_EMAIL = originalFromEmail;
+      }
+    }
+  });
+
   await check('send() fails when unconfigured by default', async () => {
     const service = new EmailService({ apiKey: '' });
     const result = await service.send({ to: 'a@test.com', subject: 'x', html: '<p>x</p>' });

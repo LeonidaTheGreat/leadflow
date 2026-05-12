@@ -26,7 +26,7 @@ async function getResend() {
 }
 
 // .trim() guards against trailing whitespace/newlines in env var values
-const FROM_EMAIL = (process.env.FROM_EMAIL || 'stojan@landyourleads.com').trim()
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
 const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'https://leadflow-ai-five.vercel.app/pilot'
 const LANDING_URL = process.env.NEXT_PUBLIC_LANDING_URL || 'https://leadflow-ai-five.vercel.app'
 

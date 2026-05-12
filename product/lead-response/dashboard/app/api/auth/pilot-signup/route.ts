@@ -63,7 +63,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   try {
     // Check if Resend is configured
     const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim()
-    const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
+    const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
 
     if (!RESEND_API_KEY) {
       logger.info('[pilot-signup] RESEND_API_KEY not configured, skipping welcome email')

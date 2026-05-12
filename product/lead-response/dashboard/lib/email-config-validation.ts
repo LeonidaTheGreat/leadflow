@@ -31,7 +31,7 @@ export function validateEmailConfig(): EmailConfigValidation {
 
   // Check FROM_EMAIL
   // .trim() guards against trailing whitespace/newlines in env var values
-  const fromEmail = (process.env.FROM_EMAIL || 'stojan@landyourleads.com').trim()
+  const fromEmail = (process.env.FROM_EMAIL || 'onboarding@leadflow.ai').trim()
   if (!process.env.FROM_EMAIL) {
     warnings.push(
       `FROM_EMAIL not configured, using default: ${fromEmail}`
@@ -42,6 +42,17 @@ export function validateEmailConfig(): EmailConfigValidation {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(fromEmail)) {
     issues.push(`FROM_EMAIL appears invalid: ${fromEmail}`)
+  }
+
+  // Guard against domains known to be unverified in Resend — they cause silent delivery failures.
+  // landyourleads.com was the original default but was never added to the Resend account.
+  const UNVERIFIED_DOMAINS = ['landyourleads.com']
+  const fromDomain = fromEmail.split('@')[1]?.toLowerCase()
+  if (fromDomain && UNVERIFIED_DOMAINS.includes(fromDomain)) {
+    issues.push(
+      `FROM_EMAIL domain "${fromDomain}" is not verified with Resend. ` +
+        'Emails will be silently blocked. Use onboarding@leadflow.ai or verify the domain at resend.com/domains.'
+    )
   }
 
   return {
