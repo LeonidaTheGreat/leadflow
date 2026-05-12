@@ -1,8 +1,30 @@
+/**
+ * TASK SPEC (070f1b3a-545f-45df-a2e7-b901e655ff3b)
+ * What:
+ * - Update product/lead-response/dashboard/app/pilot-signup/page.tsx (PilotSignupPage.handleSubmit)
+ *   to post to /api/auth/pilot-signup so signup writes to real_estate_agents (same table login reads).
+ * - Update product/lead-response/dashboard/app/pilot-signup/page.tsx form state/validation/UI
+ *   to include password required by /api/auth/pilot-signup.
+ * - Add tests/unit/pilot-signup-auth-table-alignment.test.js to guard endpoint/table alignment.
+ *
+ * Verify:
+ * - npm test -- tests/unit/pilot-signup-auth-table-alignment.test.js
+ * - npm test
+ * - npm run build
+ * - cd product/lead-response/dashboard && npx next build
+ * - rg -n "fetch\\('/api/auth/pilot-signup'|password" product/lead-response/dashboard/app/pilot-signup/page.tsx
+ * - rg -n "/api/pilot-signup" product/lead-response/dashboard/app/pilot-signup/page.tsx (expect 0)
+ *
+ * Boundaries:
+ * - Do not modify product/lead-response/dashboard/app/api/pilot-signup/route.ts (lead capture intake route).
+ * - Do not change login route behavior.
+ * - Do not modify DB schema/migrations.
+ */
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Check, Loader2 } from 'lucide-react'
+import { ArrowRight, Check, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -13,8 +35,8 @@ import { useUtmCapture } from '@/lib/utm-capture'
  * /pilot-signup — Pilot Signup Page
  *
  * Frictionless acquisition-focused pilot signup.
- * Collects: Name, Email, Phone, License #, Brokerage, Market, Source
- * Posts to /api/pilot-signup
+ * Collects: Name, Email, Password, Phone, License #, Brokerage, Market, Source
+ * Posts to /api/auth/pilot-signup
  */
 
 const SOURCE_OPTIONS = [
@@ -32,6 +54,7 @@ export default function PilotSignupPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     phone: '',
     license_number: '',
     brokerage_name: '',
@@ -41,6 +64,7 @@ export default function PilotSignupPage() {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -51,8 +75,8 @@ export default function PilotSignupPage() {
     e.preventDefault()
     setError(null)
 
-    if (!formData.name.trim() || !formData.email.trim()) {
-      setError('Name and email are required')
+    if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
+      setError('Name, email, and password are required')
       return
     }
 
@@ -62,23 +86,32 @@ export default function PilotSignupPage() {
       return
     }
 
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+
     setLoading(true)
 
     try {
-      const response = await fetch('/api/pilot-signup', {
+      const response = await fetch('/api/auth/pilot-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          password: formData.password,
           phone: formData.phone || undefined,
           brokerage_name: formData.brokerage_name || undefined,
-          // Pack license and market into team_name field (extended metadata)
+          source: formData.source || 'landing_page',
+          utm_source: undefined,
+          utm_medium: undefined,
+          utm_campaign: undefined,
+          // Keep extra metadata in existing optional field used by this flow.
           team_name: [
             formData.license_number ? `License: ${formData.license_number}` : '',
             formData.market ? `Market: ${formData.market}` : '',
           ].filter(Boolean).join(' | ') || undefined,
-          source: formData.source || 'landing_page',
         }),
       })
 
@@ -86,12 +119,23 @@ export default function PilotSignupPage() {
 
       if (!response.ok) {
         if (response.status === 409) {
-          setError('This email has already been registered for the pilot program.')
+          setError('This email already has an account. Please log in instead.')
         } else {
           setError(data.error || 'Something went wrong. Please try again.')
         }
         setLoading(false)
         return
+      }
+
+      if (data.token) {
+        try {
+          localStorage.setItem('leadflow_token', data.token)
+        } catch {}
+      }
+      if (data.user) {
+        try {
+          localStorage.setItem('leadflow_user', JSON.stringify(data.user))
+        } catch {}
       }
 
       setSubmitted(true)
@@ -126,17 +170,13 @@ export default function PilotSignupPage() {
             </div>
             <h1 className="text-3xl font-bold text-white mb-4">You&apos;re in!</h1>
             <p className="text-slate-300 mb-6">
-              Thanks for joining the LeadFlow AI free pilot. We&apos;ll reach out within 24 hours to
-              schedule a quick 15-minute setup call and get you responding to leads in seconds.
+              Your account is ready. Continue to onboarding to connect your CRM and start responding to leads.
             </p>
-            <p className="text-slate-400 text-sm mb-8">
-              Questions? Email{' '}
-              <a href="mailto:support@leadflow.ai" className="text-emerald-400 hover:underline">
-                support@leadflow.ai
-              </a>
-            </p>
-            <Link href="/" className="text-sm text-slate-400 hover:text-white transition-colors">
-              ← Back to home
+            <Link
+              href="/dashboard/onboarding"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-3 font-semibold text-white hover:bg-emerald-600"
+            >
+              Continue to Onboarding <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         ) : (
@@ -207,6 +247,35 @@ export default function PilotSignupPage() {
                   </div>
 
                   <div>
+                    <Label htmlFor="password" className="text-slate-300 mb-1.5 block text-sm">
+                      Password <span className="text-emerald-400">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        data-testid="pilot-signup-password-input"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="At least 8 characters"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 pr-10"
+                        required
+                        minLength={8}
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
                     <Label htmlFor="phone" className="text-slate-300 mb-1.5 block text-sm">
                       Phone Number <span className="text-slate-500 font-normal">(required for SMS setup)</span>
                     </Label>
@@ -270,14 +339,14 @@ export default function PilotSignupPage() {
                         data-testid="pilot-signup-license-input"
                         value={formData.license_number}
                         onChange={handleChange}
-                        placeholder="CA-DRE-01234567"
+                        placeholder="DRE #01234567"
                         className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
                         disabled={loading}
                       />
                     </div>
                     <div>
                       <Label htmlFor="source" className="text-slate-300 mb-1.5 block text-sm">
-                        How did you hear about us?
+                        Source <span className="text-slate-500 font-normal">(optional)</span>
                       </Label>
                       <select
                         id="source"
@@ -285,7 +354,7 @@ export default function PilotSignupPage() {
                         data-testid="pilot-signup-source-select"
                         value={formData.source}
                         onChange={handleChange}
-                        className="w-full rounded-md border border-slate-600 bg-slate-900 px-3 py-2 text-white text-sm focus:border-emerald-500 focus:outline-none"
+                        className="w-full h-10 px-3 rounded-md bg-slate-900 border border-slate-600 text-white"
                         disabled={loading}
                       >
                         {SOURCE_OPTIONS.map((opt) => (
@@ -298,27 +367,27 @@ export default function PilotSignupPage() {
                   </div>
 
                   {error && (
-                    <div role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+                    <div className="rounded-md border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200">
                       {error}
                     </div>
                   )}
 
                   <Button
                     type="submit"
-                    disabled={loading}
                     data-testid="pilot-signup-submit-button"
-                    className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold py-3 text-base rounded-xl"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                    disabled={loading}
                   >
                     {loading ? (
-                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Joining pilot…</>
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Creating account...
+                      </span>
                     ) : (
-                      <>Join Free Pilot <ArrowRight className="w-4 h-4 ml-2" /></>
+                      <span className="inline-flex items-center gap-2">
+                        Start Free Pilot <ArrowRight className="h-4 w-4" />
+                      </span>
                     )}
                   </Button>
-
-                  <p className="text-xs text-slate-500 text-center">
-                    Free for 30 days. No credit card. Cancel anytime.
-                  </p>
                 </form>
               </CardContent>
             </Card>
