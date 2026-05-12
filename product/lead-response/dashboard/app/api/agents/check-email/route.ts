@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       .from('real_estate_agents')
       .select('id')
       .eq('email', email.toLowerCase())
-      .single()
+      .maybeSingle()
 
     return NextResponse.json({
       available: !data,

@@ -3,6 +3,7 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import bcrypt from 'bcryptjs';
 import { onboardingValidator } from '@/lib/onboarding-validation';
 import { OnboardingFormData, OnboardingSubmission } from '@/lib/types/onboarding';
+import { createSession } from '@/lib/services/AuthService';
 import { logger } from '@/lib/logger'
 
 // Password hashing using bcrypt (consistent with login route)
@@ -176,10 +177,26 @@ export async function POST(request: NextRequest) {
       source: 'onboarding_api',
       created_at: new Date().toISOString() });
 
+    // Create a session so the user is authenticated immediately after onboarding
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip')
+      ?? undefined;
+    let sessionToken: string | null = null;
+    try {
+      const session = await createSession({
+        userId: agent.id,
+        userAgent: request.headers.get('user-agent') || undefined,
+        ipAddress,
+      });
+      sessionToken = session.token;
+    } catch (sessionErr) {
+      logger.error('[onboarding/submit] Session creation error (non-blocking):', sessionErr);
+    }
+
     // Return success (exclude password_hash)
     const { password_hash, ...agentSafe } = agent;
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         data: {
@@ -192,6 +209,21 @@ export async function POST(request: NextRequest) {
         message: 'Welcome to LeadFlow AI!' },
       { status: 201 }
     );
+
+    // Set session cookie so the dashboard recognises the new agent immediately
+    if (sessionToken) {
+      response.cookies.set({
+        name: 'leadflow_session',
+        value: sessionToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60, // 24 hours
+        path: '/',
+      });
+    }
+
+    return response;
 
   } catch (error) {
     logger.error('Onboarding submission error:', error);

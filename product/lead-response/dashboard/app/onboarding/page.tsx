@@ -4,8 +4,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, useRef, Suspense } from 'react'
 import {
   Mail, Lock, Eye, EyeOff, User, Phone, MapPin, Link2, MessageSquare,
-  Check, AlertCircle, CheckCircle, Wifi, WifiOff
+  AlertCircle, CheckCircle, WifiOff
 } from 'lucide-react'
+import { onboardingApi, OnboardingApiError } from '@/lib/onboarding-api'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,11 +36,11 @@ interface AgentFormData {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const STEPS: { id: StepId; label: string }[] = [
-  { id: 'account', label: 'Account' },
-  { id: 'profile', label: 'Profile' },
-  { id: 'integrations', label: 'Integrations' },
-  { id: 'confirm', label: 'Confirm' },
+const STEPS: { id: StepId; label: string; draftStep: string }[] = [
+  { id: 'account', label: 'Account', draftStep: 'welcome' },
+  { id: 'profile', label: 'Profile', draftStep: 'agent-info' },
+  { id: 'integrations', label: 'Integrations', draftStep: 'calendar' },
+  { id: 'confirm', label: 'Confirm', draftStep: 'confirmation' },
 ]
 
 const US_STATES = [
@@ -854,18 +855,12 @@ function OnboardingPageInner() {
       setIsValidating(true)
       setEmailError(null)
       try {
-        const res = await fetch('/api/agents/check-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-        })
-        if (!res.ok) throw new Error('Server error')
-        const json = await res.json()
-        if (!json.available) {
+        const result = await onboardingApi.checkEmail(email, false)
+        if (!result.available) {
           setEmailError('Email is already taken — try another or sign in')
         }
       } catch (err: any) {
-        if (err.message?.includes('Failed to fetch') || err.name === 'TypeError') {
+        if (!navigator.onLine || err.message?.includes('Failed to fetch') || err.name === 'TypeError') {
           setNetworkError('No connection — check your internet and try again')
         }
       } finally {
@@ -876,24 +871,34 @@ function OnboardingPageInner() {
     return () => window.removeEventListener('onboarding:check-email', handleCheckEmail)
   }, [])
 
-  // Auto-save every 2 seconds
+  // Auto-save every 2 seconds — sends structured payload so drafts are recoverable
   useEffect(() => {
     autoSaveTimer.current = setInterval(async () => {
-      const serialized = JSON.stringify({ email: data.email, firstName: data.firstName, state: data.state })
+      if (!data.email) return // Don't save without email
+      const serialized = JSON.stringify({ email: data.email, firstName: data.firstName, state: data.state, step: currentStepIndex })
       if (serialized === lastSavedRef.current) return
       lastSavedRef.current = serialized
+      const currentDraftStep = STEPS[currentStepIndex]?.draftStep ?? 'welcome'
+      const completedDraftSteps = [...completedSteps].map((i) => STEPS[i]?.draftStep).filter(Boolean)
       try {
-        await fetch('/api/onboarding/draft', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: data.email, firstName: data.firstName, lastName: data.lastName, state: data.state, step: currentStepIndex }),
+        await onboardingApi.saveDraft({
+          email: data.email,
+          formData: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            state: data.state,
+            calcomLink: data.calcomLink,
+            smsPhoneNumber: data.smsPhoneNumber,
+          } as any,
+          currentStep: currentDraftStep as any,
+          completedSteps: completedDraftSteps as any,
         })
       } catch { /* silently ignore auto-save failures */ }
     }, 2000)
     return () => {
       if (autoSaveTimer.current) clearInterval(autoSaveTimer.current)
     }
-  }, [data, currentStepIndex])
+  }, [data, currentStepIndex, completedSteps])
 
   const onChange = (partial: Partial<AgentFormData>) => {
     setData((prev) => ({ ...prev, ...partial }))
@@ -915,29 +920,21 @@ function OnboardingPageInner() {
     if (emailError) return
     setIsValidating(true)
     try {
-      const res = await fetch('/api/agents/check-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email }),
-      })
-      if (!res.ok) {
-        if (res.status >= 500) {
-          setNetworkError('Server error — please try again')
-          return
-        }
-      } else {
-        const json = await res.json()
-        if (!json.available) {
-          setEmailError('Email is already taken — try another or sign in')
-          return
-        }
+      const result = await onboardingApi.checkEmail(data.email, false)
+      if (!result.available) {
+        setEmailError('Email is already taken — try another or sign in')
+        return
       }
     } catch (err: any) {
+      if (err instanceof OnboardingApiError && err.statusCode >= 500) {
+        setNetworkError('Server error — please try again')
+        return
+      }
       if (!navigator.onLine || err.message?.includes('Failed to fetch')) {
         setNetworkError('No connection — check your internet and try again')
         return
       }
-      // Non-network errors: allow proceeding
+      // Non-network, non-server errors: allow proceeding
     } finally {
       setIsValidating(false)
     }
@@ -953,24 +950,36 @@ function OnboardingPageInner() {
         setNetworkError('No connection — check your internet and try again')
         return
       }
-      const res = await fetch('/api/agents/onboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      await onboardingApi.submit({
+        data: {
+          email: data.email,
+          password: data.password,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phoneNumber: data.phoneNumber,
+          state: data.state,
+          timezone: 'America/New_York',
+          calcomLink: data.calcomLink,
+          calendarUrl: data.calcomLink,
+          smsPhoneNumber: data.smsPhoneNumber,
+          currentStep: 'confirmation' as any,
+          completedSteps: ['welcome', 'agent-info', 'calendar', 'confirmation'] as any,
+          startedAt: new Date().toISOString(),
+          lastUpdatedAt: new Date().toISOString(),
+        },
+        tracking: {
+          utmSource: data.utmSource ?? undefined,
+          utmMedium: data.utmMedium ?? undefined,
+          utmCampaign: data.utmCampaign ?? undefined,
+        },
       })
-      if (res.status === 409) {
-        setSubmitError('An account with this email already exists. Please sign in instead.')
-        return
-      }
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}))
-        throw new Error(json.error || `Server error (${res.status})`)
-      }
       setSuccessState(true)
       setCompletedSteps((prev) => new Set([...prev, currentStepIndex]))
       setTimeout(() => router.push('/dashboard'), 2000)
     } catch (err: any) {
-      if (!navigator.onLine || err.message?.includes('Failed to fetch')) {
+      if (err instanceof OnboardingApiError && err.statusCode === 409) {
+        setSubmitError('An account with this email already exists. Please sign in instead.')
+      } else if (!navigator.onLine || err.message?.includes('Failed to fetch')) {
         setNetworkError('No connection — check your internet and try again')
       } else {
         setSubmitError(err.message || 'Failed to create account. Please try again.')

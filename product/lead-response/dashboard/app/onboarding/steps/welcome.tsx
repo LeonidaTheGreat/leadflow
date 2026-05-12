@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Mail, AlertCircle } from 'lucide-react'
+import { onboardingApi } from '@/lib/onboarding-api'
 
 export default function OnboardingWelcome({
   onNext,
@@ -55,15 +56,9 @@ export default function OnboardingWelcome({
     
     // Check if email exists
     try {
-      const response = await fetch('/api/agents/check-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
+      const result = await onboardingApi.checkEmail(email, false)
 
-      const data = await response.json()
-      
-      if (!data.available) {
+      if (!result.available) {
         setErrors({ email: 'Email is already registered' })
         return
       }

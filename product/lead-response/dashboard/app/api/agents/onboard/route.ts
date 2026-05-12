@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import bcrypt from 'bcryptjs'
+import { createSession } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
 
 /** Pilot duration in days */
@@ -156,10 +157,26 @@ export async function POST(request: NextRequest) {
     // Notify Stojan via Telegram about new pilot signup (fire-and-forget)
     notifyPilotSignup(`${firstName} ${lastName}`, email.toLowerCase()).catch(() => {})
 
+    // Create a session so the user is authenticated immediately after onboarding
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip')
+      ?? undefined
+    let sessionToken: string | null = null
+    try {
+      const session = await createSession({
+        userId: agent.id,
+        userAgent: request.headers.get('user-agent') || undefined,
+        ipAddress,
+      })
+      sessionToken = session.token
+    } catch (sessionErr) {
+      logger.error('Session creation error (non-blocking):', sessionErr)
+    }
+
     // Return success with agent data (no password)
     const { password_hash, ...agentSafe } = agent
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         message: 'Welcome to your free pilot! You have 60 days of full access.',
         agent: agentSafe,
@@ -170,6 +187,21 @@ export async function POST(request: NextRequest) {
           expiresAt: pilotExpiresAt.toISOString() } },
       { status: 200 }
     )
+
+    // Set session cookie so the dashboard recognises the new agent immediately
+    if (sessionToken) {
+      response.cookies.set({
+        name: 'leadflow_session',
+        value: sessionToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60, // 24 hours
+        path: '/',
+      })
+    }
+
+    return response
   } catch (error) {
     logger.error('Onboarding error:', error)
     return NextResponse.json(
