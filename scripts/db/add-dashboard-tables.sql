@@ -1,15 +1,19 @@
 -- TASK SPEC (7d2969fe-a8cd-4c15-b18f-275a205d0827)
 -- What:
--- - Update model_performance schema/data scripts to use success_rate for Genome metric compatibility.
--- - Files: scripts/db/add-dashboard-tables.sql, scripts/db/setup-dashboard-tables.js, scripts/utilities/setup-dashboard-tables.js.
+-- - Update model_performance setup/backfill logic in:
+--   scripts/db/add-dashboard-tables.sql
+--   scripts/db/setup-dashboard-tables.js
+--   scripts/utilities/setup-dashboard-tables.js
+-- - Replace direct legacy-column reference to success_rate_percent with a safe fallback that does not error when the legacy column is missing.
 -- Verify:
--- - rg -n "success_rate_percent|success_rate" scripts/db/add-dashboard-tables.sql scripts/db/setup-dashboard-tables.js scripts/utilities/setup-dashboard-tables.js
+-- - source ~/.env && psql "$LOCAL_PG_URL" -v ON_ERROR_STOP=1 -f scripts/db/add-dashboard-tables.sql (expects no "column success_rate_percent does not exist" error)
+-- - rg -n "success_rate_percent|to_jsonb\\(model_performance\\)" scripts/db/add-dashboard-tables.sql scripts/db/setup-dashboard-tables.js scripts/utilities/setup-dashboard-tables.js
 -- - npm test
 -- - npm run build
 -- Boundaries:
--- - Do not change runtime services/routes or non-model_performance dashboard behavior.
--- - Do not modify extracted Genome core files outside this repository.
--- - Keep scope limited to schema/seed naming fix for model_performance success rate.
+-- - Do not modify runtime services/routes or business logic outside these three setup scripts.
+-- - Do not change schema beyond model_performance success-rate migration/backfill compatibility.
+-- - Do not touch extracted Genome files outside this repository snapshot.
 --
 -- Add tables for dashboard.html full Supabase integration
 -- Run this in Supabase SQL Editor
@@ -32,7 +36,10 @@ CREATE TABLE IF NOT EXISTS model_performance (
 
 ALTER TABLE model_performance ADD COLUMN IF NOT EXISTS success_rate INT;
 UPDATE model_performance
-SET success_rate = COALESCE(success_rate, success_rate_percent)
+SET success_rate = COALESCE(
+  success_rate,
+  NULLIF((to_jsonb(model_performance) ->> 'success_rate_percent'), '')::INT
+)
 WHERE success_rate IS NULL;
 
 -- ==================== AGENT PERFORMANCE DETAIL ====================

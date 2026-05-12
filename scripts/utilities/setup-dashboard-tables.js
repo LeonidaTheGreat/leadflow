@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS model_performance (
   UNIQUE(project_id, model_name)
 );
 ALTER TABLE model_performance ADD COLUMN IF NOT EXISTS success_rate INT;
-UPDATE model_performance SET success_rate = COALESCE(success_rate, success_rate_percent) WHERE success_rate IS NULL;
+UPDATE model_performance SET success_rate = COALESCE(success_rate, NULLIF((to_jsonb(model_performance) ->> 'success_rate_percent'), '')::INT) WHERE success_rate IS NULL;
 
 -- Extend agents
 ALTER TABLE agents ADD COLUMN IF NOT EXISTS tasks_completed INT DEFAULT 0;
