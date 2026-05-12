@@ -1,3 +1,20 @@
+<!--
+TASK SPEC (070f1b3a-545f-45df-a2e7-b901e655ff3b)
+What:
+- Change file: TOOLS.md
+- Add a retry marker note documenting verification remediation for "no commits on branch".
+
+Verify:
+- git log --oneline origin/main..HEAD contains a new retry commit.
+- npm test exits 0.
+- npm run build exits 0.
+
+Boundaries:
+- Do not modify signup/login business logic files.
+- Do not modify DB schema/migrations.
+- Do not touch protected orchestrator/config docs listed in task instructions.
+-->
+
 # TOOLS.md - Local Notes
 
 Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
