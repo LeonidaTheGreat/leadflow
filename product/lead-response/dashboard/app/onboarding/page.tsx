@@ -6,6 +6,7 @@ import {
   Mail, Lock, Eye, EyeOff, User, Phone, MapPin, Link2, MessageSquare,
   Check, AlertCircle, CheckCircle, Wifi, WifiOff
 } from 'lucide-react'
+import { LegalFooter } from '@/components/legal-footer'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1061,6 +1062,8 @@ function OnboardingPageInner() {
             </div>
           </div>
         </main>
+
+        <LegalFooter className="border-t border-slate-700/50" />
       </div>
     </div>
   )
