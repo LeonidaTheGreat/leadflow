@@ -1,24 +1,39 @@
 #!/usr/bin/env node
+'use strict'
+/*
+TASK SPEC (f65e7bdd-ce07-42b6-898c-b346d86dfcb3)
+What:
+- Change `scripts/run-pilot-conversion-migration.js`:
+  - Replace broken env/connection logic in `runMigration()` with valid PostgreSQL connection handling.
+  - Keep migration statement splitting and execution behavior, but make startup validation deterministic.
+Verify:
+- `node --check scripts/run-pilot-conversion-migration.js` exits 0.
+- `node scripts/run-pilot-conversion-migration.js` without DB env exits non-zero with explicit missing-config error.
+- `rg -n "supabaseUrl|apiUrl" scripts/run-pilot-conversion-migration.js` shows no stale undefined-variable usage.
+Boundaries:
+- Do not touch routes, services, schema SQL files, or other migration scripts.
+- Do not modify deployment config, cron config, or dashboard code.
+*/
 /**
  * Run pilot conversion email sequence schema migration
- * Uses direct PostgreSQL if LOCAL_PG_PASSWORD is set
+ * Uses direct PostgreSQL via LOCAL_PG_URL or PG* environment variables.
  *
  * Usage: node scripts/run-pilot-conversion-migration.js
  */
 
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
 const fs = require('fs')
 const path = require('path')
+const { Client } = require('pg')
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
-const dbPassword = process.env.LOCAL_PG_PASSWORD
-
-if (!apiUrl) {
-  console.error('Missing SUPABASE_URL in .env')
-  process.exit(1)
+try {
+  require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
+} catch (error) {
+  if (error && error.code !== 'MODULE_NOT_FOUND') {
+    throw error
+  }
 }
 
-const MIGRATION_FILE = 'pilot-conversion-email-schema.sql'
+const MIGRATION_FILE = path.join(__dirname, '..', 'sql', 'pilot-conversion-email-schema.sql')
 
 /**
  * Split SQL into executable statements, respecting DO $$ ... $$ blocks
@@ -64,28 +79,30 @@ function splitStatements(sql) {
 }
 
 async function runMigration() {
-  const { Client } = require('pg')
-  const ref = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1]
-  if (!ref) throw new Error('Could not extract project ref from SUPABASE_URL')
+  const connectionString = process.env.LOCAL_PG_URL || process.env.DATABASE_URL
+  const hasDiscretePgConfig = Boolean(
+    process.env.PGHOST || process.env.PGPORT || process.env.PGUSER || process.env.PGDATABASE
+  )
+  if (!connectionString && !hasDiscretePgConfig) {
+    throw new Error('Missing database config: set LOCAL_PG_URL, DATABASE_URL, or PGHOST/PGPORT/PGUSER/PGDATABASE')
+  }
 
-  const connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${ref}.localhost:5432/postgres`
-  console.log(`Connecting to database via PostgreSQL (project: ${ref})...`)
-
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } })
+  const clientConfig = connectionString ? { connectionString } : {}
+  console.log('Connecting to database via PostgreSQL...')
+  const client = new Client(clientConfig)
   await client.connect()
   console.log('Connected.\n')
 
   try {
-    const sqlPath = path.join(__dirname, '..', 'sql', MIGRATION_FILE)
-    if (!fs.existsSync(sqlPath)) {
-      console.error(`Migration file not found: ${sqlPath}`)
+    if (!fs.existsSync(MIGRATION_FILE)) {
+      console.error(`Migration file not found: ${MIGRATION_FILE}`)
       process.exit(1)
     }
 
-    const sql = fs.readFileSync(sqlPath, 'utf-8')
+    const sql = fs.readFileSync(MIGRATION_FILE, 'utf-8')
     const statements = splitStatements(sql)
 
-    console.log(`--- Running ${MIGRATION_FILE} (${statements.length} statements) ---`)
+    console.log(`--- Running pilot-conversion-email-schema.sql (${statements.length} statements) ---`)
     await client.query('BEGIN')
 
     let success = 0
@@ -111,7 +128,7 @@ async function runMigration() {
     }
 
     await client.query('COMMIT')
-    console.log(`\n  ${MIGRATION_FILE}: ${success}/${statements.length} OK`)
+    console.log(`\n  pilot-conversion-email-schema.sql: ${success}/${statements.length} OK`)
     console.log('\n✅ Migration complete!')
 
   } finally {
