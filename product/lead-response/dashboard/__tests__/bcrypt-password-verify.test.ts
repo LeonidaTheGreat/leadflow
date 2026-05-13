@@ -17,6 +17,7 @@ const mockAgent = { id: 'agent-123', email: 'test@example.com', first_name: 'Joh
 
 // Store inserted data for verification
 let lastInsertedData: any = null
+let lastUpdateData: any = null
 let mockAgentsDb: Map<string, any> = new Map()
 
 // Build a mock QueryBuilder that intercepts calls
@@ -65,7 +66,21 @@ function makeMockQueryBuilder(table: string): any {
       }),
     }
   }
-  qb.update = () => ({ eq: () => Promise.resolve({ error: null }) })
+  qb.update = (data: any) => {
+    lastUpdateData = data
+    return {
+      eq: (field: string, value: string) => {
+        if (table === 'real_estate_agents') {
+          for (const [email, agent] of mockAgentsDb.entries()) {
+            if (agent[field] === value) {
+              mockAgentsDb.set(email, { ...agent, ...data })
+            }
+          }
+        }
+        return Promise.resolve({ error: null })
+      },
+    }
+  }
   qb.delete = () => ({ eq: () => Promise.resolve({ error: null }) })
   // Allow promise-like usage (for tables that await the builder directly)
   qb.then = (resolve: any) => resolve({ data: null, error: null })
@@ -151,6 +166,7 @@ describe('Password Verification Fix', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     lastInsertedData = null
+    lastUpdateData = null
     mockAgentsDb.clear()
     process.env.JWT_SECRET = 'test-secret'
     process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
@@ -329,6 +345,63 @@ describe('Password Verification Fix', () => {
       const loginResponse = await loginHandler(loginReq)
       const loginData = await loginResponse.json()
       
+      expect(loginResponse.status).toBe(401)
+      expect(loginData.error).toContain('Invalid')
+    })
+
+    it('should verify legacy PBKDF2 hash and upgrade it to bcrypt on successful login', async () => {
+      const crypto = require('crypto')
+      const email = 'legacy@example.com'
+      const password = 'LegacyPassword123!'
+      const salt = crypto.randomBytes(16).toString('hex')
+      const digest = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex')
+      const legacyHash = `${salt}:${digest}`
+
+      mockAgentsDb.set(email, {
+        id: 'legacy-agent-1',
+        email,
+        password_hash: legacyHash,
+        first_name: 'Legacy',
+        last_name: 'User',
+        email_verified: true,
+        onboarding_completed: false,
+      })
+
+      const loginReq = makeLoginRequest({ email, password })
+      const loginResponse = await loginHandler(loginReq)
+      const loginData = await loginResponse.json()
+
+      expect(loginResponse.status).toBe(200)
+      expect(loginData.success).toBe(true)
+      expect(lastUpdateData).toBeDefined()
+      expect(lastUpdateData.password_hash).toBeDefined()
+      expect(lastUpdateData.password_hash).toMatch(/^\$2[aby]\$\d+\$/)
+      expect(lastUpdateData.password_hash).not.toContain(':')
+
+      const upgradedAgent = mockAgentsDb.get(email)
+      expect(upgradedAgent.password_hash).toMatch(/^\$2[aby]\$\d+\$/)
+      const upgradedValid = await bcrypt.compare(password, upgradedAgent.password_hash)
+      expect(upgradedValid).toBe(true)
+    })
+
+    it('should reject invalid legacy-like placeholder hash without throwing', async () => {
+      const email = 'placeholder@example.com'
+      const password = 'AnyPassword123!'
+
+      mockAgentsDb.set(email, {
+        id: 'placeholder-agent-1',
+        email,
+        password_hash: 'invited',
+        first_name: 'Placeholder',
+        last_name: 'User',
+        email_verified: true,
+        onboarding_completed: false,
+      })
+
+      const loginReq = makeLoginRequest({ email, password })
+      const loginResponse = await loginHandler(loginReq)
+      const loginData = await loginResponse.json()
+
       expect(loginResponse.status).toBe(401)
       expect(loginData.error).toContain('Invalid')
     })
