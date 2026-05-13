@@ -2,97 +2,107 @@
 
 - Status: draft
 - Version: 1.1
-- Date: 2026-05-12
+- Date: 2026-05-13
 - Owner: Product Manager
 - Project: leadflow
-- Use Case: feature-utm-parameter-capture-landing-page-for
+- Task ID: 4b380dd3-c9b0-4a8c-9c69-7072c7d8836b
+- Use Case ID: feature-utm-parameter-capture-landing-page-for
 - Priority: P0
 
-## KPI State (Test Focus)
-- Mission phase: `scale`
-- Revenue-critical funnel: Awareness -> Signup -> Onboarding -> Trial -> Aha Moment -> Paid
-- Current weakest link for this PRD: Awareness -> Signup attribution is not reliably measurable, blocking budget reallocation toward higher Trial->Paid channels.
+## Product State (KPIs First)
+- Mission: active (`phase: scale`)
+- Paying customers: `0 / 50` (gap)
+- MRR: `597 / 20000` (gap)
+- Top metric gaps to unblock revenue decisions: `Signup to Activated Rate`, `Trial to Paid Conversion`, `NPS Score` (current values not instrumented)
+- Use case status: `in_progress`
 
-## Problem Statement
-Visitors arrive on marketing landing pages with UTM parameters, but first-touch attribution is not guaranteed to persist through signup. Without consistent attribution capture and persistence, channel ROI cannot be trusted, and revenue decisions are delayed.
+## What Is Being Tested
+Can LeadFlow reliably preserve first-touch UTM from landing entry through signup so funnel conversion can be measured by source/campaign and acquisition spend can be reallocated faster?
+
+## Problem
+Landing traffic includes campaign UTMs, but attribution is not consistently guaranteed end-to-end in every signup path. Without deterministic capture and write-through, source-level funnel analysis is untrustworthy, delaying channel optimization during a paying-customer critical phase.
 
 ## Goal
-Guarantee deterministic first-touch UTM capture on landing entry and persistence to customer signup records for marketing attribution.
+Ship deterministic first-touch UTM capture on landing entry and persist attribution onto the customer record at signup, with direct/unknown fallback for denominator-safe reporting.
 
 ## Non-Goals
-- Multi-touch attribution.
-- Cross-device/user identity stitching.
-- Offline conversion uploads to ad platforms.
-- New attribution dashboard UI.
+- Multi-touch attribution
+- Cross-device stitching
+- Ad network conversion API integrations
+- Campaign taxonomy governance process changes
 
-## Primary Users
-- Marketing owner: needs campaign-level performance by signup, activation, and paid conversion.
-- Product owner: needs reliable attribution data to prioritize revenue experiments.
-
-## Use Case Coverage
-- Covered now:
-  - UTM-tagged visitor lands, browses multiple pages, signs up, attribution retained.
-  - Direct/no-UTM visitor signs up, categorized without data loss.
-  - Re-entry with different UTM in same session preserves first touch.
-- Not covered in this PRD:
-  - Cross-session or cross-device attribution continuity.
-  - Weighted/multi-touch attribution models.
+## Users
+- Marketing owner: needs campaign ROI visibility
+- Product owner: needs signup->activated->paid conversion by source
+- Prospective customer (real estate agent): should see zero UX friction
 
 ## User Stories
-1. As a campaign visitor, my source parameters are captured automatically when I land, without UX friction.
-2. As the business owner, I can see original campaign attribution on each new customer signup.
-3. As marketing, I can quantify unattributed traffic explicitly instead of silently dropping it.
+1. As a campaign visitor, when I arrive with UTM parameters, my first-touch attribution is captured silently.
+2. As LeadFlow, when that visitor signs up later in the same session, the original attribution is written to the customer record.
+3. As PM/marketing, when signups lack UTM, they appear as `direct/unknown` so reporting totals remain complete.
 
 ## Functional Requirements
 
-### FR-1: First-Touch Capture on Landing
-- System reads landing URL parameters: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`.
-- If any UTM parameter exists and no first-touch value exists for the current session, store a normalized attribution object.
-- First-touch lock applies within session: later UTM values do not overwrite first-touch.
+### FR-1: First-Touch Capture on Landing Entry
+- On first client render of marketing landing entry, parse query params:
+  - `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`
+- If any key is present and no first-touch exists for the session, store normalized attribution payload.
+- First-touch lock: once stored in-session, later UTM values in that session do not overwrite.
+- If no UTM keys exist, no attribution write is made.
 
-### FR-2: Persistence Through Signup
-- Signup flow includes captured first-touch attribution when available.
-- Signup API accepts attribution fields as optional and persists them on customer creation.
-- Missing attribution must never block signup completion.
+### FR-2: Session Persistence Across Navigation
+- Captured attribution survives landing -> pricing -> signup navigation in same browser session.
+- Missing UTM on downstream pages must not clear prior first-touch payload.
 
-### FR-3: Attribution Data Contract
-- Persist nullable fields: `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`.
-- Normalize empty/whitespace values to null before persistence.
-- Enforce boundary validation (length and basic string sanitation) at API edge.
+### FR-3: Signup Payload Attachment
+- Signup/trial submission includes stored first-touch UTM when present.
+- If attribution absent, signup continues normally without errors.
 
-### FR-4: Direct/Unknown Handling
-- If no UTM exists for a signup, reporting groups it as `direct/unknown`.
-- Reporting totals must include both attributed and unattributed signups.
+### FR-4: API and Data Persistence Contract
+- Signup API accepts optional UTM fields and persists on customer creation.
+- Persisted fields:
+  - `utm_source`
+  - `utm_medium`
+  - `utm_campaign`
+  - `utm_content`
+  - `utm_term`
+- Empty or whitespace-only UTM values normalize to null before write.
 
-### FR-5: Reliability Requirements
-- Storage access failures must fail gracefully (no user-facing errors, no signup interruption).
-- No SSR/client-runtime exceptions from attribution handling.
+### FR-5: Reporting Contract
+- Funnel reporting supports group-by on source/medium/campaign.
+- Unattributed signups must be represented as `direct/unknown` bucket.
+- Attribution report totals must equal total signups for the same time window.
+
+### FR-6: Reliability and Safety
+- Storage-read/write failures are non-blocking.
+- No uncaught errors at SSR/client boundaries.
+- API boundary enforces safe max field lengths and trimming.
 
 ## Acceptance Criteria
-1. Given a landing URL with UTM params, when the first page loads, then first-touch attribution is stored exactly once for that session.
-2. Given stored first-touch attribution, when user signs up after navigating other pages in the same session, then created customer record contains matching UTM values.
-3. Given a second landing in the same session with different UTM values, then original first-touch values remain unchanged.
-4. Given no UTM params, when signup completes, then signup succeeds and attribution fields remain null while reporting groups the row into `direct/unknown`.
-5. Given storage-disabled/private context, landing and signup still complete with no uncaught runtime errors.
-6. Given a reporting time window, attribution report totals equal total signups in the same window.
+1. Given landing URL includes at least one UTM key, when page loads, then first-touch payload is stored once for that session.
+2. Given first-touch payload exists, when signup completes in same session, then customer record contains matching UTM values.
+3. Given two different UTM-tagged visits in one session, first-touch values remain from the first visit.
+4. Given no UTM at entry, signup succeeds and UTM fields are null (and reportable as `direct/unknown`).
+5. Given storage unavailable/restricted browser context, landing and signup still work without uncaught exceptions.
+6. Given reporting window W, attribution breakdown row totals exactly match total signups in W.
 
 ## Success Metrics
-- Attribution capture coverage (non-null `utm_source`) >= 80% of new signups within 14 days of release.
-- Signup success rate does not regress versus 7-day pre-release baseline.
-- Weekly view available for Trial->Paid conversion by `utm_source` and `utm_campaign`.
+- Attribution coverage: >= 80% of new signups have non-null `utm_source` within 14 days post-release.
+- Funnel visibility: weekly reporting can compute Signup->Activated and Trial->Paid by `utm_source` and `utm_campaign`.
+- Guardrail: no increase in signup failure rate vs 7-day pre-release baseline.
 
 ## Dependencies
-- Signup/customer creation path must carry attribution payload.
-- Customer schema supports UTM fields.
-- Funnel reporting query includes source/medium/campaign with `direct/unknown` fallback.
+- Existing signup/onboarding API path
+- Customer schema includes UTM fields
+- Reporting surface/query includes attribution dimensions and direct/unknown fallback
 
 ## Risks and Mitigations
-- Risk: inconsistent key usage across pages and forms.
-  - Mitigation: single canonical attribution payload contract across landing and signup boundaries.
-- Risk: malformed UTM values degrade reporting.
-  - Mitigation: normalization and boundary validation at API edge.
-- Risk: stakeholders misread `direct/unknown` as failure.
-  - Mitigation: document attribution taxonomy and expected direct baseline.
+- Risk: key mismatch between capture and signup read paths.
+  - Mitigation: one canonical attribution storage key contract used across landing and signup.
+- Risk: malformed UTM values pollute reporting.
+  - Mitigation: trim + max length + null normalization.
+- Risk: partial rollout leaves some signup paths unattributed.
+  - Mitigation: acceptance checks must cover each active signup entry path.
 
-## Prioritization Rationale
-P0: This directly reduces time to first paying customer by enabling channel-level budget and experiment decisions tied to Signup->Activated->Paid outcomes.
+## Revenue Prioritization Rationale
+This is P0 because channel-level attribution is a prerequisite for reducing time to first paying customer. Without reliable source mapping, paid/organic channel spend cannot be optimized against Signup->Activated->Paid outcomes.
