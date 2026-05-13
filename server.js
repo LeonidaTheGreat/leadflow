@@ -15,6 +15,7 @@ const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
+const bookingLinksRouter = require('./routes/booking-links');
 const billingRouter = require('./routes/billing');
 
 const app = express();
@@ -54,6 +55,9 @@ app.use('/', reactivationCampaignRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);
+
+// Booking links API
+app.use('/', bookingLinksRouter);
 
 // Billing (Stripe webhook + subscription/portal API)
 app.use('/', billingRouter);
