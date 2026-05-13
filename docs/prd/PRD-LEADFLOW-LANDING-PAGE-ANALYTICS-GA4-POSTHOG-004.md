@@ -3,7 +3,10 @@
 ## KPI State and Test Focus (2026-05-12)
 - Mission: AI-powered real estate lead response with first paying customer target.
 - Phase: `scale`.
-- Critical metric gaps directly impacted by this PRD: `Signup to Activated Rate`, `Trial to Paid Conversion`.
+- Critical metric gaps directly impacted by this PRD:
+  - `Signup to Activated Rate`: current `null`, target `60%`.
+  - `Trial to Paid Conversion`: current `null`, target `15%`.
+  - `NPS Score`: current `null`, target `50`.
 - Product test in this PRD: instrument a trustworthy landing funnel so PM can identify the highest-revenue leak within 7 days.
 
 ## Problem
@@ -46,6 +49,11 @@ Top-of-funnel steps instrumented by this PRD:
 5. Handoff for downstream monetization tracking: `landing_signup_submit_success`
 
 Downstream dependency (outside scope but required for business interpretation): successful mapping from `landing_signup_submit_success` cohorts into activation and trial-to-paid cohorts.
+
+## Revenue Impact Hypotheses
+1. If `landing_cta_click` by `cta_location` is visible weekly, PM can remove or rewrite the lowest-yield CTA block within one sprint.
+2. If `landing_signup_submit_error` is measured with `error_type`, PM can isolate conversion losses caused by form/API friction rather than traffic quality.
+3. If funnel stage drop-off is measurable from view to submit success, PM can prioritize P0 conversion fixes before feature expansion.
 
 ## User Stories
 1. As Product, I need CTA conversion by placement so I can prioritize the highest-yield page changes first.
@@ -134,6 +142,9 @@ Enable only after at least 14 consecutive days of clean GA4 data and at least on
 6. QA evidence includes at least one full session from `landing_page_view` to `landing_signup_submit_success`.
 7. UTM-segmented view of CTA and signup success is available for PM weekly review.
 8. PostHog gate outcome is documented as `disabled` or `enabled` with explicit evidence.
+9. Dev handoff includes explicit CTA registry table (`cta_id`, `cta_location`, `destination`, `component/path`) for all landing CTAs.
+10. QC handoff includes one failing-path validation proving `landing_signup_submit_error` emits with `error_type`.
+11. PM weekly review template includes three mandatory outputs: top drop-off stage, worst-performing CTA location, and top `error_type` by frequency.
 
 ## Prioritization
 - P0: FR-1, FR-2, FR-4, FR-5.
