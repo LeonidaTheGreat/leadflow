@@ -1,5 +1,23 @@
 #!/usr/bin/env node
 /**
+ * TASK SPEC
+ * What:
+ * - Update product/lead-response/dashboard/scripts/validate-env.js to enforce supported Node.js versions for dashboard builds.
+ * - Update product/lead-response/dashboard/package.json engines.node to an explicit supported range for Next.js 16 builds.
+ * - Add product/lead-response/dashboard/.nvmrc so local/dev/CI use a compatible Node.js major version by default.
+ *
+ * Verify:
+ * - cd product/lead-response/dashboard && node scripts/validate-env.js (on unsupported Node expect non-zero with Node compatibility error).
+ * - cd product/lead-response/dashboard && npx next build (expect prior opaque "unknown/module" build failure replaced by explicit Node version failure when Node is unsupported).
+ * - cd product/lead-response/dashboard && npm run build (under supported Node, expect successful Next.js production build).
+ * - grep -n "\"engines\"" product/lead-response/dashboard/package.json and cat product/lead-response/dashboard/.nvmrc.
+ *
+ * Boundaries:
+ * - Do not modify dashboard feature code, routes, services, or UI components.
+ * - Do not change database schema or non-dashboard packages.
+ * - Do not alter deployment behavior beyond Node runtime compatibility enforcement for builds.
+ */
+/**
  * Pre-build env var validation (multi-project).
  * Reads required vars from project.config.json → deployment.env_validation.
  * Falls back to hardcoded list if config not found.
@@ -13,6 +31,27 @@
 
 const fs = require('fs')
 const path = require('path')
+
+const MIN_NODE_MAJOR = 20
+const MIN_NODE_MINOR_FOR_20 = 9
+const MAX_NODE_MAJOR_EXCLUSIVE = 25
+
+function validateNodeVersion() {
+  const [majorRaw = '0', minorRaw = '0'] = process.versions.node.split('.')
+  const major = Number(majorRaw)
+  const minor = Number(minorRaw)
+  const hasMinVersion = major > MIN_NODE_MAJOR || (major === MIN_NODE_MAJOR && minor >= MIN_NODE_MINOR_FOR_20)
+  const isBelowMaxExclusive = major < MAX_NODE_MAJOR_EXCLUSIVE
+
+  if (!hasMinVersion || !isBelowMaxExclusive) {
+    const supportedRange = `>=${MIN_NODE_MAJOR}.${MIN_NODE_MINOR_FOR_20}.0 <${MAX_NODE_MAJOR_EXCLUSIVE}.0.0`
+    console.error(`❌ NODE VERSION UNSUPPORTED: found ${process.versions.node}; expected ${supportedRange} for dashboard builds.`)
+    console.error('Use the dashboard .nvmrc / engines setting (for example: `nvm use`) and rerun the build.')
+    process.exit(1)
+  }
+}
+
+validateNodeVersion()
 
 // Load required vars from project.config.json (multi-project support)
 let config = {}
