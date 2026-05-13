@@ -1,0 +1,28 @@
+{
+  "taskId": "03e40f13-5802-452b-8217-8e6cf8eb849e",
+  "status": "completed",
+  "timestamp": "2026-05-12T20:27:39-04:00",
+  "deliverables": [
+    "Updated canonical PRD: docs/prd/PRD-LEADFLOW-POSTLOGIN-ONBOARDING-WIZARD-001.md"
+  ],
+  "architecturalDecisions": [
+    {
+      "decision": "Updated existing canonical PRD in-place instead of creating a new onboarding PRD file",
+      "reason": "Avoid duplicate PRD tracks for the same use case and preserve single-source artifact continuity",
+      "alternatives": "Create PRD-LEADFLOW-POSTLOGIN-ONBOARDING-WIZARD-002.md as a new file"
+    },
+    {
+      "decision": "Defined one canonical API contract family for onboarding flow (/api/agents/onboarding/*)",
+      "reason": "Reduce flow/state drift from mixed endpoint families and improve activation truthfulness",
+      "alternatives": "Continue allowing multiple endpoint families during onboarding"
+    }
+  ],
+  "metricsContext": {
+    "missionPhase": "scale",
+    "kpiGapsAddressed": [
+      "Signup to Activated Rate",
+      "Trial to Paid Conversion",
+      "NPS Score"
+    ]
+  }
+}
