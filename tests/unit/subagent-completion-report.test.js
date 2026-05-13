@@ -601,6 +601,8 @@ describe('reportSuccess', () => {
     execSync.mockImplementation((cmd) => {
       if (cmd === 'git branch --show-current') return 'feature-branch\n';
       if (cmd.startsWith('git log --oneline main..')) return ''; // no commits ahead
+      if (cmd === 'git fetch origin main') return '';
+      if (cmd === 'git pull --ff-only origin main') return '';
       return '';
     });
   }
@@ -752,7 +754,7 @@ describe('reportSuccess', () => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
     const fp = reportSuccess('succ-rebase-fail', { passed: 1, total: 1, passRate: 1 }, [], []);
     expect(fs.existsSync(fp)).toBe(true);
-    expect(spy).toHaveBeenCalledWith(expect.stringContaining('Rebase onto main failed'));
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('Sync with main failed'));
     jest.restoreAllMocks();
   });
 
@@ -771,6 +773,16 @@ describe('reportSuccess', () => {
       (c) => typeof c[0] === 'string' && c[0].includes('git push'),
     );
     expect(pushCalls.length).toBeGreaterThan(0);
+    jest.restoreAllMocks();
+  });
+
+  test('attempts ff-only pull from main when no commits exist on branch', () => {
+    mockGitNoCommits();
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    reportSuccess('succ-no-commit-sync', { passed: 1, total: 1, passRate: 1 }, [], []);
+    const pullCalls = execSync.mock.calls.filter((c) => c[0] === 'git pull --ff-only origin main');
+    expect(pullCalls.length).toBeGreaterThan(0);
     jest.restoreAllMocks();
   });
 });
