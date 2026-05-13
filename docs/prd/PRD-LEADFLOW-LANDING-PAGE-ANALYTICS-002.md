@@ -1,72 +1,61 @@
 # PRD-LEADFLOW-LANDING-PAGE-ANALYTICS-002
 
-## Product State (2026-05-12)
-- Mission: first paying customer and faster path from traffic to paid.
-- Known top mission gaps (context): NPS score, signup→activated rate, trial→paid conversion.
-- This PRD scope: instrument landing funnel so we can identify and remove conversion drop-off.
+## KPI State (2026-05-12)
+- Mission phase: `scale`
+- Top mission gaps provided by mission context: `NPS Score`, `Signup to Activated Rate`, `Trial to Paid Conversion`
+- This PRD target: close measurement blind spots in Awareness -> Signup -> Trial so conversion work can be prioritized by evidence.
 
 ## What Is Being Tested
-Whether landing visitors who engage with content and CTAs progress to signup and activation at higher rates once funnel blind spots are visible.
+Whether standardized landing-page analytics (CTA, scroll depth, and funnel stages) reveals the highest drop-off point quickly enough to improve signup->activated and trial->paid experiments.
+
+## Use Case Coverage
+- Use case: `improve-landing-page-analytics-add-ga4-posthog`
+- Coverage in this PRD:
+  - CTA click instrumentation contract
+  - Scroll depth instrumentation contract
+  - Funnel stage contract from landing view to trial activation
+  - Provider decision and fallback (`GA4` default, `PostHog` optional)
+- Not covered:
+  - In-app authenticated product analytics
+  - Aha/Paid-stage instrumentation implementation
+  - Dashboard redesign or BI warehouse work
 
 ## Problem
-Landing page decisions are still partially blind. Prior GA4 work exists, but the current use case requires a production-ready, auditable tracking contract for:
-- CTA clicks
-- Scroll depth
-- Funnel progression to signup/trial activation
-- Tool choice governance (GA4 vs PostHog)
-
-Without a strict event contract and verification gates, we cannot trust conversion diagnostics or prioritize growth work.
+Existing landing analytics is inconsistent across prior PRDs and implementations. Event naming and validation are not strict enough for reliable funnel analysis. Without a single production contract, traffic and conversion decisions remain guesswork.
 
 ## Goal
-Ship a minimal analytics layer that answers, daily:
-1. Which CTA drives the highest qualified progression to signup?
-2. Where do users drop in the landing funnel?
-3. Which traffic sources produce activated trials, not just clicks?
-
-## Non-Goals
-- Session replay optimization workflows
-- Full product analytics across authenticated dashboard
-- Multi-touch attribution modeling
-- Warehouse/BI rebuild
-
-## Success Metrics
-Primary:
-- 100% of defined landing CTA clicks emit valid analytics events.
-- 100% of sessions emit at least one funnel stage event (`landing_view`).
-- Funnel report available for stages: `landing_view -> scroll_50 -> cta_click -> signup_start -> signup_complete -> trial_activated`.
-
-Business guardrail:
-- No measurable regression in landing page Core Web Vitals after instrumentation.
+Deliver a production-ready analytics specification that any developer can implement without interpretation errors, enabling daily answers to:
+1. Which CTA drives the strongest progression to signup completion?
+2. Where is the largest drop-off in the landing funnel?
+3. Which acquisition sources generate trial activation, not just clicks?
 
 ## User Stories
-1. As PM, I need CTA-level conversion rates so I can prioritize copy/layout changes that reduce time to first paying customer.
-2. As Marketing, I need source-level funnel drop-off so I can cut channels that generate low-intent traffic.
-3. As Founder, I need a daily trusted funnel snapshot so revenue-critical decisions are not guesswork.
+1. As a PM, I need CTA-level funnel conversion so I can prioritize high-impact landing changes.
+2. As a growth operator, I need source-level drop-off visibility so I can stop spending time on low-intent channels.
+3. As founder, I need a trusted daily funnel view so decisions on paid experiments are evidence-based.
 
 ## Platform Decision
-Default: GA4 (P0).
-Optional extension: PostHog (P1) only if one of these is true:
-- team needs session replay for unresolved conversion ambiguity after GA4 rollout,
-- team needs event-level self-serve product analytics not feasible in GA4 explorations.
+- P0 provider: `GA4`
+- P1 optional provider: `PostHog`
 
-Rationale:
-- GA4 is already partially present and fastest to standardize.
-- PostHog adds implementation and governance overhead; defer until GA4 signal quality is proven.
+Decision rule:
+- Implement GA4 first for speed and operational simplicity.
+- Add PostHog only if GA4 cannot resolve a concrete analysis gap after 7 days of clean GA4 data.
 
-## Requirements
+## Functional Requirements
 
-### FR-1 Event Taxonomy (Mandatory)
-Define and use this exact event set on landing flow:
+### FR-1: Canonical Event Taxonomy (P0)
+The implementation MUST emit exactly these canonical events for the landing flow:
 - `landing_view`
 - `scroll_depth`
 - `cta_click`
 - `signup_start`
 - `signup_submit`
 - `signup_complete`
-- `trial_activated` (server-confirmed, if available)
+- `trial_activated` (server-confirmed when available)
 
-Required common properties for every event:
-- `event_version` (start at `1`)
+Every event MUST include:
+- `event_version` (integer, start `1`)
 - `page_path`
 - `session_id` (anonymous allowed)
 - `timestamp_ms`
@@ -74,94 +63,122 @@ Required common properties for every event:
 - `utm_medium` (nullable)
 - `utm_campaign` (nullable)
 
-### FR-2 CTA Instrumentation (Mandatory)
-Track all high-intent CTAs on landing page sections:
-- nav
-- hero primary/secondary
-- pricing section CTA(s)
-- final page CTA
+### FR-2: CTA Click Tracking (P0)
+Track all high-intent landing CTAs:
+- `nav_primary`
+- `hero_primary`
+- `hero_secondary`
+- `pricing_primary`
+- `final_primary`
 
-`cta_click` required properties:
-- `cta_id` (stable slug)
+`cta_click` MUST include:
+- `cta_id` (stable slug from list above)
 - `cta_text`
-- `cta_section`
+- `cta_section` (`nav`, `hero`, `pricing`, `final`)
 - `destination`
 
-### FR-3 Scroll Depth (Mandatory)
-Emit `scroll_depth` at thresholds 25, 50, 75, 90.
-Required property:
+### FR-3: Scroll Depth Tracking (P0)
+Emit `scroll_depth` at thresholds:
+- `25`
+- `50`
+- `75`
+- `90`
+
+`scroll_depth` MUST include:
 - `percent_scrolled` (integer)
 
 Dedup rule:
-- fire each threshold once per session per page.
+- Each threshold fires once per session per page.
 
-### FR-4 Funnel Contract (Mandatory)
-Funnel stages and definitions:
-1. `landing_view`: first render complete.
-2. `scroll_50`: first `scroll_depth` with `percent_scrolled >= 50`.
-3. `cta_click`: qualifying CTA click.
-4. `signup_start`: first interaction with signup form.
-5. `signup_complete`: successful signup response.
-6. `trial_activated`: activation confirmed by backend state.
+### FR-4: Funnel Stage Contract (P0)
+Canonical funnel stages:
+1. `landing_view`
+2. `scroll_50` (derived from `scroll_depth >= 50`)
+3. `cta_click`
+4. `signup_start`
+5. `signup_complete`
+6. `trial_activated`
 
-Each stage must be queryable by day and by source (`utm_*`).
+Each stage MUST be segmentable by:
+- day
+- `utm_source`
+- `utm_medium`
+- `utm_campaign`
+- `cta_id` (where applicable)
 
-### FR-5 Environment + Safety (Mandatory)
-- Analytics must be disabled safely when measurement keys are absent.
-- No PII (email/phone/name/free-text lead content) in client analytics payloads.
-- Instrumentation must not throw runtime errors if analytics SDK is unavailable.
+### FR-5: Provider Abstraction (P1)
+Implementation MUST support one active provider selected by config:
+- `GA4`
+- `PostHog`
 
-### FR-6 Tool Choice Switch (Mandatory)
-Implementation must support one active provider at runtime:
-- `GA4` or `PostHog`
-- provider selected by env/config flag
-- same event taxonomy regardless of provider
+Constraint:
+- Canonical event names and required fields remain unchanged across providers.
 
-### FR-7 Verification Surface (Mandatory)
-Provide a lightweight verification checklist showing:
-- event fired name
-- required properties present
-- event appears in provider debug view
-- funnel exploration report built and saved
+### FR-6: Privacy and Data Safety (P0)
+The implementation MUST NOT send any PII to either provider:
+- no email
+- no phone
+- no name
+- no message/free-text lead content
+
+If provider SDK/key is missing:
+- no runtime exceptions
+- no retry loop spam
+- application UX unaffected
+
+### FR-7: Verification Checklist Artifact (P0)
+Delivery MUST include a verification checklist covering:
+- event emitted name
+- required fields present
+- provider debug view evidence
+- funnel report created and shared
+
+## Non-Functional Requirements
+- Performance: analytics scripts load non-blocking; no measurable regression in landing CWV versus pre-instrumentation baseline.
+- Reliability: event emission failures do not block navigation or form submission.
+- Maintainability: single event dictionary file for names/required properties to prevent drift.
 
 ## Revenue Funnel Mapping
-Awareness -> Signup -> Onboarding -> Trial -> Aha -> Paid mapping:
 - Awareness: `landing_view`, `scroll_depth`
-- Signup intent: `cta_click`, `signup_start`
-- Signup: `signup_complete`
-- Onboarding/Trial: `trial_activated`
-- Aha/Paid: out of this PRD scope, but this PRD must output attribution keys consumed downstream.
+- Signup Intent: `cta_click`, `signup_start`
+- Signup: `signup_submit`, `signup_complete`
+- Trial: `trial_activated`
+- Aha: out of scope (dependency for future PRD)
+- Paid: out of scope (dependency for future PRD)
 
-Current coverage gap:
-- Aha and Paid attribution from landing source remains incomplete until downstream instrumentation is aligned.
+Current weakest link this PRD addresses:
+- Awareness -> Signup instrumentation quality is insufficient for confident prioritization.
 
 ## Acceptance Criteria
-1. All defined events fire with required properties in production build.
-2. CTA report shows event counts segmented by `cta_id` and `cta_section`.
-3. Scroll report shows unique session counts at 25/50/75/90 thresholds.
-4. Funnel report exists for all six stages and is shareable with PM/Founder.
-5. UTM dimensions are present on events when URL contains UTM parameters.
-6. No PII fields are present in any analytics payload sample.
-7. Disabling provider key results in no runtime errors and no event send attempts.
-8. Documentation includes provider choice, env vars, and verification checklist.
+1. In production build, all canonical events fire with required fields and `event_version=1`.
+2. For each tracked CTA, at least one validated `cta_click` event appears in provider debug view during test run.
+3. `scroll_depth` events appear exactly once per threshold (25/50/75/90) per session per page.
+4. Funnel exploration/report exists with all six canonical stages.
+5. UTM parameters are present in event payloads when URL contains UTM query params.
+6. QA payload review confirms zero PII fields in all tracked events.
+7. With provider key removed, site behavior remains functional and console/error logs show no uncaught analytics exceptions.
+8. A short operator runbook exists documenting provider selection, env vars, and validation steps.
 
 ## Prioritization
-- P0: FR-1, FR-2, FR-3, FR-4, FR-5, FR-7
-- P1: FR-6 (if provider switch is not already available)
+- P0: FR-1, FR-2, FR-3, FR-4, FR-6, FR-7
+- P1: FR-5
 - P2: PostHog-specific enhancements (session replay, heatmaps)
 
-## Risks
-- Event drift from ad hoc naming: mitigated by strict taxonomy above.
-- False confidence from client-only conversion events: mitigated by `trial_activated` server-confirmed stage.
-- Performance regressions: mitigated by non-blocking script load and post-deploy CWV check.
-
 ## Dependencies
-- Existing landing page CTA components
-- Signup/trial state endpoints for `trial_activated`
-- Env configuration in deployment platform
+- Landing page CTA components and IDs
+- Signup success signal
+- Trial activation signal from backend
+- Deployment env var management
+
+## Risks and Mitigations
+- Risk: event naming drift across components.
+  - Mitigation: single canonical event dictionary and CI lint/check for event constants.
+- Risk: client-only conversion overstates funnel quality.
+  - Mitigation: include `trial_activated` server-confirmed stage.
+- Risk: performance regression from analytics script loading.
+  - Mitigation: non-blocking load strategy and post-deploy CWV comparison.
 
 ## Out of Scope
-- Building dashboards outside provider-native reporting
-- Retroactive historical backfill
-- CRM-level lifecycle reporting
-
+- Heatmaps/session replay optimization workflows
+- Attribution backfill for historical traffic
+- Cross-product analytics for authenticated dashboard
