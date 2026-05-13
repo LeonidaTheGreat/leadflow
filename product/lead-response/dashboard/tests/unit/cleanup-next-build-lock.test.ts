@@ -53,7 +53,7 @@ describe('cleanup-next-build-lock', () => {
     script.getActiveNextBuildPids()
 
     expect(mockedExecSync).toHaveBeenCalledWith(
-      'pgrep -f "node_modules/.bin/next build"',
+      expect.stringContaining("node_modules/(\\.bin/next|next/dist/bin/next) build"),
       { encoding: 'utf8' }
     )
   })

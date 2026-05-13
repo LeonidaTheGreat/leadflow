@@ -1,4 +1,20 @@
 /**
+ * TASK SPEC
+ * What:
+ * - Keep `app/api/page-views/route.ts` route exports limited to valid Next.js Route handlers.
+ * - Validate helper usage via `lib/page-views.ts` so `isTrackedPage` is not exported from the route module.
+ * - Verify `__tests__/page-view-logger.test.ts` imports `isTrackedPage` from `lib/page-views` and `POST` from the route.
+ *
+ * Verify:
+ * - `cd product/lead-response/dashboard && npx -y -p node@22 -p npm@10 next build --webpack` should no longer fail with `isTrackedPage` invalid route export.
+ * - `cd product/lead-response/dashboard && npx -y -p node@22 -p npm@10 npm test -- --runInBand __tests__/page-view-logger.test.ts` should pass.
+ * - `cd product/lead-response/dashboard && rg "export function isTrackedPage|export const TRACKED_PAGES" app/api/page-views/route.ts lib/page-views.ts`.
+ *
+ * Boundaries:
+ * - Do not change page-view business logic or tracked route rules.
+ * - Do not modify unrelated dashboard APIs/components.
+ * - Do not modify schema, migrations, or non-dashboard packages.
+ *
  * @jest-environment node
  *
  * Tests for page view logging (FR-3: agent_page_views table population).
@@ -21,7 +37,8 @@ jest.mock('@/lib/supabase-server', () => ({
 }))
 
 // ---- Import after mocks ----
-const { POST, isTrackedPage } = require('@/app/api/page-views/route')
+const { POST } = require('@/app/api/page-views/route')
+const { isTrackedPage } = require('@/lib/page-views')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 const AGENT_ID = '703b59fe-e16c-4dc6-8afa-a802db8c33d4'

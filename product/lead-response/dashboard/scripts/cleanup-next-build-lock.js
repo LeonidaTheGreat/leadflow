@@ -1,5 +1,31 @@
 #!/usr/bin/env node
 'use strict'
+/*
+TASK SPEC (dbfe5cb1-99c2-4134-8d4d-f361f335fa4f)
+What:
+- Change product/lead-response/dashboard/scripts/cleanup-next-build-lock.js:
+  - getActiveNextBuildPids() to scope process detection to this dashboard directory only.
+  - Add helper to safely escape absolute paths used in the pgrep regex.
+- Change product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts:
+  - Update assertions for the new scoped pgrep pattern.
+- Change product/lead-response/dashboard/app/api/page-views/route.ts:
+  - Remove non-route export fields and consume shared page tracking helpers from lib.
+- Add product/lead-response/dashboard/lib/page-views.ts:
+  - Define tracked page constants and `isTrackedPage()` helper outside the route module.
+- Change product/lead-response/dashboard/__tests__/page-view-logger.test.ts:
+  - Import `isTrackedPage` from the new helper module.
+
+Verify:
+- cd product/lead-response/dashboard && npx next build (expect build starts without false "next build running" wait from unrelated processes).
+- cd product/lead-response/dashboard && npm test -- tests/unit/cleanup-next-build-lock.test.ts (expect passing tests).
+- cd product/lead-response/dashboard && npm test -- __tests__/page-view-logger.test.ts (expect passing tests).
+- cd product/lead-response/dashboard && npm run build (expect success).
+
+Boundaries:
+- Do not modify app/components/business logic.
+- Do not change database schema, routes, or services outside dashboard build-lock script behavior.
+- Do not alter deployment config or unrelated scripts.
+*/
 
 const fs = require('fs')
 const path = require('path')
@@ -7,6 +33,11 @@ const { execSync } = require('child_process')
 
 // A build running longer than this is stuck — remove the lock regardless
 const STALE_AGE_MS = 10 * 60 * 1000 // 10 minutes
+const PROJECT_ROOT = path.resolve(__dirname, '..')
+
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 
 function getPPID(pid) {
   try {
@@ -33,7 +64,8 @@ function isProcessAlive(pid) {
 function getActiveNextBuildPids() {
   let rawPids
   try {
-    const out = execSync('pgrep -f "node_modules/.bin/next build"', { encoding: 'utf8' })
+    const scopedPattern = `${escapeRegex(PROJECT_ROOT)}/node_modules/(\\.bin/next|next/dist/bin/next) build`
+    const out = execSync(`pgrep -f '${scopedPattern}'`, { encoding: 'utf8' })
     rawPids = out.trim().split('\n').filter(Boolean).map(Number)
   } catch {
     return [] // pgrep exits 1 when no match
