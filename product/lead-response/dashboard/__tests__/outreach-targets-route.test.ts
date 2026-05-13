@@ -30,13 +30,17 @@ jest.mock('@/lib/logger', () => ({
   logger: { error: jest.fn() },
 }))
 
+const mockRequireAdminSession = jest.fn()
+jest.mock('@/lib/admin-auth', () => ({
+  requireAdminSession: (...args: unknown[]) => mockRequireAdminSession(...args),
+}))
+
 import { GET } from '../app/api/admin/outreach/targets/route'
 import { NextRequest } from 'next/server'
 
-function makeRequest(token?: string): NextRequest {
-  return {
-    headers: { get: (k: string) => (k === 'x-admin-token' ? token ?? null : null) },
-  } as unknown as NextRequest
+function makeRequest(authenticated: boolean = true): NextRequest {
+  mockRequireAdminSession.mockResolvedValueOnce(authenticated)
+  return {} as unknown as NextRequest
 }
 
 const TARGETS = [
@@ -61,19 +65,8 @@ describe('GET /api/admin/outreach/targets', () => {
     process.env = OLD_ENV
   })
 
-  it('returns 401 with no token', async () => {
-    const res = await GET(makeRequest())
-    expect(mockJson).toHaveBeenCalledWith({ error: 'Unauthorized' }, { status: 401 })
-  })
-
-  it('returns 401 with wrong token', async () => {
-    const res = await GET(makeRequest('wrong'))
-    expect(mockJson).toHaveBeenCalledWith({ error: 'Unauthorized' }, { status: 401 })
-  })
-
-  it('returns 401 when ADMIN_SECRET not configured', async () => {
-    delete process.env.ADMIN_SECRET
-    const res = await GET(makeRequest('any-token'))
+  it('returns 401 when admin session is missing or invalid', async () => {
+    const res = await GET(makeRequest(false))
     expect(mockJson).toHaveBeenCalledWith({ error: 'Unauthorized' }, { status: 401 })
   })
 
@@ -97,7 +90,7 @@ describe('GET /api/admin/outreach/targets', () => {
       }
     })
 
-    await GET(makeRequest('test-secret'))
+    await GET(makeRequest(true))
 
     const call = mockJson.mock.calls[0]
     const { targets } = call[0] as { targets: any[] }
@@ -116,7 +109,7 @@ describe('GET /api/admin/outreach/targets', () => {
       }),
     })
 
-    await GET(makeRequest('test-secret'))
+    await GET(makeRequest(true))
     expect(mockJson).toHaveBeenCalledWith({ error: 'Failed to fetch targets' }, { status: 500 })
   })
 
@@ -127,7 +120,7 @@ describe('GET /api/admin/outreach/targets', () => {
       }),
     })
 
-    await GET(makeRequest('test-secret'))
+    await GET(makeRequest(true))
     const call = mockJson.mock.calls[0]
     expect((call[0] as any).targets).toEqual([])
   })

@@ -29,25 +29,20 @@ jest.mock('@/lib/logger', () => ({
   },
 }))
 
+const mockRequireAdminSession = jest.fn()
+jest.mock('@/lib/admin-auth', () => ({
+  requireAdminSession: (...args: unknown[]) => mockRequireAdminSession(...args),
+}))
+
 // ============================================================
 // Helpers
 // ============================================================
 
-function makeRequest(
-  method: 'GET' | 'POST',
-  adminToken: string | null = 'test-secret'
-): NextRequest {
-  const headers: Record<string, string> = {
-    'content-type': 'application/json',
-  }
-  if (adminToken) {
-    headers['x-admin-token'] = adminToken
-  }
+function makeRequest(method: 'GET' | 'POST', authenticated: boolean = true): NextRequest {
+  mockRequireAdminSession.mockResolvedValueOnce(authenticated)
   return {
     method,
-    headers: {
-      get: (key: string) => headers[key.toLowerCase()] ?? null,
-    },
+    headers: { get: () => null },
     json: async () => ({}),
   } as unknown as NextRequest
 }
@@ -85,16 +80,8 @@ describe('POST /api/admin/outreach/blast', () => {
     jest.clearAllMocks()
   })
 
-  it('returns 401 when admin token is missing', async () => {
-    const req = makeRequest('POST', null)
-    const res = await POST(req)
-    const body = await res.json()
-    expect(res.status).toBe(401)
-    expect(body.error).toMatch(/unauthorized/i)
-  })
-
-  it('returns 401 when admin token is wrong', async () => {
-    const req = makeRequest('POST', 'wrong-token')
+  it('returns 401 when admin session is missing or invalid', async () => {
+    const req = makeRequest('POST', false)
     const res = await POST(req)
     const body = await res.json()
     expect(res.status).toBe(401)
@@ -253,8 +240,8 @@ describe('GET /api/admin/outreach/blast', () => {
     jest.clearAllMocks()
   })
 
-  it('returns 401 for missing token', async () => {
-    const req = makeRequest('GET', null)
+  it('returns 401 when admin session is missing or invalid', async () => {
+    const req = makeRequest('GET', false)
     const res = await GET(req)
     const body = await res.json()
     expect(res.status).toBe(401)

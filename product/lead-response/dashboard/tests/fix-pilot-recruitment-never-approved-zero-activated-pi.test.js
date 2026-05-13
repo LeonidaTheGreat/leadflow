@@ -53,9 +53,9 @@ const inviteRoute = read(inviteRoutePath)
 const campaignsPage = read(campaignsPagePath)
 const pilotsPage = read(pilotsPagePath)
 
-test('invite endpoint exists and enforces admin token auth', () => {
-  assert(inviteRoute.includes("request.headers.get('x-admin-token')"))
-  assert(inviteRoute.includes("process.env.ADMIN_SECRET"))
+test('invite endpoint exists and enforces admin session auth', () => {
+  assert(inviteRoute.includes("requireAdminSession"))
+  assert(inviteRoute.includes("@/lib/admin-auth"))
   assert(inviteRoute.includes("Unauthorized"))
 })
 
@@ -77,7 +77,9 @@ test('invite endpoint hashes tokens and returns a usable accept-invite URL', () 
 
 test('campaign UI exposes a Send Invite action for reachable recruitment targets', () => {
   assert(campaignsPage.includes("/api/admin/pilot-targets/${targetId}/invite"))
-  assert(campaignsPage.includes("'x-admin-token': adminToken"))
+  // Cookie auth: admin_session httpOnly cookie travels automatically with fetch.
+  // No admin token in request headers; 401 redirects to /admin/login.
+  assert(campaignsPage.includes("/admin/login"))
   assert(campaignsPage.includes('Send Invite'))
   assert(campaignsPage.includes('copyInviteUrl'))
 })
