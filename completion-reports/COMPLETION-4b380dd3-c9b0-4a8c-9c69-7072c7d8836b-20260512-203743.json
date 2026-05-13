@@ -1,0 +1,25 @@
+{
+  "taskId": "4b380dd3-c9b0-4a8c-9c69-7072c7d8836b",
+  "status": "completed",
+  "step": "1/5",
+  "role": "product-manager",
+  "deliverableType": "PRD",
+  "artifact": {
+    "id": "PRD-LEADFLOW-UTM-PARAMETER-CAPTURE-001",
+    "path": "docs/prd/PRD-LEADFLOW-UTM-PARAMETER-CAPTURE-001.md"
+  },
+  "summary": "Created PRD for landing-page UTM first-touch capture and marketing attribution persistence; updated canonical PRD DB mapping to avoid duplicate UC tracks.",
+  "architecturalDecisions": [
+    {
+      "decision": "Use first-touch attribution with session persistence and non-overwrite behavior.",
+      "reason": "Matches current funnel decision needs with minimal implementation complexity and avoids attribution churn within a session.",
+      "alternatives": "Last-touch or multi-touch attribution were deferred due to higher complexity and weaker time-to-first-paying-customer impact."
+    }
+  ],
+  "kpis": {
+    "missionPhase": "scale",
+    "targetGaps": ["NPS Score", "Signup to Activated Rate", "Trial to Paid Conversion"],
+    "attributionCompletenessTarget": ">=95%"
+  },
+  "timestamp": "2026-05-13T00:37:43Z"
+}
