@@ -23,10 +23,10 @@ Boundaries:
 */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isValidAdminSession } from '@/lib/admin-auth'
 
-// Routes that require authentication
+// Routes that require user authentication (customer-facing)
 const PROTECTED_ROUTES = [
-  '/admin',
   '/dashboard',
   '/settings',
   '/profile',
@@ -42,7 +42,13 @@ const AUTH_ROUTES = [
   '/signup',
 ]
 
-// Simulator smoke endpoint must be reachable without auth to avoid redirecting into login flow.
+// Admin paths that don't require admin_session (the login page and the public simulator)
+const ADMIN_PUBLIC_PREFIXES = [
+  '/admin/login',
+  '/admin/simulator',
+]
+
+// Customer-facing public bypass prefixes
 const PUBLIC_ROUTE_PREFIXES = [
   '/admin/simulator',
 ]
@@ -260,6 +266,28 @@ async function isTrialExpired(userId: string): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
+
+    // Admin route handling — separate auth track from customer user auth.
+    // /admin/* requires a valid admin_session cookie (set via /api/admin/login).
+    // /admin/login and /admin/simulator are public.
+    const isAdminPath = pathname === '/admin' || pathname.startsWith('/admin/')
+    const isAdminPublicPath = ADMIN_PUBLIC_PREFIXES.some(prefix =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`)
+    )
+    if (isAdminPath && !isAdminPublicPath) {
+      const sessionCookie = request.cookies.get('admin_session')?.value
+      const valid = await isValidAdminSession(sessionCookie)
+      if (!valid) {
+        const loginUrl = new URL('/admin/login', request.url)
+        if (pathname !== '/admin') loginUrl.searchParams.set('redirect', pathname)
+        return NextResponse.redirect(loginUrl)
+      }
+      const response = NextResponse.next()
+      response.headers.set('X-Frame-Options', 'DENY')
+      response.headers.set('X-Content-Type-Options', 'nosniff')
+      response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+      return response
+    }
 
     const isPublicBypassRoute = PUBLIC_ROUTE_PREFIXES.some(prefix =>
       pathname === prefix || pathname.startsWith(`${prefix}/`)

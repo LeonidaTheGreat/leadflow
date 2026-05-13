@@ -22,14 +22,7 @@ import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
 import { sendPilotOutreachEmail } from '@/lib/outreach-email-service'
 import { PilotOutreachBlastService } from '@/lib/services/pilot-outreach-blast-service'
-
-// Admin auth check — verify X-Admin-Token header matches ADMIN_SECRET
-function checkAdminAuth(request: NextRequest): boolean {
-  const adminToken = request.headers.get('x-admin-token')
-  const expectedToken = process.env.ADMIN_SECRET
-  if (!expectedToken) return false
-  return adminToken === expectedToken
-}
+import { requireAdminSession } from '@/lib/admin-auth'
 
 const blastService = new PilotOutreachBlastService({
   db: postgrestAdmin,
@@ -57,7 +50,7 @@ const blastService = new PilotOutreachBlastService({
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    if (!checkAdminAuth(request)) {
+    if (!(await requireAdminSession(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const result = await blastService.runBlast()
@@ -77,7 +70,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    if (!checkAdminAuth(request)) {
+    if (!(await requireAdminSession(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

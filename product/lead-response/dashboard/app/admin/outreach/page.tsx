@@ -1,6 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+function redirectToAdminLogin(router: ReturnType<typeof useRouter>) {
+  router.replace('/admin/login?redirect=/admin/outreach')
+}
 
 // ============================================================
 // Pilot Recruitment Blast Panel
@@ -21,28 +26,17 @@ interface BlastResult {
 }
 
 function PilotOutreachBlastPanel() {
+  const router = useRouter()
   const [stats, setStats] = useState<BlastStats | null>(null)
   const [statsLoading, setStatsLoading] = useState(true)
   const [blasting, setBlasting] = useState(false)
   const [blastResult, setBlastResult] = useState<BlastResult | null>(null)
-  const [adminToken, setAdminToken] = useState<string | null>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('admin_token')
-    if (stored) setAdminToken(stored)
-  }, [])
 
   useEffect(() => {
     async function loadStats() {
-      const token = localStorage.getItem('admin_token')
-      if (!token) {
-        setStatsLoading(false)
-        return
-      }
       try {
-        const res = await fetch('/api/admin/outreach/blast', {
-          headers: { 'x-admin-token': token },
-        })
+        const res = await fetch('/api/admin/outreach/blast')
+        if (res.status === 401) { redirectToAdminLogin(router); return }
         if (res.ok) {
           const data = await res.json()
           setStats(data.stats ?? null)
@@ -54,18 +48,9 @@ function PilotOutreachBlastPanel() {
       }
     }
     loadStats()
-  }, [])
+  }, [router])
 
   async function handleBlast() {
-    let token = adminToken
-    if (!token) {
-      const entered = prompt('Enter admin token (ADMIN_SECRET):')
-      if (!entered) return
-      token = entered
-      localStorage.setItem('admin_token', token)
-      setAdminToken(token)
-    }
-
     const confirmed = window.confirm(
       `This will send outreach emails to all "identified" recruitment targets.\n\nAre you sure?`
     )
@@ -76,18 +61,14 @@ function PilotOutreachBlastPanel() {
     try {
       const res = await fetch('/api/admin/outreach/blast', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': token,
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
+      if (res.status === 401) { redirectToAdminLogin(router); return }
       const data = await res.json()
       if (res.ok) {
         setBlastResult(data)
         // Refresh stats
-        const statsRes = await fetch('/api/admin/outreach/blast', {
-          headers: { 'x-admin-token': token },
-        })
+        const statsRes = await fetch('/api/admin/outreach/blast')
         if (statsRes.ok) {
           const statsData = await statsRes.json()
           setStats(statsData.stats ?? null)
@@ -196,16 +177,16 @@ const TARGET_STATUS_STYLES: Record<string, string> = {
   nurture: 'bg-yellow-100 text-yellow-700',
 }
 
-function PilotRecruitmentTargetsTable({ adminToken }: { adminToken: string | null }) {
+function PilotRecruitmentTargetsTable() {
+  const router = useRouter()
   const [targets, setTargets] = useState<RecruitmentTarget[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
-      const token = adminToken || localStorage.getItem('admin_token')
-      if (!token) { setLoading(false); return }
       try {
-        const res = await fetch('/api/admin/outreach/targets', { headers: { 'x-admin-token': token } })
+        const res = await fetch('/api/admin/outreach/targets')
+        if (res.status === 401) { redirectToAdminLogin(router); return }
         if (res.ok) {
           const data = await res.json()
           setTargets(data.targets ?? [])
@@ -214,7 +195,7 @@ function PilotRecruitmentTargetsTable({ adminToken }: { adminToken: string | nul
       finally { setLoading(false) }
     }
     load()
-  }, [adminToken])
+  }, [router])
 
   if (loading) return <p className="text-gray-400 text-sm mb-8">Loading targets…</p>
   if (targets.length === 0) return (
@@ -335,21 +316,15 @@ function daysSince(iso: string | null): string {
 }
 
 export default function OutreachPage() {
+  const router = useRouter()
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [summary, setSummary] = useState<Summary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'uncontacted' | 'high' | 'pilot'>('uncontacted')
   const [copied, setCopied] = useState<string | null>(null)
-  const [adminToken, setAdminToken] = useState<string | null>(null)
   const [sending, setSending] = useState<string | null>(null)
   const [sendResult, setSendResult] = useState<Record<string, 'sent' | 'error'>>({})
-
-  // Load admin token from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('admin_token')
-    if (stored) setAdminToken(stored)
-  }, [])
 
   useEffect(() => {
     async function load() {
@@ -383,28 +358,17 @@ export default function OutreachPage() {
   }
 
   async function sendInvite(candidate: Candidate) {
-    let token = adminToken
-    if (!token) {
-      const entered = prompt('Enter admin token (ADMIN_SECRET):')
-      if (!entered) return
-      token = entered
-      localStorage.setItem('admin_token', token)
-      setAdminToken(token)
-    }
-
     setSending(candidate.id)
     try {
       const res = await fetch('/api/admin/invite-pilot', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': token,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: candidate.email,
           name: candidate.name || candidate.email,
         }),
       })
+      if (res.status === 401) { redirectToAdminLogin(router); return }
       const data = await res.json()
       if (data.success) {
         setSendResult((prev) => ({ ...prev, [candidate.id]: 'sent' }))
@@ -491,7 +455,7 @@ export default function OutreachPage() {
       <PilotOutreachBlastPanel />
 
       {/* Recruitment targets table */}
-      <PilotRecruitmentTargetsTable adminToken={adminToken} />
+      <PilotRecruitmentTargetsTable />
 
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
@@ -502,11 +466,6 @@ export default function OutreachPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          {adminToken && (
-            <span className="inline-flex items-center px-2 py-1 text-xs bg-green-50 text-green-700 border border-green-200 rounded-md">
-              Token set
-            </span>
-          )}
           <button
             onClick={exportCSV}
             className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md hover:bg-gray-50"

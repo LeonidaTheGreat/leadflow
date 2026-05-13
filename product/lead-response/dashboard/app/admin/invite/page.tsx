@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Mail, Send, Copy, Check, AlertCircle, Loader2, Calendar, User, MessageSquare } from 'lucide-react'
 
 interface PilotInvite {
@@ -28,6 +29,7 @@ interface ListResponse {
 }
 
 export default function AdminInvitePage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
@@ -41,46 +43,26 @@ export default function AdminInvitePage() {
 
   const [invites, setInvites] = useState<PilotInvite[]>([])
   const [loadingInvites, setLoadingInvites] = useState(true)
-  const [adminToken, setAdminToken] = useState<string | null>(null)
 
-  // Get admin token from localStorage or prompt
+  function redirectToLogin() {
+    router.replace('/admin/login?redirect=/admin/invite')
+  }
+
   useEffect(() => {
-    const stored = localStorage.getItem('admin_token')
-    if (stored) {
-      setAdminToken(stored)
-    } else {
-      const token = prompt('Enter admin token (ADMIN_SECRET):')
-      if (token) {
-        localStorage.setItem('admin_token', token)
-        setAdminToken(token)
-      }
-    }
+    loadInvites()
   }, [])
 
-  // Load invites on mount
-  useEffect(() => {
-    if (adminToken) {
-      loadInvites()
-    }
-  }, [adminToken])
-
   async function loadInvites() {
-    if (!adminToken) return
-
     setLoadingInvites(true)
     try {
       const response = await fetch('/api/admin/invite-pilot?action=list', {
         method: 'GET',
-        headers: {
-          'x-admin-token': adminToken,
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem('admin_token')
-          setAdminToken(null)
+          redirectToLogin()
           return
         }
         throw new Error('Failed to load invites')
@@ -105,22 +87,20 @@ export default function AdminInvitePage() {
     setInviteUrl(null)
 
     try {
-      if (!adminToken) {
-        throw new Error('Admin token not set')
-      }
-
       const response = await fetch('/api/admin/invite-pilot', {
         method: 'POST',
-        headers: {
-          'x-admin-token': adminToken,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email.trim(),
           name: name.trim(),
           message: message.trim() || undefined
         })
       })
+
+      if (response.status === 401) {
+        redirectToLogin()
+        return
+      }
 
       const data: ApiResponse = await response.json()
 
@@ -158,24 +138,6 @@ export default function AdminInvitePage() {
       setCopiedUrl(true)
       setTimeout(() => setCopiedUrl(false), 2000)
     }
-  }
-
-  if (!adminToken) {
-    return (
-      <div className="min-h-screen bg-slate-900 p-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <div className="flex gap-3">
-              <AlertCircle className="text-yellow-600 flex-shrink-0 mt-0.5" size={20} />
-              <div>
-                <h3 className="font-semibold text-yellow-900">Authentication Required</h3>
-                <p className="text-yellow-700 mt-1">Please provide your admin token to continue.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (

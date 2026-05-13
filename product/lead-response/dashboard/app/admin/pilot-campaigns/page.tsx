@@ -20,6 +20,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -121,6 +122,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function PilotCampaignsPage() {
+  const router = useRouter()
   const [campaign, setCampaign] = useState<Campaign | null>(null)
   const [stats, setStats] = useState<CampaignStats | null>(null)
   const [targets, setTargets] = useState<Target[]>([])
@@ -130,20 +132,7 @@ export default function PilotCampaignsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [inviteLoading, setInviteLoading] = useState<string | null>(null)
   const [inviteResults, setInviteResults] = useState<Record<string, { url: string; copied: boolean }>>({})
-  const [adminToken, setAdminToken] = useState<string | null>(null)
 
-  useEffect(() => {
-    const stored = localStorage.getItem('admin_token')
-    if (stored) {
-      setAdminToken(stored)
-    } else {
-      const token = prompt('Enter admin token (ADMIN_SECRET):')
-      if (token) {
-        localStorage.setItem('admin_token', token)
-        setAdminToken(token)
-      }
-    }
-  }, [])
   const [newTarget, setNewTarget] = useState({
     name: '',
     email: '',
@@ -254,20 +243,17 @@ export default function PilotCampaignsPage() {
   }
 
   async function handleSendInvite(targetId: string) {
-    if (!adminToken) {
-      alert('Admin token not set. Refresh the page.')
-      return
-    }
-
     setInviteLoading(targetId)
     try {
       const res = await fetch(`/api/admin/pilot-targets/${targetId}/invite`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': adminToken,
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
+
+      if (res.status === 401) {
+        router.replace('/admin/login?redirect=/admin/pilot-campaigns')
+        return
+      }
 
       const data = await res.json()
       if (data.success) {
