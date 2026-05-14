@@ -29,18 +29,20 @@ test('defines explicit DB health timeout constant', () => {
   assert.ok(source.includes('const DB_HEALTH_TIMEOUT_MS = 1500'), 'missing DB_HEALTH_TIMEOUT_MS constant')
 })
 
-test('implements withTimeout wrapper', () => {
-  assert.ok(source.includes('function withTimeout'), 'missing withTimeout helper')
-  assert.ok(source.includes('timeout after ${timeoutMs}ms'), 'timeout error detail missing')
+test('implements abortable DB probe helper', () => {
+  assert.ok(source.includes('async function checkDatabaseHealth'), 'missing checkDatabaseHealth helper')
+  assert.ok(source.includes('const controller = new AbortController()'), 'missing AbortController timeout guard')
+  assert.ok(source.includes('setTimeout(() => controller.abort(), DB_HEALTH_TIMEOUT_MS)'), 'abort timeout not configured')
 })
 
-test('applies timeout wrapper to real_estate_agents query', () => {
-  assert.ok(source.includes('withTimeout('), 'db query should use withTimeout')
-  assert.ok(source.includes(".from('real_estate_agents')"), 'db query table should remain real_estate_agents')
+test('applies timeout guard to real_estate_agents query', () => {
+  assert.ok(source.includes("new URL('/real_estate_agents', postgrestUrl)"), 'db query table should remain real_estate_agents')
+  assert.ok(source.includes('signal: controller.signal'), 'fetch should bind abort signal')
 })
 
 test('database errors still flow into check detail', () => {
-  assert.ok(source.includes('detail: error ? `query failed: ${error.message}` : \'connected\''), 'expected query failed detail handling')
+  assert.ok(source.includes('query failed: HTTP ${response.status}'), 'expected HTTP query failed detail handling')
+  assert.ok(source.includes('exception: timeout after ${DB_HEALTH_TIMEOUT_MS}ms'), 'expected timeout exception detail handling')
 })
 
 console.log(`\nResults: ${passed} passed, ${failed} failed`)

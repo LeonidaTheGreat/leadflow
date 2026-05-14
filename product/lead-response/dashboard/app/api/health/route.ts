@@ -1,25 +1,71 @@
+/**
+ * Task Spec (28489ac8-8554-4d02-a7bb-eaf791afe7a3)
+ * What:
+ * - Change `product/lead-response/dashboard/app/api/health/route.ts` `GET()` database probe to use
+ *   an abortable direct PostgREST fetch (`checkDatabaseHealth`) instead of a non-canceling wrapper.
+ * - Update timeout guard tests in:
+ *   - `product/lead-response/dashboard/tests/fix-health-route-db-timeout-guard.test.js`
+ *   - `product/lead-response/dashboard/tests/qc-health-timeout-behavior.test.js`
+ *   to assert the new abort-based timeout path.
+ * Verify:
+ * - `cd product/lead-response/dashboard && npm test -- tests/fix-health-route-db-timeout-guard.test.js tests/qc-health-timeout-behavior.test.js`
+ * - `cd product/lead-response/dashboard && npx next build`
+ * - `cd /private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-28489ac8-8554-4d02-a7bb-eaf791afe7a3 && npm test`
+ * - `cd /private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-28489ac8-8554-4d02-a7bb-eaf791afe7a3 && npm run build`
+ * Boundaries:
+ * - Do not modify project.config smoke test IDs/URLs.
+ * - Do not touch unrelated auth/onboarding middleware or schema/migrations.
+ * - Do not change non-health API routes.
+ */
 import { NextResponse } from 'next/server'
-import { postgrestAdmin, isPostgrestConfigured } from '@/lib/db'
+import { isPostgrestConfigured } from '@/lib/db'
 
 const DB_HEALTH_TIMEOUT_MS = 1500
 
-function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error(`timeout after ${timeoutMs}ms`))
-    }, timeoutMs)
+async function checkDatabaseHealth(): Promise<{ ok: boolean; detail: string }> {
+  const postgrestUrl = (process.env.NEXT_PUBLIC_API_URL || '').trim()
+  const postgrestKey = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
+  if (!postgrestUrl) {
+    return { ok: false, detail: 'skipped — NEXT_PUBLIC_API_URL missing' }
+  }
 
-    promise.then(
-      (value) => {
-        clearTimeout(timer)
-        resolve(value)
-      },
-      (error) => {
-        clearTimeout(timer)
-        reject(error)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), DB_HEALTH_TIMEOUT_MS)
+  try {
+    const url = new URL('/real_estate_agents', postgrestUrl)
+    url.searchParams.set('select', 'id')
+    url.searchParams.set('limit', '1')
+
+    const headers: Record<string, string> = { Accept: 'application/json' }
+    if (postgrestKey) {
+      headers.apikey = postgrestKey
+      headers.Authorization = `Bearer ${postgrestKey}`
+    }
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      const body = await response.text()
+      return {
+        ok: false,
+        detail: `query failed: HTTP ${response.status}${body ? ` ${body.slice(0, 120)}` : ''}`,
       }
-    )
-  })
+    }
+
+    return { ok: true, detail: 'connected' }
+  } catch (err: any) {
+    if (err?.name === 'AbortError') {
+      return { ok: false, detail: `exception: timeout after ${DB_HEALTH_TIMEOUT_MS}ms` }
+    }
+    return { ok: false, detail: `exception: ${err?.message || 'unknown error'}` }
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 /**
@@ -49,24 +95,8 @@ export async function GET() {
 
   // 2. Database connectivity via PostgREST
   if (isPostgrestConfigured()) {
-    try {
-      const dbCheckPromise = postgrestAdmin
-        .from('real_estate_agents')
-        .select('id')
-        .limit(1) as PromiseLike<{ error: { message: string } | null }>
-
-      const { error } = await withTimeout(
-        dbCheckPromise,
-        DB_HEALTH_TIMEOUT_MS
-      )
-      checks['database'] = {
-        ok: !error,
-        detail: error ? `query failed: ${error.message}` : 'connected' }
-    } catch (err: any) {
-      checks['database'] = {
-        ok: false,
-        detail: `exception: ${err.message}` }
-    }
+    const db = await checkDatabaseHealth()
+    checks['database'] = db
   } else {
     checks['database'] = {
       ok: false,
