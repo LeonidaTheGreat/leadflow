@@ -394,7 +394,7 @@ export default function PricingPage() {
 
           {/* Demo Booking CTA */}
           <div className="mb-16 text-center">
-            <p className="text-slate-300 mb-4 text-lg">Not sure which plan is right for you?</p>
+            <p className="text-slate-300 mb-4 text-lg">Questions? Book a 15-min demo</p>
             <a
               href={DEMO_BOOKING_URL}
               target="_blank"
