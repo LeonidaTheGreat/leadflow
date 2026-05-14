@@ -53,13 +53,71 @@ export function PostHogFunnelsDashboard() {
   async function fetchFunnelData() {
     try {
       setLoading(true)
-      
-      // In a real implementation, this would fetch from PostHog API
-      // For now, we generate sample data based on the selected funnel
+
+      const funnelMap: Record<string, string> = {
+        signup: 'signup',
+        onboarding: 'onboarding',
+        activation: 'conversion',
+      }
+      const apiFunnel = funnelMap[selectedFunnel] || 'signup'
+
+      const res = await fetch(
+        `/api/analytics/conversion-funnel?funnel=${apiFunnel}&days=${timeRange}`
+      )
+      if (res.ok) {
+        const json = await res.json()
+        if (json.success && json.data?.steps?.length > 0) {
+          const apiSteps = json.data.steps as Array<{
+            event: string
+            label: string
+            count: number
+            conversionRate: number
+            dropOffRate: number
+          }>
+
+          const iconPool = [
+            <MousePointer key="i0" className="w-4 h-4" />,
+            <Users key="i1" className="w-4 h-4" />,
+            <CheckCircle key="i2" className="w-4 h-4" />,
+            <Zap key="i3" className="w-4 h-4" />,
+            <TrendingUp key="i4" className="w-4 h-4" />,
+          ]
+          const colorPool = [
+            'bg-blue-100 text-blue-600',
+            'bg-purple-100 text-purple-600',
+            'bg-emerald-100 text-emerald-600',
+            'bg-amber-100 text-amber-600',
+            'bg-indigo-100 text-indigo-600',
+          ]
+
+          const steps: FunnelStep[] = apiSteps.map((s, i) => ({
+            id: String(i + 1),
+            name: s.label,
+            event: s.event,
+            count: s.count,
+            previousCount: i > 0 ? apiSteps[i - 1].count : undefined,
+            conversionRate: s.conversionRate,
+            dropOffRate: s.dropOffRate,
+            icon: iconPool[i % iconPool.length],
+            color: colorPool[i % colorPool.length],
+          }))
+
+          setFunnelData({
+            steps,
+            totalConversionRate: json.data.totalConversionRate,
+            avgTimeToComplete: 0,
+            period: json.data.period,
+          })
+          return
+        }
+      }
+
       const data = generateSampleFunnelData(selectedFunnel, timeRange)
       setFunnelData(data)
     } catch (error) {
       console.error('Error fetching funnel data:', error)
+      const data = generateSampleFunnelData(selectedFunnel, timeRange)
+      setFunnelData(data)
     } finally {
       setLoading(false)
     }

@@ -79,11 +79,20 @@ export function TrialCountdownWidget() {
           <Clock className={`w-5 h-5 flex-shrink-0 ${styles.text}`} />
           <span className={`text-sm font-semibold ${styles.text}`}>{statusText}</span>
         </div>
-        {urgency > 0 && (
-          <button data-testid="trial-upgrade-cta" onClick={handleCheckout} disabled={checkoutLoading} className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap">
-            {checkoutLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : 'Upgrade Now'}
-          </button>
-        )}
+        <button
+          data-testid="trial-upgrade-cta"
+          onClick={handleCheckout}
+          disabled={checkoutLoading}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
+        >
+          {checkoutLoading ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+          ) : urgency > 0 ? (
+            'Upgrade Now'
+          ) : (
+            'View Plans'
+          )}
+        </button>
       </div>
       {checkoutError && <p className="text-xs mt-2 text-rose-600 dark:text-rose-400">{checkoutError}</p>}
     </div>

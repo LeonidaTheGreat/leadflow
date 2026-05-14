@@ -1,7 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowRight, Zap, Loader2 } from 'lucide-react'
+
+function trackBannerEvent(eventType: string, metadata: Record<string, unknown> = {}) {
+  fetch('/api/events/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event: eventType, properties: metadata }),
+  }).catch(() => {})
+}
 
 interface UpgradeBannerProps {
   planTier?: string | null
@@ -12,16 +20,20 @@ export function UpgradeBanner({ planTier }: UpgradeBannerProps) {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
-  // Only show for trial, pilot, or null (unpaid) agents
-  if (planTier && !['trial', 'pilot', null].includes(planTier)) {
-    return null
-  }
+  const shouldShow = isVisible && (!planTier || ['trial', 'pilot'].includes(planTier))
 
-  if (!isVisible) {
+  useEffect(() => {
+    if (shouldShow) {
+      trackBannerEvent('upgrade_banner_viewed', { plan_tier: planTier, source: 'dashboard' })
+    }
+  }, [shouldShow, planTier])
+
+  if (!shouldShow) {
     return null
   }
 
   async function handleUpgrade() {
+    trackBannerEvent('upgrade_banner_clicked', { plan_tier: planTier, source: 'dashboard' })
     setCheckoutLoading(true)
     setCheckoutError(null)
     try {
@@ -73,7 +85,10 @@ export function UpgradeBanner({ planTier }: UpgradeBannerProps) {
             )}
           </button>
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={() => {
+              trackBannerEvent('upgrade_banner_dismissed', { plan_tier: planTier, source: 'dashboard' })
+              setIsVisible(false)
+            }}
             className="px-3 py-2 text-white hover:bg-white/20 rounded-lg transition-colors"
           >
             ✕

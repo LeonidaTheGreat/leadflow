@@ -25,6 +25,10 @@ const VALID_EVENTS = new Set([
   'trial_pricing_viewed',
   'trial_upgrade_clicked',
   'trial_checkout_started',
+  // Upgrade banner conversion events
+  'upgrade_banner_viewed',
+  'upgrade_banner_clicked',
+  'upgrade_banner_dismissed',
 ])
 
 function getSupabase() {
