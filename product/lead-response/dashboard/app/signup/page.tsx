@@ -1,3 +1,23 @@
+/*
+Task Spec (05cd51d7-ff40-47be-beea-7fe2c7b46f08)
+What:
+- Change file: product/lead-response/dashboard/app/signup/page.tsx
+- Functions/components: SignupPage (route module-level behavior), SignupPageInner
+- Add route-level rendering controls to keep /signup statically available and avoid runtime-only route resolution drift.
+- Change file: product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts
+- Test: enforce explicit static rendering contract for /signup.
+
+Verify:
+- cd product/lead-response/dashboard && npm test -- __tests__/fix-signup-page-smoke-500.test.ts
+- cd product/lead-response/dashboard && npx next build
+- curl -I https://leadflow-ai-five.vercel.app/signup returns HTTP 200 after deploy
+- grep check: rg -n "dynamic = 'force-static'" product/lead-response/dashboard/app/signup/page.tsx
+
+Boundaries:
+- Do not change signup form fields, pricing plans, or checkout API payloads.
+- Do not modify auth middleware, API route handlers, or database logic.
+- Do not touch unrelated deployment config outside dashboard signup route guardrails.
+*/
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -10,6 +30,8 @@ import { Label } from '@/components/ui/label'
 import { Suspense } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 import { trackFormEvent } from '@/lib/analytics/ga4'
+
+export const dynamic = 'force-static'
 
 // Pricing tiers as per UC-9 spec
 // HARDCODED: No env var dependency to ensure plans always render.
