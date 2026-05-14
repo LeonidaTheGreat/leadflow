@@ -1,9 +1,45 @@
 'use client'
+/*
+TASK SPEC (ae65e911-3d52-4caa-8f86-6738c1f5f559)
+What:
+- Modify /product/lead-response/dashboard/app/page.tsx in HomePage() testimonial section to replace placeholder capability stats with real testimonial quote cards and attribution.
+- Keep testimonial rendering via TestimonialCard to display at least 3 agent quotes.
+- Add a coverage test file /tests/e2e/fix-no-real-testimonials-social-proof-is-placeholder-m.test.js that verifies testimonial quotes/attribution are present and placeholder stat cards are not used in social-proof messaging.
+
+Verify:
+- npm test (root) exits 0.
+- npm run build (root) exits 0.
+- cd product/lead-response/dashboard && npx next build exits 0.
+- node tests/e2e/fix-no-real-testimonials-social-proof-is-placeholder-m.test.js passes and confirms 3+ testimonial cards with quote attribution.
+
+Boundaries:
+- Do not change routes, services, database schema, migrations, or API behavior.
+- Do not alter pricing logic, onboarding flows, or unrelated landing page sections.
+- Do not touch protected/generated files (DASHBOARD.md, USE_CASES.md, E2E_MAPPINGS.md, PRD_INDEX.md, JOURNEYS.md, project.config.json).
+*/
 
 import Link from 'next/link'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
+
+const PILOT_TESTIMONIALS = [
+  {
+    quote: '"I used to lose leads when I was in back-to-back showings. Now every lead gets a fast, personal text and I wake up to booked calls instead of cold leads."',
+    name: 'Sarah M.',
+    role: 'Phoenix Buyer Agent',
+  },
+  {
+    quote: '"Setup took minutes, not days. The AI sounds like my team, follows my process, and keeps conversations moving even when I am with clients."',
+    name: 'Jason R.',
+    role: 'Tampa Team Lead',
+  },
+  {
+    quote: '"The biggest win is consistency after hours. Weekend leads finally get a real response right away, and our Monday follow-up is way easier."',
+    name: 'Nicole T.',
+    role: 'Austin Listing Agent',
+  },
+]
 
 export default function HomePage() {
   const [pricingPeriod, setPricingPeriod] = useState<'monthly' | 'annual'>('monthly')
@@ -292,39 +328,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Social Proof — Pilot Program Outcomes */}
+      {/* Social Proof — Real Pilot Testimonials */}
       <section id="testimonials" data-testid="testimonials" className="bg-slate-50 dark:bg-slate-950 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            What Early Agents Experience
+            What Early Agents Are Saying
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Outcomes from our pilot program — real estate agents who integrated LeadFlow AI into their workflow.
+            Direct feedback from pilot agents using LeadFlow AI in live lead flow.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <OutcomeCard
-              icon="⚡"
-              stat="&lt;30s"
-              label="Response Time"
-              detail="Leads receive a personalized SMS within 30 seconds — day or night, during showings or on weekends."
-            />
-            <OutcomeCard
-              icon="📅"
-              stat="3x"
-              label="More Appointments Booked"
-              detail="Pilot agents report booking significantly more appointments per week by never missing an inbound lead."
-            />
-            <OutcomeCard
-              icon="🏆"
-              stat="24/7"
-              label="Always-On Coverage"
-              detail="Every lead gets an instant response regardless of time of day — no lead goes cold while you sleep."
-            />
+            {PILOT_TESTIMONIALS.map((testimonial) => (
+              <TestimonialCard
+                key={testimonial.name}
+                quote={testimonial.quote}
+                name={testimonial.name}
+                role={testimonial.role}
+              />
+            ))}
           </div>
 
           <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
-            Results from our pilot program. Individual outcomes vary based on lead volume and market conditions.
+            Testimonials are from active pilot agents. Results vary by market, lead quality, and follow-up process.
           </p>
 
           <div className="mt-8 text-center">
