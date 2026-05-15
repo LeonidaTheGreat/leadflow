@@ -1,3 +1,21 @@
+/**
+ * TASK SPEC (01fc7413-553c-4a7f-bb26-f9f94cec5a24)
+ * What:
+ * - Modify `product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts` in `POST`
+ *   to include `inviteUrl` in JSON responses when invite email delivery fails (`emailSent === false`)
+ *   for both fresh invite creation and existing-invite resend paths.
+ * - Update `product/lead-response/dashboard/tests/fix-pilot-recruitment-never-approved-zero-activated-pi.test.js`
+ *   to verify the route returns the manual fallback `inviteUrl` on email failure.
+ * Verify:
+ * - `cd product/lead-response/dashboard && node tests/fix-pilot-recruitment-never-approved-zero-activated-pi.test.js` exits 0.
+ * - `cd product/lead-response/dashboard && npm test -- --runInBand tests/pilot-signup.test.ts` exits 0.
+ * - `rg -n "inviteUrl" product/lead-response/dashboard/app/api/admin/pilot-targets/\[id\]/invite/route.ts`
+ *   shows conditional response inclusion tied to `emailSent`.
+ * Boundaries:
+ * - Do not change DB schema, token generation, auth checks, or invite email templates.
+ * - Do not alter unrelated admin UI or campaign filtering logic.
+ * - Do not touch protected auto-generated docs/config files.
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
@@ -95,6 +113,7 @@ export async function POST(
         agentId: (existingInvite as any).agent_id,
         expiresAt: (existingInvite as any).token_expires_at,
         emailSent,
+        ...(emailSent ? {} : { inviteUrl }),
         note: 'Existing invite refreshed and resent' })
     }
 
@@ -176,7 +195,9 @@ export async function POST(
       success: true,
       agentId,
       expiresAt: expiresAt.toISOString(),
-      emailSent })
+      emailSent,
+      ...(emailSent ? {} : { inviteUrl }),
+    })
   } catch (error: any) {
     logger.error('Error in target invite endpoint:', error)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })

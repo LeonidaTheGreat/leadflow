@@ -73,6 +73,16 @@ test('invite endpoint hashes tokens and returns a usable accept-invite URL', () 
   assert(inviteRoute.includes('accept-invite?token=${rawToken}'))
   assert(inviteRoute.includes('sendPilotInviteEmail'))
   assert(inviteRoute.includes("status: 'contacted'"))
+  assert(inviteRoute.includes('...(emailSent ? {} : { inviteUrl })'))
+})
+
+test('invite endpoint returns manual inviteUrl fallback only when email delivery fails', () => {
+  const conditionalCount = (inviteRoute.match(/\.\.\.\(emailSent \? \{\} : \{ inviteUrl \}\)/g) || []).length
+  assert.strictEqual(
+    conditionalCount,
+    2,
+    `Expected conditional inviteUrl fallback in resend + new invite responses, found ${conditionalCount}`
+  )
 })
 
 test('campaign UI exposes a Send Invite action for reachable recruitment targets', () => {
