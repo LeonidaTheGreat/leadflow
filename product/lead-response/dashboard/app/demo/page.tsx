@@ -483,7 +483,7 @@ export default function DemoPage() {
                     </button>
                   </div>
                   <p className="mt-3 text-xs text-slate-500">
-                    No credit card required • 30 days free • Cancel anytime
+                    No credit card required • 14 days free • Cancel anytime
                   </p>
                 </div>
               </div>
