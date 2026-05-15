@@ -1,29 +1,26 @@
 'use client'
 
 /*
-TASK SPEC (61d47e0b-b81c-4c12-9c85-03945a31ee98)
+TASK SPEC (bdc0360b-df24-4a5a-9878-94885021de14)
 What:
 - Change file: product/lead-response/dashboard/app/page.tsx
 - Function: HomePage()
-- Update stale feature copy that claims an outdated Claude model name to model-agnostic text aligned with AI_MODEL-driven runtime behavior.
-- Change file: product/lead-response/dashboard/lib/ai.ts
-- Functions/constants: getModelClient(), qualifyLead(), Anthropic fallback constant usage
-- Upgrade Anthropic fallback model from "claude-3-haiku-20240307" to "claude-haiku-4-5" and remove stale Sonnet reference in qualification docstring.
+- Keep landing page section order as Features -> How It Works -> Mid-page CTA -> Testimonials -> Pricing.
+- Keep PRD R2 AC-2 copy in How It Works steps:
+  1) Connect Your CRM
+  2) AI Responds Instantly
+  3) You Close the Deal
 
 Verify:
-- Run: rg -n "Claude 3\\.5 Sonnet" product/lead-response/dashboard/app/
-- Expect: no matches.
-- Run: npm run lint
-- Run: npm test
-- Run: npm run build
-- Run: npm audit --audit-level=high
-- Run: cd product/lead-response/dashboard && npx next build
-- Expect all commands exit 0.
+- Run: rg -n "How It Works|Ready to Respond Faster\\?|Connect Your CRM|AI Responds Instantly|You Close the Deal" product/lead-response/dashboard/app/page.tsx
+- Run: cd product/lead-response/dashboard && npm test
+- Run: cd product/lead-response/dashboard && npm run build
+- Confirm order in page source is Features -> How It Works -> Mid-page CTA -> Testimonials -> Pricing.
 
 Boundaries:
-- Do not change routes/services outside product/lead-response/dashboard/lib/ai.ts.
-- Do not alter pricing/content unrelated to the AI model copy claim.
-- Do not modify database schema, migrations, or non-dashboard modules.
+- Do not modify backend routes/services/db/migrations.
+- Do not change analytics event IDs or CTA destinations.
+- Do not edit unrelated landing sections beyond required ordering/copy for AC-2.
 */
 
 import Link from 'next/link'
@@ -254,8 +251,47 @@ export default function HomePage() {
           />
         </div>
 
-        {/* CTA Placement #2: End of Features */}
-        <div className="mt-16 text-center" data-testid="features-cta">
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="bg-white dark:bg-slate-900 py-20" data-testid="how-it-works-section">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            How It Works
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            LeadFlow AI responds to leads in three simple steps.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <HowItWorksStep
+              step={1}
+              icon="🔗"
+              title="Connect Your CRM"
+              description="Link your Follow Up Boss account in 2 minutes. We sync your leads automatically."
+              testId="how-it-works-step-1"
+            />
+            <HowItWorksStep
+              step={2}
+              icon="⚡"
+              title="AI Responds Instantly"
+              description="The moment a lead comes in, LeadFlow AI sends a personalized SMS response in <30 seconds."
+              testId="how-it-works-step-2"
+            />
+            <HowItWorksStep
+              step={3}
+              icon="🏆"
+              title="You Close the Deal"
+              description="Qualified leads turn into booked appointments, so you can focus on closing."
+              testId="how-it-works-step-3"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Placement #2: After How It Works */}
+      <section className="container mx-auto px-4 pb-20">
+        <div className="text-center" data-testid="features-cta">
           <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
             Ready to Respond Faster?
           </h4>
@@ -278,42 +314,6 @@ export default function HomePage() {
             >
               Apply for Pilot Program →
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section id="how-it-works" className="bg-white dark:bg-slate-900 py-20" data-testid="how-it-works-section">
-        <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            How It Works
-          </h3>
-          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            LeadFlow AI responds to leads in three simple steps.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <HowItWorksStep
-              step={1}
-              icon="🔗"
-              title="Connect Your CRM"
-              description="Link your Follow Up Boss account in under 5 minutes. Your existing leads and contacts sync automatically."
-              testId="how-it-works-step-1"
-            />
-            <HowItWorksStep
-              step={2}
-              icon="⚡"
-              title="AI Responds Instantly"
-              description="The moment a lead comes in, LeadFlow AI sends a personalized SMS response in <30 seconds — 24/7, even during showings."
-              testId="how-it-works-step-2"
-            />
-            <HowItWorksStep
-              step={3}
-              icon="🏆"
-              title="You Close the Deals"
-              description="Qualified leads get booked on your calendar automatically. You show up to the meeting — the AI did the work."
-              testId="how-it-works-step-3"
-            />
           </div>
         </div>
       </section>
