@@ -49,6 +49,15 @@ export async function GET(request: NextRequest) {
       ? Math.max(0, Math.ceil((pilotExpiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
       : 0
 
+    const { data: activeSubscription } = await supabase
+      .from('subscriptions')
+      .select('interval, current_period_end, status')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
     return NextResponse.json({
       agentId: userId,
       isTrial,
@@ -59,7 +68,9 @@ export async function GET(request: NextRequest) {
       daysRemaining: isTrial ? daysRemaining : pilotDaysRemaining,
       isExpired,
       onboardingCompleted: agent.onboarding_completed,
-      onboardingStep: agent.onboarding_step
+      onboardingStep: agent.onboarding_step,
+      subscriptionInterval: activeSubscription?.interval || null,
+      renewalDate: activeSubscription?.current_period_end || null
     })
 
   } catch (error) {

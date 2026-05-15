@@ -41,8 +41,11 @@ function calculateMRR(subscription: Stripe.Subscription): number {
 function getTierFromPriceId(priceId: string): string {
   const tierMap: Record<string, string> = {
     [process.env.STRIPE_PRICE_STARTER_MONTHLY || '']: 'starter',
-    [process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '']: 'pro',
-    [process.env.STRIPE_PRICE_TEAM_MONTHLY || '']: 'team' }
+    [process.env.STRIPE_PRICE_STARTER_ANNUAL || '']: 'starter',
+    [process.env.STRIPE_PRICE_PRO_MONTHLY || process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '']: 'pro',
+    [process.env.STRIPE_PRICE_PRO_ANNUAL || process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL || '']: 'pro',
+    [process.env.STRIPE_PRICE_TEAM_MONTHLY || process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || '']: 'team',
+    [process.env.STRIPE_PRICE_TEAM_ANNUAL || process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL || '']: 'team' }
   return tierMap[priceId] || 'professional'
 }
 
