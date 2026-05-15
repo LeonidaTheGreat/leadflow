@@ -6,10 +6,11 @@ import {
   Mail, Lock, Eye, EyeOff, User, Phone, MapPin, Link2, MessageSquare,
   Check, AlertCircle, CheckCircle, Wifi, WifiOff
 } from 'lucide-react'
+import OnboardingSimulator from '@/app/onboarding/steps/simulator'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type StepId = 'account' | 'profile' | 'integrations' | 'confirm'
+type StepId = 'account' | 'profile' | 'integrations' | 'simulator' | 'confirm'
 
 interface AgentFormData {
   // Step 1: Account
@@ -23,7 +24,10 @@ interface AgentFormData {
   // Step 3: Integrations (optional)
   calcomLink: string
   smsPhoneNumber: string
-  // Step 4: Confirm
+  // Step 4: Simulator (aha moment)
+  ahaCompleted: boolean
+  ahaResponseTimeMs: number | null
+  // Step 5: Confirm
   termsAccepted: boolean
   // UTM
   utmSource: string | null
@@ -39,6 +43,7 @@ const STEPS: { id: StepId; label: string }[] = [
   { id: 'account', label: 'Account' },
   { id: 'profile', label: 'Profile' },
   { id: 'integrations', label: 'Integrations' },
+  { id: 'simulator', label: 'See It Live' },
   { id: 'confirm', label: 'Confirm' },
 ]
 
@@ -831,6 +836,8 @@ function OnboardingPageInner() {
     state: '',
     calcomLink: '',
     smsPhoneNumber: '',
+    ahaCompleted: false,
+    ahaResponseTimeMs: null,
     termsAccepted: false,
     utmSource: null,
     utmMedium: null,
@@ -1044,6 +1051,19 @@ function OnboardingPageInner() {
                   onNext={goNext}
                   onBack={goBack}
                   networkError={networkError}
+                />
+              )}
+              {currentStep.id === 'simulator' && (
+                <OnboardingSimulator
+                  onNext={goNext}
+                  onBack={goBack}
+                  agentData={data}
+                  setAgentData={(updated: any) => {
+                    onChange({
+                      ahaCompleted: updated.ahaCompleted ?? false,
+                      ahaResponseTimeMs: updated.ahaResponseTimeMs ?? null,
+                    })
+                  }}
                 />
               )}
               {currentStep.id === 'confirm' && (
