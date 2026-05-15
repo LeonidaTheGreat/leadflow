@@ -1,0 +1,62 @@
+WIREFRAME: ADMIN TRIAGE - BLOCKED HUMAN OUTREACH
+
+DESKTOP
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Use Case Triage                                            Generated: ...   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [Banner: Agent retries paused for blocked-human work]                      │
+│ 3 pilot recruitment use cases require direct owner outreach                │
+│ Blocked UCs: 3   Retry Tasks: Canceled   Last Sync: 2026-05-15 19:xx      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Human Action Required (Blocked Outreach)                                   │
+│ These use cases are paused because only direct human outreach can unblock. │
+│                                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐ │
+│ │ Zero Real Pilots Recruited                                             │ │
+│ │ fix-zero-real-pilots-recruited                                         │ │
+│ │ [Blocked] [blocked_human] [Retries canceled] [Owner: Stojan]          │ │
+│ │                                                                         │ │
+│ │ Action: Call and message qualified agents today to secure first pilots.│ │
+│ │ [View automation stop details ▾]                                        │ │
+│ └─────────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐ │
+│ │ Pilot Outreach Not Started (11 Days Left)                               │ │
+│ │ fix-pilot-outreach-has-not-happened-11-days-left                        │ │
+│ │ [Blocked] [blocked_human] [Retries canceled] [Owner: Stojan] [11 days] │ │
+│ │ Action: Start direct outreach now; prioritize verified signups.         │ │
+│ └─────────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│ ┌─────────────────────────────────────────────────────────────────────────┐ │
+│ │ 30-Pilot Campaign Stalled at Day 8                                      │ │
+│ │ fix-30-pilot-campaign-stalled-at-day-8                                  │ │
+│ │ [Blocked] [blocked_human] [Retries canceled] [Owner: Stojan]           │ │
+│ │ Action: Restart campaign with daily outreach tracking.                  │ │
+│ └─────────────────────────────────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Existing generic triage list starts here (START/MERGE/REVIEW...)          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MOBILE
+┌──────────────────────────────────────┐
+│ Human Action Required                │
+│ Blocked UCs: 3 | Retries: Canceled   │
+├──────────────────────────────────────┤
+│ Zero Real Pilots Recruited           │
+│ fix-zero-real-pilots-recruited       │
+│ [Blocked] [blocked_human]            │
+│ [Retries canceled] [Owner: Stojan]   │
+│ Action: Call/message agents today.   │
+│ [Automation details ▸]               │
+├──────────────────────────────────────┤
+│ Pilot Outreach Not Started (11 days) │
+│ ...                                  │
+├──────────────────────────────────────┤
+│ 30-Pilot Campaign Stalled at Day 8   │
+│ ...                                  │
+└──────────────────────────────────────┘
+
+NOTES
+- No Retry buttons for blocked_human.
+- Human-blocked section is always above generic triage queue.
+- Chips wrap; no horizontal scrolling on mobile.
