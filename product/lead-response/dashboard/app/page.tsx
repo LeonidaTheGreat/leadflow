@@ -101,6 +101,12 @@ export default function HomePage() {
             >
               Sign In
             </Link>
+            <Link
+              href="/signup"
+              className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
+            >
+              Sign Up
+            </Link>
           </nav>
         </div>
       </header>
@@ -503,6 +509,8 @@ export default function HomePage() {
             <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white">Terms</Link>
             <Link href="/login" className="hover:text-slate-900 dark:hover:text-white">Sign In</Link>
+            <Link href="/signup" className="hover:text-slate-900 dark:hover:text-white">Sign Up</Link>
+            <Link href="/onboarding" className="hover:text-slate-900 dark:hover:text-white">Onboarding</Link>
             <Link href="/pilot" className="hover:text-slate-900 dark:hover:text-white">Pilot Program</Link>
           </div>
         </div>
