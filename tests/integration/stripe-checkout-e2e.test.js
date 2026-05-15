@@ -165,7 +165,7 @@ class MockStripe {
   }
 
   // Helper: Create a checkout completed event
-  createCheckoutCompletedEvent(sessionId, agentId, tier = 'pro') {
+  createCheckoutCompletedEvent(sessionId, agentId, tier = 'pro', interval = 'month') {
     const session = this.checkoutSessions.get(sessionId);
     if (!session) {
       throw new Error(`Checkout session not found: ${sessionId}`);
@@ -180,14 +180,14 @@ class MockStripe {
       status: 'active',
       customer: customerId,
       current_period_start: Math.floor(Date.now() / 1000),
-      current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
+      current_period_end: Math.floor(Date.now() / 1000) + (interval === 'year' ? 365 : 30) * 24 * 60 * 60,
       items: {
         data: [{
           id: 'item_test_' + crypto.randomBytes(8).toString('hex'),
           price: {
             id: this.getPriceIdForTier(tier),
-            unit_amount: this.getPriceAmountForTier(tier),
-            recurring: { interval: 'month' }
+            unit_amount: this.getPriceAmountForTier(tier, interval),
+            recurring: { interval }
           }
         }]
       },
@@ -216,22 +216,28 @@ class MockStripe {
     };
   }
 
-  getPriceIdForTier(tier) {
+  getPriceIdForTier(tier, interval = 'month') {
     const priceMap = {
-      starter: 'price_test_starter_monthly',
-      pro: 'price_test_professional_monthly',
-      team: 'price_test_team_monthly'
+      starter_month: 'price_test_starter_monthly',
+      starter_year: 'price_test_starter_annual',
+      pro_month: 'price_test_professional_monthly',
+      pro_year: 'price_test_professional_annual',
+      team_month: 'price_test_team_monthly',
+      team_year: 'price_test_team_annual'
     };
-    return priceMap[tier] || priceMap.pro;
+    return priceMap[`${tier}_${interval}`] || priceMap.pro_month;
   }
 
-  getPriceAmountForTier(tier) {
+  getPriceAmountForTier(tier, interval = 'month') {
     const amounts = {
-      starter: 4900,    // $49
-      pro: 14900,       // $149
-      team: 39900       // $399
+      starter_month: 4900,
+      starter_year: 49000,
+      pro_month: 14900,
+      pro_year: 149000,
+      team_month: 39900,
+      team_year: 399000
     };
-    return amounts[tier] || amounts.pro;
+    return amounts[`${tier}_${interval}`] || amounts.pro_month;
   }
 }
 
@@ -545,6 +551,24 @@ async function runAllTests() {
     const agent2 = db.getAgent(agentId3);
     assert.strictEqual(agent2.stripe_subscription_id, subscriptionId, 'Subscription ID should not change on replay');
     assert.strictEqual(agent1.plan_tier, agent2.plan_tier, 'Plan tier should be consistent');
+  });
+
+  await runTest('AC-2.7: Annual checkout produces Stripe subscription interval=year', async () => {
+    const annualAgentId = 'agent-' + crypto.randomUUID();
+    db.createAgent(annualAgentId, 'annual@example.com');
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: stripe.getPriceIdForTier('pro', 'year'), quantity: 1 }],
+      customer_email: 'annual@example.com',
+      client_reference_id: annualAgentId,
+      metadata: { agent_id: annualAgentId, plan_id: 'pro', interval: 'annual' }
+    });
+
+    const event = stripe.createCheckoutCompletedEvent(session.id, annualAgentId, 'pro', 'year');
+    const subscription = await stripe.subscriptions.retrieve(event.data.object.subscription);
+    assert.strictEqual(subscription.items.data[0].price.recurring.interval, 'year');
   });
 
   // ==================== AC-3: Customer Portal Access ====================

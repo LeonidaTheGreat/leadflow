@@ -1,3 +1,22 @@
+/**
+ * Task Spec (1740ea6b-9d62-4ae9-b0a8-a2b5da2f12d6)
+ * What:
+ * - Update `getPriceIdForPlan` in this file to support `interval` (`monthly` | `annual`) and map to monthly/annual Stripe price env vars.
+ * - Update POST body parsing/validation in this file to accept `interval=annual`.
+ * - Update webhook plan mapping in `app/api/webhooks/stripe/route.ts` to recognize annual price IDs.
+ * - Update trial-status response in `app/api/auth/trial-status/route.ts` to include subscription interval and renewal date from `subscriptions`.
+ * - Update billing settings UI in `app/settings/billing/page.tsx` to send interval in checkout request and show renewal date for annual subscriptions.
+ * - Add annual interval verification in `tests/integration/stripe-checkout-e2e.test.js`.
+ * Verify:
+ * - `npm test -- tests/integration/stripe-checkout-e2e.test.js` passes and includes year interval assertion.
+ * - `npm test` passes.
+ * - `npm run build` succeeds.
+ * - `rg -n "STRIPE_PRICE_PROFESSIONAL_MONTHLY|STRIPE_PRICE_ENTERPRISE_MONTHLY"` on updated checkout endpoints confirms canonical PRO/TEAM mapping coverage with backward-compatible fallback.
+ * Boundaries:
+ * - Do not change unrelated auth/onboarding/pilot flows.
+ * - Do not modify protected generated docs/config files.
+ * - Do not alter database schema/migrations in this task.
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import Stripe from 'stripe'
@@ -11,12 +30,15 @@ const stripe = process.env.STRIPE_SECRET_KEY
 /**
  * Map plan ID to Stripe price ID from environment variables
  */
-function getPriceIdForPlan(planId: string): string | null {
+function getPriceIdForPlan(planId: string, interval: 'monthly' | 'annual'): string | null {
   const priceIdMap: Record<string, string> = {
-    starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
-    team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
-  return priceIdMap[planId] || null
+    starter_monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
+    starter_annual: process.env.STRIPE_PRICE_STARTER_ANNUAL || '',
+    pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
+    pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL || process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL || '',
+    team_monthly: process.env.STRIPE_PRICE_TEAM_MONTHLY || process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || '',
+    team_annual: process.env.STRIPE_PRICE_TEAM_ANNUAL || process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL || '' }
+  return priceIdMap[`${planId}_${interval}`] || null
 }
 
 export async function POST(request: NextRequest) {
@@ -36,16 +58,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { planId } = body
+    const { planId, interval = 'monthly' } = body
 
-    if (!planId || !['starter', 'pro', 'team'].includes(planId)) {
+    if (!planId || !['starter', 'pro', 'team'].includes(planId) || !['monthly', 'annual'].includes(interval)) {
       return NextResponse.json(
-        { error: 'Invalid or missing planId' },
+        { error: 'Invalid planId or interval' },
         { status: 400 }
       )
     }
 
-    const priceId = getPriceIdForPlan(planId)
+    const priceId = getPriceIdForPlan(planId, interval)
     if (!priceId || priceId.startsWith('price_replace')) {
       return NextResponse.json(
         { error: 'Price not configured for this plan' },
@@ -91,7 +113,8 @@ export async function POST(request: NextRequest) {
       cancel_url: `${new URL(request.url).origin}/settings/billing?upgrade=cancelled`,
       metadata: {
         agent_id: agent.id,
-        plan_id: planId } })
+        plan_id: planId,
+        interval } })
 
     return NextResponse.json({ url: session.url })
   } catch (error) {

@@ -37,6 +37,8 @@ const PLANS = [
   },
 ]
 
+type BillingInterval = 'monthly' | 'annual'
+
 function BillingPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -45,6 +47,9 @@ function BillingPageContent() {
   const [isExpired, setIsExpired] = useState<boolean>(false)
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [interval, setInterval] = useState<BillingInterval>('monthly')
+  const [subscriptionInterval, setSubscriptionInterval] = useState<string | null>(null)
+  const [renewalDate, setRenewalDate] = useState<string | null>(null)
 
   useEffect(() => {
     // Fetch authoritative trial status from the server
@@ -63,6 +68,8 @@ function BillingPageContent() {
           setPlanTier(data.planTier || 'trial')
           setTrialEndsAt(data.trialEndsAt || null)
           setIsExpired(data.isExpired === true)
+          setSubscriptionInterval(data.subscriptionInterval || null)
+          setRenewalDate(data.renewalDate || null)
         })
         .catch(() => {
           // Network failure — fall back to cached user data
@@ -114,7 +121,7 @@ function BillingPageContent() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ planId }),
+        body: JSON.stringify({ planId, interval }),
       })
 
       if (!response.ok) {
@@ -138,6 +145,7 @@ function BillingPageContent() {
   const DEMO_BOOKING_URL = process.env.NEXT_PUBLIC_DEMO_BOOKING_URL || 'https://cal.com'
   const daysRemaining = trialEndsAt ? getDaysRemaining(trialEndsAt) : null
   const isUrgent = daysRemaining !== null && daysRemaining <= 7
+  const isAnnualSubscriber = subscriptionInterval === 'year' || subscriptionInterval === 'annual'
 
   const upgradeStatus = searchParams.get('upgrade')
   
@@ -229,6 +237,33 @@ function BillingPageContent() {
       <p className="text-slate-500 dark:text-slate-400 mb-10">
         Choose a plan to continue after your trial. No credit card was needed to start.
       </p>
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => setInterval('monthly')}
+          className={`px-3 py-1.5 text-sm rounded-md border ${interval === 'monthly' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600'}`}
+        >
+          Monthly
+        </button>
+        <button
+          onClick={() => setInterval('annual')}
+          className={`px-3 py-1.5 text-sm rounded-md border ${interval === 'annual' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600'}`}
+        >
+          Annual
+        </button>
+        {interval === 'annual' && (
+          <span className="text-xs font-semibold px-2 py-1 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+            2 months free
+          </span>
+        )}
+      </div>
+
+      {isAnnualSubscriber && renewalDate && (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800 p-4 mb-6">
+          <p className="text-emerald-800 dark:text-emerald-200 text-sm font-medium">
+            Annual renewal date: {new Date(renewalDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {PLANS.map((plan) => (
@@ -250,8 +285,10 @@ function BillingPageContent() {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">{plan.name}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{plan.description}</p>
             <div className="flex items-baseline gap-1 mb-5">
-              <span className="text-3xl font-bold text-slate-900 dark:text-white">${plan.price}</span>
-              <span className="text-slate-500">/mo</span>
+              <span className="text-3xl font-bold text-slate-900 dark:text-white">
+                ${interval === 'monthly' ? plan.price : plan.price * 10}
+              </span>
+              <span className="text-slate-500">{interval === 'monthly' ? '/mo' : '/yr'}</span>
             </div>
             <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map((f) => (
