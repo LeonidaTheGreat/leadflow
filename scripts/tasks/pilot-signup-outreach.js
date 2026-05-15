@@ -13,14 +13,15 @@ async function main() {
   const service = new PilotSignupOutreachService({ pool });
   const results = await service.runSequence();
 
-  const stepNames = { 1: 'Welcome', 2: 'Day 3 Reminder', 3: 'Day 7 Final Offer' };
-  for (const [step, data] of Object.entries(results.steps)) {
-    const name = stepNames[step] || `Step ${step}`;
-    console.log(`${name}: ${data.sent} sent, ${data.failed} failed (${data.eligible} eligible)`);
-    if (data.errors.length > 0) {
-      for (const err of data.errors) {
-        console.log(`  ERROR: ${err.email} — ${err.error}`);
-      }
+  console.log(`Processed: ${results.processed}`);
+  console.log(`Sent: ${results.sent}`);
+  console.log(`Converted (auto-completed): ${results.converted}`);
+  console.log(`Skipped (not due): ${results.skipped}`);
+  console.log(`Errors: ${results.errors}`);
+
+  if (results.errorDetails.length > 0) {
+    for (const err of results.errorDetails) {
+      console.log(`  ERROR: ${err.email} step ${err.step} — ${err.error}`);
     }
   }
 
