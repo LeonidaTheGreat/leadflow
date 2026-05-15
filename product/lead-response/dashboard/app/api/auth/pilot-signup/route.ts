@@ -3,6 +3,7 @@ import { postgrestAdmin } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { createVerificationToken, sendVerificationEmail } from '@/lib/verification-email'
+import { sendWelcomeEmail } from '@/lib/email-service'
 import { logger } from '@/lib/logger'
 import { encrypt } from '@/lib/services/encryption-service'
 
@@ -53,92 +54,6 @@ async function notifyTelegram(name: string, email: string, brokerage: string | n
     }
   } catch (err) {
     logger.error('[pilot-signup] Telegram notification error:', err)
-  }
-}
-
-/**
- * Send welcome email to new pilot agent
- */
-async function sendWelcomeEmail(email: string, name: string): Promise<void> {
-  try {
-    // Check if Resend is configured
-    const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim()
-    const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
-
-    if (!RESEND_API_KEY) {
-      logger.info('[pilot-signup] RESEND_API_KEY not configured, skipping welcome email')
-      return
-    }
-
-    const firstName = name?.split(' ')[0] || 'there'
-
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${RESEND_API_KEY}`
-      },
-      body: JSON.stringify({
-        from: `LeadFlow AI <${FROM_EMAIL}>`,
-        to: email,
-        subject: 'Welcome to LeadFlow AI - Your Free Pilot Starts Now!',
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to LeadFlow AI</title>
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="text-align: center; margin-bottom: 30px;">
-    <h1 style="color: #10b981; margin-bottom: 10px;">🎉 Welcome to LeadFlow AI!</h1>
-    <p style="font-size: 18px; color: #666;">Your free 60-day pilot starts now</p>
-  </div>
-
-  <div style="background: #f9fafb; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-    <h2 style="margin-top: 0; color: #111;">Hi ${firstName},</h2>
-    <p>Thanks for signing up for LeadFlow AI! You're now part of our exclusive pilot program with <strong>60 days of free access</strong> — no credit card required.</p>
-    
-    <p>Here's what happens next:</p>
-    <ol style="padding-left: 20px;">
-      <li style="margin-bottom: 10px;"><strong>Connect your FUB account</strong> — We'll walk you through this in the onboarding wizard</li>
-      <li style="margin-bottom: 10px;"><strong>Set up your SMS number</strong> — Choose a local number for AI responses</li>
-      <li style="margin-bottom: 10px;"><strong>Watch the magic happen</strong> — Our AI will respond to your leads in under 30 seconds, 24/7</li>
-    </ol>
-  </div>
-
-  <div style="text-align: center; margin: 30px 0;">
-    <a href="https://leadflow-ai-five.vercel.app/dashboard/onboarding" 
-       style="display: inline-block; background: #10b981; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
-      Start Onboarding →
-    </a>
-  </div>
-
-  <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; margin-bottom: 24px;">
-    <h3 style="margin-top: 0; color: #1e40af;">📚 Quick Start Guide</h3>
-    <p style="margin-bottom: 0;">Need help? Check out our <a href="https://leadflow-ai-five.vercel.app/help" style="color: #3b82f6;">Help Center</a> or reply to this email — our team is here to help!</p>
-  </div>
-
-  <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-  
-  <p style="font-size: 14px; color: #6b7280; text-align: center;">
-    You're receiving this because you signed up for LeadFlow AI.<br>
-    Questions? Contact us at <a href="mailto:support@landyourleads.com" style="color: #6b7280;">support@landyourleads.com</a>
-  </p>
-</body>
-</html>
-        `
-      })
-    })
-
-    if (!response.ok) {
-      logger.error('[pilot-signup] Welcome email failed:', await response.text())
-    } else {
-      logger.info('[pilot-signup] Welcome email sent successfully')
-    }
-  } catch (err) {
-    logger.error('[pilot-signup] Welcome email error:', err)
   }
 }
 
@@ -288,8 +203,14 @@ export async function POST(request: NextRequest) {
       }
     })()
 
-    // Send welcome email (non-blocking)
-    void sendWelcomeEmail(agent.email, `${agent.first_name} ${agent.last_name}`.trim())
+    // Send welcome email (non-blocking) via shared email service
+    void sendWelcomeEmail(agent.email, agent.id, {
+      agentName: `${agent.first_name} ${agent.last_name}`.trim() || undefined,
+      planTier: 'pilot',
+      dashboardUrl: 'https://leadflow-ai-five.vercel.app/dashboard/onboarding'
+    }).catch((err: unknown) => {
+      logger.error('[pilot-signup] Welcome email error:', err)
+    })
 
     // Send Telegram notification to Stojan (non-blocking)
     void notifyTelegram(`${agent.first_name} ${agent.last_name}`.trim(), agent.email, brokerage_name || null)
