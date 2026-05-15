@@ -1,3 +1,23 @@
+/**
+ * TASK SPEC (1c0e7938-4682-4aed-9dd5-f14dead26965)
+ * What:
+ * - Change product/lead-response/dashboard/app/api/auth/accept-invite/route.ts (POST):
+ *   set real_estate_agents.pilot_started_at when an invite is accepted.
+ * - Add regression test:
+ *   product/lead-response/dashboard/tests/fix-zero-real-pilots-recruited.test.js
+ *   to assert accept-invite writes pilot_started_at and still creates pilot_progress.
+ *
+ * Verify:
+ * - npm test -- product/lead-response/dashboard/tests/fix-zero-real-pilots-recruited.test.js
+ * - npm test
+ * - npm run build
+ * - cd product/lead-response/dashboard && npx next build
+ *
+ * Boundaries:
+ * - Do not modify schema or migrations.
+ * - Do not change unrelated invite/outreach routes.
+ * - Do not alter onboarding stage logic beyond pilot_started_at capture at invite acceptance.
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
@@ -110,6 +130,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
     }
 
     // 7. Create the real_estate_agents record
+    const nowIso = new Date().toISOString()
+    const trialExpiresIso = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+
     const { data: newAgent, error: createAgentError } = await supabase
       .from('real_estate_agents')
       .insert({
@@ -120,10 +143,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
         source: 'pilot_invite',
         status: 'onboarding',
         email_verified: true,
-        trial_start_date: new Date().toISOString(),
-        trial_expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        trial_start_date: nowIso,
+        trial_expires_at: trialExpiresIso,
+        pilot_started_at: nowIso,
+        created_at: nowIso,
+        updated_at: nowIso
       })
       .select('id')
       .single()
