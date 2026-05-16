@@ -56,6 +56,18 @@ while true; do
     # Report would be sent to Telegram here
     echo "   📊 Status report posted to LeadFlow topic"
   fi
+
+  # 5b. Daily revenue snapshot + conversion alerts (run once near midnight)
+  HOUR=$(date +%H)
+  MINUTE=$(date +%M)
+  if [ "$HOUR" == "00" ] && [ "$MINUTE" -lt "05" ]; then
+    echo "5️⃣b Running daily revenue snapshot..."
+    if [ -f "$PROJECT_ROOT/scripts/tasks/revenue-snapshot.js" ]; then
+      node "$PROJECT_ROOT/scripts/tasks/revenue-snapshot.js" || echo "   ⚠️ Revenue snapshot failed"
+    else
+      echo "   ⚠️ Revenue snapshot script not found"
+    fi
+  fi
   
   # 6. Check for blockers
   echo "6️⃣ Checking blockers..."
