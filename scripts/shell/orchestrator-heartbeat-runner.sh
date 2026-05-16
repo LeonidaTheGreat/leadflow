@@ -42,7 +42,10 @@ while true; do
   # (simplified - real implementation would check timestamps)
   
   # 4. Check budget
-  echo "4️⃣ Checking budget..."
+  echo "4️⃣ Revenue metrics snapshot..."
+  node scripts/tasks/revenue-snapshot.js 2>/dev/null || echo "   ⚠️ Revenue snapshot failed"
+
+  echo "5️⃣ Checking budget..."
   DAILY_SPEND=$(jq '.metrics.daily_spend_usd' "$PROJECT_FILE")
   if (( $(echo "$DAILY_SPEND > 5" | bc -l 2>/dev/null) || [ -z "$DAILY_SPEND" ] )); then
     echo "   ⚠️ Budget alert: \$$DAILY_SPEND/day (limit: \$5)"
@@ -50,15 +53,15 @@ while true; do
     echo "   ✅ Budget healthy: \$$DAILY_SPEND/day"
   fi
   
-  # 5. Every 3rd cycle: post report
+  # 6. Every 3rd cycle: post report
   if [ $((CYCLE_COUNT % REPORT_INTERVAL)) -eq 0 ]; then
-    echo "5️⃣ Posting 15-min status report..."
+    echo "6️⃣ Posting 15-min status report..."
     # Report would be sent to Telegram here
     echo "   📊 Status report posted to LeadFlow topic"
   fi
-  
-  # 6. Check for blockers
-  echo "6️⃣ Checking blockers..."
+
+  # 7. Check for blockers
+  echo "7️⃣ Checking blockers..."
   BLOCKER_COUNT=$(jq '.blockers | length' "$PROJECT_FILE")
   echo "   Active blockers: $BLOCKER_COUNT"
   
