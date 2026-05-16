@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wireframe: Product Status — UJ + UC Drilldown</title>
+  <style>
+    :root {
+      --bg-primary: #0b1020; --bg-card: #131a33; --border-default: #24305f;
+      --text-primary: #e8ecff; --text-muted: #a8b3dd;
+      --text-ok: #57d98d; --text-warn: #ffd166; --text-error: #ff6b6b;
+      --accent: #9ecbff;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body { font-family: Inter, system-ui, -apple-system, sans-serif; background: var(--bg-primary); color: var(--text-primary); }
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+    h2 { font-size: 18px; font-weight: 600; margin: 28px 0 12px; }
+
+    .wireframe-label {
+      background: var(--text-warn); color: #000; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 16px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* Journey cards */
+    .journey {
+      background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 8px;
+      padding: 16px 20px; margin-bottom: 12px;
+    }
+    .journey-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .journey-title { font-size: 15px; font-weight: 600; }
+    .journey-meta { display: flex; align-items: center; gap: 8px; }
+    .journey-desc {
+      font-size: 12px; color: var(--text-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 8px; max-width: 600px;
+    }
+    .journey-priority {
+      font-size: 10px; color: var(--text-muted);
+      padding: 2px 6px; border: 1px solid var(--border-default); border-radius: 4px;
+    }
+
+    .status-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-block; white-space: nowrap; }
+    .s-complete { background: #1a3a2a; color: var(--text-ok); }
+    .s-in_progress { background: #2a2a1a; color: var(--text-warn); }
+    .s-not_started { background: #2a2a2a; color: #666; }
+    .s-needs_merge { background: #1a2a44; color: var(--accent); }
+    .s-stuck { background: #3a1a1a; color: var(--text-error); }
+
+    /* UC list toggle */
+    .uc-list-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0 4px; cursor: pointer; font-size: 12px; color: var(--text-muted);
+      border-top: 1px solid var(--border-default); user-select: none;
+    }
+    .uc-list-header::after {
+      content: '\25B6'; font-size: 8px; transition: transform 200ms;
+    }
+    .uc-list-header.open::after { transform: rotate(90deg); }
+
+    .uc-list { max-height: 0; overflow: hidden; transition: max-height 300ms ease; }
+    .uc-list.open { max-height: 2000px; }
+
+    /* UC row */
+    .uc-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 4px; cursor: pointer;
+      border-bottom: 1px solid #1a2040; font-size: 13px;
+    }
+    .uc-row:last-child { border-bottom: none; }
+    .uc-row:hover { background: #1a2040; border-radius: 4px; }
+
+    .uc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .uc-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* UC detail panel */
+    .uc-detail {
+      max-height: 0; overflow: hidden; transition: max-height 200ms ease;
+      background: #0d1425; margin: 0 4px; border-radius: 0 0 4px 4px;
+    }
+    .uc-detail.open { max-height: 300px; padding: 12px 16px; }
+
+    .uc-detail-row { font-size: 12px; margin-bottom: 6px; display: flex; gap: 8px; }
+    .uc-detail-label { color: var(--text-muted); min-width: 80px; flex-shrink: 0; }
+    .uc-detail-value { color: var(--text-primary); }
+    .uc-workflow { font-family: monospace; color: var(--text-muted); }
+    .uc-detail-border-complete { border-left: 3px solid var(--text-ok); }
+    .uc-detail-border-in_progress { border-left: 3px solid var(--text-warn); }
+    .uc-detail-border-not_started { border-left: 3px solid #555; }
+    .uc-detail-border-needs_merge { border-left: 3px solid var(--accent); }
+    .uc-detail-border-stuck { border-left: 3px solid var(--text-error); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="wireframe-label">Interactive Wireframe — Design Spec</div>
+    <h2>User Journeys</h2>
+    <div id="journeys"></div>
+  </div>
+
+  <script>
+    const journeys = [
+      {
+        id: 'uj-leadflow-lead-response', name: 'Lead Response Flow', status: 'complete', priority: 1,
+        description: 'Handles inbound leads via FUB webhook, AI SMS response, and dashboard visibility',
+        ucs: [
+          { id: 'UC-1', name: 'Lead-Initiated SMS', status: 'complete', description: 'Handle inbound SMS from leads and route to AI response engine', workflow: ['product','dev','qc'] },
+          { id: 'UC-2', name: 'FUB New Lead Auto-SMS', status: 'complete', description: 'Automatically send AI-generated SMS when new lead appears in FUB', workflow: ['product','dev','qc'] },
+          { id: 'UC-3', name: 'FUB Status Change', status: 'complete', description: 'Respond to FUB status change events and update lead state', workflow: ['dev','qc'] },
+          { id: 'UC-4', name: 'FUB Agent Assignment', status: 'complete', description: 'Handle agent assignment events from Follow Up Boss CRM', workflow: ['dev','qc'] },
+          { id: 'UC-7', name: 'Dashboard Manual SMS', status: 'complete', description: 'Send SMS from dashboard UI with agent context', workflow: ['product','design','dev','qc'] },
+          { id: 'UC-8', name: 'Follow-up Sequences', status: 'complete', description: 'Automated follow-up SMS sequences for unresponsive leads', workflow: ['product','dev','qc'] },
+          { id: 'fix-inbound-sms', name: 'Inbound SMS handler does not classify satisfaction replies', status: 'complete', description: 'Fix satisfaction classification in inbound SMS handler', workflow: ['dev','qc'] },
+          { id: 'fix-sms-int', name: 'SMS integration requires customer-owned Twilio credentials', status: 'complete', description: null, workflow: ['product','dev','qc'] },
+          { id: 'improve-UC-2', name: 'Add Retry Logic to FUB New Lead Auto-SMS', status: 'complete', description: 'Add retry mechanism with exponential backoff for failed SMS sends', workflow: ['dev','qc'] },
+          { id: 'integrate-claude', name: 'Integrate Claude AI for SMS Response Generation', status: 'complete', description: 'Replace template-based responses with Claude AI-generated contextual SMS', workflow: ['product','dev','qc'] }
+        ]
+      },
+      {
+        id: 'uj-leadflow-visitor-to-signup', name: 'Visitor to Signup', status: 'in_progress', priority: 1,
+        description: 'Landing page visitor discovers value proposition and completes signup',
+        ucs: [
+          { id: 'uc-landing-cta', name: 'Landing Page CTA Click', status: 'complete', description: 'Visitor clicks primary CTA on landing page', workflow: ['design','dev','qc'] },
+          { id: 'uc-signup-form', name: 'Signup Form Submission', status: 'complete', description: 'Agent fills out and submits the signup form', workflow: ['design','dev','qc'] },
+          { id: 'uc-email-verify', name: 'Email Verification', status: 'in_progress', description: 'New user verifies email address via link', workflow: ['product','dev','qc'] },
+          { id: 'uc-social-proof', name: 'Social Proof on Landing', status: 'not_started', description: null, workflow: ['design','dev'] },
+          { id: 'uc-utm-tracking', name: 'UTM Attribution Tracking', status: 'needs_merge', description: 'Track marketing attribution via UTM parameters through signup flow', workflow: ['dev','qc'] }
+        ]
+      },
+      {
+        id: 'uj-leadflow-pilot-to-paid', name: 'Pilot Recruit to Paid (Current GTM Motion)', status: 'in_progress', priority: 1,
+        description: 'Convert recruited pilot agents into paying subscribers',
+        ucs: [
+          { id: 'uc-pilot-outreach', name: 'Pilot Outreach Email', status: 'in_progress', description: 'Send outreach email to potential pilot candidates', workflow: ['product','dev','qc'] },
+          { id: 'uc-pilot-onboard', name: 'Pilot Onboarding Flow', status: 'in_progress', description: 'Guide pilot agents through initial setup and first lead response', workflow: ['product','design','dev','qc'] },
+          { id: 'uc-trial-checkout', name: 'Trial to Checkout Conversion', status: 'not_started', description: 'Convert trial users to paid via Stripe checkout', workflow: ['product','dev','qc'] },
+          { id: 'uc-pilot-aha', name: 'First AI Response Observed', status: 'in_progress', description: 'Pilot agent sees their first AI-generated response to a real lead', workflow: ['dev','qc'] },
+          { id: 'uc-feedback-survey', name: 'Pilot Feedback Collection', status: 'not_started', description: 'Collect NPS and qualitative feedback from pilot agents', workflow: ['product','dev'] },
+          { id: 'uc-pilot-stuck', name: 'Pilot Gets Stuck Recovery', status: 'stuck', description: 'Detect and recover when pilot agent gets stuck in onboarding', workflow: ['product','dev','qc'] }
+        ]
+      },
+      {
+        id: 'uj-leadflow-agent-onboarding', name: 'Agent Onboarding (Post-Signup Setup)', status: 'in_progress', priority: 1,
+        description: 'New agent connects CRM, configures AI settings, and runs first test',
+        ucs: [
+          { id: 'uc-fub-connect', name: 'Connect FUB Integration', status: 'complete', description: 'Agent enters FUB API key and connects their CRM', workflow: ['design','dev','qc'] },
+          { id: 'uc-ai-config', name: 'AI Response Configuration', status: 'in_progress', description: 'Agent customizes AI response tone, speed, and templates', workflow: ['product','design','dev','qc'] },
+          { id: 'uc-test-lead', name: 'Send Test Lead', status: 'not_started', description: 'Agent sends a test lead through the system to verify setup', workflow: ['dev','qc'] },
+          { id: 'uc-twilio-setup', name: 'Twilio Number Setup', status: 'complete', description: 'System provisions or connects Twilio phone number', workflow: ['dev','qc'] },
+          { id: 'uc-onboard-wizard', name: 'Onboarding Wizard Steps', status: 'in_progress', description: 'Step-by-step wizard guiding agent through all setup tasks', workflow: ['design','dev','qc'] },
+          { id: 'uc-progress-track', name: 'Onboarding Progress Tracking', status: 'not_started', description: null, workflow: [] }
+        ]
+      }
+    ];
+
+    const statusColors = {
+      complete: 'var(--text-ok)',
+      in_progress: 'var(--text-warn)',
+      not_started: '#555',
+      backlog: '#555',
+      ready: '#dd88ff',
+      needs_merge: 'var(--accent)',
+      stuck: 'var(--text-error)'
+    };
+
+    function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+    function renderJourneys() {
+      const el = document.getElementById('journeys');
+      el.innerHTML = journeys.map(j => {
+        const ucs = j.ucs || [];
+        const completeCount = ucs.filter(u => u.status === 'complete').length;
+        return `
+          <div class="journey" data-journey-id="${esc(j.id)}">
+            <div class="journey-header">
+              <div>
+                <div class="journey-title">${esc(j.name)}</div>
+              </div>
+              <div class="journey-meta">
+                <span class="status-badge s-${j.status}">${j.status.replace(/_/g, ' ')}</span>
+                <span class="journey-priority">P${j.priority}</span>
+              </div>
+            </div>
+            ${j.description ? `<div class="journey-desc">${esc(j.description)}</div>` : ''}
+            <div class="uc-list-header" onclick="toggleUCList(this)">
+              ${ucs.length} Use Cases (${completeCount} complete)
+            </div>
+            <div class="uc-list">
+              ${ucs.map(uc => `
+                <div class="uc-row" onclick="toggleUCDetail(this)" data-uc-id="${esc(uc.id)}">
+                  <div class="uc-dot" style="background:${statusColors[uc.status] || '#555'}"></div>
+                  <div class="uc-name">${esc(uc.name)}</div>
+                  <span class="status-badge s-${uc.status}">${(uc.status || 'unknown').replace(/_/g, ' ')}</span>
+                </div>
+                <div class="uc-detail uc-detail-border-${uc.status}">
+                  <div class="uc-detail-row">
+                    <span class="uc-detail-label">Description</span>
+                    <span class="uc-detail-value">${uc.description ? esc(uc.description) : '<em style="color:var(--text-muted)">No description</em>'}</span>
+                  </div>
+                  <div class="uc-detail-row">
+                    <span class="uc-detail-label">Workflow</span>
+                    <span class="uc-detail-value uc-workflow">${uc.workflow && uc.workflow.length ? uc.workflow.join(' &rarr; ') : '<em style="color:var(--text-muted)">No workflow defined</em>'}</span>
+                  </div>
+                  <div class="uc-detail-row">
+                    <span class="uc-detail-label">Status</span>
+                    <span class="status-badge s-${uc.status}">${(uc.status || 'unknown').replace(/_/g, ' ')}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleUCList(header) {
+      header.classList.toggle('open');
+      const list = header.nextElementSibling;
+      list.classList.toggle('open');
+    }
+
+    function toggleUCDetail(row) {
+      const detail = row.nextElementSibling;
+      const journey = row.closest('.journey');
+      const wasOpen = detail.classList.contains('open');
+
+      journey.querySelectorAll('.uc-detail.open').forEach(d => d.classList.remove('open'));
+
+      if (!wasOpen) {
+        detail.classList.add('open');
+      }
+    }
+
+    renderJourneys();
+
+    // Auto-expand first journey for demo
+    setTimeout(() => {
+      const firstHeader = document.querySelector('.uc-list-header');
+      if (firstHeader) toggleUCList(firstHeader);
+      setTimeout(() => {
+        const firstRow = document.querySelector('.uc-row');
+        if (firstRow) toggleUCDetail(firstRow);
+      }, 400);
+    }, 500);
+  </script>
+</body>
+</html>
