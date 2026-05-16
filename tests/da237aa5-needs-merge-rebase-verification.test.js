@@ -2,6 +2,26 @@
 'use strict';
 
 /**
+ * TASK SPEC (819887e6-98ac-46cc-bd1d-b0f9fe39788f)
+ * What:
+ * - Change file: tests/da237aa5-needs-merge-rebase-verification.test.js
+ * - Update branch resolution logic for needs-merge verification to support current remote branch names
+ *   for uc-marketing-campaign-launch, feat-revenue-funnel-visibility, and feat-subscription-funnel-tracking.
+ * - Keep existing verification behavior (existence, freshness vs main, conflict markers, clean merge simulation).
+ *
+ * Verify:
+ * - Run: node tests/da237aa5-needs-merge-rebase-verification.test.js
+ * - Expected: script resolves one branch per UC from remote and reports pass/fail against real refs without
+ *   ambiguous-revision errors due to stale branch names.
+ * - Run: git diff -- tests/da237aa5-needs-merge-rebase-verification.test.js (only intended test logic changed).
+ *
+ * Boundaries:
+ * - Do not modify product/runtime code in routes/, lib/, product/, server.js.
+ * - Do not add new features; only unblock merge-verification logic for the re-merge workflow.
+ * - Do not touch auto-generated docs or project config files.
+ */
+
+/**
  * E2E test: Verifies the rebase work for the 3 needs-merge branches (task da237aa5)
  * Tests:
  * 1. All 3 branches exist on remote
@@ -15,14 +35,40 @@ const assert = require('assert');
 
 const REPO = '/Users/clawdbot/projects/leadflow';
 
-const BRANCHES = [
-  'dev/b883cbeb-improve-uc-no-tasks-uc-marketing-campaig',
-  'dev/d9da03d7-dev-feat-revenue-funnel-visibility-reven',
-  'feat-subscription-funnel-tracking',
-];
+const BRANCH_CANDIDATES = {
+  marketingCampaignLaunch: [
+    'dev/b883cbeb-improve-uc-no-tasks-uc-marketing-campaig',
+    'uc-marketing-campaign-launch',
+  ],
+  revenueFunnelVisibility: [
+    'dev/41b4f67f-improve-uc-no-tasks-feat-revenue-funnel',
+    'dev/d9da03d7-dev-feat-revenue-funnel-visibility-reven',
+    'feat-revenue-funnel-visibility',
+  ],
+  subscriptionFunnelTracking: [
+    'dev/026a37db-improve-uc-no-tasks-feat-subscription-fu',
+    'feat-subscription-funnel-tracking',
+  ],
+};
 
 function exec(cmd) {
   return execSync(cmd, { cwd: REPO, encoding: 'utf8' }).trim();
+}
+
+function branchExistsOnRemote(branch) {
+  const result = exec(`git ls-remote --heads origin ${branch}`);
+  return result.length > 0;
+}
+
+function resolveBranch(label, candidates) {
+  for (const candidate of candidates) {
+    if (branchExistsOnRemote(candidate)) {
+      return candidate;
+    }
+  }
+  throw new Error(
+    `No remote branch found for ${label}. Tried: ${candidates.join(', ')}`
+  );
 }
 
 let passed = 0;
@@ -41,19 +87,24 @@ function test(name, fn) {
 }
 
 console.log('\n🧪 Needs-Merge Rebase Verification (task da237aa5)\n');
+exec('git fetch origin --quiet');
+
+const BRANCHES = [
+  resolveBranch('uc-marketing-campaign-launch', BRANCH_CANDIDATES.marketingCampaignLaunch),
+  resolveBranch('feat-revenue-funnel-visibility', BRANCH_CANDIDATES.revenueFunnelVisibility),
+  resolveBranch('feat-subscription-funnel-tracking', BRANCH_CANDIDATES.subscriptionFunnelTracking),
+];
 
 // 1. Verify all branches exist on remote
 console.log('--- Branch Existence ---');
 for (const branch of BRANCHES) {
   test(`Branch exists on remote: ${branch}`, () => {
-    const result = exec(`git ls-remote --heads origin ${branch}`);
-    assert.ok(result.length > 0, `Branch not found on remote: ${branch}`);
+    assert.ok(branchExistsOnRemote(branch), `Branch not found on remote: ${branch}`);
   });
 }
 
 // 2. Verify each branch is rebased onto main (no behind commits)
 console.log('\n--- Rebase Freshness (0 commits behind main) ---');
-exec('git fetch origin --quiet');
 for (const branch of BRANCHES) {
   test(`No commits behind main: ${branch}`, () => {
     const behind = exec(`git rev-list --count origin/${branch}..origin/main`);
