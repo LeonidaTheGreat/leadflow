@@ -37,6 +37,8 @@ export async function GET() {
     'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET',
   ]
 
   for (const key of requiredEnvVars) {
@@ -92,6 +94,8 @@ export async function GET() {
     'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET',
     'database',
   ]
   const criticalFailed = Object.entries(checks)
