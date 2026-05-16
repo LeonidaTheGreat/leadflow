@@ -95,20 +95,20 @@ describe('AC-4: Testimonial social proof section', () => {
     expect(pageSource).toMatch(/data-testid=["']testimonials["']/)
   })
 
-  it('contains "What Agents Are Saying" heading', () => {
-    expect(pageSource).toMatch(/What Early Agents Experience/)
+  it('contains "Trusted by Real Estate Agents" heading', () => {
+    expect(pageSource).toMatch(/Trusted by Real Estate Agents/)
   })
 
-  it('renders 3 OutcomeCard components', () => {
-    const cardMatches = pageSource.match(/<OutcomeCard/g)
+  it('renders 3 TestimonialCard components', () => {
+    const cardMatches = pageSource.match(/<TestimonialCard/g)
     expect(cardMatches).toHaveLength(3)
   })
 
-  it('each outcome card has stat and label props', () => {
-    const cardMatches = pageSource.match(/<OutcomeCard/g)
-    expect(cardMatches).toHaveLength(3)
-    expect(pageSource).toContain('stat=')
-    expect(pageSource).toContain('label=')
+  it('each testimonial card has quote, name, and role props', () => {
+    expect(pageSource).toContain('Sarah M.')
+    expect(pageSource).toContain('Mike R.')
+    expect(pageSource).toContain('Jennifer K.')
+    expect(pageSource).toContain('Results may vary')
   })
 
   it('testimonial section has a CTA button', () => {
