@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const heartbeatPath = '/Users/clawdbot/.openclaw/genome/core/heartbeat-executor.js';
+const heartbeatPath = '/Users/clawdbot/.openclaw/genome/core/actuators/heartbeat-executor.js';
 const content = fs.readFileSync(heartbeatPath, 'utf-8');
 
 console.log('🔍 Verifying chain_completion_rate fix...\n');

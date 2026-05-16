@@ -87,6 +87,31 @@ All agents point to this directory. Active agents:
 - leadflow-marketing — marketing
 - leadflow-design — design
 
+## Handoffs to other agents
+
+When Stojan explicitly asks you to relay a message to another agent
+("tell genome X" / "ask bo2026 whether Y"), use:
+
+```
+bash ~/scripts/handoff.sh <target> "<message>"
+```
+
+Targets: `genome`, `leadflow`, `bo2026`, `ops`.
+
+This injects the message into the target's tmux session AND posts an
+audit log to the shared handoff group (Telegram chat_id `-5167634884`),
+so Stojan sees the handoff on his phone. Telegram blocks bot-to-bot
+delivery in groups — that's why the actual transport is tmux send-keys,
+with the group used only as a visible audit log.
+
+**Do not initiate handoffs autonomously.** Only on Stojan's explicit
+instruction.
+
+**If you receive a `<<handoff from X>>:` message,** treat your reply as
+completing that conversation, not a new autonomous handoff. Relay your
+response back via `bash ~/scripts/handoff.sh <X> "<your-reply>"` so the
+loop closes in the handoff group where Stojan can see it.
+
 ## Critical Rules
 - This repo lives at `~/projects/leadflow` (GitHub: `LeonidaTheGreat/leadflow`)
 - OpenClaw agents are actively running against this codebase
