@@ -12,7 +12,7 @@ const path = require('path')
 
 const ROUTE_PATH = path.join(
   __dirname,
-  '../product/lead-response/dashboard/app/api/billing/create-checkout/route.ts'
+  '../../product/lead-response/dashboard/app/api/billing/create-checkout/route.ts'
 )
 
 describe('Fix: subscription_attempts table does not exist', () => {
