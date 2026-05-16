@@ -5,14 +5,14 @@ TASK SPEC (bdc0360b-df24-4a5a-9878-94885021de14)
 What:
 - Change file: product/lead-response/dashboard/app/page.tsx
 - Function: HomePage()
-- Keep landing page section order as Features -> How It Works -> Mid-page CTA -> Testimonials -> Pricing.
-- Keep PRD R2 AC-2 copy in How It Works steps:
-  1) Connect Your CRM
-  2) AI Responds Instantly
-  3) You Close the Deal
+- Keep HomePage section order as Features -> How It Works -> Mid-page CTA -> Testimonials -> Pricing.
+- Keep PRD R2 AC-2 wording for the How It Works subtitle and three steps.
+- Keep How It Works section styling as a distinct section block.
 
 Verify:
 - Run: rg -n "How It Works|Ready to Respond Faster\\?|Connect Your CRM|AI Responds Instantly|You Close the Deal" product/lead-response/dashboard/app/page.tsx
+- Run: cd product/lead-response/dashboard && node __tests__/landing-page-conversion.test.ts
+- Run: cd product/lead-response/dashboard && node tests/fix-how-it-works-section-not-implemented.test.js
 - Run: cd product/lead-response/dashboard && npm test
 - Run: cd product/lead-response/dashboard && npm run build
 - Confirm order in page source is Features -> How It Works -> Mid-page CTA -> Testimonials -> Pricing.
@@ -254,13 +254,13 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="bg-white dark:bg-slate-900 py-20" data-testid="how-it-works-section">
+      <section id="how-it-works" className="bg-slate-100 dark:bg-slate-800 py-20" data-testid="how-it-works-section">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
             How It Works
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            LeadFlow AI responds to leads in three simple steps.
+            Get started in minutes, not hours.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -275,14 +275,14 @@ export default function HomePage() {
               step={2}
               icon="⚡"
               title="AI Responds Instantly"
-              description="The moment a lead comes in, LeadFlow AI sends a personalized SMS response in <30 seconds."
+              description="When a new lead comes in, our AI sends a personalized SMS in under 30 seconds."
               testId="how-it-works-step-2"
             />
             <HowItWorksStep
               step={3}
               icon="🏆"
               title="You Close the Deal"
-              description="Qualified leads turn into booked appointments, so you can focus on closing."
+              description="Get notified when leads are qualified and appointments are booked on your calendar."
               testId="how-it-works-step-3"
             />
           </div>
