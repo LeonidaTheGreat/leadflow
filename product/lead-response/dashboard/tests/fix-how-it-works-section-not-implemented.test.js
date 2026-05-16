@@ -99,17 +99,20 @@ const pageContent = fs.readFileSync(PAGE_FILE, 'utf-8');
     'Missing responsive grid classes (md:grid-cols-3)');
 });
 
-// Test 12: Section is positioned correctly (between Hero and Features)
+// Test 12: Section is positioned correctly (between Features and mid-page CTA)
  test('How It Works section is positioned correctly in page structure', () => {
   const heroIndex = pageContent.indexOf('AI-Powered Lead Response');
   const howItWorksIndex = pageContent.indexOf('id="how-it-works"');
   const featuresIndex = pageContent.indexOf('id="features"');
+  const midCtaIndex = pageContent.indexOf('Ready to Respond Faster?');
   
   assert(heroIndex !== -1, 'Hero section not found');
   assert(howItWorksIndex !== -1, 'How It Works section not found');
   assert(featuresIndex !== -1, 'Features section not found');
+  assert(midCtaIndex !== -1, 'Mid-page CTA section not found');
   assert(heroIndex < howItWorksIndex, 'How It Works should come after Hero');
-  assert(howItWorksIndex < featuresIndex, 'How It Works should come before Features');
+  assert(featuresIndex < howItWorksIndex, 'How It Works should come after Features');
+  assert(howItWorksIndex < midCtaIndex, 'How It Works should come before mid-page CTA');
 });
 
 // Print summary
