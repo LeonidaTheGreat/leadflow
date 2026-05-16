@@ -1,69 +1,81 @@
+'use strict'
 /**
- * Test: Genome replenishQueue ready-status startStep fix
+ * Test: Genome UC ready-status loop fix
  *
- * Bug: replenishQueue startStep calculation only ran for stuck/in_progress/not_started.
- * Ready UCs always started at step 0, causing infinite task recreation loops.
+ * Bugs fixed:
+ * 1. sweepUCCompletions ignored ready-status UCs — missing 'ready' in its filter.
+ *    Result: UCs with all steps done stayed in 'ready' forever, never swept to 'complete'.
+ * 2. replenishQueue (historical) didn't include 'ready' in its filter / startStep logic.
+ *    Both are confirmed present in queue-replenisher.js.
  *
- * Fix: 'ready' added to the implementation_status filter in replenishQueue(), so ready UCs
- * are fetched AND their startStep is calculated from done tasks (not defaulted to 0).
- *
- * The fix is verified by checking the genome codebase directly and simulating the logic.
+ * Code split: heartbeat-executor.js was split into separate loop modules.
+ *   - sweepUCCompletions → ~/.openclaw/genome/core/loops/execution-loop.js
+ *   - replenishQueue     → ~/.openclaw/genome/core/loops/queue-replenisher.js
  */
 
 const assert = require('assert')
 const { execSync } = require('child_process')
+const fs = require('fs')
 const path = require('path')
 
-const HEARTBEAT_PATH = path.join(process.env.HOME, '.openclaw/genome/core/heartbeat-executor.js')
+const EXECUTION_LOOP_PATH = path.join(process.env.HOME, '.openclaw/genome/core/loops/execution-loop.js')
+const QUEUE_REPLENISHER_PATH = path.join(process.env.HOME, '.openclaw/genome/core/loops/queue-replenisher.js')
 
-// Test 1: Verify 'ready' is in the implementation_status filter in replenishQueue
-function testReadyInStatusFilter() {
-  console.log("Test 1: Verify 'ready' is in the status filter...")
-  // The replenishQueue query must include 'ready' alongside the other statuses
+// Test 1: sweepUCCompletions includes 'ready' in its implementation_status filter
+function testSweepUCCompletionsIncludesReady() {
+  console.log("Test 1: sweepUCCompletions filter includes 'ready'...")
+  const content = fs.readFileSync(EXECUTION_LOOP_PATH, 'utf-8')
+  const sweepIdx = content.indexOf('async sweepUCCompletions')
+  assert(sweepIdx !== -1, 'sweepUCCompletions function not found in execution-loop.js')
+  const filterIdx = content.indexOf("in('implementation_status'", sweepIdx)
+  assert(filterIdx !== -1, 'implementation_status filter not found in sweepUCCompletions')
+  const filterLine = content.slice(filterIdx, content.indexOf('\n', filterIdx))
+  assert(filterLine.includes("'ready'"), `sweepUCCompletions filter missing 'ready': ${filterLine}`)
+  console.log("  ✅ sweepUCCompletions correctly includes 'ready' in implementation_status filter")
+}
+
+// Test 2: replenishQueue includes 'ready' in its implementation_status filter
+function testReplenishQueueIncludesReady() {
+  console.log("Test 2: replenishQueue filter includes 'ready'...")
   const count = parseInt(
-    execSync(`grep -c "'not_started', 'partial', 'ready'" ${HEARTBEAT_PATH}`).toString().trim(), 10
+    execSync(`grep -c "'not_started', 'partial', 'ready'" "${QUEUE_REPLENISHER_PATH}"`).toString().trim(), 10
   )
-  assert.strictEqual(count, 1, `Expected exactly 1 line with 'not_started', 'partial', 'ready' — got ${count}`)
-  console.log("  ✅ Status filter correctly includes 'ready', 'stuck', 'in_progress', 'not_started'")
+  assert.strictEqual(count, 1, `Expected 1 line with 'not_started', 'partial', 'ready' — got ${count}`)
+  console.log("  ✅ replenishQueue correctly includes 'ready' in its implementation_status filter")
 }
 
-// Test 2: Verify the startStep calculation comment proving it's unconditional
-function testStartStepCalculationForReadyUC() {
-  console.log('Test 2: startStep calculation runs unconditionally for all UC statuses...')
-  const count = parseInt(
-    execSync(`grep -c 'ALWAYS check done tasks regardless of UC status' ${HEARTBEAT_PATH}`).toString().trim(), 10
-  )
-  assert.strictEqual(count, 1, `Expected comment confirming unconditional startStep — got ${count}`)
-  console.log('  ✅ startStep correctly calculated unconditionally (not inside a status guard)')
+// Test 3: replenishQueue has all-steps-done guard
+function testReplenishQueueAllStepsDoneGuard() {
+  console.log('Test 3: replenishQueue has all-steps-done guard...')
+  const content = fs.readFileSync(QUEUE_REPLENISHER_PATH, 'utf-8')
+  assert(content.includes('startStep >= workflowLen'), 'Missing all-steps-done guard in replenishQueue')
+  console.log('  ✅ replenishQueue has all-steps-done guard: if (startStep >= workflowLen) continue')
 }
 
-// Test 3: Simulate the bug — without 'ready' in filter, ready UCs are skipped (startStep = 0)
-function testBugScenario() {
-  console.log('Test 3: Document bug scenario (without ready in filter)...')
-  const UC_STATUS_OLD = ['stuck', 'in_progress', 'not_started']
+// Test 4: simulate sweepUCCompletions — ready UC with all steps done should be swept
+function testSweepReadyUCWithAllStepsDone() {
+  console.log('Test 4: simulate sweepUCCompletions — ready UC with all steps done...')
+
+  const uc = { id: 'uc-test-1', workflow: ['product', 'dev'], implementation_status: 'ready' }
+  const doneTasks = [{ agent_id: 'product' }, { agent_id: 'dev' }]
+
+  const SWEEP_STATUSES = ['not_started', 'ready', 'in_progress', 'partial', 'stuck', 'needs_merge']
+  assert(SWEEP_STATUSES.includes(uc.implementation_status), "ready should be in sweep statuses")
+
+  const doneAgents = new Set(doneTasks.map(t => t.agent_id))
+  const allStepsDone = uc.workflow.every(agent => doneAgents.has(agent))
+  assert.strictEqual(allStepsDone, true, 'All steps should be done')
+  console.log("  ✅ Ready UC with all steps done would be swept to 'complete'")
+}
+
+// Test 5: simulate replenishQueue — ready UC with partial done should resume from correct step
+function testReplenishQueueStartStepForReadyUC() {
+  console.log('Test 5: replenishQueue startStep correctly computed for ready UC...')
+
   const uc = { implementation_status: 'ready', workflow: ['product', 'dev', 'qc'] }
-
-  // Old behavior: if UC status not in filter, it wouldn't be fetched at all
-  const wouldBeIncluded = UC_STATUS_OLD.includes(uc.implementation_status)
-  assert.strictEqual(wouldBeIncluded, false, 'Ready UC should NOT be included in old filter')
-  console.log('  ✅ Bug scenario confirmed: without ready in filter, startStep=0 creates duplicate PM task')
-}
-
-// Test 4: Verify fix — 'ready' in filter means startStep is calculated correctly
-function testFixVerification() {
-  console.log('Test 4: Verify fix works correctly...')
-  const UC_STATUS_NEW = ['not_started', 'partial', 'ready', 'stuck', 'in_progress']
-  const uc = { implementation_status: 'ready', workflow: ['product', 'dev', 'qc'] }
-
-  // New behavior: ready UC is fetched
-  const wouldBeIncluded = UC_STATUS_NEW.includes(uc.implementation_status)
-  assert.strictEqual(wouldBeIncluded, true, 'Ready UC should be included in new filter')
-
-  // Simulate done tasks (PM has already completed)
   const doneTasks = [{ agent_id: 'product', status: 'done' }]
   const doneAgents = new Set(doneTasks.map(t => t.agent_id))
 
-  // Calculate startStep
   let startStep = 0
   for (let i = 0; i < uc.workflow.length; i++) {
     if (doneAgents.has(uc.workflow[i])) startStep = i + 1
@@ -71,49 +83,46 @@ function testFixVerification() {
   }
 
   assert.strictEqual(startStep, 1, `Expected startStep=1 (dev), got ${startStep}`)
-  assert.strictEqual(uc.workflow[startStep], 'dev', `Expected dev agent, got ${uc.workflow[startStep]}`)
-  console.log('  ✅ Fix verified: with ready in filter, startStep=1 targets dev agent')
+  assert.strictEqual(uc.workflow[startStep], 'dev', `Expected dev agent at step 1, got ${uc.workflow[startStep]}`)
+  console.log('  ✅ replenishQueue startStep=1 (dev) for ready UC with product done')
 }
 
-// Test 5: All relevant statuses trigger correct startStep calculation
-function testAllStatusesNeedingStartStep() {
-  console.log('Test 5: All relevant statuses trigger startStep calculation...')
+// Test 6: simulate replenishQueue — ready UC with all steps done should be skipped
+function testReplenishQueueSkipsAllStepsDoneReadyUC() {
+  console.log('Test 6: replenishQueue skips ready UC with all steps done...')
 
-  const statuses = ['ready', 'stuck', 'in_progress', 'not_started']
-  const workflow = ['product', 'dev', 'qc']
-  const doneTasks = [{ agent_id: 'product', status: 'done' }]
+  const uc = { implementation_status: 'ready', workflow: ['product', 'dev'] }
+  const doneTasks = [{ agent_id: 'product', status: 'done' }, { agent_id: 'dev', status: 'done' }]
   const doneAgents = new Set(doneTasks.map(t => t.agent_id))
+  const workflowLen = uc.workflow.length
 
-  for (const status of statuses) {
-    // Calculate startStep (always runs regardless of UC status)
-    let startStep = 0
-    for (let i = 0; i < workflow.length; i++) {
-      if (doneAgents.has(workflow[i])) startStep = i + 1
-      else break
-    }
-    assert.strictEqual(startStep, 1, `Status ${status}: Expected startStep=1, got ${startStep}`)
+  let startStep = 0
+  for (let i = 0; i < uc.workflow.length; i++) {
+    if (doneAgents.has(uc.workflow[i])) startStep = i + 1
+    else break
   }
 
-  console.log('  ✅ All relevant statuses (ready, stuck, in_progress, not_started) trigger startStep calculation')
+  assert.strictEqual(startStep >= workflowLen, true, 'All steps done: startStep should >= workflowLen')
+  console.log('  ✅ replenishQueue skips (startStep >= workflowLen): sweepUCCompletions handles it')
 }
 
-// Run all tests
 function runTests() {
-  console.log('\n🧪 Genome replenishQueue ready-status fix tests\n')
+  console.log('\n🧪 Genome UC ready-status loop fix tests\n')
 
   try {
-    testReadyInStatusFilter()
-    testStartStepCalculationForReadyUC()
-    testBugScenario()
-    testFixVerification()
-    testAllStatusesNeedingStartStep()
+    testSweepUCCompletionsIncludesReady()
+    testReplenishQueueIncludesReady()
+    testReplenishQueueAllStepsDoneGuard()
+    testSweepReadyUCWithAllStepsDone()
+    testReplenishQueueStartStepForReadyUC()
+    testReplenishQueueSkipsAllStepsDoneReadyUC()
 
     console.log('\n✅ All tests passed!\n')
-    return { passed: 5, total: 5, passRate: 1.0 }
+    return { passed: 6, total: 6, passRate: 1.0 }
   } catch (err) {
     console.error('\n❌ Test failed:', err.message)
     console.error(err.stack)
-    return { passed: 0, total: 5, passRate: 0 }
+    return { passed: 0, total: 6, passRate: 0 }
   }
 }
 

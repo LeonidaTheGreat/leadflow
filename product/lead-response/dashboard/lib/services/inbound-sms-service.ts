@@ -21,6 +21,7 @@ import {
   sendSatisfactionPing,
 } from '@/lib/satisfaction'
 import type { Lead, Agent } from '@/lib/types'
+import { realEstateAgentRowToAgent } from '@/lib/agent-mapper'
 
 // Satisfaction ping fires after AI response cooldown (10 min = 600000ms)
 export const SATISFACTION_PING_DELAY_MS = 10 * 60 * 1000
@@ -57,10 +58,11 @@ export async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
     .from('real_estate_agents')
     .select('*')
-    .eq('is_active', true)
+    .eq('status', 'active')
     .limit(1)
 
-  return agents?.[0] || null
+  const row = agents?.[0]
+  return row ? realEstateAgentRowToAgent(row) : null
 }
 
 // ============================================
@@ -295,19 +297,18 @@ export interface AiResponseResult {
  * Resolve the agent for a lead (from joined data, then by ID, then default).
  */
 export async function resolveAgent(lead: Lead): Promise<Agent | null> {
-  let agent: Agent | null = (lead.agent as Agent) || null
-  if (!agent && lead.agent_id) {
+  if (lead.agent) {
+    return realEstateAgentRowToAgent(lead.agent as any)
+  }
+  if (lead.agent_id) {
     const { data: agentData } = await supabaseAdmin
       .from('real_estate_agents')
       .select('*')
       .eq('id', lead.agent_id)
       .single()
-    agent = agentData as Agent
+    if (agentData) return realEstateAgentRowToAgent(agentData)
   }
-  if (!agent) {
-    agent = await getDefaultAgent()
-  }
-  return agent
+  return getDefaultAgent()
 }
 
 /**
