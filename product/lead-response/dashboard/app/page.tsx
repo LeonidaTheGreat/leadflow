@@ -522,7 +522,7 @@ const faqItems = [
   },
   {
     question: "Does the AI sound like a robot?",
-    answer: "No. The AI is trained to sound like a professional agent — warm, helpful, and specific to the lead's inquiry. You can customize the tone and templates.",
+    answer: "No. The AI is trained to sound like a professional agent — warm, helpful, and specific to the lead's inquiry.",
   },
   {
     question: "How does it integrate with Follow Up Boss?",

@@ -16,6 +16,7 @@ import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai
 import { sendAiSmsResponse, normalizePhone, sendSms } from '@/lib/twilio'
 import { logSmsActivity, logQualification } from '@/lib/fub'
 import type { Lead, Agent, LeadStatus } from '@/lib/types'
+import { realEstateAgentRowToAgent } from '@/lib/agent-mapper'
 
 // ============================================
 // HELPERS
@@ -28,7 +29,8 @@ export async function getDefaultAgent(): Promise<Agent | null> {
     .eq('status', 'active')
     .limit(1)
 
-  return agents?.[0] || null
+  const row = agents?.[0]
+  return row ? realEstateAgentRowToAgent(row) : null
 }
 
 export function mapFubStatus(fubStatus: string): LeadStatus {
@@ -358,11 +360,13 @@ export async function handleStatusChanged(
 export async function handleLeadAssigned(fubLead: any): Promise<Response> {
   logger.info(`Processing lead.assigned: ${fubLead.id}`)
 
-  const { data: agent } = await supabaseAdmin
+  const { data: agentRow } = await supabaseAdmin
     .from('real_estate_agents')
     .select('*')
     .eq('fub_id', fubLead.agentId)
     .single()
+
+  const agent = agentRow ? realEstateAgentRowToAgent(agentRow) : null
 
   if (!agent) {
     logger.info(`No agent found with fub_id: ${fubLead.agentId}`)
