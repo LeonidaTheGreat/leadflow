@@ -27,10 +27,10 @@ function isValidPriceId(id: string | undefined): id is string {
 const PRICE_ID_ENV_MAP: Record<string, string> = {
   starter_monthly: 'STRIPE_PRICE_STARTER_MONTHLY',
   starter_annual:  'STRIPE_PRICE_STARTER_ANNUAL',
-  pro_monthly:     'STRIPE_PRICE_PRO_MONTHLY',
-  pro_annual:      'STRIPE_PRICE_PRO_ANNUAL',
-  team_monthly:    'STRIPE_PRICE_TEAM_MONTHLY',
-  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL',
+  pro_monthly:     'STRIPE_PRICE_PROFESSIONAL_MONTHLY',
+  pro_annual:      'STRIPE_PRICE_PROFESSIONAL_ANNUAL',
+  team_monthly:    'STRIPE_PRICE_ENTERPRISE_MONTHLY',
+  team_annual:     'STRIPE_PRICE_ENTERPRISE_ANNUAL',
 }
 
 // === Replicated from signup/page.tsx (must stay in sync) ===
@@ -82,13 +82,13 @@ describe('PRICE_ID_ENV_MAP (create-checkout/route.ts)', () => {
     expect(PRICE_ID_ENV_MAP['starter_monthly']).not.toContain('NEXT_PUBLIC')
   })
 
-  it('should use STRIPE_PRICE_PRO_MONTHLY for canonical pro tier (not PROFESSIONAL)', () => {
-    expect(PRICE_ID_ENV_MAP['pro_monthly']).toBe('STRIPE_PRICE_PRO_MONTHLY')
+  it('should use STRIPE_PRICE_PROFESSIONAL_MONTHLY for canonical pro tier', () => {
+    expect(PRICE_ID_ENV_MAP['pro_monthly']).toBe('STRIPE_PRICE_PROFESSIONAL_MONTHLY')
     expect(PRICE_ID_ENV_MAP['pro_monthly']).not.toContain('NEXT_PUBLIC')
   })
 
-  it('should use STRIPE_PRICE_TEAM_MONTHLY for canonical team tier (not ENTERPRISE)', () => {
-    expect(PRICE_ID_ENV_MAP['team_monthly']).toBe('STRIPE_PRICE_TEAM_MONTHLY')
+  it('should use STRIPE_PRICE_ENTERPRISE_MONTHLY for canonical team tier', () => {
+    expect(PRICE_ID_ENV_MAP['team_monthly']).toBe('STRIPE_PRICE_ENTERPRISE_MONTHLY')
     expect(PRICE_ID_ENV_MAP['team_monthly']).not.toContain('NEXT_PUBLIC')
   })
 
@@ -127,7 +127,7 @@ describe('Signup → Checkout tier alignment', () => {
   it('team plan should map to team_monthly (canonical name, not enterprise_monthly)', () => {
     // After tier naming fix: canonical names match the pricing page (starter, pro, team)
     expect(PLAN_CHECKOUT_TIER['team']).toBe('team_monthly')
-    expect(PRICE_ID_ENV_MAP['team_monthly']).toBe('STRIPE_PRICE_TEAM_MONTHLY')
+    expect(PRICE_ID_ENV_MAP['team_monthly']).toBe('STRIPE_PRICE_ENTERPRISE_MONTHLY')
   })
 })
 

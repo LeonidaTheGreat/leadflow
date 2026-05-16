@@ -1,21 +1,3 @@
-/*
-Task Spec (1740ea6b-9d62-4ae9-b0a8-a2b5da2f12d6)
-What:
-- Change product/lead-response/dashboard/app/api/billing/create-checkout/route.ts (POST) to enforce annual plans as cash-upfront by removing trial days for *_annual tiers while keeping monthly trial behavior.
-- Add test coverage in product/lead-response/dashboard/tests/fix-annual-billing-cash-upfront.test.ts for annual no-trial and monthly trial behavior.
-
-Verify:
-- Run: npm test
-  Expected: passes.
-- Run: npm run build
-  Expected: succeeds.
-- Run: rg -n "isAnnualTier|trial_period_days: 14" product/lead-response/dashboard/app/api/billing/create-checkout/route.ts
-  Expected: annual interval gate exists and the 14-day trial is monthly-only in conditional subscription data.
-
-Boundaries:
-- Do not modify tier/price mappings, webhook handlers, or database schema.
-- Do not alter unrelated UI flows.
-*/
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
@@ -39,10 +21,10 @@ const PRICING_TIERS: Record<string, { name: string; amount: number }> = {
 const PRICE_ID_ENV_MAP: Record<string, string> = {
   starter_monthly: 'STRIPE_PRICE_STARTER_MONTHLY',
   starter_annual:  'STRIPE_PRICE_STARTER_ANNUAL',
-  pro_monthly:     'STRIPE_PRICE_PRO_MONTHLY',
-  pro_annual:      'STRIPE_PRICE_PRO_ANNUAL',
-  team_monthly:    'STRIPE_PRICE_TEAM_MONTHLY',
-  team_annual:     'STRIPE_PRICE_TEAM_ANNUAL' }
+  pro_monthly:     'STRIPE_PRICE_PROFESSIONAL_MONTHLY',
+  pro_annual:      'STRIPE_PRICE_PROFESSIONAL_ANNUAL',
+  team_monthly:    'STRIPE_PRICE_ENTERPRISE_MONTHLY',
+  team_annual:     'STRIPE_PRICE_ENTERPRISE_ANNUAL' }
 
 /**
  * Validate a Stripe Price ID looks correct.
