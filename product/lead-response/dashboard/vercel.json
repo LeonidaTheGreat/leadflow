@@ -12,7 +12,7 @@
     },
     {
       "path": "/api/cron/inactivity-alerts",
-      "schedule": "0 9 * * *"
+      "schedule": "*/30 * * * *"
     },
     {
       "path": "/api/cron/inactivity-check",
