@@ -57,6 +57,7 @@ import {
   handleOptIn,
   handleSatisfactionReply,
   findOrCreateLeadByPhone,
+  getDefaultAgent,
 } from '../lib/services/inbound-sms-service'
 import type { Lead } from '../lib/types'
 
@@ -224,5 +225,60 @@ describe('findOrCreateLeadByPhone', () => {
     const result = await findOrCreateLeadByPhone('+12025559999')
     expect('error' in result).toBe(true)
     expect((result as { error: string }).error).toContain('Failed to create lead in FUB')
+  })
+})
+
+describe('getDefaultAgent', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('queries real_estate_agents by status=active (not is_active)', async () => {
+    const mockLimit = jest.fn().mockResolvedValue({ data: null })
+    const mockEq = jest.fn().mockReturnValue({ limit: mockLimit })
+    const mockSelect = jest.fn().mockReturnValue({ eq: mockEq })
+    mockSupabaseFrom.mockReturnValue({ select: mockSelect })
+
+    await getDefaultAgent()
+
+    expect(mockSupabaseFrom).toHaveBeenCalledWith('real_estate_agents')
+    expect(mockEq).toHaveBeenCalledWith('status', 'active')
+    expect(mockEq).not.toHaveBeenCalledWith('is_active', expect.anything())
+  })
+
+  it('returns null when no agents found', async () => {
+    const mockLimit = jest.fn().mockResolvedValue({ data: [] })
+    const mockEq = jest.fn().mockReturnValue({ limit: mockLimit })
+    const mockSelect = jest.fn().mockReturnValue({ eq: mockEq })
+    mockSupabaseFrom.mockReturnValue({ select: mockSelect })
+
+    const result = await getDefaultAgent()
+    expect(result).toBeNull()
+  })
+
+  it('returns mapped Agent with market and settings (hasRequiredAgent:true)', async () => {
+    const dbRow = {
+      id: 'agent-uuid-1',
+      email: 'jane@realty.com',
+      first_name: 'Jane',
+      last_name: 'Smith',
+      phone_number: '+15005550001',
+      state: 'CA',
+      status: 'active',
+      timezone: 'America/Los_Angeles',
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: '2026-01-01T00:00:00Z',
+    }
+    const mockLimit = jest.fn().mockResolvedValue({ data: [dbRow] })
+    const mockEq = jest.fn().mockReturnValue({ limit: mockLimit })
+    const mockSelect = jest.fn().mockReturnValue({ eq: mockEq })
+    mockSupabaseFrom.mockReturnValue({ select: mockSelect })
+
+    const agent = await getDefaultAgent()
+
+    expect(agent).not.toBeNull()
+    expect(agent!.name).toBe('Jane Smith')
+    expect(agent!.is_active).toBe(true)
+    // hasRequiredAgent check from twilio/route.ts: agent && agent.market && agent.settings
+    const hasRequiredAgent = !!(agent && agent.market && agent.settings)
+    expect(hasRequiredAgent).toBe(true)
   })
 })
