@@ -1,3 +1,21 @@
+/*
+Task Spec (1740ea6b-9d62-4ae9-b0a8-a2b5da2f12d6)
+What:
+- Change product/lead-response/dashboard/app/api/billing/create-checkout/route.ts (POST) to enforce annual plans as cash-upfront by removing trial days for *_annual tiers while keeping monthly trial behavior.
+- Add test coverage in product/lead-response/dashboard/tests/fix-annual-billing-cash-upfront.test.ts for annual no-trial and monthly trial behavior.
+
+Verify:
+- Run: npm test
+  Expected: passes.
+- Run: npm run build
+  Expected: succeeds.
+- Run: rg -n "isAnnualTier|trial_period_days: 14" product/lead-response/dashboard/app/api/billing/create-checkout/route.ts
+  Expected: annual interval gate exists and the 14-day trial is monthly-only in conditional subscription data.
+
+Boundaries:
+- Do not modify tier/price mappings, webhook handlers, or database schema.
+- Do not alter unrelated UI flows.
+*/
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase } from '@/lib/supabase-server'
 import Stripe from 'stripe'
@@ -204,17 +222,23 @@ export async function POST(request: NextRequest) {
     }
 
     // --- Create checkout session ---
+    const isAnnualTier = tier.endsWith('_annual')
+    const subscriptionMetadata = {
+      agent_id: agentId,
+      tier: tier.split('_')[0],
+      source: 'onboarding_flow',
+      billing_model: isAnnualTier ? 'cash_upfront' : 'trial_then_recurring'
+    }
+    const subscriptionData = isAnnualTier
+      ? { metadata: subscriptionMetadata }
+      : { trial_period_days: 14, metadata: subscriptionMetadata }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: agentId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      subscription_data: {
-        trial_period_days: 14,
-        metadata: {
-          agent_id: agentId,
-          tier: tier.split('_')[0], // 'starter' | 'professional' | 'enterprise'
-          source: 'onboarding_flow' } },
+      subscription_data: subscriptionData,
       success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/pricing?cancelled=true`,
       automatic_tax: { enabled: true },
