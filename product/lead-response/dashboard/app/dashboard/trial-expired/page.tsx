@@ -1,9 +1,11 @@
 'use client'
 
+
+
 import { useEffect, useState } from 'react'
-import { AlertTriangle, ArrowRight } from 'lucide-react'
-import { trackEvent } from '@/lib/analytics/ga4'
+import { AlertTriangle, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { trackEvent } from '@/lib/analytics/ga4'
 
 export default function TrialExpiredPage() {
   const router = useRouter()
@@ -92,10 +94,11 @@ export default function TrialExpiredPage() {
             href={DEMO_BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
-            data-testid="demo-call-cta-trial-expired"
+            data-testid="trial-expired-demo-call-cta"
             onClick={() => trackEvent('demo_call_cta_click', { source: 'trial_expired' })}
-            className="block w-full px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold rounded-lg transition-colors text-center"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors text-center"
           >
+            <Phone className="w-4 h-4" />
             Talk to us before you lose your leads
           </a>
 

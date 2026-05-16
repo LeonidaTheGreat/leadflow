@@ -2,7 +2,7 @@
 # Knowledge Index
 
 > Topic → file map. Read this first to find the right reference file.
-> Generated: 2026-04-27T05:17:51.570Z
+> Generated: 2026-05-10T08:39:30.722Z
 
 ## Project Root
 
@@ -28,7 +28,6 @@
 | `ORCHESTRATOR-HEARTBEAT-LOG.md` | Orchestrator Heartbeat Log | no |
 | `ORCHESTRATOR_AUTONOMY_RULES.md` | ORCHESTRATOR_AUTONOMY_RULES.md | no |
 | `ORCHESTRATOR_GUIDE.md` | 🤖 Leonida Orchestrator - Supabase Integration Guide | no |
-| `PATTERNS.md` | LeadFlow Code Patterns | no |
 | `PILOT_CONVERSION_README.md` | Pilot-to-Paid Conversion Email Sequence | no |
 | `PMF.md` | LeadFlow AI — Product-Market Fit Analysis | no |
 | `PRD_INDEX.md` | PRD Index | yes |
@@ -57,7 +56,6 @@
 | `docs/DESIGN-LEAD-SATISFACTION-FEEDBACK.md` | Design Spec: Lead Satisfaction Feedback Collection |
 | `docs/DOMAIN-ROUTING-VERIFICATION.md` | Production Domain Routing Verification |
 | `docs/GA4_SETUP.md` | GA4 Setup Guide for LeadFlow AI |
-| `docs/HUMAN-SETUP-PLAN.md` | LeadFlow Human Setup Plan |
 | `docs/PRD-AHA-MOMENT-LEAD-SIMULATOR.md` | PRD: Aha Moment — Live Lead Simulator in Onboarding (First AI Response in <30s) |
 | `docs/PRD-AUTO-GENERATED-DOCS-DIRECTORY.md` | PRD: Auto-Generated Docs Directory Convention |
 | `docs/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md` | PRD: Email Verification — Confirm Inbox Before Login |
@@ -98,6 +96,7 @@
 | `docs/design/wireframes/pricing-section-wireframe.md` | Pricing Section Wireframe |
 | `docs/design-assets/email-verification/component-spec.md` | Component Specification: Email Verification UI |
 | `docs/guides/4-LOOP-ARCHITECTURE.md` | 4-Loop Orchestration Architecture |
+| `docs/guides/ANALYSIS-rejected-pr-handler-loop-2026-04-29.md` | Rejected PR Handler Loop — Root Cause Analysis |
 | `docs/guides/CALCOM_WEBHOOK_HANDLER.md` | Cal.com Webhook Handler |
 | `docs/guides/ERROR_HANDLING.md` | Error Handling & Logging Standardization |
 | `docs/guides/GA4-SETUP-GUIDE.md` | GA4 Setup Guide |
@@ -115,11 +114,14 @@
 | `docs/guides/UC-FIRST-AGENT-ACTIVATION-TEST.md` | UC-FIRST-AGENT-ACTIVATION-TEST: First Agent Onboarding — Validate Product Stickiness |
 | `docs/guides/WALKTHROUGH-PRODUCT-SIGNUP.md` | Walkthrough Spec: Product Signup & Onboarding Flow |
 | `docs/guides/completion-reports-retention.md` | Completion Reports Retention |
+| `docs/guides/task-13489e85-branch-verification.md` | Task 13489e85 Branch Verification |
+| `docs/guides/task-3ac7337c-branch-verification.md` | Task 3ac7337c Branch Verification Fix |
 | `docs/leadflow-api-design.md` | LeadFlow API Design |
 | `docs/marketing-handoff/CONTENT-STRATEGY-FRICTIONLESS-ONBOARDING.md` | Marketing Content Strategy: Frictionless Onboarding Flow |
 | `docs/marketing-handoff/DESIGN-BRIEF-FRICTIONLESS-ONBOARDING.md` | Content Brief: Design Team — Frictionless Onboarding Flow |
 | `docs/marketing-handoff/EMAIL-TEMPLATES-FRICTIONLESS-ONBOARDING.md` | Email Templates: Frictionless Onboarding Flow |
 | `docs/prd/PRD-ACTIVE-TRIAL-CONVERSION-EMAIL-SEQUENCE.md` | PRD: Active Trial Conversion Email Sequence |
+| `docs/prd/PRD-ADMIN-FORCE-TRIAL-ACTIVATION.md` | PRD: Admin Force-Trial-Activation |
 | `docs/prd/PRD-ADMIN-PILOT-INVITE-FLOW.md` | PRD: Admin Pilot Invite Flow — Direct Recruitment by Stojan |
 | `docs/prd/PRD-AHA-MOMENT-SIMULATOR-UI.md` | PRD: Aha Moment Simulator — Onboarding Step UI |
 | `docs/prd/PRD-BILLING-SCHEMA-ALIGNMENT.md` | PRD: Billing System Schema Alignment |
@@ -138,6 +140,7 @@
 | `docs/prd/PRD-DISTRIBUTION-LOOP-MIGRATION-006.md` | PRD: Distribution Loop — Migration 006 Not Applied to Local PostgreSQL |
 | `docs/prd/PRD-DISTRIBUTION-LOOP-WAVE10.md` | PRD: Distribution Loop — Wave 10 Escalation |
 | `docs/prd/PRD-DISTRIBUTION-LOOP-WAVE8.md` | PRD: Distribution Loop Investigation — Wave 8 |
+| `docs/prd/PRD-EMAIL-DOMAIN-FIX-CRITICAL.md` | PRD-LEADFLOW-EMAIL-DOMAIN-FIX-001 |
 | `docs/prd/PRD-EMAIL-VERIFICATION-BEFORE-LOGIN.md` | PRD: Email Verification — Confirm Inbox Before Login |
 | `docs/prd/PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS.md` | PRD: Fix Checkout — Replace subscription_attempts with checkout_sessions |
 | `docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md` | PRD: Fix Distribution Health Check Loop |
@@ -153,6 +156,7 @@
 | `docs/prd/PRD-FREE-PILOT-INTEGRATION-PLAN.md` | Free Pilot Onboarding — No Credit Card Required |
 | `docs/prd/PRD-FRICTIONLESS-DEMO-NO-FUB.md` | PRD: Frictionless Demo Mode — See AI Respond in 60 Seconds (No FUB Required) |
 | `docs/prd/PRD-FRICTIONLESS-ONBOARDING-001.md` | PRD-FRICTIONLESS-ONBOARDING-001 |
+| `docs/prd/PRD-FRICTIONLESS-STRIPE-CHECKOUT-E2E.md` | PRD-FRICTIONLESS-STRIPE-CHECKOUT-E2E |
 | `docs/prd/PRD-FUB-CONNECTION-WIZARD.md` | PRD: Guided FUB Connection Wizard — Self-Serve Integration in <5 Minutes |
 | `docs/prd/PRD-FUB-WIZARD.md` | PRD: Guided FUB Connection Wizard — Self-Serve Integration in <5 Minutes |
 | `docs/prd/PRD-FUNNEL-DIAGNOSTICS-TRIAL-ACTIVATION.md` | PRD: Funnel Diagnostics — Trial Activation Analysis |
@@ -168,15 +172,19 @@
 | `docs/prd/PRD-LEAD-EXPERIENCE-SIMULATOR.md` | PRD: Lead Experience Simulator & Conversation Viewer |
 | `docs/prd/PRD-LEAD-MAGNET-EMAIL-CAPTURE.md` | PRD: Lead Magnet / Email Capture on Landing Page |
 | `docs/prd/PRD-LEAD-SATISFACTION-FEEDBACK.md` | PRD: Lead Satisfaction Feedback Collection |
+| `docs/prd/PRD-LEADFLOW-SMS-UPGRADE-NUDGE-001.md` | PRD-LEADFLOW-SMS-UPGRADE-NUDGE-001 |
 | `docs/prd/PRD-LIVE-AI-DEMO-WITHOUT-SIGNUP.md` | PRD — Live AI Demo Without Signup |
 | `docs/prd/PRD-LOOP-DETECTION-HANDLER-FIX.md` | PRD: Loop Detection Handler — Prevent Duplicate Investigations |
 | `docs/prd/PRD-LOOP-DETECTION-HANDLER-INVESTIGATION.md` | PRD: Loop Detection Handler Investigation |
 | `docs/prd/PRD-LOOP-RESCUE-WAVE9.md` | PRD: Loop Detection Rescue — Wave 9 |
+| `docs/prd/PRD-MRR-GAP-ROOT-CAUSE-D73.md` | PRD: MRR Gap Root Cause — Day 73 of 90 |
 | `docs/prd/PRD-NPS-AGENT-FEEDBACK.md` | PRD: NPS / Feedback Survey Mechanism for Real Estate Agents |
+| `docs/prd/PRD-NPS-SURVEY-TRIAL-AGENTS.md` | PRD: Expand NPS Survey to Trial/Onboarding Agents |
 | `docs/prd/PRD-ONBOARDING-AHA-COMPLETION.md` | PRD: Enable Onboarding Completion + Aha Moment |
 | `docs/prd/PRD-ONBOARDING-COMPLETION-TELEMETRY.md` | PRD: Onboarding Completion Telemetry — Know Exactly Where Real Agents Drop Off |
 | `docs/prd/PRD-ONBOARDING-WIZARD.md` | PRD: Post-Login Onboarding Wizard for New Agents |
 | `docs/prd/PRD-P0-IMPLEMENTATION-SPECS.md` | PRD: P0 Implementation Specifications — Revenue Recovery Actions |
+| `docs/prd/PRD-PILOT-CONVERSION-SPRINT-DIRECT-OUTREACH.md` | PRD: Pilot Conversion Sprint — Direct Outreach to 15 Pilot Agents |
 | `docs/prd/PRD-PILOT-RECRUITMENT-CAMPAIGN.md` | PRD: Pilot Recruitment Campaign Launch |
 | `docs/prd/PRD-PILOT-SIGNUP-FOLLOW-UP-SEQUENCE.md` | PRD: Pilot Signup Follow-Up Sequence |
 | `docs/prd/PRD-PM-ACTION-ITEMS-DASHBOARD.md` | PRD-PM-ACTION-ITEMS-DASHBOARD |
@@ -235,10 +243,13 @@
 | `docs/prd/PRD-TRIAL-AHA-MOMENT.md` | PRD: Trial Aha Moment — AI Response by Day 3 |
 | `docs/prd/PRD-TRIAL-COUNTDOWN-WIDGET.md` | PRD: Trial Countdown Widget & Urgency |
 | `docs/prd/PRD-TRIAL-EXPIRY-CONVERSION-NUDGE.md` | PRD: Trial Expiry Conversion Nudge — Automated Upgrade CTA |
+| `docs/prd/PRD-TRIAL-PAID-CONVERSION-GAP-ANALYSIS.md` | PM Gap Analysis: Trial to Paid Conversion (0% → 15%) |
 | `docs/prd/PRD-TRIAL-SIGNUP-TSC-BUILD-BLOCKER.md` | PRD — Fix TypeScript Build Blocker in Trial Signup Route |
 | `docs/prd/PRD-TRIAL-TO-PAID-CONVERSION-PATH.md` | PRD: Trial-to-Paid Conversion Path |
 | `docs/prd/PRD-UC-EXHAUSTION-LOOP-FIX.md` | PRD: Fix UC Exhaustion Loop — Duplicate PM Task Creation |
+| `docs/prd/PRD-UPTIME-METRIC-ROLLING-WINDOW.md` | PRD-UPTIME-METRIC-ROLLING-WINDOW |
 | `docs/prd/PRD-UTM-SESSIONSTORAGE-WRITE-FIX.md` | PRD-UTM-SESSIONSTORAGE-WRITE-FIX |
+| `docs/prd/PRD-WHITE-GLOVE-PILOT-ONBOARDING.md` | PRD: White-Glove Pilot Onboarding |
 | `docs/prd/PRD-fix-signup-login-table-mismatch.md` | PRD: Fix Signup/Login Table Mismatch — Remaining `agents` Table References |
 | `docs/prd/PRD-genome-circuit-breaker-false-positive.md` | PRD: Genome Circuit Breaker False Positive Fix |
 | `docs/prd/REVENUE-ALERT-SUMMARY-2026-03-31.md` | Revenue Alert Summary — PM Triage & Reprioritization |
@@ -347,6 +358,7 @@
 | `docs/reports/COMPLETION-ca339b25-twilio-webhook-verification.md` | Twilio Webhook URL Verification |
 | `docs/reports/COMPLETION-caa6e1e4-ecf9-4f94-818d-31f431e7b1f2.md` | Completion Report — Agent Referral Program Implementation |
 | `docs/reports/COMPLETION-cbad771e-013f-42f3-82a8-24bb5090c0dc.md` | Task Completion Report |
+| `docs/reports/COMPLETION-cc430133-17a2-48cd-8c7d-d52b51aeaaf9-VERIFICATION-FIX.md` | Verification Fix: Commit Presence for cc430133 |
 | `docs/reports/COMPLETION-ccdbdea8-51a6-43c4-9b2f-202824f7c766.md` | Completion Report: E2E Flow Test Failures Fix |
 | `docs/reports/COMPLETION-cdca0584-e2ec-4836-ab2c-8735e717be26.md` | Completion Report: fix-48h-trial-cta-email-delay-is-not-implemented |
 | `docs/reports/COMPLETION-cde58720-577f-4af9-bf44-51095130384f.md` | Completion Report: UTM Database Migration |
@@ -383,6 +395,7 @@
 | `docs/reports/DEPLOYMENT_VERIFICATION-958ef310.md` | Deployment Drift Resolution - Task 958ef310 |
 | `docs/reports/FIXES_APPLIED.md` | Fix Applied: feat-onboarding-completion-telemetry Status Correction |
 | `docs/reports/LANDING-PAGE-IMPLEMENTATION-SUMMARY.md` | UC-LANDING-MARKETING-001 Implementation Summary |
+| `docs/reports/NPS-METRIC-GAP-ANALYSIS-2026-04-29.md` | NPS Metric Gap Analysis — 2026-04-29 |
 | `docs/reports/PHASE-1B-FIXES-VERIFICATION.md` | Phase 1B Fixes Verification Report |
 | `docs/reports/PM-INVESTIGATION-circuit-breaker-distribution-loop.md` | PM Investigation: Circuit Breaker — uc-distribution-loop-fix |
 | `docs/reports/QC-REVIEW-042dc01b-d7d2-469d-81f5-c8c1f56fcca6.md` | QC Review Report |
@@ -453,12 +466,19 @@
 | `docs/reports/QC-REVIEW-e65f603c-c218-406b-8f06-f57f71de4a2a.md` | QC Review Report |
 | `docs/reports/QC-REVIEW-fb82cd90-f9dc-4d8e-8253-97111f01fd60.md` | QC Review: Frictionless Demo Mode — No FUB Required |
 | `docs/reports/QC-REVIEW-fd6a5bda-6372-4db7-bf56-ae9c13b8f98a.md` | QC Review Report |
+| `docs/reports/REVENUE-ANALYSIS-2026-05-01.md` | Revenue Alert: Funnel Analysis — Day 79 of 90 |
 | `docs/reports/TASK-SUMMARY-2afa1d9f.md` | Task Summary: Fix Browser Test Failures |
+| `docs/reports/audit-2026-05-03.md` | LeadFlow Audit — 2026-05-03 |
+| `docs/reports/buyer-journey-2026-05-05.md` | Home-Buyer Journey — As Code, As Marketing, As Reality |
+| `docs/reports/buyer-journey-config-diff-2026-05-09.md` | project.config.json — proposed journey addition |
 | `docs/reports/completion-reports-retention-bf9448cd.md` | Completion Reports Retention Remediation (bf9448cd) |
 | `docs/reports/domain-routing-verification-2026-04-04.md` | Production Domain Routing Verification |
+| `docs/reports/genome-requests-2026-05-10.md` | Genome Requests from LeadFlow Audit — 2026-05-10 |
+| `docs/reports/marketing-claims-audit-2026-05-04.md` | Marketing Claims Audit — 2026-05-04 |
 | `docs/reports/session-logging-e2e-verification.md` | Session Logging — E2E Verification Report |
 | `docs/task-specs/feat-annual-billing-plan-workflow-task.md` | Annual Billing Plan workflow task spec |
 | `docs/task-specs/feat-lapsed-trial-reactivation-workflow-task.md` | Lapsed Trial Reactivation workflow task spec |
+| `docs/task-specs/feat-revenue-funnel-visibility-workflow-task.md` | Workflow Task: Revenue Funnel Visibility |
 | `docs/task-specs/feat-subscription-funnel-tracking-workflow-task.md` | Workflow Task: Subscription Funnel Tracking |
 | `docs/task-specs/fix-no-urgency-or-scarcity-mechanism-workflow-task.md` | Workflow Task: Add urgency and scarcity to landing page conversion flow |
 | `docs/task-specs/fix-phantom-mrr-test-data-polluting-metric-workflow-task.md` | Workflow Task — Fix: Phantom MRR from test subscription data |
