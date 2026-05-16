@@ -1,11 +1,52 @@
 /**
  * Tests for the Pricing Page
- * Covers: PRICING_PLANS data, tier display, pricing accuracy, grid layout
+ * Covers: PRICING_PLANS data, tier display, pricing accuracy, grid layout, demo CTA
  */
 
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
+
+// ────────────────────────────────────────────────────────────
+// Demo Call CTA Tests (feat-conversion-call-booking)
+// ────────────────────────────────────────────────────────────
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+}))
+
+jest.mock('@/lib/analytics/ga4', () => ({
+  trackEvent: jest.fn(),
+  trackCTAClick: jest.fn(),
+}))
+
+describe('Demo Call CTA (feat-conversion-call-booking)', () => {
+  const CAL_BOOKING_URL = 'https://cal.com/stojan-leadflow/15min'
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    ;(global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) })
+  })
+
+  it('pricing page renders a link containing the Cal.com booking URL', async () => {
+    const PricingPage = (await import('../app/pricing/page')).default
+    render(<PricingPage />)
+    const links = screen.getAllByRole('link')
+    const calLink = links.find(
+      (l) => l.getAttribute('href') === CAL_BOOKING_URL
+    )
+    expect(calLink).toBeDefined()
+    expect(calLink).toHaveAttribute('href', CAL_BOOKING_URL)
+  })
+
+  it('pricing page demo CTA has correct testid', async () => {
+    const PricingPage = (await import('../app/pricing/page')).default
+    render(<PricingPage />)
+    const cta = screen.getByTestId('demo-call-cta')
+    expect(cta).toHaveAttribute('href', CAL_BOOKING_URL)
+    expect(cta).toHaveAttribute('target', '_blank')
+  })
+})
 
 // Mock the page component since we're testing the data structure
 // In a real scenario, we'd import the component directly
