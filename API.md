@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-04-27T05:17:51.550Z | Source: `routes/`, `integration/`
+> Generated: 2026-05-10T08:39:30.666Z | Source: `routes/`, `integration/`
 
-**20 endpoints across 8 files**
+**21 endpoints across 9 files**
 
 ## Summary
 
@@ -11,6 +11,7 @@
 |--------|------|----------|------|------|
 | **GET** | `/api/admin/activation-list` | - | Bearer token | `routes/admin/activation-outreach.js` |
 | **POST** | `/api/admin/send-activation-email` | - | Bearer token | `routes/admin/activation-outreach.js` |
+| **POST** | `/api/admin/reactivation-campaign` | `LapsedTrialReactivationService` | None | `routes/admin/reactivation-campaign.js` |
 | **POST** | `/webhook/stripe` | - | None | `routes/billing.js` |
 | **POST** | `/api/billing/checkout` | - | Bearer token | `routes/billing.js` |
 | **POST** | `/api/billing/portal` | - | Bearer token | `routes/billing.js` |
@@ -41,6 +42,15 @@
 ### POST `/api/admin/send-activation-email`
 
 - **Auth:** Bearer token
+
+---
+
+## `routes/admin/reactivation-campaign.js`
+
+### POST `/api/admin/reactivation-campaign`
+
+- **Auth:** None
+- **Services:** `LapsedTrialReactivationService`
 
 ---
 

@@ -44,6 +44,7 @@ export function withTimeout<T>(
 // Switch to Qwen 3.5 local as default
 const AI_PROVIDER = process.env.AI_PROVIDER || 'qwen-local'
 const AI_MODEL = process.env.AI_MODEL || 'qwen3.5-14b'
+const ANTHROPIC_FALLBACK_MODEL = 'claude-haiku-4-5'
 const AI_TIMEOUT_MS = 5000; // 5 second timeout for AI operations
 
 // Qwen local client configuration
@@ -56,7 +57,7 @@ const qwenLocal = createOpenAI({
 function getModelClient(): any {
   switch (AI_PROVIDER) {
     case 'anthropic':
-      return anthropic(AI_MODEL || 'claude-3-haiku-20240307')
+      return anthropic(AI_MODEL || ANTHROPIC_FALLBACK_MODEL)
     case 'qwen-local':
     default:
       return qwenLocal(AI_MODEL || 'qwen3.5-14b')
@@ -103,7 +104,7 @@ export type QualificationResult = z.infer<typeof qualificationSchema>
 // ============================================
 
 /**
- * Qualify a lead using Claude 3.5 Sonnet
+ * Qualify a lead using the configured AI model
  * Analyzes lead data to extract intent, budget, timeline, and property preferences
  */
 export async function qualifyLead(input: QualificationInput): Promise<AiQualificationResult> {
