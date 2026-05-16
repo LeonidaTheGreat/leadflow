@@ -34,13 +34,12 @@ import { GET } from '@/app/api/cron/inactivity-alerts/route'
 const AGENT_ID = 'agent-uuid-111'
 const INACTIVE_SESSION = {
   agent_id: AGENT_ID,
-  last_active_at: new Date(Date.now() - 80 * 60 * 60 * 1000).toISOString(), // 80h ago
-  real_estate_agents: {
-    id: AGENT_ID,
-    email: 'pilot@example.com',
-    first_name: 'Jane',
-    last_name: 'Pilot',
-  },
+  last_used_at: new Date(Date.now() - 80 * 60 * 60 * 1000).toISOString(), // 80h ago
+}
+const AGENT_DETAILS = {
+  email: 'pilot@example.com',
+  first_name: 'Jane',
+  last_name: 'Pilot',
 }
 
 // ---- Helpers ----
@@ -120,14 +119,17 @@ describe('no inactive agents', () => {
 
 describe('inactive agent — first alert', () => {
   beforeEach(() => {
-    let call = 0
+    let alertsCall = 0
     mockFrom.mockImplementation((table: string) => {
       if (table === 'agent_sessions') {
         return buildChain({ data: [INACTIVE_SESSION], error: null })
       }
+      if (table === 'real_estate_agents') {
+        return buildChain({ data: [AGENT_DETAILS], error: null })
+      }
       if (table === 'inactivity_alerts') {
-        call++
-        if (call === 1) {
+        alertsCall++
+        if (alertsCall === 1) {
           // dedup check — no existing alert
           return buildChain({ data: [], error: null })
         }

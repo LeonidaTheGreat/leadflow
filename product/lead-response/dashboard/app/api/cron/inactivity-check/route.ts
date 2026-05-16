@@ -48,26 +48,28 @@ export async function POST(request: NextRequest) {
   const dedupCutoff      = new Date(now.getTime() - ALERT_DEDUP_MS).toISOString()
 
   try {
-    // Find all agents whose last session activity was >72h ago
+    // Find all agents whose last session activity was >72h ago (last_used_at is the correct column)
     const { data: inactiveSessions, error: sessionErr } = await supabase
       .from('agent_sessions')
-      .select('agent_id, last_active_at')
-      .lt('last_active_at', inactivityCutoff)
-      .order('last_active_at', { ascending: false })
+      .select('agent_id, last_used_at')
+      .lt('last_used_at', inactivityCutoff)
+      .order('last_used_at', { ascending: false })
 
     if (sessionErr) {
-      return NextResponse.json({ error: sessionErr.message }, { status: 500 })
+      return NextResponse.json({ error: String(sessionErr) }, { status: 500 })
     }
 
     if (!inactiveSessions || inactiveSessions.length === 0) {
       return NextResponse.json({ alerted: 0, message: 'No inactive pilots found' })
     }
 
-    // Group to get the most-recent last_active_at per agent
+    // Group to get the most-recent last_used_at per agent
     const agentMap = new Map<string, string>()
     for (const row of inactiveSessions) {
-      if (!agentMap.has(row.agent_id)) {
-        agentMap.set(row.agent_id, row.last_active_at)
+      const agentId = row.agent_id as string | null
+      if (!agentId) continue
+      if (!agentMap.has(agentId)) {
+        agentMap.set(agentId, row.last_used_at as string)
       }
     }
 
