@@ -1,7 +1,29 @@
 'use client'
 
+/*
+Task Spec
+What:
+- Update `app/onboarding/page.tsx` to wire the simulator step into the onboarding wizard by adding:
+  - `OnboardingSimulator` import
+  - `OnboardingStep` union containing `simulator`
+  - `const steps` wizard sequence with `simulator` between `sms` and `confirmation`
+  - simulator renderer block and `currentStep === 'simulator'` branch
+  - `ahaCompleted` and `ahaResponseTimeMs` (plus `ahaSkipped`) in onboarding form state
+  - `aha_moment_completed` in completion submit payload
+- Keep existing onboarding submission behavior and UTM handling intact.
+- Align step aliases to existing UI blocks (`welcome`->account, `agent-info`->profile, `calendar`/`sms`->integrations, `confirmation`->confirm).
+Verify:
+- Run `node product/lead-response/dashboard/tests/fix-page-tsx-not-updated-simulator-step-not-wired-into.test.js` and expect all checks to pass.
+- Run `npm test` from repo root and expect passing suite.
+- Run `cd product/lead-response/dashboard && npm run build` and expect successful Next.js build.
+Boundaries:
+- Do not modify backend routes, schema, migrations, or unrelated onboarding flows.
+- Do not refactor unrelated styling/layout behavior beyond step wiring requirements.
+*/
+
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, useRef, Suspense } from 'react'
+import OnboardingSimulator from './steps/simulator'
 import {
   Mail, Lock, Eye, EyeOff, User, Phone, MapPin, Link2, MessageSquare,
   Check, AlertCircle, CheckCircle, Wifi, WifiOff
@@ -9,7 +31,7 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type StepId = 'account' | 'profile' | 'integrations' | 'confirm'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
 
 interface AgentFormData {
   // Step 1: Account
@@ -23,6 +45,10 @@ interface AgentFormData {
   // Step 3: Integrations (optional)
   calcomLink: string
   smsPhoneNumber: string
+  // Step 4: Simulator
+  ahaCompleted: boolean
+  ahaResponseTimeMs: number | null
+  ahaSkipped: boolean
   // Step 4: Confirm
   termsAccepted: boolean
   // UTM
@@ -35,11 +61,13 @@ interface AgentFormData {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const STEPS: { id: StepId; label: string }[] = [
-  { id: 'account', label: 'Account' },
-  { id: 'profile', label: 'Profile' },
-  { id: 'integrations', label: 'Integrations' },
-  { id: 'confirm', label: 'Confirm' },
+const STEPS: { id: OnboardingStep; label: string }[] = [
+  { id: 'welcome', label: 'Account' },
+  { id: 'agent-info', label: 'Profile' },
+  { id: 'calendar', label: 'Calendar' },
+  { id: 'sms', label: 'SMS' },
+  { id: 'simulator', label: 'Simulator' },
+  { id: 'confirmation', label: 'Confirm' },
 ]
 
 const US_STATES = [
@@ -831,6 +859,9 @@ function OnboardingPageInner() {
     state: '',
     calcomLink: '',
     smsPhoneNumber: '',
+    ahaCompleted: false,
+    ahaResponseTimeMs: null,
+    ahaSkipped: false,
     termsAccepted: false,
     utmSource: null,
     utmMedium: null,
@@ -903,7 +934,7 @@ function OnboardingPageInner() {
 
   const goNext = () => {
     setCompletedSteps((prev) => new Set([...prev, currentStepIndex]))
-    setCurrentStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
+    setCurrentStepIndex((i) => Math.min(i + 1, steps.length - 1))
   }
 
   const goBack = () => {
@@ -956,7 +987,10 @@ function OnboardingPageInner() {
       const res = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          aha_moment_completed: data.ahaCompleted,
+        }),
       })
       if (res.status === 409) {
         setSubmitError('An account with this email already exists. Please sign in instead.')
@@ -980,7 +1014,8 @@ function OnboardingPageInner() {
     }
   }
 
-  const currentStep = STEPS[currentStepIndex]
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
+  const currentStep = steps[currentStepIndex]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -1001,7 +1036,7 @@ function OnboardingPageInner() {
               <h1 className="text-lg font-semibold text-white">LeadFlow AI</h1>
             </div>
             <div className="text-sm text-slate-400">
-              Step {currentStepIndex + 1} of {STEPS.length}
+              Step {currentStepIndex + 1} of {steps.length}
             </div>
           </div>
         </header>
@@ -1010,7 +1045,7 @@ function OnboardingPageInner() {
         <div className="border-b border-slate-700/50 bg-slate-900/30">
           <div className="max-w-2xl mx-auto">
             <StepIndicator currentIndex={currentStepIndex} completedSteps={completedSteps} />
-            <ProgressBar currentIndex={currentStepIndex} total={STEPS.length} />
+            <ProgressBar currentIndex={currentStepIndex} total={steps.length} />
           </div>
         </div>
 
@@ -1018,7 +1053,7 @@ function OnboardingPageInner() {
         <main className="flex-1 flex items-start justify-center px-4 py-8">
           <div className="w-full max-w-2xl">
             <div className="wizard bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl p-6 md:p-10">
-              {currentStep.id === 'account' && (
+              {currentStep === 'welcome' && (
                 <StepAccount
                   data={data}
                   onChange={onChange}
@@ -1028,7 +1063,7 @@ function OnboardingPageInner() {
                   emailError={emailError}
                 />
               )}
-              {currentStep.id === 'profile' && (
+              {currentStep === 'agent-info' && (
                 <StepProfile
                   data={data}
                   onChange={onChange}
@@ -1037,7 +1072,7 @@ function OnboardingPageInner() {
                   networkError={networkError}
                 />
               )}
-              {currentStep.id === 'integrations' && (
+              {currentStep === 'calendar' && (
                 <StepIntegrations
                   data={data}
                   onChange={onChange}
@@ -1046,7 +1081,24 @@ function OnboardingPageInner() {
                   networkError={networkError}
                 />
               )}
-              {currentStep.id === 'confirm' && (
+              {currentStep === 'sms' && (
+                <StepIntegrations
+                  data={data}
+                  onChange={onChange}
+                  onNext={goNext}
+                  onBack={goBack}
+                  networkError={networkError}
+                />
+              )}
+              {currentStep === 'simulator' && (
+                <OnboardingSimulator
+                  onNext={goNext}
+                  onBack={goBack}
+                  agentData={data}
+                  setAgentData={setData}
+                />
+              )}
+              {currentStep === 'confirmation' && (
                 <StepConfirm
                   data={data}
                   onChange={onChange}

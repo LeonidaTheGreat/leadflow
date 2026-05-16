@@ -114,7 +114,9 @@ export default function OnboardingConfirm({
                 }`}>
                   {agentData.ahaCompleted
                     ? `✓ Saw AI respond in ${formatResponseTime(agentData.ahaResponseTimeMs)}`
-                    : '⊘ Skipped for now'}
+                    : agentData.ahaSkipped
+                    ? '⊘ Skipped for now'
+                    : '○ Not started'}
                 </span>
               </div>
             </div>
