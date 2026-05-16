@@ -3,8 +3,8 @@
 /**
  * E2E test: fix-email-delivery-resend-from-domain-not-verified
  *
- * Verifies that dashboard email services use onboarding@leadflow.ai as the default
- * FROM address instead of the Resend test domain.
+ * Verifies that dashboard email services use onboarding@landyourleads.com as the default
+ * FROM address (verified domain fallback), never a Resend test domain.
  */
 
 const assert = require('assert')
@@ -39,8 +39,8 @@ const files = [
 for (const file of files) {
   const src = fs.readFileSync(path.join(LIB_DIR, file), 'utf-8')
 
-  test(`${file}: contains onboarding@leadflow.ai fallback`, () => {
-    assert.ok(src.includes('onboarding@leadflow.ai'), 'Missing onboarding@leadflow.ai')
+  test(`${file}: contains onboarding@landyourleads.com fallback`, () => {
+    assert.ok(src.includes('onboarding@landyourleads.com'), 'Missing onboarding@landyourleads.com')
   })
 
   test(`${file}: FROM fallback does not use onboarding@resend.dev`, () => {

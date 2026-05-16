@@ -1,0 +1,94 @@
+{
+  "taskId": "ac389a49-fe2e-446f-a2f3-f3e026678bd0",
+  "reviewId": "47c0d2c0-f65e-4ca1-8036-dfcf53b3807c",
+  "projectId": "leadflow",
+  "status": "completed",
+  "completedAt": "2026-05-14T10:12:08-04:00",
+  "verdict": "fail",
+  "readinessScore": 38,
+  "summary": "The internal orchestration dashboard loads and hydrates with live data, but the review cannot sign off the Stripe trial-to-paid conversion flow. The current \"E2E\" coverage is mock-only, the PRD contract has drifted from the shipped checkout/webhook implementation and schema, and the internal dashboard still has a live marketing attribution data failure.",
+  "walkthrough": {
+    "step": "Open internal dashboard at http://127.0.0.1:8787/dashboard.html",
+    "status": "partial",
+    "actualBehavior": "HTTP 200. The page rendered in a headless browser, hydrated mission/KPI/system sections, and showed live LeadFlow data. One widget failed at runtime: marketing attribution displayed \"Attribution data not available\" after a 404 on /rest/v1/real_estate_agents?select=utm_source,utm_medium,utm_campaign,id."
+  },
+  "findings": [
+    {
+      "type": "validation_gap",
+      "severity": "high",
+      "summary": "Stripe trial-to-paid flow is not actually validated end-to-end.",
+      "details": "tests/integration/stripe-checkout-e2e.test.js uses MockStripe and MockDatabase only. It does not import live route handlers, hit the real webhook route, or verify PostgreSQL state."
+    },
+    {
+      "type": "contract_drift",
+      "severity": "high",
+      "summary": "PRD acceptance criteria no longer match the live checkout implementation and schema.",
+      "details": "The customer UI is wired to /api/stripe/upgrade-checkout, not /api/billing/create-checkout-session. The real_estate_agents table has no stripe_subscription_id or plan_activated_at columns, and the Stripe webhook route does not update those fields on the agent record."
+    },
+    {
+      "type": "runtime_bug",
+      "severity": "medium",
+      "summary": "Internal dashboard marketing attribution card is broken.",
+      "details": "The dashboard issues a GET to /rest/v1/real_estate_agents?select=utm_source,utm_medium,utm_campaign,id which returns 404. The UI degrades to \"Attribution data not available,\" removing signup-source visibility."
+    }
+  ],
+  "decisionsNeeded": [
+    {
+      "summary": "Choose the source-of-truth contract for Stripe conversion verification.",
+      "blocking": true,
+      "options": [
+        {
+          "id": "opt_a",
+          "label": "Align PRD/tests to shipped flow",
+          "description": "Treat /api/stripe/upgrade-checkout plus subscriptions table state as the supported contract and rewrite verification around the real customer path."
+        },
+        {
+          "id": "opt_b",
+          "label": "Change product to match PRD",
+          "description": "Keep the current PRD contract and retrofit the product to /api/billing/create-checkout-session plus agent-level subscription fields."
+        }
+      ],
+      "recommended": "opt_a"
+    }
+  ],
+  "actionItems": [
+    {
+      "title": "Run a real Stripe test-mode conversion on the customer dashboard",
+      "description": "The checklist only exposed the internal dashboard. Revenue readiness still needs a real /signup/trial -> dashboard -> upgrade-checkout -> webhook -> paid-state walkthrough with Stripe test credentials and a disposable agent account.",
+      "priority": 1,
+      "type": "ACTION"
+    },
+    {
+      "title": "Choose the Stripe conversion contract source of truth",
+      "description": "PM, dev, and QC are currently validating different contracts. This blocks a clean sign-off on the trial-to-paid path.",
+      "priority": 1,
+      "type": "DECISION",
+      "options": [
+        {
+          "id": "opt_a",
+          "label": "Align PRD/tests to shipped flow",
+          "description": "Use /api/stripe/upgrade-checkout and subscriptions table state as the contract."
+        },
+        {
+          "id": "opt_b",
+          "label": "Change product to match PRD",
+          "description": "Retrofit the product to the current PRD endpoint and agent-level fields."
+        }
+      ],
+      "recommended_option": "opt_a"
+    },
+    {
+      "title": "Fix internal dashboard marketing attribution query",
+      "description": "The attribution card is currently non-functional because the underlying REST query returns 404.",
+      "priority": 2,
+      "type": "ACTION"
+    }
+  ],
+  "architecturalDecisions": [
+    {
+      "decision": "Recommend using the shipped upgrade-checkout route and subscriptions table as the Stripe source of truth.",
+      "reason": "This is the shortest path to trustworthy conversion verification without adding duplicated subscription state to real_estate_agents.",
+      "alternatives": "Retrofit the product to the older PRD contract and duplicate more billing fields on the agent record."
+    }
+  ]
+}
