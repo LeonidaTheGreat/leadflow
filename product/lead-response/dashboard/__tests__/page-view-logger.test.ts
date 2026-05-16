@@ -10,7 +10,14 @@ import jwt from 'jsonwebtoken'
 
 // ---- Supabase mock ----
 const mockInsert = jest.fn()
-const mockFrom = jest.fn(() => ({ insert: mockInsert }))
+const mockLimit = jest.fn()
+const mockEq = jest.fn()
+const mockSelect = jest.fn()
+
+const mockFrom = jest.fn(() => ({
+  insert: mockInsert,
+  select: mockSelect,
+}))
 
 jest.mock('@/lib/db', () => ({
   createClient: jest.fn(() => ({ from: mockFrom })),
@@ -50,9 +57,9 @@ describe('isTrackedPage', () => {
   it('tracks /dashboard/conversations', () => expect(isTrackedPage('/dashboard/conversations')).toBe(true))
   it('tracks /dashboard/settings', () => expect(isTrackedPage('/dashboard/settings')).toBe(true))
   it('tracks /dashboard/billing', () => expect(isTrackedPage('/dashboard/billing')).toBe(true))
-  it('tracks /dashboard/* sub-paths', () => expect(isTrackedPage('/dashboard/analytics')).toBe(true))
-  it('tracks /settings', () => expect(isTrackedPage('/settings')).toBe(true))
-  it('tracks /settings/billing', () => expect(isTrackedPage('/settings/billing')).toBe(true))
+  it('does not track other /dashboard sub-paths', () => expect(isTrackedPage('/dashboard/analytics')).toBe(false))
+  it('does not track /settings', () => expect(isTrackedPage('/settings')).toBe(false))
+  it('does not track /settings/billing', () => expect(isTrackedPage('/settings/billing')).toBe(false))
   it('does not track /login', () => expect(isTrackedPage('/login')).toBe(false))
   it('does not track /api/leads', () => expect(isTrackedPage('/api/leads')).toBe(false))
 })
@@ -61,6 +68,13 @@ describe('POST /api/page-views', () => {
   beforeEach(() => {
     mockInsert.mockReset()
     mockFrom.mockClear()
+    mockLimit.mockReset()
+    mockEq.mockReset()
+    mockSelect.mockReset()
+
+    mockEq.mockReturnValue({ eq: mockEq, limit: mockLimit })
+    mockSelect.mockReturnValue({ eq: mockEq })
+    mockLimit.mockResolvedValue({ data: [], error: null })
   })
 
   it('inserts a page view and returns logged:true on success', async () => {
@@ -72,8 +86,24 @@ describe('POST /api/page-views', () => {
     expect(json.logged).toBe(true)
     expect(mockFrom).toHaveBeenCalledWith('agent_page_views')
     expect(mockInsert).toHaveBeenCalledWith(
-      expect.objectContaining({ agent_id: AGENT_ID, session_id: SESSION_ID, page: '/dashboard' })
+      expect.objectContaining({
+        agent_id: AGENT_ID,
+        session_id: SESSION_ID,
+        page: '/dashboard',
+        visited_at: expect.any(String),
+      })
     )
+  })
+
+  it('dedupes when page already logged for same session', async () => {
+    mockLimit.mockResolvedValue({ data: [{ id: 'pv-1' }], error: null })
+    const req = makeRequest({ page: '/dashboard' }, makeToken())
+    const res = await POST(req)
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json.logged).toBe(true)
+    expect(json.deduped).toBe(true)
+    expect(mockInsert).not.toHaveBeenCalled()
   })
 
   it('returns 401 when no token', async () => {

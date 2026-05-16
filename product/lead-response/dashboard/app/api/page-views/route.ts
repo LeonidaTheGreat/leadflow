@@ -1,3 +1,19 @@
+/*
+Task Spec (0b6b7a57-5020-4188-8260-ee6c378677ab)
+What:
+- Update product/lead-response/dashboard/app/api/page-views/route.ts:
+  - Fix page-view insert payload so writes to agent_page_views are valid.
+  - Restrict tracked pages to FR-3 paths: /dashboard, /dashboard/conversations, /dashboard/settings, /dashboard/billing.
+  - Enforce one write per page per session by checking existing row before insert.
+Verify:
+- cd product/lead-response/dashboard && npm test -- --runInBand __tests__/page-view-logger.test.ts
+- cd product/lead-response/dashboard && npm run build
+- Validate route source contains agent_page_views select/insert with page, session_id, visited_at.
+Boundaries:
+- Do not change middleware auth/onboarding redirect logic.
+- Do not modify DB schema/migrations.
+- Do not alter unrelated analytics/event tracking routes.
+*/
 /**
  * POST /api/page-views
  *
@@ -16,9 +32,7 @@ const DB_KEY = process.env.API_SECRET_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export function isTrackedPage(pathname: string): boolean {
-  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) return true
-  if (pathname === '/settings' || pathname.startsWith('/settings/')) return true
-  return false
+  return TRACKED_PAGES.includes(pathname)
 }
 
 export const TRACKED_PAGES = [
@@ -26,8 +40,6 @@ export const TRACKED_PAGES = [
   '/dashboard/conversations',
   '/dashboard/settings',
   '/dashboard/billing',
-  '/settings',
-  '/settings/billing',
 ]
 
 function extractAuthInfo(request: NextRequest): { agentId: string | null; sessionId: string | null } {
@@ -98,10 +110,29 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(DB_URL, DB_KEY)
 
+    const { data: existingRows, error: selectError } = await supabase
+      .from('agent_page_views')
+      .select('id')
+      .eq('agent_id', agentId)
+      .eq('session_id', sessionId)
+      .eq('page', page)
+      .limit(1)
+
+    if (selectError) {
+      logger.error(`[page-views] Dedup query failed: ${selectError.message}`, { agentId, page, code: selectError.code })
+      return NextResponse.json({ logged: false, reason: selectError.code }, { status: 200 })
+    }
+
+    if (Array.isArray(existingRows) && existingRows.length > 0) {
+      return NextResponse.json({ logged: true, deduped: true }, { status: 200 })
+    }
+
     const insertPayload: Record<string, string> = {
       agent_id: agentId,
       session_id: sessionId,
-      page }
+      page,
+      visited_at: new Date().toISOString(),
+    }
 
     const { error } = await supabase.from('agent_page_views').insert(insertPayload)
 
