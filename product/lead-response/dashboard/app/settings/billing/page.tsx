@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowRight, Check, Clock, Loader } from 'lucide-react'
+import { ArrowRight, Check, Clock, Loader, Phone } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics/ga4'
 
 function getDaysRemaining(trialEndsAt: string): number {
@@ -285,22 +285,25 @@ function BillingPageContent() {
         ))}
       </div>
 
-      {/* Demo Booking CTA */}
-      <div className="mt-8 mb-4 text-center">
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Have questions before upgrading?</p>
+      {/* Demo Call CTA */}
+      <div className="mt-10 p-5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-center">
+        <p className="text-sm text-blue-700 dark:text-blue-300 mb-3 font-medium">
+          Have questions before upgrading?
+        </p>
         <a
           href={DEMO_BOOKING_URL}
           target="_blank"
           rel="noopener noreferrer"
-          data-testid="demo-call-cta-billing"
+          data-testid="billing-demo-call-cta"
           onClick={() => trackEvent('demo_call_cta_click', { source: 'billing_page' })}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/40 text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-semibold rounded-lg transition-all text-sm"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors"
         >
-          Book a free 15-min demo <ArrowRight className="w-4 h-4" />
+          <Phone className="w-4 h-4" />
+          Book a 15-min demo with Stojan
         </a>
       </div>
 
-      <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
         Questions? Email us at{' '}
         <a href="mailto:support@leadflowai.com" className="text-emerald-500 hover:underline">
           support@leadflowai.com
