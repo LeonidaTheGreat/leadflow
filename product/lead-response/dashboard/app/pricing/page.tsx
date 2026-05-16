@@ -364,7 +364,7 @@ export default function PricingPage() {
                         </>
                       ) : (
                         <>
-                          {plan.cta}
+                          {interval === 'annual' && !plan.contactSales ? 'Pay Annually' : plan.cta}
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}
