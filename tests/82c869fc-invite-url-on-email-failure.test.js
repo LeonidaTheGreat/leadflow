@@ -3,6 +3,20 @@
 /**
  * E2E test for: invite-pilot endpoint returns inviteUrl when email fails
  * PR #1321 — dev/82c869fc-dev-fix-zero-real-pilots-recruited-retur
+ *
+ * Spec:
+ * What:
+ * - Resolve rebase conflict in tests/82c869fc-invite-url-on-email-failure.test.js only.
+ * - Keep Jest-style tests while preserving detailed behavior coverage from both conflict sides.
+ * Verify:
+ * - git rebase --continue completes with no conflicts.
+ * - npm run build exits 0.
+ * - npm run lint exits 0.
+ * - npm test exits 0.
+ * - npm audit --audit-level=high exits 0.
+ * Boundaries:
+ * - Do not modify application routes/services for this re-merge conflict task.
+ * - Do not change unrelated files or alter product behavior outside this test conflict.
  */
 
 // ── Simulate the API route response-building logic ──────────────────────────
@@ -13,14 +27,20 @@ function buildInviteResponse({ emailSent, inviteUrl }) {
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     emailSent
   }
-  if (!emailSent) response.inviteUrl = inviteUrl
+
+  if (!emailSent) {
+    response.inviteUrl = inviteUrl
+  }
+
   return response
 }
 
+// ── Simulate the frontend emailSent state resolution ─────────────────────────
 function resolveEmailSent(apiEmailSent) {
   return apiEmailSent ?? true
 }
 
+// ── Simulate UI conditional visibility ───────────────────────────────────────
 function getUIState(success, emailSent, inviteUrl) {
   return {
     showSuccessBanner: success && emailSent === true,
@@ -68,35 +88,35 @@ describe('invite-url-on-email-failure', () => {
   })
 
   describe('UI conditional visibility', () => {
-    test('success + emailSent=true → only success banner', () => {
+    test('success + emailSent=true -> only success banner', () => {
       const ui = getUIState(true, true, null)
       expect(ui.showSuccessBanner).toBe(true)
       expect(ui.showEmailFailedBanner).toBe(false)
       expect(ui.showManualLink).toBe(false)
     })
 
-    test('success + emailSent=false + url → failure banner + manual link', () => {
+    test('success + emailSent=false + url -> failure banner + manual link', () => {
       const ui = getUIState(true, false, 'https://example.com/accept-invite?token=x')
       expect(ui.showSuccessBanner).toBe(false)
       expect(ui.showEmailFailedBanner).toBe(true)
       expect(ui.showManualLink).toBe(true)
     })
 
-    test('success + emailSent=false but no url → failure banner only, no link', () => {
+    test('success + emailSent=false but no url -> failure banner only, no link', () => {
       const ui = getUIState(true, false, null)
       expect(ui.showSuccessBanner).toBe(false)
       expect(ui.showEmailFailedBanner).toBe(true)
       expect(ui.showManualLink).toBe(false)
     })
 
-    test('not yet submitted → no banners', () => {
+    test('not yet submitted -> no banners', () => {
       const ui = getUIState(false, null, null)
       expect(ui.showSuccessBanner).toBe(false)
       expect(ui.showEmailFailedBanner).toBe(false)
       expect(ui.showManualLink).toBe(false)
     })
 
-    test('success + emailSent=null (pre-submit default) → no banners', () => {
+    test('success + emailSent=null (pre-submit default) -> no banners', () => {
       const ui = getUIState(false, null, null)
       expect(ui.showSuccessBanner).toBe(false)
       expect(ui.showEmailFailedBanner).toBe(false)

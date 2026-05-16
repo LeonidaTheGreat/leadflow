@@ -36,6 +36,7 @@ interface InviteResponse {
   agentId?: string
   expiresAt?: string
   emailSent?: boolean
+  inviteUrl?: string
   message?: string
   error?: string
 }
@@ -192,15 +193,19 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
     }
 
     // 7. Return success response (do NOT return raw token in response — it should never be logged)
-    return NextResponse.json(
-      {
-        success: true,
-        agentId,
-        expiresAt: expiresAt.toISOString(),
-        emailSent
-      },
-      { status: 200 }
-    )
+    // When emailSent is false, include inviteUrl for manual delivery (admin-only endpoint, token expires in 7 days)
+    const response: InviteResponse = {
+      success: true,
+      agentId,
+      expiresAt: expiresAt.toISOString(),
+      emailSent
+    }
+
+    if (!emailSent) {
+      response.inviteUrl = inviteUrl
+    }
+
+    return NextResponse.json(response, { status: 200 })
   } catch (error: any) {
     logger.error('Error in invite-pilot endpoint:', error)
     return NextResponse.json(
