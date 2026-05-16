@@ -13,6 +13,10 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.ver
 const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 const FROM_DISPLAY = `LeadFlow AI <${FROM_EMAIL}>`
 
+function getGreeting(firstName: string | null | undefined): string {
+  return firstName ? `Hi ${firstName}` : 'Hi'
+}
+
 interface TrialAgent {
   id: string
   email: string
@@ -69,7 +73,7 @@ async function getTrialAgents(): Promise<TrialAgent[]> {
  */
 async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -78,8 +82,8 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">Welcome to LeadFlow AI</h2>
-          
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting},</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Welcome to LeadFlow AI. Here's what happens next:
@@ -146,7 +150,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
  */
 async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -155,8 +159,8 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">This is what your leads experience</h2>
-          
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting},</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Want to see exactly what your leads get when they inquire?
@@ -223,7 +227,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
  */
 async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -232,8 +236,8 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">3 days in — how many leads have you responded to?</h2>
-          
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting},</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Three days in. In that time, LeadFlow agents on Pro have responded to an average of 12 leads. Every response went out in under 30 seconds. Every lead got a follow-up.
@@ -294,7 +298,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
  */
 async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -303,8 +307,8 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">7 days left — don't lose your leads</h2>
-          
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting},</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             You're halfway through your trial. 7 days left.
@@ -369,7 +373,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
  */
 async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -378,8 +382,8 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">Your LeadFlow trial has ended</h2>
-          
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting},</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Your 14-day LeadFlow AI trial has ended.
@@ -444,17 +448,20 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
  */
 async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
+    const subject = agent.first_name
+      ? `${agent.first_name}, this is the last email from LeadFlow`
+      : 'This is the last email from LeadFlow'
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
       to: agent.email,
-      subject: `${agentName}, this is the last email from LeadFlow`,
+      subject,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">This is the last email we'll send</h2>
-          
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting},</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             I don't want to spam you. This is the last email we'll send.

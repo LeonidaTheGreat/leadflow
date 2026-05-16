@@ -144,9 +144,61 @@ describe('Trial Email Sequence', () => {
       expect(expectedSubject).toContain('trial has ended')
     })
 
-    it('should include correct subject for day 15 final email', async () => {
-      const expectedSubject = 'Test, this is the last email from LeadFlow'
-      expect(expectedSubject).toContain('last email')
+    it('should include correct subject for day 15 final email with name', async () => {
+      const firstName = 'Sarah'
+      const subject = firstName
+        ? `${firstName}, this is the last email from LeadFlow`
+        : 'This is the last email from LeadFlow'
+      expect(subject).toBe('Sarah, this is the last email from LeadFlow')
+    })
+
+    it('should use brand-led subject for day 15 final email when first_name is empty', async () => {
+      const firstName = ''
+      const subject = firstName
+        ? `${firstName}, this is the last email from LeadFlow`
+        : 'This is the last email from LeadFlow'
+      expect(subject).toBe('This is the last email from LeadFlow')
+      expect(subject).not.toMatch(/^there/)
+    })
+  })
+
+  describe('Empty first_name handling', () => {
+    function getGreeting(firstName: string | null | undefined): string {
+      return firstName ? `Hi ${firstName}` : 'Hi'
+    }
+
+    it('should use "Hi" greeting when first_name is empty string', () => {
+      expect(getGreeting('')).toBe('Hi')
+    })
+
+    it('should use "Hi" greeting when first_name is null', () => {
+      expect(getGreeting(null)).toBe('Hi')
+    })
+
+    it('should use "Hi" greeting when first_name is undefined', () => {
+      expect(getGreeting(undefined)).toBe('Hi')
+    })
+
+    it('should use personalized greeting when first_name is present', () => {
+      expect(getGreeting('Sarah')).toBe('Hi Sarah')
+    })
+
+    it('should never produce "Hi there" for any falsy first_name', () => {
+      const falsyValues: Array<string | null | undefined> = ['', null, undefined]
+      for (const val of falsyValues) {
+        const greeting = getGreeting(val)
+        expect(greeting).not.toContain('there')
+      }
+    })
+
+    it('should never produce a subject starting with "there" for day 15', () => {
+      const falsyValues: Array<string | null | undefined> = ['', null, undefined]
+      for (const val of falsyValues) {
+        const subject = val
+          ? `${val}, this is the last email from LeadFlow`
+          : 'This is the last email from LeadFlow'
+        expect(subject).not.toMatch(/^there/)
+      }
     })
   })
 
