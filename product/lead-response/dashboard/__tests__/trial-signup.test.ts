@@ -286,8 +286,7 @@ describe('Error Handling (AC-7)', () => {
     expect(detectsDuplicateEmail(400, 'Email and password are required')).toBe(false)
 
     // The sign-in link destination
-    const signInHref = '/login'
-    expect(signInHref).toBe('/login')
+    expect('/login').toBe('/login')
   })
 
   it('invalid email returns validation error', () => {
