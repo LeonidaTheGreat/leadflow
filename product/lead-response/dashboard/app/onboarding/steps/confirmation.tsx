@@ -110,11 +110,13 @@ export default function OnboardingConfirm({
                   <span className="text-slate-300">AI Demo Response</span>
                 </div>
                 <span className={`text-sm font-medium ${
-                  agentData.ahaCompleted ? 'text-emerald-400' : 'text-slate-500'
+                  (agentData.ahaCompleted || agentData.ahaSkipped) ? 'text-emerald-400' : 'text-slate-500'
                 }`}>
                   {agentData.ahaCompleted
                     ? `✓ Saw AI respond in ${formatResponseTime(agentData.ahaResponseTimeMs)}`
-                    : '⊘ Skipped for now'}
+                    : agentData.ahaSkipped
+                      ? '○ Skipped for now'
+                      : '⊘ Not started'}
                 </span>
               </div>
             </div>

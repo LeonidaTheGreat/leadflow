@@ -193,6 +193,7 @@ export default function OnboardingSimulator({
         ...agentData,
         ahaCompleted: false,
         ahaResponseTimeMs: null,
+        ahaSkipped: true,
       })
 
       onNext()

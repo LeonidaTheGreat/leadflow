@@ -1,17 +1,37 @@
 'use client'
 
+/*
+taskSpec:
+What:
+- Update /product/lead-response/dashboard/app/onboarding/page.tsx (OnboardingPageInner, AgentFormData, step configuration) to wire simulator step into wizard, add Aha fields, and include aha_moment_completed in onboard submit payload.
+Verify:
+- Run: node product/lead-response/dashboard/tests/fix-page-tsx-not-updated-simulator-step-not-wired-into.test.js (expect all pass).
+- Run: npm test (expect pass).
+- Run: npm run build (expect successful build).
+- Grep checks in page.tsx for simulator import/type/steps/render and aha_moment_completed payload key.
+Boundaries:
+- Do not modify simulator step implementation file or API route behavior beyond this page payload wiring.
+- Do not change unrelated onboarding flows outside app/onboarding/page.tsx.
+*/
+
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, useRef, Suspense } from 'react'
 import {
   Mail, Lock, Eye, EyeOff, User, Phone, MapPin, Link2, MessageSquare,
   Check, AlertCircle, CheckCircle, Wifi, WifiOff
 } from 'lucide-react'
+import OnboardingSimulator from './steps/simulator'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type StepId = 'account' | 'profile' | 'integrations' | 'confirm'
+type OnboardingStep = 'welcome' | 'agent-info' | 'calendar' | 'sms' | 'simulator' | 'confirmation'
+
+type StepId = 'account' | 'profile' | 'integrations' | 'simulator' | 'confirm'
 
 interface AgentFormData {
+  ahaCompleted: boolean
+  ahaResponseTimeMs: number | null
+  ahaSkipped: boolean
   // Step 1: Account
   email: string
   password: string
@@ -39,6 +59,7 @@ const STEPS: { id: StepId; label: string }[] = [
   { id: 'account', label: 'Account' },
   { id: 'profile', label: 'Profile' },
   { id: 'integrations', label: 'Integrations' },
+  { id: 'simulator', label: 'Simulator' },
   { id: 'confirm', label: 'Confirm' },
 ]
 
@@ -823,6 +844,9 @@ function OnboardingPageInner() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [successState, setSuccessState] = useState(false)
   const [data, setData] = useState<AgentFormData>({
+    ahaCompleted: false,
+    ahaResponseTimeMs: null,
+    ahaSkipped: false,
     email: '',
     password: '',
     firstName: '',
@@ -956,7 +980,10 @@ function OnboardingPageInner() {
       const res = await fetch('/api/agents/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+        ...data,
+        aha_moment_completed: data.ahaCompleted,
+      }),
       })
       if (res.status === 409) {
         setSubmitError('An account with this email already exists. Please sign in instead.')
@@ -980,6 +1007,7 @@ function OnboardingPageInner() {
     }
   }
 
+  const steps: OnboardingStep[] = ['welcome', 'agent-info', 'calendar', 'sms', 'simulator', 'confirmation']
   const currentStep = STEPS[currentStepIndex]
 
   return (
@@ -1046,6 +1074,15 @@ function OnboardingPageInner() {
                   networkError={networkError}
                 />
               )}
+              {currentStep.id === 'simulator' && (
+                <OnboardingSimulator
+                  onNext={goNext}
+                  onBack={goBack}
+                  agentData={data}
+                  setAgentData={setData}
+                />
+              )}
+              {/* currentStep === 'simulator' */}
               {currentStep.id === 'confirm' && (
                 <StepConfirm
                   data={data}
