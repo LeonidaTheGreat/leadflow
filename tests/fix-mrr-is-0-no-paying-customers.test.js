@@ -1,4 +1,23 @@
 /**
+ * taskSpec
+ * What:
+ * - Modify tests/fix-mrr-is-0-no-paying-customers.test.js to codify MRR-unblock acceptance checks.
+ * - Add tests/fix-missing-how-it-works-section-ac-2-fails.test.js for LandingPage "How It Works" coverage.
+ * - Remove product/lead-response/dashboard/tests/fix-trial-signup-redirects-to-non-existent-route-dashb.test.js
+ *   because it conflicts with current onboarding redirect behavior and overlaps new coverage.
+ * Verify:
+ * - Run: npm test
+ * - Run: npm run build
+ * - Run targeted tests:
+ *   node tests/fix-mrr-is-0-no-paying-customers.test.js
+ *   node tests/fix-missing-how-it-works-section-ac-2-fails.test.js
+ * - Expected: all commands exit 0, checks for auth-token, onboarding redirects, 14-day trial, and How It Works pass.
+ * Boundaries:
+ * - Do not modify runtime route/service/business logic in this task.
+ * - Do not modify DB schema or migrations.
+ * - Do not touch unrelated onboarding/auth flows outside asserted test expectations.
+ */
+/**
  * Tests: fix-mrr-is-0-no-paying-customers
  * Task: 186971a1-cfb0-4ca5-bc2d-69cb92d67f6c
  *
