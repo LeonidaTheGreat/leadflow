@@ -30,18 +30,18 @@ console.log('\n=== E2E: fix-api-health-endpoint-wrong-table ===\n');
 
 const source = fs.readFileSync(ROUTE_FILE, 'utf8');
 
-// 1. Must query real_estate_agents
+// 1. Must query real_estate_agents via postgrestAdmin
 test('queries real_estate_agents table', () => {
   assert.ok(
-    source.includes("client.from('real_estate_agents')"),
-    "route.ts must query 'real_estate_agents'"
+    source.includes("postgrestAdmin") && source.includes(".from('real_estate_agents')"),
+    "route.ts must query 'real_estate_agents' via postgrestAdmin"
   );
 });
 
 // 2. Must NOT query agents table
 test('does NOT query agents table', () => {
   assert.ok(
-    !source.includes("client.from('agents')"),
+    !source.includes(".from('agents')"),
     "route.ts must NOT query 'agents' table"
   );
 });
@@ -49,16 +49,16 @@ test('does NOT query agents table', () => {
 // 3. Still selects id with limit 1 (minimal query)
 test('uses select id with limit 1', () => {
   assert.ok(
-    source.includes(".select('id').limit(1)"),
+    source.includes(".select('id')") && source.includes(".limit(1)"),
     "query should select id with limit 1"
   );
 });
 
-// 4. Supabase connectivity check still exists
-test('supabase_connectivity check key is present', () => {
+// 4. Database and API connectivity checks are present
+test('database and api_connectivity checks are present', () => {
   assert.ok(
-    source.includes("supabase_connectivity"),
-    "supabase_connectivity check must exist"
+    source.includes("checks['database']") && source.includes("checks['api_connectivity']"),
+    "database and api_connectivity checks must exist"
   );
 });
 
