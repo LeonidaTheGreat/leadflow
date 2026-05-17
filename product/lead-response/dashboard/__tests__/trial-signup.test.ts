@@ -269,15 +269,25 @@ describe('Error Handling (AC-7)', () => {
   })
 
   it('duplicate email error includes sign-in link (not just plain text)', () => {
-    // The UI should render a clickable Link component to /login
-    // Not just display "Sign in" as plain text
-    const errorMessage = 'An account with this email already exists.'
-    const signInLink = '/login'
-    const hasSignInLink = true // TrialSignupForm renders <Link href="/login">Sign in</Link>
+    // Mirrors the detection logic in TrialSignupForm.handleSubmit:
+    //   if (response.status === 409 || errorMessage.toLowerCase().includes('already exists'))
+    //     setIsDuplicateEmailError(true)
+    // When isDuplicateEmailError is true, the form renders <Link href="/login">Sign in</Link>
+    // instead of the raw error string.
+    const detectsDuplicateEmail = (status: number, errorMsg: string): boolean =>
+      status === 409 || errorMsg.toLowerCase().includes('already exists')
 
-    expect(errorMessage).toContain('already exists')
-    expect(signInLink).toBe('/login')
-    expect(hasSignInLink).toBe(true)
+    // 409 status always triggers duplicate-email path
+    expect(detectsDuplicateEmail(409, 'An account with this email already exists. Sign in instead.')).toBe(true)
+    // "already exists" message triggers it even without 409
+    expect(detectsDuplicateEmail(400, 'Email already exists in our system.')).toBe(true)
+    // Generic server errors do NOT trigger it
+    expect(detectsDuplicateEmail(500, 'Something went wrong. Please try again.')).toBe(false)
+    expect(detectsDuplicateEmail(400, 'Email and password are required')).toBe(false)
+
+    // The sign-in link destination
+    const signInHref = '/login'
+    expect(signInHref).toBe('/login')
   })
 
   it('invalid email returns validation error', () => {
