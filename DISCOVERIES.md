@@ -29,3 +29,14 @@
 - If genome/project-graph reports `uc_no_tasks` for this use case again, verify the existing task record before appending a duplicate; the gap signal can lag behind task creation.
 - The canonical handoff spec for that kickoff task is `docs/task-specs/feat-lapsed-trial-reactivation-workflow-task.md`.
 
+
+### [root-cause] Execution stalled due to combined scope (auth gate + schema + UX flow) and orchestration churn, not verified code-path b
+- **Date:** 2026-05-17
+- **Source:** PM: Re-spec with alternative approach — feature-signup-must- (product/codex)
+- **Detail:** Execution stalled due to combined scope (auth gate + schema + UX flow) and orchestration churn, not verified code-path breakage.
+
+
+## 2026-05-16 — UC re-spec `feature-signup-must-require-confirmed-inbox-link`
+- Category: `needs_alternative_approach`.
+- Verified failure mode was orchestration staleness (`PARKED: Stale >24h + already retried`) across retries, not a reproduced auth runtime break.
+- Re-spec strategy: phase-1 MVP gates login using existing verification state and emits funnel events; token table + check-your-inbox page move to phase 2 only if signup-to-activated KPI remains a gap.
