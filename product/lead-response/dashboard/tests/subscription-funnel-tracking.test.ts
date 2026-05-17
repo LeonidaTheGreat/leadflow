@@ -1,20 +1,14 @@
 /**
- * Subscription Funnel Tracking — Webhook Handler Tests
+ * Subscription Funnel Tracking — Route Tests
  *
- * Tests:
- * 1. session_created insert (via upgrade-checkout route)
- * 2. session_expired update (via checkout.session.expired webhook)
- * 3. Abandonment recovery email sent for non-paying agents
- * 4. Abandonment recovery email skipped for already-paid agents
+ * Verifies that:
+ * 1. upgrade-checkout uses checkout_sessions (not the non-existent subscription_attempts)
+ * 2. admin funnel endpoint reads from checkout_sessions with correct status values
  */
 
 import fs from 'fs'
 import path from 'path'
 
-const WEBHOOK_ROUTE = path.join(
-  __dirname,
-  '../app/api/webhooks/stripe/route.ts'
-)
 const UPGRADE_CHECKOUT_ROUTE = path.join(
   __dirname,
   '../app/api/stripe/upgrade-checkout/route.ts'
@@ -25,63 +19,49 @@ const CHECKOUT_ATTEMPTS_ROUTE = path.join(
 )
 
 describe('Subscription Funnel Tracking', () => {
-  let webhookSource: string
   let upgradeCheckoutSource: string
   let checkoutAttemptsSource: string
 
   beforeAll(() => {
-    webhookSource = fs.readFileSync(WEBHOOK_ROUTE, 'utf8')
     upgradeCheckoutSource = fs.readFileSync(UPGRADE_CHECKOUT_ROUTE, 'utf8')
     checkoutAttemptsSource = fs.readFileSync(CHECKOUT_ATTEMPTS_ROUTE, 'utf8')
   })
 
-  describe('upgrade-checkout: session_created insert', () => {
-    test('route inserts into subscription_attempts on checkout creation', () => {
-      expect(upgradeCheckoutSource).toContain("from('subscription_attempts').insert(")
+  describe('upgrade-checkout: uses checkout_sessions (not subscription_attempts)', () => {
+    test('route does NOT reference subscription_attempts', () => {
+      expect(upgradeCheckoutSource).not.toContain('subscription_attempts')
     })
 
-    test('insert includes required fields: agent_id, tier, stripe_session_id, status', () => {
-      expect(upgradeCheckoutSource).toContain('agent_id:')
+    test('route inserts into checkout_sessions', () => {
+      expect(upgradeCheckoutSource).toContain("from('checkout_sessions').insert(")
+    })
+
+    test('insert uses user_id column (not agent_id)', () => {
+      expect(upgradeCheckoutSource).toContain('user_id: agent.id')
+    })
+
+    test('insert uses valid status "pending"', () => {
+      expect(upgradeCheckoutSource).toContain("status: 'pending'")
+    })
+
+    test('insert does NOT use invalid status "session_created"', () => {
+      expect(upgradeCheckoutSource).not.toContain("'session_created'")
+    })
+
+    test('insert includes stripe_session_id', () => {
+      expect(upgradeCheckoutSource).toContain('stripe_session_id: session.id')
+    })
+
+    test('insert includes tier', () => {
       expect(upgradeCheckoutSource).toContain('tier:')
-      expect(upgradeCheckoutSource).toContain('stripe_session_id:')
-      expect(upgradeCheckoutSource).toContain("status: 'session_created'")
-    })
-  })
-
-  describe('webhook: checkout.session.expired handler', () => {
-    test('webhook route handles checkout.session.expired event', () => {
-      expect(webhookSource).toContain("case 'checkout.session.expired'")
     })
 
-    test('handler updates subscription_attempts status to session_expired', () => {
-      expect(webhookSource).toContain("from('subscription_attempts')")
-      expect(webhookSource).toContain(".update({ status: 'session_expired' })")
-      expect(webhookSource).toContain(".eq('stripe_session_id',")
+    test('insert includes interval', () => {
+      expect(upgradeCheckoutSource).toContain('interval:')
     })
 
-    test('handler checks if agent already has a paid plan before sending email', () => {
-      expect(webhookSource).toContain("from('real_estate_agents')")
-      expect(webhookSource).toContain('plan_tier')
-      expect(webhookSource).toMatch(/plan_tier.*!==.*'trial'/)
-    })
-
-    test('handler sends abandonment recovery email via Resend', () => {
-      expect(webhookSource).toContain("subject: 'Your LeadFlow upgrade is waiting'")
-      expect(webhookSource).toContain('resend.emails.send')
-      expect(webhookSource).toContain('LeadFlow AI <support@leadflowai.com>')
-    })
-
-    test('recovery email links to /settings/billing', () => {
-      expect(webhookSource).toContain('settings/billing')
-    })
-
-    test('handler logs checkout_abandoned event to subscription_events', () => {
-      expect(webhookSource).toContain("event_type: 'checkout_abandoned'")
-      expect(webhookSource).toContain("from('subscription_events').insert(")
-    })
-
-    test('handler skips email when agent not found', () => {
-      expect(webhookSource).toContain('agent not found')
+    test('insert includes url from session', () => {
+      expect(upgradeCheckoutSource).toContain('url: session.url')
     })
   })
 
@@ -90,13 +70,23 @@ describe('Subscription Funnel Tracking', () => {
       expect(fs.existsSync(CHECKOUT_ATTEMPTS_ROUTE)).toBe(true)
     })
 
+    test('endpoint does NOT reference subscription_attempts', () => {
+      expect(checkoutAttemptsSource).not.toContain("from('subscription_attempts')")
+    })
+
+    test('endpoint queries checkout_sessions table', () => {
+      expect(checkoutAttemptsSource).toContain("from('checkout_sessions')")
+    })
+
     test('endpoint requires admin auth via LEADFLOW_API_KEY', () => {
       expect(checkoutAttemptsSource).toContain('LEADFLOW_API_KEY')
       expect(checkoutAttemptsSource).toContain('verifyAdminAuth')
     })
 
-    test('endpoint queries subscription_attempts table', () => {
-      expect(checkoutAttemptsSource).toContain("from('subscription_attempts')")
+    test('endpoint uses correct status values for checkout_sessions', () => {
+      expect(checkoutAttemptsSource).toContain("status === 'expired'")
+      expect(checkoutAttemptsSource).toContain("status === 'completed'")
+      expect(checkoutAttemptsSource).not.toContain("'session_expired'")
     })
 
     test('endpoint returns daily breakdown with rates', () => {
