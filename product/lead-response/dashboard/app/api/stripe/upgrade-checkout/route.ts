@@ -109,11 +109,10 @@ export async function POST(request: NextRequest) {
         interval: 'month',
         stripe_session_id: session.id,
         status: 'pending',
-        url: session.url,
-        created_at: new Date().toISOString() })
+        url: session.url })
     } catch (logError) {
       // Non-fatal — proceed even if logging fails
-      logger.warn('Failed to log upgrade checkout session:', logError)
+      logger.warn('Failed to log upgrade attempt:', logError)
     }
 
     logger.info(`✅ Upgrade checkout session ${session.id} created for pilot agent ${agent.id} → ${plan}`)

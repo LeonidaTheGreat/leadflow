@@ -27,7 +27,6 @@ const config: Config = {
     'uc11-subscription-lifecycle.test.ts',
     'onboarding.integration.test.ts',
     'accept-invite-flow.test.ts',
-    'subscription-funnel-tracking.test.ts',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
