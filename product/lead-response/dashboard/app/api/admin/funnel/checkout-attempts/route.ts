@@ -2,7 +2,7 @@
  * GET /api/admin/funnel/checkout-attempts
  *
  * Returns checkout initiation rate, completion rate, and abandonment rate
- * grouped by day. Reads from the checkout_sessions table.
+ * grouped by day. Reads from the subscription_attempts table.
  *
  * Auth: LEADFLOW_API_KEY bearer token (admin-only)
  *
@@ -35,28 +35,28 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
 
   try {
-    // checkout_sessions uses user_id (not agent_id) and status values:
-    // 'pending', 'completed', 'expired', 'abandoned'
+    // subscription_attempts uses agent_id and status values:
+    // 'session_created', 'session_expired'
     const { data: attempts, error } = await postgrestAdmin
-      .from('checkout_sessions')
-      .select('id, user_id, tier, status, created_at')
+      .from('subscription_attempts')
+      .select('id, agent_id, tier, status, created_at')
       .gte('created_at', since)
       .order('created_at', { ascending: true })
 
     if (error) throw error
 
     // Group by day
-    const byDay: Record<string, { initiated: number; completed: number; expired: number }> = {}
+    const byDay: Record<string, { initiated: number; completed: number; abandoned: number }> = {}
 
     for (const attempt of (attempts ?? []) as any[]) {
       const day = attempt.created_at.slice(0, 10) // YYYY-MM-DD
       if (!byDay[day]) {
-        byDay[day] = { initiated: 0, completed: 0, expired: 0 }
+        byDay[day] = { initiated: 0, completed: 0, abandoned: 0 }
       }
       byDay[day].initiated += 1
-      if (attempt.status === 'expired' || attempt.status === 'abandoned') {
-        byDay[day].expired += 1
-      } else if (attempt.status === 'completed') {
+      if (attempt.status === 'session_expired') {
+        byDay[day].abandoned += 1
+      } else if (attempt.status === 'session_completed') {
         byDay[day].completed += 1
       }
     }
@@ -68,30 +68,30 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         date,
         initiated: counts.initiated,
         completed: counts.completed,
-        abandoned: counts.expired,
+        abandoned: counts.abandoned,
         completion_rate: counts.initiated > 0
           ? Math.round((counts.completed / counts.initiated) * 10000) / 100
           : 0,
         abandonment_rate: counts.initiated > 0
-          ? Math.round((counts.expired / counts.initiated) * 10000) / 100
+          ? Math.round((counts.abandoned / counts.initiated) * 10000) / 100
           : 0 }))
 
     // Totals
     const totalInitiated = (attempts ?? []).length
-    const totalCompleted = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'completed').length
-    const totalExpired = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'expired' || a.status === 'abandoned').length
+    const totalCompleted = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'session_completed').length
+    const totalAbandoned = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'session_expired').length
 
     return NextResponse.json({
       summary: {
         days,
         total_initiated: totalInitiated,
         total_completed: totalCompleted,
-        total_abandoned: totalExpired,
+        total_abandoned: totalAbandoned,
         completion_rate: totalInitiated > 0
           ? Math.round((totalCompleted / totalInitiated) * 10000) / 100
           : 0,
         abandonment_rate: totalInitiated > 0
-          ? Math.round((totalExpired / totalInitiated) * 10000) / 100
+          ? Math.round((totalAbandoned / totalInitiated) * 10000) / 100
           : 0,
         as_of: new Date().toISOString() },
       daily })
