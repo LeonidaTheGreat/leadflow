@@ -19,6 +19,7 @@ const requireApiKey = require('../lib/middleware/require-api-key');
 const { writeDeadLetter } = require('../lib/utils/dead-letter');
 const { logger } = require('../lib/logger');
 const { ValidationError } = require('../lib/errors');
+const { stripe: stripeConfig } = require('../lib/config');
 const log = logger.child('billing');
 
 const VALID_TIERS = ['starter', 'professional', 'enterprise'];
@@ -30,8 +31,10 @@ const VALID_INTERVALS = ['month', 'year'];
 router.post('/webhook/stripe', async (req, res) => {
     const signature = req.headers['stripe-signature'];
 
-    // Signature verification is mandatory — reject if secret is not configured
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    // Signature verification is mandatory — reject if secret is not configured.
+    // STRIPE_WEBHOOK_SECRET must be set in Vercel Dashboard → Project Settings →
+    // Environment Variables (value: whsec_... from Stripe Dashboard → Webhooks).
+    if (!stripeConfig.webhookSecret) {
         log.error('STRIPE_WEBHOOK_SECRET not configured — rejecting webhook');
         return res.status(503).json({ error: 'Webhook verification not configured' });
     }
