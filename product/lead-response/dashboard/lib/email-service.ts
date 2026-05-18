@@ -38,7 +38,7 @@ async function getResend() {
   }
 }
 
-// landyourleads.com is the verified sender domain fallback.
+// landyourleads.com is verified in Resend as the sender domain.
 // Override via FROM_EMAIL env var if needed.
 // .trim() guards against trailing whitespace/newlines in env var values (e.g. from .env files)
 const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
