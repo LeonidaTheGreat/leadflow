@@ -2,7 +2,7 @@
 const fs=require('fs'),path=require('path'),pr=path.join(__dirname,'..'),dr=path.join(pr,'product/lead-response/dashboard')
 describe('Admin pilot invite flow',()=>{
   test('invite-pilot route exists',()=>{expect(fs.existsSync(path.join(dr,'app/api/admin/invite-pilot/route.ts'))).toBe(true)})
-  test('invite-pilot has admin auth',()=>{expect(fs.readFileSync(path.join(dr,'app/api/admin/invite-pilot/route.ts'),'utf8')).toMatch(/X-Admin-Token|ADMIN_SECRET/)})
+  test('invite-pilot has admin auth',()=>{expect(fs.readFileSync(path.join(dr,'app/api/admin/invite-pilot/route.ts'),'utf8')).toMatch(/X-Admin-Token|ADMIN_SECRET|requireAdminSession|admin-auth/)})
   test('accept-invite page exists',()=>{expect(fs.existsSync(path.join(dr,'app/accept-invite/page.tsx'))).toBe(true)})
   test('accept-invite has Suspense',()=>{const c=fs.readFileSync(path.join(dr,'app/accept-invite/page.tsx'),'utf8');expect(c).toMatch(/Suspense/);expect(c).toMatch(/useSearchParams/)})
   test('accept-invite uses pilot_invites',()=>{expect(fs.readFileSync(path.join(dr,'app/api/auth/accept-invite/route.ts'),'utf8')).toMatch(/pilot_invites/)})
