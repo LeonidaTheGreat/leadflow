@@ -115,3 +115,48 @@ describe('TrialSignupForm — duplicate email error (compact)', () => {
     expect(link).toHaveAttribute('href', '/login')
   })
 })
+
+describe('TrialSignupForm — isDuplicateEmailError reset on re-submit', () => {
+  it('clears sign-in link when user re-submits after a duplicate-email error', async () => {
+    let signupCallCount = 0
+    global.fetch = jest.fn().mockImplementation((url: string) => {
+      // Analytics tracking calls — always succeed silently
+      if (url.includes('/api/events/track')) {
+        return Promise.resolve({ ok: true, status: 200, json: async () => ({}) })
+      }
+      signupCallCount++
+      if (signupCallCount === 1) {
+        return Promise.resolve({
+          ok: false,
+          status: 409,
+          json: async () => ({ error: 'An account with this email already exists.' }),
+        })
+      }
+      return Promise.resolve({
+        ok: false,
+        status: 500,
+        json: async () => ({ error: 'Something went wrong. Please try again.' }),
+      })
+    })
+
+    const { getByPlaceholderText, getByRole } = render(<TrialSignupForm />)
+
+    // First submit — triggers duplicate email state
+    fireEvent.change(getByPlaceholderText('you@example.com'), { target: { value: 'dup@example.com' } })
+    fireEvent.change(getByPlaceholderText('Min 8 characters'), { target: { value: 'password123' } })
+    fireEvent.click(getByRole('button', { name: /create my free account/i }))
+
+    const alert = await screen.findByRole('alert')
+    expect(within(alert).getByRole('link', { name: /sign in/i })).toBeInTheDocument()
+
+    // Second submit — isDuplicateEmailError must reset; sign-in link must not appear
+    fireEvent.change(getByPlaceholderText('you@example.com'), { target: { value: 'new@example.com' } })
+    fireEvent.click(getByRole('button', { name: /create my free account/i }))
+
+    await waitFor(() => {
+      const updatedAlert = screen.getByRole('alert')
+      expect(within(updatedAlert).queryByRole('link', { name: /sign in/i })).not.toBeInTheDocument()
+      expect(updatedAlert).toHaveTextContent(/something went wrong/i)
+    })
+  })
+})
