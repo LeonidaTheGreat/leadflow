@@ -215,11 +215,27 @@ class QueryBuilder implements PromiseLike<any> {
   then<TResult1 = any, TResult2 = never>(
     onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
-  ): PromiseLike<TResult1 | TResult2> {
+  ): Promise<TResult1 | TResult2> {
     if (!this.cachedPromise) {
       this.cachedPromise = this.execute()
     }
     return this.cachedPromise.then(onfulfilled, onrejected)
+  }
+
+  catch<TResult = never>(
+    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null
+  ): Promise<any | TResult> {
+    if (!this.cachedPromise) {
+      this.cachedPromise = this.execute()
+    }
+    return this.cachedPromise.catch(onrejected)
+  }
+
+  finally(onfinally?: (() => void) | null): Promise<any> {
+    if (!this.cachedPromise) {
+      this.cachedPromise = this.execute()
+    }
+    return this.cachedPromise.finally(onfinally)
   }
 
   private buildUrl(): string {
