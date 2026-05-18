@@ -296,6 +296,96 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   log('warn', 'Payment failed', { agentId, invoiceId: invoice.id, attemptCount: invoice.attempt_count })
 }
 
+
+async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
+  const stripeSessionId = session.id
+
+  // Mark the attempt as session_expired
+  const { data: attempt } = await supabase
+    .from('subscription_attempts')
+    .update({ status: 'session_expired' })
+    .eq('stripe_session_id', stripeSessionId)
+    .select('agent_id')
+    .single()
+
+  if (!attempt) {
+    log('warn', 'checkout.session.expired: no subscription_attempt found', { stripeSessionId })
+    return
+  }
+
+  const agentId = attempt.agent_id
+
+  // Look up agent info
+  const { data: agent } = await supabase
+    .from('real_estate_agents')
+    .select('plan_tier, email, first_name')
+    .eq('id', agentId)
+    .single()
+
+  if (!agent) {
+    log('warn', 'checkout.session.expired: agent not found', { agentId })
+    return
+  }
+
+  // Skip recovery email if agent already has a paid plan (not trial)
+  if (agent.plan_tier !== 'trial') {
+    log('info', 'checkout.session.expired: agent already on paid plan, skipping recovery email', { agentId, plan_tier: agent.plan_tier })
+    return
+  }
+
+  // Log abandonment event
+  await supabase.from('subscription_events').insert({
+    user_id: agentId,
+    event_type: 'checkout_abandoned',
+    stripe_event_data: { stripe_session_id: stripeSessionId },
+    created_at: new Date().toISOString() })
+
+  // Send abandonment recovery email
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
+  if (resend) {
+    const firstName = agent.first_name || 'there'
+    try {
+      await resend.emails.send({
+        from: 'LeadFlow AI <support@leadflowai.com>',
+        to: agent.email,
+        subject: 'Your LeadFlow upgrade is waiting',
+        html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 30px 20px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { background: #f9fafb; padding: 30px 20px; border: 1px solid #e5e7eb; }
+    .button { display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 10px; }
+    h1 { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your LeadFlow upgrade is waiting</h1>
+    </div>
+    <div class="content">
+      <p>Hi ${firstName},</p>
+      <p>It looks like you started upgrading your LeadFlow account but did not complete the checkout. We saved your spot!</p>
+      <p>Click below to pick up where you left off and unlock the full power of LeadFlow.</p>
+      <a href="${baseUrl}/settings/billing" class="button">Complete Your Upgrade</a>
+    </div>
+  </div>
+</body>
+</html>
+        ` })
+      log('info', 'Abandonment recovery email sent', { email: agent.email })
+    } catch (emailError) {
+      log('error', 'Failed to send abandonment recovery email', { email: agent.email, error: (emailError as any).message })
+    }
+  }
+
+  log('info', 'checkout.session.expired handled', { agentId, stripeSessionId })
+}
+
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   const agentId = subscription.metadata?.agent_id
 
@@ -352,6 +442,10 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed':
         await handleCheckoutComplete(event.data.object as Stripe.Checkout.Session)
+        break
+
+      case 'checkout.session.expired':
+        await handleCheckoutSessionExpired(event.data.object as Stripe.Checkout.Session)
         break
 
       case 'invoice.paid':

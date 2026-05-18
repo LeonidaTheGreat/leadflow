@@ -103,17 +103,14 @@ export async function POST(request: NextRequest) {
 
     // ── 7. Log upgrade attempt ────────────────────────────────────────────────
     try {
-      await supabase.from('checkout_sessions').insert({
-        user_id: agent.id,
+      await supabase.from('subscription_attempts').insert({
+        agent_id: agent.id,
         tier: plan,
-        interval: 'month',
         stripe_session_id: session.id,
-        status: 'pending',
-        url: session.url,
-        created_at: new Date().toISOString() })
+        status: 'session_created' })
     } catch (logError) {
       // Non-fatal — proceed even if logging fails
-      logger.warn('Failed to log upgrade checkout session:', logError)
+      logger.warn('Failed to log upgrade attempt:', logError)
     }
 
     logger.info(`✅ Upgrade checkout session ${session.id} created for pilot agent ${agent.id} → ${plan}`)
