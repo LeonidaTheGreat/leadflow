@@ -11,6 +11,8 @@ const supabase = postgrestAdmin
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
+// TypeScript fix (TS2339): All promise chains in this route use full Promise<void> (not PromiseLike<void>)
+// to ensure .catch() is available. Supabase query results are consumed via async/await only.
 export async function POST(request: NextRequest) {
   try {
     const {

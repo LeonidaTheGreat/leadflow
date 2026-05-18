@@ -18,6 +18,8 @@ import { useUtmCapture } from '@/lib/utm-capture'
  *
  * The frictionless "Start Free Trial" path is at /signup?mode=trial
  * source is set to 'pilot_application' for attribution (FR-6)
+ *
+ * TypeScript fix (TS2345): 'form_view' is a valid FormFunnelEvent in lib/analytics/ga4.ts.
  */
 
 const CRM_OPTIONS = [
