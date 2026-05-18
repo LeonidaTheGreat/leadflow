@@ -106,7 +106,7 @@ test('A2.4: Stuck alerts feature exists', () => {
   const libPath = path.join(projectRoot, 'lib/onboarding-telemetry.js');
   const content = fs.readFileSync(libPath, 'utf8');
   assert(content.includes('checkAndAlertStuckAgents'), 'checkAndAlertStuckAgents not found');
-  assert(content.includes('24 * 60 * 60'), 'Must check for >24h stuck agents');
+  assert(/24\s*\*\s*60\s*\*\s*60/.test(content), 'Must check for >24h stuck agents');
 });
 
 // ── AC-3: Admin Pilot Invite Flow ────────────────────────
@@ -344,4 +344,12 @@ if (require.main === module) {
     const success = await runTests();
     process.exit(success ? 0 : 1);
   })();
+}
+
+// Jest compatibility: run the full suite as a single Jest test when loaded by Jest
+if (typeof it === 'function' && require.main !== module) {
+  it('all UTM branch merge acceptance criteria pass', async () => {
+    const success = await runTests();
+    expect(success).toBe(true);
+  }, 30000);
 }
