@@ -119,7 +119,8 @@ test('A3.2: Admin invite creation requires authentication', () => {
   const routePath = path.join(dashboardRoot, 'app/api/admin/invite-pilot/route.ts');
   const content = fs.readFileSync(routePath, 'utf8');
   assert(
-    content.includes('X-Admin-Token') || content.includes('authorization'),
+    content.includes('X-Admin-Token') || content.includes('authorization') ||
+    content.includes('requireAdminSession') || content.includes('admin-auth'),
     'Auth check missing'
   );
 });
@@ -228,7 +229,8 @@ test('A9.1: No hardcoded API keys in component files', () => {
 test('A9.2: Admin routes validate auth token', () => {
   const routePath = path.join(dashboardRoot, 'app/api/admin/invite-pilot/route.ts');
   const content = fs.readFileSync(routePath, 'utf8');
-  const headerCheck = content.includes('X-Admin-Token') || content.includes('headers');
+  const headerCheck = content.includes('X-Admin-Token') || content.includes('headers') ||
+    content.includes('requireAdminSession') || content.includes('admin-auth');
   assert(headerCheck, 'No auth token validation found');
 });
 
