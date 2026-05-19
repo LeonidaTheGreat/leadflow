@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin, createLead } from '@/lib/supabase'
 import { normalizePhone } from '@/lib/twilio'
 import { searchLeadByPhone, createLeadInFub } from '@/lib/fub'
+import { realEstateAgentRowToAgent } from '@/lib/agent-mapper'
 import type { Lead, Agent } from '@/lib/types'
 import { logger } from '@/lib/logger'
 
@@ -9,9 +10,9 @@ async function getDefaultAgent(): Promise<Agent | null> {
   const { data: agents } = await supabaseAdmin
     .from('real_estate_agents')
     .select('*')
-    .eq('is_active', true)
+    .eq('status', 'active')
     .limit(1)
-  return (agents?.[0] as Agent | undefined) ?? null
+  return agents?.[0] ? realEstateAgentRowToAgent(agents[0]) : null
 }
 
 export async function POST(request: Request) {
