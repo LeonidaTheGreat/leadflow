@@ -236,7 +236,7 @@ Accordion with 7 questions. Only one answer open at a time.
 |---|----------|--------|
 | 1 | How does LeadFlow AI respond to leads? | It monitors your FUB inbox. When a new lead arrives, AI generates a personalized SMS using their name, property of interest, and inquiry context. Sent in <30 seconds. |
 | 2 | Do I need to sign a long-term contract? | No. All plans are month-to-month. Cancel anytime from your dashboard. |
-| 3 | Does the AI sound like a robot? | No. The AI is trained to sound like a professional agent — warm, helpful, and specific to the lead's inquiry. You can customize the tone and templates. |
+| 3 | Does the AI sound like a robot? | No. The AI is trained to sound like a professional agent — warm, helpful, and specific to the lead's inquiry. |
 | 4 | How does it integrate with Follow Up Boss? | Via OAuth. Connect in <5 minutes. New leads automatically trigger AI responses. No FUB changes required. |
 | 5 | Is SMS messaging compliant (A2P 10DLC)? | Yes. LeadFlow is registered for A2P 10DLC compliance. All SMS is opt-in and includes compliant opt-out language. |
 | 6 | How long does setup take? | Most agents are live in under 15 minutes. Connect FUB, verify your phone, and the AI starts responding. |
