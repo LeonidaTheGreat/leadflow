@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { FeatureGate } from '@/components/ui/FeatureGate'
+import type { PlanTier } from '@/lib/plans'
 import {
   Plug,
   CheckCircle2,
@@ -30,6 +32,7 @@ interface Integration {
 
 export default function IntegrationsPage() {
   const { track } = useAnalytics()
+  const [planTier, setPlanTier] = useState<PlanTier>('starter')
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: 'fub',
@@ -70,6 +73,11 @@ export default function IntegrationsPage() {
   useEffect(() => {
     loadIntegrationStatus()
     track(PostHogEvents.SETTINGS_PAGE_VIEWED, { tab: 'integrations' })
+    // Load plan tier from session for feature gating
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((data) => { if (data?.plan_tier) setPlanTier(data.plan_tier as PlanTier) })
+      .catch(() => {})
   }, [track])
 
   const loadIntegrationStatus = async () => {
@@ -337,11 +345,18 @@ export default function IntegrationsPage() {
                   />
                 )}
                 {integration.id === 'calcom' && (
-                  <CalComConfig
-                    config={integration.config}
-                    onChange={(key, value) => updateConfig(integration.id, key, value)}
-                    error={integration.error}
-                  />
+                  <FeatureGate
+                    feature="calcom"
+                    currentTier={planTier}
+                    mode="inline"
+                    featureName="Cal.com booking automation"
+                  >
+                    <CalComConfig
+                      config={integration.config}
+                      onChange={(key, value) => updateConfig(integration.id, key, value)}
+                      error={integration.error}
+                    />
+                  </FeatureGate>
                 )}
 
                 {/* Error */}

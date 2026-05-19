@@ -8,10 +8,12 @@
  * Pre-fills Stripe checkout with the selected plan on CTA click.
  *
  * PRD: PRD-PRICING-CLARITY-TRIAL-USERS.md
+ * Plan data: lib/plans.ts (single source of truth)
  */
 
 import { useEffect, useState } from 'react'
 import { CheckCircle2, Loader2, Star } from 'lucide-react'
+import { PLANS } from '@/lib/plans'
 
 interface TrialStatus {
   isTrial: boolean
@@ -19,87 +21,6 @@ interface TrialStatus {
   daysRemaining: number
   planTier: string
 }
-
-interface PricingTier {
-  id: string
-  name: string
-  price: string
-  priceNote?: string
-  description: string
-  features: string[]
-  recommended: boolean
-  cta: string
-}
-
-const PRICING_TIERS: PricingTier[] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: '$49',
-    priceNote: '/mo',
-    description: 'For agents just getting started with AI lead response',
-    features: [
-      '100 SMS per month',
-      'Basic AI response',
-      'Follow Up Boss integration',
-      'Lead qualification',
-      'Email support',
-    ],
-    recommended: false,
-    cta: 'Choose Starter',
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '$149',
-    priceNote: '/mo',
-    description: 'Best for solo agents who want full AI power',
-    features: [
-      'Unlimited SMS',
-      'Full AI — appointment booking',
-      'Follow Up Boss integration',
-      'Cal.com booking automation',
-      'Advanced lead qualification',
-      'Priority support',
-    ],
-    recommended: true,
-    cta: 'Choose Pro',
-  },
-  {
-    id: 'team',
-    name: 'Team',
-    price: '$399',
-    priceNote: '/mo',
-    description: 'For small teams and growing brokerages',
-    features: [
-      'Up to 5 agents',
-      'Unlimited SMS',
-      'Full AI — all Pro features',
-      'Team analytics dashboard',
-      'Shared lead routing',
-      'Priority support',
-    ],
-    recommended: false,
-    cta: 'Choose Team',
-  },
-  {
-    id: 'brokerage',
-    name: 'Brokerage',
-    price: '$999+',
-    priceNote: '/mo',
-    description: 'White-label solution for large brokerages',
-    features: [
-      'Unlimited agents',
-      'White-label branding',
-      'Custom AI training',
-      'Dedicated account manager',
-      'Custom integrations',
-      'SLA guarantee',
-    ],
-    recommended: false,
-    cta: 'Contact Sales',
-  },
-]
 
 async function createCheckout(plan: string): Promise<{ url?: string; error?: string }> {
   try {
@@ -138,7 +59,6 @@ export default function PricingPage() {
 
   useEffect(() => {
     async function init() {
-      // Fetch trial status to personalize messaging
       try {
         const res = await fetch('/api/auth/trial-status')
         if (res.ok) {
@@ -149,42 +69,36 @@ export default function PricingPage() {
         // Non-critical
       }
 
-      // Track pricing page view
-      await trackEvent('trial_pricing_viewed', {
-        source: 'pricing_page',
-      })
+      await trackEvent('trial_pricing_viewed', { source: 'pricing_page' })
     }
 
     init()
   }, [])
 
-  async function handleChoosePlan(tier: PricingTier) {
-    if (tier.id === 'brokerage') {
-      // Brokerage is contact sales — open email
+  async function handleChoosePlan(tierId: string) {
+    if (tierId === 'brokerage') {
       window.location.href = 'mailto:hello@leadflow.ai?subject=Brokerage%20Plan%20Inquiry'
       return
     }
 
-    setLoadingPlan(tier.id)
-    setErrors((prev) => ({ ...prev, [tier.id]: '' }))
+    setLoadingPlan(tierId)
+    setErrors((prev) => ({ ...prev, [tierId]: '' }))
 
-    // Track upgrade clicked
     await trackEvent('trial_upgrade_clicked', {
-      plan: tier.id,
+      plan: tierId,
       source: 'pricing_page',
       days_remaining: trialStatus?.daysRemaining,
     })
 
-    const result = await createCheckout(tier.id)
+    const result = await createCheckout(tierId)
     if (result.error) {
-      setErrors((prev) => ({ ...prev, [tier.id]: result.error! }))
+      setErrors((prev) => ({ ...prev, [tierId]: result.error! }))
       setLoadingPlan(null)
       return
     }
     if (result.url) {
-      // Track checkout started
       await trackEvent('trial_checkout_started', {
-        plan: tier.id,
+        plan: tierId,
         source: 'pricing_page',
         days_remaining: trialStatus?.daysRemaining,
       })
@@ -218,19 +132,19 @@ export default function PricingPage() {
         )}
       </div>
 
-      {/* Pricing grid */}
+      {/* Pricing grid — sourced from lib/plans.ts */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {PRICING_TIERS.map((tier) => (
+        {PLANS.map((plan) => (
           <div
-            key={tier.id}
-            data-testid={`pricing-tier-${tier.id}`}
+            key={plan.tier}
+            data-testid={`pricing-tier-${plan.tier}`}
             className={`relative flex flex-col rounded-2xl border p-6 ${
-              tier.recommended
+              plan.highlighted
                 ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10 shadow-lg shadow-emerald-500/10'
                 : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'
             }`}
           >
-            {tier.recommended && (
+            {plan.highlighted && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-semibold">
                   <Star className="w-3 h-3 fill-white" /> Recommended
@@ -241,24 +155,20 @@ export default function PricingPage() {
             {/* Tier header */}
             <div className="mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-                {tier.name}
+                {plan.name}
               </h2>
               <div className="flex items-baseline gap-1 mb-2">
                 <span className="text-3xl font-bold text-slate-900 dark:text-white">
-                  {tier.price}
+                  {plan.contactSales ? '$999+' : `$${plan.monthlyPrice}`}
                 </span>
-                {tier.priceNote && (
-                  <span className="text-slate-500 dark:text-slate-400 text-sm">
-                    {tier.priceNote}
-                  </span>
-                )}
+                <span className="text-slate-500 dark:text-slate-400 text-sm">/mo</span>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">{tier.description}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{plan.description}</p>
             </div>
 
             {/* Features */}
             <ul className="space-y-2 mb-8 flex-1">
-              {tier.features.map((feature) => (
+              {plan.features.map((feature) => (
                 <li key={feature} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                   <span>{feature}</span>
@@ -269,24 +179,28 @@ export default function PricingPage() {
             {/* CTA */}
             <div>
               <button
-                onClick={() => handleChoosePlan(tier)}
-                disabled={loadingPlan === tier.id}
-                data-testid={`upgrade-cta-${tier.id}`}
+                onClick={() => handleChoosePlan(plan.tier)}
+                disabled={loadingPlan === plan.tier}
+                data-testid={`upgrade-cta-${plan.tier}`}
                 className={`w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-                  tier.recommended
+                  plan.highlighted
                     ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                     : 'bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900'
                 }`}
               >
-                {loadingPlan === tier.id ? (
+                {loadingPlan === plan.tier ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                ) : plan.contactSales ? (
+                  'Contact Sales'
+                ) : plan.highlighted ? (
+                  'Choose Pro'
                 ) : (
-                  tier.cta
+                  `Choose ${plan.name}`
                 )}
               </button>
-              {errors[tier.id] && (
+              {errors[plan.tier] && (
                 <p className="text-xs text-red-600 dark:text-red-400 mt-2 text-center">
-                  {errors[tier.id]}
+                  {errors[plan.tier]}
                 </p>
               )}
             </div>

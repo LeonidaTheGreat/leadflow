@@ -4,160 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Check, Minus, ArrowRight, Loader2, Phone } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics/ga4'
+import { PLANS, FEATURE_COMPARISON, type BillingInterval } from '@/lib/plans'
 
-type BillingInterval = 'monthly' | 'annual'
-
-/**
- * Maps pricing page tier to the API's base tier key.
- * Canonical tier names are shared between the pricing page and checkout API:
- *   starter    → starter_monthly / starter_annual
- *   pro        → pro_monthly / pro_annual
- *   team       → team_monthly / team_annual
- *   brokerage  → contact sales (no checkout flow)
- *
- * The billing interval is appended by handleSelectPlan: `${tier}_${interval}`
- */
-const TIER_KEY_MAP: Record<string, string | null> = {
-  starter:   'starter',
-  pro:       'pro',
-  team:      'team',
-  brokerage: null, // contact sales — no direct checkout
-}
-
-const PRICING_PLANS = [
-  {
-    name: 'Starter',
-    tier: 'starter',
-    monthlyPrice: 49,
-    annualPrice: 490,
-    description: 'Perfect for testing the waters',
-    features: [
-      '100 SMS/month',
-      'Basic AI responses',
-      'Basic qualification',
-      'Dashboard access',
-      'FUB integration',
-      'Email support',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Pro',
-    tier: 'pro',
-    monthlyPrice: 149,
-    annualPrice: 1490,
-    description: 'Most popular for working agents',
-    features: [
-      'Unlimited SMS',
-      'Full AI (Claude)',
-      'Cal.com booking',
-      'Lead qualification',
-      'Priority chat + email',
-      'Full analytics',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: true,
-  },
-  {
-    name: 'Team',
-    tier: 'team',
-    monthlyPrice: 399,
-    annualPrice: 3990,
-    description: 'For small teams (up to 5 agents)',
-    features: [
-      'Everything in Pro',
-      'Unlimited SMS',
-      'Full AI (Claude)',
-      'Lead routing',
-      'Team analytics',
-      '5 agents included',
-      'Priority support',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Brokerage',
-    tier: 'brokerage',
-    monthlyPrice: 999,
-    annualPrice: 9990,
-    description: 'White-label for large brokerages',
-    features: [
-      'Unlimited everything',
-      'Custom AI training',
-      'White-label options',
-      'SLA (99.9% uptime)',
-      'Dedicated account manager',
-      'Compliance reporting',
-    ],
-    cta: 'Contact Sales',
-    highlighted: false,
-    contactSales: true,
-  },
-]
-
-// Feature comparison data
-const FEATURE_CATEGORIES = [
-  {
-    name: 'SMS & AI',
-    features: [
-      { name: 'SMS/month', starter: '100', pro: 'Unlimited', team: 'Unlimited', brokerage: 'Unlimited' },
-      { name: 'AI Model', starter: 'Basic', pro: 'Full (Claude)', team: 'Full (Claude)', brokerage: 'Full + Custom' },
-      { name: 'Response Time', starter: '< 60s', pro: '< 30s', team: '< 30s', brokerage: '< 15s' },
-      { name: 'Custom AI Training', starter: false, pro: true, team: true, brokerage: true },
-    ],
-  },
-  {
-    name: 'Agents',
-    features: [
-      { name: 'Included', starter: '1', pro: '1', team: '5', brokerage: '20+' },
-      { name: 'Additional Agents', starter: '—', pro: '—', team: '$49/mo', brokerage: 'Custom' },
-    ],
-  },
-  {
-    name: 'Integrations',
-    features: [
-      { name: 'FUB CRM', starter: true, pro: true, team: true, brokerage: true },
-      { name: 'Cal.com Booking', starter: false, pro: true, team: true, brokerage: true },
-      { name: 'Lead Routing', starter: false, pro: false, team: true, brokerage: true },
-      { name: 'API Access', starter: false, pro: true, team: true, brokerage: true },
-    ],
-  },
-  {
-    name: 'Analytics',
-    features: [
-      { name: 'Dashboard', starter: 'Basic', pro: 'Full', team: 'Full', brokerage: 'Full + Admin' },
-      { name: 'Team Reports', starter: false, pro: false, team: true, brokerage: true },
-      { name: 'Custom Reports', starter: false, pro: false, team: false, brokerage: true },
-    ],
-  },
-  {
-    name: 'Support',
-    features: [
-      { name: 'Email', starter: true, pro: true, team: true, brokerage: true },
-      { name: 'Chat', starter: false, pro: true, team: true, brokerage: true },
-      { name: 'Priority', starter: false, pro: false, team: true, brokerage: true },
-      { name: 'Dedicated AM', starter: false, pro: false, team: false, brokerage: true },
-    ],
-  },
-  {
-    name: 'Enterprise',
-    features: [
-      { name: 'White-label', starter: false, pro: false, team: false, brokerage: true },
-      { name: 'SLA (99.9%)', starter: false, pro: false, team: false, brokerage: true },
-      { name: 'Compliance Reporting', starter: false, pro: false, team: false, brokerage: true },
-      { name: 'Custom Contracts', starter: false, pro: false, team: false, brokerage: true },
-    ],
-  },
-]
-
-
+type BillingToggle = BillingInterval
 
 export default function PricingPage() {
   const router = useRouter()
-  const [interval, setInterval] = useState<BillingInterval>('monthly')
-  const [selectedTier, setSelectedTier] = useState<string | null>(null)
+  const [interval, setInterval] = useState<BillingToggle>('monthly')
   const [loadingTier, setLoadingTier] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const DEMO_BOOKING_URL = process.env.NEXT_PUBLIC_DEMO_BOOKING_URL || 'https://cal.com'
@@ -165,13 +18,11 @@ export default function PricingPage() {
   const handleSelectPlan = async (tier: string) => {
     setCheckoutError(null)
 
-    // Brokerage is a "Contact Sales" tier — redirect to email
     if (tier === 'brokerage') {
       window.location.href = 'mailto:sales@leadflow.ai?subject=Brokerage Plan Inquiry'
       return
     }
 
-    // Get the user from storage (set by login page)
     const token =
       localStorage.getItem('leadflow_token') ||
       sessionStorage.getItem('leadflow_token')
@@ -179,7 +30,6 @@ export default function PricingPage() {
       localStorage.getItem('leadflow_user') ||
       sessionStorage.getItem('leadflow_user')
 
-    // Not logged in → redirect to login, then back to pricing
     if (!token || !userRaw) {
       router.push('/login?redirect=/pricing')
       return
@@ -198,16 +48,8 @@ export default function PricingPage() {
       return
     }
 
-    // Map pricing-page tier + billing interval → API tier key
-    const baseTierKey = TIER_KEY_MAP[tier]
-    if (!baseTierKey) {
-      setCheckoutError('This plan requires contacting sales. Please email sales@leadflow.ai.')
-      return
-    }
-    const apiTier = `${baseTierKey}_${interval}` // e.g. "pro_monthly", "team_annual"
-
+    const apiTier = `${tier}_${interval}`
     setLoadingTier(tier)
-    setSelectedTier(tier)
 
     try {
       const response = await fetch('/api/billing/create-checkout', {
@@ -217,11 +59,7 @@ export default function PricingPage() {
           Authorization: `Bearer ${token}`,
           'x-agent-id': user.id,
         },
-        body: JSON.stringify({
-          tier: apiTier,
-          agentId: user.id,
-          email: user.email,
-        }),
+        body: JSON.stringify({ tier: apiTier, agentId: user.id, email: user.email }),
       })
 
       const data = await response.json()
@@ -234,20 +72,18 @@ export default function PricingPage() {
         throw new Error('No checkout URL returned. Please try again.')
       }
 
-      // Redirect to Stripe hosted checkout page
       window.location.href = data.url
     } catch (err: any) {
       setCheckoutError(err.message || 'Something went wrong. Please try again.')
       setLoadingTier(null)
-      setSelectedTier(null)
     }
   }
 
   return (
     <div data-testid="pricing-page" className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10">
@@ -266,7 +102,6 @@ export default function PricingPage() {
           </div>
         </header>
 
-        {/* Content */}
         <main className="max-w-6xl mx-auto px-4 py-16">
           {/* Title */}
           <div className="text-center mb-16">
@@ -303,11 +138,15 @@ export default function PricingPage() {
             </div>
           </div>
 
-          {/* Pricing Cards */}
+          {/* Pricing Cards — sourced from lib/plans.ts */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {PRICING_PLANS.map((plan) => {
-              const price = interval === 'monthly' ? plan.monthlyPrice : Math.floor(plan.annualPrice / 12)
-              const fullPrice = interval === 'monthly' ? plan.monthlyPrice * 12 : plan.annualPrice
+            {PLANS.map((plan) => {
+              const price =
+                interval === 'monthly'
+                  ? plan.monthlyPrice
+                  : Math.floor(plan.annualPrice / 12)
+              const annualSaving =
+                (plan.monthlyPrice - Math.floor(plan.annualPrice / 12)) * 12
 
               return (
                 <div
@@ -318,36 +157,34 @@ export default function PricingPage() {
                       : 'border-slate-700/50 bg-gradient-to-br from-slate-800/50 to-slate-900/50 hover:border-slate-600'
                   } p-8 overflow-hidden`}
                 >
-                  {/* Background gradient */}
                   {plan.highlighted && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-blue-500/5 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-blue-500/5 pointer-events-none" />
                   )}
 
                   <div className="relative z-10">
-                    {/* Popular badge */}
-                    {plan.highlighted && (
+                    {plan.badge && (
                       <div className="inline-block mb-4 px-3 py-1 bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-semibold rounded-full">
-                        Most Popular
+                        {plan.badge}
                       </div>
                     )}
 
                     <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
                     <p className="text-slate-300 text-sm mb-6">{plan.description}</p>
 
-                    {/* Price */}
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-bold text-white">${plan.tier === 'brokerage' ? '999+' : price}</span>
+                        <span className="text-4xl font-bold text-white">
+                          ${plan.contactSales ? '999+' : price}
+                        </span>
                         <span className="text-slate-400">/month</span>
                       </div>
                       <p className="text-xs text-slate-400 mt-2">
-                        {interval === 'annual'
-                          ? `Billed $${fullPrice}/year (save $${(plan.monthlyPrice * 2).toFixed(0)})`
+                        {interval === 'annual' && !plan.contactSales
+                          ? `Billed $${plan.annualPrice}/year (save $${annualSaving})`
                           : 'Billed monthly'}
                       </p>
                     </div>
 
-                    {/* CTA Button */}
                     <button
                       onClick={() => handleSelectPlan(plan.tier)}
                       disabled={loadingTier !== null}
@@ -364,13 +201,18 @@ export default function PricingPage() {
                         </>
                       ) : (
                         <>
-                          {interval === 'annual' && !plan.contactSales ? 'Pay Annually' : plan.cta}
+                          {plan.contactSales
+                            ? 'Contact Sales'
+                            : interval === 'annual'
+                            ? 'Pay Annually'
+                            : plan.highlighted
+                            ? 'Start Free Trial'
+                            : 'Get Started'}
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}
                     </button>
 
-                    {/* Features */}
                     <div className="space-y-3">
                       {plan.features.map((feature) => (
                         <div key={feature} className="flex items-start gap-3">
@@ -408,7 +250,7 @@ export default function PricingPage() {
             </a>
           </div>
 
-          {/* Feature Comparison Table */}
+          {/* Feature Comparison Table — sourced from lib/plans.ts */}
           <div className="mb-16">
             <h3 className="text-2xl font-bold text-white mb-8 text-center">Compare All Features</h3>
             <div className="overflow-x-auto -mx-4 px-4">
@@ -424,71 +266,47 @@ export default function PricingPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Price row */}
                     <tr className="border-b border-slate-700/50 bg-slate-800/50">
                       <td className="py-4 px-6 text-slate-300 font-medium sticky left-0 bg-slate-800/50 z-10">Monthly Price</td>
-                      <td className="text-center py-4 px-4 text-slate-300">$49</td>
-                      <td className="text-center py-4 px-4 text-emerald-400 font-semibold bg-emerald-500/5">$149</td>
-                      <td className="text-center py-4 px-4 text-slate-300">$399</td>
-                      <td className="text-center py-4 px-4 text-slate-300">$999+</td>
+                      {PLANS.map((plan) => (
+                        <td
+                          key={plan.tier}
+                          className={`text-center py-4 px-4 ${plan.tier === 'pro' ? 'text-emerald-400 font-semibold bg-emerald-500/5' : 'text-slate-300'}`}
+                        >
+                          {plan.contactSales ? '$999+' : `$${plan.monthlyPrice}`}
+                        </td>
+                      ))}
                     </tr>
-                    {FEATURE_CATEGORIES.map((category, catIdx) => (
+
+                    {FEATURE_COMPARISON.map((section, sIdx) => (
                       <>
-                        <tr key={catIdx} className="bg-slate-800/30">
+                        <tr key={`section-${sIdx}`} className="bg-slate-800/30">
                           <td colSpan={5} className="py-3 px-6 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                            {category.name}
+                            {section.name}
                           </td>
                         </tr>
-                        {category.features.map((feature, featIdx) => (
+                        {section.features.map((feat, fIdx) => (
                           <tr
-                            key={featIdx}
+                            key={`feat-${sIdx}-${fIdx}`}
                             className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors"
                           >
-                            <td className="py-3 px-6 text-slate-300 text-sm sticky left-0 bg-slate-900/50 z-10">{feature.name}</td>
-                            <td className="text-center py-3 px-4">
-                              {typeof feature.starter === 'boolean' ? (
-                                feature.starter ? (
-                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                            <td className="py-3 px-6 text-slate-300 text-sm sticky left-0 bg-slate-900/50 z-10">{feat.name}</td>
+                            {(['starter', 'pro', 'team', 'brokerage'] as const).map((tier) => (
+                              <td
+                                key={tier}
+                                className={`text-center py-3 px-4 ${tier === 'pro' ? 'bg-emerald-500/5' : ''}`}
+                              >
+                                {typeof feat[tier] === 'boolean' ? (
+                                  feat[tier] ? (
+                                    <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                                  ) : (
+                                    <Minus className="w-5 h-5 text-slate-600 mx-auto" />
+                                  )
                                 ) : (
-                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
-                                )
-                              ) : (
-                                <span className="text-slate-300 text-sm">{feature.starter}</span>
-                              )}
-                            </td>
-                            <td className="text-center py-3 px-4 bg-emerald-500/5">
-                              {typeof feature.pro === 'boolean' ? (
-                                feature.pro ? (
-                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                                ) : (
-                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
-                                )
-                              ) : (
-                                <span className="text-slate-300 text-sm">{feature.pro}</span>
-                              )}
-                            </td>
-                            <td className="text-center py-3 px-4">
-                              {typeof feature.team === 'boolean' ? (
-                                feature.team ? (
-                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                                ) : (
-                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
-                                )
-                              ) : (
-                                <span className="text-slate-300 text-sm">{feature.team}</span>
-                              )}
-                            </td>
-                            <td className="text-center py-3 px-4">
-                              {typeof feature.brokerage === 'boolean' ? (
-                                feature.brokerage ? (
-                                  <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                                ) : (
-                                  <Minus className="w-5 h-5 text-slate-600 mx-auto" />
-                                )
-                              ) : (
-                                <span className="text-slate-300 text-sm">{feature.brokerage}</span>
-                              )}
-                            </td>
+                                  <span className="text-slate-300 text-sm">{feat[tier]}</span>
+                                )}
+                              </td>
+                            ))}
                           </tr>
                         ))}
                       </>
@@ -502,7 +320,6 @@ export default function PricingPage() {
           {/* FAQ */}
           <div className="max-w-3xl mx-auto">
             <h3 className="text-2xl font-bold text-white mb-8 text-center">Frequently Asked Questions</h3>
-
             <div className="space-y-4">
               {[
                 {
@@ -518,8 +335,8 @@ export default function PricingPage() {
                   a: 'Yes! All plans come with a 14-day free trial. No credit card required to start.',
                 },
                 {
-                  q: 'What if I exceed my lead limit?',
-                  a: 'You can add extra lead packs anytime, or upgrade to a higher tier for unlimited leads.',
+                  q: 'What happens if I hit my SMS limit on Starter?',
+                  a: 'AI responses pause for the rest of the month. Upgrade to Pro for unlimited SMS.',
                 },
               ].map((faq, idx) => (
                 <div key={idx} className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
