@@ -25,7 +25,7 @@ export default function PilotSignupPage() {
       </main>
       <footer className="border-t border-slate-700/50">
         <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-slate-500">
-          <p>© 2026 LeadFlow AI. All rights reserved.</p>
+          <p>© 2026 LeadFlow AI by Imagine Squared. All rights reserved.</p>
         </div>
       </footer>
     </div>
