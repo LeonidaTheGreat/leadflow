@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       // Call Claude API
       try {
         const result = await generateText({
-          model: anthropic('claude-3-haiku-20240307'),
+          model: anthropic('claude-haiku-4-5'),
           system: DEMO_SYSTEM_PROMPT,
           prompt: buildDemoPrompt({
             leadName: sanitizedName,

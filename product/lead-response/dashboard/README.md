@@ -4,7 +4,7 @@ Real estate AI-powered instant lead response system built with Next.js 15, shadc
 
 ## Features
 
-- 🤖 AI Lead Qualification (Claude 3.5 Sonnet)
+- 🤖 AI Lead Qualification (Claude Haiku 4.5 / Qwen local)
 - 📱 Instant SMS Response (Twilio)
 - 🔗 Follow Up Boss Integration
 - 📊 Agent Dashboard
@@ -16,7 +16,7 @@ Real estate AI-powered instant lead response system built with Next.js 15, shadc
 - **Frontend:** Next.js 15 + React 19 + TypeScript
 - **UI:** shadcn/ui + Tailwind CSS
 - **Database:** Supabase (PostgreSQL)
-- **AI:** Claude 3.5 Sonnet via Vercel AI SDK
+- **AI:** Claude Haiku 4.5 (Anthropic fallback) / Qwen local (default) via Vercel AI SDK
 - **SMS:** Twilio
 - **CRM:** Follow Up Boss
 - **Scheduling:** Cal.com (self-hosted)

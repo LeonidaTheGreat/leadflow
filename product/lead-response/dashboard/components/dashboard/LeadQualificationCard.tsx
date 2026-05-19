@@ -142,7 +142,7 @@ export function LeadQualificationCard({ lead, qualifications }: LeadQualificatio
       {/* Model Info */}
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Model: {latestQualification.model_used || 'claude-3-5-sonnet'}
+          Model: {latestQualification.model_used || 'claude-haiku-4-5'}
         </p>
       </div>
     </div>
