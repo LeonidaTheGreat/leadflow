@@ -1,3 +1,28 @@
+/*
+Task Spec (c844e56e-e91a-478a-b30b-418060036bc3)
+What:
+- Update product/lead-response/dashboard/app/api/billing/create-checkout-session/route.ts:
+  function getPriceIdForPlan() to use STRIPE_PRICE_PRO_MONTHLY (standardized with create-checkout route).
+- Update tests that assert or seed the old STRIPE_PRICE_PROFESSIONAL_MONTHLY name:
+  product/lead-response/dashboard/tests/feat-self-serve-stripe-checkout.test.js
+  product/lead-response/dashboard/__tests__/upgrade-checkout.test.ts
+  product/lead-response/dashboard/__tests__/trial-nudge.test.ts
+
+Verify:
+- Run: node product/lead-response/dashboard/tests/b4b9f900-fix-checkout-price-id-regex.test.js
+  Expected: all checks pass and confirm regex accepts valid Stripe IDs.
+- Run: npm test -- product/lead-response/dashboard/__tests__/upgrade-checkout.test.ts
+  Expected: passes with pro monthly env var mapping.
+- Run: cd product/lead-response/dashboard && npx next build
+  Expected: build succeeds.
+- Run grep:
+  rg -n "STRIPE_PRICE_PROFESSIONAL_MONTHLY" product/lead-response/dashboard/app/api/billing product/lead-response/dashboard/__tests__ product/lead-response/dashboard/tests
+  Expected: zero matches.
+
+Boundaries:
+- Do not change checkout business flow, tier lists, or Stripe session payload semantics.
+- Do not modify webhook handlers, DB schema, or unrelated UI components.
+*/
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import Stripe from 'stripe'
@@ -14,7 +39,7 @@ const stripe = process.env.STRIPE_SECRET_KEY
 function getPriceIdForPlan(planId: string): string | null {
   const priceIdMap: Record<string, string> = {
     starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
+    pro: process.env.STRIPE_PRICE_PRO_MONTHLY || '',
     team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
   return priceIdMap[planId] || null
 }

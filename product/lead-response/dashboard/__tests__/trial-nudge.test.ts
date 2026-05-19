@@ -15,7 +15,7 @@
 
 process.env.STRIPE_SECRET_KEY = 'sk_test_fake'
 process.env.JWT_SECRET = 'test-secret'
-process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY = 'price_pro_real_test_id'
+process.env.STRIPE_PRICE_PRO_MONTHLY = 'price_pro_real_test_id'
 process.env.NEXT_PUBLIC_APP_URL = 'https://leadflow-ai-five.vercel.app'
 
 // ── next/server mock ──────────────────────────────────────────────────────────
