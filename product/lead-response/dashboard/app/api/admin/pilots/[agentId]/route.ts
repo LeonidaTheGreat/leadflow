@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase-server'
-import { isAdminUser } from '@/lib/services/AuthService'
+import { requireAdmin } from '@/lib/services/AuthService'
 import {
   sendPilotWelcomeEmail,
   sendPilotSetupCompleteEmail,
@@ -19,7 +19,7 @@ export async function POST(
   { params }: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    if (!await isAdminUser(request)) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -82,7 +82,7 @@ export async function PATCH(
   { params }: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    if (!await isAdminUser(request)) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 

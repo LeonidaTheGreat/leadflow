@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import { supabaseServer } from '@/lib/supabase-server'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 import { logger } from '@/lib/logger'
-import { requireAdminSession } from '@/lib/admin-auth'
+import { requireAdmin } from '@/lib/services/AuthService'
 
 function generateInviteToken(): { rawToken: string; tokenHash: string } {
   const rawToken = crypto.randomBytes(32).toString('hex')
@@ -41,7 +41,7 @@ interface InviteResponse {
 export async function POST(request: NextRequest): Promise<NextResponse<InviteResponse>> {
   try {
     // 1. Check admin auth
-    if (!(await requireAdminSession(request))) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized - invalid or missing admin token' },
         { status: 401 }
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<InviteRes
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     // Check admin auth
-    if (!(await requireAdminSession(request))) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

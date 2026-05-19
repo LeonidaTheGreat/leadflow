@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import { postgrestAdmin } from '@/lib/db'
 import { sendPilotInviteEmail } from '@/lib/email-service'
 import { logger } from '@/lib/logger'
-import { requireAdminSession } from '@/lib/admin-auth'
+import { requireAdmin } from '@/lib/services/AuthService'
 
 function generateInviteToken(): { rawToken: string; tokenHash: string } {
   const rawToken = crypto.randomBytes(32).toString('hex')
@@ -26,7 +26,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    if (!(await requireAdminSession(request))) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 

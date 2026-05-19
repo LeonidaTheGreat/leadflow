@@ -22,7 +22,7 @@ import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
 import { sendPilotOutreachEmail } from '@/lib/outreach-email-service'
 import { PilotOutreachBlastService } from '@/lib/services/pilot-outreach-blast-service'
-import { requireAdminSession } from '@/lib/admin-auth'
+import { requireAdmin } from '@/lib/services/AuthService'
 
 const blastService = new PilotOutreachBlastService({
   db: postgrestAdmin,
@@ -46,11 +46,11 @@ const blastService = new PilotOutreachBlastService({
  *
  * Returns: { sent: N, skipped: N, errors: string[] }
  *
- * Auth: X-Admin-Token header (must match ADMIN_SECRET)
+ * Auth: admin_session cookie (set via /api/admin/login)
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    if (!(await requireAdminSession(request))) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const result = await blastService.runBlast()
@@ -66,11 +66,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
  *
  * Returns campaign stats for the outreach blast admin page.
  *
- * Auth: X-Admin-Token header
+ * Auth: admin_session cookie (set via /api/admin/login)
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    if (!(await requireAdminSession(request))) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

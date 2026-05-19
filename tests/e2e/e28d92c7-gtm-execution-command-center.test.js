@@ -47,11 +47,11 @@ test('Admin page exists', () => {
 // --- API route: auth enforcement ---
 console.log('\n[2] Auth enforcement')
 const apiSrc = readFile(API_ROUTE)
-test('Route calls isAdminUser before any DB access', () => {
-  const authIdx = apiSrc.indexOf('isAdminUser')
+test('Route calls requireAdmin before any DB access', () => {
+  const authIdx = apiSrc.indexOf('requireAdmin')
   const dbIdx = apiSrc.indexOf("postgrestAdmin")
-  assert.ok(authIdx > -1, 'isAdminUser not found in route')
-  assert.ok(authIdx < dbIdx, 'isAdminUser must appear before first postgrestAdmin call')
+  assert.ok(authIdx > -1, 'requireAdmin not found in route')
+  assert.ok(authIdx < dbIdx, 'requireAdmin must appear before first postgrestAdmin call')
 })
 test('Unauthorized path returns 401', () => {
   assert.ok(apiSrc.includes("status: 401"), 'Route must return 401 on auth failure')
