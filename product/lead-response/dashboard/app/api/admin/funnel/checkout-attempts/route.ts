@@ -2,7 +2,7 @@
  * GET /api/admin/funnel/checkout-attempts
  *
  * Returns checkout initiation rate, completion rate, and abandonment rate
- * grouped by day. Reads from subscription_attempts table.
+ * grouped by day. Reads from the checkout_sessions table.
  *
  * Auth: LEADFLOW_API_KEY bearer token (admin-only)
  *
@@ -35,9 +35,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
 
   try {
+    // checkout_sessions uses user_id (not agent_id) and status values:
+    // 'pending', 'completed', 'expired', 'abandoned'
     const { data: attempts, error } = await postgrestAdmin
-      .from('subscription_attempts')
-      .select('id, agent_id, tier, status, created_at')
+      .from('checkout_sessions')
+      .select('id, user_id, tier, status, created_at')
       .gte('created_at', since)
       .order('created_at', { ascending: true })
 
@@ -52,7 +54,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         byDay[day] = { initiated: 0, completed: 0, expired: 0 }
       }
       byDay[day].initiated += 1
-      if (attempt.status === 'session_expired') {
+      if (attempt.status === 'expired' || attempt.status === 'abandoned') {
         byDay[day].expired += 1
       } else if (attempt.status === 'completed') {
         byDay[day].completed += 1
@@ -77,7 +79,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Totals
     const totalInitiated = (attempts ?? []).length
     const totalCompleted = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'completed').length
-    const totalExpired = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'session_expired').length
+    const totalExpired = ((attempts ?? []) as any[]).filter((a: any) => a.status === 'expired' || a.status === 'abandoned').length
 
     return NextResponse.json({
       summary: {
