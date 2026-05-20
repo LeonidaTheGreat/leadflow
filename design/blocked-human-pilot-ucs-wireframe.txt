@@ -1,0 +1,56 @@
+BLOCKED HUMAN PILOT UCs - WIREFRAME
+Task: 3ab3dbb5-9e2b-450a-8ecf-32a637bc8bf5
+
+[Desktop /admin - Right Column]
++---------------------------------------------------------------+
+| Immediate blockers                                             |
+| Pending decisions and compliance issues that stop execution.   |
+|                                                               |
+| [!] Human Required (3)                                        |
+| These items cannot be automated and require owner outreach.   |
+|                                                               |
+| ------------------------------------------------------------- |
+| No real pilots recruited yet              [blocked_human] [>] |
+| Blocked: Human outreach required                               |
+| Retry tasks canceled                                           |
+|                                                               |
+| Outreach has not started (11 days left) [11 DAYS] [blocked..] |
+| Blocked: Human outreach required                               |
+| Retry tasks canceled                                           |
+|                                                               |
+| 30-pilot campaign stalled at Day 8   [DAY 8] [blocked_human]  |
+| Blocked: Human outreach required                               |
+| Retry tasks canceled                                           |
++---------------------------------------------------------------+
+
+[Desktop /admin/pilot-campaigns - Top Lane]
++================================================================+
+| Blocked - Human Action                                         |
+| Agent retries are disabled while awaiting owner action.        |
+|                                                                |
+| [Card] No real pilots recruited yet                            |
+| [blocked_human] [retry tasks canceled]                         |
+| - Contact 10 active real estate agents directly                |
+| - Log outreach summary                                         |
+| - Set UC to in_progress after first outreach                   |
+|                                        [Expand details]         |
++================================================================+
+
+[Mobile]
++--------------------------------------+
+| Human Required (3)                   |
+| ------------------------------------ |
+| No real pilots recruited yet         |
+| [blocked_human]                      |
+| v                                    |
+| ------------------------------------ |
+| Outreach has not started             |
+| [11 DAYS] [blocked_human]            |
+| v                                    |
+| ------------------------------------ |
+| 30-pilot campaign stalled at Day 8   |
+| [DAY 8] [blocked_human]              |
+| v                                    |
+|                                      |
+| [ Open outreach checklist ]          |
++--------------------------------------+
