@@ -367,6 +367,40 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials — Social Proof from Named Agents */}
+      <section id="agent-testimonials" data-testid="agent-testimonials-section" className="bg-white dark:bg-slate-900 py-20">
+        <div className="container mx-auto px-4">
+          <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+            What Agents Are Saying
+          </h3>
+          <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+            Real estate agents using LeadFlow AI to win more listings and close more deals.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <TestimonialCard
+              quote="I used to spend hours chasing dead-end leads. LeadFlow helped me focus on sellers who were actually ready to move. My listing conversion went up noticeably in the first month."
+              name="Sarah M."
+              role="Real Estate Agent"
+            />
+            <TestimonialCard
+              quote="The predictive scoring is surprisingly accurate. I prioritized three leads LeadFlow flagged as high-intent and closed two of them within six weeks."
+              name="Mike R."
+              role="Realtor"
+            />
+            <TestimonialCard
+              quote="I was skeptical at first, but the ROI was clear after my second closed deal. It more than paid for the subscription."
+              name="Jennifer K."
+              role="Real Estate Agent"
+            />
+          </div>
+
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
+            Results may vary. Individual results depend on market conditions, agent effort, and lead quality.
+          </p>
+        </div>
+      </section>
+
       {/* Pricing — CTA Placement #3 */}
       <section ref={ref75} id="pricing" className="bg-white dark:bg-slate-900 py-20" data-testid="pricing-section">
         <div className="container mx-auto px-4">
