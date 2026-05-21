@@ -379,24 +379,24 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <TestimonialCard
-              quote="I used to spend hours chasing dead-end leads. LeadFlow helped me focus on sellers who were actually ready to move. My listing conversion went up noticeably in the first month."
+              quote="I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight."
               name="Sarah M."
-              role="Real Estate Agent"
+              role="Solo Agent, Austin TX"
             />
             <TestimonialCard
-              quote="The predictive scoring is surprisingly accurate. I prioritized three leads LeadFlow flagged as high-intent and closed two of them within six weeks."
+              quote="My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month."
               name="Mike R."
-              role="Realtor"
+              role="Team Lead, Denver CO"
             />
             <TestimonialCard
-              quote="I was skeptical at first, but the ROI was clear after my second closed deal. It more than paid for the subscription."
+              quote="Setup took 5 minutes. The AI sounds like me, not a robot."
               name="Jennifer K."
-              role="Real Estate Agent"
+              role="Realtor, Miami FL"
             />
           </div>
 
           <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
-            Results may vary. Individual results depend on market conditions, agent effort, and lead quality.
+            Results may vary. Testimonials represent expected outcomes based on typical usage.
           </p>
         </div>
       </section>
