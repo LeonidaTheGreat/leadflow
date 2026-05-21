@@ -1,4 +1,17 @@
 #!/bin/bash
+# Task Spec:
+# What:
+# - Update scripts/shell/orchestrator-heartbeat-runner.sh to invoke the onboarding stuck-agent cron endpoint on every heartbeat cycle.
+# - Add call wiring that ultimately executes onboardingTelemetry.checkAndAlertStuckAgents() via GET /api/cron/check-stuck-agents.
+# Verify:
+# - Run: rg -n "check-stuck-agents|CRON_SECRET|NEXT_PUBLIC_BASE_URL" scripts/shell/orchestrator-heartbeat-runner.sh
+# - Run: npm test -- tests/e2e/fix-createstuckalerts-heartbeat-wiring.test.js
+# - Run: npm test
+# - Run: npm run build
+# Boundaries:
+# - Do not modify onboarding telemetry business logic in product/lead-response/dashboard/lib/onboarding-telemetry.js.
+# - Do not modify database schema/migrations.
+# - Do not change unrelated heartbeat steps or orchestration task-state logic.
 
 PROJECT_ROOT="/Users/clawdbot/projects/leadflow"
 TASKS_FILE="$PROJECT_ROOT/.local-tasks.json"
@@ -64,6 +77,23 @@ while true; do
   echo "7️⃣ Checking blockers..."
   BLOCKER_COUNT=$(jq '.blockers | length' "$PROJECT_FILE")
   echo "   Active blockers: $BLOCKER_COUNT"
+
+  # 8. Trigger onboarding stuck-agent alert job (if configured)
+  echo "8️⃣ Running onboarding stuck-agent alert heartbeat job..."
+  if [ -n "${CRON_SECRET:-}" ] && [ -n "${NEXT_PUBLIC_BASE_URL:-}" ]; then
+    STUCK_ALERTS_URL="${NEXT_PUBLIC_BASE_URL%/}/api/cron/check-stuck-agents"
+    HTTP_STATUS=$(curl -sS -o /tmp/leadflow-stuck-alerts-response.json -w "%{http_code}" \
+      -H "Authorization: Bearer ${CRON_SECRET}" \
+      "$STUCK_ALERTS_URL" || echo "000")
+
+    if [ "$HTTP_STATUS" = "200" ]; then
+      echo "   ✅ Stuck-agent alert job completed"
+    else
+      echo "   ⚠️ Stuck-agent alert job failed (HTTP $HTTP_STATUS)"
+    fi
+  else
+    echo "   ℹ️ Skipped: set CRON_SECRET and NEXT_PUBLIC_BASE_URL to enable this job"
+  fi
   
   echo "✅ Cycle $CYCLE_COUNT complete"
   echo "⏳ Next cycle in ${HEARTBEAT_INTERVAL}s..."
