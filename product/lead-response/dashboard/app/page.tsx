@@ -1,28 +1,23 @@
 'use client'
 
 /*
-TASK SPEC (61d47e0b-b81c-4c12-9c85-03945a31ee98)
+TASK SPEC (66195b5f-648c-4bb3-a614-558df7e5f7d0)
 What:
 - Change file: product/lead-response/dashboard/app/page.tsx
 - Function: HomePage()
-- Update stale feature copy that claims an outdated Claude model name to model-agnostic text aligned with AI_MODEL-driven runtime behavior.
-- Change file: product/lead-response/dashboard/lib/ai.ts
-- Functions/constants: getModelClient(), qualifyLead(), Anthropic fallback constant usage
-- Upgrade Anthropic fallback model from "claude-3-haiku-20240307" to "claude-haiku-4-5" and remove stale Sonnet reference in qualification docstring.
+- Update urgency banner copy from "Only 10 spots remaining..." to "Only 10 pilot spots remaining for Q1 2026..." per product review acceptance criteria.
 
 Verify:
-- Run: rg -n "Claude 3\\.5 Sonnet" product/lead-response/dashboard/app/
-- Expect: no matches.
-- Run: npm run lint
+- Run: node tests/e2e/fix-no-urgency-or-scarcity-mechanism.test.js
 - Run: npm test
-- Run: npm run build
-- Run: npm audit --audit-level=high
 - Run: cd product/lead-response/dashboard && npx next build
 - Expect all commands exit 0.
+- Run: rg -n "Only 10 pilot spots remaining for Q1 2026" product/lead-response/dashboard/app/page.tsx
+- Expect: one match in urgency banner text.
 
 Boundaries:
-- Do not change routes/services outside product/lead-response/dashboard/lib/ai.ts.
-- Do not alter pricing/content unrelated to the AI model copy claim.
+- Do not alter any component structure, styling classes, CTA links, or behavior.
+- Do not change any files outside product/lead-response/dashboard/app/page.tsx.
 - Do not modify database schema, migrations, or non-dashboard modules.
 */
 
@@ -69,7 +64,7 @@ export default function HomePage() {
         className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-center py-2.5 px-4 text-sm font-medium"
         data-testid="urgency-banner"
       >
-        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 spots remaining. Join today to lock in 20% lifetime pricing.{' '}
+        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 pilot spots remaining for Q1 2026. Join today to lock in 20% lifetime pricing.{' '}
         <Link href="/pilot" className="underline underline-offset-2 font-semibold hover:text-emerald-100">
           Apply Now →
         </Link>
