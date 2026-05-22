@@ -224,7 +224,8 @@ describe('Lead Magnet Email Service', () => {
       const mod = require('../lib/lead-magnet-email')
       const result = await mod.sendPlaybookEmail('lead@example.com', 'Jane')
       expect(result.sent).toBe(false)
-      expect(result.provider).toBe('logged')
+      expect(result.provider).toBe('resend')
+      expect(result.error).toBe('RESEND_API_KEY not configured')
     })
   })
 

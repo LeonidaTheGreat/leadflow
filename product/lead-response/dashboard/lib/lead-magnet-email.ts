@@ -2,6 +2,22 @@
  * Lead Magnet Email Service
  * UC: feat-lead-magnet-email-capture
  *
+ * TASK SPEC (2f1a8dd1-cad5-4674-a96b-b6f2b3ad8617)
+ * What:
+ * - Update `product/lead-response/dashboard/lib/lead-magnet-email.ts`:
+ *   - `LeadMagnetEmailResult` type
+ *   - `sendLeadMagnetEmail()` missing-Resend guard behavior
+ * - Update `product/lead-response/dashboard/tests/feat-transactional-email-resend.test.ts`
+ *   to assert explicit missing-key error contract.
+ * Verify:
+ * - `cd product/lead-response/dashboard && npm test -- --runInBand tests/feat-transactional-email-resend.test.ts`
+ * - `cd /private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-2f1a8dd1-cad5-4674-a96b-b6f2b3ad8617 && npm test`
+ * - `cd /private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-2f1a8dd1-cad5-4674-a96b-b6f2b3ad8617 && npm run build`
+ * - `rg -n "Email queued \\(Resend not configured\\)|RESEND_API_KEY not configured" product/lead-response/dashboard/lib/lead-magnet-email.ts`
+ * Boundaries:
+ * - Do not modify route handlers, DB schema/migrations, or non-email domains.
+ * - Do not change API payload shape for lead-capture endpoint responses.
+ *
  * Handles the 3-email nurture sequence for lead magnet captures.
  * Sequences:
  *   Email 1 (Instant): Playbook delivery
@@ -242,7 +258,7 @@ function email3Html(firstName: string): string {
 
 export interface LeadMagnetEmailResult {
   sent: boolean
-  provider: 'resend' | 'logged'
+  provider: 'resend'
   error?: string
 }
 
@@ -299,8 +315,9 @@ async function sendLeadMagnetEmail(
   } | null
 
   if (!resend) {
-    logger.info(`[lead-magnet] Email queued (Resend not configured): ${emailType} to ${to}`)
-    return { sent: false, provider: 'logged' }
+    const error = 'RESEND_API_KEY not configured'
+    logger.error(`[lead-magnet] ${error}: cannot send ${emailType} to ${to}`)
+    return { sent: false, provider: 'resend', error }
   }
 
   try {
