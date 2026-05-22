@@ -1,29 +1,22 @@
 'use client'
 
 /*
-TASK SPEC (61d47e0b-b81c-4c12-9c85-03945a31ee98)
+TASK SPEC (8a3a0250-9fbd-4399-95ed-e106e50e09a3)
 What:
-- Change file: product/lead-response/dashboard/app/page.tsx
-- Function: HomePage()
-- Update stale feature copy that claims an outdated Claude model name to model-agnostic text aligned with AI_MODEL-driven runtime behavior.
-- Change file: product/lead-response/dashboard/lib/ai.ts
-- Functions/constants: getModelClient(), qualifyLead(), Anthropic fallback constant usage
-- Upgrade Anthropic fallback model from "claude-3-haiku-20240307" to "claude-haiku-4-5" and remove stale Sonnet reference in qualification docstring.
+- Update product/lead-response/dashboard/app/page.tsx (HomePage testimonials section) to render PRD-required testimonial cards with Sarah M., Mike R., and Jennifer K. between How It Works and Pricing.
+- Keep/adjust TestimonialCard usage and include a visible "Results may vary" disclaimer in the same section.
+- Update product/lead-response/dashboard/__tests__/testimonials-section.test.ts to validate required testimonial content and disclaimer text.
 
 Verify:
-- Run: rg -n "Claude 3\\.5 Sonnet" product/lead-response/dashboard/app/
-- Expect: no matches.
-- Run: npm run lint
-- Run: npm test
-- Run: npm run build
-- Run: npm audit --audit-level=high
+- Run: cd product/lead-response/dashboard && npm test -- --runInBand __tests__/testimonials-section.test.ts
+- Run: cd product/lead-response/dashboard && npm test -- --runInBand
 - Run: cd product/lead-response/dashboard && npx next build
-- Expect all commands exit 0.
+- Grep checks: rg -n "Sarah M\.|Mike R\.|Jennifer K\.|Results may vary" product/lead-response/dashboard/app/page.tsx
 
 Boundaries:
-- Do not change routes/services outside product/lead-response/dashboard/lib/ai.ts.
-- Do not alter pricing/content unrelated to the AI model copy claim.
-- Do not modify database schema, migrations, or non-dashboard modules.
+- Do not modify pricing logic/components/routes/services/backend files.
+- Do not alter unrelated landing-page sections outside testimonial requirements.
+- Do not change schema, migrations, or non-dashboard app modules.
 */
 
 import Link from 'next/link'
@@ -318,39 +311,36 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Social Proof — Pilot Program Outcomes */}
+      {/* Testimonials */}
       <section id="testimonials" data-testid="testimonials" className="bg-slate-50 dark:bg-slate-950 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            What Early Agents Experience
+            Trusted by Real Estate Agents
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Outcomes from our pilot program — real estate agents who integrated LeadFlow AI into their workflow.
+            Hear from agents using LeadFlow AI to respond faster and book more appointments.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <OutcomeCard
-              icon="⚡"
-              stat="&lt;30s"
-              label="Response Time"
-              detail="Leads receive a personalized SMS within 30 seconds — day or night, during showings or on weekends."
+            <TestimonialCard
+              quote="I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight."
+              name="Sarah M."
+              role="Solo Agent, Austin TX"
             />
-            <OutcomeCard
-              icon="📅"
-              stat="3x"
-              label="More Appointments Booked"
-              detail="Pilot agents report booking significantly more appointments per week by never missing an inbound lead."
+            <TestimonialCard
+              quote="My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month."
+              name="Mike R."
+              role="Team Lead, Denver CO"
             />
-            <OutcomeCard
-              icon="🏆"
-              stat="24/7"
-              label="Always-On Coverage"
-              detail="Every lead gets an instant response regardless of time of day — no lead goes cold while you sleep."
+            <TestimonialCard
+              quote="Setup took 5 minutes. The AI sounds like me, not a robot."
+              name="Jennifer K."
+              role="Realtor, Miami FL"
             />
           </div>
 
           <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
-            Results from our pilot program. Individual outcomes vary based on lead volume and market conditions.
+            Results may vary. Testimonials represent expected outcomes based on typical usage.
           </p>
 
           <div className="mt-8 text-center">
@@ -567,17 +557,6 @@ const faqItems = [
     answer: "You can take over any conversation at any time from the dashboard. The AI pauses on that lead the moment you respond.",
   },
 ]
-
-function OutcomeCard({ stat, label, detail, icon }: { stat: string; label: string; detail: string; icon: string }) {
-  return (
-    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 text-center">
-      <div className="text-4xl mb-4">{icon}</div>
-      <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{stat}</div>
-      <h4 className="font-semibold text-slate-900 dark:text-white mb-2">{label}</h4>
-      <p className="text-sm text-slate-500 dark:text-slate-400">{detail}</p>
-    </div>
-  )
-}
 
 function TestimonialCard({ quote, name, role }: { quote: string; name: string; role: string }) {
   return (
