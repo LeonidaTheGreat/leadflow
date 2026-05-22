@@ -35,7 +35,7 @@ async function runTest(t) {
 const fs = require('fs');
 const path = require('path');
 
-const dashboardDir = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard';
+const dashboardDir = require('path').resolve(__dirname, '..');
 
 function readFile(filePath) {
   return fs.readFileSync(path.join(dashboardDir, filePath), 'utf8');

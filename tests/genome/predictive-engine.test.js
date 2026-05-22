@@ -20,8 +20,8 @@
  * - Only add/adjust tests required for predictive-engine coverage and task reporting artifacts.
  */
 
-const PREDICTIVE_ENGINE_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/predictive-engine'
-const LEARNING_SYSTEM_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/learning-system'
+const PREDICTIVE_ENGINE_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'intelligence', 'predictive-engine')
+const LEARNING_SYSTEM_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'intelligence', 'learning-system')
 
 function loadPredictiveEngineWithAccuracy(accuracyState) {
   jest.resetModules()

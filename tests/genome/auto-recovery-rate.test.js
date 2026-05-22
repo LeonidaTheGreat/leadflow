@@ -21,7 +21,7 @@
  */
 
 jest.mock('dotenv', () => ({ config: jest.fn() }))
-jest.mock('/Users/clawdbot/.openclaw/genome/core/project-config-loader', () => {
+jest.mock(require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'project-config-loader'), () => {
   const path = require('path')
   const os = require('os')
   const stateDir = path.join(os.tmpdir(), 'auto-recovery-test-state', 'genome')
@@ -33,7 +33,7 @@ jest.mock('/Users/clawdbot/.openclaw/genome/core/project-config-loader', () => {
   }
 })
 
-const { MissionMetricCollector } = require('/Users/clawdbot/.openclaw/genome/core/mission-metric-collector')
+const { MissionMetricCollector } = require(require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'mission-metric-collector'))
 
 /**
  * Minimal store mock for Auto-Recovery Rate tests.

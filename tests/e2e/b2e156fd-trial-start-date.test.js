@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
 
-const DASH = path.join('/Users/clawdbot/projects/leadflow', 'product', 'lead-response', 'dashboard');
+const DASH = path.join(path.resolve(__dirname, '../..'), 'product', 'lead-response', 'dashboard');
 const TRIAL_SIGNUP = path.join(DASH, 'app', 'api', 'auth', 'trial-signup', 'route.ts');
 const TRIAL_START = path.join(DASH, 'app', 'api', 'trial', 'start', 'route.ts');
 const DAY3_ROUTE = path.join(DASH, 'app', 'api', 'onboarding', 'send-aha-day3', 'route.ts');

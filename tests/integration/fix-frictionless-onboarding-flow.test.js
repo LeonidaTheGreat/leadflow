@@ -9,7 +9,7 @@ const fs = require('fs')
 // ─── Helper: read file contents ────────────────────────────────────────────────
 function readFile(relPath) {
   return fs.readFileSync(
-    path.join('/Users/clawdbot/projects/leadflow', relPath),
+    path.join(path.resolve(__dirname, '../..'), relPath),
     'utf8'
   )
 }

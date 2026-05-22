@@ -20,7 +20,7 @@ const fs = require('fs')
 const path = require('path')
 
 const PRICING_PAGE = path.join(
-  '/Users/clawdbot/projects/leadflow',
+  path.resolve(__dirname, '../..'),
   'product/lead-response/dashboard/app/pricing/page.tsx'
 )
 

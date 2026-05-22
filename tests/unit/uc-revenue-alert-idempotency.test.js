@@ -18,7 +18,7 @@ const assert = require('assert');
 const path = require('path');
 
 // Import the revenue-collector from genome
-const genomeDir = '/Users/clawdbot/.openclaw/genome';
+const genomeDir = require('path').join(require('os').homedir(), '.openclaw', 'genome');
 const { collectRevenue, checkGoalProgress } = require(path.join(genomeDir, 'scripts/revenue-collector.js'));
 const { TaskStore } = require(path.join(genomeDir, 'core/task-store.js'));
 

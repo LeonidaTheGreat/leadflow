@@ -25,7 +25,7 @@ jest.mock('child_process', () => ({
 
 // Mock project-config-loader using the real resolved path (symlink __dirname →
 // ~/.openclaw/genome/core/ so that's where ./project-config-loader resolves to).
-jest.mock('/Users/clawdbot/.openclaw/genome/core/project-config-loader', () => ({
+jest.mock(require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'project-config-loader'), () => ({
   getConfig: jest.fn(() => ({ project_id: 'test', project_dir: '/tmp/sar-default' })),
   getProjectDir: jest.fn(() => '/tmp/sar-default'),
   getConfigForProject: jest.fn(() => null),
@@ -35,7 +35,7 @@ const { execSync } = require('child_process');
 const {
   getProjectDir,
   getConfigForProject,
-} = require('/Users/clawdbot/.openclaw/genome/core/project-config-loader');
+} = require(require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'project-config-loader'));
 
 const {
   writeCompletionReport,

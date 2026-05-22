@@ -5,7 +5,7 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 
-const { evaluateCleanWorktree, REQUIRED_IGNORES, isGeneratedArtifactPath } = require('/Users/clawdbot/.openclaw/genome/core/clean-worktree-gate')
+const { evaluateCleanWorktree, REQUIRED_IGNORES, isGeneratedArtifactPath } = require(require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'clean-worktree-gate'))
 
 const LEADFLOW_DIR = path.resolve(__dirname, '..')
 const GITIGNORE_PATH = path.join(LEADFLOW_DIR, '.gitignore')

@@ -7,7 +7,7 @@
  */
 
 const assert = require('assert');
-const bcrypt = require('/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/node_modules/bcryptjs');
+const bcrypt = require(require('path').resolve(__dirname, '../../product/lead-response/dashboard/node_modules/bcryptjs'));
 const crypto = require('crypto');
 
 let passed = 0;

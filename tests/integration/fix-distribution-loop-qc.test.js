@@ -11,7 +11,7 @@
 const fs = require('fs')
 const assert = require('assert').strict
 
-const COLLECTOR_PATH = '/Users/clawdbot/.openclaw/genome/scripts/distribution-collector.js'
+const COLLECTOR_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'scripts', 'distribution-collector.js')
 
 console.log('=== QC Test Suite: Distribution Health Error Handling ===\n')
 

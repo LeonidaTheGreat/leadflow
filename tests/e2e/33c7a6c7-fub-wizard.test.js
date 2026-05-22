@@ -28,7 +28,7 @@ async function test(name, fn) {
   }
 }
 
-const BASE = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard';
+const BASE = require('path').resolve(__dirname, '../../product/lead-response/dashboard');
 const API_BASE = `${BASE}/app/api/onboarding/fub`;
 const PAGE_PATH = `${BASE}/app/onboarding/fub/page.tsx`;
 
@@ -141,7 +141,7 @@ async function runTests() {
 
   // ── Migration ────────────────────────────────────────────────────────────────
   await test('migration: targets real_estate_agents table (not wrong table)', async () => {
-    const migPath = '/Users/clawdbot/projects/leadflow/migrations/010_fub_onboarding_wizard.sql';
+    const migPath = require('path').resolve(__dirname, '../../migrations/010_fub_onboarding_wizard.sql');
     const content = fs.readFileSync(migPath, 'utf-8');
     assert.ok(content.includes('real_estate_agents'), 'Migration must target real_estate_agents');
     assert.ok(content.includes('fub_onboarding_completed'), 'Must add fub_onboarding_completed');

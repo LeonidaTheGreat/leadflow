@@ -17,7 +17,7 @@ async function runTest() {
     // Test 1: Verify route.ts file contains 14-day calculation
     console.log('Test 1: Verify route.ts contains 14-day trial calculation');
     
-    const routePath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/auth/trial-signup/route.ts';
+    const routePath = require('path').resolve(__dirname, '../app/api/auth/trial-signup/route.ts');
     const routeContent = fs.readFileSync(routePath, 'utf8');
     
     // Check for 14-day calculation
@@ -49,7 +49,7 @@ async function runTest() {
     // Test 2: Verify test file was updated to 14 days
     console.log('\nTest 2: Verify test file reflects 14-day trial');
     
-    const testPath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/tests/trial-signup.test.ts';
+    const testPath = require('path').resolve(__dirname, '../tests/trial-signup.test.ts');
     const testContent = fs.readFileSync(testPath, 'utf8');
     
     assert.ok(testContent.includes('14 * 24 * 60 * 60 * 1000'),
@@ -87,7 +87,7 @@ async function runTest() {
     try {
       const result = execSync(
         'npm test -- --testPathPattern=trial-signup.test.ts --silent 2>&1',
-        { cwd: '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard', encoding: 'utf8' }
+        { cwd: require('path').resolve(__dirname, '..'), encoding: 'utf8' }
       );
       console.log('  ✓ Existing unit tests pass');
       testsPassed++;

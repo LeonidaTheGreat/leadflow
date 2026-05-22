@@ -1,8 +1,8 @@
 /*
 taskSpec:
 - What:
-  - Create /Users/clawdbot/projects/leadflow/eslint.config.js to provide ESLint v9+ flat-config at repo root, replacing reliance on legacy .eslintrc-only discovery.
-  - Update /Users/clawdbot/projects/leadflow/package.json scripts to add a root lint command that executes ESLint with this flat config.
+  - Create eslint.config.js to provide ESLint v9+ flat-config at repo root, replacing reliance on legacy .eslintrc-only discovery.
+  - Update package.json scripts to add a root lint command that executes ESLint with this flat config.
 - Verify:
   - Run: npm run lint
   - Expected: command exits with code 0 and no ESLint config resolution error.

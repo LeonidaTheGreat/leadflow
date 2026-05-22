@@ -6,7 +6,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-const projectDir = '/Users/clawdbot/projects/leadflow';
+const projectDir = require('path').resolve(__dirname, '../..');
 let passed = 0;
 let failed = 0;
 

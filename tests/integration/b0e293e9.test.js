@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const PROJECT_DIR = '/Users/clawdbot/projects/leadflow';
+const PROJECT_DIR = require('path').resolve(__dirname, '../..');
 const CONFIG_PATH = path.join(PROJECT_DIR, 'project.config.json');
 const E2E_PATH = path.join(PROJECT_DIR, 'integrations/test-e2e-flow.js');
 

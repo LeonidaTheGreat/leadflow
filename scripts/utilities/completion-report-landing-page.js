@@ -1,4 +1,4 @@
-const { reportSuccess } = require('/Users/clawdbot/projects/leadflow/subagent-completion-report');
+const { reportSuccess } = require(require('path').resolve(__dirname, '../../subagent-completion-report'));
 
 const taskId = '390e5236-f672-46a1-9d2f-41fcde27a1a7';
 const filesCreated = [

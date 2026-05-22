@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const { createClient } = require('../lib/db');
 const sb = createClient(
   process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL,

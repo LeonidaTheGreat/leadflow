@@ -1,8 +1,8 @@
 const assert = require('assert');
 const fs = require('fs');
 
-const migrationPath = '/Users/clawdbot/projects/leadflow/supabase/migrations/003_stripe_subscriptions.sql';
-const webhookPath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/webhooks/stripe/route.ts';
+const migrationPath = require('path').resolve(__dirname, '../../supabase/migrations/003_stripe_subscriptions.sql');
+const webhookPath = require('path').resolve(__dirname, '../../product/lead-response/dashboard/app/api/webhooks/stripe/route.ts');
 
 function mustContain(content, needle, label) {
   assert(content.includes(needle), `Missing: ${label} (${needle})`);

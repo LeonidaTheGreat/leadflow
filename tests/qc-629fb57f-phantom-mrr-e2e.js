@@ -13,7 +13,7 @@ async function run() {
   // 1. Run the schema-alignment integration test — must pass and clean up after itself
   try {
     execSync('node tests/integration/stripe-subscription-schema-alignment.test.js', {
-      cwd: '/Users/clawdbot/projects/leadflow',
+      cwd: require('path').resolve(__dirname, '..'),
       stdio: 'pipe'
     })
     console.log('PASS: schema-alignment test completed without error')

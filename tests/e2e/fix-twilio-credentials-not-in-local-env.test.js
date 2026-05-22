@@ -14,7 +14,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-const projectDir = '/Users/clawdbot/projects/leadflow';
+const projectDir = require('path').resolve(__dirname, '../..');
 
 // ── Test 1: .env.example documents all three Twilio phone vars ──────────────
 {

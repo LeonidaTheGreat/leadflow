@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 
 const BRANCH_ROOT = '/private/var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-f3b7eea4-1b32-4acb-b051-da53e520201f';
-const PROJECT_ROOT = '/Users/clawdbot/projects/leadflow';
+const PROJECT_ROOT = require('path').resolve(__dirname, '../..');
 
 // Resolve to branch — service only exists on the PR branch, not main
 function branchPath(rel) {

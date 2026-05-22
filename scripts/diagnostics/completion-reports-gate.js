@@ -3,10 +3,10 @@
 /*
 Task Spec (Task ID: 452b83c3-05f7-4f91-a827-4d7bc0b34065)
 What:
-- Add /Users/clawdbot/projects/leadflow/scripts/diagnostics/completion-reports-gate.js
+- Add scripts/diagnostics/completion-reports-gate.js
   to enforce the completion report quality gate by checking report counts and rotating
   old completion JSON files from completion-reports/ into .completion-reports-archive/.
-- Update /Users/clawdbot/projects/leadflow/package.json scripts with "completion_reports"
+- Update package.json scripts with "completion_reports"
   to run this gate directly.
 
 Verify:
@@ -19,7 +19,7 @@ Verify:
 
 Boundaries:
 - Do not change service, route, or database logic.
-- Do not modify files in /Users/clawdbot/.openclaw/genome/.
+- Do not modify files in the genome repo.
 - Do not rewrite historical report contents; only move old completion report files to archive.
 */
 

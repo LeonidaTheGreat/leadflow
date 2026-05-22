@@ -18,7 +18,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const PROJECT = '/Users/clawdbot/projects/leadflow'
+const PROJECT = require('path').resolve(__dirname, '../..')
 const DASHBOARD = path.join(PROJECT, 'product/lead-response/dashboard')
 
 let passed = 0

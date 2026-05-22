@@ -10,7 +10,7 @@ const { Client } = require('pg')
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 
-const { createLocalClient } = require('/Users/clawdbot/.openclaw/genome/core/local-pg')
+const { createLocalClient } = require(require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'local-pg'))
 const SatisfactionService = require('../../lib/services/SatisfactionService')
 
 const DATABASE_URL = process.env.LOCAL_PG_URL || process.env.DATABASE_URL

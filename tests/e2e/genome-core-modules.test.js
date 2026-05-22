@@ -11,7 +11,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-const GENOME_DIR = '/Users/clawdbot/.openclaw/genome';
+const GENOME_DIR = require('path').join(require('os').homedir(), '.openclaw', 'genome');
 const TEST_FILES = [
   'tests/local-pg.test.js',
   'tests/workflow-engine.test.js',

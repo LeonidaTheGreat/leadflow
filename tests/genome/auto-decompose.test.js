@@ -17,10 +17,10 @@
  * - Only add/adjust tests for auto-decompose coverage.
  */
 
-const AUTO_DECOMPOSE_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/auto-decompose'
-const TASK_STORE_PATH = '/Users/clawdbot/.openclaw/genome/core/task-store'
-const PREDICTIVE_ENGINE_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/predictive-engine'
-const CONFIG_LOADER_PATH = '/Users/clawdbot/.openclaw/genome/core/project-config-loader'
+const AUTO_DECOMPOSE_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'intelligence', 'auto-decompose')
+const TASK_STORE_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'task-store')
+const PREDICTIVE_ENGINE_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'intelligence', 'predictive-engine')
+const CONFIG_LOADER_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'project-config-loader')
 
 // Pattern mirrored from auto-decompose.js for assertion use
 const DASHBOARD_PATTERN = {

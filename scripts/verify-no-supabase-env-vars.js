@@ -8,7 +8,7 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const projectDir = '/Users/clawdbot/projects/leadflow';
+const projectDir = require('path').resolve(__dirname, '..');
 const rule = {
   id: 'no-supabase-env-vars',
   name: 'No Supabase env var references in production code',

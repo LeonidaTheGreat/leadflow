@@ -16,7 +16,7 @@ const assert = require('assert');
 const { createClient } = require('../lib/db');
 
 // Load environment variables
-require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/.env.local' });
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_KEY = process.env.API_SECRET_KEY;

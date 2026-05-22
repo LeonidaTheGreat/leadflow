@@ -29,7 +29,7 @@
  */
 
 const fs = require('fs')
-const COMPLETION_SCAN_PATH = '/Users/clawdbot/.openclaw/genome/core/completion-scan'
+const COMPLETION_SCAN_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'completion-scan')
 const { CompletionScanner } = require(COMPLETION_SCAN_PATH)
 
 function makeTask(agentId, spawnedMinutesAgo, pid) {

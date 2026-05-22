@@ -349,7 +349,7 @@ async function runTests() {
 
   // Test 11: Auth guard — verify source code has 401 for missing/wrong key
   await test('AC-7: Next.js route has 401 auth guard with correct logic', async () => {
-    const routePath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/admin/funnel/trial-activation/route.ts';
+    const routePath = path.resolve(__dirname, '../../product/lead-response/dashboard/app/api/admin/funnel/trial-activation/route.ts');
     const src = fs.readFileSync(routePath, 'utf8');
     assert.ok(src.includes('401'), 'Must return 401');
     assert.ok(src.includes('verifyAdminAuth'), 'Must call verifyAdminAuth');
@@ -361,8 +361,8 @@ async function runTests() {
   // Test 12: No hardcoded secrets
   await test('Security: No hardcoded secrets in implementation files', async () => {
     const files = [
-      '/Users/clawdbot/projects/leadflow/routes/admin/funnel-diagnostics.js',
-      '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/admin/funnel/trial-activation/route.ts',
+      path.resolve(__dirname, '../../routes/admin/funnel-diagnostics.js'),
+      path.resolve(__dirname, '../../product/lead-response/dashboard/app/api/admin/funnel/trial-activation/route.ts'),
     ];
     for (const f of files) {
       const src = fs.readFileSync(f, 'utf8');

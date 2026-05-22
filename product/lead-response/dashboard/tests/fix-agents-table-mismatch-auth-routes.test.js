@@ -10,7 +10,7 @@ const assert = require('assert');
 const { createClient } = require('../lib/db');
 
 // Load environment variables
-require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/.env.local' });
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const apiKey = process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY;
@@ -117,7 +117,7 @@ const tests = [
     const fs = require('fs');
     const path = require('path');
     
-    const apiDir = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api';
+    const apiDir = require('path').resolve(__dirname, '../app/api');
     
     function findAgentsReferences(dir) {
       const results = [];
@@ -166,7 +166,7 @@ const tests = [
       'webhook/twilio/route.ts'
     ];
     
-    const apiBase = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api';
+    const apiBase = require('path').resolve(__dirname, '../app/api');
     
     for (const route of changedRoutes) {
       const fullPath = path.join(apiBase, route);
@@ -213,7 +213,7 @@ const tests = [
     const fs = require('fs');
     const path = require('path');
     
-    const routePath = '/Users/clawdbot/projects/leadflow/product/lead-response/dashboard/app/api/auth/trial-signup/route.ts';
+    const routePath = require('path').resolve(__dirname, '../app/api/auth/trial-signup/route.ts');
     const content = fs.readFileSync(routePath, 'utf8');
     
     // Check that analytics insert uses await with try/catch (not .then().catch())

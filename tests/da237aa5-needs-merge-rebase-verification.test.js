@@ -33,7 +33,7 @@
 const { execSync } = require('child_process');
 const assert = require('assert');
 
-const REPO = '/Users/clawdbot/projects/leadflow';
+const REPO = require('path').resolve(__dirname, '..');
 
 const BRANCH_CANDIDATES = {
   marketingCampaignLaunch: [

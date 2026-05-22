@@ -11,8 +11,8 @@
 
 const fs = require('fs')
 
-const STRUCTURED_LOGGER_PATH = '/Users/clawdbot/.openclaw/genome/core/structured-logger'
-const PROJECT_CONFIG_LOADER_PATH = '/Users/clawdbot/.openclaw/genome/core/project-config-loader'
+const STRUCTURED_LOGGER_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'structured-logger')
+const PROJECT_CONFIG_LOADER_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'project-config-loader')
 const FAKE_LOG_PATH = '/tmp/genome-test-structured.log'
 
 // LOG_PATH is resolved at module load time, so project-config-loader must be

@@ -40,7 +40,7 @@ async function run() {
   await client.connect()
 
   // TEST 1: distribution-collector.js has dedup guard
-  const collectorPath = '/Users/clawdbot/.openclaw/genome/scripts/distribution-collector.js'
+  const collectorPath = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'scripts', 'distribution-collector.js')
   if (fs.existsSync(collectorPath)) {
     const src = fs.readFileSync(collectorPath, 'utf8')
     if (src.includes('sevenDaysAgo') && src.includes('ilike') && src.includes('Skipping duplicate')) {
@@ -99,7 +99,7 @@ async function run() {
   }
 
   // TEST 4: state-change.js TTL guard exists
-  const stateChangePath = '/Users/clawdbot/.openclaw/genome/core/state-change.js'
+  const stateChangePath = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'core', 'state-change.js')
   if (fs.existsSync(stateChangePath)) {
     const src = fs.readFileSync(stateChangePath, 'utf8')
     if (src.includes('ttlHours') && src.includes('cooldown')) {

@@ -208,7 +208,7 @@ async function main() {
   console.log('\n[6] Local build output verification')
 
   const buildDir = path.join(
-    '/Users/clawdbot/projects/leadflow',
+    path.resolve(__dirname, '../..'),
     'product/lead-response/dashboard/.next/static/chunks'
   )
 

@@ -11,7 +11,7 @@
 const assert = require('assert').strict
 const fs = require('fs')
 
-const COLLECTOR_PATH = '/Users/clawdbot/.openclaw/genome/scripts/distribution-collector.js'
+const COLLECTOR_PATH = require('path').join(require('os').homedir(), '.openclaw', 'genome', 'scripts', 'distribution-collector.js')
 const source = fs.readFileSync(COLLECTOR_PATH, 'utf8')
 
 let pass = 0
