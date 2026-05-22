@@ -1,3 +1,18 @@
+/*
+Task Spec (87f40c68-a423-47bf-8070-4b3c43ac716e)
+What:
+- Update product/lead-response/dashboard/app/api/billing/create-checkout-session/route.ts, function getPriceIdForPlan(), to use STRIPE_PRICE_PRO_MONTHLY (matching create-checkout route naming).
+
+Verify:
+- Run: rg -n "STRIPE_PRICE_PRO(FESSIONAL)?_MONTHLY" product/lead-response/dashboard/app/api/billing/create-checkout/route.ts product/lead-response/dashboard/app/api/billing/create-checkout-session/route.ts
+  Expected: only STRIPE_PRICE_PRO_MONTHLY is present.
+- Run: npm test (repo baseline + dashboard scope checks).
+- Run: cd product/lead-response/dashboard && npx next build.
+
+Boundaries:
+- Do not change checkout business logic, Stripe session payloads, DB queries, pricing tiers, or schema.
+- Do not touch unrelated routes/components/services.
+*/
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import Stripe from 'stripe'
@@ -14,7 +29,7 @@ const stripe = process.env.STRIPE_SECRET_KEY
 function getPriceIdForPlan(planId: string): string | null {
   const priceIdMap: Record<string, string> = {
     starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
+    pro: process.env.STRIPE_PRICE_PRO_MONTHLY || '',
     team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
   return priceIdMap[planId] || null
 }
