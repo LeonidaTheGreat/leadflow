@@ -69,12 +69,12 @@ check('returns false when RESEND_API_KEY is missing', () => {
 });
 
 // AC3: The fix must log an error (not a success message)
-check('logs console.error (not console.log) for missing key', () => {
+check('logs logger.error (not console.log) for missing key', () => {
   const guardIdx = content.indexOf('RESEND_API_KEY not configured');
   const surrounding = content.slice(Math.max(0, guardIdx - 200), guardIdx + 200);
   assert(
-    surrounding.includes('console.error'),
-    'Missing key must produce console.error, not console.log'
+    surrounding.includes('logger.error'),
+    'Missing key must produce logger.error, not console.log'
   );
 });
 
