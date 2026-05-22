@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import type { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { requireAdminSession } from '@/lib/admin-auth'
 
 const DEFAULT_SESSION_HOURS = 24
 const REMEMBER_ME_SESSION_DAYS = 30
@@ -262,29 +263,8 @@ export class AuthService {
     return session?.userId || null
   }
 
-  async isAdminUser(request: NextRequest): Promise<boolean> {
-    const adminEmail = process.env.ADMIN_EMAIL
-    if (!adminEmail) {
-      logger.warn('ADMIN_EMAIL not configured in environment')
-      return false
-    }
-
-    const userId = await this.getAuthUserId(request)
-    if (!userId) {
-      return false
-    }
-
-    try {
-      const { data: agent } = await this.db
-        .from('real_estate_agents')
-        .select('email')
-        .eq('id', userId)
-        .single()
-
-      return agent?.email?.toLowerCase() === adminEmail.toLowerCase()
-    } catch {
-      return false
-    }
+  async requireAdmin(request: NextRequest): Promise<boolean> {
+    return requireAdminSession(request)
   }
 
   async auth(request: NextRequest): Promise<AuthResult> {
@@ -388,8 +368,8 @@ export async function getAuthUserId(request: NextRequest): Promise<string | null
   return authService.getAuthUserId(request)
 }
 
-export async function isAdminUser(request: NextRequest): Promise<boolean> {
-  return authService.isAdminUser(request)
+export async function requireAdmin(request: NextRequest): Promise<boolean> {
+  return authService.requireAdmin(request)
 }
 
 export async function auth(request: NextRequest): Promise<AuthResult> {

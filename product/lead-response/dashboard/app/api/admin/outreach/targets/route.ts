@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
-import { requireAdminSession } from '@/lib/admin-auth'
+import { requireAdmin } from '@/lib/services/AuthService'
 
 /**
  * GET /api/admin/outreach/targets
@@ -11,7 +11,7 @@ import { requireAdminSession } from '@/lib/admin-auth'
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    if (!(await requireAdminSession(request))) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

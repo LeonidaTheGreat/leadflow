@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { isAdminUser } from '@/lib/services/AuthService'
+import { requireAdmin } from '@/lib/services/AuthService'
 import { postgrestAdmin } from '@/lib/db'
 import { checkSmsDeliveryHealth, getA2pRegistrationStatus } from '@/lib/sms-delivery-monitor'
 import { logger } from '@/lib/logger'
@@ -56,7 +56,7 @@ function computeCompletionPercent(input: {
 
 export async function GET(request: NextRequest) {
   try {
-    if (!await isAdminUser(request)) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 

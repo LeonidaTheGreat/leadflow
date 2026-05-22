@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { postgrestAdmin } from '@/lib/db'
-import { isAdminUser } from '@/lib/services/AuthService'
+import { requireAdmin } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
 
 /**
@@ -10,7 +10,7 @@ import { logger } from '@/lib/logger'
  */
 export async function GET(request: NextRequest) {
   try {
-    if (!await isAdminUser(request)) {
+    if (!(await requireAdmin(request))) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
