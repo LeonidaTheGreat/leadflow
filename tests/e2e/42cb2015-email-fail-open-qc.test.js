@@ -29,7 +29,7 @@ function check(name, fn) {
 
 const EMAIL_SERVICE = path.join(
   __dirname,
-  '../product/lead-response/dashboard/lib/email-service.ts'
+  '../../product/lead-response/dashboard/lib/email-service.ts'
 );
 
 console.log('\n=== QC E2E: email fail-open fix (42cb2015) ===\n');
@@ -61,14 +61,14 @@ check('AC: guard block returns false when resend is null', () => {
   );
 });
 
-// 3. The guard block must use console.error (not console.log)
-check('AC: guard block logs console.error for missing key', () => {
+// 3. The guard block must use logger.error (not console.log)
+check('AC: guard block logs logger.error for missing key', () => {
   const guardMatch = content.match(/if\s*\(\s*!resend\s*\)[\s\S]{0,300}/);
   assert(guardMatch, 'Could not find "if (!resend)" guard block');
   const guardBlock = guardMatch[0];
   assert(
-    guardBlock.includes('console.error'),
-    'Guard must call console.error for missing key, not console.log'
+    guardBlock.includes('logger.error'),
+    'Guard must call logger.error for missing key, not console.log'
   );
 });
 
