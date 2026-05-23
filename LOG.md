@@ -959,3 +959,5 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - Project graph gaps: 1 improvement task(s) created
 - Dashboard updated
 - Report prepared for topic 10788
+
+- 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
