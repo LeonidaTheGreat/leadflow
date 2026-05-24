@@ -7,6 +7,24 @@ import { initializeSurveySchedule } from '@/lib/nps-service'
 import { createSession } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
 
+/*
+TASK SPEC (20347586-b3b9-49e3-8b18-2e805703929c)
+What:
+- Update `product/lead-response/dashboard/app/api/auth/trial-signup/route.ts` in `POST` to write funnel analytics with the real `events.event_data` column.
+- Add non-blocking server-side `trial_started` event logging alongside `trial_signup_completed` to improve landing-to-trial funnel observability.
+- Keep route behavior unchanged for account creation/auth/session flows.
+
+Verify:
+- Run: `node product/lead-response/dashboard/tests/fix-analytics-events-table-missing-trial-funnel-tracki.test.js` (expect all checks pass).
+- Run: `source ~/.env >/dev/null 2>&1; psql "$LOCAL_PG_URL" -c "SELECT event_type, COUNT(*) FROM events WHERE event_type IN ('trial_started','trial_signup_completed') GROUP BY event_type ORDER BY event_type;"`.
+- Run: `npm test` and `npm run build` from repo root (expect success; report if environment blocks execution).
+
+Boundaries:
+- Do not modify schema or migrations.
+- Do not change landing page copy/UI or pricing behavior.
+- Do not touch pilot signup route or unrelated analytics endpoints in this task.
+*/
+
 const supabase = postgrestAdmin
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
@@ -127,25 +145,35 @@ export async function POST(request: NextRequest) {
       logger.error('Failed to initialize NPS survey schedule:', err)
     })
 
-    // Log trial_signup_completed event (FR-8: Instrumentation)
+    // Log trial funnel events (non-blocking, server-authoritative)
     void (async () => {
       try {
-        await supabase.from('events').insert({
-          event_type: 'trial_signup_completed',
-          agent_id: agent.id,
-          properties: {
-            source: signupSource,
-            utm_source: utm_source || null,
-            utm_medium: utm_medium || null,
-            utm_campaign: utm_campaign || null,
-            plan_tier: 'trial',
-            trial_days: 14,
-            has_name: !!name
+        const eventData = {
+          source: signupSource,
+          utm_source: utm_source || null,
+          utm_medium: utm_medium || null,
+          utm_campaign: utm_campaign || null,
+          plan_tier: 'trial',
+          trial_days: 14,
+          has_name: !!name
+        }
+
+        await supabase.from('events').insert([
+          {
+            event_type: 'trial_started',
+            agent_id: agent.id,
+            event_data: eventData,
+            created_at: new Date().toISOString()
           },
-          created_at: new Date().toISOString()
-        })
+          {
+            event_type: 'trial_signup_completed',
+            agent_id: agent.id,
+            event_data: eventData,
+            created_at: new Date().toISOString()
+          }
+        ])
       } catch (err: unknown) {
-        logger.error('Failed to log trial_signup_completed event:', err)
+        logger.error('Failed to log trial funnel events:', err)
       }
     })()
 
