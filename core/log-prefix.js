@@ -1,5 +1,6 @@
 'use strict'
 
-const MODULE_PREFIX = '[gn]'
+// Short internal log prefix used on genome/orchestration log lines.
+const LOG_PREFIX = '[gn]'
 
-module.exports = { MODULE_PREFIX }
+module.exports = { LOG_PREFIX }
