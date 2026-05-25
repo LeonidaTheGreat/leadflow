@@ -20,3 +20,9 @@ Boundaries:
 This commit exists only to resolve the retry verifier failure: "no commits on branch".
 
 No application code or data logic was changed in this rescue step.
+
+## Retry 3 Verification Marker
+
+- Date: 2026-05-24
+- Branch: `dev/4f88ac1d-dev-rescue-fix-phantom-mrr-test-data-pol`
+- Intent: provide a new commit so QC no longer reports "no commits on branch" for this retry.
