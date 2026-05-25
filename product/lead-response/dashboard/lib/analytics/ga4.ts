@@ -1,3 +1,25 @@
+/*
+TASK SPEC (20347586-b3b9-49e3-8b18-2e805703929c)
+What:
+- Update `product/lead-response/dashboard/lib/analytics/ga4.ts`:
+  - add a shared non-blocking `trackServerEvent()` helper that POSTs to `/api/events/track`
+  - add `trackLandingPageView()` helper for landing view instrumentation
+  - ensure `trackFormEvent()` mirrors `trial_cta_clicked` and `trial_signup_started` to server tracking.
+- Update `product/lead-response/dashboard/app/page.tsx` to call `trackLandingPageView('home')` instead of inline fetch.
+- Update `product/lead-response/dashboard/components/trial-signup-form.tsx` to call `trackFormEvent('trial_signup_started', ...)`.
+
+Verify:
+- `node product/lead-response/dashboard/tests/fix-zero-conversions-landing-funnel-instrumentation.test.js` passes.
+- `cd product/lead-response/dashboard && npm test -- --runInBand __tests__/ga4-analytics.test.tsx` passes.
+- `npm test` passes.
+- `npm run build` passes.
+
+Boundaries:
+- Do not change schema/migrations/database structure.
+- Do not change pricing, checkout, or unrelated onboarding behavior.
+- Do not modify backend signup/account creation logic in this task.
+*/
+
 /**
  * GA4 Analytics Helper
  *
@@ -62,7 +84,9 @@ export type FormFunnelEvent =
   | 'form_start'
   | 'form_submit_attempt'
   | 'pilot_signup_complete'
-  | 'form_submit_error';
+  | 'form_submit_error'
+  | 'trial_cta_clicked'
+  | 'trial_signup_started';
 
 // ─── Core helper ─────────────────────────────────────────────────────────────
 
@@ -74,6 +98,21 @@ export function trackEvent(name: string, params?: Record<string, unknown>): void
   if (typeof window === 'undefined') return;
   if (typeof window.gtag !== 'function') return;
   window.gtag('event', name, params);
+}
+
+export async function trackServerEvent(
+  event: string,
+  properties?: Record<string, unknown>,
+): Promise<void> {
+  if (typeof window === 'undefined') return;
+  await fetch('/api/events/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event,
+      properties: properties || {},
+    }),
+  });
 }
 
 // ─── CTA click tracking (FR-2, US-1) ─────────────────────────────────────────
@@ -90,11 +129,15 @@ export function trackCTAClick(
   ctaLabel: string,
   section: Section,
 ): void {
-  trackEvent('cta_click', {
+  const payload = {
     cta_id: ctaId,
     cta_label: ctaLabel,
     section,
     page_url: typeof window !== 'undefined' ? window.location.href : undefined,
+  };
+  trackEvent('cta_click', payload);
+  void trackServerEvent('trial_cta_clicked', payload).catch(() => {
+    // Non-blocking analytics mirror.
   });
 }
 
@@ -122,10 +165,27 @@ export function trackFormEvent(
   formId: string = 'pilot_signup',
   extraParams?: Record<string, unknown>,
 ): void {
-  trackEvent(event, {
+  const payload = {
     form_id: formId,
     page_url: typeof window !== 'undefined' ? window.location.href : undefined,
     ...extraParams,
+  };
+  trackEvent(event, payload);
+  if (event === 'trial_cta_clicked') {
+    void trackServerEvent('trial_cta_clicked', payload).catch(() => {
+      // Non-blocking analytics mirror.
+    });
+  }
+  if (event === 'trial_signup_started') {
+    void trackServerEvent('trial_signup_started', payload).catch(() => {
+      // Non-blocking analytics mirror.
+    });
+  }
+}
+
+export function trackLandingPageView(page: string): void {
+  void trackServerEvent('landing_page_viewed', { page }).catch(() => {
+    // Non-blocking analytics event.
   });
 }
 

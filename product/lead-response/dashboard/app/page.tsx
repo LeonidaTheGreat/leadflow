@@ -22,7 +22,11 @@ Boundaries:
 import Link from 'next/link'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
-import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
+import {
+  trackCTAClick,
+  attachScrollMilestoneObservers,
+  trackLandingPageView,
+} from '@/lib/analytics/ga4'
 
 export default function HomePage() {
   const [pricingPeriod, setPricingPeriod] = useState<'monthly' | 'annual'>('monthly')
@@ -43,16 +47,7 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    void fetch('/api/events/track', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event: 'landing_page_viewed',
-        properties: { page: 'home' },
-      }),
-    }).catch(() => {
-      // Non-blocking analytics.
-    })
+    trackLandingPageView('home')
   }, [])
 
   return (

@@ -31,7 +31,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { trackCTAClick } from '@/lib/analytics/ga4'
+import { trackCTAClick, trackFormEvent } from '@/lib/analytics/ga4'
 
 interface TrialSignupFormProps {
   compact?: boolean
@@ -81,7 +81,11 @@ export default function TrialSignupForm({ compact = false, className = '', onSub
     const section = searchParams.get('source') === 'pricing' ? 'pricing' : 'hero'
     const ctaId = compact ? 'start_trial_form' : 'get_started_hero'
     trackCTAClick(ctaId, 'Start Free Trial', section)
-    void trackFunnelEvent('trial_signup_started', { section, compact })
+    trackFormEvent('trial_signup_started', 'trial_signup', {
+      section,
+      compact,
+      source: signupSource,
+    })
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
