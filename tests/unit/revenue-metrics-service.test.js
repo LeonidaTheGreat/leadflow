@@ -56,7 +56,37 @@ async function run() {
   assert.ok(Array.isArray(breach.breaches));
   assert.strictEqual(sendCount, 1);
 
-  console.log('revenue-metrics-service tests passed');
+  // Test: computeSnapshot SQL queries must exclude test subscription IDs (sub_test_*)
+  // This prevents phantom MRR from integration test data polluting revenue metrics.
+  const capturedQueries = [];
+  const trackingPool = {
+    async query(sql, params) {
+      capturedQueries.push(sql);
+      if (sql.includes('activated_at')) return { rows: [{ count: 0 }] };
+      if (sql.includes("FROM subscriptions WHERE status = 'active'") && sql.includes('COUNT')) return { rows: [{ count: 0 }] };
+      if (sql.includes('FROM real_estate_agents WHERE subscription_status')) return { rows: [{ count: 0 }] };
+      if (sql.includes('SUM(CASE plan_tier')) return { rows: [{ coalesce: 0 }] };
+      if (sql.includes('FROM real_estate_agents') && sql.includes('WHERE aha_completed = true')) return { rows: [{ count: 0 }] };
+      if (sql.includes('FROM real_estate_agents') && !sql.includes('WHERE')) return { rows: [{ count: 0 }] };
+      if (sql.includes('FROM agent_integrations')) return { rows: [{ count: 0 }] };
+      if (sql.includes('FROM pilot_recruitment_targets WHERE contacted = true')) return { rows: [{ count: 0 }] };
+      if (sql.includes('FROM pilot_recruitment_targets')) return { rows: [{ count: 0 }] };
+      return { rows: [{ count: 0 }] };
+    },
+  };
+  const trackingService = new RevenueMetricsService(trackingPool);
+  await trackingService.computeSnapshot(new Date('2026-05-10T12:00:00Z'));
+
+  // All queries touching subscriptions must exclude test subscription IDs
+  const subscriptionQueries = capturedQueries.filter(q => q.includes('FROM subscriptions'));
+  assert.ok(subscriptionQueries.length > 0, 'Expected at least one query against subscriptions table');
+  for (const q of subscriptionQueries) {
+    assert.ok(
+      q.includes("sub_test_%"),
+      `Expected test subscription guard in query: ${q}`
+    );
+  }
+  console.log('revenue-metrics-service test-subscription guard tests passed');
 }
 
 run().catch((error) => {
