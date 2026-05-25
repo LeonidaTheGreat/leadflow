@@ -961,3 +961,4 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - Report prepared for topic 10788
 
 - 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
+- 2026-05-24: PM re-spec for fix-zero-conversions-no-paying-customers-from-landing- (task 749a9f0d-9a34-46d4-8e4b-754ec58103cc). Category: needs_alternative_approach. Updated UC to MVP split: attribution hardening -> single trial-upgrade checkout path -> daily funnel KPI checks; root cause was over-broad scope plus spawn-path instability.
