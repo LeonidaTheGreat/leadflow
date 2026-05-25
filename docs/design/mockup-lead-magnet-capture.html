@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadFlow AI — Lead Magnet Section Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Font stack matching Geist Sans on the live site */
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    /* Utility for letter-spacing on the label */
+    .tracking-widest { letter-spacing: 0.12em; }
+
+    /* Transition helpers */
+    .fade-in { animation: fadeIn 0.25s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* State toggle buttons (demo only — not in production) */
+    .demo-controls {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 100;
+    }
+    .demo-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+    }
+    .demo-btn:hover { background: #e2e8f0; }
+    .demo-btn.active { background: #10b981; color: white; border-color: #10b981; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen py-8">
+
+  <!-- Demo controls (mockup only — not in production component) -->
+  <div class="demo-controls">
+    <p style="font-size:10px;color:#94a3b8;text-align:right;margin:0 0 4px">View state:</p>
+    <button class="demo-btn active" onclick="showState('idle')">Idle</button>
+    <button class="demo-btn" onclick="showState('loading')">Loading</button>
+    <button class="demo-btn" onclick="showState('error-validation')">Validation error</button>
+    <button class="demo-btn" onclick="showState('error-api')">API error</button>
+    <button class="demo-btn" onclick="showState('success')">Success</button>
+  </div>
+
+  <!-- Context: simulate the sections above and below on the landing page -->
+  <div class="max-w-4xl mx-auto px-4">
+
+    <!-- Simulated: Testimonials section above -->
+    <section class="bg-slate-50 rounded-xl border border-slate-200 px-8 py-10 mb-0 text-center opacity-40">
+      <p class="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">Section above</p>
+      <h3 class="text-2xl font-bold text-slate-700">Trusted by Real Estate Agents</h3>
+      <p class="text-slate-400 text-sm mt-1">— Testimonials section ends here —</p>
+    </section>
+
+    <!-- =========================================================
+         LEAD MAGNET SECTION
+         data-testid="lead-magnet-section"
+         ========================================================= -->
+    <section
+      data-testid="lead-magnet-section"
+      aria-label="Lead magnet — get the free playbook"
+      class="my-20"
+    >
+      <div class="max-w-2xl mx-auto bg-emerald-50 border border-emerald-200 rounded-2xl px-8 py-12 text-center">
+
+        <!-- Icon -->
+        <div class="text-5xl mb-4">📋</div>
+
+        <!-- Label -->
+        <p class="text-xs font-semibold tracking-widest uppercase text-emerald-600 mb-3">
+          Free Resource for Real Estate Agents
+        </p>
+
+        <!-- Headline -->
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+          Not ready to commit yet? That's okay.
+        </h2>
+
+        <!-- Subheadline -->
+        <p class="text-base md:text-lg text-slate-600 mb-6 max-w-lg mx-auto leading-relaxed">
+          Get <strong>"The 5-Minute AI Lead Response Playbook"</strong> — free.
+          How top agents respond faster and convert more leads, in plain English.
+        </p>
+
+        <!-- Value bullets -->
+        <ul class="text-left max-w-sm mx-auto space-y-2 mb-8">
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-500 font-bold mt-0.5 flex-shrink-0">✓</span>
+            <span class="text-sm text-slate-600">3 word-for-word SMS templates to send the moment a lead arrives</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-500 font-bold mt-0.5 flex-shrink-0">✓</span>
+            <span class="text-sm text-slate-600">Why 78% of deals go to whoever responds first — and how to be that agent</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-500 font-bold mt-0.5 flex-shrink-0">✓</span>
+            <span class="text-sm text-slate-600">The fast qualification system that books more showings in fewer messages</span>
+          </li>
+        </ul>
+
+        <!-- ---- FORM STATE (idle / loading / error) ---- -->
+        <div id="form-wrapper">
+          <form
+            data-testid="lead-magnet-form"
+            onsubmit="return false"
+            novalidate
+            class="flex flex-col gap-3 max-w-md mx-auto"
+          >
+            <!-- Name + Email row -->
+            <div id="inputs-row" class="flex flex-col sm:flex-row gap-3">
+              <!-- First name (optional) -->
+              <input
+                id="input-firstname"
+                data-testid="lead-magnet-firstname"
+                type="text"
+                placeholder="First name (optional)"
+                aria-label="First name (optional)"
+                class="w-full sm:w-36 sm:flex-shrink-0 px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+              />
+              <!-- Email -->
+              <input
+                id="input-email"
+                data-testid="lead-magnet-email"
+                type="email"
+                placeholder="your@email.com"
+                aria-label="Email address"
+                class="flex-1 px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+              />
+            </div>
+
+            <!-- CTA button -->
+            <button
+              id="submit-btn"
+              data-testid="lead-magnet-submit"
+              type="submit"
+              class="w-full px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors whitespace-nowrap text-base"
+            >
+              Send Me the Playbook →
+            </button>
+          </form>
+
+          <!-- Error message (validation or API) — hidden by default -->
+          <p
+            id="lead-magnet-error"
+            data-testid="lead-magnet-error"
+            role="alert"
+            class="hidden mt-3 text-sm text-red-600"
+          ></p>
+        </div>
+
+        <!-- ---- SUCCESS STATE ---- -->
+        <div
+          id="success-wrapper"
+          data-testid="lead-magnet-success"
+          class="hidden fade-in flex flex-col items-center gap-2"
+        >
+          <div class="text-4xl mb-1">✅</div>
+          <p class="text-lg font-semibold text-emerald-700">
+            Your playbook is on its way!
+          </p>
+          <p class="text-sm text-slate-600 mt-1">
+            Check your inbox — it should arrive in the next minute.
+          </p>
+          <a
+            href="/demo"
+            class="mt-3 text-sm text-emerald-600 hover:underline font-medium"
+          >
+            While you wait: Try the live AI demo →
+          </a>
+        </div>
+
+        <!-- Trust line (hidden on success) -->
+        <p id="trust-line" class="mt-4 text-xs text-slate-400">
+          No spam. Unsubscribe anytime. Your guide arrives in under 60 seconds.
+        </p>
+
+      </div>
+    </section>
+    <!-- =========================================================
+         END LEAD MAGNET SECTION
+         ========================================================= -->
+
+    <!-- Simulated: Pricing section below -->
+    <section class="bg-white rounded-xl border border-slate-200 px-8 py-10 mt-0 text-center opacity-40">
+      <p class="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">Section below</p>
+      <h3 class="text-2xl font-bold text-slate-700">Simple, Transparent Pricing</h3>
+      <p class="text-slate-400 text-sm mt-1">— Pricing section begins here —</p>
+    </section>
+
+  </div>
+
+  <!-- Annotation panel -->
+  <div class="max-w-4xl mx-auto px-4 mt-12 mb-16">
+    <div class="bg-white border border-slate-200 rounded-xl p-6">
+      <h3 class="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Design Notes for Dev Agent</h3>
+      <div class="grid md:grid-cols-2 gap-6 text-sm text-slate-600">
+        <div>
+          <p class="font-semibold text-slate-800 mb-2">Component location</p>
+          <code class="text-xs bg-slate-100 px-2 py-1 rounded">components/LeadMagnetSection.tsx</code>
+          <p class="mt-2">Already exists — see gap list in design spec.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-800 mb-2">Insertion point in page.tsx</p>
+          <p>After <code class="text-xs bg-slate-100 px-1 rounded">#testimonials</code> closing tag, before <code class="text-xs bg-slate-100 px-1 rounded">#pricing</code> section.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-800 mb-2">Missing from existing component</p>
+          <ul class="space-y-1 text-xs">
+            <li>• All 7 <code class="bg-slate-100 px-1 rounded">data-testid</code> attributes</li>
+            <li>• Value bullets (3 items)</li>
+            <li>• Label above headline</li>
+            <li>• Full success state (+ demo link)</li>
+            <li>• Wiring into page.tsx</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-800 mb-2">API endpoint</p>
+          <code class="text-xs bg-slate-100 px-2 py-1 rounded">POST /api/lead-capture</code>
+          <p class="mt-1 text-xs">Body: email, firstName?, source, utmSource?, utmMedium?, utmCampaign?</p>
+          <p class="text-xs">Response: <code class="bg-slate-100 px-1 rounded">{ "success": true }</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Demo state switcher — not part of the production component
+    function showState(state) {
+      const formWrapper = document.getElementById('form-wrapper')
+      const successWrapper = document.getElementById('success-wrapper')
+      const trustLine = document.getElementById('trust-line')
+      const errorEl = document.getElementById('lead-magnet-error')
+      const submitBtn = document.getElementById('submit-btn')
+      const emailInput = document.getElementById('input-email')
+
+      // Reset all
+      formWrapper.classList.remove('hidden')
+      successWrapper.classList.add('hidden')
+      trustLine.classList.remove('hidden')
+      errorEl.classList.add('hidden')
+      errorEl.textContent = ''
+      submitBtn.disabled = false
+      submitBtn.classList.remove('opacity-60', 'cursor-not-allowed')
+      submitBtn.textContent = 'Send Me the Playbook →'
+      emailInput.className = emailInput.className
+        .replace('border-red-400', 'border-slate-300')
+        .replace('focus:ring-red-400', 'focus:ring-emerald-500')
+
+      // Ensure no duplicate classes
+      if (!emailInput.className.includes('border-slate-300')) {
+        emailInput.className += ' border-slate-300'
+      }
+      if (!emailInput.className.includes('focus:ring-emerald-500')) {
+        emailInput.className += ' focus:ring-emerald-500'
+      }
+
+      document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'))
+      event.target.classList.add('active')
+
+      if (state === 'idle') {
+        // Already reset
+      } else if (state === 'loading') {
+        submitBtn.disabled = true
+        submitBtn.classList.add('opacity-60', 'cursor-not-allowed')
+        submitBtn.textContent = 'Sending…'
+      } else if (state === 'error-validation') {
+        emailInput.className = emailInput.className
+          .replace('border-slate-300', 'border-red-400')
+          .replace('focus:ring-emerald-500', 'focus:ring-red-400')
+        errorEl.textContent = 'Please enter a valid email address.'
+        errorEl.classList.remove('hidden')
+      } else if (state === 'error-api') {
+        errorEl.textContent = 'Something went wrong. Please try again or email us at support@leadflow.ai.'
+        errorEl.classList.remove('hidden')
+      } else if (state === 'success') {
+        formWrapper.classList.add('hidden')
+        trustLine.classList.add('hidden')
+        successWrapper.classList.remove('hidden')
+        successWrapper.classList.add('flex')
+      }
+    }
+  </script>
+
+</body>
+</html>
