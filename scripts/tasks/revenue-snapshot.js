@@ -86,7 +86,7 @@ function sendTelegramMessage(text) {
 
 async function computeRevenueSnapshot(pool) {
   const activeSubscribersResult = await pool.query(
-    `SELECT COUNT(*)::int AS count FROM subscriptions WHERE status = 'active'`
+    `SELECT COUNT(*)::int AS count FROM subscriptions WHERE status = 'active' AND stripe_subscription_id NOT LIKE 'sub_test_%'`
   );
 
   const trialUsersResult = await pool.query(
@@ -109,13 +109,14 @@ async function computeRevenueSnapshot(pool) {
       END
     ), 0)::int AS mrr_cents
     FROM subscriptions
-    WHERE status = 'active'`
+    WHERE status = 'active' AND stripe_subscription_id NOT LIKE 'sub_test_%'`
   );
 
   const newSubscribersResult = await pool.query(
     `SELECT COUNT(*)::int AS count
      FROM subscriptions
      WHERE status = 'active'
+       AND stripe_subscription_id NOT LIKE 'sub_test_%'
        AND created_at >= (CURRENT_DATE - INTERVAL '1 day')`
   );
 
