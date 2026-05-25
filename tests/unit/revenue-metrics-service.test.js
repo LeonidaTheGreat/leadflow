@@ -3,9 +3,14 @@
 const assert = require('assert');
 const RevenueMetricsService = require('../../lib/services/RevenueMetricsService');
 
+const TEST_SUB_EXCLUSION = "stripe_subscription_id NOT LIKE 'sub_test_%'";
+
 function createMockPool() {
-  return {
+  const subscriptionSqlsSeen = [];
+  const pool = {
+    subscriptionSqlsSeen,
     async query(sql) {
+      if (sql.includes('FROM subscriptions')) subscriptionSqlsSeen.push(sql);
       if (sql.includes('activated_at')) return { rows: [{ count: 2 }] };
       if (sql.includes("FROM subscriptions WHERE status = 'active'") && sql.includes('COUNT')) return { rows: [{ count: 4 }] };
       if (sql.includes('FROM real_estate_agents WHERE subscription_status')) return { rows: [{ count: 6 }] };
@@ -18,11 +23,22 @@ function createMockPool() {
       return { rows: [{ count: 0 }] };
     },
   };
+  return pool;
 }
 
 async function run() {
-  const service = new RevenueMetricsService(createMockPool(), { botToken: '', chatId: '' });
+  const pool = createMockPool();
+  const service = new RevenueMetricsService(pool, { botToken: '', chatId: '' });
   const snapshot = await service.computeSnapshot(new Date('2026-05-10T12:00:00Z'));
+
+  // Verify all subscription queries exclude test IDs to prevent phantom MRR
+  for (const sql of pool.subscriptionSqlsSeen) {
+    assert.ok(
+      sql.includes(TEST_SUB_EXCLUSION),
+      `Subscription query missing test-ID exclusion filter: ${sql.slice(0, 120)}`
+    );
+  }
+  assert.ok(pool.subscriptionSqlsSeen.length > 0, 'Expected at least one subscription query');
 
   assert.strictEqual(snapshot.active_subscribers, 4);
   assert.strictEqual(snapshot.trial_users, 6);
