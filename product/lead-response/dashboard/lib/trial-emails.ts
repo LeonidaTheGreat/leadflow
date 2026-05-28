@@ -1,3 +1,22 @@
+/**
+ * TASK SPEC (73dc143a-5132-42a6-b182-babfca5f686a)
+ * What:
+ * - Change file: product/lead-response/dashboard/lib/trial-emails.ts
+ * - Functions: sendWelcomeEmail, sendDay1AhaEmail, sendDay3UpgradeEmail, sendDay7WarningEmail, sendDay14ExpiredEmail, sendDay15FinalEmail
+ * - Add helper functions to avoid "there" fallback in subjects and greetings when first_name is empty/null.
+ *
+ * Verify:
+ * - Run: cd product/lead-response/dashboard && npm test -- --runInBand __tests__/trial-email-sequence.test.ts
+ * - Expect: tests pass and empty/null first_name path asserts no "there" in subject/greeting.
+ * - Run: cd product/lead-response/dashboard && npm run build
+ * - Expect: build succeeds.
+ * - Run: rg -n "first_name \\|\\| 'there'|Hi there|there, this is the last email" product/lead-response/dashboard/lib/trial-emails.ts product/lead-response/dashboard/__tests__/trial-email-sequence.test.ts
+ * - Expect: no matches.
+ *
+ * Boundaries:
+ * - Do not modify FROM_DISPLAY/FROM_EMAIL values.
+ * - Do not modify other email services/files beyond trial-emails.ts and trial-email-sequence.test.ts.
+ */
 import { supabaseAdmin } from '@/lib/db'
 import { Resend } from 'resend'
 import { logger } from '@/lib/logger'
@@ -36,6 +55,22 @@ interface EmailResult {
   errors: string[]
 }
 
+function getCleanFirstName(firstName?: string | null): string {
+  return typeof firstName === 'string' ? firstName.trim() : ''
+}
+
+function getGreeting(firstName?: string | null): string {
+  const cleanFirstName = getCleanFirstName(firstName)
+  return cleanFirstName ? `Hi ${cleanFirstName},` : 'Hello,'
+}
+
+function getDay15FinalSubject(firstName?: string | null): string {
+  const cleanFirstName = getCleanFirstName(firstName)
+  return cleanFirstName
+    ? `${cleanFirstName}, this is the last email from LeadFlow`
+    : 'This is the last email from LeadFlow'
+}
+
 /**
  * Calculate days since signup
  */
@@ -69,7 +104,7 @@ async function getTrialAgents(): Promise<TrialAgent[]> {
  */
 async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -79,7 +114,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">Welcome to LeadFlow AI</h2>
           
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting}</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Welcome to LeadFlow AI. Here's what happens next:
@@ -146,7 +181,7 @@ async function sendWelcomeEmail(agent: TrialAgent): Promise<{ success: boolean; 
  */
 async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -156,7 +191,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">This is what your leads experience</h2>
           
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting}</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Want to see exactly what your leads get when they inquire?
@@ -223,7 +258,7 @@ async function sendDay1AhaEmail(agent: TrialAgent): Promise<{ success: boolean; 
  */
 async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -233,7 +268,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">3 days in — how many leads have you responded to?</h2>
           
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting}</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Three days in. In that time, LeadFlow agents on Pro have responded to an average of 12 leads. Every response went out in under 30 seconds. Every lead got a follow-up.
@@ -294,7 +329,7 @@ async function sendDay3UpgradeEmail(agent: TrialAgent): Promise<{ success: boole
  */
 async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -304,7 +339,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">7 days left — don't lose your leads</h2>
           
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting}</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             You're halfway through your trial. 7 days left.
@@ -369,7 +404,7 @@ async function sendDay7WarningEmail(agent: TrialAgent): Promise<{ success: boole
  */
 async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
@@ -379,7 +414,7 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">Your LeadFlow trial has ended</h2>
           
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting}</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             Your 14-day LeadFlow AI trial has ended.
@@ -444,17 +479,18 @@ async function sendDay14ExpiredEmail(agent: TrialAgent): Promise<{ success: bool
  */
 async function sendDay15FinalEmail(agent: TrialAgent): Promise<{ success: boolean; error?: string }> {
   try {
-    const agentName = agent.first_name || 'there'
+    const greeting = getGreeting(agent.first_name)
+    const subject = getDay15FinalSubject(agent.first_name)
 
     const { error } = await getResend().emails.send({
       from: FROM_DISPLAY,
       to: agent.email,
-      subject: `${agentName}, this is the last email from LeadFlow`,
+      subject,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937; margin-bottom: 16px;">This is the last email we'll send</h2>
           
-          <p style="color: #4b5563; margin-bottom: 16px;">Hi ${agentName},</p>
+          <p style="color: #4b5563; margin-bottom: 16px;">${greeting}</p>
           
           <p style="color: #4b5563; margin-bottom: 16px;">
             I don't want to spam you. This is the last email we'll send.
@@ -748,6 +784,11 @@ export async function sendActiveTrialSequence(): Promise<EmailResult[]> {
     logger.error('Error in sendActiveTrialSequence', error)
     throw error
   }
+}
+
+export const __testables = {
+  getGreeting,
+  getDay15FinalSubject
 }
 
 /**
