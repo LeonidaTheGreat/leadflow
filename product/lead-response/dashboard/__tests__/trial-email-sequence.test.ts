@@ -2,6 +2,7 @@
  * Unit tests for trial email sequence
  * Tests the email sending logic and day calculations
  */
+import { __testables } from '@/lib/trial-emails'
 
 // Helper functions to test without importing the module
 describe('Trial Email Sequence', () => {
@@ -147,6 +148,25 @@ describe('Trial Email Sequence', () => {
     it('should include correct subject for day 15 final email', async () => {
       const expectedSubject = 'Test, this is the last email from LeadFlow'
       expect(expectedSubject).toContain('last email')
+    })
+
+    it('should not use "there" fallback in day 15 subject when first_name is empty', () => {
+      const subject = __testables.getDay15FinalSubject('')
+      expect(subject).toBe('This is the last email from LeadFlow')
+      expect(subject.toLowerCase()).not.toContain('there,')
+    })
+
+    it('should not use "there" fallback in day 15 subject when first_name is null', () => {
+      const subject = __testables.getDay15FinalSubject(null)
+      expect(subject).toBe('This is the last email from LeadFlow')
+      expect(subject.toLowerCase()).not.toContain('there,')
+    })
+
+    it('should use non-personalized greeting when first_name is empty/null', () => {
+      expect(__testables.getGreeting('')).toBe('Hello,')
+      expect(__testables.getGreeting(null)).toBe('Hello,')
+      expect(__testables.getGreeting('   ')).toBe('Hello,')
+      expect(__testables.getGreeting('Stojan')).toBe('Hi Stojan,')
     })
   })
 
