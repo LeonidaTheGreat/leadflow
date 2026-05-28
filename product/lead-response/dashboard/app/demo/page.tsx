@@ -551,7 +551,7 @@ export default function DemoPage() {
       {/* Footer */}
       <footer className="border-t border-slate-800 mt-20">
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-500">
-          <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved. Operated by Imagine Squared.</p>
           <div className="flex items-center gap-4 mt-4 sm:mt-0">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <Link href="/signup?mode=trial" onClick={() => handleCTAClick('footer_signup')} className="hover:text-white transition-colors">Start Trial</Link>

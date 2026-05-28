@@ -553,6 +553,11 @@ export default function PricingPage() {
             </div>
           </div>
         </main>
+        <footer className="border-t border-slate-700/50">
+          <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-slate-400">
+            © {new Date().getFullYear()} LeadFlow AI. All rights reserved. Operated by Imagine Squared.
+          </div>
+        </footer>
       </div>
     </div>
   )

@@ -31,6 +31,9 @@ export default function DashboardLayout({
       <main className="container mx-auto px-4 py-6">
         {children}
       </main>
+      <footer className="border-t border-slate-200 dark:border-slate-800 px-4 py-4 text-center text-xs text-slate-500 dark:text-slate-400">
+        © {new Date().getFullYear()} LeadFlow AI. Operated by Imagine Squared.
+      </footer>
       <FeedbackButton />
     </div>
   )

@@ -514,7 +514,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-600 dark:text-slate-400">
-          <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved. Operated by Imagine Squared.</p>
           <div className="flex items-center gap-4 mt-4 sm:mt-0">
             <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white">Terms</Link>
