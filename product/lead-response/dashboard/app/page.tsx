@@ -1,22 +1,21 @@
 'use client'
 
 /*
-TASK SPEC (8a3a0250-9fbd-4399-95ed-e106e50e09a3)
+TASK SPEC (494988e0-6470-49af-a439-e5d65af4a400)
 What:
-- Update product/lead-response/dashboard/app/page.tsx (HomePage testimonials section) to render PRD-required testimonial cards with Sarah M., Mike R., and Jennifer K. between How It Works and Pricing.
-- Keep/adjust TestimonialCard usage and include a visible "Results may vary" disclaimer in the same section.
-- Update product/lead-response/dashboard/__tests__/testimonials-section.test.ts to validate required testimonial content and disclaimer text.
+- Update product/lead-response/dashboard/app/page.tsx in HomePage urgency banner copy text.
+- Replace "Only 10 spots remaining. Join today to lock in 20% lifetime pricing." with "Only 10 pilot spots remaining for Q1 2026. Join today to lock in 20% lifetime pricing."
 
 Verify:
-- Run: cd product/lead-response/dashboard && npm test -- --runInBand __tests__/testimonials-section.test.ts
-- Run: cd product/lead-response/dashboard && npm test -- --runInBand
+- Run: rg -n "Only 10 pilot spots remaining|Q1 2026" product/lead-response/dashboard/app/page.tsx
+- Run: node tests/e2e/fix-no-urgency-or-scarcity-mechanism.test.js
+- Run: npm test
 - Run: cd product/lead-response/dashboard && npx next build
-- Grep checks: rg -n "Sarah M\.|Mike R\.|Jennifer K\.|Results may vary" product/lead-response/dashboard/app/page.tsx
 
 Boundaries:
-- Do not modify pricing logic/components/routes/services/backend files.
-- Do not alter unrelated landing-page sections outside testimonial requirements.
-- Do not change schema, migrations, or non-dashboard app modules.
+- Do not modify banner styling, component structure, or routing.
+- Do not change backend/services/routes/schema/migrations.
+- Do not modify any landing page copy outside the urgency banner sentence.
 */
 
 import Link from 'next/link'
@@ -62,7 +61,7 @@ export default function HomePage() {
         className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-center py-2.5 px-4 text-sm font-medium"
         data-testid="urgency-banner"
       >
-        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 spots remaining. Join today to lock in 20% lifetime pricing.{' '}
+        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 pilot spots remaining for Q1 2026. Join today to lock in 20% lifetime pricing.{' '}
         <Link href="/pilot" className="underline underline-offset-2 font-semibold hover:text-emerald-100">
           Apply Now →
         </Link>
