@@ -1,28 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/db'
 import { logger } from '@/lib/logger'
-import crypto from 'crypto'
-
-/**
- * POST /api/admin/demo-link
- *
- * Generates a time-limited (24h) demo share token for the simulator page.
- * The token allows unauthenticated access to /admin/simulator for 24 hours.
- *
- * Returns:
- *   { token: string, url: string, expiresAt: string }
- *
- * GET /api/admin/demo-link?token=<token>
- *
- * Validates a demo token. Returns { valid: boolean, expiresAt?: string }
- */
+import { LeadExperienceVisibilityService } from '@/lib/services/lead-experience-visibility-service'
 
 function cleanEnv(value?: string): string | undefined {
   if (!value) return undefined
   return value.replace(/\\n/g, '').trim()
 }
 
-function getDB() {
+function getService() {
   const dbUrl = cleanEnv(process.env.NEXT_PUBLIC_API_URL)
   const dbKey = cleanEnv(process.env.API_SECRET_KEY)
 
@@ -30,50 +16,23 @@ function getDB() {
     throw new Error('Missing API configuration for demo link route')
   }
 
-  return createClient(dbUrl, dbKey)
-}
-
-function generateToken(): { rawToken: string; tokenHash: string } {
-  const array = new Uint8Array(24)
-  crypto.getRandomValues(array)
-  const rawToken = Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
-  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
-  return { rawToken, tokenHash }
+  return new LeadExperienceVisibilityService({
+    db: createClient(dbUrl, dbKey),
+    logger,
+  })
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}))
     const label = body?.label || null
-
-    const { rawToken, tokenHash } = generateToken()
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-
-    const supabase = getDB()
-    const { data, error } = await supabase
-      .from('demo_tokens')
-      .insert({
-        token: tokenHash,
-        expires_at: expiresAt,
-        label,
-        created_by: 'stojan' })
-      .select('token, expires_at')
-      .single()
-
-    if (error) {
-      logger.error('Failed to create demo token:', error)
-      return NextResponse.json({ error: 'Failed to create demo link' }, { status: 500 })
-    }
-
-    // Build the full demo URL with raw token (hash is stored in DB, raw token is for user)
+    const contentType = body?.contentType || null
+    const contentId = body?.contentId || null
     const host = request.headers.get('host') || 'localhost:3000'
     const protocol = host.includes('localhost') ? 'http' : 'https'
-    const url = `${protocol}://${host}/admin/simulator?demo=${rawToken}`
 
-    return NextResponse.json({
-      token: rawToken,
-      url,
-      expiresAt: data.expires_at })
+    const result = await getService().createDemoLink({ host, protocol, label, contentType, contentId })
+    return NextResponse.json(result)
   } catch (err: any) {
     logger.error('Demo link creation error:', err)
     return NextResponse.json({ error: 'Failed to create demo link' }, { status: 500 })
@@ -89,29 +48,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ valid: false, error: 'No token provided' }, { status: 400 })
     }
 
-    // Hash the incoming token to compare against stored hash
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+    const result = await getService().validateDemoToken(rawToken)
+    return NextResponse.json(result)
+  } catch {
+    return NextResponse.json({ valid: false, error: 'Internal server error' }, { status: 500 })
+  }
+}
 
-    const supabase = getDB()
-    const { data, error } = await supabase
-      .from('demo_tokens')
-      .select('token, expires_at, used_at')
-      .eq('token', tokenHash)
-      .single()
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const rawToken = searchParams.get('token')
 
-    if (error || !data) {
-      return NextResponse.json({ valid: false })
+    if (!rawToken) {
+      return NextResponse.json({ revoked: false, error: 'No token provided' }, { status: 400 })
     }
 
-    const now = new Date()
-    const expiresAt = new Date(data.expires_at)
-    const isExpired = now > expiresAt
-
-    return NextResponse.json({
-      valid: !isExpired,
-      expiresAt: data.expires_at,
-      expired: isExpired })
+    const result = await getService().revokeDemoToken(rawToken)
+    return NextResponse.json(result)
   } catch (err: any) {
-    return NextResponse.json({ valid: false, error: 'Internal server error' }, { status: 500 })
+    logger.error('Demo link revoke error:', err)
+    return NextResponse.json({ revoked: false, error: 'Failed to revoke demo link' }, { status: 500 })
   }
 }
