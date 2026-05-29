@@ -1,0 +1,94 @@
+[
+  {
+    "id": "demo-001",
+    "scenario_label": "Zillow Inquiry — First-Time Buyer",
+    "outcome": "booked",
+    "message_count": 8,
+    "lead_name": "M.K.",
+    "lead_source": "Zillow",
+    "date_display": "May 27, 2026",
+    "messages": [
+      {"role": "lead", "text": "Hi, I saw the listing at 4821 Maple Ave. Is it still available?", "elapsed_seconds": 0},
+      {"role": "ai", "text": "Hi M! Yes, 4821 Maple Ave is still available. It's a great 3BR/2BA — just listed. Are you looking for something in that price range, or would you like to see a few similar options too?", "elapsed_seconds": 18},
+      {"role": "lead", "text": "Just that one for now. Can I see it this week?", "elapsed_seconds": 45},
+      {"role": "ai", "text": "Absolutely. I have openings Thursday at 4pm or Saturday at 10am. Which works better for you?", "elapsed_seconds": 22},
+      {"role": "lead", "text": "Saturday morning works", "elapsed_seconds": 30},
+      {"role": "ai", "text": "Perfect — you're booked for Saturday, May 31 at 10am at 4821 Maple Ave. I'll send you a confirmation with the address and agent contact. Anything else you'd like to know about the property?", "elapsed_seconds": 19},
+      {"role": "lead", "text": "No that's great, thank you!", "elapsed_seconds": 25},
+      {"role": "ai", "text": "See you Saturday! Your agent will be in touch if anything changes. Looking forward to it.", "elapsed_seconds": 14}
+    ]
+  },
+  {
+    "id": "demo-002",
+    "scenario_label": "Facebook Ad — Rental Inquiry",
+    "outcome": "in_progress",
+    "message_count": 6,
+    "lead_name": "D.T.",
+    "lead_source": "Facebook",
+    "date_display": "May 26, 2026",
+    "messages": [
+      {"role": "lead", "text": "Hey, I clicked your ad. Looking for a 2BR apartment near downtown, budget around $2,200", "elapsed_seconds": 0},
+      {"role": "ai", "text": "Hey D! Great timing — we have a couple of 2BR units near downtown in that range. Are you looking to move in the next 30 days, or is this a longer-term search?", "elapsed_seconds": 24},
+      {"role": "lead", "text": "Probably 60 days out", "elapsed_seconds": 50},
+      {"role": "ai", "text": "Got it — that gives us good time to find the right fit. I'll have an agent reach out with current availability. What's the best time to connect — weekdays or weekends?", "elapsed_seconds": 21},
+      {"role": "lead", "text": "Weekday evenings are best", "elapsed_seconds": 38},
+      {"role": "ai", "text": "Perfect. Expect a call from our team Tuesday or Wednesday evening. I'll make sure they know your timeline and budget. Talk soon!", "elapsed_seconds": 17}
+    ]
+  },
+  {
+    "id": "demo-003",
+    "scenario_label": "Website Form — Seller Inquiry",
+    "outcome": "booked",
+    "message_count": 10,
+    "lead_name": "R.S.",
+    "lead_source": "Website",
+    "date_display": "May 25, 2026",
+    "messages": [
+      {"role": "lead", "text": "Thinking about selling my home, want to know what it might be worth", "elapsed_seconds": 0},
+      {"role": "ai", "text": "Hi R! Happy to help you figure out what your home could sell for. What's the address, and roughly when are you thinking about listing?", "elapsed_seconds": 22},
+      {"role": "lead", "text": "It's on Oak Street, not sure of exact zip. Maybe listing in 3-4 months", "elapsed_seconds": 55},
+      {"role": "ai", "text": "Got it — 3-4 months is a solid window to prepare. To give you an accurate estimate, I'd need to do a quick walkthrough. Can I set up a no-obligation pricing call this week?", "elapsed_seconds": 20},
+      {"role": "lead", "text": "Sure what does that involve", "elapsed_seconds": 42},
+      {"role": "ai", "text": "Just a 20-minute call — we'll review comparable sales in your area and give you a realistic range. No pressure, just numbers. Does Thursday or Friday work?", "elapsed_seconds": 18},
+      {"role": "lead", "text": "Thursday afternoon", "elapsed_seconds": 29},
+      {"role": "ai", "text": "Thursday it is. I have 2pm or 4pm — which is better?", "elapsed_seconds": 16},
+      {"role": "lead", "text": "4pm works", "elapsed_seconds": 22},
+      {"role": "ai", "text": "You're booked for Thursday at 4pm — pricing consultation for your Oak Street property. I'll send a confirmation with what to have ready. Looking forward to it!", "elapsed_seconds": 19}
+    ]
+  },
+  {
+    "id": "demo-004",
+    "scenario_label": "Referral — Luxury Condo Buyer",
+    "outcome": "opted_out",
+    "message_count": 7,
+    "lead_name": "A.B.",
+    "lead_source": "Referral",
+    "date_display": "May 24, 2026",
+    "messages": [
+      {"role": "lead", "text": "My friend told me to reach out. Looking at condos in the $800k range", "elapsed_seconds": 0},
+      {"role": "ai", "text": "Hi A! Great to hear from you — happy to help with luxury condos in that range. Are you focused on a specific area, or open to a few neighborhoods?", "elapsed_seconds": 26},
+      {"role": "lead", "text": "Just browsing right now honestly", "elapsed_seconds": 48},
+      {"role": "ai", "text": "No problem at all — browsing is a great start. Would it be helpful if I sent you a few current listings in the $750-850k range so you have a feel for what's out there?", "elapsed_seconds": 23},
+      {"role": "lead", "text": "Actually I think I'm going to wait until fall", "elapsed_seconds": 37},
+      {"role": "ai", "text": "Totally understand — fall is a smart time to buy. Want me to check back in September, or would you rather reach out when you're ready?", "elapsed_seconds": 20},
+      {"role": "lead", "text": "I'll reach out when ready, thanks", "elapsed_seconds": 25}
+    ]
+  },
+  {
+    "id": "demo-005",
+    "scenario_label": "Google Ad — Investor Inquiry",
+    "outcome": "unqualified",
+    "message_count": 6,
+    "lead_name": "J.M.",
+    "lead_source": "Google",
+    "date_display": "May 23, 2026",
+    "messages": [
+      {"role": "lead", "text": "Looking for investment properties, what do you have under $150k", "elapsed_seconds": 0},
+      {"role": "ai", "text": "Hi J! We do work with investors. In this market, properties under $150k are mostly in specific pockets — are you open to areas outside the metro, or focused locally?", "elapsed_seconds": 25},
+      {"role": "lead", "text": "Has to be within 5 miles of downtown", "elapsed_seconds": 40},
+      {"role": "ai", "text": "Understood — within 5 miles of downtown, that price point is very limited right now. We occasionally see distressed properties or smaller units, but they move fast. Are you on a hard budget or could you stretch slightly if the right deal came up?", "elapsed_seconds": 22},
+      {"role": "lead", "text": "Hard budget, I only have $150k cash", "elapsed_seconds": 35},
+      {"role": "ai", "text": "Got it — I appreciate the clarity. Honestly, downtown inventory at that price is scarce right now. I'd hate to waste your time. If something comes up that fits, would it be okay to reach out?", "elapsed_seconds": 24}
+    ]
+  }
+]
