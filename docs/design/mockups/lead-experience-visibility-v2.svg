@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-label="Lead Experience Visibility v2 mockup">
+  <defs>
+    <style>
+      .bg { fill: #0b1220; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .panel-soft { fill: #0f172a; stroke: #334155; stroke-width: 1.5; }
+      .title { fill: #f8fafc; font: 700 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .h2 { fill: #e2e8f0; font: 700 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .body { fill: #cbd5e1; font: 500 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .meta { fill: #94a3b8; font: 500 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .chip { fill: #1e293b; stroke: #475569; stroke-width: 1; }
+      .btn-primary { fill: #10b981; }
+      .btn-secondary { fill: #2563eb; }
+      .btn-warn { fill: #f59e0b; }
+      .btn-text { fill: #ecfeff; font: 700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1200" />
+
+  <text class="title" x="80" y="70">Lead Experience Visibility</text>
+  <text class="meta" x="80" y="100">Goal: transcript visible in &lt;120s via simulator or sample fallback</text>
+
+  <rect class="btn-secondary" x="1300" y="42" rx="10" ry="10" width="220" height="44" />
+  <text class="btn-text" x="1340" y="70">Generate Demo Link</text>
+
+  <rect class="panel" x="60" y="130" rx="14" ry="14" width="1480" height="620" />
+
+  <rect class="panel-soft" x="90" y="170" rx="12" ry="12" width="500" height="540" />
+  <text class="h2" x="110" y="205">Run Test Lead Simulator</text>
+  <text class="meta" x="110" y="230">No live outbound SMS in demo mode</text>
+
+  <text class="body" x="110" y="280">Scenario</text>
+  <rect class="chip" x="110" y="292" rx="8" ry="8" width="360" height="40" />
+  <text class="body" x="125" y="318">Buyer inquiry - weekend showing</text>
+
+  <rect class="btn-primary" x="110" y="355" rx="10" ry="10" width="250" height="42" />
+  <text class="btn-text" x="145" y="382">Run Test Lead Simulator</text>
+
+  <rect class="panel-soft" x="110" y="430" rx="10" ry="10" width="450" height="130" />
+  <text class="h2" x="128" y="460">State: Timed Out</text>
+  <text class="body" x="128" y="485">Simulator did not finish in time.</text>
+  <rect class="btn-secondary" x="128" y="505" rx="8" ry="8" width="220" height="36" />
+  <text class="btn-text" x="146" y="529">Open Sample Conversation</text>
+  <rect class="btn-warn" x="360" y="505" rx="8" ry="8" width="120" height="36" />
+  <text class="btn-text" x="395" y="529">Retry</text>
+
+  <rect class="panel-soft" x="610" y="170" rx="12" ry="12" width="900" height="540" />
+  <text class="h2" x="640" y="205">Transcript Viewer</text>
+  <text class="meta" x="640" y="230">Outcome: booked | Turns: 11 | Response: 4.2s | Demo Safe (PII Masked)</text>
+
+  <rect class="chip" x="640" y="255" rx="8" ry="8" width="840" height="50" />
+  <text class="body" x="658" y="285">11:41:08  LEAD  Hi, is the 3-bed listing still available?</text>
+
+  <rect class="chip" x="640" y="317" rx="8" ry="8" width="840" height="50" />
+  <text class="body" x="658" y="347">11:41:12  AI    Yes, and I can book a showing this weekend.</text>
+
+  <rect class="chip" x="640" y="379" rx="8" ry="8" width="840" height="50" />
+  <text class="body" x="658" y="409">11:41:25  LEAD  Saturday afternoon works.</text>
+
+  <rect class="chip" x="640" y="441" rx="8" ry="8" width="840" height="50" />
+  <text class="body" x="658" y="471">11:41:31  AI    Great, 2:00 PM is open. Should I confirm?</text>
+
+  <rect class="panel-soft" x="640" y="520" rx="10" ry="10" width="840" height="160" />
+  <text class="h2" x="658" y="548">Sample Conversation Viewer (Inline)</text>
+  <text class="body" x="658" y="573">Downtown buyer - booked - 12 msgs - 2026-05-27 14:22</text>
+  <text class="body" x="658" y="598">Listing valuation - in_progress - 9 msgs - 2026-05-27 10:06</text>
+  <text class="body" x="658" y="623">Rental request - opted_out - 6 msgs - 2026-05-26 19:41</text>
+  <text class="meta" x="658" y="650">Requirement: at least 10 demo-safe threads, newest first</text>
+
+  <rect class="panel" x="60" y="780" rx="14" ry="14" width="760" height="360" />
+  <text class="h2" x="90" y="815">Mobile Wireframe (375-430px)</text>
+  <rect class="panel-soft" x="90" y="835" rx="12" ry="12" width="300" height="280" />
+  <text class="body" x="108" y="862">Lead Experience Visibility</text>
+  <text class="meta" x="108" y="882">[Generate Link]</text>
+  <text class="body" x="108" y="912">Tabs: Simulator | Samples</text>
+  <text class="body" x="108" y="942">Scenario [Buyer inquiry v]</text>
+  <text class="body" x="108" y="972">[Run Simulator] [Open Samples]</text>
+  <text class="body" x="108" y="1002">Transcript timeline</text>
+  <text class="body" x="108" y="1032">Sticky: [Retry] [Open Samples]</text>
+
+  <rect class="panel" x="840" y="780" rx="14" ry="14" width="700" height="360" />
+  <text class="h2" x="870" y="815">Interaction Contract</text>
+  <text class="body" x="870" y="850">1) Entry opens on one screen with simulator + fallback visible.</text>
+  <text class="body" x="870" y="880">2) On failed/timed_out, fallback CTA becomes primary above fold.</text>
+  <text class="body" x="870" y="910">3) Selecting a sample hydrates transcript without navigation.</text>
+  <text class="body" x="870" y="940">4) Share link supports 24h TTL and revoke action.</text>
+  <text class="body" x="870" y="970">5) All transcripts render with masked PII markers.</text>
+  <text class="meta" x="870" y="1015">Asset: docs/design/mockups/lead-experience-visibility-v2.svg</text>
+</svg>
