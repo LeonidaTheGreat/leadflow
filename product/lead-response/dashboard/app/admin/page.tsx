@@ -35,6 +35,8 @@ type GtmStatusResponse = {
     verifiedCount: number
     uncontactedVerifiedCount: number
     inviteCount: number
+    pilotSignupCount: number
+    uninvitedSignupCount: number
     pilotPlanCount: number
   }
   pilots: {
@@ -239,6 +241,20 @@ export default function AdminCommandCenterPage() {
                 </p>
                 <div className="mt-4 inline-flex items-center gap-2 text-sm text-cyan-300">
                   Work outreach queue <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+
+              <Link
+                href="/admin/pilot-signups"
+                className="rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:border-violet-500"
+              >
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Signups</p>
+                <p className="mt-2 text-lg font-medium text-white">Pilot signup queue</p>
+                <p className="mt-2 text-sm text-slate-400">
+                  {data.outreach.pilotSignupCount} total — {data.outreach.uninvitedSignupCount} not yet invited.
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm text-violet-300">
+                  Review &amp; invite <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
 

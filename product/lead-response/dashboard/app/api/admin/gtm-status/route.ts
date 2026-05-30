@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
       campaignsResult,
       targetsResult,
       invitesResult,
+      pilotSignupsResult,
       verifiedAgentsResult,
       pilotsResult,
       actionItemsResult,
@@ -78,7 +79,10 @@ export async function GET(request: NextRequest) {
         .select('id,campaign_id,status,source_channel,created_at'),
       postgrestAdmin
         .from('pilot_invites')
-        .select('id,agent_id,status,invited_at'),
+        .select('id,agent_id,email,status,invited_at'),
+      postgrestAdmin
+        .from('pilot_signups')
+        .select('email'),
       postgrestAdmin
         .from('real_estate_agents')
         .select('id,email_verified,plan_tier,onboarding_completed')
@@ -98,6 +102,7 @@ export async function GET(request: NextRequest) {
     if (campaignsResult.error) throw campaignsResult.error
     if (targetsResult.error) throw targetsResult.error
     if (invitesResult.error) throw invitesResult.error
+    if (pilotSignupsResult.error) throw pilotSignupsResult.error
     if (verifiedAgentsResult.error) throw verifiedAgentsResult.error
     if (pilotsResult.error) throw pilotsResult.error
 
@@ -106,6 +111,7 @@ export async function GET(request: NextRequest) {
     const campaigns = campaignsResult.data || []
     const targets = targetsResult.data || []
     const invites = invitesResult.data || []
+    const pilotSignups = pilotSignupsResult.data || []
     const verifiedAgents = verifiedAgentsResult.data || []
     const pilots = pilotsResult.data || []
     const pendingActionItems = (actionItemsResult.error ? [] : actionItemsResult.data || []) as ActionItem[]
@@ -121,6 +127,7 @@ export async function GET(request: NextRequest) {
 
     const contactedStatuses = new Set(['contacted', 'responded', 'scheduled', 'signed_up'])
     const targetedAgentIds = new Set(invites.map((invite: any) => invite.agent_id).filter(Boolean))
+    const invitedEmails = new Set(invites.map((invite: any) => (invite.email || '').toLowerCase()).filter(Boolean))
     const byChannel: Record<string, number> = {}
 
     for (const target of activeCampaignTargets) {
@@ -134,6 +141,8 @@ export async function GET(request: NextRequest) {
     const uncontactedVerifiedCount = verifiedAgents.filter((agent: any) => !targetedAgentIds.has(agent.id)).length
     const pilotCount = pilots.length
     const stuckPilotCount = pilots.filter((pilot: any) => pilot.stuck_since).length
+    const pilotSignupCount = pilotSignups.length
+    const uninvitedSignupCount = pilotSignups.filter((signup: any) => !invitedEmails.has((signup.email || '').toLowerCase())).length
 
     const executionStatus = deriveExecutionStatus({
       targetCount,
@@ -169,6 +178,8 @@ export async function GET(request: NextRequest) {
         verifiedCount,
         uncontactedVerifiedCount,
         inviteCount: invites.length,
+        pilotSignupCount,
+        uninvitedSignupCount,
         pilotPlanCount: verifiedAgents.filter((agent: any) => agent.plan_tier === 'pilot').length },
       pilots: {
         total: pilotCount,
