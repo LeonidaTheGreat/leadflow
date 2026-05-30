@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   ArrowRight,
   BadgeCheck,
+  Eye,
   Mail,
   Megaphone,
   RadioTower,
@@ -255,6 +256,20 @@ export default function AdminCommandCenterPage() {
                 </p>
                 <div className="mt-4 inline-flex items-center gap-2 text-sm text-amber-300">
                   Open pilot tracker <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+
+              <Link
+                href="/admin/lead-experience-visibility"
+                className="rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:border-violet-500"
+              >
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Demo</p>
+                <p className="mt-2 text-lg font-medium text-white">Lead Experience Visibility</p>
+                <p className="mt-2 text-sm text-slate-400">
+                  Simulate or browse AI conversations to see what leads experience.
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm text-violet-300">
+                  Open simulator <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
 
