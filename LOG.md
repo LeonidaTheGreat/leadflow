@@ -961,3 +961,223 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - Report prepared for topic 10788
 
 - 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
+
+### 2026-05-30 03:43:04
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":29,"inProgress":0,"blocked":13,"done":3506,"total":7196}
+- UC blocked_human (21 attempts): fix-utm-fix-branch-not-merged-to-main-fix-undeployed → human review needed
+- UC blocked_human (21 attempts): feat-revenue-funnel-visibility → human review needed
+- UC blocked_human (20 attempts): feat-transactional-email-resend → human review needed
+- UC blocked_human (21 attempts): fix-page-view-logging-not-implemented-agent-page-views → human review needed
+- UC blocked_human (21 attempts): fix-page-tsx-not-updated-simulator-step-not-wired-into → human review needed
+- UC blocked_human (21 attempts): fix-duplicate-email-error-shows-plain-text-missing-sig → human review needed
+- UC blocked_human (21 attempts): fix-api-health-endpoint-wrong-table → human review needed
+- UC blocked_human (21 attempts): fix-subscription-attempts-table-does-not-exist-in-supa → human review needed
+- UC blocked_human (21 attempts): fix-day-79-of-90-0-mrr-target-is-mathematically-unreac → human review needed
+- UC blocked_human (20 attempts): fix-createstuckalerts-not-wired-into-heartbeat → human review needed
+- UC blocked_human (20 attempts): fix-remaining-agents-table-references → human review needed
+- UC blocked_human (21 attempts): fix-stripe-price-ids-are-placeholder-values-not-real-s → human review needed
+- UC blocked_human (20 attempts): fix-missing-how-it-works-section-ac-2-fails → human review needed
+- UC blocked_human (21 attempts): fix-three-consecutive-vercel-builds-failing-fix-never- → human review needed
+- UC blocked_human (20 attempts): fix-prd-objective-not-fully-implemented-product-api-ro → human review needed
+- UC blocked_human (20 attempts): fix-verify-stripe-webhook-secret-in-production → human review needed
+- UC blocked_human (20 attempts): fix-trial-duration-mismatch-landing-says-30-day-signup → human review needed
+- UC blocked_human (20 attempts): fix-inactivity-alerting-cron-not-implemented → human review needed
+- UC blocked_human (20 attempts): fix-signup-routes-redirect-to-setup-not-dashboard-onbo → human review needed
+- Checked 13 blocked tasks
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Merge gate blocked: fix-utm-fix-branch-not-merged-to-main-fix-undeployed
+- Merge gate blocked: feat-revenue-funnel-visibility
+- Merge gate blocked: fix-page-view-logging-not-implemented-agent-page-views
+- Merge gate blocked: feat-transactional-email-resend
+- Merge gate blocked: fix-page-tsx-not-updated-simulator-step-not-wired-into
+- Merge gate blocked: fix-duplicate-email-error-shows-plain-text-missing-sig
+- Merge gate blocked: fix-api-health-endpoint-wrong-table
+- Merge gate blocked: fix-subscription-attempts-table-does-not-exist-in-supa
+- Merge gate blocked: fix-day-79-of-90-0-mrr-target-is-mathematically-unreac
+- Merge gate blocked: fix-createstuckalerts-not-wired-into-heartbeat
+- Merge gate blocked: fix-remaining-agents-table-references
+- Merge gate blocked: fix-stripe-price-ids-are-placeholder-values-not-real-s
+- Merge gate blocked: fix-missing-how-it-works-section-ac-2-fails
+- Merge gate blocked: fix-three-consecutive-vercel-builds-failing-fix-never-
+- Merge gate blocked: fix-prd-objective-not-fully-implemented-product-api-ro
+- Merge gate blocked: fix-verify-stripe-webhook-secret-in-production
+- Merge gate blocked: fix-trial-duration-mismatch-landing-says-30-day-signup
+- Merge gate blocked: fix-inactivity-alerting-cron-not-implemented
+- Merge gate blocked: fix-signup-routes-redirect-to-setup-not-dashboard-onbo
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Queried state: {"ready":10,"inProgress":0,"blocked":13,"done":3506,"total":7196}
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-05-30 03:45:33
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":10,"inProgress":0,"blocked":13,"done":3506,"total":7196}
+- Checked 13 blocked tasks
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Queried state: {"ready":10,"inProgress":0,"blocked":13,"done":3506,"total":7196}
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-05-30 03:50:10
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":11,"inProgress":0,"blocked":13,"done":3506,"total":7197}
+- Re-triggered 1 stuck spawn(s)
+- Checked 13 blocked tasks
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Tests: 582/613 passed (95%)
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Queried state: {"ready":11,"inProgress":0,"blocked":13,"done":3506,"total":7197}
+- Re-triggered 1 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-05-30 03:57:20
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":11,"inProgress":0,"blocked":13,"done":3506,"total":7197}
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7056 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Queried state: {"ready":12,"inProgress":0,"blocked":13,"done":3506,"total":7198}
+- Re-triggered 4 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7057 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-05-30 03:59:28
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":12,"inProgress":0,"blocked":13,"done":3506,"total":7198}
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7058 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Queried state: {"ready":12,"inProgress":0,"blocked":13,"done":3506,"total":7198}
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7059 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-05-30 04:08:38
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":12,"inProgress":0,"blocked":13,"done":3506,"total":7198}
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7060 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Queried state: {"ready":12,"inProgress":0,"blocked":13,"done":3506,"total":7198}
+- Re-triggered 1 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7061 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 7 (auto-corrected 1)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-05-30 04:10:56
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":12,"inProgress":0,"blocked":13,"done":3506,"total":7198}
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7062 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1736
+- QC backfill: PR #1737
+- Product review triggered: Revenue Critical — Final 10 Days
+- Queried state: {"ready":13,"inProgress":0,"blocked":13,"done":3506,"total":7199}
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke rollback recommended (7063 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 13 collected for genome
+- Queued orphan: Revive quarantined test: 2bef954d-qc-rejection-recording.test.js
+- Queued orphan: Revive quarantined test: genome-metrics-collector.uc-status-accuracy.test.js
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js

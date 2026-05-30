@@ -1,22 +1,3 @@
-/**
- * Task Spec (1740ea6b-9d62-4ae9-b0a8-a2b5da2f12d6)
- * What:
- * - Update `getPriceIdForPlan` in this file to support `interval` (`monthly` | `annual`) and map to monthly/annual Stripe price env vars.
- * - Update POST body parsing/validation in this file to accept `interval=annual`.
- * - Update webhook plan mapping in `app/api/webhooks/stripe/route.ts` to recognize annual price IDs.
- * - Update trial-status response in `app/api/auth/trial-status/route.ts` to include subscription interval and renewal date from `subscriptions`.
- * - Update billing settings UI in `app/settings/billing/page.tsx` to send interval in checkout request and show renewal date for annual subscriptions.
- * - Add annual interval verification in `tests/integration/stripe-checkout-e2e.test.js`.
- * Verify:
- * - `npm test -- tests/integration/stripe-checkout-e2e.test.js` passes and includes year interval assertion.
- * - `npm test` passes.
- * - `npm run build` succeeds.
- * - `rg -n "STRIPE_PRICE_PROFESSIONAL_MONTHLY|STRIPE_PRICE_ENTERPRISE_MONTHLY"` on updated checkout endpoints confirms canonical PRO/TEAM mapping coverage with backward-compatible fallback.
- * Boundaries:
- * - Do not change unrelated auth/onboarding/pilot flows.
- * - Do not modify protected generated docs/config files.
- * - Do not alter database schema/migrations in this task.
- */
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer as supabase, isSupabaseConfigured } from '@/lib/supabase-server'
 import Stripe from 'stripe'

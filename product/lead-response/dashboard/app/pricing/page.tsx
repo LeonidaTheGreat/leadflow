@@ -1,22 +1,5 @@
 'use client'
-/**
- * Task Spec (1740ea6b-9d62-4ae9-b0a8-a2b5da2f12d6)
- * What:
- * - Update pricing page annual framing copy to explicitly show "2 months free" on the monthly/annual toggle.
- * - Keep annual+monthly amounts unchanged for Starter/Pro/Team.
- * - Add an API alias route at `app/api/checkout/session/route.ts` that delegates to annual-capable checkout session handler.
- * - Add integration coverage that `/api/checkout/session` route exists and supports interval-aware checkout flow.
- * Verify:
- * - `npm test -- tests/integration/stripe-checkout-e2e.test.js` passes and annual interval assertion remains green.
- * - `npm test -- product/lead-response/dashboard/tests/feat-self-serve-stripe-checkout.test.js` passes.
- * - `npm test` passes.
- * - `npm run build` succeeds.
- * - `rg -n "app/api/checkout/session/route.ts|2 months free" product/lead-response/dashboard` returns matches.
- * Boundaries:
- * - Do not change onboarding/authentication behavior outside checkout entry points.
- * - Do not modify DB schema or migrations.
- * - Do not alter unrelated pricing math or feature gating.
- */
+
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
