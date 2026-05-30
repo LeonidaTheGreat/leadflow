@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, Suspense, ReactNode } from 'react';
 import { logger } from '@/lib/logger'
 

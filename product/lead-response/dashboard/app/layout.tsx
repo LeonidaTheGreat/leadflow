@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { UtmCaptureTracker } from "@/components/utm-capture-tracker";
+import { PostHogProvider } from "@/lib/analytics/posthog-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -62,8 +63,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UtmCaptureTracker />
-        {children}
+        <PostHogProvider>
+          <UtmCaptureTracker />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );
