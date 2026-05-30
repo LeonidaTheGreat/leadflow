@@ -66,6 +66,36 @@ describe('LapsedTrialReactivationService', () => {
     expect(eligibilitySql).toContain('COALESCE(trial_email_expired_sent, false) = false');
   });
 
+  it('getStats returns eligible, sent_total, and sent_last_24h counts', async () => {
+    pool.query.mockResolvedValueOnce({
+      rows: [{ eligible: 10, sent_total: 42, sent_last_24h: 3 }],
+    });
+
+    const result = await service.getStats();
+
+    expect(result).toEqual({ eligible: 10, sent_total: 42, sent_last_24h: 3 });
+    expect(pool.query).toHaveBeenCalledTimes(1);
+
+    const statsSql = pool.query.mock.calls[0][0];
+    expect(statsSql).toContain('COUNT(*) FILTER');
+    expect(statsSql).toContain("COALESCE(subscription_status, 'inactive') != 'active'");
+    expect(statsSql).toContain('COALESCE(trial_email_expired_sent, false) = true');
+    expect(statsSql).toContain("INTERVAL '24 hours'");
+  });
+
+  it('getStats returns zeros when no rows match', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+
+    const result = await service.getStats();
+
+    expect(result).toEqual({ eligible: 0, sent_total: 0, sent_last_24h: 0 });
+  });
+
+  it('getStats throws when pool is missing', async () => {
+    const bare = new LapsedTrialReactivationService({});
+    await expect(bare.getStats()).rejects.toThrow('DB pool not configured');
+  });
+
   it('live run sends email payload and marks trial_email_expired_sent=true for successful sends', async () => {
     pool.query
       .mockResolvedValueOnce({ rows: [{ count: 1 }] })

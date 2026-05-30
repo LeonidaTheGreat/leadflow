@@ -85,4 +85,20 @@ router.post('/api/admin/reactivation-campaign', async (req, res) => {
   }
 });
 
+router.get('/api/admin/reactivation-campaign/stats', async (req, res) => {
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const service = new LapsedTrialReactivationService({ pool: getPool() });
+
+  try {
+    const stats = await service.getStats();
+    return res.json(stats);
+  } catch (err) {
+    log.error('Reactivation stats failed', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;
