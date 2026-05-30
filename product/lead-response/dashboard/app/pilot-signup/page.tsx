@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useUtmCapture } from '@/lib/utm-capture'
+import { useUtmCapture, getUtmParams } from '@/lib/utm-capture'
 
 /**
  * /pilot-signup — Pilot Signup Page
@@ -65,6 +65,9 @@ export default function PilotSignupPage() {
     setLoading(true)
 
     try {
+      // Read UTM params captured on first-touch landing (may be null if direct visit)
+      const utmParams = getUtmParams()
+
       const response = await fetch('/api/pilot-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,6 +82,7 @@ export default function PilotSignupPage() {
             formData.market ? `Market: ${formData.market}` : '',
           ].filter(Boolean).join(' | ') || undefined,
           source: formData.source || 'landing_page',
+          ...(utmParams ?? {}),
         }),
       })
 

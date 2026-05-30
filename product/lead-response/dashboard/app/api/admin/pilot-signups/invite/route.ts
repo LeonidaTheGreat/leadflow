@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { requireAdmin } from '@/lib/services/AuthService'
 import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
@@ -15,6 +16,10 @@ const INVITE_EXPIRY_DAYS = 7
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
+    if (!(await requireAdmin(request))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
 
@@ -64,6 +69,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
+    if (!(await requireAdmin(request))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const { email, name } = body
 
