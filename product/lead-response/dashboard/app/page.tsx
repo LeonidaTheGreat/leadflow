@@ -23,10 +23,15 @@ import Link from 'next/link'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import TrialSignupForm from '@/components/trial-signup-form'
 import { trackCTAClick, attachScrollMilestoneObservers } from '@/lib/analytics/ga4'
+import { trackCTAClick as phTrackCTAClick } from '@/lib/analytics'
+import { useScrollTracking } from '@/hooks/useScrollTracking'
 
 export default function HomePage() {
   const [pricingPeriod, setPricingPeriod] = useState<'monthly' | 'annual'>('monthly')
   const [openFaqItem, setOpenFaqItem] = useState<number | null>(null)
+
+  // PostHog scroll depth tracking (fires at 25/50/75/100%)
+  useScrollTracking()
 
   // Scroll-depth milestone refs (FR-3 / US-2)
   const ref25 = useRef<HTMLDivElement>(null)
@@ -104,7 +109,7 @@ export default function HomePage() {
             {/* CTA: join_pilot_nav (FR-2) */}
             <Link
               href="/pilot"
-              onClick={() => trackCTAClick('join_pilot_nav', 'Pilot Program', 'navigation')}
+              onClick={() => { trackCTAClick('join_pilot_nav', 'Pilot Program', 'navigation'); phTrackCTAClick('join_pilot_nav', 'navigation') }}
               data-cta-id="join_pilot_nav"
               className="hidden sm:block px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
             >
@@ -113,7 +118,7 @@ export default function HomePage() {
             {/* CTA: sign_in_nav (FR-2) */}
             <Link
               href="/login"
-              onClick={() => trackCTAClick('sign_in_nav', 'Sign In', 'navigation')}
+              onClick={() => { trackCTAClick('sign_in_nav', 'Sign In', 'navigation'); phTrackCTAClick('sign_in_nav', 'navigation') }}
               data-cta-id="sign_in_nav"
               className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors"
               data-testid="nav-cta"
@@ -152,7 +157,7 @@ export default function HomePage() {
               {/* CTA: see_how_it_works (FR-2) */}
               <a
                 href="#features"
-                onClick={() => trackCTAClick('see_how_it_works', 'See how it works', 'hero')}
+                onClick={() => { trackCTAClick('see_how_it_works', 'See how it works', 'hero'); phTrackCTAClick('see_how_it_works', 'hero') }}
                 data-cta-id="see_how_it_works"
                 data-testid="hero-cta-secondary"
                 className="text-slate-400 hover:text-white underline underline-offset-4"
@@ -259,7 +264,7 @@ export default function HomePage() {
             {/* CTA: start_trial_features */}
             <Link
               href="/signup/trial"
-              onClick={() => trackCTAClick('start_trial_features', 'Start Free Trial — No Credit Card', 'features')}
+              onClick={() => { trackCTAClick('start_trial_features', 'Start Free Trial — No Credit Card', 'features'); phTrackCTAClick('start_trial_features', 'features') }}
               data-cta-id="start_trial_features"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
             >
@@ -347,7 +352,7 @@ export default function HomePage() {
             {/* CTA: get_started_testimonial */}
             <Link
               href="/signup/trial"
-              onClick={() => trackCTAClick('get_started_testimonial', 'Get Started', 'testimonials')}
+              onClick={() => { trackCTAClick('get_started_testimonial', 'Get Started', 'testimonials'); phTrackCTAClick('get-started', 'testimonials') }}
               data-cta-id="get_started_testimonial"
               className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors inline-block"
             >
@@ -491,7 +496,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/signup/trial"
-              onClick={() => trackCTAClick('final_cta_primary', 'Start My Free Trial', 'final')}
+              onClick={() => { trackCTAClick('final_cta_primary', 'Start My Free Trial', 'final'); phTrackCTAClick('get-started', 'final') }}
               data-cta-id="final_cta_primary"
               data-testid="final-cta-primary"
               className="px-8 py-4 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors"
@@ -667,7 +672,7 @@ function PricingCard({
       </ul>
       <Link
         href={isBrokerage ? 'mailto:sales@leadflow.ai' : `/signup/trial?plan=${planSlug}`}
-        onClick={() => trackCTAClick(`pricing_${planSlug}`, `${cta} ${name}`, 'pricing')}
+        onClick={() => { trackCTAClick(`pricing_${planSlug}`, `${cta} ${name}`, 'pricing'); phTrackCTAClick(`pricing_${planSlug}`, 'pricing') }}
         data-cta-id={`pricing_${planSlug}`}
         data-testid={testId}
         className={`mt-6 w-full block text-center px-6 py-3 rounded-lg font-semibold transition-colors ${
