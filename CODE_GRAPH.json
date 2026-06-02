@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T08:39:31.965Z",
+  "generated_at": "2026-06-02T02:04:53.694Z",
   "nodes": [
     {
       "id": ".tmp_pm_heartbeat.js",
@@ -18,85 +18,97 @@
     },
     {
       "id": "project-config-loader.js",
-      "lines": 229,
+      "lines": 288,
       "type": "root",
       "exports": [
         {
           "name": "loadProjectConfig",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "loadProjectConfig(configPath)"
         },
         {
           "name": "getConfig",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getConfig(configPath)"
         },
         {
           "name": "clearCache",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "clearCache()"
         },
         {
           "name": "getProjectDir",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getProjectDir(config)"
         },
         {
           "name": "resolveStatePath",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "resolveStatePath(filename, config)"
         },
         {
           "name": "resolveProjectPath",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "resolveProjectPath(relPath, config)"
         },
         {
           "name": "getDayNumber",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getDayNumber(config)"
         },
         {
           "name": "getDashboardDir",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getDashboardDir(config)"
         },
         {
           "name": "buildProjectContext",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "buildProjectContext(config)"
         },
         {
           "name": "getGenomeDir",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getGenomeDir()"
         },
         {
           "name": "getConfigForProject",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getConfigForProject(projectId)"
         },
         {
           "name": "getAllProjectIds",
           "kind": "function",
-          "line": 223,
+          "line": 281,
           "signature": "getAllProjectIds()"
+        },
+        {
+          "name": "getProjectCapabilities",
+          "kind": "function",
+          "line": 281,
+          "signature": "getProjectCapabilities(projectId)"
+        },
+        {
+          "name": "getProjectPhase",
+          "kind": "function",
+          "line": 281,
+          "signature": "getProjectPhase(projectId)"
         },
         {
           "name": "GENOME_DIR",
           "kind": "class",
-          "line": 223
+          "line": 281
         }
       ]
     },
@@ -792,6 +804,28 @@
       ],
       "test_files": [
         "tests/index.test.js"
+      ]
+    },
+    {
+      "id": "lib/config/revenue-funnel.js",
+      "lines": 16,
+      "type": "lib",
+      "exports": [
+        {
+          "name": "REVENUE_FUNNEL_THRESHOLDS",
+          "kind": "class",
+          "line": 11
+        },
+        {
+          "name": "REVENUE_METRICS_PROJECT_ID",
+          "kind": "class",
+          "line": 11
+        },
+        {
+          "name": "SPARKLINE_DAYS",
+          "kind": "class",
+          "line": 11
+        }
       ]
     },
     {
@@ -1660,6 +1694,43 @@
       ]
     },
     {
+      "id": "lib/services/RevenueMetricsService.js",
+      "lines": 207,
+      "type": "lib",
+      "exports": [
+        {
+          "name": "RevenueMetricsService",
+          "kind": "function",
+          "line": 206,
+          "methods": [
+            {
+              "name": "constructor",
+              "signature": "constructor(dbPool, options = {})",
+              "line": 27
+            },
+            {
+              "name": "upsertSnapshot",
+              "signature": "upsertSnapshot(snapshot)",
+              "line": 86
+            },
+            {
+              "name": "maybeSendThresholdAlert",
+              "signature": "maybeSendThresholdAlert(snapshot)",
+              "line": 121
+            },
+            {
+              "name": "if",
+              "signature": "if(!this.botToken || !this.chatId)",
+              "line": 125
+            }
+          ]
+        }
+      ],
+      "test_files": [
+        "tests/unit/revenue-metrics-service.test.js"
+      ]
+    },
+    {
       "id": "lib/services/SatisfactionService.js",
       "lines": 183,
       "type": "lib",
@@ -2200,7 +2271,7 @@
     },
     {
       "id": "product/lead-response/dashboard/middleware.ts",
-      "lines": 350,
+      "lines": 378,
       "type": "product"
     },
     {
@@ -2211,6 +2282,11 @@
     {
       "id": "product/lead-response/dashboard/__tests__/accept-invite-flow.test.ts",
       "lines": 51,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/__tests__/admin-auth.test.ts",
+      "lines": 114,
       "type": "product"
     },
     {
@@ -2280,7 +2356,7 @@
     },
     {
       "id": "product/lead-response/dashboard/__tests__/inbound-sms-service.test.ts",
-      "lines": 229,
+      "lines": 285,
       "type": "product"
     },
     {
@@ -2325,7 +2401,7 @@
     },
     {
       "id": "product/lead-response/dashboard/__tests__/outreach-targets-route.test.ts",
-      "lines": 135,
+      "lines": 128,
       "type": "product"
     },
     {
@@ -2335,7 +2411,12 @@
     },
     {
       "id": "product/lead-response/dashboard/__tests__/pilot-outreach-blast.test.ts",
-      "lines": 289,
+      "lines": 276,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/__tests__/pilot-signup-utm.test.ts",
+      "lines": 191,
       "type": "product"
     },
     {
@@ -2415,7 +2496,7 @@
     },
     {
       "id": "product/lead-response/dashboard/__tests__/trial-email-sequence.test.ts",
-      "lines": 191,
+      "lines": 211,
       "type": "product"
     },
     {
@@ -2425,7 +2506,7 @@
     },
     {
       "id": "product/lead-response/dashboard/__tests__/trial-signup.test.ts",
-      "lines": 314,
+      "lines": 324,
       "type": "product"
     },
     {
@@ -2480,7 +2561,17 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/admin/invite-pilot/route.ts",
-      "lines": 259,
+      "lines": 252,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/app/api/admin/login/route.ts",
+      "lines": 35,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/app/api/admin/logout/route.ts",
+      "lines": 9,
       "type": "product"
     },
     {
@@ -2500,12 +2591,12 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/admin/outreach/blast/route.ts",
-      "lines": 91,
+      "lines": 84,
       "type": "product"
     },
     {
       "id": "product/lead-response/dashboard/app/api/admin/outreach/targets/route.ts",
-      "lines": 62,
+      "lines": 56,
       "type": "product"
     },
     {
@@ -2524,8 +2615,18 @@
       "type": "product"
     },
     {
+      "id": "product/lead-response/dashboard/app/api/admin/pilot-signups/[id]/route.ts",
+      "lines": 42,
+      "type": "product"
+    },
+    {
       "id": "product/lead-response/dashboard/app/api/admin/pilot-signups/invite/route.ts",
-      "lines": 194,
+      "lines": 203,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/app/api/admin/pilot-signups/list/route.ts",
+      "lines": 66,
       "type": "product"
     },
     {
@@ -2535,7 +2636,7 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts",
-      "lines": 185,
+      "lines": 178,
       "type": "product"
     },
     {
@@ -2550,7 +2651,12 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/admin/prospects/route.ts",
-      "lines": 41,
+      "lines": 31,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/app/api/admin/revenue/route.ts",
+      "lines": 34,
       "type": "product"
     },
     {
@@ -2700,7 +2806,7 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/billing/create-checkout/route.ts",
-      "lines": 260,
+      "lines": 284,
       "type": "product"
     },
     {
@@ -2765,7 +2871,7 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/cron/send-trial-emails/route.ts",
-      "lines": 60,
+      "lines": 85,
       "type": "product"
     },
     {
@@ -2856,7 +2962,10 @@
     {
       "id": "product/lead-response/dashboard/app/api/feedback/route.ts",
       "lines": 77,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/feedback.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/app/api/health/route.ts",
@@ -2916,7 +3025,10 @@
     {
       "id": "product/lead-response/dashboard/app/api/lead-capture/route.ts",
       "lines": 116,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/lead-capture.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/app/api/leads/[id]/messages/route.ts",
@@ -3055,7 +3167,7 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/pilot-signup/route.ts",
-      "lines": 193,
+      "lines": 201,
       "type": "product"
     },
     {
@@ -3155,8 +3267,11 @@
     },
     {
       "id": "product/lead-response/dashboard/app/api/stripe/upgrade-checkout/route.ts",
-      "lines": 136,
-      "type": "product"
+      "lines": 138,
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/upgrade-checkout.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/app/api/test-lead/route.ts",
@@ -3171,12 +3286,18 @@
     {
       "id": "product/lead-response/dashboard/app/api/trial/dismiss-nudge/route.ts",
       "lines": 38,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/trial-nudge.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/app/api/trial/nudge/route.ts",
       "lines": 127,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/trial-nudge.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/app/api/trial/start/route.ts",
@@ -3239,19 +3360,42 @@
       "type": "product"
     },
     {
+      "id": "product/lead-response/dashboard/hooks/useScrollTracking.ts",
+      "lines": 55,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/lib/admin-auth.ts",
+      "lines": 90,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/lib/agent-mapper.ts",
+      "lines": 53,
+      "type": "product"
+    },
+    {
       "id": "product/lead-response/dashboard/lib/agent-session.ts",
       "lines": 145,
       "type": "product"
     },
     {
       "id": "product/lead-response/dashboard/lib/ai.ts",
-      "lines": 631,
+      "lines": 632,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/lib/analytics.ts",
+      "lines": 103,
       "type": "product"
     },
     {
       "id": "product/lead-response/dashboard/lib/calcom.ts",
       "lines": 462,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/tests/calcom-webhook.test.js"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/lib/config.ts",
@@ -3259,9 +3403,22 @@
       "type": "product"
     },
     {
+      "id": "product/lead-response/dashboard/lib/db.test.ts",
+      "lines": 88,
+      "type": "product"
+    },
+    {
       "id": "product/lead-response/dashboard/lib/db.ts",
       "lines": 401,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/tests/e2e-frictionless-onboarding.js",
+        "product/lead-response/dashboard/tests/fix-agents-table-mismatch-auth-routes.test.js",
+        "product/lead-response/dashboard/tests/fix-middleware-blocks-authenticated-users-from-onboard.test.js",
+        "product/lead-response/dashboard/tests/fix-no-in-app-nps-prompt-on-dashboard-login.test.js",
+        "product/lead-response/dashboard/tests/fix-onboarding-wizard-stuck-no-aha-moment-for-new-sign.test.js",
+        "product/lead-response/dashboard/tests/free-pilot-no-credit-card-required.test.js"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/lib/email-config-validation.ts",
@@ -3270,8 +3427,11 @@
     },
     {
       "id": "product/lead-response/dashboard/lib/email-service.ts",
-      "lines": 1305,
-      "type": "product"
+      "lines": 1303,
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/tests/feat-transactional-email-resend.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/lib/error-handler.ts",
@@ -3285,8 +3445,11 @@
     },
     {
       "id": "product/lead-response/dashboard/lib/lead-magnet-email.ts",
-      "lines": 327,
-      "type": "product"
+      "lines": 344,
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/tests/feat-transactional-email-resend.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/lib/logger.ts",
@@ -3420,7 +3583,10 @@
     {
       "id": "product/lead-response/dashboard/lib/supabase-server.ts",
       "lines": 19,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/lead-capture.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/lib/supabase.ts",
@@ -3434,7 +3600,7 @@
     },
     {
       "id": "product/lead-response/dashboard/lib/trial-emails.ts",
-      "lines": 786,
+      "lines": 827,
       "type": "product"
     },
     {
@@ -3499,7 +3665,7 @@
     },
     {
       "id": "product/lead-response/dashboard/lib/services/AuthService.ts",
-      "lines": 402,
+      "lines": 382,
       "type": "product"
     },
     {
@@ -3510,16 +3676,19 @@
     {
       "id": "product/lead-response/dashboard/lib/services/encryption-service.ts",
       "lines": 116,
-      "type": "product"
+      "type": "product",
+      "test_files": [
+        "product/lead-response/dashboard/__tests__/encryption-service.test.ts"
+      ]
     },
     {
       "id": "product/lead-response/dashboard/lib/services/fub-webhook-service.ts",
-      "lines": 447,
+      "lines": 451,
       "type": "product"
     },
     {
       "id": "product/lead-response/dashboard/lib/services/inbound-sms-service.ts",
-      "lines": 434,
+      "lines": 435,
       "type": "product"
     },
     {
@@ -3554,21 +3723,36 @@
     },
     {
       "id": "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
-      "lines": 103,
+      "lines": 155,
       "type": "product",
       "exports": [
         {
           "name": "getActiveNextBuildPids",
           "kind": "function",
-          "line": 102,
+          "line": 154,
           "signature": "getActiveNextBuildPids()"
         },
         {
           "name": "waitForBuildsToFinish",
           "kind": "function",
-          "line": 102,
+          "line": 154,
           "signature": "waitForBuildsToFinish(maxWaitMs, pollIntervalMs)"
+        },
+        {
+          "name": "getAllNextBuildPids",
+          "kind": "function",
+          "line": 154,
+          "signature": "getAllNextBuildPids()"
+        },
+        {
+          "name": "waitForAllBuildsToFinish",
+          "kind": "function",
+          "line": 154,
+          "signature": "waitForAllBuildsToFinish(maxWaitMs, pollIntervalMs)"
         }
+      ],
+      "test_files": [
+        "product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts"
       ]
     },
     {
@@ -3764,7 +3948,7 @@
     },
     {
       "id": "product/lead-response/dashboard/tests/feat-transactional-email-resend.test.ts",
-      "lines": 312,
+      "lines": 313,
       "type": "product"
     },
     {
@@ -3927,7 +4111,7 @@
     },
     {
       "id": "product/lead-response/dashboard/tests/fix-pilot-recruitment-never-approved-zero-activated-pi.test.js",
-      "lines": 104,
+      "lines": 106,
       "type": "product"
     },
     {
@@ -3953,6 +4137,11 @@
     {
       "id": "product/lead-response/dashboard/tests/fix-simulator-tsx-step-component-does-not-exist.test.js",
       "lines": 140,
+      "type": "product"
+    },
+    {
+      "id": "product/lead-response/dashboard/tests/fix-social-proof-testimonials-section-not-implemented.test.js",
+      "lines": 68,
       "type": "product"
     },
     {
@@ -4177,7 +4366,7 @@
     },
     {
       "id": "product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts",
-      "lines": 129,
+      "lines": 157,
       "type": "product"
     },
     {
@@ -4254,8 +4443,18 @@
       "type": "scripts"
     },
     {
+      "id": "scripts/check-migration-completeness.js",
+      "lines": 4,
+      "type": "scripts"
+    },
+    {
       "id": "scripts/check-revenue-alert-acceptance.js",
       "lines": 171,
+      "type": "scripts"
+    },
+    {
+      "id": "scripts/check-schema-coupling.js",
+      "lines": 4,
       "type": "scripts"
     },
     {
@@ -4820,8 +5019,41 @@
     },
     {
       "id": "scripts/db/backfill-nps-survey-schedules.js",
-      "lines": 22,
-      "type": "scripts"
+      "lines": 77,
+      "type": "scripts",
+      "exports": [
+        {
+          "name": "SQL_BACKFILL_MISSING",
+          "kind": "class",
+          "line": 69
+        },
+        {
+          "name": "SQL_COUNT_DUE_NOW",
+          "kind": "class",
+          "line": 69
+        },
+        {
+          "name": "SQL_COUNT_ORPHANS",
+          "kind": "class",
+          "line": 69
+        },
+        {
+          "name": "SQL_COUNT_VALID_SCHEDULES",
+          "kind": "class",
+          "line": 69
+        },
+        {
+          "name": "SQL_DELETE_ORPHANS",
+          "kind": "class",
+          "line": 69
+        },
+        {
+          "name": "runBackfill",
+          "kind": "function",
+          "line": 69,
+          "signature": "runBackfill()"
+        }
+      ]
     },
     {
       "id": "scripts/db/check-duplicate-ucs.js",
@@ -5249,6 +5481,31 @@
       "id": "scripts/tasks/reset-zombies.js",
       "lines": 38,
       "type": "scripts"
+    },
+    {
+      "id": "scripts/tasks/revenue-snapshot.js",
+      "lines": 262,
+      "type": "scripts",
+      "exports": [
+        {
+          "name": "computeRevenueSnapshot",
+          "kind": "function",
+          "line": 257,
+          "signature": "computeRevenueSnapshot(pool)"
+        },
+        {
+          "name": "upsertRevenueSnapshot",
+          "kind": "function",
+          "line": 257,
+          "signature": "upsertRevenueSnapshot(pool, snapshot)"
+        },
+        {
+          "name": "sendFunnelDropAlerts",
+          "kind": "function",
+          "line": 257,
+          "signature": "sendFunnelDropAlerts(snapshot)"
+        }
+      ]
     },
     {
       "id": "scripts/tasks/update-task-status.js",
@@ -5737,7 +5994,7 @@
     },
     {
       "id": "tests/82c869fc-invite-url-on-email-failure.test.js",
-      "lines": 106,
+      "lines": 126,
       "type": "tests"
     },
     {
@@ -5753,6 +6010,11 @@
     {
       "id": "tests/a5f7e77c-pilot-conversion-cron-wiring.test.js",
       "lines": 214,
+      "type": "tests"
+    },
+    {
+      "id": "tests/b28633c4-needs-merge-merged-pr-before-exhaustion.test.js",
+      "lines": 127,
       "type": "tests"
     },
     {
@@ -5772,7 +6034,7 @@
     },
     {
       "id": "tests/da237aa5-needs-merge-rebase-verification.test.js",
-      "lines": 109,
+      "lines": 160,
       "type": "tests"
     },
     {
@@ -5957,7 +6219,7 @@
     },
     {
       "id": "tests/e2e/admin-pilots-auth.test.js",
-      "lines": 140,
+      "lines": 136,
       "type": "tests"
     },
     {
@@ -6042,6 +6304,11 @@
       "type": "tests"
     },
     {
+      "id": "tests/e2e/ca83b150-loop-detected-investigation-dedup.test.js",
+      "lines": 65,
+      "type": "tests"
+    },
+    {
       "id": "tests/e2e/calcom-integration.test.js",
       "lines": 848,
       "type": "tests"
@@ -6123,7 +6390,7 @@
     },
     {
       "id": "tests/e2e/fix-admin-admin-pilots-page-has-no-authentication-prot.test.js",
-      "lines": 169,
+      "lines": 170,
       "type": "tests"
     },
     {
@@ -6154,6 +6421,11 @@
     {
       "id": "tests/e2e/fix-bookings-table-does-not-exist.test.js",
       "lines": 273,
+      "type": "tests"
+    },
+    {
+      "id": "tests/e2e/fix-duplicate-email-error-shows-plain-text.test.js",
+      "lines": 144,
       "type": "tests"
     },
     {
@@ -6202,6 +6474,11 @@
     {
       "id": "tests/e2e/fix-no-roi-visibility-for-agents-70f28a02.test.js",
       "lines": 250,
+      "type": "tests"
+    },
+    {
+      "id": "tests/e2e/fix-no-urgency-or-scarcity-mechanism.test.js",
+      "lines": 59,
       "type": "tests"
     },
     {
@@ -6628,6 +6905,11 @@
       "type": "tests"
     },
     {
+      "id": "tests/genome/zombie-idle-threshold.test.js",
+      "lines": 204,
+      "type": "tests"
+    },
+    {
       "id": "tests/integration/09a067f4-satisfaction-reply-recording.test.js",
       "lines": 143,
       "type": "tests"
@@ -6645,6 +6927,11 @@
     {
       "id": "tests/integration/b0e293e9.test.js",
       "lines": 122,
+      "type": "tests"
+    },
+    {
+      "id": "tests/integration/backfill-nps-survey-schedules.test.js",
+      "lines": 60,
       "type": "tests"
     },
     {
@@ -7279,6 +7566,11 @@
       "type": "tests"
     },
     {
+      "id": "tests/unit/email-templates-no-fabricated-testimonials.test.js",
+      "lines": 48,
+      "type": "tests"
+    },
+    {
       "id": "tests/unit/error-propagation.test.js",
       "lines": 187,
       "type": "tests"
@@ -7308,13 +7600,13 @@
     },
     {
       "id": "tests/unit/genome-replenish-queue-ready-fix.test.js",
-      "lines": 126,
+      "lines": 135,
       "type": "tests",
       "exports": [
         {
           "name": "runTests",
           "kind": "function",
-          "line": 125,
+          "line": 134,
           "signature": "runTests()"
         }
       ]
@@ -7342,6 +7634,11 @@
     {
       "id": "tests/unit/logger.test.js",
       "lines": 712,
+      "type": "tests"
+    },
+    {
+      "id": "tests/unit/nps-metric-collector.test.js",
+      "lines": 166,
       "type": "tests"
     },
     {
@@ -7460,6 +7757,11 @@
       "type": "tests"
     },
     {
+      "id": "tests/unit/revenue-metrics-service.test.js",
+      "lines": 66,
+      "type": "tests"
+    },
+    {
       "id": "tests/unit/run-revenue-alert-tests.js",
       "lines": 381,
       "type": "tests"
@@ -7493,8 +7795,18 @@
       "type": "tests"
     },
     {
+      "id": "tests/unit/sweep-uc-completions-needs-merge.test.js",
+      "lines": 314,
+      "type": "tests"
+    },
+    {
       "id": "tests/unit/test-genome-review-fix.js",
       "lines": 155,
+      "type": "tests"
+    },
+    {
+      "id": "tests/unit/trial-email-cron-activation-fix.test.js",
+      "lines": 105,
       "type": "tests"
     },
     {
@@ -7591,6 +7903,19 @@
           "name": "runTests",
           "kind": "function",
           "line": 163,
+          "signature": "runTests()"
+        }
+      ]
+    },
+    {
+      "id": "tests/unit/zombie-role-aware-threshold.test.js",
+      "lines": 186,
+      "type": "tests",
+      "exports": [
+        {
+          "name": "runTests",
+          "kind": "function",
+          "line": 185,
           "signature": "runTests()"
         }
       ]
@@ -8042,6 +8367,16 @@
       "type": "require",
       "methods": [
         "EmailService"
+      ]
+    },
+    {
+      "source": "lib/services/RevenueMetricsService.js",
+      "target": "lib/config/revenue-funnel.js",
+      "type": "require",
+      "methods": [
+        "REVENUE_FUNNEL_THRESHOLDS",
+        "REVENUE_METRICS_PROJECT_ID",
+        "SPARKLINE_DAYS"
       ]
     },
     {
@@ -9167,6 +9502,14 @@
       ]
     },
     {
+      "source": "scripts/tasks/revenue-snapshot.js",
+      "target": "lib/db.js",
+      "type": "require",
+      "methods": [
+        "getPool"
+      ]
+    },
+    {
       "source": "scripts/tasks/update-task-status.js",
       "target": "lib/db.js",
       "type": "require",
@@ -10088,6 +10431,14 @@
       ]
     },
     {
+      "source": "tests/unit/revenue-metrics-service.test.js",
+      "target": "lib/services/RevenueMetricsService.js",
+      "type": "require",
+      "methods": [
+        "RevenueMetricsService"
+      ]
+    },
+    {
       "source": "tests/unit/sequence-service.test.js",
       "target": "lib/services/SequenceService.js",
       "type": "require",
@@ -10240,7 +10591,7 @@
     },
     {
       "module": "product/lead-response/dashboard/app/api/stripe/upgrade-checkout/route.ts",
-      "table": "subscription_attempts",
+      "table": "checkout_sessions",
       "mode": "read-write"
     },
     {
@@ -10376,6 +10727,16 @@
     {
       "module": "scripts/pilots/check-stuck-pilots.js",
       "table": "pilot_progress",
+      "mode": "read"
+    },
+    {
+      "module": "scripts/tasks/revenue-snapshot.js",
+      "table": "real_estate_agents",
+      "mode": "read"
+    },
+    {
+      "module": "scripts/tasks/revenue-snapshot.js",
+      "table": "agent_integrations",
       "mode": "read"
     },
     {
@@ -11279,7 +11640,7 @@
   "issues": {
     "circular_deps": [],
     "hub_modules": [
-      "lib/db.js (90)",
+      "lib/db.js (91)",
       "lib/logger.js (34)",
       "lib/config/index.js (32)",
       "lib/utils/circuit-breaker.js (11)"
@@ -11314,6 +11675,7 @@
       "product/lead-response/dashboard/middleware.ts",
       "product/lead-response/dashboard/next.config.ts",
       "product/lead-response/dashboard/__tests__/accept-invite-flow.test.ts",
+      "product/lead-response/dashboard/__tests__/admin-auth.test.ts",
       "product/lead-response/dashboard/__tests__/admin-nps.test.ts",
       "product/lead-response/dashboard/__tests__/agent-session.test.ts",
       "product/lead-response/dashboard/__tests__/bcrypt-password-verify.test.ts",
@@ -11339,6 +11701,7 @@
       "product/lead-response/dashboard/__tests__/outreach-targets-route.test.ts",
       "product/lead-response/dashboard/__tests__/page-view-logger.test.ts",
       "product/lead-response/dashboard/__tests__/pilot-outreach-blast.test.ts",
+      "product/lead-response/dashboard/__tests__/pilot-signup-utm.test.ts",
       "product/lead-response/dashboard/__tests__/pilot-status.test.ts",
       "product/lead-response/dashboard/__tests__/pilot-trial-cta.test.ts",
       "product/lead-response/dashboard/__tests__/pilot-usage.test.ts",
@@ -11368,6 +11731,8 @@
       "product/lead-response/dashboard/app/api/admin/funnel/trial-activation/route.ts",
       "product/lead-response/dashboard/app/api/admin/gtm-status/route.ts",
       "product/lead-response/dashboard/app/api/admin/invite-pilot/route.ts",
+      "product/lead-response/dashboard/app/api/admin/login/route.ts",
+      "product/lead-response/dashboard/app/api/admin/logout/route.ts",
       "product/lead-response/dashboard/app/api/admin/metrics/aha-moment/route.ts",
       "product/lead-response/dashboard/app/api/admin/nps/route.ts",
       "product/lead-response/dashboard/app/api/admin/outreach-candidates/route.ts",
@@ -11376,12 +11741,15 @@
       "product/lead-response/dashboard/app/api/admin/pilot-campaigns/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilot-campaigns/[id]/stats/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilot-campaigns/[id]/targets/route.ts",
+      "product/lead-response/dashboard/app/api/admin/pilot-signups/[id]/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilot-signups/invite/route.ts",
+      "product/lead-response/dashboard/app/api/admin/pilot-signups/list/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilots/route.ts",
       "product/lead-response/dashboard/app/api/admin/pilots/[agentId]/route.ts",
       "product/lead-response/dashboard/app/api/admin/prospects/route.ts",
+      "product/lead-response/dashboard/app/api/admin/revenue/route.ts",
       "product/lead-response/dashboard/app/api/admin/simulate-lead/route.ts",
       "product/lead-response/dashboard/app/api/admin/triage-use-cases/route.ts",
       "product/lead-response/dashboard/app/api/agents/check-email/route.ts",
@@ -11514,9 +11882,14 @@
       "product/lead-response/dashboard/components/analytics/index.ts",
       "product/lead-response/dashboard/components/billing/index.ts",
       "product/lead-response/dashboard/hooks/useOnboardingTelemetry.ts",
+      "product/lead-response/dashboard/hooks/useScrollTracking.ts",
+      "product/lead-response/dashboard/lib/admin-auth.ts",
+      "product/lead-response/dashboard/lib/agent-mapper.ts",
       "product/lead-response/dashboard/lib/agent-session.ts",
       "product/lead-response/dashboard/lib/ai.ts",
+      "product/lead-response/dashboard/lib/analytics.ts",
       "product/lead-response/dashboard/lib/config.ts",
+      "product/lead-response/dashboard/lib/db.test.ts",
       "product/lead-response/dashboard/lib/email-config-validation.ts",
       "product/lead-response/dashboard/lib/error-handler.ts",
       "product/lead-response/dashboard/lib/fub.ts",
@@ -11627,6 +12000,7 @@
       "product/lead-response/dashboard/tests/fix-sessionstorage-key-mismatch-utm-params-never-reach.test.js",
       "product/lead-response/dashboard/tests/fix-signup-form-layout-inconsistency.test.js",
       "product/lead-response/dashboard/tests/fix-simulator-tsx-step-component-does-not-exist.test.js",
+      "product/lead-response/dashboard/tests/fix-social-proof-testimonials-section-not-implemented.test.js",
       "product/lead-response/dashboard/tests/fix-stripe-price-ids-placeholder.test.ts",
       "product/lead-response/dashboard/tests/fix-subscription-attempts-table-does-not-exist.test.ts",
       "product/lead-response/dashboard/tests/fix-three-consecutive-vercel-builds-failing-fix-never-.test.js",
@@ -11678,7 +12052,9 @@
       "scripts/apply-lead-sequences-migration.js",
       "scripts/check-email-columns.js",
       "scripts/check-findings-types.js",
+      "scripts/check-migration-completeness.js",
       "scripts/check-revenue-alert-acceptance.js",
+      "scripts/check-schema-coupling.js",
       "scripts/check-schema.js",
       "scripts/check-trial-email-columns.js",
       "scripts/clean-worktree.js",
@@ -11807,6 +12183,7 @@
       "scripts/tasks/pilot-signup-outreach.js",
       "scripts/tasks/query-tasks.js",
       "scripts/tasks/reset-zombies.js",
+      "scripts/tasks/revenue-snapshot.js",
       "scripts/tasks/update-task-status.js",
       "scripts/utilities/add-stripe-completed-work.js",
       "scripts/utilities/add-stripe-work.js",
@@ -11867,6 +12244,7 @@
       "tests/9390baf2-phantom-mrr-e2e-verify.test.js",
       "tests/9390baf2-phantom-mrr-test-data.test.js",
       "tests/a5f7e77c-pilot-conversion-cron-wiring.test.js",
+      "tests/b28633c4-needs-merge-merged-pr-before-exhaustion.test.js",
       "tests/c47360f2-fix-email-delivery-resend-from-domain-not-verified.test.js",
       "tests/cb30fcaa-token-hash-stored-not-raw.test.js",
       "tests/d8c81797-fix-quality-gate-build-failing-in-leadfl.test.js",
@@ -11915,6 +12293,7 @@
       "tests/e2e/b806abdb-build-gate-lock-cleanup.test.js",
       "tests/e2e/billing-api-integration.test.js",
       "tests/e2e/c31b8b4f-goal-redefine-qc.test.js",
+      "tests/e2e/ca83b150-loop-detected-investigation-dedup.test.js",
       "tests/e2e/calcom-integration.test.js",
       "tests/e2e/cd5e6ccf.test.js",
       "tests/e2e/cff10a61-follow-redirects-vuln-fix.test.js",
@@ -11938,6 +12317,7 @@
       "tests/e2e/fix-auth-routes-dead-supabase-env-vars.test.js",
       "tests/e2e/fix-bcrypt-password-verify-fails-after-signup.test.js",
       "tests/e2e/fix-bookings-table-does-not-exist.test.js",
+      "tests/e2e/fix-duplicate-email-error-shows-plain-text.test.js",
       "tests/e2e/fix-email-fail-open-missing-resend-api-key.test.js",
       "tests/e2e/fix-fub-webhook-registration-not-implemented.test.js",
       "tests/e2e/fix-ga4-script-tag-missing-from-layout-tsx-all-analyti.test.js",
@@ -11946,6 +12326,7 @@
       "tests/e2e/fix-next-js-customer-dashboard-not-deployed-users-cann.test.js",
       "tests/e2e/fix-no-evidence-of-wizard-auto-trigger-implementation.test.js",
       "tests/e2e/fix-no-roi-visibility-for-agents-70f28a02.test.js",
+      "tests/e2e/fix-no-urgency-or-scarcity-mechanism.test.js",
       "tests/e2e/fix-nps-api-routes-api-nps-verify-and-api-nps-submit-r.test.js",
       "tests/e2e/fix-post-login-onboarding-wizard-fub-sms-aha-is-stuck-.test.js",
       "tests/e2e/fix-pricing-page-checkout-buttons-do-nothing.e2e.test.js",
@@ -12013,10 +12394,12 @@
       "tests/genome/predictive-engine.test.js",
       "tests/genome/structured-logger.test.js",
       "tests/genome/workflow-engine.test.js",
+      "tests/genome/zombie-idle-threshold.test.js",
       "tests/integration/09a067f4-satisfaction-reply-recording.test.js",
       "tests/integration/9bfb815d-acceptance-needs-merge-fix.test.js",
       "tests/integration/auth-signup-login-flow.test.js",
       "tests/integration/b0e293e9.test.js",
+      "tests/integration/backfill-nps-survey-schedules.test.js",
       "tests/integration/billing-api-integration.test.js",
       "tests/integration/calcom-integration.test.js",
       "tests/integration/calcom-webhook-handler.test.js",
@@ -12082,6 +12465,7 @@
       "tests/unit/completion-reports-retention.test.js",
       "tests/unit/db.test.js",
       "tests/unit/email-service-class.test.js",
+      "tests/unit/email-templates-no-fabricated-testimonials.test.js",
       "tests/unit/error-propagation.test.js",
       "tests/unit/fub-service-class.test.js",
       "tests/unit/generate-docs.test.js",
@@ -12092,6 +12476,7 @@
       "tests/unit/lib-index-logger.test.js",
       "tests/unit/logger-requestcontext-integration.test.js",
       "tests/unit/logger.test.js",
+      "tests/unit/nps-metric-collector.test.js",
       "tests/unit/nps-survey-eligibility.test.js",
       "tests/unit/pilot-conversion-service.test.js",
       "tests/unit/pilot-outreach-blast.test.js",
@@ -12103,12 +12488,15 @@
       "tests/unit/reactivation-campaign-route.test.js",
       "tests/unit/request-context.test.js",
       "tests/unit/resolve-stale-action-items.test.js",
+      "tests/unit/revenue-metrics-service.test.js",
       "tests/unit/run-revenue-alert-tests.js",
       "tests/unit/sequence-service.test.js",
       "tests/unit/stuck-pilots-service.node.test.js",
       "tests/unit/stuck-pilots-service.test.js",
       "tests/unit/subagent-completion-report.test.js",
+      "tests/unit/sweep-uc-completions-needs-merge.test.js",
       "tests/unit/test-genome-review-fix.js",
+      "tests/unit/trial-email-cron-activation-fix.test.js",
       "tests/unit/trial-to-paid-conversion.test.js",
       "tests/unit/uc-acceptance-needs-merge-loop-fix.test.js",
       "tests/unit/uc-revenue-alert-idempotency.test.js",
@@ -12116,7 +12504,8 @@
       "tests/unit/uptime-rolling-window.test.js",
       "tests/unit/weak-randomness-fix.test.js",
       "tests/unit/weekly-performance-service.node.test.js",
-      "tests/unit/weekly-performance.test.js"
+      "tests/unit/weekly-performance.test.js",
+      "tests/unit/zombie-role-aware-threshold.test.js"
     ]
   }
 }
