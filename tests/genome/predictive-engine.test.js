@@ -1,24 +1,6 @@
 'use strict'
 
-/**
- * Task Spec (e764a860-0e23-48ea-a7d6-43fff57111fa)
- * What:
- * - Add tests in /Users/clawdbot/projects/leadflow/tests/genome/predictive-engine.test.js
- *   for /Users/clawdbot/.openclaw/genome/intelligence/predictive-engine.js exports:
- *   detectTaskType, shouldDecomposeTask, predictSuccess, recommendModel,
- *   predictQueueExhaustion, predictBudgetExhaustion, formatPrediction.
- * Verify:
- * - Run: npx jest tests/genome/predictive-engine.test.js --runInBand
- *   Expected: all tests pass.
- * - Run quality gates: npm run build, npm run lint, npm test, npm audit --audit-level=high
- *   Expected: exit code 0 for each command.
- * - Sanity grep: rg -n "predictive-engine" tests/genome/predictive-engine.test.js
- *   Expected: test file references predictive-engine module.
- * Boundaries:
- * - Do not modify runtime orchestration logic under ~/projects/genome.
- * - Do not change service/router/business logic in this repo.
- * - Only add/adjust tests required for predictive-engine coverage and task reporting artifacts.
- */
+
 
 const PREDICTIVE_ENGINE_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/predictive-engine'
 const LEARNING_SYSTEM_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/learning-system'

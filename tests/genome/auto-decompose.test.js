@@ -1,21 +1,6 @@
 'use strict'
 
-/**
- * Task Spec (fb1b2781-f2bc-4577-bb48-41c7657a532c)
- * What:
- * - Add tests in tests/genome/auto-decompose.test.js for exported functions in
- *   /Users/clawdbot/.openclaw/genome/intelligence/auto-decompose.js:
- *   checkTaskForDecomposition, generateSubtasks, autoDecompose, processAllReadyTasks.
- * Verify:
- * - Run: npx jest tests/genome/auto-decompose.test.js --runInBand
- *   Expected: all tests pass.
- * - Quality gates: npm run build, npm run lint, npm test, npm audit --audit-level=high
- *   Expected: exit code 0.
- * Boundaries:
- * - Do not modify any files under ~/projects/genome.
- * - Do not change service/router/business logic in this repo.
- * - Only add/adjust tests for auto-decompose coverage.
- */
+
 
 const AUTO_DECOMPOSE_PATH = '/Users/clawdbot/.openclaw/genome/intelligence/auto-decompose'
 const TASK_STORE_PATH = '/Users/clawdbot/.openclaw/genome/core/task-store'
