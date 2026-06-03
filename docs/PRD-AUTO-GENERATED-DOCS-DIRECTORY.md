@@ -137,7 +137,7 @@ The `reference_docs` section may continue to reference these files by their logi
 ### Documentation & Examples
 
 7. **project.config.json Schema Documentation**
-   - [ ] In `~/.openclaw/genome/docs/CONFIG_SCHEMA.md` or `project-config.md`, document the new `docs` section
+   - [ ] In `~/projects/genome/docs/CONFIG_SCHEMA.md` or `project-config.md`, document the new `docs` section
    - [ ] Provide example configurations
    - [ ] Clarify defaults
 

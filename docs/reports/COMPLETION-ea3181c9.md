@@ -49,7 +49,7 @@ it('test name', () => {
 
 **Impact:** 12/12 mocha tests now pass instead of failing with "expect is not defined"
 
-### 2. Loop Detector Cooldown Fix (File: ~/.openclaw/genome/core/task-store.js)
+### 2. Loop Detector Cooldown Fix (File: ~/projects/genome/core/task-store.js)
 
 **Before:**
 ```javascript
@@ -173,7 +173,7 @@ test('REQ-1: UC_ISSUE_MAP maps no_landing_page to gtm-landing-page', () => {
    - Changed: expects hardcoded string OR constant reference
    - Commit: 291b97de
 
-### Genome Project (in ~/.openclaw/genome/)
+### Genome Project (in ~/projects/genome/)
 1. **core/task-store.js** (1 line)
    - Fixed loop detector to use thirtyMinutesAgo variable
    - Changed: hardcoded 24h window → timestamp-based 30-min window
@@ -184,19 +184,19 @@ test('REQ-1: UC_ISSUE_MAP maps no_landing_page to gtm-landing-page', () => {
 The distribution loop fix is complete across all three components:
 
 1. **UC Completion Gate** ✅
-   - Location: `~/.openclaw/genome/scripts/distribution-collector.js` (lines 145-279)
+   - Location: `~/projects/genome/scripts/distribution-collector.js` (lines 145-279)
    - Behavior: Fetches completed UCs from database, skips issues for UCs that are already done
    - Logging: `[Distribution] UC completion gate active — skipping issues for: ...`
    - Tests: All mocha AC-3 tests pass, all QC REQ-1 tests pass
 
 2. **30-Min Task Cooldown** ✅
-   - Location: `~/.openclaw/genome/scripts/distribution-collector.js` (lines 325-352)
+   - Location: `~/projects/genome/scripts/distribution-collector.js` (lines 325-352)
    - Behavior: Checks if a task with same title was created in last 30 minutes, skips if found
    - Window: 30 * 60 * 1000 milliseconds
    - Tests: All mocha AC-4 tests pass, all QC REQ-2 tests pass
 
 3. **Timestamp-Based Loop Detector** ✅
-   - Location: `~/.openclaw/genome/core/task-store.js` (line 173+)
+   - Location: `~/projects/genome/core/task-store.js` (line 173+)
    - Behavior: Uses timestamp-based dedup window instead of status-only checks
    - Window: 30 minutes (thirtyMinutesAgo)
    - Tests: All mocha AC-5 tests pass

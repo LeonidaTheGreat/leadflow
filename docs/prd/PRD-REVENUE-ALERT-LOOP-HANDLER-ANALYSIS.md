@@ -53,7 +53,7 @@ One business intent (revenue is behind) → 4 tasks created.
 
 ### Why This Happens
 
-**File:** `~/.openclaw/genome/scripts/revenue-collector.js`  
+**File:** `~/projects/genome/scripts/revenue-collector.js`  
 **Function:** `createRevenueAlertTasks(goalResults)`  
 **Lines:** ~313-338
 
@@ -92,7 +92,7 @@ async function createRevenueAlertTasks(goalResults) {
 
 ### What Is It?
 
-**Location:** `~/.openclaw/genome/core/task-store.js`, lines ~150-165  
+**Location:** `~/projects/genome/core/task-store.js`, lines ~150-165  
 **Trigger:** Any task creation that matches pattern
 
 The loop detector runs every time a new task is created. It:
@@ -169,7 +169,7 @@ The revenue collector must check for existing active tasks before creating new o
 
 ### Implementation (Genome Dev)
 
-**File:** `~/.openclaw/genome/scripts/revenue-collector.js`  
+**File:** `~/projects/genome/scripts/revenue-collector.js`  
 **Function:** `createRevenueAlertTasks(goalResults, store)`
 
 #### Change 1: Add Store Parameter
@@ -302,7 +302,7 @@ async function collectRevenue() {
 ### AC-3: Deduplication Logs Are Present
 - **Test:** Verify revenue-collector.js logs show dedup pattern
 - **Expected:** Logs contain `[Revenue Collector] Task already exists` messages
-- **Verify:** `grep -c "Task already exists" ~/.openclaw/genome/logs/revenue-collector.log` should be > 0
+- **Verify:** `grep -c "Task already exists" ~/projects/genome/logs/revenue-collector.log` should be > 0
 
 ### AC-4: New Alerts Created When Trajectory Changes
 - **Test:** Start with trajectory='behind', update metrics to trajectory='critical'
@@ -431,12 +431,12 @@ For use case `uc-revenue-alert-dedup`, add these automated checks:
     },
     {
       "id": "check-dedup-logging",
-      "command": "grep -c 'Task already exists' ~/.openclaw/genome/logs/revenue-collector.log 2>/dev/null || echo 0",
+      "command": "grep -c 'Task already exists' ~/projects/genome/logs/revenue-collector.log 2>/dev/null || echo 0",
       "expected": "> 0"
     },
     {
       "id": "check-heartbeat-idempotent",
-      "command": "node -e \"const rc = require('~/.openclaw/genome/scripts/revenue-collector.js'); rc.testDedup().then(r => console.log(r ? 'pass' : 'fail'))\" 2>/dev/null || echo 0",
+      "command": "node -e \"const rc = require('~/projects/genome/scripts/revenue-collector.js'); rc.testDedup().then(r => console.log(r ? 'pass' : 'fail'))\" 2>/dev/null || echo 0",
       "expected": "pass"
     }
   ]
@@ -486,9 +486,9 @@ This fix requires no database migrations or data cleanup. It's a pure code chang
 
 ## Related Documentation
 
-- **Loop Detector Code:** `~/.openclaw/genome/core/task-store.js` (lines 150-165)
-- **Revenue Collector:** `~/.openclaw/genome/scripts/revenue-collector.js` (lines 313-338)
-- **Heartbeat Executor:** `~/.openclaw/genome/core/heartbeat-executor.js` (calls revenue-collector)
+- **Loop Detector Code:** `~/projects/genome/core/task-store.js` (lines 150-165)
+- **Revenue Collector:** `~/projects/genome/scripts/revenue-collector.js` (lines 313-338)
+- **Heartbeat Executor:** `~/projects/genome/core/heartbeat-executor.js` (calls revenue-collector)
 - **Project Goals:** `/Users/clawdbot/projects/leadflow/project.config.json` (goals section)
 - **Related Use Case:** `uc-revenue-alert-dedup`
 

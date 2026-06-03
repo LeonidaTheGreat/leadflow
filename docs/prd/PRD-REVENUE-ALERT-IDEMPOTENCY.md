@@ -19,7 +19,7 @@ The revenue-collector script (Loop 5 of heartbeat orchestration) creates **dupli
 - **Loop detection noise:** System interprets repeated task creation as a handler loop (false positive)
 - **Task queue bloat:** 10+ identical tasks accumulate in 6 hours
 
-**Root Cause:** `createRevenueAlertTasks()` in `~/.openclaw/genome/scripts/revenue-collector.js` creates a new PM task for every heartbeat where revenue is off-track, without checking if an identical alert already exists.
+**Root Cause:** `createRevenueAlertTasks()` in `~/projects/genome/scripts/revenue-collector.js` creates a new PM task for every heartbeat where revenue is off-track, without checking if an identical alert already exists.
 
 **Current Behavior:**
 ```
@@ -561,7 +561,7 @@ async function createRevenueAlertTasks(goalResults) {
 }
 ```
 
-#### 2. `~/.openclaw/genome/core/task-store.js` (TaskStore)
+#### 2. `~/projects/genome/core/task-store.js` (TaskStore)
 **Function:** `findTasks(filters)` and `createTask(params)`
 
 **New `findTasks()` Method:**

@@ -40,7 +40,7 @@ Ship a one-shot admin SMS capability that lets the operator trigger upgrade nudg
 1. It has `customer_id UUID NOT NULL` (references `customers` table, not `real_estate_agents`)
 2. `email_type` has a CHECK constraint — `'sms_upgrade_nudge'` is not a valid value
 
-**Migration required** (`~/.openclaw/genome/migrations/` — next available number):
+**Migration required** (`~/projects/genome/migrations/` — next available number):
 
 ```sql
 -- Extend email_events to support agent-targeted outreach channels
@@ -207,7 +207,7 @@ Columns:
 
 | File | Action | What |
 |------|--------|------|
-| `~/.openclaw/genome/migrations/0XX_email_events_agent_channel.sql` | **Create** | Schema migration (see above) |
+| `~/projects/genome/migrations/0XX_email_events_agent_channel.sql` | **Create** | Schema migration (see above) |
 | `product/lead-response/dashboard/app/api/admin/send-sms-upgrade/route.ts` | **Create** | POST endpoint |
 | `product/lead-response/dashboard/app/admin/upgrade-offers/page.tsx` | **Create** | Admin UI page |
 | `product/lead-response/dashboard/app/admin/page.tsx` | **Modify** | Add "Upgrade Offers" link in Outreach section |

@@ -20,7 +20,7 @@ The automated tests for Genome core modules have been successfully created and a
 
 | Criteria | Status | Evidence |
 |----------|--------|----------|
-| Create `~/.openclaw/genome/tests/` directory | ✅ PASS | Directory exists with 6 test files |
+| Create `~/projects/genome/tests/` directory | ✅ PASS | Directory exists with 6 test files |
 | Add Jest as test framework | ✅ PASS | `package.json` has Jest v30.3.0 in devDependencies |
 | Write `tests/local-pg.test.js` | ✅ PASS | File exists (164 lines), tests select/insert/update/filter operators |
 | Write `tests/workflow-engine.test.js` | ✅ PASS | File exists (112 lines), tests selectInitialModel/classifyAreas/estimateCost/etc |
@@ -82,7 +82,7 @@ Time:        ~0.3s
 
 ### Path, Import & Project Structure
 - [x] All `require()` paths resolve correctly
-- [x] Tests are in correct directory (`~/.openclaw/genome/tests/`)
+- [x] Tests are in correct directory (`~/projects/genome/tests/`)
 - [x] No files at repo root
 
 ### Tests
@@ -98,7 +98,7 @@ Time:        ~0.3s
 
 ## Notes
 
-1. **Repository Structure:** The Genome orchestration engine lives in `~/.openclaw/genome/` (separate repo from LeadFlow). The tests were correctly added there, not in the LeadFlow repo.
+1. **Repository Structure:** The Genome orchestration engine lives in `~/projects/genome/` (separate repo from LeadFlow). The tests were correctly added there, not in the LeadFlow repo.
 
 2. **LeadFlow E2E Test Failure:** The LeadFlow repo has a pre-existing E2E test failure (FUB API returns 403 Forbidden). This is unrelated to this PR and appears to be an API permissions issue.
 

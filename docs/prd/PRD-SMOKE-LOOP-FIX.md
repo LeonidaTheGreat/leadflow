@@ -36,7 +36,7 @@ Supabase was fully removed from the LeadFlow project (local PostgreSQL is now us
 Two separate fixes required:
 
 ### Fix A — Genome: Track `lastTaskCompleted` in smoke test state  
-Location: `~/.openclaw/genome/core/heartbeat-executor.js`  
+Location: `~/projects/genome/core/heartbeat-executor.js`  
 Scope: When a QC/dev smoke task transitions to `done` or `failed` status, write `lastTaskCompleted` into the smoke-test-state.json so the 2-hour cooldown actually fires.
 
 ### Fix B — LeadFlow: Update `/api/health` to reflect current architecture  
@@ -61,7 +61,7 @@ Scope: Remove the Supabase connectivity check (or change it to local PostgreSQL)
 - [ ] When a QC task titled `Smoke: <name> failing` reaches status `done` or `failed`, the heartbeat executor writes `lastTaskCompleted: <ISO timestamp>` to `state.results[smoke_test_id]` in the smoke-test state file
 - [ ] When `lastTaskCompleted` is set and `hoursSince < 2`, no new task is created (log: `⏳ <title> — cooldown (task completed X.Xh ago)`)
 - [ ] The loop detector does NOT fire on subsequent heartbeat runs after the fix (i.e., no more duplicate tasks created)
-- [ ] Smoke state file at `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` contains `lastTaskCompleted` entries after QC task completion
+- [ ] Smoke state file at `~/projects/genome/state/leadflow/.smoke-test-state.json` contains `lastTaskCompleted` entries after QC task completion
 
 ### Fix B — Health Endpoint
 - [ ] `GET https://leadflow-ai-five.vercel.app/api/health` returns `{"status":"ok"}` when the product is operating correctly

@@ -22,7 +22,7 @@
 | Booking | Cal.com | Embedded booking |
 | Deployment | Vercel | CLI deploys, no GitHub auto-deploy |
 | Public API | Cloudflare Tunnel | `api.imagineapi.org` → port 8788 |
-| Orchestration | OpenClaw Genome | `~/.openclaw/genome/` (separate repo) |
+| Orchestration | OpenClaw Genome | `~/projects/genome/` (separate repo) |
 
 ## Critical: Banned Dependencies
 

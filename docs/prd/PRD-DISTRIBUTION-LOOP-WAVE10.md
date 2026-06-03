@@ -48,7 +48,7 @@ Stop repeated task spawning for `PM: Distribution — Create Landing Page` by im
 - Logs: "Skipping duplicate PM:Distribution→Create Landing Page task — created X days ago"
 
 **Implementation Notes:**
-- File: `~/.openclaw/genome/scripts/distribution-collector.js`
+- File: `~/projects/genome/scripts/distribution-collector.js`
 - Logic: Query `tasks` table with `created_at > now() - INTERVAL 7 days` + `task_name LIKE '%Create Landing Page%'`
 - This prevents accumulation even if new issues are detected
 
@@ -61,7 +61,7 @@ Stop repeated task spawning for `PM: Distribution — Create Landing Page` by im
 - Uses timestamp-based check: `cutoff = now() - INTERVAL 24 hours`
 
 **Implementation Notes:**
-- File: `~/.openclaw/genome/core/task-store.js`
+- File: `~/projects/genome/core/task-store.js`
 - Method: `detectLoop()` or `checkLoopCooldown()`
 - This stops the investigator-loops-itself cycle
 
@@ -81,19 +81,19 @@ All 4 criteria must pass:
   },
   {
     "id": "dedup-guard-implemented",
-    "command": "grep -c 'sevenDaysAgo' ~/.openclaw/genome/scripts/distribution-collector.js",
+    "command": "grep -c 'sevenDaysAgo' ~/projects/genome/scripts/distribution-collector.js",
     "expected": "1",
     "description": "Dedup guard uses 7-day window to skip recent task creation"
   },
   {
     "id": "cooldown-fix-applied",
-    "command": "grep -c 'cutoff24h' ~/.openclaw/genome/core/task-store.js",
+    "command": "grep -c 'cutoff24h' ~/projects/genome/core/task-store.js",
     "expected": "2",
     "description": "Loop detector uses 24h cooldown instead of status-only check"
   },
   {
     "id": "skip-duplicate-logging",
-    "command": "grep -c 'Skipping duplicate' ~/.openclaw/genome/scripts/distribution-collector.js",
+    "command": "grep -c 'Skipping duplicate' ~/projects/genome/scripts/distribution-collector.js",
     "expected": "1",
     "description": "Dedup logic logs when skipping duplicate task creation"
   }

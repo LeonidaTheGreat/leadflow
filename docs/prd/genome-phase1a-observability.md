@@ -3,7 +3,7 @@
 **Task ID:** 7a546fbe-669c-4c8a-88dd-4792bbb1793e  
 **Status:** Implemented
 
-## Changes Made (in ~/.openclaw/genome/)
+## Changes Made (in ~/projects/genome/)
 
 ### 1. heartbeat-wrapper.js
 - Changed `stdio: 'pipe'` to `stdio: 'inherit'` on line ~81 so executor output is visible in logs.

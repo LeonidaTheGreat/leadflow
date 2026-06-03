@@ -12,7 +12,7 @@ Phase 1B implemented error propagation in the Genome orchestration engine. This 
 ### 1. Telegram Reporter Path Fix ✅
 **Status:** COMPLETE
 
-The `_reportStepFatalError` method in `~/.openclaw/genome/core/heartbeat-executor.js` has been corrected to use the proper `sendTelegram()` pattern:
+The `_reportStepFatalError` method in `~/projects/genome/core/heartbeat-executor.js` has been corrected to use the proper `sendTelegram()` pattern:
 
 ```javascript
 async _reportStepFatalError(stepId, action, err, classification) {
@@ -36,7 +36,7 @@ This prevents runtime errors from trying to require a non-existent `../dashboard
 
 The `coverage/` directory is already properly excluded from git tracking:
 - Not present in `git ls-files` output
-- Included in `.gitignore` at `~/.openclaw/genome/.gitignore`
+- Included in `.gitignore` at `~/projects/genome/.gitignore`
 - No cleanup commit needed
 
 ### 3. _step() Wrapper Verification ✅

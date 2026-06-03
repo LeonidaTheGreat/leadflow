@@ -14,7 +14,7 @@ const assert = require('assert');
 const os = require('os');
 
 // Paths
-const GENOME_PATH = path.join(os.homedir(), '.openclaw', 'genome');
+const GENOME_PATH = path.join(os.homedir(), 'projects', 'genome');
 const HEARTBEAT_EXECUTOR_PATH = path.join(GENOME_PATH, 'core', 'heartbeat-executor.js');
 
 // Test results
@@ -43,7 +43,7 @@ console.log(`📁 Genome Path: ${GENOME_PATH}`);
 console.log(`📁 Heartbeat Executor: ${HEARTBEAT_EXECUTOR_PATH}\n`);
 
 // Test 1: Heartbeat executor exists
- test('Heartbeat executor exists at ~/.openclaw/genome/core/heartbeat-executor.js', () => {
+ test('Heartbeat executor exists at ~/projects/genome/core/heartbeat-executor.js', () => {
   assert.ok(fs.existsSync(HEARTBEAT_EXECUTOR_PATH), 'Heartbeat executor should exist');
 });
 

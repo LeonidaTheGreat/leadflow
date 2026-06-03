@@ -31,7 +31,7 @@ Result: `testDef.url` is `undefined`, `CHECK_FUNCTIONS["signup_login_flow"]` is 
 Every run returns `{ pass: false, detail: "Unknown check_type: signup_login_flow" }`.
 Every failure spawns a new task. Infinite loop.
 
-**Available CHECK_FUNCTIONS (confirmed from `~/.openclaw/genome/health/smoke-tests.js`):**
+**Available CHECK_FUNCTIONS (confirmed from `~/projects/genome/health/smoke-tests.js`):**
 - `json_status_ok`
 - `http_200`
 - `html_contains`
@@ -135,7 +135,7 @@ This is a smoke test config change only. No auth code changes. Auth security req
 
 ## What Is Out of Scope (Do NOT Do)
 
-- Do NOT modify `~/.openclaw/genome/health/smoke-tests.js`
+- Do NOT modify `~/projects/genome/health/smoke-tests.js`
 - Do NOT add `signup_login_flow` to CHECK_FUNCTIONS
 - Do NOT modify any auth routes
 - Do NOT create any scripts
@@ -148,7 +148,7 @@ This is a smoke test config change only. No auth code changes. Auth security req
 ## Phase 2 (Future — Separate PRD)
 
 If full signup+login flow testing is desired:
-- Add `signup_login_flow` handler to `~/.openclaw/genome/health/smoke-tests.js`
+- Add `signup_login_flow` handler to `~/projects/genome/health/smoke-tests.js`
 - Handler must: POST to signup → capture token → POST to login → verify success
 - Use `crypto.randomBytes()` for test account email generation to avoid collisions
 - Create separate PRD targeting genome project

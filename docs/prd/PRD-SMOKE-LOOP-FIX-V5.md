@@ -14,14 +14,14 @@
 This fix has been specified **four times**. Every previous dev agent reported success with **no_commits_on_branch** — meaning **zero code changes were actually made**.
 
 ### Why Agents Fail This Task
-The genome files live in **`~/.openclaw/genome/`** — a **separate git repository** from `~/projects/leadflow/`. Most agents modify the wrong files, or modify the right files but commit to the wrong repo, or forget to commit entirely.
+The genome files live in **`~/projects/genome/`** — a **separate git repository** from `~/projects/leadflow/`. Most agents modify the wrong files, or modify the right files but commit to the wrong repo, or forget to commit entirely.
 
 ### Non-Negotiable Delivery Requirements
-1. Verify the genome repo path: `ls -la ~/.openclaw/genome/.git`
-2. Make the code changes in `~/.openclaw/genome/core/`
-3. `cd ~/.openclaw/genome && git add -A && git commit -m "fix: smoke loop dedup - findLatestTaskByTitle + lastTaskCompleted"`
+1. Verify the genome repo path: `ls -la ~/projects/genome/.git`
+2. Make the code changes in `~/projects/genome/core/`
+3. `cd ~/projects/genome && git add -A && git commit -m "fix: smoke loop dedup - findLatestTaskByTitle + lastTaskCompleted"`
 4. Report the **commit hash** in the completion report
-5. If `~/.openclaw/genome` is not a git repo: report failure immediately
+5. If `~/projects/genome` is not a git repo: report failure immediately
 
 **DO NOT mark this task done without a commit hash.**
 
@@ -37,7 +37,7 @@ The genome files live in **`~/.openclaw/genome/`** — a **separate git reposito
 
 ### Bug 1: `findTaskByTitle` excludes completed tasks
 
-**File:** `~/.openclaw/genome/core/task-store.js`  
+**File:** `~/projects/genome/core/task-store.js`  
 **Method:** `findTaskByTitle`
 
 ```javascript
@@ -54,7 +54,7 @@ Result:
 
 ### Bug 2: `lastTaskCompleted` is never written
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Location:** smoke handler (~line 2329)
 
 ```javascript
@@ -75,13 +75,13 @@ As of this spec, check these before starting:
 
 ```bash
 # Does findLatestTaskByTitle exist?
-grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/task-store.js
+grep -n "findLatestTaskByTitle" ~/projects/genome/core/task-store.js
 
 # Is lastTaskCompleted ever written?
-grep -n "lastTaskCompleted" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "lastTaskCompleted" ~/projects/genome/core/heartbeat-executor.js
 
 # Current smoke state
-cat ~/.openclaw/genome/state/leadflow/.smoke-test-state.json | python3 -m json.tool
+cat ~/projects/genome/state/leadflow/.smoke-test-state.json | python3 -m json.tool
 ```
 
 If `findLatestTaskByTitle` already exists: check that it's actually being **called** in the smoke handler. The fix may have been added to task-store.js but the heartbeat-executor.js call was never updated.
@@ -92,7 +92,7 @@ If `findLatestTaskByTitle` already exists: check that it's actually being **call
 
 ### Change 1: Add `findLatestTaskByTitle()` to task-store.js
 
-**File:** `~/.openclaw/genome/core/task-store.js`
+**File:** `~/projects/genome/core/task-store.js`
 
 Add after the existing `findTaskByTitle` method:
 
@@ -120,7 +120,7 @@ async findLatestTaskByTitle(title) {
 
 ### Change 2: Update smoke handler in heartbeat-executor.js to use findLatestTaskByTitle
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Location:** smoke failure handler (search for `const existingSmoke = await this.store.findTaskByTitle`)
 
 Replace:
@@ -143,7 +143,7 @@ const existingDev = await (this.store.findLatestTaskByTitle
 
 ### Change 3: Write `lastTaskCompleted` when smoke task is created
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Location:** After the QC smoke task is successfully created (look for `await this.store.createTask(...)` inside the smoke failure handler)
 
 After each successful `createTask` call for a smoke QC task, write to state:
@@ -187,7 +187,7 @@ if (cooldownAnchor) {
 
 4. **No duplicate open tasks:** Query `SELECT id, title, status FROM tasks WHERE title ILIKE 'Smoke: Vercel%' AND status IN ('ready','running','spawned') ORDER BY created_at DESC` → returns at most 1 row.
 
-5. **Commit exists in genome repo:** `cd ~/.openclaw/genome && git log --oneline -3` shows a commit with these changes.
+5. **Commit exists in genome repo:** `cd ~/projects/genome && git log --oneline -3` shows a commit with these changes.
 
 ---
 
@@ -195,21 +195,21 @@ if (cooldownAnchor) {
 
 ```bash
 # 1. Confirm genome is a git repo
-ls -la ~/.openclaw/genome/.git
+ls -la ~/projects/genome/.git
 
 # 2. Confirm changes are in place
-grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/task-store.js
-grep -n "findLatestTaskByTitle\|lastTaskCreated" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "findLatestTaskByTitle" ~/projects/genome/core/task-store.js
+grep -n "findLatestTaskByTitle\|lastTaskCreated" ~/projects/genome/core/heartbeat-executor.js
 
 # 3. Commit
-cd ~/.openclaw/genome
+cd ~/projects/genome
 git diff --stat  # must show changes
 git add core/task-store.js core/heartbeat-executor.js
 git commit -m "fix: smoke loop dedup - findLatestTaskByTitle + lastTaskCreated cooldown"
 git log --oneline -1  # paste this hash in completion report
 
 # 4. Check current smoke state
-cat ~/.openclaw/genome/state/leadflow/.smoke-test-state.json
+cat ~/projects/genome/state/leadflow/.smoke-test-state.json
 
 # 5. Cancel any lingering open smoke tasks
 # Note: Supabase SDK has been replaced with PostgREST client (lib/db.ts). Use `postgrestAdmin` from `@/lib/db` instead.
@@ -241,8 +241,8 @@ postgrestAdmin.from('tasks')
 
 | File | Repository | Change |
 |------|-----------|--------|
-| `~/.openclaw/genome/core/task-store.js` | genome (NOT leadflow) | Add `findLatestTaskByTitle()` method |
-| `~/.openclaw/genome/core/heartbeat-executor.js` | genome (NOT leadflow) | Use `findLatestTaskByTitle`, write `lastTaskCreated` to state |
+| `~/projects/genome/core/task-store.js` | genome (NOT leadflow) | Add `findLatestTaskByTitle()` method |
+| `~/projects/genome/core/heartbeat-executor.js` | genome (NOT leadflow) | Use `findLatestTaskByTitle`, write `lastTaskCreated` to state |
 
 ---
 

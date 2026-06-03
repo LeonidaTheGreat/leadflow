@@ -18,7 +18,7 @@
  * Boundaries:
  * - Do not modify routes/, lib/services/, schema, or runtime product business logic.
  * - Do not change report file naming or archival behavior beyond project-directory resolution.
- * - Do not modify orchestration engine code under ~/.openclaw/genome/.
+ * - Do not modify orchestration engine code under ~/projects/genome/.
  */
 
 const fs = require('fs');

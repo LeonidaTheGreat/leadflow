@@ -64,7 +64,7 @@ This PR adds automated tests for Genome core modules. The implementation meets a
 
 ## Test Results
 
-### Genome Core Tests (from ~/.openclaw/genome/)
+### Genome Core Tests (from ~/projects/genome/)
 ```
 Test Suites: 6 passed, 6 total
 Tests:       98 passed, 98 total
@@ -100,7 +100,7 @@ Time:        ~0.3s
 ### E2E Test (added by QC)
 - `tests/e2e/genome-core-modules.test.js` — Verifies tests exist and pass
 
-### Test Files (in genome repo ~/.openclaw/genome/)
+### Test Files (in genome repo ~/projects/genome/)
 - `tests/local-pg.test.js` — Same content as leadflow copy
 - `tests/workflow-engine.test.js` — Same content as leadflow copy
 - `tests/parseUTC.test.js` — Same content as leadflow copy
@@ -155,7 +155,7 @@ Time:        ~0.3s
 ✅ **APPROVED**
 
 All acceptance criteria met:
-- ✅ Tests created in `~/.openclaw/genome/tests/`
+- ✅ Tests created in `~/projects/genome/tests/`
 - ✅ Jest configured and working
 - ✅ `local-pg.test.js` tests select, insert, not, contains
 - ✅ `workflow-engine.test.js` tests selectInitialModel, classifyAreas

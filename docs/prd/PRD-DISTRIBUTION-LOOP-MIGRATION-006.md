@@ -60,12 +60,12 @@ The distribution health check creates "PM: Distribution — Create Landing Page"
 ### Fix 1 (PRIMARY): Apply Migration 006 to Local PostgreSQL
 
 **Owner:** Genome Dev agent  
-**File:** `~/.openclaw/genome/migrations/006_distribution_metrics.sql`  
+**File:** `~/projects/genome/migrations/006_distribution_metrics.sql`  
 **Action:** Run migration against local PG database `postgresql://clawdbot@localhost/openclaw`
 
 ```bash
 /opt/homebrew/Cellar/postgresql@16/16.13/bin/psql "postgresql://clawdbot@localhost/openclaw" \
-  -f ~/.openclaw/genome/migrations/006_distribution_metrics.sql
+  -f ~/projects/genome/migrations/006_distribution_metrics.sql
 ```
 
 This creates:
@@ -96,7 +96,7 @@ After this insert, `checkDistributionHealth()` will find the landing page and st
 ### Fix 3 (SECONDARY): Add Dedup Guard to `createDistributionTasks()` [Genome]
 
 **Owner:** Genome Dev agent  
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js`  
+**File:** `~/projects/genome/scripts/distribution-collector.js`  
 **Function:** `createDistributionTasks(issues)` (~line 236)
 
 Even after seeding, future table issues could re-trigger the loop. Add a title-based dedup check:
@@ -141,7 +141,7 @@ async function createDistributionTasks(issues) {
 ### Fix 4 (SECONDARY): Extend Loop Detector Cooldown
 
 **Owner:** Genome Dev agent  
-**File:** `~/.openclaw/genome/core/task-store.js` (~line 147)
+**File:** `~/projects/genome/core/task-store.js` (~line 147)
 
 The loop detector currently only skips if an investigation task is in `ready/in_progress` status. Once the PM marks it done, a new one is created. Change to check for ANY investigation task in the last 24h:
 
@@ -184,7 +184,7 @@ WHERE title LIKE 'PM: Loop detected — PM: Distribution%'
 
 ### AC-4: Distribution health check passes cleanly
 ```bash
-cd ~/.openclaw/genome && node -e "
+cd ~/projects/genome && node -e "
 require('dotenv').config({ path: '/Users/clawdbot/projects/leadflow/.env' });
 const { checkDistributionHealth } = require('./scripts/distribution-collector');
 checkDistributionHealth().then(issues => {
@@ -239,5 +239,5 @@ checkDistributionHealth().then(issues => {
 ## Notes
 
 - **This is the 4th time this loop has been investigated.** The issue is persistent because each previous fix targeted Supabase, not local PG.
-- Migration scripts in `~/.openclaw/genome/migrations/` must be applied to local PG after any DB migration. There may be other un-applied migrations — Genome Dev should audit all `00x_*.sql` files.
+- Migration scripts in `~/projects/genome/migrations/` must be applied to local PG after any DB migration. There may be other un-applied migrations — Genome Dev should audit all `00x_*.sql` files.
 - The landing page is live at `https://leadflow-ai-five.vercel.app` — no design or dev work needed on the page itself.

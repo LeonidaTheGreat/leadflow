@@ -28,7 +28,7 @@ SELECT * FROM distribution_channels → relation "distribution_channels" does no
 
 The table was designed for Supabase cloud but never migrated to local PostgreSQL after the Supabase → local PG migration. Every heartbeat, `checkDistributionHealth()` queries this non-existent table, gets `null` back, interprets it as "no active landing page," and creates a new `no_landing_page` issue.
 
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js`, line ~148  
+**File:** `~/projects/genome/scripts/distribution-collector.js`, line ~148  
 **Fix:** Apply migration `006_distribution_metrics.sql` to local PG + seed active landing page row
 
 ### Root Cause 2: No Dedup Guard in `createDistributionTasks()`
@@ -38,14 +38,14 @@ The table was designed for Supabase cloud but never migrated to local PostgreSQL
 - Whether the linked UC (`gtm-landing-page`) is already complete
 - Whether a cooldown window has passed
 
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js`, line ~236+  
+**File:** `~/projects/genome/scripts/distribution-collector.js`, line ~236+  
 **Fix:** Add UC completion gate + 30-min task cooldown (see consolidated PRD, REQ-1 and REQ-2)
 
 ### Root Cause 3: Loop Detector Status-Only Dedup Creates Meta-Loop
 
 When the loop is detected (3+ tasks in 2h), `task-store.js` creates an investigation task ("PM: Loop detected — ..."). The dedup check only skips if investigation task status is NOT IN (done, failed, cancelled). Since investigation tasks are marked `done` after each PM agent completes, the next heartbeat finds no active investigation and creates another one.
 
-**File:** `~/.openclaw/genome/core/task-store.js`, ~line 138  
+**File:** `~/projects/genome/core/task-store.js`, ~line 138  
 **Fix:** Replace status-based dedup with timestamp-based 30-min cooldown (see consolidated PRD, REQ-3)
 
 ---
@@ -68,7 +68,7 @@ The dev task needs to be picked up and executed. It should implement the three f
 
 ### Fix 1: Apply Migration 006 to Local PG
 
-File: `~/.openclaw/genome/migrations/006_distribution_metrics.sql` (or equivalent)
+File: `~/projects/genome/migrations/006_distribution_metrics.sql` (or equivalent)
 
 Create `distribution_channels` table in local PostgreSQL (`postgresql://clawdbot@localhost/openclaw`) and seed:
 
@@ -159,9 +159,9 @@ const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
 |---|-------|-------------|
 | AC-1 | `distribution_channels` table exists in local PG | `\d distribution_channels` returns schema |
 | AC-2 | Active landing page row exists for leadflow | `SELECT COUNT(*) FROM distribution_channels WHERE project_id='leadflow' AND channel_type='landing_page' AND status='active'` → `1` |
-| AC-3 | `distribution-collector.js` has UC completion gate | `grep -c 'completedUcIds\|UC_ISSUE_MAP' ~/.openclaw/genome/scripts/distribution-collector.js` → `≥2` |
-| AC-4 | `distribution-collector.js` has 30-min cooldown | `grep -c 'thirtyMinutesAgo\|30 \* 60' ~/.openclaw/genome/scripts/distribution-collector.js` → `≥1` |
-| AC-5 | `task-store.js` uses timestamp dedup for loop detection | `grep -c 'thirtyMinutesAgo' ~/.openclaw/genome/core/task-store.js` → `≥1` |
+| AC-3 | `distribution-collector.js` has UC completion gate | `grep -c 'completedUcIds\|UC_ISSUE_MAP' ~/projects/genome/scripts/distribution-collector.js` → `≥2` |
+| AC-4 | `distribution-collector.js` has 30-min cooldown | `grep -c 'thirtyMinutesAgo\|30 \* 60' ~/projects/genome/scripts/distribution-collector.js` → `≥1` |
+| AC-5 | `task-store.js` uses timestamp dedup for loop detection | `grep -c 'thirtyMinutesAgo' ~/projects/genome/core/task-store.js` → `≥1` |
 | AC-6 | No new "PM: Distribution — Create Landing Page" tasks in 3 consecutive heartbeats | DB query → `0` |
 
 ---
@@ -177,17 +177,17 @@ const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
   },
   {
     "id": "dc-has-uc-gate",
-    "command": "grep -c 'completedUcIds\\|UC_ISSUE_MAP' ~/.openclaw/genome/scripts/distribution-collector.js",
+    "command": "grep -c 'completedUcIds\\|UC_ISSUE_MAP' ~/projects/genome/scripts/distribution-collector.js",
     "expected": "2"
   },
   {
     "id": "dc-has-cooldown",
-    "command": "grep -c 'thirtyMinutesAgo' ~/.openclaw/genome/scripts/distribution-collector.js",
+    "command": "grep -c 'thirtyMinutesAgo' ~/projects/genome/scripts/distribution-collector.js",
     "expected": "1"
   },
   {
     "id": "ts-has-timestamp-dedup",
-    "command": "grep -c 'thirtyMinutesAgo' ~/.openclaw/genome/core/task-store.js",
+    "command": "grep -c 'thirtyMinutesAgo' ~/projects/genome/core/task-store.js",
     "expected": "1"
   }
 ]
@@ -197,7 +197,7 @@ const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
 
 ## Scope
 
-**Genome project** (`~/.openclaw/genome/`):
+**Genome project** (`~/projects/genome/`):
 - `core/task-store.js` — loop detection timestamp dedup
 - `scripts/distribution-collector.js` — UC gate + task cooldown
 

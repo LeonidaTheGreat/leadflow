@@ -133,20 +133,20 @@ Every task must pass these gates before completion:
 5. **File size** — no source file over 1500 lines
 If any gate fails, fix it before marking done. The genome runs `quality-audit.js` on this project every heartbeat and auto-creates fix tasks for violations.
 
-## Orchestration (Genome — extracted to `~/.openclaw/genome/`)
+## Orchestration (Genome — extracted to `~/projects/genome/`)
 The orchestration engine ("Genome") has been extracted to its own repo: `LeonidaTheGreat/openclaw-genome`.
-All heartbeat, spawning, learning, health, and dashboard generation code now lives in `~/.openclaw/genome/`.
+All heartbeat, spawning, learning, health, and dashboard generation code now lives in `~/projects/genome/`.
 
 **What stays in this repo:**
 - `project.config.json` — project identity card (read by Genome)
-- `project-config-loader.js` → symlink to `~/.openclaw/genome/core/`
-- `task-store.js` → symlink to `~/.openclaw/genome/core/`
-- `subagent-completion-report.js` → symlink to `~/.openclaw/genome/core/`
+- `project-config-loader.js` → symlink to `~/projects/genome/core/`
+- `task-store.js` → symlink to `~/projects/genome/core/`
+- `subagent-completion-report.js` → symlink to `~/projects/genome/core/`
 - Product code: `server.js`, `routes/`, `lib/`, `product/`
 
-**Genome docs:** `~/.openclaw/genome/CLAUDE.md`, `~/.openclaw/genome/ARCHITECTURE.md`
+**Genome docs:** `~/projects/genome/CLAUDE.md`, `~/projects/genome/ARCHITECTURE.md`
 
-**Realtime Dispatcher:** Long-running service at `~/.openclaw/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.leadflow.realtime-dispatcher`
+**Realtime Dispatcher:** Long-running service at `~/projects/genome/core/realtime-dispatcher.js`. Restart with: `launchctl stop ai.openclaw.leadflow.realtime-dispatcher`
 
 **Full docs:** `docs/guides/4-LOOP-ARCHITECTURE.md`
 

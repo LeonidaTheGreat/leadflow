@@ -1,0 +1,97 @@
+{
+  "genome_score": 35,
+  "priority_changes": [
+    {
+      "uc_id": "fix-distribution-collector-js-still-queries-http-local",
+      "from": 1,
+      "to": 1,
+      "reason": "CRITICAL: This UC blocks the entire heartbeat loop. distribution-collector.js queries http://localhost:8787 which returns 404 for all table queries. This prevents any distribution tasks from being spawned correctly. Must be fixed before any P2+ work proceeds."
+    },
+    {
+      "uc_id": "uc-distribution-loop-fix",
+      "from": 1,
+      "to": 1,
+      "reason": "Specification for fixing distribution loop. Needs acceptance_checks defined with machine-verifiable criteria. Currently in specification phase with no acceptance criteria."
+    }
+  ],
+  "consolidations": [
+    {
+      "primary_uc": "uc-distribution-loop-fix",
+      "duplicate_ucs": [
+        "fix-distribution-loop",
+        "fix-distribution-collector-task-loop",
+        "fix-loop-handler-distribution-dedup"
+      ],
+      "reason": "Multiple UCs addressing the same distribution loop issue. Archive duplicates and consolidate all work into uc-distribution-loop-fix with clear acceptance_checks."
+    }
+  ],
+  "cancellations": [],
+  "action_items": [
+    {
+      "type": "fix",
+      "description": "FIX DISTRIBUTION-COLLECTOR.JS HTTP LOCALHOST QUERY BUG: distribution-collector.js in ~/projects/genome/scripts/ is hardcoded to query http://localhost:8787 (PostgREST) which fails with 404. This breaks the entire distribution heartbeat loop. Root cause: PostgREST service is not running or URL is wrong. Action: (1) Identify correct Supabase/PostgreSQL endpoint, (2) Update distribution-collector.js to use process.env or project config, (3) Verify with test query before shipping.",
+      "priority": 1,
+      "reason": "BLOCKER: Prevents distribution tasks from being created at all. Every heartbeat fails silently.",
+      "affects": "leadflow"
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "ADD TO DEV SOUL.MD: 'When opening a PR or working on a merge conflict, verify the PR is still open before spending time on it. If PR is closed/merged, escalate to orchestrator immediately instead of attempting resolution. Do not invest effort in obsolete PRs — the codebase moves fast.'",
+      "priority": 2,
+      "reason": "10 failures include work on closed PRs (#81), bulk-closed PRs (2026-03-09), and stale retries. Dev was investigating conflicts that no longer applied because PRs were already merged/closed elsewhere."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "qc",
+      "description": "ADD TO QC SOUL.MD: 'When a test fails, create a minimal reproduction case FIRST before escalating to diagnosis. Include: (1) exact test command that failed, (2) expected vs actual output, (3) environment state (node version, deps). Do not escalate with just a task ID — provide enough context for dev to reproduce in 5 minutes.'",
+      "priority": 3,
+      "reason": "6 escalations to diagnosis with minimal context. Better upfront triage reduces back-and-forth."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "product",
+      "description": "ADD TO PRODUCT SOUL.MD: 'Before creating a task, verify the UC does not already exist in the use_cases table with a successful completion. If a UC already has 1+ completed tasks, archive the newer duplicate and link all findings to the original UC. Prevent duplicate work by checking: `SELECT COUNT(*) FROM tasks WHERE uc_id = X AND status = done`.'",
+      "priority": 3,
+      "reason": "2 failures due to archived duplicates. Product was creating UCs for work already completed by other tasks."
+    }
+  ],
+  "human_action_items": [
+    {
+      "title": "DECISION: Consolidate Distribution Loop UCs",
+      "description": "There are 4 UCs addressing the same distribution loop issue: uc-distribution-loop-fix (spec), fix-distribution-loop (implementation), fix-distribution-collector-task-loop (P3), fix-loop-handler-distribution-dedup (unknown status). Should we consolidate into a single UC with a clear 2-part workflow: (1) fix distribution-collector.js HTTP endpoint bug, (2) add dedup guard + cooldown?",
+      "can_eliminate": false,
+      "elimination_proposal": "MERGE these into uc-distribution-loop-fix with acceptance_checks that cover both the HTTP bug AND the dedup logic."
+    },
+    {
+      "title": "DECISION: E2E Test Infrastructure",
+      "description": "Project has 0 E2E test specs defined (task says 5/12 passed, but query shows none). What is the ground truth? Do we have test infrastructure in place? If yes, why aren't specs in e2e_test_specs table? If no, should we set up E2E tests as a P2 UC?",
+      "can_eliminate": false,
+      "elimination_proposal": "Check if test specs exist elsewhere (e.g., /tests/e2e/*.js files) and either (1) reflect them in e2e_test_specs table, or (2) define new specs for critical paths."
+    }
+  ],
+  "focus_today": "Fix distribution-collector.js HTTP endpoint bug (BLOCKER) and consolidate 4 related distribution loop UCs into a single clear spec with acceptance_checks.",
+  "timestamp": "2026-04-03T00:00:00Z",
+  "analysis": {
+    "stuck_uc_root_causes": [
+      "uc-distribution-loop-fix is in 'specification' phase with acceptance_criteria but NO acceptance_checks JSON defined — genome cannot verify it when dev completes work",
+      "fix-distribution-collector-js-still-queries-http-local is a critical bug (not started, no tasks) — the HTTP endpoint is failing silently, blocking the entire distribution heartbeat",
+      "Multiple UCs address the same issue (4 total), causing confusion and duplicate spawning"
+    ],
+    "agent_failure_analysis": {
+      "dev_38_failures_root_cause": "PR state management — dev was working on closed/merged PRs and stale conflict resolutions. Old retries from 2026-03-08/09 kept being triggered.",
+      "qc_6_failures_root_cause": "Test isolation and context — escalations lack reproduction steps, making it hard for dev to follow up",
+      "product_6_failures_root_cause": "UC deduplication — product was creating UCs for work already completed, triggering archived duplicate tasks"
+    },
+    "genome_health_assessment": {
+      "e2e_test_coverage": "0/12 passed (likely because specs not in table, or tests not implemented)",
+      "codebase_violations": "0 (good)",
+      "overall_score": 35,
+      "blockers": [
+        "distribution-collector.js HTTP endpoint broken",
+        "E2E test infrastructure unclear",
+        "4 duplicate/overlapping distribution UCs"
+      ]
+    }
+  }
+}

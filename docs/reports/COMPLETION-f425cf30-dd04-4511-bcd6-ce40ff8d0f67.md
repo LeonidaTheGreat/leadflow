@@ -43,13 +43,13 @@ Successfully resolved merge conflicts on branch `dev/deb2c164-dev-re-merge-uc-fi
 ### Three Bug Fixes (UC-FIX-DISTRIBUTION-LOOP-001)
 
 #### Bug #1: Missing distribution_channels table causes infinite no_landing_page issues
-- **File:** `~/.openclaw/genome/scripts/distribution-collector.js` (lines 189-200)
+- **File:** `~/projects/genome/scripts/distribution-collector.js` (lines 189-200)
 - **Fix:** Modified `checkDistributionHealth()` to raise `no_landing_page` issue only when NO `distribution_channels` row exists with `channel_type = 'landing_page'`
 - **Impact:** Prevents repeated task spawning when channel is inactive or missing
 - **Verification:** ✅ PASS: checkDistributionHealth skips issues for completed UCs
 
 #### Bug #2: No dedup guard in createDistributionTasks()
-- **File:** `~/.openclaw/genome/scripts/distribution-collector.js` (lines 324-352)
+- **File:** `~/projects/genome/scripts/distribution-collector.js` (lines 324-352)
 - **Fix:** Added 48-hour cooldown check before creating distribution tasks
   - Queries recent tasks by `use_case_id`
   - Skips task creation if a matching task exists within 48 hours (any status)
@@ -57,7 +57,7 @@ Successfully resolved merge conflicts on branch `dev/deb2c164-dev-re-merge-uc-fi
 - **Verification:** ✅ PASS: createDistributionTasks computes 48-hour window and skips duplicate tasks
 
 #### Bug #3: Loop detector re-fires on completed investigation tasks
-- **File:** `~/.openclaw/genome/scripts/distribution-collector.js` (lines 338-352)
+- **File:** `~/projects/genome/scripts/distribution-collector.js` (lines 338-352)
 - **Fix:** Cooldown logic prevents task creation for recently completed tasks
   - 30-minute dedup-guard for immediate duplicates
   - 48-hour cooldown for investigation tasks that already ran

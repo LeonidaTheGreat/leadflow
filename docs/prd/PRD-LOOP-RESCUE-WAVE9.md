@@ -34,7 +34,7 @@ status: complete
 phase: GTM
 ```
 
-However, the distribution health check in `~/.openclaw/genome/scripts/distribution-collector.js` has **no UC completion gate**. The logic is:
+However, the distribution health check in `~/projects/genome/scripts/distribution-collector.js` has **no UC completion gate**. The logic is:
 
 1. `checkDistributionHealth()` runs every heartbeat
 2. Detects distribution issue: "zero_traffic" or similar
@@ -72,7 +72,7 @@ The existing UC `fix-distribution-collector-task-loop` has the exact acceptance 
 
 ### Implementation Requirements
 
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js`
+**File:** `~/projects/genome/scripts/distribution-collector.js`
 
 **Acceptance Checks:**
 1. **check-uc-completion:** Add gate before creating task: skip if linked UC is complete
@@ -121,10 +121,10 @@ Once dev implements the fix, these checks must pass:
 
 ```javascript
 // Check 1: UC completion gate active
-grep -n "completedUcIds\|UC_ISSUE_MAP" ~/.openclaw/genome/scripts/distribution-collector.js
+grep -n "completedUcIds\|UC_ISSUE_MAP" ~/projects/genome/scripts/distribution-collector.js
 
 // Check 2: Dedup checks use_cases table
-grep -A 10 "createDistributionTasks" ~/.openclaw/genome/scripts/distribution-collector.js | grep "use_cases"
+grep -A 10 "createDistributionTasks" ~/projects/genome/scripts/distribution-collector.js | grep "use_cases"
 
 // Check 3: No new tasks for complete UCs
 // Verify no task created with title "PM: Distribution — Content Marketing Campaign" 

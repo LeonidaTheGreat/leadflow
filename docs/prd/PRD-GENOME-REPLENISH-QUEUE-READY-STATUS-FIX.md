@@ -10,7 +10,7 @@
 
 ## Problem
 
-`replenishQueue()` in `~/.openclaw/genome/core/heartbeat-executor.js` contains a startStep calculation to determine which workflow step to spawn next for a UC. This check only runs for UCs with `implementation_status IN ('stuck', 'in_progress', 'not_started')`.
+`replenishQueue()` in `~/projects/genome/core/heartbeat-executor.js` contains a startStep calculation to determine which workflow step to spawn next for a UC. This check only runs for UCs with `implementation_status IN ('stuck', 'in_progress', 'not_started')`.
 
 UCs with `implementation_status = 'ready'` are excluded from this check, causing `startStep` to default to `0` (the first step). If step 0 is already done (e.g., PM task completed), a new step-0 task is created anyway — every heartbeat.
 
@@ -34,7 +34,7 @@ if (['stuck', 'in_progress', 'not_started'].includes(uc.implementation_status)) 
 
 ## Fix Specification
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Change:** Add `'ready'` to the status array in the startStep block.
 
 **Before:**
@@ -61,7 +61,7 @@ This is a one-line change. No schema changes, no migrations needed.
 
 ```bash
 # Check 1: 'ready' is present in the status filter
-grep -n "ready" ~/.openclaw/genome/core/heartbeat-executor.js | grep "startStep\|includes\|not_started" | wc -l
+grep -n "ready" ~/projects/genome/core/heartbeat-executor.js | grep "startStep\|includes\|not_started" | wc -l
 # Expected: >= 1
 
 # Check 2: No duplicate PM tasks for uc-revenue-pricing-clarity
@@ -91,8 +91,8 @@ psql $LOCAL_PG_URL -c "SELECT COUNT(*) FROM tasks WHERE use_case_id='uc-revenue-
 
 ## Implementation Notes
 
-- The fix is in `~/.openclaw/genome/` (the genome repo), not in `leadflow/`
-- Dev agent should check out `~/.openclaw/genome/` and apply the one-line fix
+- The fix is in `~/projects/genome/` (the genome repo), not in `leadflow/`
+- Dev agent should check out `~/projects/genome/` and apply the one-line fix
 - After fix, restart the heartbeat or wait for the next cycle to verify no duplicate PM tasks are created for `uc-revenue-pricing-clarity`
 
 ---

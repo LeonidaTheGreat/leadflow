@@ -26,11 +26,11 @@ All four fixes from PRD-DISTRIBUTION-LOOP-MIGRATION-006 have been successfully i
 ### Fix 1: Migration 006 Applied to Local PostgreSQL
 
 **Status:** ✅ Verified  
-**File:** `~/.openclaw/genome/migrations/006_distribution_metrics.sql`  
+**File:** `~/projects/genome/migrations/006_distribution_metrics.sql`  
 **Command Executed:**
 ```bash
 /opt/homebrew/Cellar/postgresql@16/16.13/bin/psql "postgresql://clawdbot@localhost/openclaw" \
-  -f ~/.openclaw/genome/migrations/006_distribution_metrics.sql
+  -f ~/projects/genome/migrations/006_distribution_metrics.sql
 ```
 
 **Verification:**
@@ -82,7 +82,7 @@ WHERE project_id='leadflow' AND channel_type='landing_page' AND status='active';
 ### Fix 3: Dedup Guard Added to `createDistributionTasks()`
 
 **Status:** ✅ Verified in Code  
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js` (lines 319-345)  
+**File:** `~/projects/genome/scripts/distribution-collector.js` (lines 319-345)  
 **Implementation:**
 
 ```javascript
@@ -127,7 +127,7 @@ if (recentTasks?.length > 0) {
 ### Fix 4: Loop Detector Cooldown Extended to 24h Timestamp-Based Dedup
 
 **Status:** ✅ Verified in Code  
-**File:** `~/.openclaw/genome/core/task-store.js` (lines 169-179)  
+**File:** `~/projects/genome/core/task-store.js` (lines 169-179)  
 **Implementation:**
 
 ```javascript
@@ -208,7 +208,7 @@ $ /opt/homebrew/Cellar/postgresql@16/16.13/bin/psql "postgresql://clawdbot@local
 
 ```javascript
 // Test script executed:
-const { checkDistributionHealth } = require('~/.openclaw/genome/scripts/distribution-collector');
+const { checkDistributionHealth } = require('~/projects/genome/scripts/distribution-collector');
 const issues = await checkDistributionHealth();
 const noLandingPageIssues = issues.filter(i => i.type === 'no_landing_page');
 console.log('no_landing_page issues:', noLandingPageIssues.length);
@@ -225,8 +225,8 @@ console.log('no_landing_page issues:', noLandingPageIssues.length);
 |-----------|--------|----------|
 | Migration 006 | ✅ Applied | Local PostgreSQL (`openclaw` DB) |
 | Landing page record | ✅ Seeded | `distribution_channels` table |
-| Dedup guard | ✅ Deployed | Genome (`~/.openclaw/genome/scripts/distribution-collector.js`) |
-| Loop detector cooldown | ✅ Deployed | Genome (`~/.openclaw/genome/core/task-store.js`) |
+| Dedup guard | ✅ Deployed | Genome (`~/projects/genome/scripts/distribution-collector.js`) |
+| Loop detector cooldown | ✅ Deployed | Genome (`~/projects/genome/core/task-store.js`) |
 
 ---
 

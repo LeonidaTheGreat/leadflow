@@ -5,7 +5,7 @@
  * Scans all JS files in routes/ and integration/, extracts HTTP method,
  * path, brief description, and which service is called.
  *
- * Called every heartbeat by ~/.openclaw/genome/scripts/generate-api-docs.js.
+ * Called every heartbeat by ~/projects/genome/scripts/generate-api-docs.js.
  * Can also be run standalone: node scripts/generate-api-docs.js
  */
 

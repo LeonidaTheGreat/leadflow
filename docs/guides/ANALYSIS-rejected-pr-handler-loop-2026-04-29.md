@@ -6,7 +6,7 @@
 
 ## What happened
 
-`checkPRReviews()` in `~/.openclaw/genome/core/loops/pr-review-loop.js` created 7 fix tasks for the same QC rejection of PR #85. Four PRs merged with duplicate fixes (~$14 wasted compute).
+`checkPRReviews()` in `~/projects/genome/core/loops/pr-review-loop.js` created 7 fix tasks for the same QC rejection of PR #85. Four PRs merged with duplicate fixes (~$14 wasted compute).
 
 ## Root cause: 3 compounding bugs
 

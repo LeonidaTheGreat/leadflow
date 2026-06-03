@@ -24,7 +24,7 @@ The revenue collector (Loop 5 in Genome) creates duplicate "PM: Revenue alert" t
 
 ### Current Behavior
 
-**File:** `~/.openclaw/genome/scripts/revenue-collector.js`  
+**File:** `~/projects/genome/scripts/revenue-collector.js`  
 **Function:** `createRevenueAlertTasks()` (line 237)
 
 Every heartbeat (~30 seconds):
@@ -62,7 +62,7 @@ Every heartbeat (~30 seconds):
 
 ### Code Location
 
-**File:** `~/.openclaw/genome/scripts/revenue-collector.js`
+**File:** `~/projects/genome/scripts/revenue-collector.js`
 
 **Current Code (line 246-263):**
 ```javascript
@@ -329,7 +329,7 @@ Log every decision for audit trail:
 
 ### Phase 1: Code Changes (Dev Agent)
 
-**File:** `~/.openclaw/genome/scripts/revenue-collector.js`
+**File:** `~/projects/genome/scripts/revenue-collector.js`
 
 **Changes:**
 1. Modify `createRevenueAlertTasks()` function (line 237-263)
@@ -465,10 +465,10 @@ ORDER BY day DESC
 
 ## Related Documentation
 
-- **Revenue Collector:** `~/.openclaw/genome/scripts/revenue-collector.js`
-- **Genome Architecture:** `~/.openclaw/genome/ARCHITECTURE.md` (Loop 5)
-- **Task Lifecycle:** `~/.openclaw/genome/docs/TASK-LIFECYCLE.md`
-- **Loop Detection:** `~/.openclaw/genome/core/task-store.js` (line 150-160)
+- **Revenue Collector:** `~/projects/genome/scripts/revenue-collector.js`
+- **Genome Architecture:** `~/projects/genome/ARCHITECTURE.md` (Loop 5)
+- **Task Lifecycle:** `~/projects/genome/docs/TASK-LIFECYCLE.md`
+- **Loop Detection:** `~/projects/genome/core/task-store.js` (line 150-160)
 - **Project Goals:** `/Users/clawdbot/projects/leadflow/project.config.json` (goals section)
 - **Heartbeat Spec:** `/Users/clawdbot/projects/leadflow/HEARTBEAT.md`
 
@@ -479,4 +479,4 @@ ORDER BY day DESC
 **PM Review:** ✅ Approved  
 **Status:** Ready for Dev → QC → Production
 
-**Next Step:** Dev agent implements changes in `~/.openclaw/genome/scripts/revenue-collector.js`
+**Next Step:** Dev agent implements changes in `~/projects/genome/scripts/revenue-collector.js`

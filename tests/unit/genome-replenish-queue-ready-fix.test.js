@@ -9,8 +9,8 @@
  *    Both are confirmed present in queue-replenisher.js.
  *
  * Code split: heartbeat-executor.js was split into separate loop modules.
- *   - sweepUCCompletions → ~/.openclaw/genome/core/loops/execution-loop.js
- *   - replenishQueue     → ~/.openclaw/genome/core/loops/queue-replenisher.js
+ *   - sweepUCCompletions → ~/projects/genome/core/loops/execution-loop.js
+ *   - replenishQueue     → ~/projects/genome/core/loops/queue-replenisher.js
  */
 
 const assert = require('assert')

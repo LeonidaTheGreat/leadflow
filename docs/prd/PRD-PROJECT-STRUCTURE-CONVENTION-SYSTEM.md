@@ -19,7 +19,7 @@ Standardize repository structure for all projects managed by Genome via:
 ## 3) Scope
 ### In scope
 - New template file at:
-  `~/.openclaw/genome/templates/PROJECT_STRUCTURE.template.md`
+  `~/projects/genome/templates/PROJECT_STRUCTURE.template.md`
 - Canonical directory map and guardrails in template
 - `workflow-engine.js` update so role context includes/uses project structure guidance
 - Project registration bootstrap step to create `PROJECT_STRUCTURE.md` from template
@@ -87,7 +87,7 @@ Template MUST define this canonical structure and intent:
 - Deterministic output pathing guidance.
 
 ## 9) Acceptance Criteria
-1. Template exists at `~/.openclaw/genome/templates/PROJECT_STRUCTURE.template.md` and contains full canonical tree + rules above.
+1. Template exists at `~/projects/genome/templates/PROJECT_STRUCTURE.template.md` and contains full canonical tree + rules above.
 2. `buildRoleContext()` includes project structure convention in generated role context for spawned tasks.
 3. New project registration creates `PROJECT_STRUCTURE.md` from template when absent.
 4. Re-register/bootstrap does not overwrite pre-existing project-specific `PROJECT_STRUCTURE.md`.

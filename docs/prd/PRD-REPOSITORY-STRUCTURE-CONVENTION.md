@@ -36,7 +36,7 @@ A well-defined directory convention reduces agent onboarding time, eliminates pa
 
 - Refactoring product code logic (routes, integrations, lib)
 - Changing Supabase schema
-- Modifying Genome files in `~/.openclaw/genome/`
+- Modifying Genome files in `~/projects/genome/`
 - Moving symlinks: `task-store.js`, `project-config-loader.js`, `subagent-completion-report.js` (these STAY at root — they are Genome symlinks)
 
 ---

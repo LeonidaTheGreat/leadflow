@@ -33,7 +33,7 @@ Wave 3 concrete task IDs (today, 12:36–12:43):
 
 ### Bug 1: `distribution_channels` table empty (PRIMARY TRIGGER)
 
-`checkDistributionHealth()` in `~/.openclaw/genome/scripts/distribution-collector.js` queries:
+`checkDistributionHealth()` in `~/projects/genome/scripts/distribution-collector.js` queries:
 ```js
 const { data: landingPages } = await supabase
   .from('distribution_channels')
@@ -49,7 +49,7 @@ The `distribution_channels` table exists (created by migration `006_distribution
 
 ### Bug 2: Loop detector itself has no cooldown (AMPLIFIER — NEWLY IDENTIFIED)
 
-The loop detector in `~/.openclaw/genome/core/task-store.js` (~line 139) creates a PM investigation task when it detects 3+ identical tasks in 2h:
+The loop detector in `~/projects/genome/core/task-store.js` (~line 139) creates a PM investigation task when it detects 3+ identical tasks in 2h:
 
 ```js
 const { data: existingInv } = await this.supabase.from('tasks').select('id')
@@ -76,7 +76,7 @@ Wave 3 shows 6 consecutive "PM: Loop detected" tasks created 10 minutes apart �
 
 ### Fix A — Seed `distribution_channels` with active landing page [Genome Dev]
 
-**File:** `~/.openclaw/genome/scripts/seed-gtm-use-cases.js` (or a new migration script)  
+**File:** `~/projects/genome/scripts/seed-gtm-use-cases.js` (or a new migration script)  
 **Location:** Genome core, applied to local PostgreSQL
 
 Run this SQL (idempotent):
@@ -99,7 +99,7 @@ INSERT INTO distribution_channels (
 
 ### Fix B — Add dedup guard to `createDistributionTasks()` [Genome Dev]
 
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js`  
+**File:** `~/projects/genome/scripts/distribution-collector.js`  
 **Function:** `createDistributionTasks(issues)`
 
 Add dedup check BEFORE calling `store.createTask()`:
@@ -140,13 +140,13 @@ for (const issue of issues) {
 **Acceptance:**
 - Running `createDistributionTasks()` twice with the same issues within 7 days creates exactly 1 task
 - Skipped tasks are logged: `[Distribution] Skipping duplicate: "..."` 
-- `grep -c 'Skipping duplicate' ~/.openclaw/genome/scripts/distribution-collector.js` returns ≥ 1
+- `grep -c 'Skipping duplicate' ~/projects/genome/scripts/distribution-collector.js` returns ≥ 1
 
 ---
 
 ### Fix C — Add 24h cooldown to loop detector [Genome Dev]
 
-**File:** `~/.openclaw/genome/core/task-store.js`  
+**File:** `~/projects/genome/core/task-store.js`  
 **Location:** Runtime loop detection block (~line 139)
 
 Replace the current "active task check" with a "recently created check":
@@ -170,7 +170,7 @@ const { data: existingInv } = await this.supabase.from('tasks').select('id')
 
 **Acceptance:**
 - After loop investigation task is created and completed (done), no new loop investigation task is created for the same trigger within 24h
-- `grep -c 'cooldownStart\|24 \* 60 \* 60' ~/.openclaw/genome/core/task-store.js` returns ≥ 1
+- `grep -c 'cooldownStart\|24 \* 60 \* 60' ~/projects/genome/core/task-store.js` returns ≥ 1
 
 ---
 
@@ -196,12 +196,12 @@ const { data: existingInv } = await this.supabase.from('tasks').select('id')
   },
   {
     "id": "dedup-guard-in-collector",
-    "command": "grep -c 'Skipping duplicate' ~/.openclaw/genome/scripts/distribution-collector.js || echo 0",
+    "command": "grep -c 'Skipping duplicate' ~/projects/genome/scripts/distribution-collector.js || echo 0",
     "expected": "1"
   },
   {
     "id": "loop-detector-cooldown-fix",
-    "command": "grep -c 'cooldownStart\\|24 \\* 60 \\* 60' ~/.openclaw/genome/core/task-store.js || echo 0",
+    "command": "grep -c 'cooldownStart\\|24 \\* 60 \\* 60' ~/projects/genome/core/task-store.js || echo 0",
     "expected": "1"
   }
 ]
@@ -230,7 +230,7 @@ const { data: existingInv } = await this.supabase.from('tasks').select('id')
 
 ## Notes for Dev Agent
 
-- Genome lives at `~/.openclaw/genome/` — that's where Fixes B and C go
+- Genome lives at `~/projects/genome/` — that's where Fixes B and C go
 - Fix A is a SQL statement against local PostgreSQL (`LOCAL_PG_URL` from `~/.env`)
 - The landing page is already deployed — this is purely a DB registration issue
 - Do NOT modify any files in `~/projects/leadflow/` for these fixes

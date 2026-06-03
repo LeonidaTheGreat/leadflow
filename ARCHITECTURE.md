@@ -87,7 +87,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 - **Database:** Local PostgreSQL on Mac Mini (openclaw DB)
 - **Deployment:** Vercel (two projects: webhook API + dashboard)
 - **External:** Twilio (SMS), Stripe (billing), Follow Up Boss (CRM), Cal.com (bookings), Resend (email)
-- **Orchestration:** OpenClaw Genome (`~/.openclaw/genome/`) — heartbeat, task spawning, agent management
+- **Orchestration:** OpenClaw Genome (`~/projects/genome/`) — heartbeat, task spawning, agent management
 
 ### Two Vercel Projects
 

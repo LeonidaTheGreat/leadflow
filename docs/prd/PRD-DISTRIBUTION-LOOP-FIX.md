@@ -5,7 +5,7 @@
 **Priority:** 1 (Blocker — loop wastes agent budget and creates noise)  
 **Author:** Product Manager  
 **Date:** 2026-03-28  
-**Project:** genome (affects `~/.openclaw/genome/scripts/distribution-collector.js`)
+**Project:** genome (affects `~/projects/genome/scripts/distribution-collector.js`)
 
 ---
 
@@ -116,7 +116,7 @@ When skipping task creation due to cooldown or UC completion, log clearly:
 
 ## File to Modify
 
-**Genome project only:** `~/.openclaw/genome/scripts/distribution-collector.js`
+**Genome project only:** `~/projects/genome/scripts/distribution-collector.js`
 
 - Function: `checkDistributionHealth()` — add UC completion gate (REQ-1) and loosen channel check (REQ-3)
 - Function: `createDistributionTasks()` — add cooldown check (REQ-2) and skip logging (REQ-4)

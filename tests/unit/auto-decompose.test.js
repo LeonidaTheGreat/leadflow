@@ -1,7 +1,7 @@
 'use strict'
 
 /*
- * Tests for ~/.openclaw/genome/intelligence/auto-decompose.js
+ * Tests for ~/projects/genome/intelligence/auto-decompose.js
  *
  * Spec:
  *   What: Test all four exported functions:

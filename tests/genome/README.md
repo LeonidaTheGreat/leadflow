@@ -1,6 +1,6 @@
 # Genome Core Module Tests
 
-These tests verify the core orchestration modules from `~/.openclaw/genome/`.
+These tests verify the core orchestration modules from `~/projects/genome/`.
 
 ## Test Files
 
@@ -13,7 +13,7 @@ These tests verify the core orchestration modules from `~/.openclaw/genome/`.
 These tests must be run from the genome directory:
 
 ```bash
-cd ~/.openclaw/genome
+cd ~/projects/genome
 npm test
 ```
 

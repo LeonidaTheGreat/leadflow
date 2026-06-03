@@ -3,7 +3,7 @@
 **ID:** prd-pm-loop-detection-fix  
 **Status:** active  
 **Priority:** P0  
-**Affected component:** `~/.openclaw/genome/core/heartbeat-executor.js`, `~/.openclaw/genome/core/task-store.js`
+**Affected component:** `~/projects/genome/core/heartbeat-executor.js`, `~/projects/genome/core/task-store.js`
 
 ---
 
@@ -133,6 +133,6 @@ All three changes are small, surgical, and do not require DB migrations.
 
 | File | Change |
 |------|--------|
-| `~/.openclaw/genome/core/heartbeat-executor.js` | Fix 1: add `'ready'` to replenishQueue startStep condition |
-| `~/.openclaw/genome/core/heartbeat-executor.js` | Fix 2: add `'ready'` to sweepUCCompletions status filter |
-| `~/.openclaw/genome/core/task-store.js` | Fix 3: add 2h done-task cooldown to createTask UC+agent guard |
+| `~/projects/genome/core/heartbeat-executor.js` | Fix 1: add `'ready'` to replenishQueue startStep condition |
+| `~/projects/genome/core/heartbeat-executor.js` | Fix 2: add `'ready'` to sweepUCCompletions status filter |
+| `~/projects/genome/core/task-store.js` | Fix 3: add 2h done-task cooldown to createTask UC+agent guard |

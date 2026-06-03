@@ -7,7 +7,7 @@
 
 ## Summary
 
-All three Phase 1B fixes have been **implemented and committed** to the Genome orchestration engine (`~/.openclaw/genome/core/`).
+All three Phase 1B fixes have been **implemented and committed** to the Genome orchestration engine (`~/projects/genome/core/`).
 
 Previous attempts documented the fixes without actually implementing them. This attempt **made the real code changes** and committed them to the genome repository.
 
@@ -15,7 +15,7 @@ Previous attempts documented the fixes without actually implementing them. This 
 
 ### 1. ✅ Telegram Reporter Path Fix
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Method:** `_reportStepFatalError()`
 
 **Problem:**
@@ -32,7 +32,7 @@ Previous attempts documented the fixes without actually implementing them. This 
 
 ### 2. ✅ Coverage Directory Cleanup
 
-**File:** `~/.openclaw/genome/` (git tracking)
+**File:** `~/projects/genome/` (git tracking)
 
 **Problem:**
 - 14,000+ lines of coverage files were committed in Phase 1B commit (824a3ee)
@@ -48,7 +48,7 @@ Previous attempts documented the fixes without actually implementing them. This 
 
 ### 3. ✅ _step() Wrapper Verification
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Method:** `run()`
 
 **Problem:**
