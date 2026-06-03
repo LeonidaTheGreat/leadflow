@@ -118,8 +118,8 @@ Any open "Smoke: Vercel dashboard health failing" tasks that were created during
 
 | File | Change |
 |------|--------|
-| `~/.openclaw/genome/core/heartbeat-executor.js` | Fix smoke handler: use `findLatestTaskByTitle`, populate `lastTaskCompleted` |
-| `~/.openclaw/genome/core/task-store.js` | Add `findLatestTaskByTitle(title)` method (returns most recent task regardless of status) |
+| `~/projects/genome/core/heartbeat-executor.js` | Fix smoke handler: use `findLatestTaskByTitle`, populate `lastTaskCompleted` |
+| `~/projects/genome/core/task-store.js` | Add `findLatestTaskByTitle(title)` method (returns most recent task regardless of status) |
 
 > **Note:** These are genome files — not in the `leadflow` repo. The dev agent must modify them in-place. Do NOT copy them to the leadflow repo.
 

@@ -38,24 +38,24 @@ PM investigation tasks for stuck UCs complete in <2 minutes with zero output (no
 ### Issue A Fix
 - [ ] Stuck-UC detection query filters out `implementation_status IN ('complete', 'cancelled', 'paused')`
 - [ ] Zero investigation tasks created for already-complete UCs
-- Machine check: `grep -n "implementation_status" ~/.openclaw/genome/core/heartbeat-executor.js | grep -c "complete"` ≥ 1
+- Machine check: `grep -n "implementation_status" ~/projects/genome/core/heartbeat-executor.js | grep -c "complete"` ≥ 1
 
 ### Issue B Fix  
 - [ ] Task store write errors are logged with full error detail (not swallowed)
 - [ ] Health check validates Supabase connectivity on startup and every N cycles
 - [ ] Failed writes trigger a genome alert (Telegram or action_item)
-- Machine check: `grep -c "task write.*error\|write.*failed" ~/.openclaw/genome/core/task-store.js` ≥ 1
+- Machine check: `grep -c "task write.*error\|write.*failed" ~/projects/genome/core/task-store.js` ≥ 1
 
 ### Issue C Fix
 - [ ] PM investigation task prompt includes: current UC status from DB, recent task list with failure reasons, explicit output format requirement
 - [ ] A PM investigation task that completes without triageOutcome is flagged as invalid and retried once
-- Machine check: `grep -c "triageOutcome" ~/.openclaw/genome/core/workflow-engine.js` ≥ 1
+- Machine check: `grep -c "triageOutcome" ~/projects/genome/core/workflow-engine.js` ≥ 1
 
 ## Out of Scope
 - Changes to the LeadFlow product code (`~/projects/leadflow/`)
 - Changes to the circuit breaker threshold values
 
 ## Files to Modify (Genome)
-- `~/.openclaw/genome/core/heartbeat-executor.js` — Issue A: filter stuck-UC query
-- `~/.openclaw/genome/core/task-store.js` — Issue B: surface write errors
-- `~/.openclaw/genome/core/workflow-engine.js` — Issue C: validate PM completion
+- `~/projects/genome/core/heartbeat-executor.js` — Issue A: filter stuck-UC query
+- `~/projects/genome/core/task-store.js` — Issue B: surface write errors
+- `~/projects/genome/core/workflow-engine.js` — Issue C: validate PM completion

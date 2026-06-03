@@ -2,7 +2,7 @@
 
 /**
  * Spec:
- *   What:   ~/.openclaw/genome/core/structured-logger.js
+ *   What:   ~/projects/genome/core/structured-logger.js
  *           createLogger(moduleName) → { info, warn, error, debug }
  *           emit() → console.log/console.error + fs.appendFileSync with rotation
  *   Verify: npx jest tests/genome/structured-logger.test.js --no-coverage → all pass

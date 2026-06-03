@@ -12,7 +12,7 @@
 
 **VERDICT: ✅ APPROVE**
 
-All acceptance criteria met. Tests exist in `~/.openclaw/genome/tests/` and `tests/genome/` (leadflow repo copies), all 98 tests pass, and files are in correct locations.
+All acceptance criteria met. Tests exist in `~/projects/genome/tests/` and `tests/genome/` (leadflow repo copies), all 98 tests pass, and files are in correct locations.
 
 ---
 
@@ -32,7 +32,7 @@ Previous attempts failed with `false_completion` - agents claimed completion but
 
 | Criteria | Status | Evidence |
 |----------|--------|----------|
-| Create `~/.openclaw/genome/tests/` directory | ✅ PASS | Directory exists with 6 test files |
+| Create `~/projects/genome/tests/` directory | ✅ PASS | Directory exists with 6 test files |
 | Add Jest as test framework | ✅ PASS | `package.json` has Jest v30.3.0 in devDependencies |
 | Write `tests/local-pg.test.js` | ✅ PASS | File exists, tests select/insert/not/contains |
 | Write `tests/workflow-engine.test.js` | ✅ PASS | File exists, tests selectInitialModel/classifyAreas |
@@ -134,7 +134,7 @@ Test 5: Verify no hardcoded secrets in test files
 
 ## Files Reviewed
 
-### Genome Repo (`~/.openclaw/genome/`)
+### Genome Repo (`~/projects/genome/`)
 - `tests/local-pg.test.js` — SELECT, INSERT, UPDATE, filter operators
 - `tests/workflow-engine.test.js` — model selection, area classification
 - `tests/parseUTC.test.js` — UTC timestamp parsing

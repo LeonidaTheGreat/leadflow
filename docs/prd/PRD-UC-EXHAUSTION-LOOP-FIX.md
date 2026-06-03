@@ -25,7 +25,7 @@ The `_checkUCExhausted()` function in `heartbeat-executor.js` creates duplicate 
 
 ## Root Cause
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`  
+**File:** `~/projects/genome/core/heartbeat-executor.js`  
 **Function:** `_checkUCExhausted(ucId, ucName, maxTotalAttempts)`
 
 The function lacks an early-exit guard at the top. When a UC is already marked `stuck`, all three calling paths re-execute the full exhaustion logic:
@@ -49,7 +49,7 @@ At the **top** of `_checkUCExhausted()`, before any task queries or counts:
 - Log: `"UC {ucId} already stuck — skipping exhaustion check"`
 
 **Acceptance criteria:**
-- `grep -n "implementation_status.*stuck.*return" ~/.openclaw/genome/core/heartbeat-executor.js` returns at least 1 match inside `_checkUCExhausted`
+- `grep -n "implementation_status.*stuck.*return" ~/projects/genome/core/heartbeat-executor.js` returns at least 1 match inside `_checkUCExhausted`
 
 ### R2 — Single PM Task Per UC (P1)
 The `findTaskByTitle()` guard must also check across all `project_id` values, not just the current project, to catch cross-project PM tasks.
@@ -71,7 +71,7 @@ The early exit must log at debug level so it's visible in heartbeat logs without
 
 ## Implementation Spec
 
-**Target file:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**Target file:** `~/projects/genome/core/heartbeat-executor.js`
 
 **Change:** Insert at the top of `_checkUCExhausted()`, after the `if (!this.store.supabase)` guard:
 

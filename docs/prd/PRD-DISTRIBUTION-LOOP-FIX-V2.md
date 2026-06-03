@@ -112,33 +112,33 @@ console.log(`  [Distribution] Dedup check via TaskStore (local PG) for: "${title
 
 1. **Dedup uses TaskStore, not raw Supabase client:**
    ```
-   grep -c 'supabase.from.*tasks' ~/.openclaw/genome/scripts/distribution-collector.js
+   grep -c 'supabase.from.*tasks' ~/projects/genome/scripts/distribution-collector.js
    Expected: 0
    ```
    (The raw supabase client must no longer be used for task dedup queries)
 
 2. **TaskStore used in dedup guard:**
    ```
-   grep -c 'store\.find\|store\.getRecent\|TaskStore.*dedup\|findRecent' ~/.openclaw/genome/scripts/distribution-collector.js
+   grep -c 'store\.find\|store\.getRecent\|TaskStore.*dedup\|findRecent' ~/projects/genome/scripts/distribution-collector.js
    Expected: >= 1
    ```
 
 3. **Zero-traffic guard checks for analytics source:**
    ```
-   grep -c 'hasAnalyticsSource\|POSTHOG_API_KEY.*zero\|analyticsConfigured' ~/.openclaw/genome/scripts/distribution-collector.js
+   grep -c 'hasAnalyticsSource\|POSTHOG_API_KEY.*zero\|analyticsConfigured' ~/projects/genome/scripts/distribution-collector.js
    Expected: >= 1
    ```
 
 4. **No new content marketing tasks created after fix (runtime test):**
    After deploying the fix, running `distribution-collector.js` twice in succession should create 0 new tasks (dedup prevents the second creation).
    ```
-   node ~/.openclaw/genome/scripts/distribution-collector.js 2>&1 | grep -c 'Skipping duplicate'
+   node ~/projects/genome/scripts/distribution-collector.js 2>&1 | grep -c 'Skipping duplicate'
    Expected: >= 1
    ```
 
 ### Human Test
 
-1. Run `node ~/.openclaw/genome/scripts/distribution-collector.js` twice
+1. Run `node ~/projects/genome/scripts/distribution-collector.js` twice
 2. Confirm that the second run logs "Skipping duplicate: PM: Distribution — Content Marketing Campaign"
 3. Confirm no new tasks appear in the `tasks` table on the second run
 
@@ -147,7 +147,7 @@ console.log(`  [Distribution] Dedup check via TaskStore (local PG) for: "${title
 ## Implementation Notes for Dev Agent
 
 ### File to Modify
-`~/.openclaw/genome/scripts/distribution-collector.js` (Genome repo, not leadflow repo)
+`~/projects/genome/scripts/distribution-collector.js` (Genome repo, not leadflow repo)
 
 ### TaskStore Method Needed
 
@@ -172,8 +172,8 @@ Since `TaskStore.supabase` is actually a local-pg client (when `LOCAL_PG_URL` is
 
 ### Scope
 
-- Modify: `~/.openclaw/genome/scripts/distribution-collector.js`
-- Possibly modify: `~/.openclaw/genome/core/task-store.js` (if `findRecentTaskByTitle` doesn't exist)
+- Modify: `~/projects/genome/scripts/distribution-collector.js`
+- Possibly modify: `~/projects/genome/core/task-store.js` (if `findRecentTaskByTitle` doesn't exist)
 - Do NOT modify: any files in `/Users/clawdbot/projects/leadflow/` — this is a Genome bug
 
 ---

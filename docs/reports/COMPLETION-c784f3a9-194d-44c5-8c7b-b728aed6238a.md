@@ -18,7 +18,7 @@ UC-PILOT-WHITE-GLOVE (and other use cases) had PM tasks complete 3x in 2 hours w
 
 ### Fix 1: heartbeat-executor.js - replenishQueue()
 
-**Location:** `~/.openclaw/genome/core/heartbeat-executor.js` (lines ~7453-7485)
+**Location:** `~/projects/genome/core/heartbeat-executor.js` (lines ~7453-7485)
 
 **Changes:**
 1. **Always calculate startStep from done tasks** - regardless of UC implementation_status
@@ -48,7 +48,7 @@ if (doneAgents.has(targetAgentForStep)) {
 
 ### Fix 2: workflow-engine.js - chainTask()
 
-**Location:** `~/.openclaw/genome/core/workflow-engine.js` (lines ~706-715)
+**Location:** `~/projects/genome/core/workflow-engine.js` (lines ~706-715)
 
 **Changes:**
 1. **Use task.metadata.workflow_step if available** - more reliable than searching the workflow array
@@ -95,8 +95,8 @@ Created comprehensive unit tests in `tests/unit/pm-loop-fix.test.js`:
 ## Files Modified
 
 ### Genome Core (outside LeadFlow repo)
-- `~/.openclaw/genome/core/heartbeat-executor.js` - replenishQueue() fix
-- `~/.openclaw/genome/core/workflow-engine.js` - chainTask() fix
+- `~/projects/genome/core/heartbeat-executor.js` - replenishQueue() fix
+- `~/projects/genome/core/workflow-engine.js` - chainTask() fix
 
 ### LeadFlow Repo
 - `tests/unit/pm-loop-fix.test.js` - New unit tests (208 lines)
@@ -116,4 +116,4 @@ Created comprehensive unit tests in `tests/unit/pm-loop-fix.test.js`:
 
 ## Deployment Notes
 
-The Genome core files (`~/.openclaw/genome/core/`) are shared orchestration infrastructure. Changes take effect immediately on the next heartbeat cycle (every 5 minutes). No deployment to Vercel required.
+The Genome core files (`~/projects/genome/core/`) are shared orchestration infrastructure. Changes take effect immediately on the next heartbeat cycle (every 5 minutes). No deployment to Vercel required.

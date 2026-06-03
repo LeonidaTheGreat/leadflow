@@ -6,7 +6,7 @@
 
 ## Finding
 
-The fix is live in `~/.openclaw/genome/scripts/distribution-collector.js`:
+The fix is live in `~/projects/genome/scripts/distribution-collector.js`:
 
 1. **Dedup uses local PG** — `store.findRecentTaskByTitle()` calls TaskStore against local PostgreSQL, not cloud Supabase. Inline comment documents this explicitly.
 2. **zero_traffic suppressed** — checks for analytics env vars before treating zero traffic as anomaly.

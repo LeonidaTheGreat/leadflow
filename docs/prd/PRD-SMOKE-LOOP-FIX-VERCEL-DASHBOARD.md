@@ -77,7 +77,7 @@ Root cause: The Vercel dashboard `/api/health` endpoint still tries to connect t
 
 ### Part 1: Fix Genome Engine Loop Bug
 
-**Files:** `~/.openclaw/genome/core/task-store.js`, `~/.openclaw/genome/core/heartbeat-executor.js`
+**Files:** `~/projects/genome/core/task-store.js`, `~/projects/genome/core/heartbeat-executor.js`
 
 #### 1A — Add `findTaskByTitleAny` method to task-store.js
 

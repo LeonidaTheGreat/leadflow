@@ -8,7 +8,7 @@ What:
 
 Verify:
 - Run `npm run no_direct_db` and expect exit code 0 plus a pass message when no backend route violations exist.
-- Run `node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json` and confirm the current no_direct_db failure source is dashboard `app/api` files, while backend routes remain clean.
+- Run `node ~/projects/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json` and confirm the current no_direct_db failure source is dashboard `app/api` files, while backend routes remain clean.
 - Run project quality gates: `npm run build`, `npm run lint`, `npm test`, `npm audit --audit-level=high` and expect success.
 
 Boundaries:

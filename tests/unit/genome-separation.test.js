@@ -5,7 +5,7 @@
  * Tests that verify the separation between LeadFlow product code
  * and Genome orchestration system.
  * 
- * Genome files should be in ~/.openclaw/genome/
+ * Genome files should be in ~/projects/genome/
  * LeadFlow files should be in ~/projects/leadflow/
  * 
  * Run with: node tests/unit/genome-separation.test.js
@@ -17,7 +17,7 @@ const assert = require('assert');
 const os = require('os');
 
 // Paths
-const GENOME_PATH = path.join(os.homedir(), '.openclaw', 'genome');
+const GENOME_PATH = path.join(os.homedir(), 'projects', 'genome');
 const LEADFLOW_PATH = path.resolve(__dirname, '..', '..');
 
 // Test results
@@ -46,8 +46,8 @@ console.log(`📁 Genome Path: ${GENOME_PATH}`);
 console.log(`📁 LeadFlow Path: ${LEADFLOW_PATH}\n`);
 
 // Test 1: Genome directory exists in correct location
- test('Genome directory exists in ~/.openclaw/genome/', () => {
-  assert.ok(fs.existsSync(GENOME_PATH), 'Genome directory should exist at ~/.openclaw/genome/');
+ test('Genome directory exists in ~/projects/genome/', () => {
+  assert.ok(fs.existsSync(GENOME_PATH), 'Genome directory should exist at ~/projects/genome/');
   const stats = fs.statSync(GENOME_PATH);
   assert.ok(stats.isDirectory(), 'Genome path should be a directory');
 });
@@ -92,7 +92,7 @@ console.log(`📁 LeadFlow Path: ${LEADFLOW_PATH}\n`);
 });
 
 // Test 5: Genome symlinks point to correct location
- test('Genome symlinks point to ~/.openclaw/genome/', () => {
+ test('Genome symlinks point to ~/projects/genome/', () => {
   const symlinks = [
     'task-store.js',
     'project-config-loader.js',
@@ -104,7 +104,7 @@ console.log(`📁 LeadFlow Path: ${LEADFLOW_PATH}\n`);
     if (fs.existsSync(linkPath)) {
       const target = fs.readlinkSync(linkPath);
       assert.ok(
-        target.includes('.openclaw/genome') || target.includes('genome/'),
+        target.includes('projects/genome') || target.includes('.openclaw/genome') || target.includes('genome/'),
         `Symlink ${link} should point to genome directory, got: ${target}`
       );
     }

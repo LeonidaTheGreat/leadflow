@@ -15,7 +15,7 @@ A loop detection mechanism is correctly identifying duplicate "PM: Revenue alert
 
 **However, the root cause is not in the loop detector; it's in the revenue collector source code.**
 
-The `~/.openclaw/genome/scripts/revenue-collector.js` creates a new task **every heartbeat** (every ~30 seconds) without checking if an identical task already exists. This is idempotent failure — the system works correctly but does the wrong thing repeatedly.
+The `~/projects/genome/scripts/revenue-collector.js` creates a new task **every heartbeat** (every ~30 seconds) without checking if an identical task already exists. This is idempotent failure — the system works correctly but does the wrong thing repeatedly.
 
 **This spec documents the investigation findings and the required fix.**
 
@@ -28,7 +28,7 @@ Loop detector triggers: "PM: Loop detected — PM: Revenue alert — critical (m
 
 ### Root Cause Analysis
 
-**Location:** `~/.openclaw/genome/scripts/revenue-collector.js`, function `createRevenueAlertTasks()` (lines 313-338)
+**Location:** `~/projects/genome/scripts/revenue-collector.js`, function `createRevenueAlertTasks()` (lines 313-338)
 
 **Current Code:**
 ```javascript
@@ -64,7 +64,7 @@ async function createRevenueAlertTasks(goalResults) {
 
 ### Why Loop Detection Works (The Handler Is Correct)
 
-**File:** `~/.openclaw/genome/core/task-store.js`, lines 150-165
+**File:** `~/projects/genome/core/task-store.js`, lines 150-165
 
 **Code:**
 ```javascript
@@ -374,7 +374,7 @@ Add to use case `uc-revenue-alert-dedup`:
     {
       "id": "check-3-dedup-logging",
       "name": "Deduplication logging in revenue-collector logs",
-      "command": "grep -c 'Task already exists' ~/.openclaw/genome/logs/revenue-collector.log 2>/dev/null || echo 0",
+      "command": "grep -c 'Task already exists' ~/projects/genome/logs/revenue-collector.log 2>/dev/null || echo 0",
       "expected": "1"
     }
   ]
@@ -386,7 +386,7 @@ Add to use case `uc-revenue-alert-dedup`:
 ## Handler Analysis
 
 ### Loop Detector (Source of Truth)
-**Location:** `~/.openclaw/genome/core/task-store.js`, lines 150-165  
+**Location:** `~/projects/genome/core/task-store.js`, lines 150-165  
 **Status:** ✅ **Working Correctly**
 
 The loop detector:
@@ -399,7 +399,7 @@ The loop detector:
 **Verdict:** The handler is not broken. It's doing its job correctly by detecting and escalating the loop. The real issue is upstream in revenue-collector.
 
 ### Revenue Collector (Root Cause)
-**Location:** `~/.openclaw/genome/scripts/revenue-collector.js`, lines 313-338  
+**Location:** `~/projects/genome/scripts/revenue-collector.js`, lines 313-338  
 **Status:** ❌ **Missing Deduplication Logic**
 
 The revenue collector creates idempotent failures:
@@ -416,7 +416,7 @@ The revenue collector creates idempotent failures:
 ### Phase 1: Dev Implementation
 **Owner:** Dev Agent (Genome)  
 **Duration:** 2-4 hours  
-**File:** `~/.openclaw/genome/scripts/revenue-collector.js`  
+**File:** `~/projects/genome/scripts/revenue-collector.js`  
 **Changes:**
 1. Add dedup query to `createRevenueAlertTasks()` function
 2. Update function signature to accept TaskStore instance
@@ -454,9 +454,9 @@ The revenue collector creates idempotent failures:
 
 ## Related Documentation
 
-- **Loop Detection Code:** `~/.openclaw/genome/core/task-store.js` (lines 150-165)
-- **Revenue Collector:** `~/.openclaw/genome/scripts/revenue-collector.js` (lines 313-338)
-- **Heartbeat Executor:** `~/.openclaw/genome/core/heartbeat-executor.js` (calls revenue-collector)
+- **Loop Detection Code:** `~/projects/genome/core/task-store.js` (lines 150-165)
+- **Revenue Collector:** `~/projects/genome/scripts/revenue-collector.js` (lines 313-338)
+- **Heartbeat Executor:** `~/projects/genome/core/heartbeat-executor.js` (calls revenue-collector)
 - **Project Goals:** `/Users/clawdbot/projects/leadflow/project.config.json` (goals section)
 - **Related PRD:** `PRD-REVENUE-COLLECTOR-DEDUP.md`
 - **Related UC:** `uc-revenue-alert-dedup` (use case)

@@ -17,7 +17,7 @@
 
 ## Database
 - Local PostgreSQL via TaskStore query builder. No raw SQL in route handlers.
-- Migrations in `~/.openclaw/genome/migrations/`. Never modify schema directly.
+- Migrations in `~/projects/genome/migrations/`. Never modify schema directly.
 
 ## Git
 - Stage only changed files: `git add <file1> <file2>`. Never `git add -A`.

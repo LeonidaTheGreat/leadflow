@@ -32,7 +32,7 @@ The `createRevenueAlertTasks()` function does not:
 
 ### Implementation Requirements
 
-#### File: `~/.openclaw/genome/scripts/revenue-collector.js`
+#### File: `~/projects/genome/scripts/revenue-collector.js`
 
 **Function:** `createRevenueAlertTasks(goalResults)`
 
@@ -113,7 +113,7 @@ async function createRevenueAlertTasks(goalResults) {
 
 ## Implementation Notes
 
-- **File Location:** `~/.openclaw/genome/scripts/revenue-collector.js` (in orchestration repo, not leadflow)
+- **File Location:** `~/projects/genome/scripts/revenue-collector.js` (in orchestration repo, not leadflow)
 - **Dependencies:** Already has `TaskStore` imported
 - **Testing:** Can be tested standalone: `node revenue-collector.js` after updating code
 - **Backward Compatibility:** Change is additive (adds check, doesn't break existing behavior)
@@ -126,6 +126,6 @@ async function createRevenueAlertTasks(goalResults) {
 ## Related Documentation
 - Loop Detection: `task-store.js` → `createTask()` function, lines ~150-160
 - Revenue Collector: `revenue-collector.js` → `createRevenueAlertTasks()` function
-- Heartbeat Loop Architecture: `~/.openclaw/genome/ARCHITECTURE.md`
-- Task Lifecycle: `~/.openclaw/genome/docs/TASK-LIFECYCLE.md`
+- Heartbeat Loop Architecture: `~/projects/genome/ARCHITECTURE.md`
+- Task Lifecycle: `~/projects/genome/docs/TASK-LIFECYCLE.md`
 

@@ -7,7 +7,7 @@
 **Author:** Product Manager  
 **Task ID:** aff3649c-c7b3-4e65-84a4-c3fc57760a0b  
 **Supersedes:** prd-smoke-auth-loop-fix-v2 (filesystem only, never DB-registered; dev agents timed out)  
-**Genome Project:** `~/.openclaw/genome/`
+**Genome Project:** `~/projects/genome/`
 
 ---
 
@@ -27,7 +27,7 @@ The smoke test **"Smoke: Auth: signup then login failing"** is being auto-create
 
 ### RC-1: `signup_login_flow` Check Type Not Implemented in Genome (Primary)
 
-File: `~/.openclaw/genome/health/smoke-tests.js`
+File: `~/projects/genome/health/smoke-tests.js`
 
 `CHECK_FUNCTIONS` contains only: `json_status_ok`, `http_200`, `html_contains`, `supabase_read`.
 
@@ -54,7 +54,7 @@ Additionally, this test uses `base_url` instead of `url`, so `test.url` is `unde
 
 ### RC-2: `lastTaskCompleted` Never Written to Smoke State (Secondary)
 
-File: `~/.openclaw/genome/core/heartbeat-executor.js`
+File: `~/projects/genome/core/heartbeat-executor.js`
 
 The cooldown gate reads `state.results[id].lastTaskCompleted` but **nothing ever writes it**. Result: no cooldown activates, every heartbeat creates a new task for the perpetually-failing smoke check.
 
@@ -94,7 +94,7 @@ Change the `auth-signup-login-flow` test in `project.config.json` to use a simpl
 
 ### Deliverable B: Full Implementation (Proper Fix)
 
-Implement the real `signup_login_flow` check in `~/.openclaw/genome/health/smoke-tests.js`:
+Implement the real `signup_login_flow` check in `~/projects/genome/health/smoke-tests.js`:
 
 #### Handler Requirements
 
@@ -256,7 +256,7 @@ Dev agent must verify these hold for the actual auth endpoints (not just the smo
 
 Stojan can verify:
 1. **No loop:** Check task queue — no burst of "Smoke: Auth" tasks
-2. **State file updated:** `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` shows `lastTaskCompleted` for `auth-signup-login-flow`
+2. **State file updated:** `~/projects/genome/state/leadflow/.smoke-test-state.json` shows `lastTaskCompleted` for `auth-signup-login-flow`
 3. **Signup works:** Visit `https://leadflow-ai-five.vercel.app/signup`, create account, log in successfully
 4. **Passwords hashed:** In local PG: `SELECT email, LEFT(password_hash, 7) FROM real_estate_agents LIMIT 5;` → all start with `$2a$` or `$2b$`
 
@@ -265,7 +265,7 @@ Stojan can verify:
 ## Implementation Notes for Dev Agent
 
 ### Working in the Right Repo
-- **Genome files:** `~/.openclaw/genome/health/smoke-tests.js` and `~/.openclaw/genome/core/heartbeat-executor.js`
+- **Genome files:** `~/projects/genome/health/smoke-tests.js` and `~/projects/genome/core/heartbeat-executor.js`
 - **Leadflow files:** `project.config.json` (for Deliverable A fallback)
 - Do NOT mix the two repos — genome changes go in genome, leadflow changes go in leadflow
 

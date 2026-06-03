@@ -7,13 +7,13 @@
 **Author:** Product Manager  
 **Task ID:** 0f4ab963-b46b-4a51-831c-5baa68f42682  
 **Supersedes:** prd-smoke-auth-loop-fix-v3 (approved but dev agents timed out 3x)  
-**Genome Project:** `~/.openclaw/genome/`
+**Genome Project:** `~/projects/genome/`
 
 ---
 
 ## Executive Summary
 
-The smoke test `auth-signup-login-flow` uses `check_type: "signup_login_flow"` which **does not exist** in `~/.openclaw/genome/health/smoke-tests.js`. This causes the test to always return `{ pass: false, detail: "Unknown check_type: signup_login_flow" }` — triggering a new task every heartbeat. **5+ dev/QC tasks created today. Loop continues.**
+The smoke test `auth-signup-login-flow` uses `check_type: "signup_login_flow"` which **does not exist** in `~/projects/genome/health/smoke-tests.js`. This causes the test to always return `{ pass: false, detail: "Unknown check_type: signup_login_flow" }` — triggering a new task every heartbeat. **5+ dev/QC tasks created today. Loop continues.**
 
 Previous PRDs (V1, V2, V3) were too broad → dev agents timed out exploring. This V4 is prescriptive: exact files, exact lines, exact changes.
 
@@ -23,7 +23,7 @@ Previous PRDs (V1, V2, V3) were too broad → dev agents timed out exploring. Th
 
 ### Primary: Missing Check Handler
 
-**File:** `~/.openclaw/genome/health/smoke-tests.js`  
+**File:** `~/projects/genome/health/smoke-tests.js`  
 **Line ~40:** `CHECK_FUNCTIONS` object contains: `json_status_ok`, `http_200`, `html_contains`, `supabase_read` — **no `signup_login_flow`**
 
 **File:** `/Users/clawdbot/projects/leadflow/project.config.json`  
@@ -117,7 +117,7 @@ This is safe because:
 
 ### Phase 2: Full `signup_login_flow` Handler (Only if Phase 1 succeeds + budget remains)
 
-**File:** `~/.openclaw/genome/health/smoke-tests.js`
+**File:** `~/projects/genome/health/smoke-tests.js`
 
 Add to `CHECK_FUNCTIONS`:
 
@@ -261,7 +261,7 @@ Do NOT block Phase 1 on these. Verify as part of Phase 2 or file as separate bug
 
 Stojan verifies:
 1. **No loop:** Task queue shows no burst of "Smoke: Auth" tasks after next 2 heartbeats
-2. **Smoke passes:** `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` shows `lastPass` for `auth-signup-login-flow`
+2. **Smoke passes:** `~/projects/genome/state/leadflow/.smoke-test-state.json` shows `lastPass` for `auth-signup-login-flow`
 3. **Auth works:** Visit `https://leadflow-ai-five.vercel.app/signup`, create new account, see confirmation email step
 
 ---

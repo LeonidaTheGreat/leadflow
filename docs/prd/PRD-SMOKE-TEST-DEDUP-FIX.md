@@ -19,7 +19,7 @@ This is the sixth specification for fixing the smoke test task duplication loop.
 
 ## Problem Statement
 
-The smoke test orchestration handler in `~/.openclaw/genome/core/heartbeat-executor.js` creates duplicate fix tasks for the same failing smoke test across multiple heartbeat cycles. The previous dedup fixes (V5) resolved the QC task loop, but the dev fix task loop remains broken due to three new gaps in the escalation paths.
+The smoke test orchestration handler in `~/projects/genome/core/heartbeat-executor.js` creates duplicate fix tasks for the same failing smoke test across multiple heartbeat cycles. The previous dedup fixes (V5) resolved the QC task loop, but the dev fix task loop remains broken due to three new gaps in the escalation paths.
 
 ---
 
@@ -35,7 +35,7 @@ ORDER BY created_at DESC LIMIT 11;
 -- Three created within 5 minutes: 22:43, 22:45, 22:48
 ```
 
-State file at time of investigation (`~/.openclaw/genome/state/leadflow/.smoke-test-state.json`):
+State file at time of investigation (`~/projects/genome/state/leadflow/.smoke-test-state.json`):
 ```json
 "vercel-dashboard": {
   "lastPass": "2026-04-05T03:03:27.932Z",
@@ -51,7 +51,7 @@ The `lastTaskCreated` is from March 25 — 10 days stale. This means the "hard c
 
 ### Bug 1: Escalation paths do not update `lastTaskCreated` in state file
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 The "daily hard cap" guard (line ~2726) checks `testState.lastTaskCreated`:
 ```javascript
@@ -77,7 +77,7 @@ The two **escalation paths** (QC-done → first dev task, and dev-done → retry
 
 ### Bug 2: Auto-resolve wipes `devRetries` but not `lastTaskCompleted`, enabling rapid re-escalation
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 The auto-resolve path (line ~2956) resets retry counters when smoke tests pass:
 ```javascript
@@ -136,11 +136,11 @@ Heartbeat N+2: same as N+1
 
 ## Required Changes
 
-**All changes are in `~/.openclaw/genome/` — a separate git repo from `~/projects/leadflow`.**
+**All changes are in `~/projects/genome/` — a separate git repo from `~/projects/leadflow`.**
 
 ### Change 1: Update `lastTaskCreated` in ALL task creation paths (not just QC initial)
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 After EVERY `await this.store.createTask(...)` call in the smoke handler, update `lastTaskCreated` in the state file. There are three such calls:
 
@@ -177,7 +177,7 @@ smokeTests.saveState(state)
 
 ### Change 2: Write `lastTaskCompleted` when auto-resolve fires
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 In the auto-resolve block (line ~2956), also write `lastTaskCompleted` to the state file so the 2-hour cooldown activates:
 
@@ -210,7 +210,7 @@ Note: This block should fire unconditionally when a task is auto-resolved (not j
 
 ### Change 3: Verify the daily cap check uses `lastTaskCreated` correctly
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 The daily cap check (line ~2726) is correct in logic but depends on `lastTaskCreated` being fresh. With Change 1 in place, this guard will now correctly fire after any escalation. No code change needed here, but verify after testing.
 
@@ -220,19 +220,19 @@ The daily cap check (line ~2726) is correct in logic but depends on `lastTaskCre
 
 ```bash
 # 1. Confirm genome is a git repo
-ls -la ~/.openclaw/genome/.git
+ls -la ~/projects/genome/.git
 
 # 2. Check current state of state file
-cat ~/.openclaw/genome/state/leadflow/.smoke-test-state.json | python3 -m json.tool
+cat ~/projects/genome/state/leadflow/.smoke-test-state.json | python3 -m json.tool
 
 # 3. After making changes, confirm the writes exist
-grep -n "lastTaskCreated\|lastTaskCompleted" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "lastTaskCreated\|lastTaskCompleted" ~/projects/genome/core/heartbeat-executor.js
 
 # 4. Verify ALL three task creation paths update lastTaskCreated
-grep -n -A5 "createTask.*devTitle\|createTask.*smokeTitle" ~/.openclaw/genome/core/heartbeat-executor.js | grep -A3 "lastTaskCreated\|saveState"
+grep -n -A5 "createTask.*devTitle\|createTask.*smokeTitle" ~/projects/genome/core/heartbeat-executor.js | grep -A3 "lastTaskCreated\|saveState"
 
 # 5. Commit to genome repo
-cd ~/.openclaw/genome
+cd ~/projects/genome
 git diff --stat  # must show heartbeat-executor.js changed
 git add core/heartbeat-executor.js
 git commit -m "fix: smoke loop dedup - update lastTaskCreated in all escalation paths + lastTaskCompleted on auto-resolve"
@@ -241,7 +241,7 @@ git log --oneline -1  # paste commit hash in completion report
 # 6. Manually update stale state to prevent immediate re-loop
 node -e "
 const fs = require('fs');
-const path = '~/.openclaw/genome/state/leadflow/.smoke-test-state.json'.replace('~', process.env.HOME);
+const path = '~/projects/genome/state/leadflow/.smoke-test-state.json'.replace('~', process.env.HOME);
 const state = JSON.parse(fs.readFileSync(path, 'utf-8'));
 const now = new Date().toISOString();
 for (const [id, s] of Object.entries(state.results)) {
@@ -266,7 +266,7 @@ console.log('State reset to now:', now);
 
 5. **Auto-resolve writes lastTaskCompleted:** When a smoke test passes and has existing open tasks that get auto-resolved, the state file's `lastTaskCompleted` is updated.
 
-6. **Commit exists in genome repo:** `cd ~/.openclaw/genome && git log --oneline -5` shows a commit with these changes from today.
+6. **Commit exists in genome repo:** `cd ~/projects/genome && git log --oneline -5` shows a commit with these changes from today.
 
 7. **No duplicate open tasks:** At no point should there be more than 1 active (ready/spawned/in_progress) task for the same smoke test title.
 
@@ -283,11 +283,11 @@ console.log('State reset to now:', now);
 
 ## Notes for Dev Agent
 
-1. **This is a genome fix.** All changes go in `~/.openclaw/genome/core/heartbeat-executor.js`. The `~/projects/leadflow/` repo does not need changes.
+1. **This is a genome fix.** All changes go in `~/projects/genome/core/heartbeat-executor.js`. The `~/projects/leadflow/` repo does not need changes.
 
-2. **The genome is a separate git repo.** Commit with `cd ~/.openclaw/genome && git add ... && git commit`.
+2. **The genome is a separate git repo.** Commit with `cd ~/projects/genome && git add ... && git commit`.
 
-3. **Check the genome git status first:** `cd ~/.openclaw/genome && git status`. If there are unstaged changes from previous attempts, stash or review them before making new changes.
+3. **Check the genome git status first:** `cd ~/projects/genome && git status`. If there are unstaged changes from previous attempts, stash or review them before making new changes.
 
 4. **Do not mark done without a commit hash.** The previous V5 fix was only committed after 5 attempts precisely because agents forgot to commit to the genome repo.
 

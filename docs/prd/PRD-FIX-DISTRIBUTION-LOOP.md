@@ -73,12 +73,12 @@ Once investigation tasks are marked `done`, the guard clears. On the next heartb
 
 ---
 
-## Required Fixes (all in `~/.openclaw/genome/`)
+## Required Fixes (all in `~/projects/genome/`)
 
 ### Fix 1 — Create `distribution_channels` table + seed active entry (CRITICAL)
 
-**File:** `~/.openclaw/genome/scripts/migrations/` (new migration)  
-**Also:** `~/.openclaw/genome/scripts/distribution-collector.js`
+**File:** `~/projects/genome/scripts/migrations/` (new migration)  
+**Also:** `~/projects/genome/scripts/distribution-collector.js`
 
 Create the `distribution_channels` table:
 
@@ -107,7 +107,7 @@ Additionally, add error handling in `checkDistributionHealth()` so a table-not-f
 
 ### Fix 2 — Add dedup guard in `createDistributionTasks()`
 
-**File:** `~/.openclaw/genome/scripts/distribution-collector.js`  
+**File:** `~/projects/genome/scripts/distribution-collector.js`  
 **Function:** `createDistributionTasks()`
 
 Before calling `store.createTask()`, check for an existing non-cancelled, non-failed task with the same title that was created within the last 7 days:
@@ -134,7 +134,7 @@ The dedup window should be **7 days** — long enough to prevent repeated task c
 
 ### Fix 3 — Extend loop detector guard to cover recently-done tasks
 
-**File:** `~/.openclaw/genome/core/task-store.js`  
+**File:** `~/projects/genome/core/task-store.js`  
 **Location:** Loop detection block (~line 147)
 
 Change the guard from checking only "not done/failed/cancelled" to also checking "created within the last 24 hours":
@@ -200,7 +200,7 @@ This prevents the loop detector itself from looping when investigation tasks com
 - Fix 1 (table + seed) must be applied FIRST; it eliminates the trigger condition entirely
 - Fix 2 (dedup) is a safety net for future distribution issues that legitimately recur
 - Fix 3 (loop detector guard) is a systemic fix that protects all loop-detection paths
-- All changes are in `~/.openclaw/genome/` — **do not modify** `~/projects/leadflow/` product code for this fix
+- All changes are in `~/projects/genome/` — **do not modify** `~/projects/leadflow/` product code for this fix
 
 ---
 

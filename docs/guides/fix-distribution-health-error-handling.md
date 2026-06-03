@@ -6,7 +6,7 @@
 
 ## Problem
 
-`checkDistributionHealth()` in `~/.openclaw/genome/scripts/distribution-collector.js` destructured only `{data}` from the `distribution_channels` query, silently discarding the error field. If the table was missing or the query failed, `landingPages` was `null`, triggering a false-positive `no_landing_page` issue that re-triggered the distribution loop indefinitely.
+`checkDistributionHealth()` in `~/projects/genome/scripts/distribution-collector.js` destructured only `{data}` from the `distribution_channels` query, silently discarding the error field. If the table was missing or the query failed, `landingPages` was `null`, triggering a false-positive `no_landing_page` issue that re-triggered the distribution loop indefinitely.
 
 ## Fix Applied
 

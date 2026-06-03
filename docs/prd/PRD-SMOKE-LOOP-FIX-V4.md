@@ -21,7 +21,7 @@ This fix has been specified 3 times before. Each time, dev agents reported compl
 
 "Smoke: Vercel dashboard health failing" is created in an infinite loop — 7x in 2 hours as of 2026-03-24. Every heartbeat creates a new QC task. Budget is wasted. Telegram is flooded. No actual fix is ever initiated.
 
-**Evidence from state file** (`~/.openclaw/genome/state/leadflow/.smoke-test-state.json`):
+**Evidence from state file** (`~/projects/genome/state/leadflow/.smoke-test-state.json`):
 ```json
 "vercel-dashboard": {
   "lastPass": "2026-03-24T01:40:24.111Z",
@@ -39,7 +39,7 @@ This fix has been specified 3 times before. Each time, dev agents reported compl
 
 ### Bug 1: `findTaskByTitle` excludes completed tasks
 
-**File:** `~/.openclaw/genome/core/task-store.js`, method `findTaskByTitle` (~line 227)
+**File:** `~/projects/genome/core/task-store.js`, method `findTaskByTitle` (~line 227)
 
 ```javascript
 .not('status', 'in', '("done","failed","cancelled")')
@@ -49,13 +49,13 @@ When the QC task "Smoke: Vercel dashboard health failing" completes (`status = d
 
 ### Bug 2: `lastTaskCompleted` is never written
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`, smoke handler (~line 2329)
+**File:** `~/projects/genome/core/heartbeat-executor.js`, smoke handler (~line 2329)
 
 The cooldown relies on `testState.lastTaskCompleted`, which is **never written anywhere** in the codebase. The 2-hour cooldown is permanently non-functional.
 
 ### Bug 3: `lastCloudSpawn` not always written on task creation
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`, ~line 2505–2510
+**File:** `~/projects/genome/core/heartbeat-executor.js`, ~line 2505–2510
 
 `lastCloudSpawn` is only written when: `severity === 'critical' && cloudCooldownExpired && cloudCountToday < 1`. For `vercel-dashboard`, this condition may not always hold, so `lastCloudSpawn` isn't updated when the QC task is created. The cooldown cannot activate.
 
@@ -65,7 +65,7 @@ The cooldown relies on `testState.lastTaskCompleted`, which is **never written a
 
 ### Change 1: Add `findLatestTaskByTitle()` to `task-store.js`
 
-**File:** `~/.openclaw/genome/core/task-store.js`
+**File:** `~/projects/genome/core/task-store.js`
 
 After the existing `findTaskByTitle` method, add:
 
@@ -94,7 +94,7 @@ async findLatestTaskByTitle(title) {
 
 ### Change 2: Update smoke handler dedup in `heartbeat-executor.js`
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`, ~lines 2317–2320
+**File:** `~/projects/genome/core/heartbeat-executor.js`, ~lines 2317–2320
 
 **Replace:**
 ```javascript
@@ -118,7 +118,7 @@ if (existingSmoke && !['done', 'failed', 'cancelled'].includes(existingSmoke.sta
 
 ### Change 3: Write `lastTaskCreated` to smoke state after creating QC task
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 After the code that creates the QC task (look for where `this.store.createTask(...)` is called with `smokeTitle`), add:
 
@@ -133,7 +133,7 @@ smokeTests.saveState(state)
 
 ### Change 4: Update cooldown check to use `lastTaskCreated`
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`, ~line 2329
+**File:** `~/projects/genome/core/heartbeat-executor.js`, ~line 2329
 
 **Replace:**
 ```javascript
@@ -163,13 +163,13 @@ if (lastActivity) {
 
 ## Acceptance Criteria
 
-- [ ] **AC-1:** `findLatestTaskByTitle` method exists in `~/.openclaw/genome/core/task-store.js` — verify with `grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/task-store.js`
-- [ ] **AC-2:** Smoke handler in `heartbeat-executor.js` calls `findLatestTaskByTitle` (not `findTaskByTitle`) for dedup — verify with `grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/heartbeat-executor.js`
+- [ ] **AC-1:** `findLatestTaskByTitle` method exists in `~/projects/genome/core/task-store.js` — verify with `grep -n "findLatestTaskByTitle" ~/projects/genome/core/task-store.js`
+- [ ] **AC-2:** Smoke handler in `heartbeat-executor.js` calls `findLatestTaskByTitle` (not `findTaskByTitle`) for dedup — verify with `grep -n "findLatestTaskByTitle" ~/projects/genome/core/heartbeat-executor.js`
 - [ ] **AC-3:** After a QC smoke task is created, `lastTaskCreated` appears in `.smoke-test-state.json` for that test ID — verify by checking the state file after a heartbeat run
-- [ ] **AC-4:** Cooldown check uses `lastTaskCompleted || lastTaskCreated` — verify with `grep -n "lastTaskCreated\|lastTaskCompleted" ~/.openclaw/genome/core/heartbeat-executor.js`
+- [ ] **AC-4:** Cooldown check uses `lastTaskCompleted || lastTaskCreated` — verify with `grep -n "lastTaskCreated\|lastTaskCompleted" ~/projects/genome/core/heartbeat-executor.js`
 - [ ] **AC-5:** 10 consecutive heartbeats with failing `vercel-dashboard` produce AT MOST 1 new QC task (not 10)
-- [ ] **AC-6:** Git commit exists in `~/.openclaw/genome/` with these changes — provide commit hash in completion report
-- [ ] **AC-7:** `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` shows `lastTaskCreated` for `vercel-dashboard` after next heartbeat
+- [ ] **AC-6:** Git commit exists in `~/projects/genome/` with these changes — provide commit hash in completion report
+- [ ] **AC-7:** `~/projects/genome/state/leadflow/.smoke-test-state.json` shows `lastTaskCreated` for `vercel-dashboard` after next heartbeat
 
 ---
 
@@ -177,7 +177,7 @@ if (lastActivity) {
 
 - ❌ Do NOT report success without a git commit hash
 - ❌ Do NOT create test scripts and leave them unrun
-- ❌ Do NOT edit files in `~/projects/leadflow/` — the fix is in `~/.openclaw/genome/`
+- ❌ Do NOT edit files in `~/projects/leadflow/` — the fix is in `~/projects/genome/`
 - ❌ Do NOT add `lastTaskCompleted` writes if there's no mechanism to set them — use `lastTaskCreated` instead
 - ❌ Do NOT create a new PRD or spec — implement the fix directly
 
@@ -189,19 +189,19 @@ After making changes:
 
 ```bash
 # 1. Confirm the method exists
-grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/task-store.js
+grep -n "findLatestTaskByTitle" ~/projects/genome/core/task-store.js
 
 # 2. Confirm heartbeat-executor uses it
-grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "findLatestTaskByTitle" ~/projects/genome/core/heartbeat-executor.js
 
 # 3. Confirm cooldown uses lastTaskCreated
-grep -n "lastTaskCreated" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "lastTaskCreated" ~/projects/genome/core/heartbeat-executor.js
 
 # 4. Commit in genome repo
-cd ~/.openclaw/genome && git add -A && git commit -m "fix: smoke loop — findLatestTaskByTitle + lastTaskCreated cooldown"
+cd ~/projects/genome && git add -A && git commit -m "fix: smoke loop — findLatestTaskByTitle + lastTaskCreated cooldown"
 
 # 5. Show the commit hash
-cd ~/.openclaw/genome && git log --oneline -1
+cd ~/projects/genome && git log --oneline -1
 ```
 
 ---

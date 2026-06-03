@@ -194,7 +194,7 @@ The `trial-signup` and `login` endpoints must:
 ## Notes for Dev Agent
 
 1. **Do NOT modify AGENTS.md, agents.json, or any agent configs**
-2. **genome files live in `~/.openclaw/genome/`** — not in the leadflow repo
+2. **genome files live in `~/projects/genome/`** — not in the leadflow repo
 3. The `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are available as env vars in the genome environment (`.env` at genome root or `~/.env`)
 4. The cleanup call should use `postgrestAdmin` from `@/lib/db` (Note: Supabase SDK has been replaced with PostgREST client. Do not import from `@supabase/supabase-js`.)
 5. The smoke state file path is available via `smokeTests.STATE_PATH`

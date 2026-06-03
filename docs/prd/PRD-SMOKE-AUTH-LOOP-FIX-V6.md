@@ -36,14 +36,14 @@ Result: `testDef.url` is `undefined`, `CHECK_FUNCTIONS["signup_login_flow"]` is 
 Every run returns `{ pass: false, detail: "Unknown check_type: signup_login_flow" }`.
 Every failure spawns a new smoke task. The circuit breaker fires after 3 retries, but resets on next cycle.
 
-**Available CHECK_FUNCTIONS (confirmed from `~/.openclaw/genome/health/smoke-tests.js`):**
+**Available CHECK_FUNCTIONS (confirmed from `~/projects/genome/health/smoke-tests.js`):**
 - `json_status_ok`
 - `http_200`
 - `html_contains`
 - `supabase_read`
 
 ### Issue 2: Loop Detector Doesn't Self-Dedup (genome)
-**File:** `~/.openclaw/genome/core/task-store.js` lines 139–152
+**File:** `~/projects/genome/core/task-store.js` lines 139–152
 
 The loop detector creates `PM: Loop detected — Smoke: Auth: signup then login failing` only when
 no active (non-done/non-failed) PM loop task exists. Once the PM task completes, the loop
@@ -122,7 +122,7 @@ git push origin main
 
 ## Fix 2: Loop Detector Cooldown (genome)
 
-**File:** `~/.openclaw/genome/core/task-store.js`
+**File:** `~/projects/genome/core/task-store.js`
 
 **Location:** ~line 146 — the `if (!existingInv?.length)` check inside the loop detector block
 
@@ -203,14 +203,14 @@ Auth security requirements from prior PRDs remain in effect:
 ## Affected Projects
 
 - **leadflow** — `project.config.json` smoke test config (Fix 1)
-- **genome** — `~/.openclaw/genome/core/task-store.js` loop detector cooldown (Fix 2)
+- **genome** — `~/projects/genome/core/task-store.js` loop detector cooldown (Fix 2)
 
 ---
 
 ## Phase 2 (Future — Separate PRD)
 
 Full signup+login flow testing:
-- Add `signup_login_flow` handler to `~/.openclaw/genome/health/smoke-tests.js`
+- Add `signup_login_flow` handler to `~/projects/genome/health/smoke-tests.js`
 - Handler: POST to signup → capture token → POST to login → verify success
 - Use `crypto.randomBytes()` for test account email generation to avoid collisions
 - Separate PRD targeting genome project

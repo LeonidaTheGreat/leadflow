@@ -12,7 +12,7 @@
  * - Quality gates: npm run build, npm run lint, npm test, npm audit --audit-level=high
  *   Expected: exit code 0.
  * Boundaries:
- * - Do not modify any files under ~/.openclaw/genome.
+ * - Do not modify any files under ~/projects/genome.
  * - Do not change service/router/business logic in this repo.
  * - Only add/adjust tests for auto-decompose coverage.
  */

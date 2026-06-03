@@ -17,7 +17,7 @@
  * implementation_status='complete'. Falls back to task-level rate when no
  * UC-linked failures exist (orphan/fix tasks).
  *
- * Run from genome directory: cd ~/.openclaw/genome && npm test
+ * Run from genome directory: cd ~/projects/genome && npm test
  */
 
 jest.mock('dotenv', () => ({ config: jest.fn() }))

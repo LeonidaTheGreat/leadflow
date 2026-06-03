@@ -10,7 +10,7 @@
     "verify": [
       "find completion-reports/ -name \"COMPLETION-*\" | wc -l returns count under 500.",
       "npm run completion_reports exits 0.",
-      "node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json reports gate completion_reports passed=true.",
+      "node ~/projects/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json reports gate completion_reports passed=true.",
       "Quality gates: npm run build, npm run lint, npm test, npm audit --audit-level=high all exit 0."
     ],
     "boundaries": [

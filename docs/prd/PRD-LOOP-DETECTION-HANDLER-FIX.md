@@ -25,7 +25,7 @@ The loop detection mechanism (`task-store.js`, lines 138-157) correctly identifi
 ## Problem Statement
 
 ### Current Loop Detection Code
-**File:** `~/.openclaw/genome/core/task-store.js`, lines 138-157
+**File:** `~/projects/genome/core/task-store.js`, lines 138-157
 
 ```javascript
 // Runtime loop detection: 3+ tasks with same title prefix in 2h = loop
@@ -94,7 +94,7 @@ Given the failure pattern (multiple "PM: Loop detected" tasks created 3x in 2 ho
 
 **Change:** Track whether an investigation task was already created for this loop in the *current heartbeat cycle*, not just globally.
 
-**File:** `~/.openclaw/genome/core/task-store.js`
+**File:** `~/projects/genome/core/task-store.js`
 
 **Approach:**
 1. Add a `loopDetectionCache` (in-memory, cleared each heartbeat)
@@ -143,7 +143,7 @@ function resetLoopDetectionCache() {
 
 **Change:** When creating the investigation task, explicitly set its status to 'in_progress' to indicate it's actively being handled, and update the check to include this status.
 
-**File:** `~/.openclaw/genome/core/task-store.js`
+**File:** `~/projects/genome/core/task-store.js`
 
 **Approach:**
 1. Investigation tasks are created with status='in_progress' (not 'ready')
@@ -173,7 +173,7 @@ if (!existingInv?.length) {
 
 **Change:** Track the last time an investigation task was created for each loop type, and only create a new one if the previous one is older than a threshold (e.g., 30 minutes).
 
-**File:** `~/.openclaw/genome/core/task-store.js`
+**File:** `~/projects/genome/core/task-store.js`
 
 **Approach:**
 1. Query for the most recent investigation task with the same title
@@ -236,7 +236,7 @@ if (lastInv?.length && new Date(lastInv[0].created_at) > thirtyMinutesAgo) {
 
 ## Implementation Checklist
 
-- [ ] Modify `~/.openclaw/genome/core/task-store.js` to add timestamp-based deduplication
+- [ ] Modify `~/projects/genome/core/task-store.js` to add timestamp-based deduplication
 - [ ] Add console.log for deduplication decision (for debugging)
 - [ ] Test: Trigger the same loop 6+ times within 30 minutes → verify only 1 investigation task
 - [ ] Test: Trigger 3+ different loops within 2 hours → verify no nested "Loop detected — Loop detected"

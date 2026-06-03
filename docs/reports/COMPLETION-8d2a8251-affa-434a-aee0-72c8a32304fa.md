@@ -7,7 +7,7 @@
 
 ## Summary
 
-Automated tests for Genome core modules have been successfully created and are passing. The tests are located in `~/.openclaw/genome/tests/` (Genome repository).
+Automated tests for Genome core modules have been successfully created and are passing. The tests are located in `~/projects/genome/tests/` (Genome repository).
 
 ## Test Files Created
 
@@ -87,12 +87,12 @@ The test files were committed to the Genome repository:
 
 ## Notes
 
-The Genome repository (`~/.openclaw/genome/`) is a separate repository from LeadFlow. The orchestration engine code lives there, and the tests were added to that repository. This completion report is filed in the LeadFlow repository to track the task completion status.
+The Genome repository (`~/projects/genome/`) is a separate repository from LeadFlow. The orchestration engine code lives there, and the tests were added to that repository. This completion report is filed in the LeadFlow repository to track the task completion status.
 
 ## Verification
 
 To verify the tests:
 ```bash
-cd ~/.openclaw/genome
+cd ~/projects/genome
 npm test
 ```

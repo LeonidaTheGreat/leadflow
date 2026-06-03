@@ -15,7 +15,7 @@ Fixed the recurring loop causing smoke test fix tasks to be created multiple tim
 
 ## Changes Made
 
-### File Modified: `~/.openclaw/genome/core/heartbeat-executor.js`
+### File Modified: `~/projects/genome/core/heartbeat-executor.js`
 
 **Genome Commit:** `43f4fa3`
 
@@ -70,17 +70,17 @@ if (passState) {
 
 ## State File Reset
 
-Manually reset stale `lastTaskCreated` values in `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` to prevent immediate re-loop before the next heartbeat:
+Manually reset stale `lastTaskCreated` values in `~/projects/genome/state/leadflow/.smoke-test-state.json` to prevent immediate re-loop before the next heartbeat:
 
 ```bash
 node -e "
 const fs = require('fs');
-const state = JSON.parse(fs.readFileSync('~/.openclaw/genome/state/leadflow/.smoke-test-state.json', 'utf-8'));
+const state = JSON.parse(fs.readFileSync('~/projects/genome/state/leadflow/.smoke-test-state.json', 'utf-8'));
 const now = new Date().toISOString();
 for (const [id, s] of Object.entries(state.results)) {
   state.results[id] = { ...s, lastTaskCreated: now, lastTaskCompleted: now };
 }
-fs.writeFileSync('~/.openclaw/genome/state/leadflow/.smoke-test-state.json', JSON.stringify(state, null, 2));
+fs.writeFileSync('~/projects/genome/state/leadflow/.smoke-test-state.json', JSON.stringify(state, null, 2));
 "
 ```
 
@@ -116,7 +116,7 @@ Reset timestamp: `2026-04-05T05:00:27.281Z`
 | Daily cap respected | ✅ | All paths update `lastTaskCreated` which daily cap checks |
 | State file updated after escalation | ✅ | Both escalation paths now write `lastTaskCreated` |
 | Auto-resolve writes `lastTaskCompleted` | ✅ | Auto-resolve block now sets `lastTaskCompleted: nowIso` |
-| Commit exists in genome repo | ✅ | Commit `43f4fa3` in `~/.openclaw/genome` |
+| Commit exists in genome repo | ✅ | Commit `43f4fa3` in `~/projects/genome` |
 | No duplicate open tasks | ✅ | Cooldown + daily cap + dedup checks prevent this |
 
 ---
@@ -125,7 +125,7 @@ Reset timestamp: `2026-04-05T05:00:27.281Z`
 
 | File | Location | Change |
 |------|----------|--------|
-| `heartbeat-executor.js` | `~/.openclaw/genome/core/` | Added `lastTaskCreated` updates to escalation paths; added `lastTaskCompleted` to auto-resolve |
+| `heartbeat-executor.js` | `~/projects/genome/core/` | Added `lastTaskCreated` updates to escalation paths; added `lastTaskCompleted` to auto-resolve |
 
 ---
 
@@ -139,4 +139,4 @@ Reset timestamp: `2026-04-05T05:00:27.281Z`
 
 ## Notes
 
-This fix is in the **Genome orchestration layer** (`~/.openclaw/genome/`), not the LeadFlow product code. The Genome is a separate git repository that manages the orchestration heartbeat, task spawning, and smoke test handling.
+This fix is in the **Genome orchestration layer** (`~/projects/genome/`), not the LeadFlow product code. The Genome is a separate git repository that manages the orchestration heartbeat, task spawning, and smoke test handling.

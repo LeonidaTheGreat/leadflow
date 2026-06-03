@@ -7,7 +7,7 @@ Verify:
 - find completion-reports/ -name "COMPLETION-*" -mtime +7 -delete
 - find completion-reports/ -name "COMPLETION-*" | wc -l
 - npm run completion_reports
-- node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json
+- node ~/projects/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json
 - npm run build
 - npm run lint
 - npm test
@@ -31,7 +31,7 @@ Keep the `completion_reports` quality gate below the hard limit of 500 files.
 3. Run retention script:
    - `npm run completion_reports`
 4. Confirm via quality audit:
-   - `node ~/.openclaw/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json`
+   - `node ~/projects/genome/scripts/quality-audit.js /Users/clawdbot/projects/leadflow --json`
 
 ## Verification Example (task bf9448cd)
 - completion report count after remediation: `480`

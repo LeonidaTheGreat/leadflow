@@ -6,8 +6,8 @@
 **Date:** 2026-03-24  
 **Supersedes:** prd-fix-smoke-loop-vercel-dashboard, prd-smoke-loop-fix-001  
 **Affected Files:**
-- `~/.openclaw/genome/core/task-store.js`
-- `~/.openclaw/genome/core/heartbeat-executor.js`
+- `~/projects/genome/core/task-store.js`
+- `~/projects/genome/core/heartbeat-executor.js`
 
 ---
 
@@ -23,7 +23,7 @@ The root cause is in the genome orchestrator, not the LeadFlow product code.
 
 ### Bug 1: `findTaskByTitle` filters out completed tasks
 
-**File:** `~/.openclaw/genome/core/task-store.js`, line 227–242
+**File:** `~/projects/genome/core/task-store.js`, line 227–242
 
 ```javascript
 async findTaskByTitle(title) {
@@ -37,7 +37,7 @@ async findTaskByTitle(title) {
 
 ### Bug 2: Escalation checks are unreachable
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`, lines 2317–2460
+**File:** `~/projects/genome/core/heartbeat-executor.js`, lines 2317–2460
 
 The escalation logic:
 ```javascript
@@ -51,7 +51,7 @@ const existingDev   = await this.store.findTaskByTitle(devTitle)    // returns n
 
 ### Bug 3: `lastTaskCompleted` is never written
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js` — smoke handler and auto-resolve section
+**File:** `~/projects/genome/core/heartbeat-executor.js` — smoke handler and auto-resolve section
 
 The cooldown check (line 2329) relies on `testState.lastTaskCompleted`:
 ```javascript
@@ -61,7 +61,7 @@ if (lastCompleted) { /* hoursSince < 2 → skip */ }  // ← never fires
 
 There is NO code in the heartbeat that writes `lastTaskCompleted` to `.smoke-test-state.json`. The cooldown is permanently non-functional.
 
-**Confirmed Evidence:** `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` shows:
+**Confirmed Evidence:** `~/projects/genome/state/leadflow/.smoke-test-state.json` shows:
 ```json
 "vercel-dashboard": {
   "lastPass": "2026-03-24T01:40:24.111Z",
@@ -108,7 +108,7 @@ async findLatestTaskByTitle(title) {
 
 ### Change 2: Replace `findTaskByTitle` with `findLatestTaskByTitle` in smoke handler
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`, lines 2317–2318
+**File:** `~/projects/genome/core/heartbeat-executor.js`, lines 2317–2318
 
 **Before:**
 ```javascript
@@ -126,7 +126,7 @@ const existingDev = await this.store.findLatestTaskByTitle(devTitle)
 
 ### Change 3: Write `lastTaskCreated` when spawning smoke tasks
 
-**File:** `~/.openclaw/genome/core/heartbeat-executor.js`
+**File:** `~/projects/genome/core/heartbeat-executor.js`
 
 After the line that creates the initial QC task (`await this.store.createTask({ title: smokeTitle, ... })`), add state update:
 
@@ -190,16 +190,16 @@ Previous PM tasks wrote PRDs. Previous dev tasks were spawned. But all completed
 
 ```bash
 # 1. Verify the method was added to task-store.js
-grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/task-store.js
+grep -n "findLatestTaskByTitle" ~/projects/genome/core/task-store.js
 
 # 2. Verify the smoke handler now uses findLatestTaskByTitle
-grep -n "findLatestTaskByTitle" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "findLatestTaskByTitle" ~/projects/genome/core/heartbeat-executor.js
 
 # 3. Verify lastTaskCreated is written after smoke task creation
-grep -n "lastTaskCreated" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "lastTaskCreated" ~/projects/genome/core/heartbeat-executor.js
 
 # 4. Verify cooldown check uses lastTaskCreated as fallback
-grep -n "lastTaskCreated\|lastActivity" ~/.openclaw/genome/core/heartbeat-executor.js
+grep -n "lastTaskCreated\|lastActivity" ~/projects/genome/core/heartbeat-executor.js
 ```
 
 **All four commands must return matches. If any returns empty, the fix is incomplete.**
@@ -212,7 +212,7 @@ grep -n "lastTaskCreated\|lastActivity" ~/.openclaw/genome/core/heartbeat-execut
 
 2. **Escalation path reached:** After the QC task completes (`status = done`), the NEXT heartbeat must create a `Fix: Vercel dashboard health (smoke)` dev task — not another QC task. This verifies `findLatestTaskByTitle` correctly reads the completed QC task.
 
-3. **`lastTaskCreated` populated:** After a new QC task is spawned, verify `~/.openclaw/genome/state/leadflow/.smoke-test-state.json` contains `lastTaskCreated` timestamp for `vercel-dashboard`.
+3. **`lastTaskCreated` populated:** After a new QC task is spawned, verify `~/projects/genome/state/leadflow/.smoke-test-state.json` contains `lastTaskCreated` timestamp for `vercel-dashboard`.
 
 4. **Cooldown functional:** Within 2h of task creation, a second heartbeat with the same failing test must skip task creation and log `⏳ ... cooldown`.
 

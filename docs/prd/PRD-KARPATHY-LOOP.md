@@ -97,7 +97,7 @@ It then identifies the highest-impact improvement opportunity:
 
 ## Versioning
 
-Prompt versions are stored in: `~/.openclaw/genome/state/leadflow/prompts/`
+Prompt versions are stored in: `~/projects/genome/state/leadflow/prompts/`
 
 ```
 prompts/

@@ -5,7 +5,7 @@
  *
  * Spec:
  *   What:   All 6 exports from subagent-completion-report.js (symlink at project root →
- *           ~/.openclaw/genome/core/subagent-completion-report.js):
+ *           ~/projects/genome/core/subagent-completion-report.js):
  *           writeCompletionReport, markReportProcessed, getUnprocessedReports,
  *           reportSuccess, reportFailure, getCompletionDir
  *   Verify: npx jest tests/unit/subagent-completion-report.test.js --no-coverage → exit 0
@@ -24,7 +24,7 @@ jest.mock('child_process', () => ({
 }));
 
 // Mock project-config-loader using the real resolved path (symlink __dirname →
-// ~/.openclaw/genome/core/ so that's where ./project-config-loader resolves to).
+// ~/projects/genome/core/ so that's where ./project-config-loader resolves to).
 jest.mock('/Users/clawdbot/.openclaw/genome/core/project-config-loader', () => ({
   getConfig: jest.fn(() => ({ project_id: 'test', project_dir: '/tmp/sar-default' })),
   getProjectDir: jest.fn(() => '/tmp/sar-default'),

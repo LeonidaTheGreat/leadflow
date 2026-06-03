@@ -18,7 +18,7 @@ The revenue-collector script (Loop 5 of heartbeat orchestration) creates duplica
 - Difficulty tracking when a goal trend changed
 - Loop detection false positives (system thinks there's a handler loop when there's only task creation loop)
 
-**Root Cause:** The `createRevenueAlertTasks()` function in `~/.openclaw/genome/scripts/revenue-collector.js` creates a new task for EVERY off-track goal, without checking if an identical task was recently created.
+**Root Cause:** The `createRevenueAlertTasks()` function in `~/projects/genome/scripts/revenue-collector.js` creates a new task for EVERY off-track goal, without checking if an identical task was recently created.
 
 **Current Behavior:**
 ```
@@ -104,7 +104,7 @@ Heartbeat 4 (11:00) → MRR improved to "behind" → Create NEW task "PM: Revenu
 ## Technical Design
 
 ### Code Location
-- **File to Modify:** `~/.openclaw/genome/scripts/revenue-collector.js`
+- **File to Modify:** `~/projects/genome/scripts/revenue-collector.js`
 - **Function to Fix:** `createRevenueAlertTasks(goalResults)`
 - **Dependencies:** 
   - TaskStore API (already imported)
@@ -277,7 +277,7 @@ If implementation causes issues:
 
 **Symptom:** "PM: Revenue alert — critical (mrr)" created 3x in 2 hours on 2026-03-30
 
-**Root Cause:** `~/.openclaw/genome/scripts/revenue-collector.js` line ~267 calls `store.createTask()` without checking for existing tasks
+**Root Cause:** `~/projects/genome/scripts/revenue-collector.js` line ~267 calls `store.createTask()` without checking for existing tasks
 
 **Impact:** 
 - Loop detection system sees 3 identical tasks created in quick succession

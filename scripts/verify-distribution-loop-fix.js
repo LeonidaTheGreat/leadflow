@@ -4,7 +4,7 @@
  *
  * Verification script for the distribution loop fix (PRD-DISTRIBUTION-LOOP-FIX).
  * 
- * Changes made to ~/.openclaw/genome/scripts/distribution-collector.js:
+ * Changes made to ~/projects/genome/scripts/distribution-collector.js:
  * - REQ-1: UC Completion Gate (already implemented)
  * - REQ-2: Increased cooldown from 30 min to 48 hours
  * - REQ-3: Removed 'status=active' filter for landing page check

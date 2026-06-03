@@ -10,7 +10,7 @@ created: 2026-04-04
 
 ## Problem
 
-The smoke test handler in `~/.openclaw/genome/core/heartbeat-executor.js` creates duplicate "Fix: {name} (smoke)" dev tasks in a loop when a smoke test keeps failing across heartbeats.
+The smoke test handler in `~/projects/genome/core/heartbeat-executor.js` creates duplicate "Fix: {name} (smoke)" dev tasks in a loop when a smoke test keeps failing across heartbeats.
 
 **Observed:** "Fix: Lead Experience Simulator (smoke)" created 3× in 2 hours.
 
@@ -38,7 +38,7 @@ The **initial QC failure path** (~line 2933) correctly sets `lastTaskCreated` �
 
 ## Fix Specification
 
-### File: `~/.openclaw/genome/core/heartbeat-executor.js`
+### File: `~/projects/genome/core/heartbeat-executor.js`
 
 **Change 1 — QC→Dev escalation path (~line 2849):**
 
@@ -92,12 +92,12 @@ This adds defense-in-depth but is not required for the primary fix.
 [
   {
     "id": "escalation-path-has-lastTaskCreated",
-    "command": "grep -A5 'devRetries: 1' ~/.openclaw/genome/core/heartbeat-executor.js | grep -c 'lastTaskCreated'",
+    "command": "grep -A5 'devRetries: 1' ~/projects/genome/core/heartbeat-executor.js | grep -c 'lastTaskCreated'",
     "expected": "1"
   },
   {
     "id": "retry-path-has-lastTaskCreated",
-    "command": "grep -A8 'devRetries: retryCount' ~/.openclaw/genome/core/heartbeat-executor.js | grep -c 'lastTaskCreated'",
+    "command": "grep -A8 'devRetries: retryCount' ~/projects/genome/core/heartbeat-executor.js | grep -c 'lastTaskCreated'",
     "expected": "1"
   }
 ]
@@ -109,5 +109,5 @@ This adds defense-in-depth but is not required for the primary fix.
 
 ## Project
 
-- **Affected file:** `~/.openclaw/genome/core/heartbeat-executor.js` (genome project)
+- **Affected file:** `~/projects/genome/core/heartbeat-executor.js` (genome project)
 - **affectedProjects:** `["genome"]`

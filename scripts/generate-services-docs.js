@@ -5,7 +5,7 @@
  * Scans all JS files in lib/services/, extracts class names, public methods,
  * constructor dependencies, and JSDoc descriptions.
  *
- * Called every heartbeat by ~/.openclaw/genome/scripts/generate-services-docs.js.
+ * Called every heartbeat by ~/projects/genome/scripts/generate-services-docs.js.
  * Can also be run standalone: node scripts/generate-services-docs.js
  */
 

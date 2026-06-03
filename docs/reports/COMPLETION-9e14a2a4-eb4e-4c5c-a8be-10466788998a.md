@@ -24,7 +24,7 @@ Set up GitHub Actions CI/CD for the `LeonidaTheGreat/openclaw-genome` repo and u
   1. Repeat CI steps (syntax check + jest) as gate
   2. SSH to `stojanadmins-mac-mini.tail3ca16c.ts.net` as `clawdbot`
   3. `git pull origin main`
-  4. `bash ~/.openclaw/genome/scripts/atomic-restart.sh`
+  4. `bash ~/projects/genome/scripts/atomic-restart.sh`
 - **Requires:** `DEPLOY_SSH_KEY` secret in GitHub repo settings (see Setup Required below)
 
 ### 3. `scripts/atomic-restart.sh` (updated)

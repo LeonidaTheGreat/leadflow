@@ -25,7 +25,7 @@ The smoke test **"Smoke: Auth: signup then login failing"** is being created **9
 
 ### Root Cause 1 — `signup_login_flow` Check Type Not Implemented (Primary)
 
-`~/.openclaw/genome/health/smoke-tests.js` uses a dispatch table:
+`~/projects/genome/health/smoke-tests.js` uses a dispatch table:
 
 ```js
 const CHECK_FUNCTIONS = {
@@ -80,8 +80,8 @@ if (lastCompleted) {
 
 | File | Change |
 |------|--------|
-| `~/.openclaw/genome/health/smoke-tests.js` | Add `signup_login_flow` handler to CHECK_FUNCTIONS |
-| `~/.openclaw/genome/core/heartbeat-executor.js` | Write `lastTaskCompleted` to state after smoke task completes |
+| `~/projects/genome/health/smoke-tests.js` | Add `signup_login_flow` handler to CHECK_FUNCTIONS |
+| `~/projects/genome/core/heartbeat-executor.js` | Write `lastTaskCompleted` to state after smoke task completes |
 
 **Files to read (leadflow project, for context only):**
 
@@ -286,9 +286,9 @@ Human (Stojan) can:
 
 ## Notes for Dev Agent
 
-- **Genome files are in `~/.openclaw/genome/`** — not in the leadflow project directory
+- **Genome files are in `~/projects/genome/`** — not in the leadflow project directory
 - `smoke-tests.js` exports `{ tests, runAll, loadState, saveState, STATE_PATH }`
 - The `CHECK_FUNCTIONS` object may need async support — verify `runAll()` awaits `check()`
 - The `lastTaskCompleted` write must go inside `runSmokeTests()` in `heartbeat-executor.js`
 - Do NOT modify `project.config.json` — the `check_type: "signup_login_flow"` is correct; the handler needs to be implemented
-- State file: `~/.openclaw/genome/state/leadflow/.smoke-test-state.json`
+- State file: `~/projects/genome/state/leadflow/.smoke-test-state.json`

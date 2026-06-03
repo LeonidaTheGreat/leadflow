@@ -25,7 +25,7 @@ The circuit breaker tripped after 3 attempts ($10.50) on task "fix-next-js-custo
 ## Issue 1: Genome Spawn Bug — `cd 'undefined'`
 
 ### Root Cause
-In all 3 dev agent spawns, the generated shell script (`~/.openclaw/genome/state/leadflow/spawn-logs/lf-2270ba8a-*-run.sh`) contained:
+In all 3 dev agent spawns, the generated shell script (`~/projects/genome/state/leadflow/spawn-logs/lf-2270ba8a-*-run.sh`) contained:
 
 ```sh
 cd 'undefined'
@@ -37,7 +37,7 @@ This caused the agent to launch outside the project directory. All file reads, g
 `spawn-consumer.js` in the genome repo — the `buildProjectContext()` or `getConfigForProject()` call returns `project_dir: undefined` for some task configurations. The run script generator must validate `project_dir` is truthy before writing the script, and abort with a clear error if not.
 
 ### Acceptance Criteria (genome fix)
-- [ ] `grep -r "cd 'undefined'" ~/.openclaw/genome/state/` returns 0 results after fix
+- [ ] `grep -r "cd 'undefined'" ~/projects/genome/state/` returns 0 results after fix
 - [ ] Newly spawned agents have correct `cd /Users/clawdbot/projects/leadflow` in their run scripts
 - [ ] Spawn pipeline validates `project_dir` before writing the shell script; throws if undefined
 
@@ -81,7 +81,7 @@ This caused the agent to launch outside the project directory. All file reads, g
 
 ### Task 1 (Genome, P1): Fix `cd 'undefined'` spawn bug
 - **Project:** `genome`
-- **File:** `~/.openclaw/genome/core/spawn-consumer.js`
+- **File:** `~/projects/genome/core/spawn-consumer.js`
 - **Scope:** Validate `project_dir` before writing run script; abort spawn with error if undefined
 - **Estimated size:** Small (< 20 lines changed)
 

@@ -21,7 +21,7 @@ The `Uptime` mission metric uses a point-in-time calculation: `passed_tests / to
 
 ## Solution
 
-Change `_collectSmokeTestMetrics` in `~/.openclaw/genome/core/mission-metric-collector.js` to compute **rolling 24-hour uptime**:
+Change `_collectSmokeTestMetrics` in `~/projects/genome/core/mission-metric-collector.js` to compute **rolling 24-hour uptime**:
 
 ```
 Uptime = (runs_where_all_critical_tests_passed / total_runs_in_last_24h) * 100
@@ -32,7 +32,7 @@ Tests with `severity: 'warning'` (e.g., `lead-simulator`) do not count against u
 
 ## Implementation
 
-**File:** `~/.openclaw/genome/core/mission-metric-collector.js`
+**File:** `~/projects/genome/core/mission-metric-collector.js`
 
 **Method:** `_collectSmokeTestMetrics(projectId)`
 
@@ -77,7 +77,7 @@ const uptime = Math.round((healthyRuns.length / recentRuns.length) * 1000) / 10
 2. Uptime is computed over the last 24h of runs, not the most recent run
 3. Only `critical` severity failures count against uptime (warning = ignored)
 4. If a 20-min outage occurs in a 24h window, uptime reflects ~98.6% (not 42.9%)
-5. `npm test` passes in both `~/projects/leadflow` and `~/.openclaw/genome/`
+5. `npm test` passes in both `~/projects/leadflow` and `~/projects/genome/`
 
 ## Verification Commands
 
@@ -86,10 +86,10 @@ const uptime = Math.round((healthyRuns.length / recentRuns.length) * 1000) / 10
 # Expected: should show ~98-99% (one blip in 24h), not 100%
 
 # Confirm the query uses limit 288:
-grep -n "limit: 288\|limit:288" ~/.openclaw/genome/core/mission-metric-collector.js
+grep -n "limit: 288\|limit:288" ~/projects/genome/core/mission-metric-collector.js
 
 # Confirm critical-severity filter present:
-grep -n "severity.*critical\|critical.*severity" ~/.openclaw/genome/core/mission-metric-collector.js
+grep -n "severity.*critical\|critical.*severity" ~/projects/genome/core/mission-metric-collector.js
 ```
 
 ## Out of Scope

@@ -15,7 +15,7 @@
  * - Sanity grep: rg -n "predictive-engine" tests/genome/predictive-engine.test.js
  *   Expected: test file references predictive-engine module.
  * Boundaries:
- * - Do not modify runtime orchestration logic under ~/.openclaw/genome.
+ * - Do not modify runtime orchestration logic under ~/projects/genome.
  * - Do not change service/router/business logic in this repo.
  * - Only add/adjust tests required for predictive-engine coverage and task reporting artifacts.
  */
