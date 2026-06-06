@@ -961,3 +961,55 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - Report prepared for topic 10788
 
 - 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
+
+### 2026-06-06 04:05:54
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":2,"inProgress":0,"blocked":13,"done":3748,"total":11361}
+- Checked 13 blocked tasks
+- Smoke rollback recommended (11596 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- E2E: 2 critical failures → fix task
+- E2E: 10/12 passed, 2 failed
+- Browser tests: 1 failures → fix task
+- Browser tests: 46/47 passed, 1 failed
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1754
+- Queried state: {"ready":4,"inProgress":0,"blocked":13,"done":3748,"total":11365}
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke rollback recommended (11597 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 14 collected for genome
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-06 04:07:03
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":2,"inProgress":1,"blocked":13,"done":3749,"total":11366}
+- Checked 13 blocked tasks
+- Smoke rollback recommended (11598 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1754
+- Queried state: {"ready":3,"inProgress":1,"blocked":13,"done":3749,"total":11367}
+- Re-triggered 1 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 13 blocked tasks
+- Smoke rollback recommended (11599 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 14 collected for genome
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 6 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+- PM circuit breaker investigation (685d2f1c): uc-leadflow-maintenance CANCEL recommended — 89% of $4,142 cost from orchestration overhead misrouted; genome fix needed
