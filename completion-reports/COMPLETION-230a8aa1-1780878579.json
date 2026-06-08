@@ -1,0 +1,41 @@
+{
+  "taskId": "230a8aa1-861b-4e89-8755-ed3ec43d29d1",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "UC fix-rescue-triage-feature-selfserve-frictionless-o had a truncated description (same text as the name) and implementation_status='in_progress' with no clear spec for dev to implement",
+    "why": "The UC was created by a rescue-triage flow that copied the PM triage task title as both name and description, leaving no concrete spec for the dev agent to act on. The implementation_status was 'in_progress' but no task was actively working on it.",
+    "fix": "Updated the UC description with a concrete 4-point spec (name+email+phone form, no email verification gate, /dashboard with dismissable FUB connect prompt, no payment required) and reset implementation_status to 'not_started' so the orchestrator can spawn a dev task"
+  },
+  "taskSpec": {
+    "what": "Update use_cases table in PostgreSQL openclaw DB: set description to 4-point frictionless onboarding spec, set implementation_status to 'not_started' for UC id=fix-rescue-triage-feature-selfserve-frictionless-o",
+    "verify": "psql query confirming description updated and status='not_started'",
+    "boundaries": "No code changes needed — existing trial-signup route already has email_verified=true (no gate), redirects to /dashboard/onboarding, no payment required. Dashboard already has OnboardingWizardLauncher (dismissable). This is a DB-only spec update."
+  },
+  "databaseChanges": [
+    {
+      "table": "use_cases",
+      "id": "fix-rescue-triage-feature-selfserve-frictionless-o",
+      "changes": {
+        "description": "Updated with 4-point frictionless onboarding spec",
+        "implementation_status": "changed from 'in_progress' to 'not_started'"
+      }
+    }
+  ],
+  "existingImplementationVerified": {
+    "emailVerificationGate": "Already removed — trial-signup route sets email_verified=true on account creation",
+    "noPaymentRequired": "Already implemented — trial-signup creates trial account, no Stripe step",
+    "redirectToDashboard": "Already implemented — redirectTo: '/dashboard/onboarding' in trial-signup response",
+    "dismissableFUBPrompt": "Already implemented — OnboardingWizardLauncher in dashboard/page.tsx shows dismissable wizard (handleDismiss stores sessionStorage flag)",
+    "signupFormFields": "TrialSignupForm collects email + password + name (optional); name field exists but is optional — spec clarifies it should be required along with phone"
+  },
+  "testResults": {
+    "passed": 9,
+    "total": 9,
+    "passRate": 1.0
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-230a8aa1-1780878579.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-230a8aa1-1780878579.json"
+}
