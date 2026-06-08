@@ -1,6 +1,7 @@
 /**
  * E2E Test: fix-api-health-endpoint-wrong-table
  * Verifies that /api/health queries real_estate_agents (not agents)
+ * and uses the correct PostgREST client (postgrestAdmin) with proper URL construction.
  */
 
 const assert = require('assert');
@@ -30,43 +31,46 @@ console.log('\n=== E2E: fix-api-health-endpoint-wrong-table ===\n');
 
 const source = fs.readFileSync(ROUTE_FILE, 'utf8');
 
-// 1. Must query real_estate_agents
-test('queries real_estate_agents table', () => {
+// 1. Must query real_estate_agents via postgrestAdmin
+test('queries real_estate_agents table via postgrestAdmin', () => {
   assert.ok(
-    source.includes("client.from('real_estate_agents')"),
-    "route.ts must query 'real_estate_agents'"
+    source.includes("postgrestAdmin") && source.includes("real_estate_agents"),
+    "route.ts must use postgrestAdmin and query 'real_estate_agents'"
   );
 });
 
 // 2. Must NOT query agents table
 test('does NOT query agents table', () => {
   assert.ok(
-    !source.includes("client.from('agents')"),
+    !source.includes(".from('agents')"),
     "route.ts must NOT query 'agents' table"
   );
 });
 
 // 3. Still selects id with limit 1 (minimal query)
-test('uses select id with limit 1', () => {
+test('uses select id and limit 1', () => {
   assert.ok(
-    source.includes(".select('id').limit(1)"),
-    "query should select id with limit 1"
+    source.includes(".select('id')") && source.includes(".limit(1)"),
+    "query should select id and use limit 1"
   );
 });
 
-// 4. Supabase connectivity check still exists
-test('supabase_connectivity check key is present', () => {
+// 4. api_connectivity check key is present (replaced supabase_connectivity)
+test('api_connectivity check key is present', () => {
   assert.ok(
-    source.includes("supabase_connectivity"),
-    "supabase_connectivity check must exist"
+    source.includes("api_connectivity"),
+    "api_connectivity check must exist in health route"
   );
 });
 
-// 5. Comment documents intent
-test('comment documents real_estate_agents intent', () => {
+// 5. Does NOT use new URL('/table', base) pattern — absolute path drops base path segments
+test('no broken new URL with absolute path (would drop /rest/v1)', () => {
+  // new URL('/something', baseUrl) loses the path from baseUrl (e.g. /rest/v1).
+  // The correct approach is string interpolation: `${baseUrl}/${table}`.
+  const brokenPattern = /new URL\s*\(\s*['"`]\/[^/]/;
   assert.ok(
-    source.includes('real_estate_agents'),
-    'table name real_estate_agents present in source'
+    !brokenPattern.test(source),
+    "route.ts must not use new URL('/table', base) — it drops path segments from base URL"
   );
 });
 
