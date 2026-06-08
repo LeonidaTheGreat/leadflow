@@ -22,7 +22,7 @@ import type {
 const PLACEHOLDER_URL = 'https://placeholder.example.com'
 
 function getBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL).trim()
+  return (process.env.NEXT_PUBLIC_API_URL || PLACEHOLDER_URL).trim().replace(/\/+$/, '')
 }
 
 function getApiKey(): string {
