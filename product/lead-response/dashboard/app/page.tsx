@@ -1,23 +1,5 @@
 'use client'
 
-/*
-TASK SPEC (8a3a0250-9fbd-4399-95ed-e106e50e09a3)
-What:
-- Update product/lead-response/dashboard/app/page.tsx (HomePage testimonials section) to render PRD-required testimonial cards with Sarah M., Mike R., and Jennifer K. between How It Works and Pricing.
-- Keep/adjust TestimonialCard usage and include a visible "Results may vary" disclaimer in the same section.
-- Update product/lead-response/dashboard/__tests__/testimonials-section.test.ts to validate required testimonial content and disclaimer text.
-
-Verify:
-- Run: cd product/lead-response/dashboard && npm test -- --runInBand __tests__/testimonials-section.test.ts
-- Run: cd product/lead-response/dashboard && npm test -- --runInBand
-- Run: cd product/lead-response/dashboard && npx next build
-- Grep checks: rg -n "Sarah M\.|Mike R\.|Jennifer K\.|Results may vary" product/lead-response/dashboard/app/page.tsx
-
-Boundaries:
-- Do not modify pricing logic/components/routes/services/backend files.
-- Do not alter unrelated landing-page sections outside testimonial requirements.
-- Do not change schema, migrations, or non-dashboard app modules.
-*/
 
 import Link from 'next/link'
 import { Suspense, useEffect, useRef, useState } from 'react'
@@ -316,37 +298,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Outcomes */}
       <section id="testimonials" data-testid="testimonials" className="bg-slate-50 dark:bg-slate-950 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
-            Trusted by Real Estate Agents
+            What Early Agents Experience
           </h3>
           <p className="text-lg text-slate-500 dark:text-slate-400 text-center mb-12 max-w-2xl mx-auto">
-            Hear from agents using LeadFlow AI to respond faster and book more appointments.
+            LeadFlow AI is built to respond instantly, follow up persistently, and book appointments automatically.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <TestimonialCard
-              quote="I used to lose leads because I couldn't respond fast enough. LeadFlow changed that overnight."
-              name="Sarah M."
-              role="Solo Agent, Austin TX"
+            <OutcomeCard
+              stat="&lt; 30 sec"
+              label="Average response time to new leads"
             />
-            <TestimonialCard
-              quote="My response time went from 2 hours to 30 seconds. I've booked 3 extra appointments this month."
-              name="Mike R."
-              role="Team Lead, Denver CO"
+            <OutcomeCard
+              stat="24/7"
+              label="Lead coverage — nights, weekends, holidays"
             />
-            <TestimonialCard
-              quote="Setup took 5 minutes. The AI sounds like me, not a robot."
-              name="Jennifer K."
-              role="Realtor, Miami FL"
+            <OutcomeCard
+              stat="5 min"
+              label="Average time to go live"
             />
           </div>
-
-          <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
-            Results may vary. Testimonials represent expected outcomes based on typical usage.
-          </p>
 
           <div className="mt-8 text-center">
             {/* CTA: get_started_testimonial */}
@@ -563,15 +538,11 @@ const faqItems = [
   },
 ]
 
-function TestimonialCard({ quote, name, role }: { quote: string; name: string; role: string }) {
+function OutcomeCard({ stat, label }: { stat: string; label: string }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 flex flex-col">
-      <div className="text-emerald-500 text-3xl leading-none mb-4">&ldquo;</div>
-      <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed flex-1">{quote}</p>
-      <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
-        <p className="font-semibold text-slate-900 dark:text-white text-sm">{name}</p>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">{role}</p>
-      </div>
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 flex flex-col items-center text-center">
+      <p className="text-4xl font-bold text-emerald-500 mb-3">{stat}</p>
+      <p className="text-slate-600 dark:text-slate-300 text-base">{label}</p>
     </div>
   )
 }

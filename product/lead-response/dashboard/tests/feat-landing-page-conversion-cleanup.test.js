@@ -37,10 +37,10 @@ test('Pricing CTAs deep-link to /signup?plan=starter|pro|team', () => {
   assert(landing.includes('name="Team"'), 'Missing Team plan')
 })
 
-test('Testimonials include quote + attribution', () => {
-  const cards = landing.match(/<TestimonialCard/g) || []
-  assert(cards.length >= 1, 'Expected at least one testimonial card')
-  assert(/quote="[^"]+"\s+name="[^"]+"\s+role="[^"]+"/.test(landing), 'Missing testimonial quote/name/role attribution')
+test('Outcomes section has at least 1 OutcomeCard', () => {
+  const cards = landing.match(/<OutcomeCard/g) || []
+  assert(cards.length >= 1, 'Expected at least one OutcomeCard')
+  assert(/stat="[^"]+"\s+label="[^"]+"/.test(landing), 'Missing OutcomeCard stat/label props')
 })
 
 test('Pricing + trial messaging is consistent between landing and signup', () => {
