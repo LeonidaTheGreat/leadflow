@@ -1,0 +1,122 @@
+{
+  "date": "2026-06-07",
+  "genome_score": 33,
+  "score_rationale": "E2E 10/12 and 0 codebase violations are positives (+28). Hard offset by: dev agent 50 failures with 58-136 retry attempts on blocked_human UCs — genome burning budget with no progress (-25); 7+ P0/P1 UCs in needs_merge state with complete code stuck from production (-15); 4 in_progress UCs stale 21d with PRs closed repeatedly (-12); auth flow broken for new signups blocking first paying customer (-10); upstream schema UC blocking 2 P1 feature UCs (-5). Score down from 52 in April primarily because the blocked_human retry loop is worse.",
+
+  "priority_changes": [],
+
+  "cancellations": [
+    {
+      "task_id": "070f1b3a-545f-45df-a2e7-b901e655ff3b",
+      "reason": "PR #1585 closed (safety net cleanup). UC fix-fix-signup-and-login-table-mismatch requires a human auth-schema decision before dev can succeed. Cancelling to stop retry loop — escalated to human action items."
+    },
+    {
+      "task_id": "829906ea-5dac-4858-bd93-a8ca4a277a8f",
+      "reason": "PR #1584 closed (safety net cleanup). fix-rescue-triage-feature-selfserve-frictionless-o is a meta-rescue that itself got stuck. The underlying onboarding feature needs a fresh spec from PM, not another dev retry."
+    },
+    {
+      "task_id": "f95e4664-b40c-451b-b46e-89a4bb43663e",
+      "reason": "Invariant: awaiting_merge requires pr_number. fix-signup-page-shows-choose-your-plan cannot complete without the auth schema decision. Blocking retry until human resolves the upstream table mismatch."
+    },
+    {
+      "task_id": "c51cff3e-4f4e-4905-8681-f125fff17317",
+      "reason": "PR #1598 closed. fix-stored-password-cannot-verified-after-account (bcrypt issue) is directly linked to the table mismatch — passwords were hashed for one table, queried from another. No point retrying until schema is resolved."
+    },
+    {
+      "task_id": "b764cbf1-53f3-4d9f-9f25-13607f21a5c3",
+      "reason": "Retries exhausted (pipeline-health). feat-conversion-call-booking had 5 attempts including a rescue — all parked/failed. Cancelling. Escalated to human action: decide on Cal.com direct link approach vs. full booking system before respawning."
+    },
+    {
+      "task_id": "013c9b80-ac72-47b2-b3fc-5a67226eaac2",
+      "reason": "Upstream UC uc-buyer-journey-agent-schema-unification is blocked_human. Investigating a P3 pause-on-reply feature while its dependency is blocked is pure waste."
+    },
+    {
+      "task_id": "be7a20a0-7741-4de5-bb8b-8ecdbaa0cf36",
+      "reason": "Upstream UC uc-buyer-journey-agent-schema-unification is blocked_human. Real AI SMS response requires the agent schema to be unified first. Blocked until schema UC resolves."
+    },
+    {
+      "task_id": "4a0c92ef-4397-4bb2-8966-b70391a36c01",
+      "reason": "Upstream UC uc-buyer-journey-agent-schema-unification is blocked_human. Design task cannot proceed until the data model is settled."
+    },
+    {
+      "task_id": "efa82adb-a447-44e2-8c89-a8d789c237aa",
+      "reason": "Cancelling stale blocked task (PR #1685 closed, safety net cleanup) to allow a clean retry with explicit scope in action_items below."
+    },
+    {
+      "task_id": "47725ec7-94d2-40c5-9cbe-027d44e5a081",
+      "reason": "QC: fix-qc-rejection-recording retries exhausted. Cancelling blocked task and spawning a fresh dev fix via action_items."
+    }
+  ],
+
+  "action_items": [
+    {
+      "type": "fix",
+      "description": "Merge all P0/P1 needs_merge branches into main. For each branch: (1) git fetch origin, (2) git checkout <branch>, (3) git rebase origin/main, (4) resolve any conflicts, (5) git push --force-with-lease, (6) check gh pr view for merge status. Branches to process: feat-revenue-funnel-visibility, fix-page-view-logging-not-implemented-agent-page-views, feat-transactional-email-resend, fix-page-tsx-not-updated-simulator-step-not-wired-into, fix-api-health-endpoint-wrong-table, fix-day-79-of-90-0-mrr-target-is-mathematically-unreac, fix-createstuckalerts-not-wired-into-heartbeat, fix-stripe-price-ids-are-placeholder-values-not-real-s, fix-three-consecutive-vercel-builds-failing-fix-never-. Expected outcome: all 9 branches merged to main, vercel deploy triggered for dashboard.",
+      "priority": 1,
+      "reason": "9 P0/P1 code-complete branches stuck from production due to merge conflicts. Revenue funnel visibility, transactional email activation, and health endpoint fix are all gating the conversion funnel. Merging all at once is more efficient than piecemeal."
+    },
+    {
+      "type": "fix",
+      "description": "Merge P2 needs_merge branches: fix-utm-fix-branch-not-merged-to-main-fix-undeployed, fix-duplicate-email-error-shows-plain-text-missing-sig. Same approach as P0/P1 merge task above: rebase onto main, push, verify merge.",
+      "priority": 2,
+      "reason": "UTM tracking and signup UX improvements are complete but undeployed. Low conflict risk, quick wins for conversion tracking."
+    },
+    {
+      "type": "fix",
+      "description": "Retry: Remove fabricated testimonials from email templates. Scope: grep -r 'testimonial\\|said about us\\|5 stars\\|worked with' routes/ product/lead-response/dashboard/ --include='*.ts' --include='*.tsx' --include='*.js'. For every result that contains marketing copy attributed to unnamed users, replace with empty string or remove the section entirely. Do NOT add replacement testimonials. Verify: npm run build exits 0. Commit on new branch. This is content removal only — no new logic, no new endpoints.",
+      "priority": 1,
+      "reason": "Fabricated testimonials are a trust/legal risk. 3 previous dev attempts all failed via safety net cleanup (stale branches). Narrowed scope to grep-and-remove should succeed in one pass."
+    },
+    {
+      "type": "fix",
+      "description": "Fix QC rejection recording: store QC verdicts in the code_reviews table. In ~/projects/genome/core/realtime-dispatcher.js, find extractQCVerdict() and verify it correctly writes to code_reviews with status='approved' or 'changes_requested'. If the DB insert is missing, add it. Verify: after QC runs on a task with a PR, SELECT status FROM code_reviews WHERE pr_number = <recent_pr> should return 'approved' or 'changes_requested' (not null). This is a genome health fix, not a LeadFlow product change.",
+      "priority": 2,
+      "reason": "QC rejection data is missing from code_reviews, so the orchestrator cannot track code quality trends or route changes_requested back to dev. Previous task hit max retries — fresh attempt with explicit file path and acceptance criteria."
+    },
+    {
+      "type": "fix",
+      "description": "Write a fresh spec for frictionless self-serve onboarding (UC fix-rescue-triage-feature-selfserve-frictionless-o replacement). Minimum viable: (1) Signup form collects name + email + phone, (2) account created immediately without email verification gate, (3) user lands on /dashboard with an inline 'connect FUB' prompt (dismissable), (4) no payment required to start. Deliverable: update the UC description in the DB with this exact spec, then spawn dev. The previous PRs (#1584) were closed due to safety-net cleanup — this retry must stay within these narrow boundaries.",
+      "priority": 1,
+      "reason": "Frictionless onboarding is the primary path to first paying customer. The previous PM triage rescue got stuck because the scope was undefined ('new user visits landing page...' — incomplete). A concrete 4-point spec should unblock dev in one attempt."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add to RULES.md under a new section BLOCKED_HUMAN CIRCUIT BREAKER: 'Before writing any code, check: (1) SELECT implementation_status FROM use_cases WHERE id = <uc_id> — if blocked_human, STOP and report blocked_human. (2) SELECT last_error FROM tasks WHERE use_case_id = <uc_id> AND status IN (failed, blocked) ORDER BY updated_at DESC LIMIT 1 — if last_error contains safety net cleanup, blocked_human, or PR closed, STOP and report blocked_human. (3) If any upstream UC in depends_on[] has implementation_status=blocked_human, STOP and report blocked_dependency=<uc_id>. Do NOT create a branch, write code, or create a PR when any of these checks trigger. Wasting cycles on a known-blocked UC is always worse than stopping early and surfacing the block. Report your check results in the completion report.'",
+      "priority": 1,
+      "reason": "Dev agent accumulated 50 failures this week with 58-136 retry attempts per blocked_human UC. Pattern: PR closed → rescue task spawned → rescue PR closed → repeat. A single pre-flight check at task start would have prevented ~90% of these failures and saved significant budget.",
+      "agent": "dev"
+    },
+    {
+      "type": "mission_proposal",
+      "description": "Update project mission metrics: (1) Remove or archive the 'first paying customer by Day 90 (2026-05-15)' metric — it is permanently failed and creates noise in every review. (2) Set active milestone: 'First paying customer by 2026-07-01' (25 days from today). (3) Confirm the 180-day extended goal '$20K MRR by 2026-08-13' as the primary target. Update project.config.json reporting.day_target and the corresponding mission_metrics row to reflect the 180-day window. The Day 90 metric should be marked 'archived' or 'missed' with a note, not left as an active gap.",
+      "priority": 1,
+      "reason": "Day 90 passed 2026-05-15 with $0 MRR. The genome reports this as a permanent gap every heartbeat, which dilutes signal from actionable metrics. The live goal is $20K MRR by Day 180 (2026-08-13). Keeping a permanently-failed metric active degrades every genome_score calculation."
+    }
+  ],
+
+  "human_action_items": [
+    {
+      "description": "AUTH TABLE SCHEMA DECISION (P1, blocking first paying customer): Three UCs are stuck because signup inserts into real_estate_agents while login queries agents (or vice versa), and bcrypt hashes mismatch across tables. PRs #1585, #1598 were both closed by safety net. Stojan must decide: (A) migrate all auth queries to real_estate_agents (preferred — it's the correct table), approve the next PR when it arrives without waiting for safety-net cooldown, or (B) document which table is canonical and the dev agent can execute. Cannot auto-resolve — requires schema ownership decision.",
+      "can_eliminate": false,
+      "elimination_proposal": "One 15-minute decision unlocks 3 P1 UCs: fix-fix-signup-and-login-table-mismatch, fix-signup-page-shows-choose-your-plan, fix-stored-password-cannot-verified-after-account."
+    },
+    {
+      "description": "FEAT-CONVERSION-CALL-BOOKING approach decision (P0): 5 dev attempts all parked/failed. The feature (book a demo for trial agents near checkout) requires either: (A) add a Cal.com calendar link to the checkout confirmation page — 1 line of code, low risk, or (B) full booking flow with webhooks. Dev cannot decide this scope — human must choose. Once decided, spawn a fresh dev task with the chosen approach.",
+      "can_eliminate": true,
+      "elimination_proposal": "Choose option A (Cal.com link on checkout confirmation). This is a 1-line change that delivers 80% of the value with 0 risk. Eliminates the need for complex booking flow."
+    },
+    {
+      "description": "uc-buyer-journey-agent-schema-unification (P1, blocked_human, stale 13d): This is the upstream blocker for both uc-buyer-journey-fubservice-real-ai and uc-buyer-journey-takeover-pause-on-agent-reply. The Agent TypeScript type and real_estate_agents DB shape are out of sync. This unblocks AI SMS response and sequence pause features.",
+      "can_eliminate": false,
+      "elimination_proposal": "Cannot auto-resolve — requires code review and schema alignment decision. Estimated 2-3 hours of dev work once the canonical shape is agreed."
+    },
+    {
+      "description": "Onboarding UI wireframes and form components (blocked tasks 90687cbc and 2040c777): Design assets have been blocked for multiple cycles. If wireframes are not coming within 48 hours, these tasks should be cancelled and replaced with a minimal functional form (no design polish) to unblock dev.",
+      "can_eliminate": true,
+      "elimination_proposal": "Cancel wireframe-dependency tasks. Use plain HTML form with email + name + phone — ship functional onboarding in 2 hours vs. waiting indefinitely for polished designs. 0 paying customers means functional > beautiful."
+    }
+  ],
+
+  "focus_today": "Merge the 9 needs_merge P0/P1 branches to get finished code into production, then get Stojan's auth schema decision to unblock the 3 login/signup UCs — these two actions together unblock the full conversion funnel."
+}
