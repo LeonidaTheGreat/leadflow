@@ -48,37 +48,35 @@ export async function GET() {
   }
 
   // 2. Database connectivity via PostgREST
+  const client = postgrestAdmin
   if (isPostgrestConfigured()) {
     try {
-      const dbCheckPromise = postgrestAdmin
-        .from('real_estate_agents')
-        .select('id')
-        .limit(1) as PromiseLike<{ error: { message: string } | null }>
+      const dbCheckPromise = client.from('real_estate_agents').select('id').limit(1) as PromiseLike<{ error: { message: string } | null }>
 
       const { error } = await withTimeout(
         dbCheckPromise,
         DB_HEALTH_TIMEOUT_MS
       )
-      checks['database'] = {
+      checks['supabase_connectivity'] = {
         ok: !error,
         detail: error ? `query failed: ${error.message}` : 'connected' }
     } catch (err: any) {
-      checks['database'] = {
+      checks['supabase_connectivity'] = {
         ok: false,
         detail: `exception: ${err.message}` }
     }
   } else {
-    checks['database'] = {
+    checks['supabase_connectivity'] = {
       ok: false,
       detail: 'skipped — PostgREST not configured' }
   }
 
   // 3. API connectivity — derives from database connectivity check above
   // If the database is reachable, the PostgREST API is reachable (they are the same endpoint).
-  if (checks['database']) {
+  if (checks['supabase_connectivity']) {
     checks['api_connectivity'] = {
-      ok: checks['database'].ok,
-      detail: checks['database'].ok ? 'ok' : checks['database'].detail }
+      ok: checks['supabase_connectivity'].ok,
+      detail: checks['supabase_connectivity'].ok ? 'ok' : checks['supabase_connectivity'].detail }
   } else {
     checks['api_connectivity'] = {
       ok: false,
@@ -92,7 +90,7 @@ export async function GET() {
     'NEXT_PUBLIC_API_KEY',
     'API_SECRET_KEY',
     'RESEND_API_KEY',
-    'database',
+    'supabase_connectivity',
   ]
   const criticalFailed = Object.entries(checks)
     .filter(([name, c]) => criticalKeys.includes(name) && !c.ok)

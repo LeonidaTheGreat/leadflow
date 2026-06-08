@@ -223,7 +223,11 @@ class QueryBuilder implements PromiseLike<any> {
   }
 
   private buildUrl(): string {
-    const url = new URL(`${this.baseUrl}/${this.table}`)
+    // Strip any trailing /rest/v1 (or /v1) from baseUrl, then always add /rest/v1/.
+    // This normalises behaviour regardless of whether NEXT_PUBLIC_API_URL is set to
+    // 'https://api.imagineapi.org' or 'https://api.imagineapi.org/rest/v1'.
+    const base = this.baseUrl.replace(/\/(?:rest\/)?v1\/?$/, '').replace(/\/$/, '')
+    const url = new URL(`${base}/rest/v1/${this.table}`)
 
     if (this.selectCols) {
       url.searchParams.set('select', this.selectCols)
@@ -340,7 +344,8 @@ export async function rpc(name: string, params?: any): Promise<{ data: any; erro
 
 async function rpcCall(name: string, params?: any): Promise<{ data: any; error: any }> {
   try {
-    const url = `${baseUrl}/rpc/${name}`
+    const base = baseUrl.replace(/\/(?:rest\/)?v1\/?$/, '').replace(/\/$/, '')
+    const url = `${base}/rest/v1/rpc/${name}`
     const response = await fetch(url, {
       method: 'POST',
       headers: {
