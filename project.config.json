@@ -395,15 +395,26 @@
   "phase": "pre-launch",
   "reporting": {
     "day_zero": "2026-02-15",
-    "day_target": 90,
-    "report_prefix": "LeadFlow Orchestrator"
+    "day_target": 180,
+    "report_prefix": "LeadFlow Orchestrator",
+    "active_milestone": "First paying customer",
+    "active_milestone_deadline": "2026-07-01",
+    "archived_milestones": [
+      {
+        "name": "First paying customer (Day 90)",
+        "deadline": "2026-05-15",
+        "status": "missed",
+        "note": "Archived 2026-06-07. $0 MRR at Day 90. Active goal moved to 2026-07-01."
+      }
+    ]
   },
   "goals": [
     {
       "type": "mrr",
       "target": 20000,
-      "target_date": "2026-04-15",
-      "currency": "USD"
+      "target_date": "2026-08-13",
+      "currency": "USD",
+      "note": "Day 180 primary target. Original Day 90 first-paying-customer target missed (2026-05-15)."
     }
   ],
   "failure_resolution": {
