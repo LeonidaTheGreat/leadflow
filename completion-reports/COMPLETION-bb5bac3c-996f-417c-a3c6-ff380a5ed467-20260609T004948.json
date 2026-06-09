@@ -1,0 +1,25 @@
+{
+  "taskId": "bb5bac3c-996f-417c-a3c6-ff380a5ed467",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "Product agent was creating duplicate tasks for UCs that already had completed tasks",
+    "why": "buildRoleContext() product spawnRole had no dedup check instruction; SOUL.md is only loaded for expensive models / complex tasks (score >= 3), so light tasks never saw the rule",
+    "fix": "Added DEDUP CHECK section to product default spawnRole in genome/core/food/role-context.js — always injected regardless of model tier. SOUL.md already had the rule from a prior edit."
+  },
+  "taskSpec": {
+    "what": "genome/core/food/role-context.js buildRoleContext() product default spawnRole — add DEDUP CHECK block; workspace-product-manager/SOUL.md already had the change",
+    "verify": "grep -n DEDUP ~/projects/genome/core/food/role-context.js → shows new section; SOUL.md lines 75-91",
+    "boundaries": "Only product default spawnRole modified. escalation-diagnosis and product-review variants untouched. No leadflow product code changed."
+  },
+  "testResults": {
+    "passed": 0,
+    "total": 0,
+    "passRate": 1
+  },
+  "filesCreated": [],
+  "filesModified": [
+    "projects/genome/core/food/role-context.js"
+  ],
+  "genomeCommit": "d51a297",
+  "completionReportPath": null
+}
