@@ -1,0 +1,32 @@
+{
+  "taskId": "011df732-4cfa-4aee-9570-414bd8ae3a35",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "Dev agents repeatedly placed test files in product/lead-response/dashboard/tests/ instead of tests/",
+    "why": "No explicit test file placement rule existed in agent instructions or buildRoleContext output",
+    "fix": "Added TEST FILE PLACEMENT rule to SOUL.md (workspace-dev, commit c7d55688) and to buildRoleContext() dev role in core/food/role-context.js (genome, commit 22e96249). Previous agent completed the code changes but died before filing the completion report."
+  },
+  "taskSpec": {
+    "what": "1. /Users/clawdbot/.openclaw/workspace-dev/SOUL.md — add TEST FILE PLACEMENT rule in 'What You Don't Do' section. 2. /Users/clawdbot/projects/genome/core/food/role-context.js buildRoleContext() dev role — add rule under 'Write tests' step.",
+    "verify": "git -C ~/.openclaw/workspace-dev blame SOUL.md | grep 'TEST FILE PLACEMENT' && git -C ~/projects/genome blame core/food/role-context.js | grep 'TEST FILE PLACEMENT'",
+    "boundaries": "Do not remove existing instructions. Do not modify non-dev roles. Do not modify leadflow product code."
+  },
+  "filesCreated": [],
+  "filesModified": [
+    "/Users/clawdbot/.openclaw/workspace-dev/SOUL.md",
+    "/Users/clawdbot/projects/genome/core/food/role-context.js"
+  ],
+  "evidence": {
+    "soulMdCommit": "c7d55688 — committed 2026-05-12, contains TEST FILE PLACEMENT rule at line 65",
+    "roleContextCommit": "22e96249 — committed 2026-05-12, contains TEST FILE PLACEMENT rule at lines 364-366",
+    "verificationCommand": "git -C /Users/clawdbot/.openclaw/workspace-dev blame SOUL.md -L 65,65",
+    "ruleText": "ALL test files MUST be under project-root tests/: tests/e2e/, tests/integration/, or tests/unit/. NEVER place tests in product/lead-response/dashboard/tests/ or any directory outside tests/. After writing a test file, verify the path starts with tests/ before committing."
+  },
+  "testResults": {
+    "passed": 0,
+    "total": 0,
+    "passRate": 1.0,
+    "note": "No application code changed — this task modified agent instruction files only"
+  },
+  "completionReportPath": "completion-reports/COMPLETION-011df732-4cfa-4aee-9570-414bd8ae3a35-1749393000000.json"
+}
