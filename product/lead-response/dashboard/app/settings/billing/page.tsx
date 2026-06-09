@@ -294,7 +294,7 @@ function BillingPageContent() {
           href={DEMO_BOOKING_URL}
           target="_blank"
           rel="noopener noreferrer"
-          data-testid="billing-demo-call-cta"
+          data-testid="demo-call-cta-billing"
           onClick={() => trackEvent('demo_call_cta_click', { source: 'billing_page' })}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors"
         >
