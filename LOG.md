@@ -961,3 +961,5 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - Report prepared for topic 10788
 
 - 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
+
+- 2026-06-09: Investigation 6de667ec — stuck UC fix-rescue-triage-feature-selfserve-frictionless-o. Gaps: AC-1 (no phone field in trial form) and AC-3 (redirects to /dashboard/onboarding not /dashboard). Created dev task bb7163d2 to implement. UC updated to in_progress.
