@@ -107,9 +107,11 @@ async function verifyResendKey() {
   // Test 2: Send test email to verify the key can actually send
   log('\n📤 Test 2: Sending test email to verify delivery...', 'yellow');
   
+  const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim();
+
   const testEmail = {
-    from: 'onboarding@resend.dev',
-    to: 'madzunkov@gmail.com', // Resend test keys can only send to account owner
+    from: FROM_EMAIL,
+    to: 'madzunkov@gmail.com',
     subject: 'LeadFlow AI - RESEND_API_KEY Verification Test',
     html: `
       <!DOCTYPE html>
@@ -138,7 +140,7 @@ async function verifyResendKey() {
                       <p style="color: #10b981; font-size: 14px; margin: 0 0 8px;"><strong>Test Results:</strong></p>
                       <ul style="color: #94a3b8; font-size: 14px; margin: 0; padding-left: 20px;">
                         <li>API Key: Valid and active</li>
-                        <li>From address: onboarding@resend.dev</li>
+                        <li>From address: ${FROM_EMAIL}</li>
                         <li>Sent at: ${new Date().toISOString()}</li>
                         <li>Task ID: 5af04ef5-7b00-46d0-8d41-4ecb2f44ae1b</li>
                       </ul>
@@ -179,9 +181,7 @@ async function verifyResendKey() {
       log('✅ RESEND_API_KEY is LIVE and valid', 'green');
       log(`✅ Key type: ${isSendingOnlyKey ? 'Sending-only (secure)' : 'Full access'}`, 'green');
       log('✅ Email delivery confirmed - email sent to inbox', 'green');
-      log('\n⚠️  NOTE: Domain verification required for full functionality', 'yellow');
-      log('   Current: Can send to account owner (madzunkov@gmail.com)', 'cyan');
-      log('   To send to any recipient: Verify landyourleads.com at resend.com/domains', 'cyan');
+      log('\n✅ Sending from verified domain: landyourleads.com', 'green');
       log('\n✅ Pilots CAN be enrolled - email delivery is functional', 'green');
       log('='.repeat(60), 'blue');
       
@@ -197,11 +197,10 @@ async function verifyResendKey() {
       log('✅ RESEND_API_KEY is LIVE and valid', 'green');
       log(`✅ Key type: ${isSendingOnlyKey ? 'Sending-only (secure)' : 'Full access'}`, 'green');
       log('✅ API authentication successful', 'green');
-      log('\n⚠️  Email delivery blocked: Domain verification required', 'yellow');
-      log('   To send emails to any recipient:', 'cyan');
-      log('   1. Verify landyourleads.com domain at https://resend.com/domains', 'cyan');
-      log('   2. Update FROM_EMAIL to hello@landyourleads.com in Vercel', 'cyan');
-      log('\n⚠️  Pilots can be enrolled BUT emails will fail until domain is verified', 'yellow');
+      log('\n❌ Email delivery blocked: domain not verified', 'red');
+      log('   Check that landyourleads.com is verified at https://resend.com/domains', 'cyan');
+      log('   Confirm FROM_EMAIL is set to onboarding@landyourleads.com in Vercel', 'cyan');
+      log('\n⚠️  Pilots emails will fail until domain verification is confirmed', 'yellow');
       log('='.repeat(60), 'blue');
       
       process.exit(1);
