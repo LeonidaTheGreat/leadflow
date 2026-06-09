@@ -20,7 +20,7 @@ Boundaries:
 ## What is LeadFlow
 Real estate AI lead response service. Responds to leads via SMS in <30 seconds,
 integrates with Follow Up Boss (FUB) CRM, books appointments via Cal.com.
-**Near-term Goal:** First paying customer by Day 90 (2026-05-15). (Authoritative source: `project.config.json → reporting.day_target`)
+**Near-term Goal:** First paying customer by 2026-07-01. Day 90 (2026-05-15) missed at $0 MRR — archived. (Authoritative source: `project.config.json → reporting.active_milestone_deadline`)
 **Extended Goal:** $20K MRR by Day 180 (2026-08-13) — original 90-day target mathematically unreachable as of Day 79 with $0 MRR.
 
 ## Current Status
