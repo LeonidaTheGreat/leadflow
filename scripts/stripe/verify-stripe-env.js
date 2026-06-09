@@ -13,24 +13,27 @@ console.log('==============================================');
 console.log('Stripe Environment Variables Verification');
 console.log('==============================================\n');
 
-// Required environment variables (must match PRICE_ID_ENV_MAP in create-checkout/route.ts)
+// Required environment variables (must match PRICE_ID_ENV_MAP in create-checkout/route.ts
+// and PLAN_PRICE_ENV in upgrade-checkout/route.ts)
 const requiredVars = [
   { name: 'STRIPE_SECRET_KEY', sensitive: true },
   { name: 'STRIPE_WEBHOOK_SECRET', sensitive: true },
-  // Server-side price IDs — these are the authoritative names
+  // Server-side price IDs — canonical names used by both checkout routes
   { name: 'STRIPE_PRICE_STARTER_MONTHLY', sensitive: false },
-  { name: 'STRIPE_PRICE_PROFESSIONAL_MONTHLY', sensitive: false },
-  { name: 'STRIPE_PRICE_ENTERPRISE_MONTHLY', sensitive: false },
+  { name: 'STRIPE_PRICE_PRO_MONTHLY', sensitive: false },
+  { name: 'STRIPE_PRICE_TEAM_MONTHLY', sensitive: false },
 ];
 
 // Deprecated / incorrect vars that should NOT be used
 const deprecatedVars = [
   { name: 'NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY',  reason: 'Use STRIPE_PRICE_STARTER_MONTHLY (server-side)' },
-  { name: 'NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY',      reason: 'Use STRIPE_PRICE_PROFESSIONAL_MONTHLY (server-side)' },
-  { name: 'NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY',     reason: 'Use STRIPE_PRICE_ENTERPRISE_MONTHLY (server-side)' },
+  { name: 'NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY',      reason: 'Use STRIPE_PRICE_PRO_MONTHLY (server-side)' },
+  { name: 'NEXT_PUBLIC_STRIPE_PRICE_TEAM_MONTHLY',     reason: 'Use STRIPE_PRICE_TEAM_MONTHLY (server-side)' },
+  { name: 'STRIPE_PRICE_PROFESSIONAL_MONTHLY',         reason: 'Use STRIPE_PRICE_PRO_MONTHLY' },
+  { name: 'STRIPE_PRICE_ENTERPRISE_MONTHLY',           reason: 'Use STRIPE_PRICE_TEAM_MONTHLY' },
   { name: 'STRIPE_PRICE_ID_BASIC',       reason: 'Use STRIPE_PRICE_STARTER_MONTHLY' },
-  { name: 'STRIPE_PRICE_ID_PRO',         reason: 'Use STRIPE_PRICE_PROFESSIONAL_MONTHLY' },
-  { name: 'STRIPE_PRICE_ID_ENTERPRISE',  reason: 'Use STRIPE_PRICE_ENTERPRISE_MONTHLY' },
+  { name: 'STRIPE_PRICE_ID_PRO',         reason: 'Use STRIPE_PRICE_PRO_MONTHLY' },
+  { name: 'STRIPE_PRICE_ID_ENTERPRISE',  reason: 'Use STRIPE_PRICE_TEAM_MONTHLY' },
 ];
 
 // Kept for backward compat (empty — no longer used)
@@ -126,8 +129,8 @@ if (allPassed) {
   console.log('2. Copy the price_... IDs output by the script');
   console.log('3. Set them in Vercel:');
   console.log('   echo "price_..." | vercel env add STRIPE_PRICE_STARTER_MONTHLY production');
-  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_PROFESSIONAL_MONTHLY production');
-  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_ENTERPRISE_MONTHLY production');
+  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_PRO_MONTHLY production');
+  console.log('   echo "price_..." | vercel env add STRIPE_PRICE_TEAM_MONTHLY production');
   console.log('4. Also set: STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET in Vercel');
   console.log('5. Redeploy: vercel --prod');
   console.log('6. Run: node scripts/utilities/verify-stripe-env.js again to verify');

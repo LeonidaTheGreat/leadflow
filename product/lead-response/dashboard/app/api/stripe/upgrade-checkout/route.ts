@@ -10,12 +10,18 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
-// Plan → Stripe price ID mapping.
-// In production these are set via Vercel env vars.
-const PLAN_PRICE_IDS: Record<string, string> = {
-  starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
-  pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
-  team: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly' }
+// Plan → Stripe price ID env var mapping.
+// Canonical env var names match PRICE_ID_ENV_MAP in create-checkout/route.ts.
+// No hardcoded fallbacks — placeholder strings cause opaque Stripe errors.
+const PLAN_PRICE_ENV: Record<string, string> = {
+  starter: 'STRIPE_PRICE_STARTER_MONTHLY',
+  pro:     'STRIPE_PRICE_PRO_MONTHLY',
+  team:    'STRIPE_PRICE_TEAM_MONTHLY',
+}
+
+function isValidPriceId(id: string | undefined): id is string {
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,}$/.test(id)
+}
 
 /**
  * POST /api/stripe/upgrade-checkout
@@ -47,10 +53,23 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { plan } = body
 
-    if (!plan || !PLAN_PRICE_IDS[plan]) {
+    if (!plan || !PLAN_PRICE_ENV[plan]) {
       return NextResponse.json(
-        { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_PRICE_IDS).join(', ')}` },
+        { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_PRICE_ENV).join(', ')}` },
         { status: 400 }
+      )
+    }
+
+    // Resolve price ID from env var — reject placeholder/missing values before reaching Stripe
+    const priceId = process.env[PLAN_PRICE_ENV[plan]]
+    if (!isValidPriceId(priceId)) {
+      logger.error(
+        `Missing or invalid Stripe price ID for plan "${plan}". ` +
+        `Set ${PLAN_PRICE_ENV[plan]} in Vercel environment variables.`
+      )
+      return NextResponse.json(
+        { error: `Billing is not configured for the "${plan}" plan. Contact support.`, code: 'PRICE_NOT_CONFIGURED' },
+        { status: 503 }
       )
     }
 
@@ -88,7 +107,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: agent.id,
-      line_items: [{ price: PLAN_PRICE_IDS[plan], quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       subscription_data: {
         metadata: {

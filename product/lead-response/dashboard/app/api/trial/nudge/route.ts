@@ -9,7 +9,7 @@ const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
 // Default to Pro plan for the nudge CTA
-const PRO_PRICE_ID = process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly'
+const PRO_PRICE_ID = process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_professional_monthly'
 
 /**
  * GET /api/trial/nudge
