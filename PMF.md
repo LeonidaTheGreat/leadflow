@@ -2,10 +2,10 @@
 
 **Product:** LeadFlow AI (formerly InstantLead AI)  
 **Domain:** Real Estate — AI Lead Response  
-**Near-Term Milestone:** First paying customer by Day 90 (2026-05-15)  
+**Near-Term Milestone:** First paying customer by 2026-07-01 (Day 90 / 2026-05-15 missed at $0 MRR)  
 **Minimum Target:** $20,000 MRR by Day 180 (2026-08-13)  
 **Stretch Target:** $50,000 MRR  
-**Last Updated:** 2026-04-08  
+**Last Updated:** 2026-06-08  
 **Status:** MVP Complete → Pilot Phase → Conversion Push
 
 ---
