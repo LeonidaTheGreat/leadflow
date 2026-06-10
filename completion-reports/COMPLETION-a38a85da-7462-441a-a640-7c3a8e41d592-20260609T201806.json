@@ -1,0 +1,25 @@
+{
+  "taskId": "a38a85da-7462-441a-a640-7c3a8e41d592",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "Dev agent had no instruction to bail on blocked_external UC status, and used status=failed (instead of status=blocked) for blocked_human exits — causing 136-143 wasted retry attempts on 4 blocked UCs",
+    "why": "The existing BLOCKED_HUMAN CIRCUIT BREAKER only checked blocked_human, not blocked_external, and reported status=failed which triggers retries instead of status=blocked which halts the retry ladder",
+    "fix": "Updated role-context.js Check 1 and Check 3 to also trigger on blocked_external; changed exit reports to use status=blocked with reason=upstream_blocked_human; updated SOUL.md to match"
+  },
+  "taskSpec": {
+    "what": "1. /Users/clawdbot/projects/genome/core/food/role-context.js — dev role BLOCKED_HUMAN checks (Check 1 + Check 3), 2. /Users/clawdbot/.openclaw/workspace-dev/SOUL.md — BLOCKED_HUMAN CIRCUIT BREAKER bullet",
+    "verify": "grep -n 'blocked_external' /Users/clawdbot/projects/genome/core/food/role-context.js /Users/clawdbot/.openclaw/workspace-dev/SOUL.md — should show 2 hits in role-context.js and 1 in SOUL.md",
+    "boundaries": "Did not touch other roles (product/qc/design/analytics/marketing), did not change application code in leadflow"
+  },
+  "filesModified": [
+    "~/projects/genome/core/food/role-context.js (genome commit d5ce9b5)",
+    "~/.openclaw/workspace-dev/SOUL.md (workspace-dev commit 24c4b0c)"
+  ],
+  "filesCreated": [],
+  "testResults": { "passed": 0, "total": 0, "passRate": 1.0, "note": "No tests for agent instruction changes; verified via grep" },
+  "preflightChecks": {
+    "note": "This task IS the blocked_human early exit improvement — no UC to check"
+  },
+  "verificationOutput": "grep 'blocked_external' ~/projects/genome/core/food/role-context.js shows 2 occurrences (Check 1 + Check 3); SOUL.md shows 1 occurrence",
+  "genomePushCommit": "d5ce9b5 on LeonidaTheGreat/openclaw-genome main"
+}
