@@ -94,7 +94,7 @@ export default function TrialExpiredPage() {
             href={DEMO_BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
-            data-testid="trial-expired-demo-call-cta"
+            data-testid="demo-call-cta-trial-expired"
             onClick={() => trackEvent('demo_call_cta_click', { source: 'trial_expired' })}
             className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors text-center"
           >
@@ -103,7 +103,7 @@ export default function TrialExpiredPage() {
           </a>
 
           <a
-            href="mailto:support@leadflow.ai"
+            href="mailto:support@landyourleads.com"
             className="block w-full px-4 py-3 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 font-medium rounded-lg transition-colors text-center text-sm"
           >
             Email Support
@@ -111,7 +111,7 @@ export default function TrialExpiredPage() {
         </div>
 
         <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-6">
-          Questions? Email us at <a href="mailto:support@leadflow.ai" className="text-emerald-500 hover:text-emerald-600">support@leadflow.ai</a>
+          Questions? Email us at <a href="mailto:support@landyourleads.com" className="text-emerald-500 hover:text-emerald-600">support@landyourleads.com</a>
         </p>
       </div>
     </div>

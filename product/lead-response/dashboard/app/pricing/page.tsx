@@ -399,7 +399,7 @@ export default function PricingPage() {
               href={DEMO_BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
-              data-testid="demo-call-cta"
+              data-testid="demo-call-cta-pricing"
               onClick={() => trackEvent('demo_call_cta_click', { source: 'pricing_page' })}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:text-blue-200 font-semibold rounded-lg transition-all"
             >
