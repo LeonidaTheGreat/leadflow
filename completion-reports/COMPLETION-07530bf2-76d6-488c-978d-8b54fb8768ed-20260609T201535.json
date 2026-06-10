@@ -1,0 +1,22 @@
+{
+  "taskId": "07530bf2-76d6-488c-978d-8b54fb8768ed",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "spawn-preparer.js prepareAndQueueSpawn() — UC status check only gated on 'complete', allowing tasks tied to blocked_human/blocked_external UCs to proceed to spawn",
+    "why": "The UC status check at spawn time was added to prevent spawning against already-complete UCs, but the equivalent guard for terminal-blocked UCs (blocked_human, blocked_external) was never added. Tasks created before a UC was marked blocked remain in 'ready' status and get spawned repeatedly, burning budget with guaranteed failures.",
+    "fix": "Added hard-skip in prepareAndQueueSpawn() immediately after the 'complete' check: if uc.implementation_status is 'blocked_human' or 'blocked_external', mark task as 'blocked' and return null. Committed to ~/projects/genome @ 59fd370."
+  },
+  "taskSpec": {
+    "what": "Edit /Users/clawdbot/projects/genome/core/food/spawn-preparer.js — prepareAndQueueSpawn() — add blocked_human/blocked_external guard after the 'complete' check (line ~178)",
+    "verify": "grep -n 'blocked_human' genome/core/food/spawn-preparer.js shows the guard; npm test exits 0",
+    "boundaries": "Only touched the spawn-preparer.js UC status check. Did not modify queue-replenisher (already excludes these statuses), rescue-strategies (already guards on blocked_human), or heartbeat-executor."
+  },
+  "testResults": { "passed": 9, "total": 9, "passRate": 1.0 },
+  "filesCreated": [],
+  "filesModified": [
+    "/Users/clawdbot/projects/genome/core/food/spawn-preparer.js"
+  ],
+  "genomeCommit": "59fd370",
+  "genomeRepo": "~/projects/genome",
+  "completionReportPath": null
+}
