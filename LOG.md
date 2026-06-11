@@ -963,3 +963,139 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
 
 - 2026-06-09: Investigation 6de667ec — stuck UC fix-rescue-triage-feature-selfserve-frictionless-o. Gaps: AC-1 (no phone field in trial form) and AC-3 (redirects to /dashboard/onboarding not /dashboard). Created dev task bb7163d2 to implement. UC updated to in_progress.
+
+### 2026-06-11 00:15:22
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":22,"inProgress":4,"blocked":5,"done":3783,"total":13478}
+- UC blocked_human (273 attempts): feat-revenue-funnel-visibility → human review needed
+- UC blocked_human (284 attempts): feat-transactional-email-resend → human review needed
+- UC blocked_human (285 attempts): fix-page-tsx-not-updated-simulator-step-not-wired-into → human review needed
+- UC blocked_human (285 attempts): fix-day-79-of-90-0-mrr-target-is-mathematically-unreac → human review needed
+- UC blocked_human (284 attempts): fix-createstuckalerts-not-wired-into-heartbeat → human review needed
+- UC blocked_human (285 attempts): fix-remaining-agents-table-references → human review needed
+- UC blocked_human (286 attempts): fix-stripe-price-ids-are-placeholder-values-not-real-s → human review needed
+- UC blocked_human (285 attempts): fix-missing-how-it-works-section-ac-2-fails → human review needed
+- UC blocked_human (286 attempts): fix-three-consecutive-vercel-builds-failing-fix-never- → human review needed
+- UC blocked_human (285 attempts): fix-prd-objective-not-fully-implemented-product-api-ro → human review needed
+- UC blocked_human (286 attempts): fix-verify-stripe-webhook-secret-in-production → human review needed
+- UC blocked_human (285 attempts): fix-trial-duration-mismatch-landing-says-30-day-signup → human review needed
+- UC blocked_human (285 attempts): fix-inactivity-alerting-cron-not-implemented → human review needed
+- UC blocked_human (285 attempts): fix-signup-routes-redirect-to-setup-not-dashboard-onbo → human review needed
+- Reset 1 exhausted task(s)
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Merge gate blocked: feat-revenue-funnel-visibility
+- Merge gate blocked: feat-transactional-email-resend
+- Merge gate blocked: fix-page-tsx-not-updated-simulator-step-not-wired-into
+- Merge gate blocked: fix-day-79-of-90-0-mrr-target-is-mathematically-unreac
+- Merge gate blocked: fix-createstuckalerts-not-wired-into-heartbeat
+- Merge gate blocked: fix-remaining-agents-table-references
+- Merge gate blocked: fix-stripe-price-ids-are-placeholder-values-not-real-s
+- Merge gate blocked: fix-missing-how-it-works-section-ac-2-fails
+- Merge gate blocked: fix-three-consecutive-vercel-builds-failing-fix-never-
+- Merge gate blocked: fix-prd-objective-not-fully-implemented-product-api-ro
+- Merge gate blocked: fix-verify-stripe-webhook-secret-in-production
+- Merge gate blocked: fix-trial-duration-mismatch-landing-says-30-day-signup
+- Merge gate blocked: fix-inactivity-alerting-cron-not-implemented
+- Merge gate blocked: fix-signup-routes-redirect-to-setup-not-dashboard-onbo
+- QC backfill: PR #1794
+- QC backfill: PR #1795
+- Queried state: {"ready":9,"inProgress":4,"blocked":5,"done":3783,"total":13478}
+- 🛑 Main CI broken — all spawning paused
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Mission metrics: 14 collected for genome
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 11 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-11 00:17:49
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":9,"inProgress":3,"blocked":5,"done":3783,"total":13478}
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1794
+- QC backfill: PR #1795
+- Queried state: {"ready":8,"inProgress":3,"blocked":5,"done":3783,"total":13478}
+- 🛑 Main CI broken — all spawning paused
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Mission metrics: 14 collected for genome
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 11 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-11 00:31:42
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":4,"inProgress":2,"blocked":5,"done":3784,"total":13480}
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1794
+- QC backfill: PR #1795
+- Archived 1 stale task(s)
+- Queried state: {"ready":4,"inProgress":2,"blocked":5,"done":3784,"total":13480}
+- Re-triggered 1 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Mission metrics: 14 collected for genome
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 12 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-11 01:07:44
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":1,"inProgress":0,"blocked":5,"done":3784,"total":13480}
+- Checked 5 blocked tasks
+- Smoke rollback recommended (12999 consecutive critical fails): vercel-dashboard
+- Smoke escalated → Dev: Vercel dashboard health
+- Smoke tests: 6/7 passed
+- Product sync: 6 components updated
+- E2E: 1 critical failures → fix task
+- E2E: 11/12 passed, 1 failed
+- Mission metrics: 3 collected for leadflow
+- QC backfill: PR #1794
+- QC backfill: PR #1795
+- Queried state: {"ready":1,"inProgress":1,"blocked":5,"done":3784,"total":13481}
+- Re-triggered 1 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 5 blocked tasks
+- Smoke rollback recommended (13000 consecutive critical fails): vercel-dashboard
+- Smoke tests: 6/7 passed
+- Mission metrics: 14 collected for genome
+- Replenished: multi-role task for fix-rework-rate-80-6-and-breakage-rate-98-4-agent-outp
+- Replenished: multi-role task for fix-dev-task-rework-rate-55-6-vs-target-10-5-5x-over-t
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 13 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-10 — Quality metrics fix (genome PR #293)
+- **genome/core/loops/world-class-metrics.js**: Fixed rework_rate and breakage_rate metrics that were catastrophically inflated (80.6% rework, 98.4% breakage vs targets of <3% / <10%)
+  - breakage_rate now requires causal linkage (parent_task_id or same use_case_id) — previously counted any global ci-fix task within 4h of any done task
+  - rework_rate numerator now limited to quality-miss children only — feature-extension children tracked in decomposition but no longer inflate the rate
+  - automated monitoring tasks (smoke-test, quality-audit, automated) excluded from both metrics
+- **genome/core/food/role-context.js**: Dev pre-submit checklist upgraded from advisory to hard-blocker with explicit HALT conditions per gate; QC role given "do NOT create Fix: tasks" directive with clear APPROVE/REJECT criteria
+- 8 new tests added; 24 total world-class-metrics tests pass
+- PR: https://github.com/LeonidaTheGreat/openclaw-genome/pull/293
