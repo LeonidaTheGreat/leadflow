@@ -9,7 +9,12 @@ const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
 // Default to Pro plan for the nudge CTA
-const PRO_PRICE_ID = process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly'
+// Canonical env var: STRIPE_PRICE_PRO_MONTHLY (matches create-checkout and upgrade-checkout routes)
+const PRO_PRICE_ID = process.env.STRIPE_PRICE_PRO_MONTHLY || ''
+
+function isValidPriceId(id: string | undefined): id is string {
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,30}$/.test(id)
+}
 
 /**
  * GET /api/trial/nudge
@@ -70,7 +75,7 @@ export async function GET(request: NextRequest) {
     // Build a Stripe checkout URL for Pro plan upgrade
     let checkoutUrl: string | null = null
 
-    if (stripe && PRO_PRICE_ID && !PRO_PRICE_ID.startsWith('price_professional')) {
+    if (stripe && isValidPriceId(PRO_PRICE_ID)) {
       try {
         let customerId = agent.stripe_customer_id
 

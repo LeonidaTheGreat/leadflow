@@ -14,9 +14,9 @@ process.env.STRIPE_SECRET_KEY = 'sk_test_fake'
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
 process.env.API_SECRET_KEY = 'test-service-role-key'
 process.env.JWT_SECRET = 'test-secret'
-process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_starter_monthly_test'
-process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY = 'price_pro_monthly_test'
-process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY = 'price_team_monthly_test'
+process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_1QvIEf2eZvKYlo2CkuDLQABG'
+process.env.STRIPE_PRICE_PRO_MONTHLY = 'price_1QvIEf2eZvKYlo2CkuDLQABC'
+process.env.STRIPE_PRICE_TEAM_MONTHLY = 'price_1QvIEf2eZvKYlo2CkuDLQABD'
 
 // ── Mock next/server ──────────────────────────────────────────────────────────
 
@@ -256,6 +256,20 @@ describe('POST /api/stripe/upgrade-checkout', () => {
         cancel_url: expect.stringContaining('/dashboard'),
       })
     )
+  })
+
+  // ── Price configuration ───────────────────────────────────────────────────
+
+  it('returns 503 when Stripe price ID is not configured for the plan', async () => {
+    const savedPrice = process.env.STRIPE_PRICE_STARTER_MONTHLY
+    delete process.env.STRIPE_PRICE_STARTER_MONTHLY
+    const req = makeRequest({ plan: 'starter' })
+    await POST(req)
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'PRICE_NOT_CONFIGURED' }),
+      expect.objectContaining({ status: 503 })
+    )
+    process.env.STRIPE_PRICE_STARTER_MONTHLY = savedPrice
   })
 
   // ── Error cases ───────────────────────────────────────────────────────────
