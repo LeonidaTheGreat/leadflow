@@ -963,3 +963,5 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 - 2026-05-23: PM re-spec for uc-buyer-journey-tier-gating-or-remove (task 0031b150-36d9-4028-b828-a655dfc25f47). Category: needs_alternative_approach. Pivoted to Phase 1 pricing-truthfulness cleanup, Phase 2 minimal endpoint gating follow-up; priority raised to P1 in DB.
 
 - 2026-06-09: Investigation 6de667ec — stuck UC fix-rescue-triage-feature-selfserve-frictionless-o. Gaps: AC-1 (no phone field in trial form) and AC-3 (redirects to /dashboard/onboarding not /dashboard). Created dev task bb7163d2 to implement. UC updated to in_progress.
+
+- 2026-06-10: Investigation 2cfa290b — stuck UC feature-update-project-mission-metrics-remove-arch. All 3 UC objectives already complete via PR #1781 (task f3981c1a): (1) Day 90 metric archived in project_goals + project.config.json archived_milestones; (2) active milestone set to 2026-07-01 across project_goals, mission_metrics, project_missions, CLAUDE.md, PMF.md; (3) $20K MRR by 2026-08-13 confirmed as day_target=180 in project.config.json and project_goals. E2E tests updated. UC marked complete.
