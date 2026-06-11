@@ -84,7 +84,7 @@ async function runAll() {
 
   await test('route.ts imports bcrypt (not crypto)', async () => {
     const fs = require('fs');
-    const routePath = `${__dirname}/../product/lead-response/dashboard/app/api/onboarding/submit/route.ts`;
+    const routePath = `${__dirname}/../../product/lead-response/dashboard/app/api/onboarding/submit/route.ts`;
     const source = fs.readFileSync(routePath, 'utf8');
     assert.ok(source.includes("import bcrypt from 'bcryptjs'"), 'Must import bcrypt');
     assert.ok(!source.includes("import * as crypto from 'crypto'"), 'Must NOT import crypto for hashing');
@@ -92,7 +92,7 @@ async function runAll() {
 
   await test('route.ts uses bcrypt.hash (not pbkdf2Sync)', async () => {
     const fs = require('fs');
-    const routePath = `${__dirname}/../product/lead-response/dashboard/app/api/onboarding/submit/route.ts`;
+    const routePath = `${__dirname}/../../product/lead-response/dashboard/app/api/onboarding/submit/route.ts`;
     const source = fs.readFileSync(routePath, 'utf8');
     assert.ok(source.includes('bcrypt.hash('), 'Must call bcrypt.hash()');
     assert.ok(!source.includes('pbkdf2Sync'), 'Must NOT use pbkdf2Sync');
@@ -101,7 +101,7 @@ async function runAll() {
 
   await test('route.ts awaits hashPassword (async fix applied)', async () => {
     const fs = require('fs');
-    const routePath = `${__dirname}/../product/lead-response/dashboard/app/api/onboarding/submit/route.ts`;
+    const routePath = `${__dirname}/../../product/lead-response/dashboard/app/api/onboarding/submit/route.ts`;
     const source = fs.readFileSync(routePath, 'utf8');
     assert.ok(source.includes('await hashPassword('), 'hashPassword must be awaited');
     assert.ok(source.includes('async function hashPassword'), 'hashPassword must be async');
@@ -112,7 +112,7 @@ async function runAll() {
 
   await test('login route uses bcrypt.compare', async () => {
     const fs = require('fs');
-    const loginPath = `${__dirname}/../product/lead-response/dashboard/app/api/auth/login/route.ts`;
+    const loginPath = `${__dirname}/../../product/lead-response/dashboard/app/api/auth/login/route.ts`;
     const source = fs.readFileSync(loginPath, 'utf8');
     assert.ok(source.includes('bcrypt.compare('), 'Login must use bcrypt.compare');
   });
