@@ -1,7 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -12,9 +13,9 @@ import { useUtmCapture, getUtmParams } from '@/lib/utm-capture'
 /**
  * /pilot-signup — Pilot Signup Page
  *
- * Frictionless acquisition-focused pilot signup.
- * Collects: Name, Email, Phone, License #, Brokerage, Market, Source
- * Posts to /api/pilot-signup
+ * Posts to /api/auth/pilot-signup so credentials are written to
+ * real_estate_agents — the same table /api/auth/login reads from.
+ * Collects: Name, Email, Password, Phone, License #, Brokerage, Market, Source
  */
 
 const SOURCE_OPTIONS = [
@@ -28,10 +29,12 @@ const SOURCE_OPTIONS = [
 
 export default function PilotSignupPage() {
   useUtmCapture()
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     phone: '',
     license_number: '',
     brokerage_name: '',
@@ -62,25 +65,26 @@ export default function PilotSignupPage() {
       return
     }
 
+    if (!formData.password || formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+
     setLoading(true)
 
     try {
       // Read UTM params captured on first-touch landing (may be null if direct visit)
       const utmParams = getUtmParams()
 
-      const response = await fetch('/api/pilot-signup', {
+      // Post to /api/auth/pilot-signup — writes to real_estate_agents (same table login reads)
+      const response = await fetch('/api/auth/pilot-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: formData.phone || undefined,
+          password: formData.password,
           brokerage_name: formData.brokerage_name || undefined,
-          // Pack license and market into team_name field (extended metadata)
-          team_name: [
-            formData.license_number ? `License: ${formData.license_number}` : '',
-            formData.market ? `Market: ${formData.market}` : '',
-          ].filter(Boolean).join(' | ') || undefined,
           source: formData.source || 'landing_page',
           ...(utmParams ?? {}),
         }),
@@ -90,7 +94,7 @@ export default function PilotSignupPage() {
 
       if (!response.ok) {
         if (response.status === 409) {
-          setError('This email has already been registered for the pilot program.')
+          setError('An account with this email already exists. Sign in instead.')
         } else {
           setError(data.error || 'Something went wrong. Please try again.')
         }
@@ -98,7 +102,17 @@ export default function PilotSignupPage() {
         return
       }
 
-      setSubmitted(true)
+      // Store user for client-side personalization (auth cookie set server-side)
+      if (data.user) {
+        try {
+          localStorage.setItem('leadflow_user', JSON.stringify(data.user))
+        } catch {
+          // localStorage unavailable (private browsing) — non-fatal
+        }
+      }
+
+      // Redirect to onboarding — account is ready for immediate login
+      router.push(data.redirectTo || '/dashboard/onboarding')
     } catch {
       setError('Something went wrong. Please try again.')
       setLoading(false)
@@ -208,6 +222,25 @@ export default function PilotSignupPage() {
                         disabled={loading}
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password" className="text-slate-300 mb-1.5 block text-sm">
+                      Password <span className="text-emerald-400">*</span>
+                    </Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      data-testid="pilot-signup-password-input"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="At least 8 characters"
+                      className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
+                      required
+                      disabled={loading}
+                      autoComplete="new-password"
+                    />
                   </div>
 
                   <div>
