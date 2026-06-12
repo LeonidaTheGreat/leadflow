@@ -1,0 +1,193 @@
+{
+  "taskId": "61f4c3f8-65ac-428b-9041-109809413862",
+  "status": "completed",
+  "reviewId": "4e15663a-931b-4bcd-b157-51ca80290fea",
+  "verdict": "fail",
+  "readinessScore": 15,
+  "summary": "Admin pilot invite flow is architecturally broken. The invite-pilot route pre-creates an agent AND sets agent_id on the invite record, but the accept-invite route checks if(invite.agent_id) and returns 409 'already processed'. All 9 real pending invites in the DB have agent_id set — zero have been accepted. Any agent who clicked a magic link got an error. Flow is completely non-functional end-to-end.",
+  "walkthrough": [
+    {
+      "step": "Admin navigates to /admin/invite and submits invite form",
+      "status": "partial",
+      "actual_behavior": "UI renders correctly. Form submits to /api/admin/invite-pilot. Agent record created with status=invited. Invite record created with agent_id populated. Email sent (or manual URL shown on failure). Admin sees invite in list. This half works.",
+      "notes": "Cookie-based admin auth is solid. Duplicate-invite dedup logic exists but doesn't resend email or return invite URL on refresh."
+    },
+    {
+      "step": "Agent clicks magic link → /accept-invite?token=<token>",
+      "status": "fail",
+      "actual_behavior": "API hashes the token, looks it up, finds the invite, then checks if(invite.agent_id) — which is ALWAYS set for admin-created invites — and returns 409 'This invite has already been processed'. Agent sees 'Something Went Wrong' error page.",
+      "notes": "Confirmed by DB: 9 real pending invites, agent_id set on all 9, 0 accepted. This is the fatal break."
+    },
+    {
+      "step": "Agent account activated → redirect to onboarding",
+      "status": "fail",
+      "actual_behavior": "Never reached due to 409 above. Even if fixed: accept-invite generates a random temp password that is not communicated to the agent, so they would be redirected to /dashboard/onboarding with no way to log in.",
+      "notes": "No password-set step in the UX flow."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F001",
+      "type": "bug",
+      "severity": "critical",
+      "summary": "accept-invite always returns 409 for admin-created invites",
+      "details": "In routes/api/admin/invite-pilot: the POST handler creates an agent record and sets agent_id on the pilot_invites row. In routes/api/auth/accept-invite: step 4 checks if(invite.agent_id) and returns 409 'This invite has already been processed'. For every invite created via the admin UI, agent_id is pre-populated, so this check ALWAYS fires. Live evidence: 9 real (non-test) pending invites in pilot_invites — all have agent_id set, 0 accepted.",
+      "file": "product/lead-response/dashboard/app/api/auth/accept-invite/route.ts",
+      "line": 85,
+      "fix": "Change check from if(invite.agent_id) to if(invite.status === 'accepted'). Also skip the agent INSERT if agent already exists — use invite.agent_id, update the existing agent's status/trial dates instead.",
+      "status": "fail"
+    },
+    {
+      "id": "F002",
+      "type": "bug",
+      "severity": "critical",
+      "summary": "No password set step — accepted agents cannot log in",
+      "details": "accept-invite/route.ts generates a random temp password (crypto.randomBytes(12).toString('hex')) and hashes it, but never returns or emails the plain text. The accept-invite page shows success and redirects to /dashboard/onboarding. The agent has no way to log in — no password was communicated, and the system has no 'set your password' flow.",
+      "file": "product/lead-response/dashboard/app/accept-invite/page.tsx",
+      "fix": "Option A: Add a password collection step to the accept-invite page (collect before POST). Option B: Send a 'set your password' email after account creation. Option A is better UX — one fewer email, immediate access.",
+      "status": "fail"
+    },
+    {
+      "id": "F003",
+      "type": "bug",
+      "severity": "high",
+      "summary": "Invite URL never shown to admin when email succeeds",
+      "details": "PRD AC (Stojan user story): 'I receive a magic link URL I can also send manually (via WhatsApp/SMS) in case email fails.' The admin UI only shows the invite URL when emailSent === false. If the email API call succeeds but the agent never receives it (common with transactional email), Stojan has no way to retrieve or resend the link. The raw token is never stored (only hash) so it cannot be looked up later.",
+      "file": "product/lead-response/dashboard/app/admin/invite/page.tsx",
+      "line": 251,
+      "fix": "Always return the inviteUrl in the API response and always show a copyable 'Manual Link' section in the UI, regardless of emailSent status.",
+      "status": "fail"
+    },
+    {
+      "id": "F004",
+      "type": "bug",
+      "severity": "high",
+      "summary": "Expired invite re-invitation fails with UNIQUE constraint on email",
+      "details": "pilot_invites has UNIQUE CONSTRAINT on email. The duplicate-invite dedup check queries status='pending' only. If a previous invite is expired, the check finds nothing and tries to INSERT a new row — which fails with duplicate email key. Stojan cannot re-invite anyone whose first invite expired.",
+      "file": "product/lead-response/dashboard/app/api/admin/invite-pilot/route.ts",
+      "line": 74,
+      "fix": "Dedup check should query without status filter, then handle pending/expired/accepted cases separately. For expired: update existing row with new token. For accepted: return early with clear message.",
+      "status": "fail"
+    },
+    {
+      "id": "F005",
+      "type": "bug",
+      "severity": "medium",
+      "summary": "Duplicate invite refresh: new token generated but email not resent and URL not returned",
+      "details": "When a pending (non-expired) invite exists, the route generates a new token hash and updates the DB. But it does not resend the email and does not return the inviteUrl (because rawToken is generated but not included in the response). The admin gets back {success: true, agentId, expiresAt, message:'token refreshed'} with no URL and no email sent.",
+      "file": "product/lead-response/dashboard/app/api/admin/invite-pilot/route.ts",
+      "line": 81,
+      "fix": "On duplicate invite: call sendPilotInviteEmail again and return inviteUrl (same pattern as new invite creation).",
+      "status": "fail"
+    },
+    {
+      "id": "F006",
+      "type": "ux_issue",
+      "severity": "medium",
+      "summary": "UX screenshot capture broken for authenticated pages",
+      "details": "Dashboard, pricing, and settings screenshots all capture the login page (auth redirect). The screenshot system doesn't handle authenticated routes. UX evaluation of post-login flows is blind — we cannot assess dashboard, settings, or pricing page UX from screenshots.",
+      "status": "partial"
+    },
+    {
+      "id": "F007",
+      "type": "ux_issue",
+      "severity": "low",
+      "summary": "Signup page shows plan selector without trial framing on mobile",
+      "details": "The signup/plan-select page (ux-signup screenshot) shows Starter/Pro/Team cards. The 'Start with a 14-day free trial. Cancel anytime.' subheading is present but in small text. For non-tech-savvy real estate agents, the price prominence ($49/$149/$399) before establishing the trial period may cause drop-off. The 'MOST POPULAR' badge on Pro could anchor perception too high for pilot recruits who should start on Pilot tier (not visible here).",
+      "status": "partial"
+    },
+    {
+      "id": "F008",
+      "type": "ux_issue",
+      "severity": "low",
+      "summary": "Login page has no 'Get Started' CTA for agents with magic link",
+      "details": "Agents arriving from the invite email would bypass the login page entirely (magic link auto-activates). But if a link expires or fails, they land on /login with no path forward — the only option is 'Start your free trial' which would create a duplicate account. A 'Resend my invite' or 'I have an invitation code' link is missing.",
+      "status": "partial"
+    }
+  ],
+  "decisions_needed": [
+    {
+      "id": "D001",
+      "title": "Fix strategy for accept-invite / invite-pilot incompatibility",
+      "blocking": false,
+      "description": "The two routes need to be reconciled. Three approaches.",
+      "options": [
+        {
+          "id": "opt_a",
+          "label": "Fix accept-invite to handle pre-created agents",
+          "description": "Change if(invite.agent_id) check to if(invite.status==='accepted'). If agent_id is set, skip INSERT and update existing agent record with onboarding status + trial dates. Minimal changes."
+        },
+        {
+          "id": "opt_b",
+          "label": "Remove pre-creation from invite-pilot",
+          "description": "Don't create the agent record in invite-pilot at all. Only create the invite record. Let accept-invite own agent creation entirely. Cleaner separation but requires removing agent_id FK from invite record at creation time."
+        },
+        {
+          "id": "opt_c",
+          "label": "Merge into single flow: invite-pilot handles everything",
+          "description": "Remove accept-invite entirely. Invite-pilot creates agent + invite. Magic link hits a lightweight activation endpoint that just sets status=active and starts a session. Agent never needs to 'create' an account — they just get in."
+        }
+      ],
+      "recommended": "opt_a"
+    },
+    {
+      "id": "D002",
+      "title": "Password flow for invited agents",
+      "blocking": false,
+      "description": "Agents who accept invite have no password. How should they gain access?",
+      "options": [
+        {
+          "id": "opt_a",
+          "label": "Collect password on accept-invite page",
+          "description": "Show a password field on the /accept-invite page. User sets password before clicking accept. One step, immediate access after redirect."
+        },
+        {
+          "id": "opt_b",
+          "label": "Auto-login via session token after accept",
+          "description": "On successful invite acceptance, create a session cookie and redirect without requiring password. Agents can set password later in settings. Lowest friction — magic link = instant access."
+        }
+      ],
+      "recommended": "opt_b"
+    }
+  ],
+  "action_items": [
+    {
+      "title": "URGENT: Do not send more invites until bug is fixed",
+      "description": "All 9 existing pending invites will return 409 when agents click the magic link. Any new invite sent now will have the same bug. Stop inviting until dev deploys the fix.",
+      "priority": 1,
+      "type": "ACTION"
+    },
+    {
+      "title": "Reach out to the 9 pending invitees after fix",
+      "description": "After the fix is deployed, re-invite all 9 agents (new tokens will need to be sent since raw tokens are not stored). Consider a personal message acknowledging the delay.",
+      "priority": 1,
+      "type": "ACTION"
+    },
+    {
+      "title": "Deploy P0 fix: accept-invite 409 bug + password flow",
+      "description": "Dev task required. Fix: (1) change agent_id check to status check in accept-invite route, (2) handle pre-created agent case, (3) implement password-less auto-login via session cookie on accept (option B above). All three must ship together.",
+      "priority": 1,
+      "type": "ACTION",
+      "source_type": "bug_fix_required"
+    },
+    {
+      "title": "Fix: expired invite re-invitation blocked by UNIQUE email constraint",
+      "description": "Dev task: update dedup logic to handle expired invites (UPDATE existing row vs INSERT new row).",
+      "priority": 2,
+      "type": "ACTION"
+    },
+    {
+      "title": "Show invite URL to admin always (not just on email failure)",
+      "description": "Dev task: return inviteUrl in API response always. Show copyable link in UI regardless of email success. This is a PRD requirement (manual delivery fallback).",
+      "priority": 2,
+      "type": "ACTION"
+    },
+    {
+      "title": "Fix UX screenshot capture for authenticated routes",
+      "description": "The screenshot system captures login-redirect for /dashboard, /pricing, /settings. These pages need to be captured with a valid session cookie. Without this, UX review of the product's core pages is blind every heartbeat.",
+      "priority": 3,
+      "type": "RECOMMENDATION"
+    }
+  ],
+  "completedAt": "2026-06-11T00:00:00.000Z"
+}
