@@ -1107,3 +1107,24 @@ Require stack:
 Require stack:
 - /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
 - /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-11 — PM Review: Repository Structure Convention
+
+**Verdict: FAIL | Readiness: 42/100**
+
+Reviewed PRD `prd-repository-structure-convention-leadflow` against current repo state.
+
+**Passing (5/9 AC):**
+- AC-1: Root JS files clean — only server.js, tooling configs, and 3 genome symlinks remain
+- AC-2: No .sh files at root
+- AC-6: PROJECT_STRUCTURE.md exists
+- AC-7: CLAUDE.md Key Directories updated
+- AC-8: All 3 orchestration symlinks resolve correctly
+
+**Failing / Partial (4/9 AC):**
+- AC-4 FAIL: `config/` directory does not exist. strategy-config.json, swarm-config.json, budget-tracker.json not found anywhere. CLAUDE.md documents this dir as existing — misdirects all agents.
+- AC-3 PARTIAL: 5 stray root MDs match report/summary patterns but not moved to docs/reports/.
+- AC-5 PARTIAL: e2e/ (full Playwright project) and integration/ still exist at repo root alongside tests/. 23 flat test files in tests/ not categorized.
+- AC-3 PARTIAL: docs/ has 20+ files outside its subdirectories.
+
+**UX:** Landing, login, signup, simulator — professional and conversion-ready. Authenticated pages not capturable without session.
