@@ -3,6 +3,9 @@
 > Append-only structured record of significant events. **Never regenerated, only appended.**
 > Entries added by the genome when PRs merge, deployments complete, or discoveries are filed.
 
+## 2026-06-11
+- PM review (aee4a239): Stripe subscriptions table fix — verdict PASS (85). Implementation confirmed at route.ts:111 — upsert live, idempotent. UC fix-create-subscriptions-table-supabase-for-stripe corrected from blocked_human → complete. Pricing copy inconsistency found (Pro: landing says unlimited SMS, pricing step says 200 leads/month cap).
+
 <!-- Entries are appended below. Do not delete entries. -->
 
 
@@ -1102,6 +1105,62 @@ Require stack:
 - Mission metrics: 15 collected for genome
 - Project graph gaps: 1 improvement task(s) created
 - State drift: 13 (auto-corrected 0)
+- Report prepared for topic 10788
+- **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
+Require stack:
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-reporter.js
+- /Users/clawdbot/projects/genome/core/actuators/heartbeat-executor.js
+
+### 2026-06-12 00:18:15
+- Optimizer: switched to speed mode (goal critical)
+- Queried state: {"ready":62,"inProgress":1,"blocked":5,"done":3792,"total":13832}
+- Re-triggered 31 stuck spawn(s)
+- UC blocked_human (294 attempts): feat-revenue-funnel-visibility → human review needed
+- UC blocked_human (305 attempts): feat-transactional-email-resend → human review needed
+- UC blocked_human (306 attempts): fix-page-tsx-not-updated-simulator-step-not-wired-into → human review needed
+- UC blocked_human (306 attempts): fix-day-79-of-90-0-mrr-target-is-mathematically-unreac → human review needed
+- UC blocked_human (305 attempts): fix-createstuckalerts-not-wired-into-heartbeat → human review needed
+- UC blocked_human (306 attempts): fix-remaining-agents-table-references → human review needed
+- UC blocked_human (307 attempts): fix-stripe-price-ids-are-placeholder-values-not-real-s → human review needed
+- UC blocked_human (306 attempts): fix-missing-how-it-works-section-ac-2-fails → human review needed
+- UC blocked_human (307 attempts): fix-three-consecutive-vercel-builds-failing-fix-never- → human review needed
+- UC blocked_human (306 attempts): fix-prd-objective-not-fully-implemented-product-api-ro → human review needed
+- UC blocked_human (307 attempts): fix-verify-stripe-webhook-secret-in-production → human review needed
+- UC blocked_human (306 attempts): fix-trial-duration-mismatch-landing-says-30-day-signup → human review needed
+- UC blocked_human (306 attempts): fix-inactivity-alerting-cron-not-implemented → human review needed
+- UC blocked_human (306 attempts): fix-signup-routes-redirect-to-setup-not-dashboard-onbo → human review needed
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Product sync: 6 components updated
+- Mission metrics: 3 collected for leadflow
+- Merge gate blocked: feat-revenue-funnel-visibility
+- Merge gate blocked: feat-transactional-email-resend
+- Merge gate blocked: fix-page-tsx-not-updated-simulator-step-not-wired-into
+- Merge gate blocked: fix-day-79-of-90-0-mrr-target-is-mathematically-unreac
+- Merge gate blocked: fix-createstuckalerts-not-wired-into-heartbeat
+- Merge gate blocked: fix-remaining-agents-table-references
+- Merge gate blocked: fix-stripe-price-ids-are-placeholder-values-not-real-s
+- Merge gate blocked: fix-missing-how-it-works-section-ac-2-fails
+- Merge gate blocked: fix-three-consecutive-vercel-builds-failing-fix-never-
+- Merge gate blocked: fix-prd-objective-not-fully-implemented-product-api-ro
+- Merge gate blocked: fix-verify-stripe-webhook-secret-in-production
+- Merge gate blocked: fix-trial-duration-mismatch-landing-says-30-day-signup
+- Merge gate blocked: fix-inactivity-alerting-cron-not-implemented
+- Merge gate blocked: fix-signup-routes-redirect-to-setup-not-dashboard-onbo
+- QC backfill: PR #1794
+- QC backfill: PR #1795
+- Pruned 7 stale local branches
+- Cleaned up 1 stale branch(es)
+- Periodic product review triggered
+- Queried state: {"ready":49,"inProgress":1,"blocked":5,"done":3792,"total":13833}
+- Re-triggered 13 stuck spawn(s)
+- 🛑 Main CI broken — all spawning paused
+- Checked 5 blocked tasks
+- Smoke tests: 7/7 passed
+- Mission metrics: 15 collected for genome
+- Periodic product review triggered
+- Project graph gaps: 1 improvement task(s) created
+- State drift: 12 (auto-corrected 0)
 - Report prepared for topic 10788
 - **Errors (1):** Dashboard: Cannot find module '../dashboard/generate-dashboard-complete'
 Require stack:
