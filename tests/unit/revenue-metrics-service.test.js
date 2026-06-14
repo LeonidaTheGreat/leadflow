@@ -6,10 +6,10 @@ const RevenueMetricsService = require('../../lib/services/RevenueMetricsService'
 function createMockPool() {
   return {
     async query(sql) {
-      if (sql.includes('activated_at')) return { rows: [{ count: 2 }] };
+      if (sql.includes('created_at') && sql.includes("FROM subscriptions WHERE status = 'active'")) return { rows: [{ count: 2 }] };
       if (sql.includes("FROM subscriptions WHERE status = 'active'") && sql.includes('COUNT')) return { rows: [{ count: 4 }] };
       if (sql.includes('FROM real_estate_agents WHERE subscription_status')) return { rows: [{ count: 6 }] };
-      if (sql.includes('SUM(CASE plan_tier')) return { rows: [{ coalesce: 59600 }] };
+      if (sql.includes('SUM(CASE tier')) return { rows: [{ coalesce: 59600 }] };
       if (sql.includes('FROM real_estate_agents') && sql.includes('WHERE aha_completed = true')) return { rows: [{ count: 3 }] };
       if (sql.includes('FROM real_estate_agents') && !sql.includes('WHERE')) return { rows: [{ count: 10 }] };
       if (sql.includes('FROM agent_integrations')) return { rows: [{ count: 2 }] };

@@ -9,6 +9,7 @@ import {
   Mail,
   Megaphone,
   RadioTower,
+  TrendingUp,
   Users,
 } from 'lucide-react'
 
@@ -269,6 +270,20 @@ export default function AdminCommandCenterPage() {
                 </p>
                 <div className="mt-4 inline-flex items-center gap-2 text-sm text-blue-300">
                   Review funnel data <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+
+              <Link
+                href="/admin/revenue"
+                className="rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:border-green-500"
+              >
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Revenue</p>
+                <p className="mt-2 text-lg font-medium text-white">Revenue funnel</p>
+                <p className="mt-2 text-sm text-slate-400">
+                  Track signups → FUB → Aha → Paid with 7-day sparklines and drop alerts.
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm text-green-300">
+                  <TrendingUp className="h-4 w-4" /> View MRR funnel
                 </div>
               </Link>
             </div>
