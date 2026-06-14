@@ -221,9 +221,18 @@ Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifyi
 
 Journey definitions live in `project.config.json` → `journeys[]`. The PM agent is responsible for reviewing and maintaining these — adding new journeys as the product evolves, updating steps when flows change, and triggering manual reviews via `!journey-review`.
 
-## Telegram Topic Worker Router
+## Telegram Topic Worker Router (HARD RULE)
 
-When `@leonida_leadflow_bot` is mentioned in forum supergroup `-1004290768040` with a `thread_id`, route the request to an isolated topic worker instead of doing the work in the router session.
+When `@leonida_leadflow_bot` is mentioned in forum supergroup `-1004290768040` with a `thread_id` present:
+
+1. **ALWAYS** spawn a worker via `bash ~/.claude/bin/spawn-leadflow-worker.sh <thread_id>`.
+2. **NEVER** answer the user directly from this router session — even for simple status queries, even if you think you can answer faster. The worker answers.
+3. The only exception is the literal command `/router status`, which you may answer directly.
+4. After spawning, forward the user's message to the worker via `local-handoff` and stop. The worker handles the rest.
+
+**Why this is strict:** the router session is meant to be invisible to the user. Mixing router work with user work causes context bleed across topics, and direct-answer shortcuts have already produced TG-reply-loss incidents in adjacent routers (genome 2026-06-14 topic 84 — see audit 86). Always spawn.
+
+### Forwarding mechanics
 
 - Registry: `~/.claude/channels/telegram-leadflow/topics.json`
 - Route state: `~/.claude/channels/telegram-leadflow/active-routes.jsonl`
