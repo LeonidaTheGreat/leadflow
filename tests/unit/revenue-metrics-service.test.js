@@ -33,6 +33,13 @@ async function run() {
   assert.strictEqual(snapshot.data.aha_completion_rate, 0.3);
   assert.strictEqual(snapshot.data.pilot_contacted_rate, 0.2);
 
+  assert.ok(snapshot.data.funnel, 'funnel structure must be present');
+  assert.strictEqual(snapshot.data.funnel.signups.count, 10);
+  assert.strictEqual(snapshot.data.funnel.fub_connected.count, 2);
+  assert.strictEqual(snapshot.data.funnel.aha_moment.count, 3);
+  assert.strictEqual(snapshot.data.funnel.paid.count, 4);
+  assert.strictEqual(snapshot.data.funnel.paid.rate, 0.4);
+
   const alert = await service.maybeSendThresholdAlert(snapshot);
   assert.strictEqual(alert.alerted, false);
 

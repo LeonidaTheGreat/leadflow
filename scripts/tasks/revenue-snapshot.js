@@ -164,6 +164,15 @@ async function computeRevenueSnapshot(pool) {
       aha_completion_rate: ahaCompletionRate,
       pilot_contacted_rate: pilotContactedRate,
       plan_price_cents: PLAN_PRICE_CENTS,
+      funnel: {
+        signups: { count: totalAgents, rate: 1 },
+        fub_connected: { count: integrationsCount, rate: fubActivationRate },
+        aha_moment: { count: ahaCount, rate: ahaCompletionRate },
+        paid: {
+          count: activeSubscribers,
+          rate: totalAgents > 0 ? Number((activeSubscribers / totalAgents).toFixed(4)) : 0,
+        },
+      },
     },
   };
 }
