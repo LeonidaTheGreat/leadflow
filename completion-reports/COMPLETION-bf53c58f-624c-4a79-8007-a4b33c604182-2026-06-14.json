@@ -1,0 +1,56 @@
+{
+  "taskId": "bf53c58f-624c-4a79-8007-a4b33c604182",
+  "reviewId": "429debaf-1986-4fa7-8374-ec24f2857ddc",
+  "type": "product_review",
+  "prd": "PRD-FIX-REMAINING-AGENTS-TABLE",
+  "status": "completed",
+  "verdict": "pass",
+  "readinessScore": 92,
+  "completedAt": "2026-06-14T00:00:00Z",
+  "testResults": {
+    "passed": 31,
+    "total": 31,
+    "passRate": 1.0,
+    "suites": [
+      "__tests__/check-email.test.ts",
+      "__tests__/product-api-table-migration.test.ts",
+      "__tests__/stripe-webhook.test.ts"
+    ]
+  },
+  "acceptanceCriteria": {
+    "AC-1": { "status": "pass", "notes": "check-email route uses real_estate_agents at line 17" },
+    "AC-2": { "status": "pass", "notes": "profile route uses real_estate_agents at lines 14, 106" },
+    "AC-3": { "status": "pass", "notes": "onboarding/submit uses real_estate_agents at lines 52, 76" },
+    "AC-4": { "status": "pass", "notes": "No from('agents') in any product API route — no wrong-table 500s expected" },
+    "AC-5": { "status": "pass", "notes": "grep -r \"from('agents')\" product/lead-response/dashboard/app/api/ → 0 results" },
+    "AC-6": { "status": "pass", "notes": "webhooks/stripe/route.ts uses real_estate_agents at lines 257, 284, 307 for subscription events" }
+  },
+  "findings": [
+    {
+      "type": "verification",
+      "severity": "info",
+      "summary": "Zero from('agents') references remain in product API routes",
+      "details": "All 21 references replaced with from('real_estate_agents'). Verified via grep across all files in app/api/."
+    },
+    {
+      "type": "observation",
+      "severity": "low",
+      "summary": "webhooks/stripe/route.ts uses supabaseServer client (pre-existing)",
+      "details": "This file imports supabaseServer as supabase instead of postgrestAdmin. Table name is correct (real_estate_agents). This client pattern predates the fix and was not introduced by it. Both clients connect to the same local PostgreSQL. Non-blocking."
+    }
+  ],
+  "actionItems": [
+    {
+      "title": "Deploy to Vercel and run Human Test Plan",
+      "priority": 1,
+      "type": "ACTION",
+      "description": "Manually verify: signup → onboarding → logout → login → Settings/Profile → Settings/Billing. All 6 steps in PRD-FIX-AGENTS-TABLE-MISMATCH-AUTH Human Test Plan."
+    },
+    {
+      "title": "Migrate stripe webhook to postgrestAdmin client",
+      "priority": 3,
+      "type": "RECOMMENDATION",
+      "description": "webhooks/stripe/route.ts still uses supabaseServer SDK. Low-risk technical debt — table name is correct but SDK migration incomplete."
+    }
+  ]
+}
