@@ -1,0 +1,27 @@
+{
+  "taskId": "2f5193c7-db87-4000-a170-f0e1ca4ee9a1",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "No heartbeat step existed to unblock tasks whose last_error='Upstream UCs incomplete: <ids>' after those UCs completed",
+    "why": "spawn-preparer.js (genome/core/food/spawn-preparer.js:210) sets task status='blocked' with last_error='Upstream UCs incomplete: <ids>' when a UC has unmet depends_on. But there was no mechanism to reverse this when the upstream UCs transitioned to implementation_status='complete'. The blocked tasks sat indefinitely — uc-buyer-journey-takeover-pause-on-agent-reply and uc-buyer-journey-fubservice-real-ai were both stuck for weeks after uc-buyer-journey-agent-schema-unification completed.",
+    "fix": "Added unblockUpstreamResolvedTasks() to ExecutionLoop (genome/core/loops/execution-loop.js). Heartbeat step 3b5 queries all blocked tasks with last_error LIKE 'Upstream UCs incomplete:%', parses the UC IDs, checks their implementation_status, and sets status='ready' + clears last_error for any task whose upstream UCs are all now complete. Wired in heartbeat-executor.js step 3b5 after retryNeedsMergeUCs (step 3b4)."
+  },
+  "taskSpec": {
+    "what": "genome/core/loops/execution-loop.js — new unblockUpstreamResolvedTasks() method; genome/core/actuators/heartbeat-executor.js — step 3b5 call + doc comment; genome/tests/execution-loop.test.js — 6 behavioral tests",
+    "verify": "npx jest tests/execution-loop.test.js — all 25 tests pass including 6 new ones for unblockUpstreamResolvedTasks",
+    "boundaries": "Did not touch spawn-preparer.js (blocking logic), rescue-strategies.js, queue-replenisher.js, or any leadflow product code"
+  },
+  "genomeRef": {
+    "repo": "LeonidaTheGreat/openclaw-genome",
+    "branch": "dev/2f5193c7-auto-unblock-upstream-uc-tasks",
+    "commit": "a21d38b"
+  },
+  "testResults": { "passed": 25, "total": 25, "passRate": 1.0 },
+  "filesCreated": [],
+  "filesModified": [
+    "genome/core/loops/execution-loop.js",
+    "genome/core/actuators/heartbeat-executor.js",
+    "genome/tests/execution-loop.test.js"
+  ],
+  "completionReportPath": "completion-reports/COMPLETION-2f5193c7-db87-4000-a170-f0e1ca4ee9a1-20260613T000000.json"
+}
