@@ -14,8 +14,10 @@
   "genomeRef": {
     "repo": "LeonidaTheGreat/openclaw-genome",
     "branch": "dev/2f5193c7-auto-unblock-upstream-uc-tasks",
-    "commit": "a21d38b"
+    "commit": "344fd8c",
+    "pr": "https://github.com/LeonidaTheGreat/openclaw-genome/pull/302"
   },
+  "handShipNote": "Rebased genome branch onto main (6 commits); created genome PR #302; 25/25 tests pass. Pre-existing 4 failures in heartbeat-step-failure-investigative-dedup.test.js on main unrelated to this change.",
   "testResults": { "passed": 25, "total": 25, "passRate": 1.0 },
   "filesCreated": [],
   "filesModified": [
