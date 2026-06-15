@@ -1,0 +1,57 @@
+{
+  "taskId": "72143bf7-af9e-41f2-84c4-8c690f6c3f3c",
+  "taskTitle": "PM: Product Review — World-Class Meta-Pipeline",
+  "status": "completed",
+  "completedAt": "2026-06-15T04:30:00Z",
+  "reviewId": "226fe606-9559-4ac7-9187-3a7ffa9903d0",
+  "verdict": "fail",
+  "readinessScore": 28,
+  "summary": "The world-class pipeline UC was marked complete but 3 of 5 mission metrics it targets remain critically off target. The most urgent issue is a QC dispatch failure leaving 15 PRs permanently stuck in awaiting_merge with no reviewer. Auto-Recovery Rate remains at 0% (target 95%). Rework rate is 52.4% (target 3%) by world_class_distance measurement. The UC itself was prematurely closed — 8 of 10 planned WCP tasks were cancelled rather than completed.",
+  "findings": [
+    {
+      "type": "critical_bug",
+      "severity": "critical",
+      "summary": "QC agent never dispatched for 15 awaiting_merge tasks — merge queue fully blocked",
+      "details": "All 15 tasks in awaiting_merge have code_reviews.status = pending and reviewer_agent = NULL. Oldest from June 10 (5 days). Only 6/45 PRs merged in last 7 days (13.3% rate). checkPRReviews() is not spawning QC agents."
+    },
+    {
+      "type": "critical_bug",
+      "severity": "critical",
+      "summary": "Auto-Recovery Rate: 0% vs target 95% — self-healing is non-functional",
+      "details": "Bug auto-fix miss rate 63.2% (12/19 bug-class tasks not auto-fixed). Rescue tasks for the related UC are PARKED stale. Genome detects failures but cannot recover autonomously."
+    },
+    {
+      "type": "metric_regression",
+      "severity": "high",
+      "summary": "Dev Task Rework Rate: 52.4% by world_class_distance (target 3%), 41.2% by mission_metrics (target 10%)",
+      "details": "22/42 completed tasks were rework. 83/134 child tasks were quality-miss rework (62%). QC First-Pass Rate 71% vs target 90%."
+    },
+    {
+      "type": "data_bug",
+      "severity": "high",
+      "summary": "Cost tracking totalCost7d is a garbled concatenated string — cost dashboard untrustworthy",
+      "details": "Genome self-assessment shows totalCost7d as '012.270.43...' — string concatenation bug in cost aggregator."
+    },
+    {
+      "type": "gap",
+      "severity": "medium",
+      "summary": "uc-genome-world-class-pipeline marked complete but 8/10 tasks were cancelled",
+      "details": "Only WCP-4 and WCP-8 P1a completed. WCP-5, WCP-7, WCP-8 P0a/P0b/P1b/P2, and WCP-9 all cancelled. UC prematurely closed."
+    }
+  ],
+  "metricsReviewed": {
+    "agentRetryRate": { "current": 45, "target": 10, "status": "critical" },
+    "devTaskReworkRate": { "current": 41.2, "worldClassMeasured": 52.4, "target": 10, "status": "critical" },
+    "autoRecoveryRate": { "current": 0, "target": 95, "status": "critical" },
+    "qcFirstPassRate": { "current": 71, "target": 90, "status": "behind" },
+    "ucChainCompletion": { "current": 22, "target": 50, "status": "behind" },
+    "bugAutoFixMissRate": { "current": 63.2, "target": 0, "status": "critical" },
+    "awaitingMergeBacklog": { "current": 15, "staleOver24h": 12, "target": 0, "status": "critical" }
+  },
+  "testsResults": {
+    "passed": 5,
+    "total": 5,
+    "passRate": 1.0,
+    "note": "Findings verified against live DB data and GitHub PR state"
+  }
+}
