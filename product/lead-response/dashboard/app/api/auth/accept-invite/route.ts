@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
 import { postgrestAdmin } from '@/lib/db'
+import { createSession } from '@/lib/services/AuthService'
 import { logger } from '@/lib/logger'
 
 interface AcceptInviteRequest {
@@ -12,6 +13,14 @@ interface AcceptInviteRequest {
 interface AcceptInviteResponse {
   success: boolean
   agentId?: string
+  token?: string
+  user?: {
+    id: string
+    email: string
+    firstName: string
+    lastName: string
+    onboardingCompleted: boolean
+  }
   error?: string
 }
 
@@ -22,13 +31,14 @@ const supabase = postgrestAdmin
  *
  * Accept a pilot invite via magic token.
  * This endpoint:
- * 1. Validates the token exists, is not expired, and status is 'invited'
+ * 1. Validates the token exists, is not expired, and status is 'pending' (not 'accepted')
  * 2. Creates a new real_estate_agent account (email, name from invite)
- * 3. Generates random password if not provided
+ * 3. Generates random password if not provided by the user
  * 4. Updates the invite as accepted with agent_id
  * 5. Creates a pilot_progress record
+ * 6. If the user set an explicit password, creates a session for immediate login
  *
- * Returns: { success: true, agentId } or error
+ * Returns: { success: true, agentId, token?, user? } or error
  */
 export async function POST(request: NextRequest): Promise<NextResponse<AcceptInviteResponse>> {
   try {
@@ -110,6 +120,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
     }
 
     // 7. Create the real_estate_agents record
+    // IMPORTANT: The column is trial_ends_at (not trial_expires_at).
+    // PostgREST silently ignores unknown columns, so trial_expires_at would set nothing.
     const { data: newAgent, error: createAgentError } = await supabase
       .from('real_estate_agents')
       .insert({
@@ -121,11 +133,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
         status: 'onboarding',
         email_verified: true,
         trial_start_date: new Date().toISOString(),
-        trial_expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
-      .select('id')
+      .select('id, email, first_name, last_name')
       .single()
 
     if (createAgentError || !newAgent) {
@@ -168,7 +180,56 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       logger.error('[accept-invite] Failed to create pilot_progress record:', err)
     })
 
-    // Return success
+    // 10. If the user explicitly set a password, create a session so they're immediately logged in.
+    // If we generated a random password (no password in request body), skip session creation —
+    // the user will need to use forgot-password to set their own password before logging in.
+    if (password) {
+      try {
+        const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+          ?? request.headers.get('x-real-ip')
+          ?? undefined
+        const session = await createSession({
+          userId: agentId,
+          userAgent: request.headers.get('user-agent') || undefined,
+          ipAddress,
+          rememberMe: true, // Pilot users get 30-day session
+        })
+
+        const response = NextResponse.json(
+          {
+            success: true,
+            agentId,
+            token: session.token,
+            user: {
+              id: agentId,
+              email: newAgent.email,
+              firstName: newAgent.first_name,
+              lastName: newAgent.last_name,
+              onboardingCompleted: false
+            }
+          },
+          { status: 200 }
+        )
+
+        // Set HTTP-only session cookie — same config as /api/auth/login
+        response.cookies.set({
+          name: 'leadflow_session',
+          value: session.token,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 30 * 24 * 60 * 60, // 30 days
+          path: '/',
+        })
+
+        return response
+      } catch (sessionError) {
+        // Session creation failure must not block account creation — log and fall through
+        logger.error('[accept-invite] Session creation failed:', sessionError)
+      }
+    }
+
+    // Return success without session (random-password case or session creation failure)
     return NextResponse.json(
       {
         success: true,

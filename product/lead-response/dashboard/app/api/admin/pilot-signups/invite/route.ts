@@ -110,7 +110,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         name,
         token: tokenHash,
         token_expires_at: expiresAt.toISOString(),
-        status: 'invited',
+        status: 'pending',
         invited_by: 'admin',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
