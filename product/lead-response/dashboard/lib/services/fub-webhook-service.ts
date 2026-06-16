@@ -15,6 +15,7 @@ import { logger } from '@/lib/logger'
 import { qualifyLead, generateAiSmsResponse, calculateLeadScore } from '@/lib/ai'
 import { sendAiSmsResponse, normalizePhone, sendSms } from '@/lib/twilio'
 import { logSmsActivity, logQualification } from '@/lib/fub'
+import { pauseSequencesByAgent } from '@/lib/sequences'
 import type { Lead, Agent, LeadStatus } from '@/lib/types'
 import { realEstateAgentRowToAgent } from '@/lib/agent-mapper'
 
@@ -447,4 +448,35 @@ export async function handleLeadAssigned(fubLead: any): Promise<Response> {
     sms_mock: smsResult.mock,
     reason: smsResult.success ? undefined : smsResult.error,
   })
+}
+
+/**
+ * Handle FUB outbound activity (agent sent SMS/text from FUB inbox).
+ * FUB fires textMessageSent / activityCreated when an agent sends from their inbox.
+ * We pause active AI sequences for that lead so the human can own the conversation.
+ */
+export async function handleAgentOutboundActivity(activityData: any): Promise<Response> {
+  const fubPersonId = activityData?.personId || activityData?.person?.id
+  if (!fubPersonId) {
+    logger.info('Agent outbound activity — no personId, skipping')
+    return NextResponse.json({ received: true, sequences_paused: 0 })
+  }
+
+  logger.info(`Processing agent outbound activity for FUB person: ${fubPersonId}`)
+
+  const { data: lead } = (await supabaseAdmin
+    .from('leads')
+    .select('id')
+    .eq('fub_id', String(fubPersonId))
+    .single()) as { data: { id: string } | null }
+
+  if (!lead) {
+    logger.info(`No local lead found for FUB person: ${fubPersonId}`)
+    return NextResponse.json({ received: true, sequences_paused: 0 })
+  }
+
+  const count = await pauseSequencesByAgent(lead.id)
+  logger.info(`⏸ Agent outbound from FUB — paused ${count} sequence(s) for lead ${lead.id}`)
+
+  return NextResponse.json({ success: true, sequences_paused: count })
 }

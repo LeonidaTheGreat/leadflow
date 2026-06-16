@@ -203,7 +203,9 @@ export type FubEventType =
   | 'peopleUpdated'
   | 'peopleStageUpdated'
   | 'peopleTagsCreated'
-  | 'peopleDeleted';
+  | 'peopleDeleted'
+  | 'textMessageSent'   // Agent sent SMS from FUB inbox
+  | 'activityCreated';  // Generic FUB activity (includes outbound messages)
 
 export interface FubWebhookPayload {
   event: FubEventType;

@@ -5,7 +5,8 @@ import {
   handleLeadCreated,
   handleLeadUpdated,
   handleStatusChanged,
-  handleLeadAssigned } from '@/lib/services/fub-webhook-service'
+  handleLeadAssigned,
+  handleAgentOutboundActivity } from '@/lib/services/fub-webhook-service'
 import type { FubWebhookPayload } from '@/lib/types'
 import { logger } from '@/lib/logger'
 
@@ -61,6 +62,11 @@ export async function POST(request: NextRequest) {
 
       case 'lead.assigned':
         return await handleLeadAssigned(payload.data)
+
+      // Agent sent an outbound message from FUB inbox — pause AI sequences
+      case 'textMessageSent':
+      case 'activityCreated':
+        return await handleAgentOutboundActivity(payload.data)
 
       default:
         logger.info('Unhandled FUB event:', payload.event)

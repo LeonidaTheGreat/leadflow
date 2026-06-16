@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendSms } from '@/lib/twilio'
 import { createMessage, getLeadById, getAgentById } from '@/lib/supabase'
 import { generateAiSmsResponse } from '@/lib/ai'
+import { pauseSequencesByAgent } from '@/lib/sequences'
 import { logger } from '@/lib/logger'
 
 /**
@@ -123,13 +124,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // When a human agent sends (not AI), pause active sequences for this lead
+    let sequencesPaused = 0
+    if (!ai_assist) {
+      sequencesPaused = await pauseSequencesByAgent(lead.id)
+      if (sequencesPaused > 0) {
+        logger.info(`⏸ Paused ${sequencesPaused} sequence(s) — human agent sent outbound to lead ${lead.id}`)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message_id: messageRecord?.id,
       status: result.status,
       message_body: finalMessage,
       ai_generated: ai_assist,
-      twilio_sid: result.messageSid })
+      twilio_sid: result.messageSid,
+      sequences_paused: sequencesPaused })
 
   } catch (error: any) {
     logger.error('❌ Send manual SMS error:', error)

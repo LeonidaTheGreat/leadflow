@@ -79,6 +79,30 @@ export async function pauseAllSequences(leadId: string): Promise<number> {
 }
 
 /**
+ * Pause all active sequences for a lead because the human agent sent an outbound message.
+ * Sets status to paused_by_agent and clears next_send_at so the sequence won't fire.
+ */
+export async function pauseSequencesByAgent(leadId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('lead_sequences')
+    .update({
+      status: 'paused_by_agent',
+      next_send_at: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('lead_id', leadId)
+    .eq('status', 'active')
+    .select()
+
+  if (error) {
+    logger.error('Error pausing sequences by agent', error)
+    return 0
+  }
+
+  return data?.length || 0
+}
+
+/**
  * Resume a paused sequence
  */
 export async function resumeSequence(sequenceId: string, nextSendAt?: string): Promise<boolean> {
@@ -90,7 +114,7 @@ export async function resumeSequence(sequenceId: string, nextSendAt?: string): P
       updated_at: new Date().toISOString(),
     })
     .eq('id', sequenceId)
-    .eq('status', 'paused') // Only resume paused sequences
+    .in('status', ['paused', 'paused_by_agent']) // Resume either pause type
     .lt('total_messages_sent', 3) // Don't resume completed sequences
 
   if (error) {

@@ -9,9 +9,10 @@ export type SequenceType =
   | 'no_show'          // 30m after missed appointment
   | 'nurture'          // 7d general nurture sequence
 
-export type SequenceStatus = 
+export type SequenceStatus =
   | 'active'           // Currently running
   | 'paused'           // Lead responded, sequence paused
+  | 'paused_by_agent'  // Human agent sent outbound — AI took a back seat
   | 'completed'        // Max messages sent (step >= 3)
 
 export interface LeadSequence {
