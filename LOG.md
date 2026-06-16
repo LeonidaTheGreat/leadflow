@@ -964,6 +964,8 @@ Error: Branch dev/d5f56911-refactor-phase-4d-delete-orphan-files-re does not exi
 
 - 2026-06-09: Investigation 6de667ec — stuck UC fix-rescue-triage-feature-selfserve-frictionless-o. Gaps: AC-1 (no phone field in trial form) and AC-3 (redirects to /dashboard/onboarding not /dashboard). Created dev task bb7163d2 to implement. UC updated to in_progress.
 
+- 2026-06-15: Investigation b2e95f88 — orphan branch dev/f015a494-fix-wcd-metrics-agent-quality. Task f015a494-0b47-438a-afdf-978f2ca334d5 found in DB (status: done, agent: multi-role). Branch has 1 commit modifying only LOG.md (stale heartbeat logs from 2026-06-11 + genome PR #293 docs). Actual code changes shipped via genome repo PR #293 (world-class-metrics.js rework_rate + breakage_rate fixes). No LeadFlow PR or code_reviews entry. Verdict: safe to delete — work already shipped, LOG.md additions are stale.
+
 ### 2026-06-11 22:31:16
 - Optimizer: switched to speed mode (goal critical)
 - Queried state: {"ready":49,"inProgress":0,"blocked":5,"done":3790,"total":13802}
