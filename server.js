@@ -12,6 +12,7 @@ const systemRouter = require('./routes/system');
 const weeklyPerformanceRouter = require('./routes/internal/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
+const pilotReactivationRouter = require('./routes/internal/pilot-reactivation');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
@@ -45,6 +46,9 @@ app.use('/', checkStuckPilotsRouter);
 
 // Dead letter replay cron route (retries failed webhook events)
 app.use('/', deadLetterReplayRouter);
+
+// Pilot reactivation cron route (3-email sequence for phone-less verified pilots)
+app.use('/', pilotReactivationRouter);
 
 // Admin: activation outreach (personal email to verified but unactivated signups)
 app.use('/', activationOutreachRouter);
