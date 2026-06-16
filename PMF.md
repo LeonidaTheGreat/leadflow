@@ -185,6 +185,15 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ### Competitive Watch Log
 
+**2026-06-15 — Bi-Weekly Reaffirmation (Day 131 of 180):**
+- **Market verdict: STABLE** — no positioning pivot required
+- **Mod Ai Automation** (HIGH risk): No reported major feature expansion since last check. Still the most direct analog — FUB-native, voice+SMS, targets solo agents. Counter: leapfrog via personal outreach to existing 21 pilot signups before they reach them. Window shrinking.
+- **Inside Real Estate Streams** (Watch): Still targeting brokerages/teams, not solo agents. No change to positioning threat. Continue monitoring quarterly.
+- **Summer 2026 seasonal effect**: Real estate transaction volume typically dips June–August. This reduces urgency for lead response tools (fewer active leads = less pain) but increases agent availability to evaluate and trial new tools. Net neutral to slightly positive for free trial adoption; slight headwind for paid urgency. No pricing response warranted — seasonal, not structural.
+- **AI consolidation at brokerage tier**: Real Brokerage/RE/MAX acquisition continues to play out. Solo agent market remains fragmented for 12–18+ months. Our ICP is unaffected.
+- **Pricing**: $49–$149 still correctly positioned below all enterprise competitors ($299–$1,000+). No price adjustment needed.
+- **Mission assessment**: $0 MRR with 16 days to first-customer deadline is a **funnel infrastructure failure, not a market failure**. Four human-blocked critical path items (auth broken, Resend email domain unverified, A2P 10DLC unregistered, signup page plan options broken) have been the blockers since Day 112. Market timing, ICP, and product format remain correct. Execution is the constraint.
+
 **2026-05-04 — Bi-Weekly Reaffirmation:**
 - **Market verdict: STABLE** — no positioning pivot required
 - **Mod Ai Automation** (HIGH risk): FUB Marketplace listing, voice+SMS, targets solo agents. Most direct analog to LeadFlow. Counter: be first to convert FUB pilots; speed to value matters more than features at this stage.
@@ -195,7 +204,39 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ---
 
-## 8. Current Status (Day 79 of 180 — 2026-05-04)
+## 8. Current Status (Day 131 of 180 — 2026-06-15)
+
+| Component | Status | Note |
+|-----------|--------|------|
+| MVP Features | ✅ Complete (348 UCs) | Product built |
+| Registered Agents | 57 | 0 real customers — all pilot/test |
+| Pilot Signups | 21 | Last signup 2026-05-28 |
+| Paying Subscribers | ❌ 0 | Critical |
+| MRR | ❌ $0 | Funnel infrastructure failures blocking all conversion |
+| First Customer Deadline | ⚠️ 2026-07-01 | 16 days remaining |
+| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 59 days remaining |
+| **Critical Blockers** | **4 human-blocked items** | **Auth, Email, A2P SMS, Signup page** |
+
+### Funnel Bottleneck Analysis (2026-06-15)
+
+| Stage | Status | Blocker |
+|-------|--------|---------|
+| **Auth** | ❌ Broken | Signup inserts wrong table; bcrypt compareSync returns false — `fix-fix-signup-and-login-table-mismatch` in_progress |
+| **Signup → Trial** | ❌ Broken | Email delivery blocked (Resend test domain); signup page plan options not rendering |
+| **Trial → Aha Moment** | ✅ Built | A2P 10DLC incomplete — real SMS blocked in production (blocked_human since Day 112) |
+| **Aha → Upgrade** | ✅ Built | Stripe checkout unblocked via direct payment link (P0, not_started) |
+| **Paid** | ❌ $0 | No real users have reached checkout |
+
+**Critical path to first paying customer (in order):**
+1. **STOJAN**: Fix Resend email domain — unblock activation email delivery
+2. **STOJAN**: A2P 10DLC SMS registration — unblock SMS in production
+3. **DEV**: Auth fix must land + be verified (`fix-fix-signup-and-login-table-mismatch`)
+4. **STOJAN**: Personal outreach to 21 existing pilot signups + 57 registered agents
+5. **DEV**: Direct Stripe payment link for 3 completed-onboarding agents (`uc-stripe-payment-link-direct`, not_started, P0)
+
+---
+
+## 8. Previous Status (Day 79 of 180 — 2026-05-04)
 
 | Component | Status | Note |
 |-----------|--------|------|
