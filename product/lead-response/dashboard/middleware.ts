@@ -53,10 +53,14 @@ const PUBLIC_ROUTE_PREFIXES = [
   '/admin/simulator',
 ]
 
-// Routes that are always allowed even for expired trials
+// Routes that are always allowed even for expired trials.
+// IMPORTANT: '/dashboard/trial-expired' MUST be here — it's the redirect target for
+// expired trials. Omitting it caused an infinite redirect loop on /login (see
+// dev/fix-trial-expired-redirect-loop).
 const EXPIRED_TRIAL_ALLOWED_ROUTES = [
   '/upgrade',
   '/dashboard/upgrade',
+  '/dashboard/trial-expired',
   '/pricing',
   '/settings/billing',
   '/login',
