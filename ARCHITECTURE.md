@@ -65,6 +65,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | — |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
+| RevenueMetricsService | `lib/services/RevenueMetricsService.js` | Daily MRR/subscriber/funnel snapshot, upsert to `revenue_metrics`, Telegram threshold alerts |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
 | SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
 | StripeService | `lib/services/StripeService.js` | Creates a Stripe coupon + promo code for a personal upgrade offer. |
