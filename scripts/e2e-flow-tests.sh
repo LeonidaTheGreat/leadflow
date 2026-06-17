@@ -69,10 +69,16 @@ run_test() {
 # ============================================
 
 # Test 1: Health endpoint shows API connectivity OK
+# Retries up to 3 times (5s apart) to tolerate Vercel cold-start and transient
+# DB/tunnel latency that would otherwise cause false-positive critical failures.
 test_health_connectivity() {
-  local resp
-  resp=$(curl -sf --max-time 10 "$BASE_URL/api/health" 2>/dev/null) || return 1
-  echo "$resp" | grep -q '"api_connectivity":{"ok":true' || return 1
+  local resp attempt
+  for attempt in 1 2 3; do
+    resp=$(curl -sf --max-time 10 "$BASE_URL/api/health" 2>/dev/null) || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    echo "$resp" | grep -q '"api_connectivity":{"ok":true' && return 0
+    [ "$attempt" -lt 3 ] && sleep 5
+  done
+  return 1
 }
 
 # Test 2: Login rejects invalid credentials
