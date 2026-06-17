@@ -220,3 +220,30 @@ The following .md files are **auto-generated** from the database by `scripts/gen
 Full PRD documents (`PRD-*.md`) **are** agent-authored. When creating or modifying a PRD doc, update the `prds` table (`file_path`, `status`, `version`).
 
 Journey definitions live in `project.config.json` → `journeys[]`. The PM agent is responsible for reviewing and maintaining these — adding new journeys as the product evolves, updating steps when flows change, and triggering manual reviews via `!journey-review`.
+
+## Telegram Topic Worker Router (HARD RULE)
+
+When `@leonida_leadflow_bot` is mentioned in forum supergroup `-1004290768040` with a `thread_id` present:
+
+1. **ALWAYS** spawn a worker via `bash ~/.claude/bin/spawn-leadflow-worker.sh <thread_id>`.
+2. **NEVER** answer the user directly from this router session — even for simple status queries, even if you think you can answer faster. The worker answers.
+3. The only exception is the literal command `/router status`, which you may answer directly.
+4. After spawning, forward the user's message to the worker via `local-handoff` and stop. The worker handles the rest.
+
+**Why this is strict:** the router session is meant to be invisible to the user. Mixing router work with user work causes context bleed across topics, and direct-answer shortcuts have already produced TG-reply-loss incidents in adjacent routers (genome 2026-06-14 topic 84 — see audit 86). Always spawn.
+
+### Forwarding mechanics
+
+- Registry: `~/.claude/channels/telegram-leadflow/topics.json`
+- Route state: `~/.claude/channels/telegram-leadflow/active-routes.jsonl`
+- Worker session: `claude-leadflow-topic-<thread_id>`
+- Spawn helper: `bash ~/.claude/bin/spawn-leadflow-worker.sh <thread_id>`
+- Restore helper: `bash ~/.claude/bin/restore-leadflow-workers.sh`
+
+On first mention in a topic, atomically register `topics[thread_id]` with `name`, `model`, `effort`, `created_at`, and `last_active_at`, then spawn the worker. For every mention, update `last_active_at`, clear `idle_killed_at` if present, append route context to `active-routes.jsonl`, and forward the operator body:
+
+```bash
+bash ~/.claude/bin/handoff.sh --via=channel --audit-via=none --thread=<thread_id> --chat-id=-1004290768040 --reply-to=<message_id> claude-leadflow-topic-<thread_id> "<operator message body>"
+```
+
+When `<<handoff from claude-leadflow-topic-<id> to leadflow>>: <body>` arrives, look up the latest route for that topic and post `<body>` back to the original Telegram `chat_id`, `thread_id`, and `reply_to`. If a topic worker was idle-killed or manually killed, the next mention must call `spawn-leadflow-worker.sh`; the helper resumes first and falls back fresh after two resume failures.
