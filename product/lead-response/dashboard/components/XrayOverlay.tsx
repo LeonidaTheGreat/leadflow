@@ -10,8 +10,9 @@
  * dependency — the JSON is bundled at build time and refreshed by the genome
  * exporter (scripts/export-screen-provenance.js).
  *
- * Gate: opt-in via ?xray=1 (persists to localStorage 'lf_xray'); ?xray=0 clears.
- * Not visible to normal users. The data is non-sensitive (component/route names).
+ * Gate: Admin only — verified server-side via the admin_session cookie
+ * (/api/admin/whoami). Invisible to everyone else. The pill defaults to off;
+ * an admin clicks it to X-ray the page. Data is non-sensitive (component names).
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -39,19 +40,17 @@ function matchRoute(pathname: string, routes: Record<string, Route>): string | n
 export function XrayOverlay() {
   const pathname = usePathname()
   const [enabled, setEnabled] = useState(false)
-  const [active, setActive] = useState(true)
+  const [active, setActive] = useState(false)
   const [data, setData] = useState<Provenance | null>(null)
   const [hover, setHover] = useState<{ el: El | null; x: number; y: number } | null>(null)
   const styleRef = useRef<HTMLStyleElement | null>(null)
 
-  // Gate: enable via ?xray=1 (persisted), disable via ?xray=0.
+  // Gate: Admin only — verified server-side via the admin_session cookie.
   useEffect(() => {
-    try {
-      const sp = new URLSearchParams(window.location.search)
-      if (sp.get('xray') === '1') localStorage.setItem('lf_xray', '1')
-      if (sp.get('xray') === '0') localStorage.removeItem('lf_xray')
-      setEnabled(localStorage.getItem('lf_xray') === '1')
-    } catch { /* SSR / no storage */ }
+    fetch('/api/admin/whoami', { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : { admin: false }))
+      .then(d => setEnabled(!!d.admin))
+      .catch(() => setEnabled(false))
   }, [])
 
   // Load the provenance bundle once enabled.
