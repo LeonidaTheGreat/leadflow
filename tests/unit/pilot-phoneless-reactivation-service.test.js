@@ -48,13 +48,13 @@ describe('PilotPhonelessReactivationService', () => {
 
       await service.runCampaign({ dryRun: true });
 
-      const [countSql] = pool.query.mock.calls[0];
+      const [countSql, countParams] = pool.query.mock.calls[0];
       expect(countSql).toContain('phone IS NULL OR ps.phone');
       expect(countSql).toContain('email_events');
-      expect(countSql).toContain('pilot_phoneless_reactivation');
+      expect(countParams[0]).toBe('pilot_phoneless_reactivation');
 
-      const [eligibleSql] = pool.query.mock.calls[1];
-      expect(eligibleSql).toContain('pilot_phoneless_reactivation');
+      const [eligibleSql, eligibleParams] = pool.query.mock.calls[1];
+      expect(eligibleParams[0]).toBe('pilot_phoneless_reactivation');
       expect(eligibleSql).toContain('ORDER BY ps.created_at ASC');
     });
   });
