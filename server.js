@@ -14,6 +14,7 @@ const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
+const pilotPhonelessReactivationRouter = require('./routes/admin/pilot-phoneless-reactivation');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
 
@@ -51,6 +52,9 @@ app.use('/', activationOutreachRouter);
 
 // Admin: lapsed trial reactivation campaign
 app.use('/', reactivationCampaignRouter);
+
+// Admin: email reactivation for phone-less pilot signups (UC: uc-pilot-email-reactivation-zero-phone)
+app.use('/', pilotPhonelessReactivationRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);
