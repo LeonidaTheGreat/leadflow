@@ -5,7 +5,7 @@
   "browser_tests": {
     "enabled": true,
     "command": "npx playwright test tests/browser/ --reporter=json --project=chromium",
-    "base_url": "https://leadflow-ai-five.vercel.app",
+    "base_url": "http://localhost:3030",
     "interval_hours": 6,
     "priority_on_failure": 1
   },
@@ -26,7 +26,7 @@
     "project_id": "prj_p9ZX952UhE1cl1PYZAgVW53FqVm9",
     "team_id": "team_f6bohlhVY2mNroXiNqk1NUF5",
     "root_directory": "product/lead-response/dashboard",
-    "production_url": "https://leadflow-ai-five.vercel.app",
+    "production_url": "http://localhost:3030",
     "framework": "nextjs",
     "deploy_mode": "github_integration",
     "health_endpoint": "/api/health",
@@ -92,29 +92,29 @@
     {
       "id": "vercel-dashboard",
       "name": "Vercel dashboard health",
-      "url": "https://leadflow-ai-five.vercel.app/api/health",
+      "url": "http://localhost:3030/api/health",
       "severity": "critical",
       "check_type": "json_status_ok",
-      "fallback_url": "https://leadflow-ai-five.vercel.app/dashboard"
+      "fallback_url": "http://localhost:3030/dashboard"
     },
     {
       "id": "signup-page",
       "name": "Signup page",
-      "url": "https://leadflow-ai-five.vercel.app/signup",
+      "url": "http://localhost:3030/signup",
       "severity": "critical",
       "check_type": "http_200"
     },
     {
       "id": "login-page",
       "name": "Login page",
-      "url": "https://leadflow-ai-five.vercel.app/login",
+      "url": "http://localhost:3030/login",
       "severity": "critical",
       "check_type": "http_200"
     },
     {
       "id": "lead-simulator",
       "name": "Lead Experience Simulator",
-      "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
+      "url": "http://localhost:3030/admin/simulator",
       "severity": "warning",
       "check_type": "http_200"
     }
@@ -124,8 +124,8 @@
       "id": "customer-dashboard",
       "name": "Customer Dashboard",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app",
-      "test_url": "https://leadflow-ai-five.vercel.app/api/health",
+      "url": "http://localhost:3030",
+      "test_url": "http://localhost:3030/api/health",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "UC-9",
       "description": "Next.js customer-facing dashboard",
@@ -166,7 +166,7 @@
       "id": "landing-page",
       "name": "Landing Page",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app",
+      "url": "http://localhost:3030",
       "local_path": "product/lead-response/dashboard/",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "gtm-landing-page",
@@ -190,7 +190,7 @@
       "id": "billing-flow",
       "name": "Billing Flow",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app/settings",
+      "url": "http://localhost:3030/settings",
       "smoke_test_id": "vercel-dashboard",
       "uc_id": "UC-10",
       "description": "Stripe billing integration (part of customer dashboard)",
@@ -202,7 +202,7 @@
       "id": "lead-simulator",
       "name": "Lead Experience Simulator",
       "type": "web",
-      "url": "https://leadflow-ai-five.vercel.app/admin/simulator",
+      "url": "http://localhost:3030/admin/simulator",
       "smoke_test_id": "lead-simulator",
       "uc_id": "feat-lead-experience-simulator",
       "description": "Admin tool for simulating lead SMS experience and viewing anonymized conversations",
@@ -218,7 +218,7 @@
       "id": "new-agent-signup",
       "name": "New Agent Signup",
       "persona": "Real estate agent, first visit, not tech-savvy",
-      "entry_point": "https://leadflow-ai-five.vercel.app",
+      "entry_point": "http://localhost:3030",
       "expected_outcome": "Agent has an active account with integrations configured",
       "products_involved": [
         "landing-page",
