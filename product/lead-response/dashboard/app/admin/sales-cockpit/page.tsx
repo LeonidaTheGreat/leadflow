@@ -12,6 +12,7 @@ interface Agent {
   phone: string | null
   plan_tier: string
   onboarding_step: number
+  onboarding_completed: boolean
   created_at: string
   last_login_at: string | null
   outreach_status: 'new' | 'contacted' | 'interested' | 'declined' | 'closed'
@@ -71,6 +72,8 @@ export default function SalesCockpitPage() {
   const [submitting, setSubmitting] = useState(false)
   const [generatingLink, setGeneratingLink] = useState<string | null>(null)
   const [copiedLink, setCopiedLink] = useState<string | null>(null)
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null)
+  const [emailSent, setEmailSent] = useState<string | null>(null)
   const [statusUpdating, setStatusUpdating] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>('all')
 
@@ -115,6 +118,29 @@ export default function SalesCockpitPage() {
       alert(`Error: ${e.message}`)
     } finally {
       setGeneratingLink(null)
+    }
+  }
+
+  async function sendPaymentLinkEmail(agent: Agent) {
+    setSendingEmail(agent.id)
+    try {
+      const res = await fetch('/api/admin/sales-cockpit/send-payment-link-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentId: agent.id }),
+      })
+      if (res.status === 401) {
+        router.replace('/admin/login?redirect=/admin/sales-cockpit')
+        return
+      }
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Failed')
+      setEmailSent(agent.id)
+      setTimeout(() => setEmailSent(null), 3000)
+    } catch (e: any) {
+      alert(`Error: ${e.message}`)
+    } finally {
+      setSendingEmail(null)
     }
   }
 
@@ -267,10 +293,15 @@ export default function SalesCockpitPage() {
                     <tr
                       key={agent.id}
                       onClick={() => setSelected(agent)}
-                      className={`hover:bg-gray-50 cursor-pointer ${selected?.id === agent.id ? 'bg-blue-50' : ''}`}
+                      className={`hover:bg-gray-50 cursor-pointer ${selected?.id === agent.id ? 'bg-blue-50' : ''} ${agent.onboarding_completed ? 'border-l-2 border-emerald-400' : ''}`}
                     >
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900">{agent.name}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-medium text-gray-900">{agent.name}</p>
+                          {agent.onboarding_completed && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700" title="Completed onboarding">✓ Ready</span>
+                          )}
+                        </div>
                         <p className="text-gray-400 text-xs">{agent.email}</p>
                         {agent.phone && <p className="text-gray-400 text-xs">{agent.phone}</p>}
                       </td>
@@ -296,18 +327,32 @@ export default function SalesCockpitPage() {
                         </select>
                       </td>
                       <td className="px-4 py-3">
-                        <button
-                          onClick={e => { e.stopPropagation(); generatePaymentLink(agent) }}
-                          disabled={generatingLink === agent.id}
-                          className="text-xs bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 font-medium disabled:opacity-50 transition-colors"
-                          data-testid={`payment-link-btn-${agent.id}`}
-                        >
-                          {generatingLink === agent.id
-                            ? '...'
-                            : copiedLink === agent.id
-                            ? '✓ Copied!'
-                            : 'Payment Link'}
-                        </button>
+                        <div className="flex flex-col gap-1">
+                          <button
+                            onClick={e => { e.stopPropagation(); generatePaymentLink(agent) }}
+                            disabled={generatingLink === agent.id}
+                            className="text-xs bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 font-medium disabled:opacity-50 transition-colors"
+                            data-testid={`payment-link-btn-${agent.id}`}
+                          >
+                            {generatingLink === agent.id
+                              ? '...'
+                              : copiedLink === agent.id
+                              ? '✓ Copied!'
+                              : 'Copy Link'}
+                          </button>
+                          <button
+                            onClick={e => { e.stopPropagation(); sendPaymentLinkEmail(agent) }}
+                            disabled={sendingEmail === agent.id}
+                            className="text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700 font-medium disabled:opacity-50 transition-colors"
+                            data-testid={`email-link-btn-${agent.id}`}
+                          >
+                            {sendingEmail === agent.id
+                              ? '...'
+                              : emailSent === agent.id
+                              ? '✓ Sent!'
+                              : 'Email Link'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

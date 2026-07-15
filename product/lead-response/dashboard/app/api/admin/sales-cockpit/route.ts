@@ -16,9 +16,10 @@ export async function GET(request: NextRequest) {
   try {
     const { data: agents, error: agentsError } = await postgrestAdmin
       .from('real_estate_agents')
-      .select('id,first_name,last_name,email,phone_number,plan_tier,onboarding_step,created_at,last_login_at,subscription_status')
+      .select('id,first_name,last_name,email,phone_number,plan_tier,onboarding_step,onboarding_completed,created_at,last_login_at,subscription_status')
       .eq('email_verified', true)
       .eq('subscription_status', 'inactive')
+      .order('onboarding_completed', { ascending: false })
       .order('created_at', { ascending: false })
 
     if (agentsError) {
@@ -62,6 +63,7 @@ export async function GET(request: NextRequest) {
         phone: agent.phone_number,
         plan_tier: agent.plan_tier,
         onboarding_step: agent.onboarding_step ?? 0,
+        onboarding_completed: agent.onboarding_completed ?? false,
         created_at: agent.created_at,
         last_login_at: agent.last_login_at,
         outreach_status: latest?.status ?? 'new',
