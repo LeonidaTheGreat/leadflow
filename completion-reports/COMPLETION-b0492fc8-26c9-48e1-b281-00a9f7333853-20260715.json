@@ -1,0 +1,54 @@
+{
+  "taskId": "b0492fc8-26c9-48e1-b281-00a9f7333853",
+  "status": "completed",
+  "type": "investigation",
+  "subject": "Orphan branch: dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+  "rootCauseAnalysis": {
+    "failurePoint": "Branch has 3 commits ahead of main with no matching task row",
+    "why": "This branch was a rescue attempt for uc-admin-sales-cockpit-admin that created an Express-side implementation of the Sales Cockpit API. PR #1844 (merged 2026-06-23) separately shipped a Next.js-based implementation of the same feature via the dashboard app. The task row for this rescue branch was likely deleted when the UC was considered done via #1844.",
+    "fix": "Branch is NOT a duplicate — it contains complementary server-side work. Recommend filing a PR to merge the Express routes + service class + unit tests, with the migration treated as no-op (table already exists via scripts/db/create-outreach-log-table.sql)."
+  },
+  "findings": {
+    "commitsAheadOfMain": 3,
+    "commitSummaries": [
+      "feat: admin pilots sales cockpit (cherry-pick from feature branch)",
+      "feat(admin): add Sales Cockpit link to admin dashboard Execution Areas",
+      "feat(admin): link Sales Cockpit in admin dashboard + add formal migration"
+    ],
+    "filesChanged": [
+      "lib/services/AdminPilotsService.js (NEW — 198 lines)",
+      "migrations/024_outreach_log.sql (NEW — formal migration)",
+      "product/lead-response/dashboard/app/admin/page.tsx (MODIFIED — adds Sales Cockpit link)",
+      "routes/admin/pilots.js (NEW — Express routes at /api/admin/pilots/*)",
+      "server.js (MODIFIED — registers adminPilotsRouter)",
+      "tests/unit/admin-pilots.test.js (NEW — 346 lines of unit tests)"
+    ],
+    "isDuplicate": false,
+    "analysis": {
+      "pr1844Overlap": "PR #1844 shipped Sales Cockpit via Next.js API routes at /api/admin/sales-cockpit/*. This branch adds Express routes at /api/admin/pilots/* targeting the webhook server (fub-inbound-webhook Vercel project). Different deployment target, different URL paths.",
+      "genuineGaps": [
+        "admin/page.tsx Sales Cockpit link is NOT in main — the sales-cockpit page exists but the admin dashboard doesn't link to it",
+        "AdminPilotsService.js Express-side service class missing from main",
+        "routes/admin/pilots.js Express-side API not in main",
+        "server.js router registration missing",
+        "tests/unit/admin-pilots.test.js unit tests not in main"
+      ],
+      "concerns": [
+        "migrations/024_outreach_log.sql creates outreach_log without CHECK constraints; main has scripts/db/create-outreach-log-table.sql WITH constraints (channel IN ('email','call','sms','linkedin'), status IN ('contacted','interested','declined','closed')). Service uses different allowed values (ALLOWED_CHANNELS includes 'phone','text','other'; ALLOWED_STATUSES includes 'not_interested','converted','follow_up','no_response'). Inconsistency between service validation and DB constraints.",
+        "If outreach_log table already exists in production (created by PR #1844 script), migration 024 is a no-op (uses IF NOT EXISTS) but adds no constraints."
+      ]
+    },
+    "recommendation": "SHIP — file a PR for this branch. The admin page link gap is the most impactful fix (users can't navigate to sales cockpit from admin dashboard). The Express routes add backend API capability on the webhook server. Before merging: reconcile the outreach_log channel/status allowed values between the service and the existing DB CHECK constraints."
+  },
+  "testResults": {
+    "passed": 0,
+    "total": 0,
+    "passRate": null,
+    "note": "Investigation task — no code changes made. Tests on orphan branch not run (out of scope for investigation)."
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-b0492fc8-26c9-48e1-b281-00a9f7333853-20260715.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-b0492fc8-26c9-48e1-b281-00a9f7333853-20260715.json"
+}
