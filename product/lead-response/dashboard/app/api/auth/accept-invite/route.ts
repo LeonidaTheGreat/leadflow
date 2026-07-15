@@ -17,18 +17,24 @@ interface AcceptInviteResponse {
 
 const supabase = postgrestAdmin
 
+const TRIAL_DAYS = 14
+
 /**
  * POST /api/auth/accept-invite
  *
  * Accept a pilot invite via magic token.
- * This endpoint:
- * 1. Validates the token exists, is not expired, and status is 'invited'
- * 2. Creates a new real_estate_agent account (email, name from invite)
- * 3. Generates random password if not provided
- * 4. Updates the invite as accepted with agent_id
- * 5. Creates a pilot_progress record
  *
- * Returns: { success: true, agentId } or error
+ * Two flows are supported:
+ *
+ * A) Pre-provisioned agent (admin invite-pilot / pilot-targets invite):
+ *    The invite record already has agent_id set (agent was created at invite time
+ *    with a placeholder password 'invited'). On acceptance we set a real password
+ *    and transition the existing agent to 'onboarding'.
+ *
+ * B) New agent (pilot-signups invite, no agent_id on invite):
+ *    We create a fresh agent record on acceptance.
+ *
+ * In both cases we mark the invite as 'accepted' and create a pilot_progress record.
  */
 export async function POST(request: NextRequest): Promise<NextResponse<AcceptInviteResponse>> {
   try {
@@ -81,20 +87,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    // 4. Check if already has an agent_id
-    if (invite.agent_id) {
-      return NextResponse.json(
-        { success: false, error: 'This invite has already been processed' },
-        { status: 409 }
-      )
-    }
-
-    // 5. Parse name into first/last
-    const names = (invite.name || '').trim().split(' ')
-    const firstName = names[0] || 'Agent'
-    const lastName = names.slice(1).join(' ') || ''
-
-    // 6. Generate or use provided password
+    // 4. Validate and hash password
     let passwordHash: string
     if (password) {
       if (password.length < 8) {
@@ -109,41 +102,75 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       passwordHash = await bcrypt.hash(tempPassword, 10)
     }
 
-    // 7. Create the real_estate_agents record
-    const { data: newAgent, error: createAgentError } = await supabase
-      .from('real_estate_agents')
-      .insert({
-        email: invite.email.toLowerCase(),
-        first_name: firstName,
-        last_name: lastName,
-        password_hash: passwordHash,
-        source: 'pilot_invite',
-        status: 'onboarding',
-        email_verified: true,
-        trial_start_date: new Date().toISOString(),
-        trial_expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .select('id')
-      .single()
+    const trialExpiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 
-    if (createAgentError || !newAgent) {
-      logger.error('Error creating agent:', createAgentError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to create agent account' },
-        { status: 500 }
-      )
+    let agentId: string
+
+    if (invite.agent_id) {
+      // Flow A: Pre-provisioned agent — admin created the agent at invite time
+      // with a placeholder password. Update with real credentials and onboarding state.
+      agentId = invite.agent_id
+
+      const { error: updateAgentError } = await supabase
+        .from('real_estate_agents')
+        .update({
+          password_hash: passwordHash,
+          status: 'onboarding',
+          email_verified: true,
+          pilot_started_at: now.toISOString(),
+          pilot_expires_at: trialExpiresAt,
+          updated_at: now.toISOString()
+        })
+        .eq('id', agentId)
+
+      if (updateAgentError) {
+        logger.error('Error updating pre-provisioned agent:', updateAgentError)
+        return NextResponse.json(
+          { success: false, error: 'Failed to activate agent account' },
+          { status: 500 }
+        )
+      }
+    } else {
+      // Flow B: No pre-provisioned agent — create a fresh account now.
+      const names = (invite.name || '').trim().split(' ')
+      const firstName = names[0] || 'Agent'
+      const lastName = names.slice(1).join(' ') || ''
+
+      const { data: newAgent, error: createAgentError } = await supabase
+        .from('real_estate_agents')
+        .insert({
+          email: invite.email.toLowerCase(),
+          first_name: firstName,
+          last_name: lastName,
+          password_hash: passwordHash,
+          source: 'pilot_invite',
+          status: 'onboarding',
+          email_verified: true,
+          pilot_started_at: now.toISOString(),
+          pilot_expires_at: trialExpiresAt,
+          created_at: now.toISOString(),
+          updated_at: now.toISOString()
+        })
+        .select('id')
+        .single()
+
+      if (createAgentError || !newAgent) {
+        logger.error('Error creating agent:', createAgentError)
+        return NextResponse.json(
+          { success: false, error: 'Failed to create agent account' },
+          { status: 500 }
+        )
+      }
+
+      agentId = newAgent.id
     }
 
-    const agentId = newAgent.id
-
-    // 8. Update the invite record with agent_id and accepted status
+    // 5. Mark the invite as accepted
     const { error: updateInviteError } = await supabase
       .from('pilot_invites')
       .update({
         status: 'accepted',
-        accepted_at: new Date().toISOString(),
+        accepted_at: now.toISOString(),
         agent_id: agentId
       })
       .eq('id', invite.id)
@@ -156,24 +183,20 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
       )
     }
 
-    // 9. Create pilot_progress record for admin tracking (non-blocking)
+    // 6. Create pilot_progress record (non-blocking)
     void Promise.resolve(supabase.from('pilot_progress').insert({
       agent_id: agentId,
       stage: 'signed_up',
-      stage_entered_at: new Date().toISOString(),
+      stage_entered_at: now.toISOString(),
       pilot_cohort: 'cohort-1',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      created_at: now.toISOString(),
+      updated_at: now.toISOString()
     })).catch((err: unknown) => {
       logger.error('[accept-invite] Failed to create pilot_progress record:', err)
     })
 
-    // Return success
     return NextResponse.json(
-      {
-        success: true,
-        agentId
-      },
+      { success: true, agentId },
       { status: 200 }
     )
   } catch (error: any) {
