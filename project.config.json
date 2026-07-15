@@ -398,13 +398,19 @@
     "day_target": 180,
     "report_prefix": "LeadFlow Orchestrator",
     "active_milestone": "First paying customer",
-    "active_milestone_deadline": "2026-07-01",
+    "active_milestone_deadline": "2026-07-31",
     "archived_milestones": [
       {
         "name": "First paying customer (Day 90)",
         "deadline": "2026-05-15",
         "status": "missed",
         "note": "Archived 2026-06-07. $0 MRR at Day 90. Active goal moved to 2026-07-01."
+      },
+      {
+        "name": "First paying customer (Day 135)",
+        "deadline": "2026-07-01",
+        "status": "missed",
+        "note": "Archived 2026-07-15. $0 MRR at Day 135. Active goal moved to 2026-07-31."
       }
     ]
   },
