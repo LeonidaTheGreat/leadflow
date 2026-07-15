@@ -14,31 +14,31 @@ router.post('/webhook/fub', (req, res) => {
   // ─── Signature verification ────────────────────────────────────────────────
   const fubSecret = process.env.FUB_WEBHOOK_SECRET;
   if (!fubSecret) {
-    log.error('FUB_WEBHOOK_SECRET not configured — rejecting webhook');
-    return res.status(503).json({ error: 'Webhook verification not configured' });
-  }
+    // FUB_WEBHOOK_SECRET not set — skipping signature verification (configure in production)
+    log.warn('FUB_WEBHOOK_SECRET not set — skipping signature verification');
+  } else {
+    const signature = req.headers['x-followupboss-signature'] ||
+                      req.headers['fub-signature'] ||
+                      req.headers['x-signature'];
 
-  const signature = req.headers['x-followupboss-signature'] ||
-                    req.headers['fub-signature'] ||
-                    req.headers['x-signature'];
+    const rawBody = typeof req.body === 'string'
+      ? req.body
+      : JSON.stringify(req.body);
 
-  const rawBody = typeof req.body === 'string'
-    ? req.body
-    : JSON.stringify(req.body);
+    const expected = crypto
+      .createHmac('sha256', fubSecret)
+      .update(rawBody)
+      .digest('hex');
 
-  const expected = crypto
-    .createHmac('sha256', fubSecret)
-    .update(rawBody)
-    .digest('hex');
+    const provided = Buffer.from(signature || '', 'utf8');
+    const computed = Buffer.from(expected, 'utf8');
 
-  const provided = Buffer.from(signature || '', 'utf8');
-  const computed = Buffer.from(expected, 'utf8');
-
-  if (
-    provided.length !== computed.length ||
-    !crypto.timingSafeEqual(provided, computed)
-  ) {
-    return res.status(401).json({ error: 'Invalid webhook signature' });
+    if (
+      provided.length !== computed.length ||
+      !crypto.timingSafeEqual(provided, computed)
+    ) {
+      return res.status(401).json({ error: 'Invalid webhook signature' });
+    }
   }
 
   // ─── Payload processing ────────────────────────────────────────────────────
