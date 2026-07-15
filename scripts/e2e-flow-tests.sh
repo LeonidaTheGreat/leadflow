@@ -205,46 +205,58 @@ test_dashboard_no_errors() {
 
   [ -z "$user_id" ] && return 1
 
-  # Create a fresh session: generate raw token, store SHA-256 hash in DB.
-  # The DB stores only the hash (since PR #1026). The cookie must hold the raw token —
-  # middleware calls hashToken(cookie) and looks up that hash in sessions.token.
-  local raw_token token_hash now expires session_resp session_id
-  raw_token=$(openssl rand -hex 32)
-  token_hash=$(printf '%s' "$raw_token" | openssl dgst -sha256 | awk '{print $2}')
-  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  expires=$(date -u -v+1H +"%Y-%m-%dT%H:%M:%SZ")
+  # Retry up to 3 times (5s apart) to tolerate Vercel cold-start and transient
+  # tunnel latency that can stall session validation in the middleware (5s timeout
+  # on the Cloudflare tunnel → middleware treats user as unauthenticated → redirect
+  # to /login → no 'Lead Feed' content). Each attempt creates a fresh session so
+  # the token hash is always unique; the previous session is cleaned up before retry.
+  local attempt
+  for attempt in 1 2 3; do
+    # Create a fresh session: generate raw token, store SHA-256 hash in DB.
+    # The DB stores only the hash (since PR #1026). The cookie must hold the raw token —
+    # middleware calls hashToken(cookie) and looks up that hash in sessions.token.
+    local raw_token token_hash now expires session_resp session_id
+    raw_token=$(openssl rand -hex 32)
+    token_hash=$(printf '%s' "$raw_token" | openssl dgst -sha256 | awk '{print $2}')
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    expires=$(date -u -v+1H +"%Y-%m-%dT%H:%M:%SZ")
 
-  session_resp=$(curl -s --max-time 10 -X POST "$API_URL/sessions" \
-    -H "apikey: $API_KEY" \
-    -H "Content-Type: application/json" \
-    -H "Prefer: return=representation" \
-    -d "{\"user_id\":\"$user_id\",\"token\":\"$token_hash\",\"expires_at\":\"$expires\",\"created_at\":\"$now\",\"last_used_at\":\"$now\",\"user_agent\":\"e2e-test\"}" 2>/dev/null) || return 1
+    session_resp=$(curl -s --max-time 10 -X POST "$API_URL/sessions" \
+      -H "apikey: $API_KEY" \
+      -H "Content-Type: application/json" \
+      -H "Prefer: return=representation" \
+      -d "{\"user_id\":\"$user_id\",\"token\":\"$token_hash\",\"expires_at\":\"$expires\",\"created_at\":\"$now\",\"last_used_at\":\"$now\",\"user_agent\":\"e2e-test\"}" 2>/dev/null) || {
+      [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1
+    }
 
-  session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
-  [ -z "$session_id" ] && return 1
+    session_id=$(echo "$session_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); r=d[0] if isinstance(d,list) else d; print(r.get('id','') if isinstance(r,dict) else '')" 2>/dev/null) || true
+    if [ -z "$session_id" ]; then
+      [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1
+    fi
 
-  # Load dashboard with raw token in cookie — server hashes it to validate
-  # Capture HTTP status code alongside body to detect deployment failures (e.g. 500 FUNCTION_INVOCATION_FAILED)
-  local html http_status _tmp_dash
-  _tmp_dash=$(mktemp)
-  http_status=$(curl -s --max-time 15 -o "$_tmp_dash" -w "%{http_code}" "$BASE_URL/dashboard" \
-    -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
-  local exit_code=$?
-  html=$(cat "$_tmp_dash" 2>/dev/null); rm -f "$_tmp_dash"
+    # Load dashboard with raw token in cookie — server hashes it to validate
+    # Capture HTTP status code alongside body to detect deployment failures (e.g. 500 FUNCTION_INVOCATION_FAILED)
+    local html http_status _tmp_dash
+    _tmp_dash=$(mktemp)
+    http_status=$(curl -s --max-time 15 -o "$_tmp_dash" -w "%{http_code}" "$BASE_URL/dashboard" \
+      -H "Cookie: leadflow_session=$raw_token" 2>/dev/null)
+    local exit_code=$?
+    html=$(cat "$_tmp_dash" 2>/dev/null); rm -f "$_tmp_dash"
 
-  # Clean up test session regardless of outcome
-  curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
-    -H "apikey: $API_KEY" >/dev/null 2>&1 || true
+    # Clean up test session regardless of outcome
+    curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
+      -H "apikey: $API_KEY" >/dev/null 2>&1 || true
 
-  [ $exit_code -ne 0 ] && return 1
-  # HTTP 5xx = server/deployment failure (e.g. wrong Vercel deploy directory)
-  [[ "$http_status" == 5* ]] && return 1
-
-  # Should not contain PostgREST or Vercel error patterns
-  echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error\|FUNCTION_INVOCATION_FAILED' && return 1
-  # Should contain dashboard content
-  echo "$html" | grep -q 'Lead Feed' || return 1
-  return 0
+    [ $exit_code -ne 0 ] && { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    # HTTP 5xx = server/deployment failure (e.g. wrong Vercel deploy directory)
+    [[ "$http_status" == 5* ]] && { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    # Should not contain PostgREST or Vercel error patterns
+    echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error\|FUNCTION_INVOCATION_FAILED' && { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    # Should contain dashboard content
+    echo "$html" | grep -q 'Lead Feed' && return 0
+    [ "$attempt" -lt 3 ] && sleep 5
+  done
+  return 1
 }
 
 # Test 11: Billing page loads without errors
