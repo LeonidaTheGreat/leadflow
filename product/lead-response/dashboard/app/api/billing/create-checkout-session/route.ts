@@ -8,15 +8,22 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20' as any })
   : null
 
-/**
- * Map plan ID to Stripe price ID from environment variables
- */
-function getPriceIdForPlan(planId: string): string | null {
-  const priceIdMap: Record<string, string> = {
-    starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '',
-    team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
-  return priceIdMap[planId] || null
+const PRICE_ENV_MAP: Record<string, string> = {
+  starter: 'STRIPE_PRICE_STARTER_MONTHLY',
+  pro: 'STRIPE_PRICE_PRO_MONTHLY',
+  team: 'STRIPE_PRICE_TEAM_MONTHLY',
+}
+
+function isValidPriceId(id: string | undefined): id is string {
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,30}$/.test(id)
+}
+
+function getPriceIdForPlan(planId: string): { priceId: string; envVar: string } | null {
+  const envVar = PRICE_ENV_MAP[planId]
+  if (!envVar) return null
+  const priceId = process.env[envVar]
+  if (!isValidPriceId(priceId)) return null
+  return { priceId, envVar }
 }
 
 export async function POST(request: NextRequest) {
@@ -45,13 +52,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const priceId = getPriceIdForPlan(planId)
-    if (!priceId || priceId.startsWith('price_replace')) {
+    const resolved = getPriceIdForPlan(planId)
+    if (!resolved) {
+      const envVar = PRICE_ENV_MAP[planId] || 'STRIPE_PRICE_*'
+      logger.error(`Missing or invalid Stripe Price ID for plan "${planId}". Set ${envVar} to a valid price_... ID.`)
       return NextResponse.json(
-        { error: 'Price not configured for this plan' },
+        { error: `Billing is not configured for the "${planId}" plan. Contact support.`, code: 'PRICE_NOT_CONFIGURED' },
         { status: 503 }
       )
     }
+    const priceId = resolved.priceId
 
     // Authenticate via auth-token or leadflow_session cookie
     const userId = await getAuthUserId(request)

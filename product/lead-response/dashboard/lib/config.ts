@@ -38,10 +38,9 @@ export const stripe = {
   webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || null,
   portalReturnUrl: (process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app').trim(),
   prices: {
-    starter:      process.env.STRIPE_PRICE_STARTER_MONTHLY      || 'price_starter_monthly',
-    professional: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
-    team:         process.env.STRIPE_PRICE_TEAM_MONTHLY         || 'price_team_monthly',
-    enterprise:   process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY   || 'price_enterprise_monthly',
+    starter:      process.env.STRIPE_PRICE_STARTER_MONTHLY      || null,
+    pro:          process.env.STRIPE_PRICE_PRO_MONTHLY          || null,
+    team:         process.env.STRIPE_PRICE_TEAM_MONTHLY         || null,
   },
 }
 
