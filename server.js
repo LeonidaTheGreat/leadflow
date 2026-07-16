@@ -14,6 +14,7 @@ const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
+const adminVerifyEmailRouter = require('./routes/api/admin-verify-email');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
 
@@ -51,6 +52,9 @@ app.use('/', activationOutreachRouter);
 
 // Admin: lapsed trial reactivation campaign
 app.use('/', reactivationCampaignRouter);
+
+// Admin: email verification override (unblock agents locked out by undelivered verification emails)
+app.use('/', adminVerifyEmailRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);
