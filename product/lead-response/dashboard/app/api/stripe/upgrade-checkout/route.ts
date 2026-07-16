@@ -11,11 +11,13 @@ const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
 // Plan → Stripe price ID mapping.
-// In production these are set via Vercel env vars.
-const PLAN_PRICE_IDS: Record<string, string> = {
-  starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || 'price_starter_monthly',
-  pro: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || 'price_professional_monthly',
-  team: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise_monthly' }
+// Env var names must match what is configured in Vercel:
+//   STRIPE_PRICE_STARTER_MONTHLY, STRIPE_PRICE_PRO_MONTHLY, STRIPE_PRICE_TEAM_MONTHLY
+const PLAN_PRICE_IDS: Record<string, string | undefined> = {
+  starter: process.env.STRIPE_PRICE_STARTER_MONTHLY,
+  pro:     process.env.STRIPE_PRICE_PRO_MONTHLY,
+  team:    process.env.STRIPE_PRICE_TEAM_MONTHLY,
+}
 
 /**
  * POST /api/stripe/upgrade-checkout
@@ -47,10 +49,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { plan } = body
 
-    if (!plan || !PLAN_PRICE_IDS[plan]) {
+    if (!plan || !(plan in PLAN_PRICE_IDS)) {
       return NextResponse.json(
         { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_PRICE_IDS).join(', ')}` },
         { status: 400 }
+      )
+    }
+
+    const priceId = PLAN_PRICE_IDS[plan]
+    if (!priceId || !priceId.startsWith('price_')) {
+      logger.error(
+        `Missing or invalid Stripe price ID for plan "${plan}". ` +
+        `Set STRIPE_PRICE_${plan.toUpperCase()}_MONTHLY in Vercel env vars.`
+      )
+      return NextResponse.json(
+        { error: `Billing not configured for the "${plan}" plan. Contact support.`, code: 'PRICE_NOT_CONFIGURED' },
+        { status: 503 }
       )
     }
 
@@ -88,7 +102,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: agent.id,
-      line_items: [{ price: PLAN_PRICE_IDS[plan], quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       subscription_data: {
         metadata: {
