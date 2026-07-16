@@ -4,8 +4,7 @@
  * QC E2E test for PR #1862 — Direct Stripe Payment Link
  *
  * Validates architecture rules, security, and code quality by inspecting
- * the PR diff (fetched via gh CLI). PR is closed; tests run against the
- * graveyard branch snapshot.
+ * the PR diff (fetched via gh CLI).
  *
  * Verify: node tests/e2e/qc-pr1862-payment-link.test.js
  */
@@ -51,7 +50,20 @@ function extractFile(filePath) {
 
 console.log('\nQC E2E — PR #1862: Direct Stripe Payment Link (diff-based review)\n')
 
-// ── Architecture: Express route must use service layer ──
+// ── Architecture: Express route must use existing PaymentLinkService ──
+
+test('ARCH: payment-link.js must not remove PaymentLinkService (regression check)', () => {
+  const src = extractFile('routes/admin/payment-link.js')
+  assert.ok(src, 'routes/admin/payment-link.js not found in diff')
+  const removesService = !src.includes('PaymentLinkService')
+  assert.ok(
+    !removesService,
+    'REGRESSION: main already has a clean pattern — routes/admin/payment-link.js uses ' +
+    'PaymentLinkService from lib/services/PaymentLinkService.js (thin route + service). ' +
+    'This PR replaces it with inline Stripe calls, making PaymentLinkService dead code. ' +
+    'Fix: use the existing PaymentLinkService instead of inlining.'
+  )
+})
 
 test('ARCH: payment-link.js should use StripeService, not inline Stripe calls', () => {
   const src = extractFile('routes/admin/payment-link.js')
@@ -112,14 +124,14 @@ test('NO MAGIC: send-payment-link-email must not have bare unit_amount: 4900', (
 test('SEC: email HTML template should escape firstName to prevent XSS', () => {
   const src = extractFile('product/lead-response/dashboard/app/api/admin/sales-cockpit/send-payment-link-email/route.ts')
   assert.ok(src, 'send-payment-link-email/route.ts not found in diff')
-  const hasInterpolation = src.includes('${firstName')
-  const hasEscape = src.includes('escapeHtml') || src.includes('encodeURIComponent') ||
-    src.includes('.replace(') || src.includes('sanitize')
-  if (hasInterpolation) {
+  const hasRawInterpolation = src.includes("${firstName || 'there'}") || src.includes('${firstName}')
+  if (hasRawInterpolation) {
+    const hasEscapeCall = src.includes('escapeHtml(firstName') || src.includes('sanitize(firstName')
     assert.ok(
-      hasEscape,
-      'WARNING: firstName is interpolated directly into HTML email template without escaping. ' +
-      'If a DB record contains HTML/script tags, this is an XSS vector in email clients.'
+      hasEscapeCall,
+      'WARNING: firstName is interpolated directly into HTML email template (buildEmailHtml) ' +
+      'without HTML-escaping. A DB record with <script> or HTML tags in first_name would inject ' +
+      'into the email body. Use an escapeHtml() helper before interpolation.'
     )
   }
 })
