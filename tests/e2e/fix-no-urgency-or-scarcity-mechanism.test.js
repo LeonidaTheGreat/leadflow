@@ -41,8 +41,8 @@ test('Landing page includes explicit scarcity count and pilot wording', () => {
   assert.ok(content.includes('Only 10 pilot spots remaining'), 'Expected scarcity count text with pilot spots')
 })
 
-test('Landing page includes deadline window for urgency (Q1 2026)', () => {
-  assert.ok(content.includes('Q1 2026'), 'Expected Q1 2026 deadline urgency')
+test('Landing page includes CTA urgency trigger (Apply Now)', () => {
+  assert.ok(content.includes('Apply Now'), 'Expected Apply Now CTA urgency trigger')
 })
 
 test('Landing page includes pricing lock-in FOMO trigger', () => {

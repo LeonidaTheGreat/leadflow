@@ -67,7 +67,7 @@ export default function HomePage() {
         className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-center py-2.5 px-4 text-sm font-medium"
         data-testid="urgency-banner"
       >
-        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 spots remaining. Join today to lock in 20% lifetime pricing.{' '}
+        🎯 <span className="font-semibold">Limited Pilot Spots:</span> Only 10 pilot spots remaining. Join today to lock in 20% lifetime pricing.{' '}
         <Link href="/pilot" className="underline underline-offset-2 font-semibold hover:text-emerald-100">
           Apply Now →
         </Link>
