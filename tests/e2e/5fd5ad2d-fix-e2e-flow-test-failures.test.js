@@ -120,11 +120,11 @@ async function runTests() {
 
   // Test 7: Static code analysis — column name mismatch in send-aha-day3
   try {
-    const routePath = path.join(__dirname, '../product/lead-response/dashboard/app/api/onboarding/send-aha-day3/route.ts');
+    const routePath = path.join(__dirname, '../../product/lead-response/dashboard/app/api/onboarding/send-aha-day3/route.ts');
     const content = fs.readFileSync(routePath, 'utf8');
     // The GET handler uses trial_started_at but migration adds trial_start_date — these must match
     const usesTrialStartedAt = content.includes('trial_started_at');
-    const migrationPath = path.join(__dirname, '../migrations/012_trial_aha_moment.sql');
+    const migrationPath = path.join(__dirname, '../../migrations/012_trial_aha_moment.sql');
     const migration = fs.readFileSync(migrationPath, 'utf8');
     const migrationHasTrialStartedAt = migration.includes('trial_started_at');
     

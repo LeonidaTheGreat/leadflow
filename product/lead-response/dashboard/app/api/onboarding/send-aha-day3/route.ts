@@ -119,10 +119,10 @@ export async function GET(request: NextRequest) {
     // Find agents who started trial 3 days ago
     const { data: agents, error } = await supabase
       .from('real_estate_agents')
-      .select('id, email, first_name, last_name, trial_started_at')
+      .select('id, email, first_name, last_name, trial_start_date')
       .eq('plan_tier', 'trial')
-      .gte('trial_started_at', threeDaysAgo.toISOString())
-      .lte('trial_started_at', threeDaysAgoEnd.toISOString())
+      .gte('trial_start_date', threeDaysAgo.toISOString())
+      .lte('trial_start_date', threeDaysAgoEnd.toISOString())
 
     if (error) {
       logger.error('Day-3 cohort fetch error:', error)
