@@ -2,11 +2,11 @@
 
 **Product:** LeadFlow AI (formerly InstantLead AI)  
 **Domain:** Real Estate — AI Lead Response  
-**Near-Term Milestone:** First paying customer by 2026-07-01 (Day 90 / 2026-05-15 missed at $0 MRR)  
-**Minimum Target:** $20,000 MRR by Day 180 (2026-08-13)  
+**Primary Target:** $20,000 MRR by Day 180 (2026-08-13) — 28 days remaining  
 **Stretch Target:** $50,000 MRR  
-**Last Updated:** 2026-06-08  
-**Status:** MVP Complete → Pilot Phase → Conversion Push
+**Last Updated:** 2026-07-16  
+**Status:** MVP Complete → Revenue Foundation Phase (Day 151 of 180)  
+**Archived Milestones:** First paying customer by 2026-07-01 — missed at $0 MRR (archived 2026-07-15). First paying customer by 2026-05-15 (Day 90) — missed at $0 MRR (archived 2026-06-07).
 
 ---
 
@@ -204,7 +204,20 @@ With 11 days remaining and 0 subscriptions active, $20K MRR is not achievable in
 
 ---
 
-## 8. Current Status (Day 131 of 180 — 2026-06-15)
+## 8. Current Status (Day 151 of 180 — 2026-07-16)
+
+| Component | Status | Note |
+|-----------|--------|------|
+| MVP Features | ✅ Complete (348 UCs) | Product built |
+| Registered Agents | 57 | 0 real customers — all pilot/test |
+| Pilot Signups | 21 | Last signup 2026-05-28 |
+| Paying Subscribers | ❌ 0 | Critical |
+| MRR | ❌ $0 | Both first-customer deadlines missed; pivoting to direct revenue push |
+| First Customer Deadline | ❌ Missed | 2026-07-01 passed at $0 MRR — archived 2026-07-15 |
+| $20K MRR Goal | ⚠️ Day 180 (2026-08-13) | 28 days remaining |
+| **Priority** | **Revenue Foundation** | **Convert any pilot to paid subscriber ASAP** |
+
+## 8a. Previous Status (Day 131 of 180 — 2026-06-15)
 
 | Component | Status | Note |
 |-----------|--------|------|
