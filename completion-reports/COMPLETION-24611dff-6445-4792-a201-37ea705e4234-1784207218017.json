@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-16T13:06:58.016Z",
+  "taskId": "24611dff-6445-4792-a201-37ea705e4234",
+  "status": "failed",
+  "testResults": {
+    "passed": 10,
+    "total": 10,
+    "passRate": 1
+  },
+  "filesCreated": [
+    "tests/uc-leadflow-maintenance-qc-pr-1862.test.js"
+  ],
+  "filesModified": [],
+  "completionReportPath": null,
+  "error": "PR rejected: Architecture violation — 3x duplication of PaymentLinkService inline Stripe logic",
+  "retryRecommendation": "retry",
+  "prdId": null,
+  "prdFilePath": null,
+  "affectedProjects": null,
+  "triageOutcome": null,
+  "discoveries": [],
+  "rootCauseAnalysis": null,
+  "architecturalDecisions": [],
+  "metadata": {
+    "processed": false,
+    "processedAt": null,
+    "processedBy": null
+  }
+}
