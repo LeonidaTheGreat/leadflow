@@ -1,185 +1,200 @@
 'use strict'
 
 /**
- * QC E2E test for PR #1862 — Direct Stripe Payment Link flow
+ * QC E2E test for PR #1862 — Direct Stripe Payment Link
  *
- * What:   Verifies the new payment-link endpoint auth gate, input validation,
- *         and the absence of magic-number pricing violations.
+ * Validates architecture rules, security, and code quality by inspecting
+ * the PR diff (fetched via gh CLI). PR is closed; tests run against the
+ * graveyard branch snapshot.
+ *
  * Verify: node tests/e2e/qc-pr1862-payment-link.test.js
- *         (backend server optional — auth/validation tests run without it)
  */
 
 const assert = require('assert')
-const http = require('http')
+const { execSync } = require('child_process')
 const path = require('path')
 const fs = require('fs')
-
-// Load env
-for (const name of ['.env', '.env.local']) {
-  try {
-    const lines = fs.readFileSync(path.join(__dirname, '../..', name), 'utf8').split('\n')
-    for (const line of lines) {
-      const m = line.match(/^([^#=][^=]*)=(.*)$/)
-      if (m) {
-        const k = m[1].trim(), v = m[2].trim().replace(/^["']|["']$/g, '')
-        if (!process.env[k]) process.env[k] = v
-      }
-    }
-  } catch { /* absent */ }
-}
 
 let passed = 0, failed = 0
 const errors = []
 
 function test(name, fn) {
-  return Promise.resolve().then(fn).then(() => {
+  try {
+    fn()
     console.log(`  ✅ ${name}`)
     passed++
-  }).catch(e => {
+  } catch (e) {
     console.log(`  ❌ ${name}: ${e.message}`)
     errors.push({ name, error: e.message })
     failed++
-  })
-}
-
-function request(port, method, reqPath, body, headers = {}) {
-  return new Promise((resolve, reject) => {
-    const payload = body ? JSON.stringify(body) : null
-    const hdrs = { 'Content-Type': 'application/json', ...headers }
-    if (payload) hdrs['Content-Length'] = Buffer.byteLength(payload)
-    const req = http.request({ hostname: 'localhost', port, path: reqPath, method, headers: hdrs }, res => {
-      let data = ''
-      res.on('data', c => { data += c })
-      res.on('end', () => {
-        try { resolve({ status: res.statusCode, body: JSON.parse(data) })
-        } catch { resolve({ status: res.statusCode, body: data }) }
-      })
-    })
-    req.on('error', reject)
-    if (payload) req.write(payload)
-    req.end()
-  })
-}
-
-// ─── Static file checks (no server needed) ───────────────────────────────────
-
-async function runStaticChecks() {
-  console.log('\nStatic checks (no server required)\n')
-
-  const root = path.join(__dirname, '../..')
-  const dashboard = path.join(root, 'product/lead-response/dashboard')
-
-  await test('routes/admin/payment-link.js exists', async () => {
-    assert.ok(fs.existsSync(path.join(root, 'routes/admin/payment-link.js')), 'File missing')
-  })
-
-  await test('payment-link.js uses TIER_CONFIG (no bare amounts)', async () => {
-    const src = fs.readFileSync(path.join(root, 'routes/admin/payment-link.js'), 'utf8')
-    assert.ok(src.includes('TIER_CONFIG'), 'TIER_CONFIG constant must be defined')
-    // amount must come from TIER_CONFIG, not a bare literal after it's defined
-    const tierConfigBlock = src.match(/const TIER_CONFIG[\s\S]*?\}/m)?.[0] ?? ''
-    assert.ok(tierConfigBlock.includes('4900'), 'Starter amount 4900 must be in TIER_CONFIG')
-    // Should NOT appear outside the config block as a bare literal
-    const afterConfig = src.slice(src.indexOf('TIER_CONFIG') + tierConfigBlock.length)
-    assert.ok(!afterConfig.includes('unit_amount: 4900'), 'Magic number 4900 outside TIER_CONFIG')
-  })
-
-  // THIS IS THE FAILING CHECK — send-payment-link-email has bare 4900
-  await test('send-payment-link-email route uses named constant, not bare 4900', async () => {
-    const emailRouteFile = path.join(dashboard, 'app/api/admin/sales-cockpit/send-payment-link-email/route.ts')
-    assert.ok(fs.existsSync(emailRouteFile), 'send-payment-link-email/route.ts must exist')
-    const src = fs.readFileSync(emailRouteFile, 'utf8')
-    // Should NOT have bare `unit_amount: 4900` — must use a named constant or TIER_CONFIG
-    assert.ok(
-      !src.includes('unit_amount: 4900'),
-      'VIOLATION: send-payment-link-email/route.ts has magic number `unit_amount: 4900` at line ~113. ' +
-      'Must define a named constant (e.g. const STARTER_AMOUNT_CENTS = 4900) or import from TIER_CONFIG.'
-    )
-  })
-
-  await test('activation page exists', async () => {
-    const pg = path.join(dashboard, 'app/admin/activation/page.tsx')
-    assert.ok(fs.existsSync(pg), 'app/admin/activation/page.tsx missing')
-  })
-
-  await test('activation API route exists', async () => {
-    const rt = path.join(dashboard, 'app/api/admin/activation/route.ts')
-    assert.ok(fs.existsSync(rt), 'app/api/admin/activation/route.ts missing')
-  })
-
-  await test('activation/completed API route exists', async () => {
-    const rt = path.join(dashboard, 'app/api/admin/activation/completed/route.ts')
-    assert.ok(fs.existsSync(rt), 'app/api/admin/activation/completed/route.ts missing')
-  })
-
-  await test('server.js registers payment-link router', async () => {
-    const srv = fs.readFileSync(path.join(root, 'server.js'), 'utf8')
-    assert.ok(srv.includes("require('./routes/admin/payment-link')"), 'payment-link router not registered in server.js')
-    assert.ok(srv.includes("app.use('/', paymentLinkRouter)"), 'payment-link router not mounted in server.js')
-  })
-
-  await test('stripe webhook reads agent_id from payment link metadata', async () => {
-    const wh = fs.readFileSync(path.join(dashboard, 'app/api/webhooks/stripe/route.ts'), 'utf8')
-    assert.ok(
-      wh.includes("session.client_reference_id || (session.metadata as any)?.agent_id"),
-      'Webhook must read agent_id from metadata for payment links'
-    )
-    assert.ok(
-      wh.includes("metadataTier"),
-      'Webhook must prefer metadata tier over price ID lookup'
-    )
-  })
-}
-
-// ─── Live server checks (backend on port 3888) ────────────────────────────────
-
-async function runLiveChecks() {
-  const PORT = parseInt(process.env.TEST_SERVER_PORT || '3888', 10)
-  const ENDPOINT = '/api/admin/create-payment-link'
-
-  let serverUp = false
-  try {
-    const probe = await Promise.race([
-      request(PORT, 'POST', ENDPOINT, {}, {}),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000)),
-    ])
-    serverUp = probe.status !== undefined
-  } catch { /* server not running */ }
-
-  if (!serverUp) {
-    console.log(`\n  ℹ️  Backend not running on port ${PORT} — skipping live checks`)
-    return
-  }
-
-  console.log(`\nLive backend checks (port ${PORT})\n`)
-
-  await test('POST /api/admin/create-payment-link — 401 without x-api-key', async () => {
-    const res = await request(PORT, 'POST', ENDPOINT, { agentId: 'test', planTier: 'starter' }, {})
-    assert.strictEqual(res.status, 401, `Expected 401 got ${res.status}`)
-  })
-
-  await test('POST /api/admin/create-payment-link — 401 with wrong key', async () => {
-    const res = await request(PORT, 'POST', ENDPOINT, { agentId: 'test', planTier: 'starter' }, { 'x-api-key': 'wrong' })
-    assert.strictEqual(res.status, 401, `Expected 401 got ${res.status}`)
-  })
-
-  await test('Route is registered (not 404)', async () => {
-    const res = await request(PORT, 'POST', ENDPOINT, {}, {})
-    assert.notStrictEqual(res.status, 404, `Route should exist — got 404`)
-  })
-}
-
-async function main() {
-  console.log('QC E2E — PR #1862: Direct Stripe Payment Link')
-  await runStaticChecks()
-  await runLiveChecks()
-
-  console.log(`\n${passed + failed} tests — ${passed} passed, ${failed} failed`)
-  if (failed > 0) {
-    console.log('\nFailures:')
-    for (const { name, error } of errors) console.log(`  • ${name}: ${error}`)
-    process.exit(1)
   }
 }
 
-main().catch(e => { console.error('Fatal:', e); process.exit(1) })
+const diff = execSync('gh pr diff 1862 2>/dev/null || echo ""', { encoding: 'utf8', maxBuffer: 1024 * 1024 })
+if (!diff.trim()) {
+  console.error('Could not fetch PR #1862 diff')
+  process.exit(1)
+}
+
+function extractFile(filePath) {
+  const marker = `+++ b/${filePath}`
+  const idx = diff.indexOf(marker)
+  if (idx === -1) return null
+  const nextFile = diff.indexOf('\ndiff --git', idx + 1)
+  const section = nextFile === -1 ? diff.slice(idx) : diff.slice(idx, nextFile)
+  return section
+    .split('\n')
+    .filter(l => l.startsWith('+') && !l.startsWith('+++'))
+    .map(l => l.slice(1))
+    .join('\n')
+}
+
+console.log('\nQC E2E — PR #1862: Direct Stripe Payment Link (diff-based review)\n')
+
+// ── Architecture: Express route must use service layer ──
+
+test('ARCH: payment-link.js should use StripeService, not inline Stripe calls', () => {
+  const src = extractFile('routes/admin/payment-link.js')
+  assert.ok(src, 'routes/admin/payment-link.js not found in diff')
+  const hasInlineStripe = src.includes("stripe.prices.create") || src.includes("stripe.paymentLinks.create")
+  const usesService = src.includes('StripeService') || src.includes('require') && src.includes("services/Stripe")
+  assert.ok(
+    !hasInlineStripe || usesService,
+    'VIOLATION: routes/admin/payment-link.js has inline Stripe API calls (stripe.prices.create, ' +
+    'stripe.paymentLinks.create) instead of using lib/services/StripeService.js. ' +
+    'Existing pattern: activation-outreach.js uses ActivationService.'
+  )
+})
+
+test('ARCH: payment-link.js should use service for DB queries, not inline pool.query', () => {
+  const src = extractFile('routes/admin/payment-link.js')
+  assert.ok(src, 'routes/admin/payment-link.js not found in diff')
+  const hasInlineQuery = src.includes('pool.query')
+  assert.ok(
+    !hasInlineQuery,
+    'VIOLATION: routes/admin/payment-link.js has inline pool.query. ' +
+    'Routes must be thin — DB operations belong in service classes (see activation-outreach.js pattern).'
+  )
+})
+
+// ── Duplicate constants ──
+
+test('DRY: TIER_CONFIG should not be duplicated across files', () => {
+  const files = [
+    'routes/admin/payment-link.js',
+    'product/lead-response/dashboard/app/api/admin/sales-cockpit/payment-link/route.ts',
+  ]
+  let tierConfigCount = 0
+  for (const f of files) {
+    const src = extractFile(f)
+    if (src && src.includes('TIER_CONFIG')) tierConfigCount++
+  }
+  assert.ok(
+    tierConfigCount <= 1,
+    `TIER_CONFIG is defined in ${tierConfigCount} files. Should be in one shared location.`
+  )
+})
+
+// ── Magic numbers ──
+
+test('NO MAGIC: send-payment-link-email must not have bare unit_amount: 4900', () => {
+  const src = extractFile('product/lead-response/dashboard/app/api/admin/sales-cockpit/send-payment-link-email/route.ts')
+  assert.ok(src, 'send-payment-link-email/route.ts not found in diff')
+  assert.ok(
+    !src.includes('unit_amount: 4900'),
+    'VIOLATION: send-payment-link-email/route.ts uses magic number `unit_amount: 4900`. ' +
+    'Must use a named constant or import from a shared tier config.'
+  )
+})
+
+// ── Security: HTML email escaping ──
+
+test('SEC: email HTML template should escape firstName to prevent XSS', () => {
+  const src = extractFile('product/lead-response/dashboard/app/api/admin/sales-cockpit/send-payment-link-email/route.ts')
+  assert.ok(src, 'send-payment-link-email/route.ts not found in diff')
+  const hasInterpolation = src.includes('${firstName')
+  const hasEscape = src.includes('escapeHtml') || src.includes('encodeURIComponent') ||
+    src.includes('.replace(') || src.includes('sanitize')
+  if (hasInterpolation) {
+    assert.ok(
+      hasEscape,
+      'WARNING: firstName is interpolated directly into HTML email template without escaping. ' +
+      'If a DB record contains HTML/script tags, this is an XSS vector in email clients.'
+    )
+  }
+})
+
+// ── Security: auth gates ──
+
+test('SEC: all new routes have auth gates', () => {
+  const routeFiles = [
+    'routes/admin/payment-link.js',
+    'product/lead-response/dashboard/app/api/admin/activation/route.ts',
+    'product/lead-response/dashboard/app/api/admin/activation/completed/route.ts',
+    'product/lead-response/dashboard/app/api/admin/sales-cockpit/send-payment-link-email/route.ts',
+  ]
+  for (const f of routeFiles) {
+    const src = extractFile(f)
+    if (!src) continue
+    const hasAuth = src.includes('requireApiKey') || src.includes('requireAdmin')
+    assert.ok(hasAuth, `${f} is missing auth gate (requireApiKey or requireAdmin)`)
+  }
+})
+
+// ── Security: SQL injection ──
+
+test('SEC: payment-link.js uses parameterized queries', () => {
+  const src = extractFile('routes/admin/payment-link.js')
+  assert.ok(src, 'routes/admin/payment-link.js not found in diff')
+  if (src.includes('pool.query')) {
+    assert.ok(
+      src.includes('$1'),
+      'DB query must use parameterized placeholders ($1, $2, etc.)'
+    )
+    const hasStringConcat = /query\s*\(\s*['"`].*\+/.test(src)
+    assert.ok(!hasStringConcat, 'SQL query must not use string concatenation')
+  }
+})
+
+// ── Correctness: Stripe webhook metadata fallback ──
+
+test('CORRECT: webhook reads agent_id from metadata as fallback', () => {
+  const src = extractFile('product/lead-response/dashboard/app/api/webhooks/stripe/route.ts')
+  assert.ok(src, 'stripe webhook route.ts not found in diff')
+  assert.ok(
+    src.includes('metadata') && src.includes('agent_id'),
+    'Webhook must read agent_id from session metadata for payment link flow'
+  )
+})
+
+test('CORRECT: webhook validates metadata tier against known list', () => {
+  const src = extractFile('product/lead-response/dashboard/app/api/webhooks/stripe/route.ts')
+  assert.ok(src, 'stripe webhook route.ts not found in diff')
+  assert.ok(
+    src.includes('KNOWN_TIERS') || src.includes("['starter', 'pro', 'team']"),
+    'Webhook must validate metadata tier against known tier list'
+  )
+})
+
+// ── Correctness: server.js registration ──
+
+test('CORRECT: server.js registers payment-link router', () => {
+  const src = extractFile('server.js')
+  assert.ok(src, 'server.js not found in diff')
+  assert.ok(
+    src.includes("require('./routes/admin/payment-link')"),
+    'payment-link router must be registered in server.js'
+  )
+})
+
+// ── Report ──
+
+console.log(`\n${passed + failed} tests — ${passed} passed, ${failed} failed`)
+if (failed > 0) {
+  console.log('\nFailing checks (REJECT reasons):')
+  for (const { name, error } of errors) {
+    console.log(`  • ${name}`)
+    console.log(`    ${error}\n`)
+  }
+  process.exit(1)
+}
