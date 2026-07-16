@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-16T12:32:57.388Z",
+  "taskId": "c126af52-df18-4884-b389-5b2c45642f08",
+  "status": "completed",
+  "testResults": {
+    "passed": 10,
+    "total": 10,
+    "passRate": 1
+  },
+  "filesCreated": [
+    "tests/uc-leadflow-maintenance-investigate-orphan-branch.test.js"
+  ],
+  "filesModified": [],
+  "completionReportPath": null,
+  "error": null,
+  "retryRecommendation": null,
+  "prdId": null,
+  "prdFilePath": null,
+  "affectedProjects": null,
+  "triageOutcome": null,
+  "discoveries": [],
+  "rootCauseAnalysis": null,
+  "architecturalDecisions": [],
+  "metadata": {
+    "processed": false,
+    "processedAt": null,
+    "processedBy": null
+  }
+}
