@@ -1,0 +1,68 @@
+{
+  "taskId": "252b64a0-d583-4711-b880-6488f50b548a",
+  "taskType": "pm_product_review",
+  "reviewId": "a66669c9-044e-4850-8837-4c967dbfad4b",
+  "prd": "PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS",
+  "status": "completed",
+  "completedAt": "2026-07-15",
+  "verdict": "pass_with_issues",
+  "readinessScore": 85,
+  "acceptanceCriteria": {
+    "AC-1": { "status": "pass", "note": "create-checkout route no longer inserts into subscription_attempts — uses checkout_sessions with correct columns and status=pending" },
+    "AC-2": { "status": "pass", "note": "Insert maps: user_id (from agentId), tier (split from tier string), interval (month/year), stripe_session_id, status=pending, url" },
+    "AC-3": { "status": "unverifiable", "note": "Cannot test Stripe checkout redirect without production credentials — code logic is correct" },
+    "AC-4": { "status": "pass", "note": "npm run build in dashboard directory exits 0, no TypeScript errors" },
+    "AC-5": { "status": "pass", "note": "All 400/404/503/429 error paths unchanged; logging failure wrapped in try/catch so it cannot block checkout" }
+  },
+  "findings": [
+    {
+      "type": "fix_verified",
+      "severity": "info",
+      "summary": "Primary fix applied and verified",
+      "file": "product/lead-response/dashboard/app/api/billing/create-checkout/route.ts",
+      "lines": "247-265"
+    },
+    {
+      "type": "bug",
+      "severity": "medium",
+      "summary": "Admin funnel checkout-attempts route still queries subscription_attempts",
+      "file": "product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts",
+      "line": 39,
+      "outOfScope": true,
+      "recommendation": "Create dev task to replace subscription_attempts with checkout_sessions in admin funnel route"
+    },
+    {
+      "type": "gap",
+      "severity": "low",
+      "summary": "expires_at not populated in checkout_sessions insert",
+      "file": "product/lead-response/dashboard/app/api/billing/create-checkout/route.ts",
+      "recommendation": "Add expires_at: session.expires_at ? new Date(session.expires_at * 1000).toISOString() : null"
+    }
+  ],
+  "actionItems": [
+    {
+      "priority": 1,
+      "type": "ACTION",
+      "title": "Verify fix in Vercel production",
+      "description": "Manual test: go to /pricing, click upgrade, confirm Stripe checkout redirect (not 500). Check checkout_sessions table for pending row."
+    },
+    {
+      "priority": 2,
+      "type": "ACTION",
+      "title": "Fix admin funnel checkout-attempts route",
+      "description": "product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts line 39 queries subscription_attempts which doesn't exist. Dev task needed to replace with checkout_sessions query."
+    },
+    {
+      "priority": 3,
+      "type": "RECOMMENDATION",
+      "title": "Populate expires_at in checkout_sessions insert",
+      "description": "Minor: add expires_at from Stripe session to enable session expiry cleanup queries."
+    }
+  ],
+  "testResults": {
+    "passedTests": 5,
+    "totalTests": 5,
+    "passRate": 1.0,
+    "testFile": "product/lead-response/dashboard/tests/fix-subscription-attempts-table-does-not-exist.test.ts"
+  }
+}
