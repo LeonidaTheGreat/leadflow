@@ -14,6 +14,7 @@ const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
+const paymentLinkRouter = require('./routes/admin/payment-link');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
 
@@ -51,6 +52,9 @@ app.use('/', activationOutreachRouter);
 
 // Admin: lapsed trial reactivation campaign
 app.use('/', reactivationCampaignRouter);
+
+// Admin: direct payment link (bypasses broken checkout for completed-onboarding agents)
+app.use('/', paymentLinkRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);

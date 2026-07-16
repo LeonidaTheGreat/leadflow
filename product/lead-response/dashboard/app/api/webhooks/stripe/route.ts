@@ -59,7 +59,8 @@ function getPlanDisplayName(tier: string): string {
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   if (!stripe) return
 
-  const userId = session.client_reference_id
+  // Payment links pass agent_id in metadata; checkout sessions use client_reference_id
+  const userId = session.client_reference_id || (session.metadata as any)?.agent_id || null
   const subscriptionId = session.subscription as string
 
   if (!userId || !subscriptionId) return
@@ -69,7 +70,11 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as any
     const lineItem = subscription.items.data[0]
     const priceId = lineItem.price.id
-    const tier = getTierFromPriceId(priceId)
+    // For payment links the price is created on-the-fly so won't match price ID env vars.
+    // Prefer the tier from metadata (set by payment-link route), fall back to price ID lookup.
+    const KNOWN_TIERS = ['starter', 'pro', 'team']
+    const metadataTier = (session.metadata as any)?.tier
+    const tier = (metadataTier && KNOWN_TIERS.includes(metadataTier)) ? metadataTier : getTierFromPriceId(priceId)
     const mrr = calculateMRR(subscription)
     const stripeCustomerId = session.customer as string
 
