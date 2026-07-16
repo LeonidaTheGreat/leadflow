@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-16T12:11:26.414Z",
+  "taskId": "71d09217-7800-45b2-85b6-86ac9c490a1f",
+  "status": "failed",
+  "testResults": {
+    "passed": 6,
+    "total": 6,
+    "passRate": 1
+  },
+  "filesCreated": [],
+  "filesModified": [],
+  "completionReportPath": null,
+  "error": "PR #1860 rejected: wrong use case implemented + security regression",
+  "retryRecommendation": "retry",
+  "prdId": null,
+  "prdFilePath": null,
+  "affectedProjects": null,
+  "triageOutcome": null,
+  "discoveries": [],
+  "rootCauseAnalysis": null,
+  "architecturalDecisions": [],
+  "metadata": {
+    "processed": false,
+    "processedAt": null,
+    "processedBy": null
+  }
+}
