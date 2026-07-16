@@ -23,7 +23,7 @@ async function runTests() {
 
   await test('maps FUB webhook events and emits asynchronously', async () => {
     const eventBus = new EventEmitter();
-    const service = new FUBService({ eventBus, registerEventHandlers: false, logger: { log() {}, warn() {}, error() {} } });
+    const service = new FUBService({ eventBus, registerEventHandlers: false, logger: { log() {}, info() {}, warn() {}, error() {} } });
 
     const emitted = new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('Timed out waiting for lead.created emit')), 500);
@@ -46,7 +46,7 @@ async function runTests() {
     const pingCalls = [];
     const service = new FUBService({
       registerEventHandlers: false,
-      logger: { log() {}, warn() {}, error() {} },
+      logger: { log() {}, info() {}, warn() {}, error() {} },
       sendSmsViatwilio: async () => ({ sid: 'SM123', status: 'queued' }),
       scheduleSatisfactionPing: (payload) => pingCalls.push(payload),
       createLeadSequence: async (payload) => {
