@@ -1,1 +1,1 @@
-/Users/clawdbot/.openclaw/genome/core/project-config-loader.js
+/Users/clawdbot/projects/genome/core/project-config-loader.js

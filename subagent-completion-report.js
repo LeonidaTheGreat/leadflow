@@ -1,1 +1,1 @@
-/Users/clawdbot/.openclaw/genome/core/subagent-completion-report.js
+/Users/clawdbot/projects/genome/core/subagent-completion-report.js
