@@ -40,3 +40,6 @@ next-env.d.ts
 # Supabase
 supabase/.branches
 supabase/.temp
+
+# PR backup files (created by orchestrator PR process)
+*.pr-backup
