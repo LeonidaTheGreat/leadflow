@@ -14,12 +14,12 @@
 const fs = require('fs');
 const path = require('path');
 
-const MIDDLEWARE_PATH = path.resolve(__dirname, '..', 'middleware.ts');
+const MIDDLEWARE_PATH = path.resolve(__dirname, '..', 'proxy.ts');
 
 function extractAllowedRoutes(source) {
   const match = source.match(/EXPIRED_TRIAL_ALLOWED_ROUTES\s*=\s*\[([^\]]*)\]/);
   if (!match) {
-    throw new Error('EXPIRED_TRIAL_ALLOWED_ROUTES not found in middleware.ts');
+    throw new Error('EXPIRED_TRIAL_ALLOWED_ROUTES not found in proxy.ts');
   }
   return match[1]
     .split(',')

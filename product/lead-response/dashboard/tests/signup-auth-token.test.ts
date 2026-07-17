@@ -205,10 +205,10 @@ describe('AC-8: /dashboard/onboarding calls /api/auth/me when localStorage empty
 // ---------------------------------------------------------------------------
 describe('AC-11: Unauthenticated access to /dashboard/onboarding is blocked', () => {
   it('/dashboard/onboarding is under PROTECTED_ROUTES in middleware (/dashboard prefix)', () => {
-    const src = readFile('middleware.ts')
+    const src = readFile('proxy.ts')
     assert.ok(
       src.includes("'/dashboard'"),
-      '/dashboard is not in PROTECTED_ROUTES in middleware.ts'
+      '/dashboard is not in PROTECTED_ROUTES in proxy.ts'
     )
   })
 })

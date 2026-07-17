@@ -33,7 +33,7 @@ describe('Frictionless demo onboarding redirects', () => {
   })
 
   it('middleware redirects incomplete users to /dashboard/onboarding', () => {
-    const source = read('middleware.ts')
+    const source = read('proxy.ts')
     expect(source).toContain("pathname.startsWith('/dashboard/onboarding')")
     expect(source).toContain("new URL('/dashboard/onboarding', request.url)")
   })

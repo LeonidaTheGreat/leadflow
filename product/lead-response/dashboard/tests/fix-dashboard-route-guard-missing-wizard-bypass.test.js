@@ -17,9 +17,9 @@ const path = require('path');
 
 // Helper to check if middleware file contains the fix
 function checkMiddlewareContainsFix() {
-  const middlewarePath = path.join(__dirname, '../middleware.ts');
+  const middlewarePath = path.join(__dirname, '../proxy.ts');
   
-  assert.strictEqual(fs.existsSync(middlewarePath), true, 'middleware.ts should exist');
+  assert.strictEqual(fs.existsSync(middlewarePath), true, 'proxy.ts should exist');
   
   const content = fs.readFileSync(middlewarePath, 'utf8');
   
@@ -251,7 +251,7 @@ async function runTests() {
   // Test 13: Verify middleware file has proper error handling
   try {
     console.log('\nTest 13: Middleware has error handling for onboarding check');
-    const middlewarePath = path.join(__dirname, '../middleware.ts');
+    const middlewarePath = path.join(__dirname, '../proxy.ts');
     const content = fs.readFileSync(middlewarePath, 'utf8');
     
     // Check for error handling
@@ -270,7 +270,7 @@ async function runTests() {
   // Test 14: Verify middleware function signature
   try {
     console.log('\nTest 14: isOnboardingCompleted function has correct signature');
-    const middlewarePath = path.join(__dirname, '../middleware.ts');
+    const middlewarePath = path.join(__dirname, '../proxy.ts');
     const content = fs.readFileSync(middlewarePath, 'utf8');
     
     // Check function signature
@@ -289,7 +289,7 @@ async function runTests() {
   // Test 15: Verify middleware awaits the onboarding check
   try {
     console.log('\nTest 15: Middleware properly awaits onboarding check');
-    const middlewarePath = path.join(__dirname, '../middleware.ts');
+    const middlewarePath = path.join(__dirname, '../proxy.ts');
     const content = fs.readFileSync(middlewarePath, 'utf8');
     
     // Check that the async function is awaited

@@ -2,7 +2,7 @@
  * E2E Test: fix-middleware-blocks-authenticated-users-from-onboard
  * 
  * Tests that authenticated users can access /onboarding route
- * after the fix to middleware.ts
+ * after the fix to proxy.ts
  */
 
 const assert = require('assert');
@@ -146,12 +146,12 @@ async function runTests() {
   
   // Test 9: Verify the middleware file exists and contains the fix
   try {
-    console.log('\nTest 9: Verify middleware.ts contains the fix');
+    console.log('\nTest 9: Verify proxy.ts contains the fix');
     const fs = require('fs');
     const path = require('path');
-    const middlewarePath = path.join(__dirname, '../middleware.ts');
+    const middlewarePath = path.join(__dirname, '../proxy.ts');
     
-    assert.strictEqual(fs.existsSync(middlewarePath), true, 'middleware.ts should exist');
+    assert.strictEqual(fs.existsSync(middlewarePath), true, 'proxy.ts should exist');
     
     const content = fs.readFileSync(middlewarePath, 'utf8');
     
@@ -174,7 +174,7 @@ async function runTests() {
     // Check that /signup is still there
     assert.ok(authRoutesContent.includes("'/signup'"), '/signup should still be in AUTH_ROUTES');
     
-    console.log('  ✅ PASS: middleware.ts contains the correct fix');
+    console.log('  ✅ PASS: proxy.ts contains the correct fix');
     passed++;
   } catch (error) {
     console.log('  ❌ FAIL:', error.message);

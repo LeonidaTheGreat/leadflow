@@ -1,26 +1,3 @@
-/*
-Task Spec (d729a061-43b0-421f-892a-e919ac0f5044)
-What:
-- Update product/lead-response/dashboard/middleware.ts:
-  - Preserve protected-route onboarding enforcement.
-  - Treat /dashboard/onboarding as the allowed onboarding destination.
-  - Redirect incomplete users to /dashboard/onboarding (not /setup) for protected routes.
-- Update product/lead-response/dashboard/tests/frictionless-demo-onboarding-redirects.test.ts:
-  - Assert middleware onboarding redirect target is /dashboard/onboarding.
-Verify:
-- Reproduce before fix:
-  - POST https://leadflow-ai-five.vercel.app/api/auth/trial-signup (new email) returns redirectTo=/dashboard/onboarding.
-  - GET https://leadflow-ai-five.vercel.app/dashboard/onboarding with signup cookies returns 307 Location: /setup (failure).
-- Validate after fix (code-level + tests):
-  - cd product/lead-response/dashboard && npm test -- tests/frictionless-demo-onboarding-redirects.test.ts
-  - Confirm middleware source now contains redirect('/dashboard/onboarding') behavior.
-- Quality gates:
-  - cd /var/folders/6d/xd0z4ldx1l17klqt54scqxsc0000gp/T/leadflow-d729a061-43b0-421f-892a-e919ac0f5044 && npm run build && npm run lint && npm test && npm audit --audit-level=high
-Boundaries:
-- Do not modify signup API route payload shape/cookie behavior.
-- Do not change onboarding page components or setup wizard implementation.
-- Do not touch database schema, migrations, or non-onboarding middleware behaviors.
-*/
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { isValidAdminSession } from '@/lib/admin-auth'
@@ -139,7 +116,7 @@ async function hashSessionToken(token: string): Promise<string> {
     .join('')
 }
 
-// PostgREST config for DB queries in middleware
+// PostgREST config for DB queries in proxy
 const POSTGREST_URL = (process.env.NEXT_PUBLIC_API_URL || '').trim()
 const POSTGREST_KEY = (process.env.API_SECRET_KEY || process.env.NEXT_PUBLIC_API_KEY || '').trim()
 
@@ -267,7 +244,7 @@ async function isTrialExpired(userId: string): Promise<boolean> {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
 
@@ -368,8 +345,8 @@ export async function middleware(request: NextRequest) {
 
     return response
   } catch (error) {
-    // Middleware error: log and continue (fail open for public routes)
-    console.error('Middleware error:', error)
+    // Proxy error: log and continue (fail open for public routes)
+    console.error('Proxy error:', error)
     return NextResponse.next()
   }
 }
