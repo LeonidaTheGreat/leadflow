@@ -2,7 +2,7 @@
 # LeadFlow Database Schema Reference
 
 > Source of truth for table/column existence. Read BEFORE filing bugs about missing columns.
-> Generated: 2026-05-10T08:39:30.651Z | 106 tables in local PostgreSQL (openclaw DB).
+> Generated: 2026-07-17T00:59:58.459Z | 112 tables in local PostgreSQL (openclaw DB).
 
 ## Common Gotchas
 
@@ -19,7 +19,7 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `real_estate_agents` | 65 | |
+| `real_estate_agents` | 68 | |
 | `customers` | 0 | |
 | `profiles` | 0 | |
 | `agent_profiles` | 0 | |
@@ -30,13 +30,13 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `leads` | 51 | |
+| `leads` | 34 | |
 | `messages` | 0 | |
 | `sms_messages` | 0 | |
 | `conversations` | 0 | |
 | `lead_sequences` | 0 | |
-| `lead_satisfaction_events` | 47 | |
-| `lead_simulations` | 19 | |
+| `lead_satisfaction_events` | 26 | |
+| `lead_simulations` | 33 | |
 | `dnc_list` | 0 | |
 
 ### Product — Bookings
@@ -63,13 +63,13 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `onboarding_drafts` | 0 | |
-| `onboarding_simulations` | 3 | |
+| `onboarding_simulations` | 9 | |
 | `onboarding_events` | 1 | |
 | `onboarding_stuck_alerts` | 0 | |
 | `agent_onboarding_wizard` | 1 | |
-| `pilot_invites` | 26 | |
-| `pilot_signups` | 35 | |
-| `pilot_progress` | 17 | |
+| `pilot_invites` | 28 | |
+| `pilot_signups` | 21 | |
+| `pilot_progress` | 15 | |
 | `pilot_recruitment_campaigns` | 1 | |
 | `pilot_recruitment_targets` | 20 | |
 
@@ -77,8 +77,8 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `sessions` | 308 | |
-| `password_reset_tokens` | 145 | |
+| `sessions` | 804 | |
+| `password_reset_tokens` | 1067 | |
 | `demo_tokens` | 9 | |
 
 ### Product — Analytics & Events
@@ -86,15 +86,15 @@
 | Table | Rows | Purpose |
 |-------|------|---------|
 | `analytics_events` | 0 | |
-| `events` | 515 | |
-| `email_events` | 478 | |
+| `events` | 2377 | |
+| `email_events` | 959 | |
 | `agent_page_views` | 3 | |
 | `agent_sessions` | 0 | |
 | `demo_runs` | 0 | |
 | `agent_nps_responses` | 0 | |
 | `nps_survey_tokens` | 0 | |
-| `nps_prompt_dismissals` | 1 | |
-| `agent_survey_schedule` | 65 | |
+| `nps_prompt_dismissals` | 0 | |
+| `agent_survey_schedule` | 412 | |
 | `inactivity_alerts` | 0 | |
 
 ### Product — Templates & Webhooks
@@ -117,33 +117,33 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `tasks` | 6737 | |
-| `task_dependencies` | 105 | |
-| `task_outcomes` | 3679 | |
+| `tasks` | 16549 | |
+| `task_dependencies` | 76 | |
+| `task_outcomes` | 4226 | |
 | `completed_work` | 9 | |
-| `action_items` | 294 | |
+| `action_items` | 466 | |
 
 ### Orchestration — Product
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `use_cases` | 447 | |
-| `prds` | 168 | |
+| `use_cases` | 455 | |
+| `prds` | 174 | |
 | `e2e_test_specs` | 438 | |
-| `code_reviews` | 1439 | |
-| `product_feedback` | 48 | |
-| `product_reviews` | 309 | |
-| `product_decisions` | 44 | |
+| `code_reviews` | 1574 | |
+| `product_feedback` | 47 | |
+| `product_reviews` | 608 | |
+| `product_decisions` | 42 | |
 
 ### Orchestration — Metrics
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `metrics` | 65183 | |
-| `revenue_metrics` | 1 | |
+| `metrics` | 126979 | |
+| `revenue_metrics` | 4 | |
 | `distribution_channels` | 1 | |
 | `distribution_metrics` | 250 | |
-| `project_metadata` | 3 | |
+| `project_metadata` | 2 | |
 | `project_goals` | 2 | |
 | `system_components` | 23 | |
 
@@ -151,7 +151,7 @@
 
 | Table | Rows | Purpose |
 |-------|------|---------|
-| `schema_migrations` | 22 | |
+| `schema_migrations` | 44 | |
 | `weekly_performance_reports` | 0 | |
 | `weekly_performance_email_logs` | 0 | |
 
@@ -159,36 +159,42 @@
 
 | Table | Rows |
 |-------|------|
-| `code_calls` | 564 |
-| `code_edges` | 839 |
-| `code_exports` | 758 |
-| `code_modules` | 1207 |
-| `evaluation_candidates` | 70 |
+| `_mp_test` | 0 |
+| `code_calls` | 586 |
+| `code_edges` | 909 |
+| `code_exports` | 836 |
+| `code_modules` | 1298 |
+| `evaluation_candidates` | 14 |
 | `evaluation_feedback` | 0 |
 | `evaluation_runs` | 1 |
-| `evaluation_scores` | 178 |
-| `features` | 15 |
+| `evaluation_scores` | 42 |
+| `features` | 29 |
 | `genome_graph_edges` | 3 |
 | `genome_graph_nodes` | 12 |
-| `genome_traces` | 17734 |
-| `heartbeat_step_metrics` | 434044 |
+| `genome_traces` | 289573 |
+| `heartbeat_step_metrics` | 1878984 |
+| `lead_visibility_events` | 0 |
 | `learning_insights` | 0 |
-| `learning_qc_findings` | 37 |
-| `learning_recovery_patterns` | 405 |
+| `learning_qc_findings` | 54 |
+| `learning_recovery_patterns` | 769 |
 | `market_intelligence` | 0 |
-| `mission_metrics` | 29 |
+| `mission_metrics` | 26 |
+| `model_performance` | 0 |
+| `outreach_log` | 0 |
 | `phone_inventory` | 1 |
 | `pilot_conversion_email_logs` | 0 |
-| `pilot_recruitment_touchpoints` | 3 |
-| `product_assets` | 0 |
+| `pilot_email_log` | 0 |
+| `pilot_recruitment_touchpoints` | 2 |
+| `product_assets` | 140 |
 | `project_missions` | 2 |
-| `promo_codes` | 23 |
+| `promo_codes` | 30 |
 | `prospect_waitlist` | 0 |
 | `qualifications` | 0 |
 | `subscription_attempts` | 0 |
-| `task_modules` | 361 |
-| `tool_usage` | 2307 |
-| `user_journeys` | 6 |
+| `task_modules` | 317 |
+| `tmp_model_performance` | 0 |
+| `tool_usage` | 969 |
+| `user_journeys` | 13 |
 | `webhook_dead_letters` | 0 |
 
 ---
@@ -257,6 +263,8 @@
 | aha_completed | boolean | no | false |
 | aha_response_time_ms | integer | yes | - |
 | onboarding_final_step | character varying | yes | - |
+| last_activation_sms_at | timestamp with time zone | yes | - |
+| first_ai_response_notified_at | timestamp with time zone | yes | - |
 
 **Foreign keys:**
 - `referred_by_agent_id` → `real_estate_agents.id`
@@ -337,6 +345,7 @@
 | media_url | text | yes | - |
 | created_at | timestamp with time zone | yes | now() |
 | updated_at | timestamp with time zone | yes | now() |
+| message_body | text | yes | - |
 
 ### bookings
 
@@ -396,6 +405,10 @@
 | metadata | jsonb | yes | '{}'::jsonb |
 | created_at | timestamp without time zone | yes | CURRENT_TIMESTAMP |
 | updated_at | timestamp without time zone | yes | CURRENT_TIMESTAMP |
+| pending_tier | character varying | yes | - |
+| pending_interval | character varying | yes | - |
+| pending_change_at | timestamp without time zone | yes | - |
+| cancellation_reason | text | yes | - |
 
 ### customers
 
@@ -511,6 +524,9 @@
 | acceptance_checks | jsonb | yes | '[]'::jsonb |
 | user_journey_id | text | yes | - |
 | order_in_journey | integer | yes | 0 |
+| route_taken | text | yes | - |
+| spec | jsonb | yes | - |
+| feature_id | text | yes | - |
 
 **Foreign keys:**
 - `prd_id` → `prds.id`
@@ -530,4 +546,10 @@
 | review_notes | jsonb | yes | - |
 | created_at | timestamp with time zone | yes | CURRENT_TIMESTAMP |
 | updated_at | timestamp with time zone | yes | CURRENT_TIMESTAMP |
+| verdict | text | yes | - |
+| rubric | jsonb | yes | - |
+| patch_id | text | yes | - |
+| reviewer_model | text | yes | - |
+| review_duration_ms | integer | yes | - |
+| dissent_agreed | boolean | yes | - |
 

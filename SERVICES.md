@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-05-10T08:39:30.661Z | Source: `lib/services/`
+> Generated: 2026-07-17T00:59:58.466Z | Source: `lib/services/`
 
-**21 services across 21 files**
+**24 services across 23 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
@@ -16,9 +16,12 @@
 | [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, logger, circuit-breaker… |
 | [EmailService](#emailservice) | `EmailService.js` | 9 | request-context, circuit-breaker |
 | [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, logger… |
+| [FirstResponseNotificationService](#firstresponsenotificationservice) | `FirstResponseNotificationService.js` | 1 | db, EmailService, TwilioService, logger |
 | [LapsedTrialReactivationService](#lapsedtrialreactivationservice) | `LapsedTrialReactivationService.js` | 1 | EmailService |
 | [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | logger, circuit-breaker |
 | [PilotSignupOutreachService](#pilotsignupoutreachservice) | `PilotSignupOutreachService.js` | 3 | EmailService |
+| [RevenueMetricsService](#revenuemetricsservice) | `RevenueMetricsService.js` | 5 | https, revenue-funnel |
+| [RevenueMetricsService](#revenuemetricsservice) | `RevenueMetricsService.js` | 5 | https, revenue-funnel |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
 | [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db, logger |
 | [StripeService](#stripeservice) | `StripeService.js` | 1 | stripe, config, logger |
@@ -281,6 +284,22 @@
 
 ---
 
+## FirstResponseNotificationService
+
+**File:** `lib/services/FirstResponseNotificationService.js`
+
+**Dependencies:** `db`, `EmailService`, `TwilioService`, `logger`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `notify()` | `agentId`, `context` | Fire the one-time first-AI-response notification for an agent. |
+
+---
+
 ## LapsedTrialReactivationService
 
 **File:** `lib/services/LapsedTrialReactivationService.js`
@@ -339,6 +358,46 @@
 | `getSignupsForStep()` | `step` | - |
 | `sendStepEmail()` | `signup`, `step` | - |
 | `runSequence()` | - | - |
+
+---
+
+## RevenueMetricsService
+
+**File:** `lib/services/RevenueMetricsService.js`
+
+**Dependencies:** `https`, `revenue-funnel`
+
+**Constructor params:** `dbPool`, `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `upsertSnapshot()` | `snapshot` | - |
+| `maybeSendThresholdAlert()` | `snapshot` | - |
+| `getFunnelSeries()` | `days` | - |
+| `scalar()` | `query`, `params` | - |
+| `sendTelegramMessage()` | `text` | - |
+
+---
+
+## RevenueMetricsService
+
+**File:** `lib/services/RevenueMetricsService.js`
+
+**Dependencies:** `https`, `revenue-funnel`
+
+**Constructor params:** `dbPool`, `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `upsertSnapshot()` | `snapshot` | - |
+| `maybeSendThresholdAlert()` | `snapshot` | - |
+| `getFunnelSeries()` | `days` | - |
+| `scalar()` | `query`, `params` | - |
+| `sendTelegramMessage()` | `text` | - |
 
 ---
 

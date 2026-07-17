@@ -1,9 +1,9 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-05-10T08:39:30.666Z | Source: `routes/`, `integration/`
+> Generated: 2026-07-17T00:59:58.468Z | Source: `routes/`, `integration/`
 
-**21 endpoints across 9 files**
+**22 endpoints across 10 files**
 
 ## Summary
 
@@ -24,6 +24,7 @@
 | **POST** | `/api/calcom/webhooks/:id/test` | - | Bearer token | `routes/calcom-webhook.js` |
 | **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/internal/check-stuck-pilots.js` |
 | **GET** | `/api/cron/dead-letter-replay` | - | Vercel cron | `routes/internal/dead-letter-replay.js` |
+| **POST** | `/api/internal/test-lead-response` | - | Bearer token | `routes/internal/test-lead-response.js` |
 | **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Bearer token | `routes/internal/weekly-performance.js` |
 | **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Bearer token | `routes/internal/weekly-performance.js` |
 | **GET** | `/` | `systemStatusService` | None | `routes/system.js` |
@@ -117,6 +118,14 @@ Stuck Pilots Cron Route
 ### GET `/api/cron/dead-letter-replay`
 
 - **Auth:** Vercel cron
+
+---
+
+## `routes/internal/test-lead-response.js`
+
+### POST `/api/internal/test-lead-response`
+
+- **Auth:** Bearer token
 
 ---
 
