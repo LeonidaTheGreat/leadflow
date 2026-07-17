@@ -86,7 +86,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<SetPasswo
         password_hash: passwordHash,
         status: 'onboarding',
         trial_start_date: new Date().toISOString(),
-        trial_expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date().toISOString()
       })
       .eq('id', invite.agent_id)
