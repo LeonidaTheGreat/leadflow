@@ -17,6 +17,7 @@ const stripe = stripeKey ? new Stripe(stripeKey) : null
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 const resendKey = process.env.RESEND_API_KEY?.trim()
 const resend = resendKey ? new Resend(resendKey) : null
+const FROM_EMAIL = (process.env.FROM_EMAIL || 'onboarding@landyourleads.com').trim()
 
 // Helper functions
 function calculateMRR(subscription: Stripe.Subscription): number {
@@ -41,7 +42,7 @@ function calculateMRR(subscription: Stripe.Subscription): number {
 function getTierFromPriceId(priceId: string): string {
   const tierMap: Record<string, string> = {
     [process.env.STRIPE_PRICE_STARTER_MONTHLY || '']: 'starter',
-    [process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY || '']: 'pro',
+    [process.env.STRIPE_PRICE_PRO_MONTHLY || '']: 'pro',
     [process.env.STRIPE_PRICE_TEAM_MONTHLY || '']: 'team' }
   return tierMap[priceId] || 'professional'
 }
@@ -95,6 +96,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     const { error: updateError } = await supabase
       .from('real_estate_agents')
       .update({
+        email_verified: true,
         stripe_customer_id: stripeCustomerId,
         plan_tier: tier,
         mrr: mrr,
@@ -155,7 +157,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       
       try {
         await resend.emails.send({
-          from: 'LeadFlow AI <support@leadflowai.com>',
+          from: `LeadFlow AI <${FROM_EMAIL}>`,
           to: agent.email,
           subject: `You're on LeadFlow ${planName} — Here's your receipt`,
           html: `

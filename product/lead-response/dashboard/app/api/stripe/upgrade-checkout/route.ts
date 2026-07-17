@@ -17,7 +17,7 @@ const PLAN_ENV_MAP: Record<string, string> = {
 }
 
 function isValidPriceId(id: string | undefined): id is string {
-  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,30}$/.test(id)
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,36}$/.test(id)
 }
 
 /**
