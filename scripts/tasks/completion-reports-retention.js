@@ -25,7 +25,9 @@ const fs = require('fs');
 const path = require('path');
 const { getProjectDir } = require('../../project-config-loader');
 
-const DEFAULT_MAX_REPORTS = 400;
+// Keep only 50 newest reports — gives 450-file headroom before the 500-file quality gate limit.
+// With ~1-2 reports/minute accumulation, this keeps the gate green for several hours per cycle.
+const DEFAULT_MAX_REPORTS = 50;
 const DEFAULT_REPORTS_DIR = 'completion-reports';
 const DEFAULT_ARCHIVE_DIR = '.completion-reports-archive';
 const REPORT_PREFIX = 'COMPLETION-';
