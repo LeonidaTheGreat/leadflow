@@ -70,8 +70,8 @@ function SmsNudgeTab() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data = await res.json()
         setAgents(data.agents ?? [])
-      } catch (e: any) {
-        setError(e.message)
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : String(e))
       } finally {
         setLoading(false)
       }
@@ -80,7 +80,7 @@ function SmsNudgeTab() {
   }, [router])
 
   async function sendNudge(agent: SmsAgent) {
-    setSending(prev => ({ ...prev, [agent.id]: true }))
+    setSending((prev) => ({ ...prev, [agent.id]: true }))
     try {
       const res = await fetch('/api/admin/activation', {
         method: 'POST',
@@ -99,8 +99,8 @@ function SmsNudgeTab() {
       const result = data.results?.[0]
       if (result?.status === 'sent') {
         const now = new Date().toISOString()
-        setAgents(prev =>
-          prev.map(a => a.id === agent.id ? { ...a, last_activation_sms_at: now } : a)
+        setAgents((prev) =>
+          prev.map((a) => (a.id === agent.id ? { ...a, last_activation_sms_at: now } : a))
         )
         showToast(`SMS sent to ${agent.email}`)
       } else if (result?.status === 'skipped') {
@@ -108,10 +108,10 @@ function SmsNudgeTab() {
       } else {
         showToast(`Failed: ${result?.error ?? 'Unknown error'}`)
       }
-    } catch (e: any) {
-      showToast(`Error: ${e.message}`)
+    } catch (e: unknown) {
+      showToast(`Error: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
-      setSending(prev => ({ ...prev, [agent.id]: false }))
+      setSending((prev) => ({ ...prev, [agent.id]: false }))
     }
   }
 
@@ -134,20 +134,22 @@ function SmsNudgeTab() {
       }
       const sentNow = new Date().toISOString()
       const sentIds = new Set(
-        (data.results ?? []).filter((r: any) => r.status === 'sent').map((r: any) => r.id)
+        (data.results ?? [])
+          .filter((r: { status: string }) => r.status === 'sent')
+          .map((r: { id: string }) => r.id)
       )
-      setAgents(prev =>
-        prev.map(a => sentIds.has(a.id) ? { ...a, last_activation_sms_at: sentNow } : a)
+      setAgents((prev) =>
+        prev.map((a) => (sentIds.has(a.id) ? { ...a, last_activation_sms_at: sentNow } : a))
       )
       showToast(`Sent ${data.sent} SMS nudge${data.sent !== 1 ? 's' : ''}`)
-    } catch (e: any) {
-      showToast(`Error: ${e.message}`)
+    } catch (e: unknown) {
+      showToast(`Error: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
       setNudgingAll(false)
     }
   }
 
-  const pendingCount = agents.filter(a => !a.last_activation_sms_at && a.phone_number).length
+  const pendingCount = agents.filter((a) => !a.last_activation_sms_at && a.phone_number).length
 
   if (loading) return <p className="mt-4 text-gray-500">Loading stuck agents...</p>
   if (error) return <p className="mt-4 text-red-600">Error: {error}</p>
@@ -337,8 +339,8 @@ function PaymentReadyTab() {
           defaults[a.id] = a.plan_tier ?? 'pro'
         }
         setSelectedTier(defaults)
-      } catch (e: any) {
-        setError(e.message)
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : String(e))
       } finally {
         setLoading(false)
       }
@@ -348,7 +350,7 @@ function PaymentReadyTab() {
 
   const generateLink = useCallback(async (agent: PaymentReadyAgent) => {
     const planTier = selectedTier[agent.id] ?? 'pro'
-    setGenerating(prev => ({ ...prev, [agent.id]: true }))
+    setGenerating((prev) => ({ ...prev, [agent.id]: true }))
     try {
       const res = await fetch('/api/admin/create-payment-link', {
         method: 'POST',
@@ -365,10 +367,10 @@ function PaymentReadyTab() {
         return
       }
       setModal({ url: data.url, email: agent.email })
-    } catch (e: any) {
-      showToast(`Error: ${e.message}`)
+    } catch (e: unknown) {
+      showToast(`Error: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
-      setGenerating(prev => ({ ...prev, [agent.id]: false }))
+      setGenerating((prev) => ({ ...prev, [agent.id]: false }))
     }
   }, [selectedTier, router])
 
@@ -425,7 +427,7 @@ function PaymentReadyTab() {
                     <td className="px-4 py-3">
                       <select
                         value={tier}
-                        onChange={e => setSelectedTier(prev => ({ ...prev, [agent.id]: e.target.value }))}
+                        onChange={(e) => setSelectedTier((prev) => ({ ...prev, [agent.id]: e.target.value }))}
                         data-testid={`tier-select-${agent.id}`}
                         className="text-xs border border-gray-200 rounded px-2 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                       >
@@ -471,6 +473,83 @@ function PaymentReadyTab() {
   )
 }
 
+// ─── Revenue Config Banner ────────────────────────────────────────────────────
+
+interface RevenueHealth {
+  stripe: {
+    ok: boolean
+    secretKey: string
+    webhookSecret: string
+    prices: { valid: string[]; missing: string[]; placeholder: string[] }
+  }
+  email: { ok: boolean; resendApiKey: string; domain: string | null }
+  overall: 'ok' | 'degraded' | 'broken'
+}
+
+function RevenueConfigBanner() {
+  const [health, setHealth] = useState<RevenueHealth | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch('/api/admin/revenue-config-health')
+        if (!res.ok) {
+          setError(`HTTP ${res.status}`)
+          return
+        }
+        setHealth(await res.json())
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : String(e))
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  if (loading) return null
+  if (error) {
+    return (
+      <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        Failed to load revenue config: {error}
+      </div>
+    )
+  }
+  if (!health) return null
+  if (health.overall === 'ok') {
+    return (
+      <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700" data-testid="revenue-config-banner">
+        <span className="font-semibold">Revenue config OK</span> — Stripe keys, price IDs, and email are all configured.
+      </div>
+    )
+  }
+
+  const issues: string[] = []
+  if (health.stripe.secretKey !== 'valid') issues.push('STRIPE_SECRET_KEY missing or invalid format (need sk_live_* or sk_test_*)')
+  if (health.stripe.webhookSecret !== 'set') issues.push('STRIPE_WEBHOOK_SECRET not set')
+  if (health.stripe.prices.missing.length > 0) issues.push(`Missing price IDs: ${health.stripe.prices.missing.join(', ')}`)
+  if (health.stripe.prices.placeholder.length > 0) issues.push(`Placeholder price IDs (not real Stripe IDs): ${health.stripe.prices.placeholder.join(', ')}`)
+  if (health.email.resendApiKey !== 'set') issues.push('RESEND_API_KEY not set')
+  if (!health.email.domain) issues.push('FROM_EMAIL not configured')
+
+  const bg = health.overall === 'broken' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+
+  return (
+    <div className={`mb-6 p-4 border rounded-lg text-sm ${bg}`} data-testid="revenue-config-banner">
+      <p className="font-semibold mb-2">
+        Revenue config: {health.overall === 'broken' ? 'BROKEN — payments will fail' : 'DEGRADED — some features unavailable'}
+      </p>
+      <ul className="list-disc list-inside space-y-1">
+        {issues.map((issue, i) => (
+          <li key={i}>{issue}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ActivationPage() {
@@ -483,6 +562,8 @@ export default function ActivationPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      <RevenueConfigBanner />
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Activation</h1>
         <p className="text-gray-500 text-sm mt-1">

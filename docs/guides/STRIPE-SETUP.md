@@ -1,72 +1,87 @@
 # Stripe Setup Guide
 
-How to configure Stripe products and environment variables so checkout works.
+How to create Stripe products/prices and configure the Vercel environment variables so that checkout works.
 
 ## 1. Create Products in Stripe Dashboard
 
 Go to [Stripe Dashboard > Products](https://dashboard.stripe.com/products) and create three products:
 
-| Product Name | Monthly Price | Annual Price |
-|-------------|--------------|--------------|
-| LeadFlow Starter | $49/mo | $490/yr |
-| LeadFlow Pro | $149/mo | $1,490/yr |
-| LeadFlow Team | $399/mo | $3,990/yr |
+| Product Name | Monthly Price | Description |
+|-------------|--------------|-------------|
+| LeadFlow Starter | $49/mo | 100 SMS, basic AI response |
+| LeadFlow Pro | $149/mo | Unlimited SMS, full AI, priority support |
+| LeadFlow Team | $399/mo | Up to 5 agents, team dashboard |
 
-For each product, create the recurring prices. After creation, copy each price's ID (looks like `price_1AbCDEFGHIJKL...`).
+For each product:
+1. Click **Add product**
+2. Enter the name and description
+3. Add a **Recurring** price with the monthly amount
+4. Optionally add an **Annual** price (e.g., $490/year for Starter)
+5. After creating, copy the **Price ID** (looks like `price_1AbCDEFGHIJKLMN`)
 
-## 2. Set Environment Variables in Vercel
+## 2. Set Vercel Environment Variables
 
-Go to Vercel > leadflow-ai project > Settings > Environment Variables and set:
+Go to [Vercel Dashboard > leadflow-ai > Settings > Environment Variables](https://vercel.com/stojans-projects-7db98187/leadflow-ai/settings/environment-variables).
 
-### Required for checkout
+Set these variables for **Production** (and Preview/Development if needed):
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `STRIPE_SECRET_KEY` | Stripe API secret key (sk_live_... or sk_test_...) | `sk_live_abc123...` |
-| `STRIPE_PRICE_STARTER_MONTHLY` | Price ID for Starter monthly plan | `price_1QvIEf2eZvKYlo2C...` |
-| `STRIPE_PRICE_STARTER_ANNUAL` | Price ID for Starter annual plan | `price_1QvIFa2eZvKYlo2C...` |
-| `STRIPE_PRICE_PRO_MONTHLY` | Price ID for Pro monthly plan | `price_1QvIGb2eZvKYlo2C...` |
-| `STRIPE_PRICE_PRO_ANNUAL` | Price ID for Pro annual plan | `price_1QvIHc2eZvKYlo2C...` |
-| `STRIPE_PRICE_TEAM_MONTHLY` | Price ID for Team monthly plan | `price_1QvIId2eZvKYlo2C...` |
-| `STRIPE_PRICE_TEAM_ANNUAL` | Price ID for Team annual plan | `price_1QvIJe2eZvKYlo2C...` |
+### Required for Checkout
 
-### Required for webhooks
+| Variable | Value | Example |
+|----------|-------|---------|
+| `STRIPE_SECRET_KEY` | Your Stripe secret key | `sk_live_51Ab...` or `sk_test_51Ab...` |
+| `STRIPE_WEBHOOK_SECRET` | Webhook signing secret | `whsec_...` |
+| `STRIPE_PRICE_STARTER_MONTHLY` | Starter monthly price ID | `price_1QvIEf2eZvKYlo2C...` |
+| `STRIPE_PRICE_PRO_MONTHLY` | Pro monthly price ID | `price_1QvIFg3fAwLZmp3D...` |
+| `STRIPE_PRICE_TEAM_MONTHLY` | Team monthly price ID | `price_1QvIGh4gBxMAno4E...` |
 
-| Variable | Description |
-|----------|-------------|
-| `STRIPE_WEBHOOK_SECRET` | Webhook endpoint signing secret (whsec_...) |
+### Optional (annual billing)
 
-## 3. Validate Configuration
+| Variable | Value |
+|----------|-------|
+| `STRIPE_PRICE_STARTER_ANNUAL` | Starter annual price ID |
+| `STRIPE_PRICE_PRO_ANNUAL` | Pro annual price ID |
+| `STRIPE_PRICE_TEAM_ANNUAL` | Team annual price ID |
 
-After setting the env vars, redeploy and check:
+### Required for Email
 
-```bash
-curl -H "Authorization: Bearer $LEADFLOW_API_KEY" \
-  https://leadflow-ai-five.vercel.app/api/admin/revenue-config-health
+| Variable | Value |
+|----------|-------|
+| `RESEND_API_KEY` | Resend API key for transactional email |
+| `FROM_EMAIL` | Sender address (e.g., `stojan@landyourleads.com`) |
+
+## 3. Verify Configuration
+
+After setting the env vars and redeploying, check:
+
+```
+GET /api/admin/revenue-config-health
 ```
 
+This endpoint (requires admin auth) returns the status of all revenue-related config. You can also see it on the **Activation** admin page as a banner at the top.
+
 Expected response when everything is configured:
+
 ```json
 {
   "stripe": {
     "ok": true,
-    "secret_key": "valid",
-    "prices": { "ok": ["STRIPE_PRICE_STARTER_MONTHLY", ...], "missing": [], "invalid": [] }
+    "secretKey": "valid",
+    "webhookSecret": "set",
+    "prices": { "valid": [...], "missing": [], "placeholder": [] }
   },
-  "email": { "ok": true, "resend_api_key": "configured", "domain": "landyourleads.com" },
+  "email": { "ok": true, "resendApiKey": "set", "domain": "landyourleads.com" },
   "overall": "ok"
 }
 ```
 
-The admin dashboard at `/admin` also shows a revenue config banner when any issues are detected.
+## 4. Common Issues
 
-## 4. Common Mistakes
+**"PRICE_NOT_CONFIGURED" on checkout:**
+The price env var is either missing or set to a placeholder like `price_starter_49`. Real Stripe price IDs look like `price_1QvIEf2eZvKYlo2CkuDLQABG` (14+ alphanumeric characters after `price_`).
 
-- **Placeholder values**: `price_starter_49`, `price_pro_149` are not real Stripe price IDs. Real IDs look like `price_1QvIEf2eZvKYlo2CkuDLQABG`.
-- **Wrong env var names**: The checkout routes use `STRIPE_PRICE_PRO_MONTHLY` (not `STRIPE_PRICE_PROFESSIONAL_MONTHLY`). Use the exact names from the table above.
-- **NEXT_PUBLIC_ prefix**: Price ID env vars must NOT have the `NEXT_PUBLIC_` prefix. They are server-side only.
-- **Missing redeploy**: Vercel env var changes require a redeploy to take effect.
+**Checkout creates session but payment fails:**
+Make sure you're using the correct mode (`sk_live_*` for production, `sk_test_*` for testing). Live and test price IDs are different.
 
-## 5. Test Mode vs Live Mode
-
-Use `sk_test_...` keys and test-mode price IDs during development. Switch to `sk_live_...` for production. Test and live price IDs are different even for the same product.
+**Webhook events not arriving:**
+Create a webhook endpoint in [Stripe Dashboard > Developers > Webhooks](https://dashboard.stripe.com/webhooks) pointing to `https://leadflow-ai-five.vercel.app/api/webhooks/stripe`. Subscribe to events: `checkout.session.completed`, `customer.subscription.*`, `invoice.*`.

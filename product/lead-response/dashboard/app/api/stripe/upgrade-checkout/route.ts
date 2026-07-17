@@ -10,7 +10,7 @@ const stripeKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeKey ? new Stripe(stripeKey) : null
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leadflow-ai-five.vercel.app'
 
-const PLAN_ENV_MAP: Record<string, string> = {
+const PRICE_ENV_MAP: Record<string, string> = {
   starter: 'STRIPE_PRICE_STARTER_MONTHLY',
   pro: 'STRIPE_PRICE_PRO_MONTHLY',
   team: 'STRIPE_PRICE_TEAM_MONTHLY',
@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { plan } = body
 
-    if (!plan || !(plan in PLAN_ENV_MAP)) {
+    if (!plan || !(plan in PRICE_ENV_MAP)) {
       return NextResponse.json(
-        { error: `Invalid plan. Choose one of: ${Object.keys(PLAN_ENV_MAP).join(', ')}` },
+        { error: `Invalid plan. Choose one of: ${Object.keys(PRICE_ENV_MAP).join(', ')}` },
         { status: 400 }
       )
     }
 
-    const envVarName = PLAN_ENV_MAP[plan]
+    const envVarName = PRICE_ENV_MAP[plan]
     const priceId = process.env[envVarName]
     if (!isValidPriceId(priceId)) {
       logger.error(
