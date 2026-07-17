@@ -8,7 +8,7 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20' as any })
   : null
 
-const PLAN_ENV_MAP: Record<string, string> = {
+const PRICE_ENV_MAP: Record<string, string> = {
   starter: 'STRIPE_PRICE_STARTER_MONTHLY',
   pro: 'STRIPE_PRICE_PRO_MONTHLY',
   team: 'STRIPE_PRICE_TEAM_MONTHLY',
@@ -16,6 +16,14 @@ const PLAN_ENV_MAP: Record<string, string> = {
 
 function isValidPriceId(id: string | undefined): id is string {
   return typeof id === 'string' && /^price_[A-Za-z0-9]{14,36}$/.test(id)
+}
+
+function getPriceIdForPlan(planId: string): { priceId: string; envVar: string } | null {
+  const envVar = PRICE_ENV_MAP[planId]
+  if (!envVar) return null
+  const priceId = process.env[envVar]
+  if (!isValidPriceId(priceId)) return null
+  return { priceId, envVar }
 }
 
 export async function POST(request: NextRequest) {
@@ -44,21 +52,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const envVarName = PLAN_ENV_MAP[planId]
-    const priceId = process.env[envVarName]
-    if (!isValidPriceId(priceId)) {
-      logger.error(
-        `Missing or invalid Stripe Price ID for plan "${planId}". ` +
-        `Set ${envVarName} in Vercel environment variables to a valid price_... ID.`
-      )
+    const resolved = getPriceIdForPlan(planId)
+    if (!resolved) {
+      const envVar = PRICE_ENV_MAP[planId] || 'STRIPE_PRICE_*'
+      logger.error(`Missing or invalid Stripe Price ID for plan "${planId}". Set ${envVar} to a valid price_... ID.`)
       return NextResponse.json(
-        {
-          error: `Billing is not configured for the "${planId}" plan. Contact support.`,
-          code: 'PRICE_NOT_CONFIGURED',
-        },
+        { error: `Billing is not configured for the "${planId}" plan. Contact support.`, code: 'PRICE_NOT_CONFIGURED' },
         { status: 503 }
       )
     }
+    const priceId = resolved.priceId
 
     // Authenticate via auth-token or leadflow_session cookie
     const userId = await getAuthUserId(request)

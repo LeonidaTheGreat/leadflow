@@ -18,69 +18,66 @@ function isValidStripeSecretKey(key: string | undefined): boolean {
   return typeof key === 'string' && /^sk_(live|test)_.+$/.test(key)
 }
 
-function verifyApiKeyAuth(request: NextRequest): boolean {
-  const apiKey = process.env.LEADFLOW_API_KEY
-  if (!apiKey) return false
-
-  const authHeader = request.headers.get('authorization') ?? ''
-  if (authHeader.startsWith('Bearer ')) {
-    return authHeader.slice(7).trim() === apiKey
-  }
-
-  const headerKey = request.headers.get('x-api-key') ?? ''
-  return headerKey === apiKey
-}
-
-export async function GET(request: NextRequest): Promise<NextResponse> {
-  const hasApiKey = verifyApiKeyAuth(request)
-  const hasSession = !hasApiKey && await requireAdmin(request)
-
-  if (!hasApiKey && !hasSession) {
+export async function GET(request: NextRequest) {
+  const apiKey = request.headers.get('x-api-key') || request.headers.get('authorization')?.replace('Bearer ', '')
+  const validApiKey = process.env.LEADFLOW_API_KEY
+  const authedViaApiKey = validApiKey && apiKey === validApiKey
+  if (!authedViaApiKey && !(await requireAdmin(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const stripeKey = process.env.STRIPE_SECRET_KEY
-  const stripeKeyValid = isValidStripeSecretKey(stripeKey)
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+  const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  const resendApiKey = process.env.RESEND_API_KEY
+  const fromEmail = (process.env.FROM_EMAIL || '').trim()
 
-  const priceMissing: string[] = []
-  const priceInvalid: string[] = []
-  const priceOk: string[] = []
+  const missingPrices: string[] = []
+  const placeholderPrices: string[] = []
+  const validPrices: string[] = []
 
   for (const envVar of STRIPE_PRICE_VARS) {
     const val = process.env[envVar]
     if (!val) {
-      priceMissing.push(envVar)
+      missingPrices.push(envVar)
     } else if (!isValidPriceId(val)) {
-      priceInvalid.push(envVar)
+      placeholderPrices.push(envVar)
     } else {
-      priceOk.push(envVar)
+      validPrices.push(envVar)
     }
   }
 
-  const stripeOk = stripeKeyValid && priceMissing.length === 0 && priceInvalid.length === 0
+  const stripeKeyOk = isValidStripeSecretKey(stripeSecretKey)
+  const webhookSecretOk = !!stripeWebhookSecret
+  const pricesOk = missingPrices.length === 0 && placeholderPrices.length === 0
 
-  const resendKey = process.env.RESEND_API_KEY
-  const resendConfigured = !!resendKey && resendKey !== 'placeholder'
-  const emailFromDomain = process.env.EMAIL_FROM_DOMAIN || process.env.RESEND_FROM_DOMAIN || null
+  const stripeOk = stripeKeyOk && webhookSecretOk && pricesOk
 
-  const emailOk = resendConfigured
+  const emailDomain = fromEmail.includes('@') ? fromEmail.split('@')[1] : null
+  const resendOk = !!resendApiKey
+  const emailOk = resendOk && !!emailDomain
 
-  const overall = stripeOk && emailOk ? 'ok' : (!stripeKeyValid || priceMissing.length > 0) ? 'broken' : 'degraded'
+  let overall: 'ok' | 'degraded' | 'broken' = 'ok'
+  if (!stripeKeyOk || !pricesOk) {
+    overall = 'broken'
+  } else if (!emailOk || !webhookSecretOk) {
+    overall = 'degraded'
+  }
 
   return NextResponse.json({
     stripe: {
       ok: stripeOk,
-      secret_key: stripeKeyValid ? 'valid' : !stripeKey ? 'missing' : 'invalid_format',
+      secretKey: stripeKeyOk ? 'valid' : 'missing_or_invalid',
+      webhookSecret: webhookSecretOk ? 'set' : 'missing',
       prices: {
-        ok: priceOk,
-        missing: priceMissing,
-        invalid: priceInvalid,
+        valid: validPrices,
+        missing: missingPrices,
+        placeholder: placeholderPrices,
       },
     },
     email: {
       ok: emailOk,
-      resend_api_key: resendConfigured ? 'configured' : 'missing',
-      domain: emailFromDomain,
+      resendApiKey: resendOk ? 'set' : 'missing',
+      domain: emailDomain,
     },
     overall,
   })
