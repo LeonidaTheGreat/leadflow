@@ -1,1 +1,1 @@
-/Users/clawdbot/.openclaw/genome/core/task-store.js
+/Users/clawdbot/projects/genome/core/task-store.js
