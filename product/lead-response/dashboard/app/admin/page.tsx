@@ -6,11 +6,27 @@ import {
   AlertTriangle,
   ArrowRight,
   BadgeCheck,
+  CreditCard,
   Mail,
   Megaphone,
   RadioTower,
   Users,
+  XCircle,
 } from 'lucide-react'
+
+type RevenueConfigHealth = {
+  stripe: {
+    ok: boolean
+    secret_key: string
+    prices: { ok: string[]; missing: string[]; invalid: string[] }
+  }
+  email: {
+    ok: boolean
+    resend_api_key: string
+    domain: string | null
+  }
+  overall: 'ok' | 'degraded' | 'broken'
+}
 
 type GtmStatusResponse = {
   success: boolean
@@ -105,18 +121,80 @@ function formatDeliveryRate(rate: number | null): string {
   return `${Math.round(rate * 100)}%`
 }
 
+function RevenueConfigBanner({ health }: { health: RevenueConfigHealth }) {
+  if (health.overall === 'ok') {
+    return (
+      <div className="rounded-2xl border border-emerald-800 bg-emerald-950/60 p-4">
+        <div className="flex items-center gap-3">
+          <BadgeCheck className="h-5 w-5 shrink-0 text-emerald-400" />
+          <div>
+            <p className="font-medium text-emerald-200">Revenue config healthy</p>
+            <p className="text-sm text-emerald-300/70">
+              Stripe keys, price IDs, and email are all configured correctly. Checkout is ready.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const issues: string[] = []
+  if (health.stripe.secret_key !== 'valid') issues.push(`Stripe secret key: ${health.stripe.secret_key}`)
+  if (health.stripe.prices.missing.length > 0) issues.push(`Missing price IDs: ${health.stripe.prices.missing.join(', ')}`)
+  if (health.stripe.prices.invalid.length > 0) issues.push(`Invalid price IDs (placeholder?): ${health.stripe.prices.invalid.join(', ')}`)
+  if (!health.email.ok) issues.push(`Email (Resend): ${health.email.resend_api_key}`)
+
+  const isBroken = health.overall === 'broken'
+  const borderColor = isBroken ? 'border-red-800' : 'border-amber-800'
+  const bgColor = isBroken ? 'bg-red-950/60' : 'bg-amber-950/60'
+  const textColor = isBroken ? 'text-red-200' : 'text-amber-200'
+  const subTextColor = isBroken ? 'text-red-300/70' : 'text-amber-300/70'
+
+  return (
+    <div className={`rounded-2xl border ${borderColor} ${bgColor} p-4`} data-testid="revenue-config-banner">
+      <div className="flex items-start gap-3">
+        {isBroken ? (
+          <XCircle className={`h-5 w-5 shrink-0 ${textColor}`} />
+        ) : (
+          <AlertTriangle className={`h-5 w-5 shrink-0 ${textColor}`} />
+        )}
+        <div>
+          <p className={`font-medium ${textColor}`}>
+            {isBroken ? 'Checkout is broken' : 'Revenue config degraded'} — agents cannot pay
+          </p>
+          <ul className={`mt-2 space-y-1 text-sm ${subTextColor}`}>
+            {issues.map((issue) => (
+              <li key={issue}>- {issue}</li>
+            ))}
+          </ul>
+          <p className={`mt-2 text-xs ${subTextColor}`}>
+            Fix in Vercel dashboard &gt; Settings &gt; Environment Variables. See docs/guides/STRIPE-SETUP.md.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminCommandCenterPage() {
   const [data, setData] = useState<GtmStatusResponse | null>(null)
+  const [revenueHealth, setRevenueHealth] = useState<RevenueConfigHealth | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/admin/gtm-status')
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const body = await res.json()
+        const [gtmRes, healthRes] = await Promise.all([
+          fetch('/api/admin/gtm-status'),
+          fetch('/api/admin/revenue-config-health'),
+        ])
+        if (!gtmRes.ok) throw new Error(`HTTP ${gtmRes.status}`)
+        const body = await gtmRes.json()
         setData(body)
+        if (healthRes.ok) {
+          setRevenueHealth(await healthRes.json())
+        }
       } catch (err: any) {
         setError(err.message || 'Failed to load GTM status')
       } finally {
@@ -175,6 +253,10 @@ export default function AdminCommandCenterPage() {
             />
           </div>
         </section>
+
+        {revenueHealth && revenueHealth.overall !== 'ok' && (
+          <RevenueConfigBanner health={revenueHealth} />
+        )}
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard
@@ -294,7 +376,29 @@ export default function AdminCommandCenterPage() {
               Pending decisions and compliance issues that stop execution.
             </p>
 
-            <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-950 p-4">
+            {revenueHealth && (
+              <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-950 p-4">
+                <div className="flex items-center gap-3">
+                  {revenueHealth.overall === 'ok' ? (
+                    <BadgeCheck className="h-5 w-5 text-emerald-400" />
+                  ) : revenueHealth.overall === 'broken' ? (
+                    <XCircle className="h-5 w-5 text-red-400" />
+                  ) : (
+                    <AlertTriangle className="h-5 w-5 text-amber-400" />
+                  )}
+                  <div>
+                    <p className="font-medium text-white">Stripe Checkout</p>
+                    <p className="text-sm text-slate-400">
+                      {revenueHealth.overall === 'ok'
+                        ? 'All price IDs and keys configured. Payments enabled.'
+                        : `${revenueHealth.stripe.prices.missing.length + revenueHealth.stripe.prices.invalid.length} price ID(s) need fixing in Vercel env vars.`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-950 p-4">
               <div className="flex items-center gap-3">
                 {data.a2p.registration.status === 'registered' ? (
                   <BadgeCheck className="h-5 w-5 text-emerald-400" />

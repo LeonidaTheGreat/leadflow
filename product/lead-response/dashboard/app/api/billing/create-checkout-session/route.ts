@@ -8,15 +8,14 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20' as any })
   : null
 
-/**
- * Map plan ID to Stripe price ID from environment variables
- */
-function getPriceIdForPlan(planId: string): string | null {
-  const priceIdMap: Record<string, string> = {
-    starter: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-    pro: process.env.STRIPE_PRICE_PRO_MONTHLY || '',
-    team: process.env.STRIPE_PRICE_TEAM_MONTHLY || '' }
-  return priceIdMap[planId] || null
+const PLAN_ENV_MAP: Record<string, string> = {
+  starter: 'STRIPE_PRICE_STARTER_MONTHLY',
+  pro: 'STRIPE_PRICE_PRO_MONTHLY',
+  team: 'STRIPE_PRICE_TEAM_MONTHLY',
+}
+
+function isValidPriceId(id: string | undefined): id is string {
+  return typeof id === 'string' && /^price_[A-Za-z0-9]{14,30}$/.test(id)
 }
 
 export async function POST(request: NextRequest) {
@@ -45,10 +44,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const priceId = getPriceIdForPlan(planId)
-    if (!priceId || priceId.startsWith('price_replace')) {
+    const envVarName = PLAN_ENV_MAP[planId]
+    const priceId = process.env[envVarName]
+    if (!isValidPriceId(priceId)) {
+      logger.error(
+        `Missing or invalid Stripe Price ID for plan "${planId}". ` +
+        `Set ${envVarName} in Vercel environment variables to a valid price_... ID.`
+      )
       return NextResponse.json(
-        { error: 'Price not configured for this plan' },
+        {
+          error: `Billing is not configured for the "${planId}" plan. Contact support.`,
+          code: 'PRICE_NOT_CONFIGURED',
+        },
         { status: 503 }
       )
     }
