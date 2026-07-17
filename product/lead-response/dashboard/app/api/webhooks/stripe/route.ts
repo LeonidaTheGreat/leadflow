@@ -59,7 +59,8 @@ function getPlanDisplayName(tier: string): string {
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   if (!stripe) return
 
-  const userId = session.client_reference_id
+  // Support both checkout sessions (client_reference_id) and payment links (metadata.agent_id)
+  const userId = session.client_reference_id || (session.metadata?.agent_id ?? null)
   const subscriptionId = session.subscription as string
 
   if (!userId || !subscriptionId) return
@@ -69,7 +70,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as any
     const lineItem = subscription.items.data[0]
     const priceId = lineItem.price.id
-    const tier = getTierFromPriceId(priceId)
+    // For admin payment links, prefer metadata tier (lookup-key prices aren't in env var map)
+    const tier = (session.metadata?.plan_tier as string | undefined) || getTierFromPriceId(priceId)
     const mrr = calculateMRR(subscription)
     const stripeCustomerId = session.customer as string
 
