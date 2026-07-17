@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-16T22:30:00.000Z",
+  "taskId": "f4ac488e-8804-4400-ab55-8add6d9077ae",
+  "status": "completed",
+  "recommendation": "CANCEL",
+  "diagnosis": {
+    "category": "implementation_already_complete",
+    "rootCause": "tracking_bug_false_failure",
+    "summary": "The circuit breaker tripped ($20.83 / $10.00 limit, 2 tasks) due to a cascade of tracking failures, not a hard implementation problem. The weekly-roi-reporter.js is already fully implemented and merged to genome main (commit d5f6011). All 6 UC metrics are present, the reporter is wired into learning-loop.js (weeklyRoiReport step) and heartbeat-wrapper.js. The original dev task (f23e71c4) succeeded at the code level but died as a zombie — branch_name was never written to the tasks table, so verification failed and a rescue cycle started. The PM re-spec task (47cae1b6) then ran, confirmed implementation exists, and reported ucAction: marked_complete — but did not actually UPDATE the tasks table, so UC stayed 'stuck'. This PM task closes the loop by updating the DB directly.",
+    "costBreakdown": {
+      "taskF23e71c4": "$0.00 (zombie — no cost recorded, code shipped via direct merge)",
+      "task4458a3e7": "$0.87 (rescue dev — cancelled correctly once duplicate found)",
+      "task47cae1b6": "$19.96 (PM re-spec — discovered implementation was already done; high cost from context-heavy spec work)",
+      "total": "$20.83"
+    },
+    "systemicGap": "Dev task completion handler does not write branch_name to tasks table when agent dies as zombie before cleanup. This caused the full rescue ladder to fire unnecessarily. A genome fix should ensure branch_name is recorded at spawn time, not at completion time.",
+    "ucAction": "marked_complete",
+    "ucId": "uc-genome-budget-roi-tracker"
+  },
+  "testResults": {
+    "passed": 1,
+    "total": 1,
+    "passRate": 1
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-f4ac488e-8804-4400-ab55-8add6d9077ae-1784300000000.json"
+  ],
+  "filesModified": [],
+  "error": null
+}
