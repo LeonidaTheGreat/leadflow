@@ -31,7 +31,8 @@
 // auto-listening on port 3000 (it listens when NODE_ENV !== 'production').
 process.env.NODE_ENV = 'test';
 
-require('dotenv').config();
+// dotenv is an optional loader — fall back gracefully if not installed
+try { require('dotenv').config(); } catch {}
 
 const http = require('http');
 const assert = require('assert');
@@ -164,8 +165,9 @@ async function runAll() {
   console.log(`  PostgreSQL:     ${PG_URL ? 'configured' : 'NOT SET'}`);
 
   if (SKIP) {
-    console.log(`\n  Skipping all tests — ${SKIP_REASON}\n`);
-    printSummary();
+    console.log(`\n  All 9 tests SKIPPED — ${SKIP_REASON}`);
+    console.log('  Set STRIPE_SECRET_KEY (sk_test_...), STRIPE_WEBHOOK_SECRET (whsec_...), LOCAL_PG_URL to run.\n');
+    printSummary(9);
     return;
   }
 
@@ -214,9 +216,10 @@ async function runAll() {
     if (API_KEY) process.env.LEADFLOW_API_KEY = API_KEY;
   }
 
-  // ── Start Express app on a random port ────────────────────────────────────
-  // NODE_ENV=test (set at top of file) prevents server.js from auto-listening
-  // on port 3000, so only this server instance is active during tests.
+  // ── Start Express app on an OS-assigned port (port 0) ────────────────────
+  // - NODE_ENV=test (set above) prevents server.js from auto-listening on 3000
+  // - port 0 = OS picks a free port → no conflicts in concurrent CI runs
+  // - server.close() is called in the finally block below (always runs)
   const app = require('../../server');
   let server;
   await new Promise((resolve, reject) => {
@@ -543,12 +546,14 @@ async function runAll() {
   printSummary();
 }
 
-function printSummary() {
+function printSummary(totalOverride) {
+  const total = totalOverride ?? (results.passed + results.failed + results.skipped);
+  const skipped = totalOverride ?? results.skipped;
   console.log('='.repeat(50));
   console.log(`  Passed:  ${results.passed}`);
   console.log(`  Failed:  ${results.failed}`);
-  console.log(`  Skipped: ${results.skipped}`);
-  console.log(`  Total:   ${results.passed + results.failed + results.skipped}`);
+  console.log(`  Skipped: ${skipped}`);
+  console.log(`  Total:   ${total}`);
   console.log('='.repeat(50) + '\n');
   if (results.failed > 0) {
     console.log('Failed tests:');
