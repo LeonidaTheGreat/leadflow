@@ -12,6 +12,9 @@ jobs:
       - run: npm ci
       - name: API tests
         run: npm test
+      - name: Stripe checkout integration test
+        run: node tests/integration/stripe-checkout.test.js
+        continue-on-error: false
       - name: Dashboard install
         working-directory: product/lead-response/dashboard
         run: npm ci
