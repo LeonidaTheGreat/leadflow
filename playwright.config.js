@@ -17,6 +17,7 @@ const { defineConfig, devices } = require('@playwright/test')
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'https://leadflow-ai-five.vercel.app'
 
 module.exports = defineConfig({
+  globalSetup: require.resolve('./scripts/playwright-browser-setup.js'),
   testDir: './tests/browser',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
