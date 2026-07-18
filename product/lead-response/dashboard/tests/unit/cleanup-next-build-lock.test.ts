@@ -153,4 +153,24 @@ describe('cleanup-next-build-lock', () => {
     expect(remaining).toEqual([])
     expect(pgrepCalls).toBeGreaterThan(1)
   })
+
+  it('removes stale build trace and cache artifacts', () => {
+    mockedFs.existsSync.mockReturnValue(true)
+
+    script.cleanupBuildArtifacts('/tmp/dashboard/.next')
+
+    expect(mockedFs.rmSync).toHaveBeenCalledWith('/tmp/dashboard/.next/trace', { force: true })
+    expect(mockedFs.rmSync).toHaveBeenCalledWith('/tmp/dashboard/.next/cache', {
+      recursive: true,
+      force: true,
+    })
+  })
+
+  it('skips artifact cleanup when .next does not exist', () => {
+    mockedFs.existsSync.mockReturnValue(false)
+
+    script.cleanupBuildArtifacts('/tmp/dashboard/.next')
+
+    expect(mockedFs.rmSync).not.toHaveBeenCalled()
+  })
 })
