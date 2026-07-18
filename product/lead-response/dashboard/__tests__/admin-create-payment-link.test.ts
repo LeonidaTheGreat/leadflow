@@ -367,3 +367,19 @@ describe('GET /api/admin/payment-ready', () => {
     expect(agents[0].name).toBe('Jane Doe')
   })
 })
+
+// ─── Dashboard page contract ─────────────────────────────────────────────────
+
+describe('Admin payment links page API contract', () => {
+  it('uses dashboard payment-ready endpoint and accepted plan tiers', () => {
+    const fs = require('fs')
+    const path = require('path')
+    const pagePath = path.resolve(__dirname, '../app/admin/payment-links/page.tsx')
+    const source = fs.readFileSync(pagePath, 'utf-8')
+
+    expect(source).toMatch(/fetch\('\/api\/admin\/payment-ready'\)/)
+    expect(source).not.toMatch(/payment-link-candidates/)
+    expect(source).toMatch(/type PlanTier = 'starter' \| 'pro' \| 'team'/)
+    expect(source).not.toMatch(/professional' \| 'enterprise/)
+  })
+})
