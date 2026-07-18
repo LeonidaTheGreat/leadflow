@@ -198,22 +198,30 @@ test_dashboard_no_errors() {
   # Must exclude agents on expired trials — the middleware redirects them to /upgrade
   # before the dashboard can render, causing the test to fail with no 'Lead Feed' content.
   # Strategy: prefer paid/pilot agents; fall back to trial agents with future trial_ends_at.
-  local agent_resp user_id now_iso
-  now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  # Retry the user lookup (3 attempts, 5s apart) — these queries go through the same
+  # Cloudflare tunnel as session validation and can experience the same transient latency.
+  local agent_resp user_id now_iso lookup_attempt
+  user_id=''
+  for lookup_attempt in 1 2 3; do
+    now_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-  # First: try a paid or pilot agent (plan_tier != 'trial')
-  agent_resp=$(curl -s --max-time 10 \
-    "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
-    -H "apikey: $API_KEY" 2>/dev/null) || return 1
-  user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-
-  # Fallback: find a trial agent whose trial has NOT yet expired
-  if [ -z "$user_id" ]; then
+    # First: try a paid or pilot agent (plan_tier != 'trial')
     agent_resp=$(curl -s --max-time 10 \
-      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
-      -H "apikey: $API_KEY" 2>/dev/null) || return 1
-    user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
-  fi
+      "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=neq.trial&order=created_at.desc&limit=1" \
+      -H "apikey: $API_KEY" 2>/dev/null) \
+      && user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+
+    # Fallback: find a trial agent whose trial has NOT yet expired
+    if [ -z "$user_id" ]; then
+      agent_resp=$(curl -s --max-time 10 \
+        "$API_URL/real_estate_agents?select=id&onboarding_completed=eq.true&plan_tier=eq.trial&trial_ends_at=gt.${now_iso}&order=trial_ends_at.desc&limit=1" \
+        -H "apikey: $API_KEY" 2>/dev/null) \
+        && user_id=$(echo "$agent_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')" 2>/dev/null) || true
+    fi
+
+    [ -n "$user_id" ] && break
+    [ "$lookup_attempt" -lt 3 ] && sleep 5
+  done
 
   [ -z "$user_id" ] && return 1
 
