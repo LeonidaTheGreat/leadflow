@@ -12,7 +12,7 @@
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/clawdbot/.openclaw/genome/core</string>
+    <string>/Users/clawdbot/projects/genome/core</string>
 
     <key>KeepAlive</key>
     <true/>
