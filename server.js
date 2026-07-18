@@ -16,6 +16,7 @@ const testLeadResponseRouter = require('./routes/internal/test-lead-response');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
 const paymentLinkRouter = require('./routes/admin/payment-link');
+const adminMagicLinkRouter = require('./routes/admin-magic-link');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
 
@@ -59,6 +60,9 @@ app.use('/', reactivationCampaignRouter);
 
 // Admin: direct payment links for completed-onboarding agents (bypass broken checkout)
 app.use('/', paymentLinkRouter);
+
+// Admin: magic links for immediate trial activation while email delivery is blocked
+app.use('/', adminMagicLinkRouter);
 
 // Cal.com webhook and admin endpoints
 app.use('/', calcomWebhookRouter);

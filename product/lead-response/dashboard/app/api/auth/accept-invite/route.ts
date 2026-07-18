@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import jwt from 'jsonwebtoken'
 import { postgrestAdmin } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { createSession } from '@/lib/services/AuthService'
 
 interface AcceptInviteRequest {
   token: string
@@ -13,16 +15,141 @@ interface AcceptInviteResponse {
   email?: string
   name?: string
   needsPassword?: boolean
+  redirectTo?: string
   error?: string
 }
 
 const supabase = postgrestAdmin
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+const TRIAL_ACTIVATION_PURPOSE = 'trial-activation'
+const TRIAL_ACTIVATION_ISSUER = 'leadflow-admin-magic-link'
+const DASHBOARD_REDIRECT = '/dashboard/onboarding'
+const AUTH_COOKIE_DAYS = 14
+const SESSION_COOKIE_DAYS = 30
+const HOURS_PER_DAY = 24
+const MINUTES_PER_HOUR = 60
+const SECONDS_PER_MINUTE = 60
+
+interface TrialActivationPayload {
+  agentId?: string
+  email?: string
+  purpose?: string
+  iss?: string
+}
+
+function isJwtLike(token: string): boolean {
+  return token.split('.').length === 3
+}
+
+function getClientIp(request: NextRequest): string | undefined {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')
+    || undefined
+}
+
+async function acceptTrialActivationToken(
+  request: NextRequest,
+  token: string
+): Promise<NextResponse<AcceptInviteResponse>> {
+  let payload: TrialActivationPayload
+
+  try {
+    payload = jwt.verify(token, JWT_SECRET, { issuer: TRIAL_ACTIVATION_ISSUER }) as TrialActivationPayload
+  } catch (err: any) {
+    const message = err?.name === 'TokenExpiredError'
+      ? 'This magic link has expired. Please request a new one.'
+      : 'Invalid magic link'
+    return NextResponse.json(
+      { success: false, error: message },
+      { status: 401 }
+    )
+  }
+
+  if (payload.purpose !== TRIAL_ACTIVATION_PURPOSE || !payload.agentId || !payload.email) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid magic link' },
+      { status: 401 }
+    )
+  }
+
+  const { data: agent, error: agentError } = await supabase
+    .from('real_estate_agents')
+    .select('id, email, first_name, last_name')
+    .eq('id', payload.agentId)
+    .single()
+
+  if (agentError || !agent || agent.email.toLowerCase() !== payload.email.toLowerCase()) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid magic link' },
+      { status: 401 }
+    )
+  }
+
+  await supabase
+    .from('real_estate_agents')
+    .update({
+      email_verified: true,
+      status: 'onboarding',
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', agent.id)
+
+  const session = await createSession({
+    userId: agent.id,
+    userAgent: request.headers.get('user-agent') || undefined,
+    ipAddress: getClientIp(request),
+    rememberMe: true,
+  })
+
+  const authToken = jwt.sign(
+    {
+      userId: agent.id,
+      email: agent.email,
+      name: `${agent.first_name || ''} ${agent.last_name || ''}`.trim()
+    },
+    JWT_SECRET,
+    { expiresIn: `${AUTH_COOKIE_DAYS}d` }
+  )
+
+  const response = NextResponse.json(
+    {
+      success: true,
+      agentId: agent.id,
+      email: agent.email,
+      name: `${agent.first_name || ''} ${agent.last_name || ''}`.trim(),
+      needsPassword: false,
+      redirectTo: DASHBOARD_REDIRECT,
+    },
+    { status: 200 }
+  )
+
+  response.cookies.set('auth-token', authToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: AUTH_COOKIE_DAYS * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE,
+    path: '/'
+  })
+
+  response.cookies.set({
+    name: 'leadflow_session',
+    value: session.token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: SESSION_COOKIE_DAYS * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE,
+    path: '/'
+  })
+
+  return response
+}
 
 /**
  * POST /api/auth/accept-invite
  *
- * Validate a pilot invite token and ensure an agent record exists.
- * Does NOT set the password — that's handled by /api/auth/set-password.
+ * Validate a pilot invite token or an admin trial-activation JWT.
+ * Pilot invites still use /api/auth/set-password; trial-activation JWTs create
+ * an immediate session for manual Gmail outreach while automated email is down.
  */
 export async function POST(request: NextRequest): Promise<NextResponse<AcceptInviteResponse>> {
   try {
@@ -34,6 +161,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<AcceptInv
         { success: false, error: 'Missing invite token' },
         { status: 400 }
       )
+    }
+
+    if (isJwtLike(token)) {
+      return acceptTrialActivationToken(request, token)
     }
 
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
