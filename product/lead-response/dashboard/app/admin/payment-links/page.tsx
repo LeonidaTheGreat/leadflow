@@ -1,5 +1,28 @@
 'use client'
 
+/*
+ * Task Spec: c8cd1b56-5ebd-45af-9053-a02bfe2ba544
+ * What:
+ * - Change product/lead-response/dashboard/app/admin/payment-links/page.tsx:
+ *   align PaymentLinksPage with the existing dashboard admin API by loading
+ *   candidates from /api/admin/payment-ready and posting plan tiers accepted by
+ *   app/api/admin/create-payment-link/route.ts.
+ * - Change product/lead-response/dashboard/__tests__/admin-create-payment-link.test.ts:
+ *   add static regression coverage for the dashboard payment-link page endpoint
+ *   and plan tier contract.
+ * Verify:
+ * - npx jest tests/admin-payment-link.test.js should pass 17/17 when local
+ *   dependencies are installed.
+ * - cd product/lead-response/dashboard && npm test -- __tests__/admin-create-payment-link.test.ts
+ *   should pass when local dependencies are installed.
+ * - npm run build and cd product/lead-response/dashboard && npm run build should exit 0.
+ * Boundaries:
+ * - Do not modify /api/billing/create-checkout or checkout-session flows.
+ * - Do not change Stripe webhook behavior, pricing amounts, database schema, or
+ *   root Express API contracts beyond the already-shipped payment-link feature.
+ * - Do not touch protected generated project docs/config.
+ */
+
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -13,18 +36,23 @@ interface Agent {
   created_at: string
 }
 
-type PlanTier = 'starter' | 'professional' | 'enterprise'
+type PlanTier = 'starter' | 'pro' | 'team'
 
 interface ModalState {
   agentEmail: string
   url: string
 }
 
-const PLAN_TIERS: PlanTier[] = ['starter', 'professional', 'enterprise']
+const PLAN_TIERS: PlanTier[] = ['starter', 'pro', 'team']
 const PLAN_PRICES: Record<PlanTier, string> = {
   starter: '$49/mo',
-  professional: '$149/mo',
-  enterprise: '$399/mo',
+  pro: '$149/mo',
+  team: '$399/mo',
+}
+const PLAN_LABELS: Record<PlanTier, string> = {
+  starter: 'Starter',
+  pro: 'Pro',
+  team: 'Team',
 }
 
 function agentName(agent: Agent): string {
@@ -57,9 +85,7 @@ export default function PaymentLinksPage() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/payment-link-candidates', {
-        headers: { 'x-api-key': process.env.NEXT_PUBLIC_ADMIN_API_KEY ?? '' },
-      })
+      const res = await fetch('/api/admin/payment-ready')
       if (res.status === 401) {
         router.replace('/admin/login?redirect=/admin/payment-links')
         return
@@ -90,7 +116,6 @@ export default function PaymentLinksPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': process.env.NEXT_PUBLIC_ADMIN_API_KEY ?? '',
         },
         body: JSON.stringify({ agentId: agent.id, planTier: tier }),
       })
@@ -228,7 +253,7 @@ export default function PaymentLinksPage() {
                       >
                         {PLAN_TIERS.map(t => (
                           <option key={t} value={t}>
-                            {t.charAt(0).toUpperCase() + t.slice(1)} — {PLAN_PRICES[t]}
+                            {PLAN_LABELS[t]} — {PLAN_PRICES[t]}
                           </option>
                         ))}
                       </select>
