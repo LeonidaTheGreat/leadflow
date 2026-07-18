@@ -50,6 +50,10 @@ function AcceptInviteContent() {
       }
 
       if (data.success) {
+        if (data.redirectTo) {
+          router.replace(data.redirectTo)
+          return
+        }
         setName(data.name || '')
         setStatus('set-password')
       } else {
