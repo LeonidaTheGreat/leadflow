@@ -1,4 +1,22 @@
 #!/usr/bin/env node
+/*
+Task Spec (2402c9a6-809a-4c96-b563-605ff7c92218)
+What:
+- Change product/lead-response/dashboard/scripts/cleanup-next-build-lock.js:
+  - Keep existing stale .next/lock handling.
+  - Add cleanupBuildArtifacts() to remove stale .next/trace and .next/cache before next build writes a new trace.
+- Change product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts:
+  - Cover cleanupBuildArtifacts() for trace/cache removal and missing .next directories.
+Verify:
+- Reproduce: npm run build initially fails in this isolated worktree with `next: command not found` because node_modules is absent; the upstream confirmed failure was ENOSPC opening product/lead-response/dashboard/.next/trace.
+- Run: cd product/lead-response/dashboard && npm test -- tests/unit/cleanup-next-build-lock.test.ts (expect pass).
+- Run: npm run build after dependencies are available (expect exit 0 with only documented env warnings allowed).
+- Run: git diff --check (expect no whitespace errors).
+Boundaries:
+- Do not modify dashboard app routes, services, middleware/proxy behavior, database schema, generated docs, or dependency manifests.
+- Do not reconfigure Tailscale, dashboard ports, Vercel project links, or protected generated project files.
+- Do not install or alter node_modules outside this assigned worktree.
+*/
 'use strict'
 
 const fs = require('fs')
@@ -14,6 +32,10 @@ const GENUINE_WAIT_MS = 90 * 1000 // 90 seconds
 
 // Max time to wait for orphaned builds before killing them.
 const ORPHAN_WAIT_MS = 30 * 1000 // 30 seconds
+
+const BUILD_DIR = path.resolve(__dirname, '..', '.next')
+const BUILD_TRACE_PATH = path.join(BUILD_DIR, 'trace')
+const BUILD_CACHE_PATH = path.join(BUILD_DIR, 'cache')
 
 function getPPID(pid) {
   try {
@@ -97,7 +119,9 @@ async function waitForAllBuildsToFinish(maxWaitMs, pollIntervalMs) {
 }
 
 async function main() {
-  const lockPath = path.resolve(__dirname, '..', '.next', 'lock')
+  cleanupBuildArtifacts()
+
+  const lockPath = path.join(BUILD_DIR, 'lock')
   if (!fs.existsSync(lockPath)) return
 
   const lockStat = fs.statSync(lockPath)
@@ -144,6 +168,16 @@ async function main() {
   console.log(`Removed stale .next/lock (age: ${ageDesc}) before build`)
 }
 
+function cleanupBuildArtifacts(buildDir = BUILD_DIR) {
+  if (!fs.existsSync(buildDir)) return
+
+  const tracePath = path.join(buildDir, 'trace')
+  const cachePath = path.join(buildDir, 'cache')
+
+  fs.rmSync(tracePath, { force: true })
+  fs.rmSync(cachePath, { recursive: true, force: true })
+}
+
 if (require.main === module) {
   main().catch(err => {
     console.error('cleanup-next-build-lock:', err.message)
@@ -151,4 +185,12 @@ if (require.main === module) {
   })
 }
 
-module.exports = { getActiveNextBuildPids, waitForBuildsToFinish, getAllNextBuildPids, waitForAllBuildsToFinish }
+module.exports = {
+  getActiveNextBuildPids,
+  waitForBuildsToFinish,
+  getAllNextBuildPids,
+  waitForAllBuildsToFinish,
+  cleanupBuildArtifacts,
+  BUILD_TRACE_PATH,
+  BUILD_CACHE_PATH,
+}
