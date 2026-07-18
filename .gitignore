@@ -1,3 +1,18 @@
+# TASK SPEC (0271999d-cd6b-41f4-86a4-e63d56fd38bb)
+# What:
+# - Change file: .gitignore
+# - Add generated architecture artifacts: dashboard/architecture.html and docs/ARCHITECTURE-MAP.md
+# - Functions changed: none; this is repository hygiene configuration only.
+# Verify:
+# - Run: node /Users/clawdbot/projects/genome/scripts/clean-worktree.js from this worktree; expect clean_worktree: PASS.
+# - Run: npm run clean_worktree; expect clean_worktree: PASS.
+# - Run: git check-ignore -v dashboard/architecture.html docs/ARCHITECTURE-MAP.md; expect both paths matched by .gitignore.
+# - Run: npm test and npm run build; expect both commands to exit 0.
+# Boundaries:
+# - Do not change application source, routes, services, migrations, package manifests, or generated docs.
+# - Do not remove or reorder unrelated ignore rules.
+# - Do not touch protected auto-generated files listed in the task instructions.
+
 # Dependencies
 node_modules/
 
@@ -109,6 +124,8 @@ playwright-report/
 playwright-report.json
 .completion-reports-archive/
 # Auto-generated orchestrator docs
+dashboard/architecture.html
+docs/ARCHITECTURE-MAP.md
 DASHBOARD.md
 E2E_MAPPINGS.md
 JOURNEYS.md
