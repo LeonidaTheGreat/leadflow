@@ -13,8 +13,11 @@ jobs:
       - name: API tests
         run: npm test
       - name: Stripe checkout integration test
+        # Env vars STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, LOCAL_PG_URL must be
+        # set in the self-hosted runner environment (Mac Mini launchd services).
+        # The test auto-skips (exits 0) when any required env var is absent, so
+        # this step never blocks CI on runners without Stripe credentials.
         run: node tests/integration/stripe-checkout.test.js
-        continue-on-error: false
       - name: Dashboard install
         working-directory: product/lead-response/dashboard
         run: npm ci

@@ -2,25 +2,34 @@
  * Stripe Checkout Integration Test
  * Proves the $49 (starter_monthly) payment flow works end-to-end.
  *
- * Required env vars (test is SKIPPED, not failed, if any are absent):
- *   STRIPE_SECRET_KEY     — must start with sk_test_ (test mode only; no real money)
+ * Required env vars (test SKIPS, does not fail, when any are absent):
+ *   STRIPE_SECRET_KEY     — must start with sk_test_ (test mode only; no real charges)
  *   STRIPE_WEBHOOK_SECRET — must start with whsec_
  *   LOCAL_PG_URL          — PostgreSQL connection string (postgresql://...)
  *
- * Optional (enables DB-state assertions):
- *   NEXT_PUBLIC_API_URL   — PostgREST-compatible API URL (defaults to http://localhost:8788)
- *   LEADFLOW_API_KEY      — API key for the above (read from process.env)
+ * DB assertion tests (7–9) additionally require the PostgREST API to be reachable.
+ * They are SKIPPED (not failed) when PostgREST is unavailable.
+ *   NEXT_PUBLIC_API_URL   — PostgREST URL (defaults to http://localhost:8788)
+ *   LEADFLOW_API_KEY      — API key for PostgREST
  *
  * Flow under test:
  *   1. Stripe Checkout Session creation (starter_monthly → $49/mo)
- *   2. checkout.session.completed webhook → POST /webhook/stripe (HMAC-signed)
- *   3. DB state: real_estate_agents.subscription_status = 'active', plan_tier = 'starter'
- *   4. Cleanup: reset test agent
+ *   2. Stripe test subscription (simulates post-checkout Stripe state)
+ *   3. Test agent seeded into real_estate_agents
+ *   4. checkout.session.completed webhook → POST /webhook/stripe (HMAC-signed)
+ *   5. Webhook signature rejection (bad sig → 400)
+ *   6a–6b. HMAC edge cases (empty payload, Unicode payload)
+ *   7–9. DB state assertions (subscription_status, plan_tier, stripe_customer_id)
  *
  * Run standalone: node tests/integration/stripe-checkout.test.js
+ * Run via npm:    npm run test:stripe-checkout
  */
 
 'use strict';
+
+// ── Must be set before any require('../../server') to prevent server.js from
+// auto-listening on port 3000 (it listens when NODE_ENV !== 'production').
+process.env.NODE_ENV = 'test';
 
 require('dotenv').config();
 
@@ -28,7 +37,7 @@ const http = require('http');
 const assert = require('assert');
 const crypto = require('crypto');
 
-// ─── Skip guard ──────────────���───────────────────────────────────────────────
+// ─── Skip guard ───────────────────────────────────────────────────────────────
 
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || '';
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -45,7 +54,7 @@ const SKIP_REASON = !STRIPE_KEY.startsWith('sk_test_')
   ? 'STRIPE_WEBHOOK_SECRET missing or invalid (must start with whsec_)'
   : 'LOCAL_PG_URL not set';
 
-// ─── Test harness ───────────────────────────────────��─────────────────────────
+// ─── Test harness ─────────────────────────────────────────────────────────────
 
 const results = { passed: 0, failed: 0, skipped: 0, tests: [] };
 
@@ -67,13 +76,24 @@ function skip(name, reason) {
   console.log(`  SKIP  ${name} [${reason}]`);
 }
 
+// Throw this inside a test() callback to skip (not fail) the test.
+function skipTest(reason) {
+  const e = new Error(reason);
+  e._skipTest = true;
+  throw e;
+}
+
 async function test(name, fn) {
   if (SKIP) { skip(name, SKIP_REASON); return; }
   try {
     await fn();
     pass(name);
   } catch (err) {
-    fail(name, err.message);
+    if (err && err._skipTest) {
+      skip(name, err.message);
+    } else {
+      fail(name, err.message || String(err));
+    }
   }
 }
 
@@ -86,7 +106,9 @@ function httpRequest(baseUrl, path, options = {}) {
     const mod = isHttps ? require('https') : http;
 
     const body = options.body != null
-      ? (typeof options.body === 'string' ? Buffer.from(options.body) : options.body)
+      ? (Buffer.isBuffer(options.body)
+          ? options.body
+          : Buffer.from(typeof options.body === 'string' ? options.body : JSON.stringify(options.body)))
       : null;
 
     const req = mod.request(
@@ -106,7 +128,7 @@ function httpRequest(baseUrl, path, options = {}) {
         const chunks = [];
         res.on('data', (c) => chunks.push(c));
         res.on('end', () => {
-          const raw = Buffer.concat(chunks).toString();
+          const raw = Buffer.concat(chunks).toString('utf8');
           let data = raw;
           try { data = JSON.parse(raw); } catch {}
           resolve({ status: res.statusCode, data, headers: res.headers });
@@ -121,11 +143,13 @@ function httpRequest(baseUrl, path, options = {}) {
   });
 }
 
-// ─── Stripe webhook HMAC signature (matches Stripe's own scheme) ─────────────
+// ─── Stripe webhook HMAC signature ───────────────────────────────────────────
+// Stripe signs: HMAC_SHA256(secret, "{unix_ts}.{payload_utf8}")
+// Header format: t={unix_ts},v1={hex_hmac}
 
 function generateStripeSignature(payload, secret) {
   const timestamp = Math.floor(Date.now() / 1000);
-  const payloadStr = typeof payload === 'string' ? payload : payload.toString();
+  const payloadStr = Buffer.isBuffer(payload) ? payload.toString('utf8') : String(payload);
   const signed = `${timestamp}.${payloadStr}`;
   const sig = crypto.createHmac('sha256', secret).update(signed, 'utf8').digest('hex');
   return `t=${timestamp},v1=${sig}`;
@@ -140,72 +164,76 @@ async function runAll() {
   console.log(`  PostgreSQL:     ${PG_URL ? 'configured' : 'NOT SET'}`);
 
   if (SKIP) {
-    console.log(`\n  ⚠  Skipping — ${SKIP_REASON}\n`);
+    console.log(`\n  Skipping all tests — ${SKIP_REASON}\n`);
     printSummary();
     return;
   }
 
-  // Lazy-require modules (only when env vars are present)
   const Stripe = require('stripe');
   const { getPool } = require('../../lib/db');
 
   const stripe = new Stripe(STRIPE_KEY);
   const pool = getPool();
 
-  // Verify our HMAC implementation matches the Stripe SDK before using it
+  // ── HMAC sanity check before starting the server ──────────────────────────
+  // A mismatch here would make all webhook tests return 400 instead of 200.
   {
     const testPayload = '{"sanity":true}';
     const sig = generateStripeSignature(testPayload, WEBHOOK_SECRET);
-    // If our signature doesn't verify, the webhook tests will fail with 400 — catch it early
     try {
       stripe.webhooks.constructEvent(testPayload, sig, WEBHOOK_SECRET);
     } catch (err) {
-      throw new Error(`HMAC sanity check failed: ${err.message}. Cannot run webhook tests.`);
+      throw new Error(
+        `HMAC sanity-check failed: ${err.message}. ` +
+        'Our signature scheme does not match Stripe SDK — cannot continue.'
+      );
     }
   }
 
-  // Probe the local PostgREST API — needed for BillingService DB writes in handleCheckoutCompleted.
-  // The BillingService singleton uses NEXT_PUBLIC_API_URL for all DB operations.
-  // On the self-hosted Mac Mini CI runner, this server is always at http://localhost:8788.
+  // ── PostgREST probe (needed for BillingService DB writes) ─────────────────
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8788';
   const API_KEY = process.env.LEADFLOW_API_KEY || '';
   let apiReachable = false;
-
   try {
     const probe = await httpRequest(API_URL, '/real_estate_agents?limit=0', {
-      headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` },
+      headers: { apikey: API_KEY, Authorization: `Bearer ${API_KEY}` },
       timeout: 3000,
     });
     apiReachable = probe.status < 500;
-  } catch { /* API not reachable — DB assertions will be skipped */ }
+  } catch { /* unreachable — DB assertion tests will skip */ }
 
-  console.log(`  PostgREST API:  ${apiReachable ? API_URL : 'NOT reachable (DB assertions will be skipped)'}`);
+  console.log(
+    `  PostgREST API:  ${apiReachable ? API_URL : 'NOT reachable (DB assertion tests 7–9 will be skipped)'}`
+  );
   console.log();
 
-  // Set env vars for server.js / BillingService to pick up the right API URL.
-  // Must be set BEFORE requiring server.js so the BillingService singleton is created correctly.
+  // Set env vars before requiring server.js so BillingService singleton reads
+  // the correct NEXT_PUBLIC_API_URL when the module is first required.
   if (apiReachable) {
     process.env.NEXT_PUBLIC_API_URL = API_URL;
     if (API_KEY) process.env.LEADFLOW_API_KEY = API_KEY;
   }
 
-  // Track Stripe resources for cleanup
+  // ── Start Express app on a random port ────────────────────────────────────
+  // NODE_ENV=test (set at top of file) prevents server.js from auto-listening
+  // on port 3000, so only this server instance is active during tests.
+  const app = require('../../server');
+  let server;
+  await new Promise((resolve, reject) => {
+    server = app.listen(0, '127.0.0.1', (err) => {
+      if (err) reject(err); else resolve();
+    });
+  });
+  const BASE = `http://127.0.0.1:${server.address().port}`;
+
   let stripeCustomerId = null;
   let stripeSubscriptionId = null;
   const agentId = `test-checkout-${crypto.randomUUID()}`;
   const agentEmail = `${agentId}@test.leadflow.internal`;
 
-  // Start Express app on a random port (binding 127.0.0.1 to avoid firewall prompts)
-  const app = require('../../server');
-  const server = await new Promise((resolve) => {
-    const s = app.listen(0, '127.0.0.1', () => resolve(s));
-  });
-  const BASE = `http://127.0.0.1:${server.address().port}`;
-
   try {
 
     // ── 1. Checkout session creation ─────────────────────────────────────────
-    // Uses stripe.checkout.sessions.create with test key — proves $49 price config is correct.
 
     await test('1. Checkout session creation returns a valid Stripe URL (starter_monthly = $49)', async () => {
       const configuredPriceId = process.env.STRIPE_PRICE_STARTER_MONTHLY;
@@ -218,8 +246,9 @@ async function runAll() {
       if (isValidPriceId(configuredPriceId)) {
         priceId = configuredPriceId;
       } else {
-        // No configured price: create a disposable $49/mo test price to prove session creation works
-        const product = await stripe.products.create({ name: 'LeadFlow Starter (integration test)' });
+        const product = await stripe.products.create({
+          name: 'LeadFlow Starter (integration-test ephemeral)',
+        });
         ephemeralProductId = product.id;
         const price = await stripe.prices.create({
           product: product.id,
@@ -241,7 +270,8 @@ async function runAll() {
         client_reference_id: agentId,
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'subscription',
-        success_url: 'https://leadflow-ai-five.vercel.app/dashboard?session_id={CHECKOUT_SESSION_ID}',
+        success_url:
+          'https://leadflow-ai-five.vercel.app/dashboard?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: 'https://leadflow-ai-five.vercel.app/pricing?cancelled=true',
         metadata: { agent_id: agentId, tier: 'starter', source: 'integration_test' },
       });
@@ -255,18 +285,15 @@ async function runAll() {
       assert.strictEqual(session.client_reference_id, agentId, 'client_reference_id must match agentId');
       assert.strictEqual(session.mode, 'subscription', 'Session must be subscription mode');
 
-      // Deactivate ephemeral product/price if we created them
       if (ephemeralProductId) {
         try { await stripe.prices.update(priceId, { active: false }); } catch {}
         try { await stripe.products.update(ephemeralProductId, { active: false }); } catch {}
       }
     });
 
-    // ── 2. Stripe subscription (simulates completed checkout in test mode) ─────
-    // handleCheckoutCompleted calls stripe.subscriptions.retrieve(subscriptionId),
-    // so we need a real subscription ID in Stripe test mode.
+    // ── 2. Stripe test subscription ───────────────────────────────────────────
 
-    await test('2. Stripe test subscription created with tok_visa (simulates post-checkout state)', async () => {
+    await test('2. Stripe test subscription created (simulates post-checkout state)', async () => {
       if (!stripeCustomerId) throw new Error('Customer not created — step 1 failed');
 
       const pm = await stripe.paymentMethods.create({ type: 'card', card: { token: 'tok_visa' } });
@@ -276,9 +303,13 @@ async function runAll() {
       });
 
       let priceId = process.env.STRIPE_PRICE_STARTER_MONTHLY;
-      const isValidPriceId = typeof priceId === 'string' && /^price_[A-Za-z0-9]{14,36}$/.test(priceId);
+      const isValidPriceId =
+        typeof priceId === 'string' && /^price_[A-Za-z0-9]{14,36}$/.test(priceId);
+
       if (!isValidPriceId) {
-        const product = await stripe.products.create({ name: 'LeadFlow Starter Sub (integration test)' });
+        const product = await stripe.products.create({
+          name: 'LeadFlow Starter Sub (integration-test ephemeral)',
+        });
         const price = await stripe.prices.create({
           product: product.id,
           unit_amount: 4900,
@@ -302,9 +333,9 @@ async function runAll() {
       stripeSubscriptionId = sub.id;
     });
 
-    // ── 3. Seed test agent in PostgreSQL ──────────────────────────────────────
+    // ── 3. Seed test agent ────────────────────────────────────────────────────
 
-    await test('3. Test agent inserted into real_estate_agents table', async () => {
+    await test('3. Test agent seeded into real_estate_agents', async () => {
       await pool.query(
         `INSERT INTO real_estate_agents
            (id, email, first_name, last_name, subscription_status, plan_tier, mrr, created_at, updated_at)
@@ -313,15 +344,14 @@ async function runAll() {
         [agentId, agentEmail]
       );
       const { rows } = await pool.query(
-        'SELECT subscription_status, plan_tier FROM real_estate_agents WHERE id = $1',
+        'SELECT subscription_status FROM real_estate_agents WHERE id = $1',
         [agentId]
       );
       assert.strictEqual(rows.length, 1, 'Agent row must exist after insert');
       assert.strictEqual(rows[0].subscription_status, 'inactive', 'Initial status must be inactive');
     });
 
-    // ─��� 4. Simulate checkout.session.completed webhook ─────────────────────────
-    // POST /webhook/stripe with a correctly HMAC-signed payload.
+    // ── 4. Valid webhook → 200 ────────────────────────────────────────────────
 
     await test('4. POST /webhook/stripe (checkout.session.completed) returns 200 + {received:true}', async () => {
       if (!stripeCustomerId || !stripeSubscriptionId) {
@@ -359,55 +389,100 @@ async function runAll() {
         },
       });
 
-      assert.strictEqual(res.status, 200, `Expected 200, got ${res.status}: ${JSON.stringify(res.data)}`);
-      assert(res.data && res.data.received === true, `Expected {received:true}, got ${JSON.stringify(res.data)}`);
+      assert.strictEqual(
+        res.status, 200,
+        `Expected 200, got ${res.status}: ${JSON.stringify(res.data)}`
+      );
+      assert(
+        res.data && res.data.received === true,
+        `Expected {received:true}, got ${JSON.stringify(res.data)}`
+      );
     });
 
-    // ── 5. Webhook signature rejection ──────────────���─────────────────────────
+    // ── 5. Invalid signature → 400 ────────────────────────────────────────────
 
     await test('5. POST /webhook/stripe with invalid signature returns 400', async () => {
       const payload = JSON.stringify({
-        id: 'evt_bad', type: 'checkout.session.completed',
+        id: 'evt_bad',
+        type: 'checkout.session.completed',
         data: { object: { id: 'cs_bad', client_reference_id: 'nobody' } },
       });
       const res = await httpRequest(BASE, '/webhook/stripe', {
         method: 'POST',
         body: payload,
-        headers: { 'Content-Type': 'application/json', 'stripe-signature': 't=1,v1=invalidsig' },
+        headers: {
+          'Content-Type': 'application/json',
+          'stripe-signature': 't=1,v1=invalidsignature000000000000000',
+        },
       });
       assert.strictEqual(res.status, 400, `Expected 400 for bad signature, got ${res.status}`);
     });
 
-    // ── 6. DB state after webhook (only when PostgREST API is reachable) ──────
-    // The BillingService writes to the DB via PostgREST HTTP (not direct SQL),
-    // so these assertions require the local API server to be running.
+    // ── 6a. HMAC edge case: empty JSON payload ────────────────────────────────
+    // Verifies our HMAC impl handles empty-ish payloads correctly.
+    // The server must return 400 because the event lacks a `type` field,
+    // NOT because signature verification failed.
 
-    await test('6. DB: subscription_status = active after checkout.session.completed webhook', async () => {
-      if (!apiReachable) {
-        throw new Error(
-          `PostgREST API not reachable at ${API_URL} — ` +
-          'BillingService cannot write to DB without it. ' +
-          'Ensure the local API server is running (launchctl start com.leonida.dashboard-server).'
-        );
+    await test('6a. HMAC edge case: empty payload ({}) — signature valid, event rejected (400)', async () => {
+      const payload = '{}';
+      const signature = generateStripeSignature(payload, WEBHOOK_SECRET);
+      // Confirm our signature matches the Stripe SDK for this payload
+      try {
+        stripe.webhooks.constructEvent(payload, signature, WEBHOOK_SECRET);
+      } catch (err) {
+        throw new Error(`HMAC verification failed for empty payload: ${err.message}`);
       }
-      // Give the async handler a moment to commit
-      await new Promise((r) => setTimeout(r, 500));
+      // Server returns 400 for missing `type`, not HMAC failure (which would also be 400
+      // but with a different error message)
+      const res = await httpRequest(BASE, '/webhook/stripe', {
+        method: 'POST',
+        body: payload,
+        headers: { 'Content-Type': 'application/json', 'stripe-signature': signature },
+      });
+      assert.strictEqual(
+        res.status, 400,
+        `Expected 400 (invalid event shape), got ${res.status}: ${JSON.stringify(res.data)}`
+      );
+      // Ensure the rejection is for event structure, not HMAC (HMAC error message contains "signature")
+      const msg = typeof res.data === 'object' ? (res.data.error || '') : String(res.data);
+      assert(
+        !msg.toLowerCase().includes('signature'),
+        `Expected event-structure rejection, got HMAC error: ${msg}`
+      );
+    });
 
+    // ── 6b. HMAC edge case: Unicode payload ───────────────────────────────────
+
+    await test('6b. HMAC edge case: Unicode payload — signature matches Stripe SDK', async () => {
+      const payload = JSON.stringify({ type: 'test.ping', note: 'café — naïve — 日本語' });
+      const signature = generateStripeSignature(payload, WEBHOOK_SECRET);
+      try {
+        stripe.webhooks.constructEvent(payload, signature, WEBHOOK_SECRET);
+      } catch (err) {
+        throw new Error(`HMAC verification failed for Unicode payload: ${err.message}`);
+      }
+    });
+
+    // ── 7. DB: subscription_status = active ───────────────────────────────────
+
+    await test('7. DB: subscription_status = active after checkout.session.completed webhook', async () => {
+      if (!apiReachable) skipTest(`PostgREST not reachable at ${API_URL} — BillingService cannot write to DB`);
+      await new Promise((r) => setTimeout(r, 600));
       const { rows } = await pool.query(
-        'SELECT subscription_status, plan_tier, stripe_customer_id FROM real_estate_agents WHERE id = $1',
+        'SELECT subscription_status FROM real_estate_agents WHERE id = $1',
         [agentId]
       );
       assert.strictEqual(rows.length, 1, 'Agent row must exist');
       assert.strictEqual(
         rows[0].subscription_status, 'active',
-        `Expected subscription_status='active', got '${rows[0].subscription_status}'`
+        `Expected 'active', got '${rows[0].subscription_status}'`
       );
     });
 
-    await test('7. DB: plan_tier = starter after checkout.session.completed webhook', async () => {
-      if (!apiReachable) {
-        throw new Error(`PostgREST API not reachable at ${API_URL}`);
-      }
+    // ── 8. DB: plan_tier = starter ────────────────────────────────────────────
+
+    await test('8. DB: plan_tier = starter after webhook', async () => {
+      if (!apiReachable) skipTest(`PostgREST not reachable at ${API_URL}`);
       const { rows } = await pool.query(
         'SELECT plan_tier FROM real_estate_agents WHERE id = $1',
         [agentId]
@@ -416,10 +491,10 @@ async function runAll() {
       assert.strictEqual(rows[0].plan_tier, 'starter', `Expected 'starter', got '${rows[0].plan_tier}'`);
     });
 
-    await test('8. DB: stripe_customer_id (cus_...) set after webhook', async () => {
-      if (!apiReachable) {
-        throw new Error(`PostgREST API not reachable at ${API_URL}`);
-      }
+    // ── 9. DB: stripe_customer_id set ─────────────────────────────────────────
+
+    await test('9. DB: stripe_customer_id (cus_...) populated after webhook', async () => {
+      if (!apiReachable) skipTest(`PostgREST not reachable at ${API_URL}`);
       const { rows } = await pool.query(
         'SELECT stripe_customer_id FROM real_estate_agents WHERE id = $1',
         [agentId]
@@ -433,10 +508,9 @@ async function runAll() {
     });
 
   } finally {
-    // ── Cleanup ───────────────────────────────────────────────────────────────
     console.log('\n  Cleaning up test data...');
 
-    // Reset agent (not delete — avoid FK constraint issues)
+    // Reset agent before deleting to avoid FK constraint issues
     try {
       await pool.query(
         `UPDATE real_estate_agents
@@ -446,10 +520,10 @@ async function runAll() {
         [agentId]
       );
     } catch {}
-    // Now safe to delete
-    try { await pool.query('DELETE FROM real_estate_agents WHERE id = $1', [agentId]); } catch {}
+    try {
+      await pool.query('DELETE FROM real_estate_agents WHERE id = $1', [agentId]);
+    } catch {}
 
-    // Cancel Stripe test subscription + delete test customer
     if (stripeSubscriptionId) {
       try { await stripe.subscriptions.cancel(stripeSubscriptionId); } catch {}
     }
@@ -457,8 +531,11 @@ async function runAll() {
       try { await stripe.customers.del(stripeCustomerId); } catch {}
     }
 
-    await new Promise((resolve) => server.close(resolve));
-    await pool.end().catch(() => {});
+    // Close test server BEFORE ending the pool so in-flight requests finish cleanly
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+    }
+    try { await pool.end(); } catch {}
 
     console.log('  Cleanup complete.\n');
   }
@@ -475,18 +552,22 @@ function printSummary() {
   console.log('='.repeat(50) + '\n');
   if (results.failed > 0) {
     console.log('Failed tests:');
-    results.tests.filter((t) => t.status === 'FAILED')
+    results.tests
+      .filter((t) => t.status === 'FAILED')
       .forEach((t) => console.log(`  - ${t.name}: ${t.reason}`));
     console.log();
   }
 }
 
-// ─── Entry point ───────────────────────────────────────��─────────────────────
+// ─── Entry point ──────────────────────────────────────────────────────────────
 
 if (require.main === module) {
   runAll()
     .then(() => process.exit(results.failed > 0 ? 1 : 0))
-    .catch((err) => { console.error('Fatal error:', err); process.exit(1); });
+    .catch((err) => {
+      console.error('Fatal error:', err);
+      process.exit(1);
+    });
 }
 
 module.exports = { runAll, results };

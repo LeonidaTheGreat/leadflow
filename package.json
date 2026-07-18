@@ -28,6 +28,7 @@
     "test": "node integrations/test-e2e-flow.js",
     "test:twilio": "node test/twilio-sms-integration.test.js",
     "test:twilio:live": "SKIP_LIVE_TESTS=false node test/twilio-sms-integration.test.js",
+    "test:stripe-checkout": "node tests/integration/stripe-checkout.test.js",
     "test:stripe-smoke": "node tests/integrated/stripe-production-smoke.test.js",
     "test:stripe-smoke:local": "LOCAL_MODE=true node tests/integrated/stripe-production-smoke.test.js",
     "test:load": "node scripts/load-test.js",
