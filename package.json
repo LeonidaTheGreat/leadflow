@@ -59,7 +59,8 @@
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
     "nodemon": "3.1.14",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "jest": "^29.7.0"
   },
   "overrides": {
     "follow-redirects": "1.16.0"
