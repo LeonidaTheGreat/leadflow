@@ -1,3 +1,8 @@
+# Task 56639c82-76db-4c5d-8028-9b7fa706911d spec:
+# What: update this .gitignore only, specifically the auto-generated artifact ignore list used by the clean_worktree quality gate; no code functions change.
+# Verify: run node /Users/clawdbot/projects/genome/scripts/clean-worktree.js . and npm run clean_worktree; both must print clean_worktree: PASS, then run npm test and npm run build.
+# Boundaries: do not touch product routes, services, generated/protected markdown dashboards, project.config.json, dashboard server settings, Tailscale settings, or node_modules.
+
 # Dependencies
 node_modules/
 
@@ -122,4 +127,6 @@ PROJECT_GRAPH.json
 PROJECT_GRAPH.md
 ARCHITECTURE.md
 DISCOVERIES.md
+dashboard/architecture.html
+docs/ARCHITECTURE-MAP.md
 MODULE_INDEX.md.generated
