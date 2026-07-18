@@ -1,0 +1,130 @@
+{
+  "taskId": "b061fd5a-64f3-4993-b63f-19342a2c1fe8",
+  "status": "completed",
+  "verdict": "already-shipped-safe-delete",
+  "taskSpec": {
+    "what": "Create one metadata-only investigation report at completion-reports/COMPLETION-b061fd5a-64f3-4993-b63f-19342a2c1fe8-20260718T154259-0400.json. No application files or functions are changed.",
+    "verify": "Run git metadata commands for branch dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken, validate the JSON with node -e, run npm test, attempt npm run build and npm run lint, and confirm only this completion report is staged/committed.",
+    "boundaries": "Do not read full file contents or full diffs over 200 lines, do not modify application code, do not delete the orphan branch, do not create a PR, and do not touch protected generated files."
+  },
+  "acceptanceCriteria": [
+    "A one-page JSON investigation report exists for task b061fd5a-64f3-4993-b63f-19342a2c1fe8.",
+    "The report includes verdict, evidence, risk, recommendation, commandsRun, taskSpec, and rootCauseAnalysis.",
+    "Verification command node -e \"JSON.parse(require('fs').readFileSync('completion-reports/COMPLETION-b061fd5a-64f3-4993-b63f-19342a2c1fe8-20260718T154259-0400.json','utf8')); console.log('json ok')\" prints json ok.",
+    "npm test passes; npm run build and npm run lint are attempted and any environment-level blockers are recorded."
+  ],
+  "rootCauseAnalysis": {
+    "failurePoint": "Branch dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken still exists with commit ef6f86d1 ahead of main by exact ancestry, but no matching active task row was provided for that branch.",
+    "why": "The original invite-accept fix appears to have been reviewed later and merged to main as patch-equivalent commit 31042b3b via PR #1906, while the rescue branch itself was left behind as an orphan remote/local branch.",
+    "fix": "No code fix is needed in this investigation. The branch can be treated as already shipped and queued for branch cleanup after human/operator confirmation; this task only records metadata evidence and does not delete the branch."
+  },
+  "evidence": {
+    "targetBranch": "dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken",
+    "branchAheadOfMain": {
+      "count": 1,
+      "commit": "ef6f86d1 fix: set-password uses wrong column trial_expires_at, add accepted_at migration"
+    },
+    "diffStatAgainstMain": {
+      "filesChanged": 3,
+      "insertions": 149,
+      "deletions": 52,
+      "files": [
+        "migrations/025_add_pilot_invites_accepted_at.sql",
+        "product/lead-response/dashboard/app/api/auth/set-password/route.ts",
+        "tests/fix-invite-accept-409.test.js"
+      ]
+    },
+    "remotePresence": {
+      "lsRemote": "failed: ssh: Could not resolve hostname github.com: -65563",
+      "localRemoteTrackingRef": "remotes/origin/dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken contains ef6f86d1"
+    },
+    "duplicationSignals": [
+      "git cherry -v main dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken returned '- ef6f86d1...', indicating the patch is already present upstream.",
+      "git log --cherry-mark --oneline --left-right main...dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken showed '= 31042b3b ... (#1906)' on main and '= ef6f86d1 ...' on the orphan branch.",
+      "git log main --grep for the commit subject found 31042b3b fix: set-password uses wrong column trial_expires_at, add accepted_at migration (#1906).",
+      "A prior 37-line investigation committed as c7f434ab had recommended shipping this exact branch before #1906 landed."
+    ],
+    "localSearch": {
+      "branchNameShortShaSubject": "rg --hidden outside .git/node_modules found no working-tree references to the branch name, short SHA, orphan commit SHA, or exact commit subject.",
+      "githubCli": "gh pr/issue searches failed because api.github.com was unreachable from the sandbox."
+    }
+  },
+  "risk": {
+    "level": "low",
+    "details": "The orphan branch patch is already represented on main by patch-equivalent commit 31042b3b (#1906). Main has continued beyond that commit, so merging the orphan branch now would risk replay noise or stale-base confusion rather than adding unique product value. Live remote PR/issue lookup was not possible due network/DNS failure, so final deletion should still be performed by the orchestrator/operator rather than this agent."
+  },
+  "recommendation": "Do not open a new PR for dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken. Mark it already shipped/superseded by main commit 31042b3b (#1906), then clean up the orphan branch through the normal branch-deletion process after operator confirmation.",
+  "commandsRun": [
+    {
+      "command": "git checkout dev/b061fd5a-investigate-orphan-branch-dev-06d32f1c-d && git branch --show-current",
+      "result": "checkout failed because the sandbox could not create .git/worktrees/.../index.lock; subsequent git branch --show-current confirmed the worktree was already on dev/b061fd5a-investigate-orphan-branch-dev-06d32f1c-d"
+    },
+    {
+      "command": "git log --oneline main..dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken",
+      "result": "ef6f86d1 fix: set-password uses wrong column trial_expires_at, add accepted_at migration"
+    },
+    {
+      "command": "git diff --stat main...dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken",
+      "result": "3 files changed, 149 insertions(+), 52 deletions(-)"
+    },
+    {
+      "command": "git ls-remote --heads origin dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken",
+      "result": "failed: ssh: Could not resolve hostname github.com: -65563"
+    },
+    {
+      "command": "git branch --all --contains ef6f86d1",
+      "result": "dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken and remotes/origin/dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken"
+    },
+    {
+      "command": "git cherry -v main dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken",
+      "result": "- ef6f86d1305516ebf12c010044e67a8b973212e0 fix: set-password uses wrong column trial_expires_at, add accepted_at migration"
+    },
+    {
+      "command": "git log --cherry-mark --oneline --left-right main...dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken",
+      "result": "main includes = 31042b3b fix: set-password uses wrong column trial_expires_at, add accepted_at migration (#1906); branch includes = ef6f86d1 with the same subject"
+    },
+    {
+      "command": "git log main --oneline --all-match --grep=\"trial_expires_at\" --grep=\"accepted_at\"",
+      "result": "31042b3b fix: set-password uses wrong column trial_expires_at, add accepted_at migration (#1906)"
+    },
+    {
+      "command": "rg --hidden --glob '!node_modules/**' --glob '!.git/**' -n \"dev/06d32f1c-dev-rescue-fix-invite-accept-409-broken|06d32f1c|ef6f86d1|set-password uses wrong column|trial_expires_at, add accepted_at\" .",
+      "result": "no working-tree matches"
+    },
+    {
+      "command": "gh pr list / gh issue list searches for branch name, short SHA, commit SHA, and subject",
+      "result": "failed: error connecting to api.github.com"
+    },
+    {
+      "command": "git show c7f434ab:docs/reports/ORPHAN-BRANCH-06d32f1c-investigation.md",
+      "result": "prior 37-line investigation found the branch shippable before the equivalent fix later landed in #1906"
+    },
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('completion-reports/COMPLETION-b061fd5a-64f3-4993-b63f-19342a2c1fe8-20260718T154259-0400.json','utf8')); console.log('json ok')\"",
+      "result": "json ok"
+    },
+    {
+      "command": "npm test",
+      "result": "passed: 9 passed, 0 failed, 100% success rate"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed after npm ci in root and product/lead-response/dashboard; Next.js production build completed successfully"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed after npm ci in root; eslint completed with no reported issues"
+    }
+  ],
+  "testResults": {
+    "passed": 12,
+    "total": 12,
+    "passRate": 1.0,
+    "notes": "JSON syntax verification passed, npm test passed 9/9, npm run build passed, and npm run lint passed. Dependencies were installed with npm ci in this assigned temp worktree only."
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-b061fd5a-64f3-4993-b63f-19342a2c1fe8-20260718T154259-0400.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-b061fd5a-64f3-4993-b63f-19342a2c1fe8-20260718T154259-0400.json"
+}
