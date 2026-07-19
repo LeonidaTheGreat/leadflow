@@ -1,0 +1,41 @@
+{
+  "taskId": "893fd54d-621d-414c-8888-08f01d63e027",
+  "branch": "dev/319f2369-fix-inactivity-schedule",
+  "verdict": "shippable-needs-task-pr",
+  "shortSha": "61d04f29",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSubject": "fix: set inactivity-alerts cron to */30 schedule; add unit test",
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitDate": "2026-05-16T20:12:16-04:00",
+    "filesChanged": [
+      "product/lead-response/dashboard/vercel.json",
+      "tests/unit/inactivity-alerts-cron.test.js"
+    ],
+    "changesSummary": "vercel.json: inactivity-alerts cron changed from daily (0 9 * * *) to every-30-min (*/30 * * * *); duplicate inactivity-check entry removed. Adds 288-line unit test covering dedup, dry-run, and alert paths.",
+    "mainCurrentState": "vercel.json on main still has daily schedule (0 9 * * *) AND duplicate inactivity-check entry — this fix was never merged",
+    "relatedPRs": [
+      {
+        "number": 242,
+        "title": "Dev: fix-inactivity-alerting-cron-not-implemented",
+        "state": "MERGED",
+        "mergedAt": "2026-03-11T06:04:54Z",
+        "note": "Older PR for initial cron implementation — different from this schedule correction"
+      }
+    ],
+    "noPRForThisBranch": true
+  },
+  "risk": "low",
+  "riskRationale": "Only changes vercel.json cron schedule (config, not code logic) and adds a new test file. No business logic, no database changes, no API changes. Aligns with FR-5 requirement (every 30 min). The duplicate inactivity-check removal is safe cleanup.",
+  "recommendation": "Create a task and PR for this branch. The fix is valid, small, and self-contained. Main currently has the wrong schedule (daily instead of every 30 min) and a duplicate cron entry. Should be shipped.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/319f2369-fix-inactivity-schedule",
+    "git fetch origin dev/319f2369-fix-inactivity-schedule",
+    "git log --oneline main..origin/dev/319f2369-fix-inactivity-schedule",
+    "git diff --stat main...origin/dev/319f2369-fix-inactivity-schedule",
+    "git show 61d04f29 --stat + head -50 diff",
+    "grep inactivity product/lead-response/dashboard/vercel.json (on main)",
+    "gh pr list --state all --search '319f2369'",
+    "gh pr list --state all --search 'inactivity-alerts cron'"
+  ]
+}
