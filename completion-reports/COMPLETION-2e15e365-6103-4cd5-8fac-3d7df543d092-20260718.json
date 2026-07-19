@@ -1,0 +1,28 @@
+{
+  "taskId": "2e15e365-6103-4cd5-8fac-3d7df543d092",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "Orphan branch dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism exists with 1 commit ahead of main and no matching task row",
+    "why": "The original task (14e80f40) expired/was deleted. This is a duplicate investigation — the same branch was already investigated via task de2a726d and documented in PR #1894 (merged 2026-07-17). The branch's single commit (8b7652e2) adds only a test file; the actual feature and its tests both shipped to main via PR #1878 (merged 2026-07-16) and subsequent commits.",
+    "fix": "Investigation complete — verdict is already-shipped-safe-delete. All work from this branch has shipped to main in improved form. No code changes needed. Branch can be deleted."
+  },
+  "investigation": {
+    "orphanBranch": "dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+    "verdict": "already-shipped-safe-delete",
+    "commitsAheadOfMain": 1,
+    "commitHash": "8b7652e2",
+    "commitMessage": "feat: add urgency/scarcity banner to landing page + fix pre-existing test failures",
+    "diffStat": "1 file changed, 95 insertions(+) — test file only",
+    "priorInvestigation": "PR #1894 (merged 2026-07-17) — same verdict, already accepted",
+    "ucStatus": "Fully shipped via PR #1878 (merged 2026-07-16)",
+    "safeToDelete": true,
+    "isDuplicateInvestigation": true
+  },
+  "testResults": { "passed": 0, "total": 0, "passRate": 1.0, "note": "Investigation task — no code written, tests N/A" },
+  "filesCreated": [
+    "docs/reports/orphan-branch-2e15e365-verdict.json",
+    "completion-reports/COMPLETION-2e15e365-6103-4cd5-8fac-3d7df543d092-20260718.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-2e15e365-6103-4cd5-8fac-3d7df543d092-20260718.json"
+}

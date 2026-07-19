@@ -1,0 +1,66 @@
+{
+  "taskId": "2e15e365-6103-4cd5-8fac-3d7df543d092",
+  "branch": "dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+  "investigatedAt": "2026-07-18",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "Duplicate investigation: this branch was already fully investigated and documented via PR #1894 (merged 2026-07-17). The UC (fix-no-urgency-or-scarcity-mechanism) is completely shipped. The branch's single commit adds only a test file (95 lines, no production code). All work — feature code and tests — shipped to main via PR #1878 (merged 2026-07-16) and follow-up commits. Safe to delete with no further action.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitHash": "8b7652e2",
+    "commitSubject": "feat: add urgency/scarcity banner to landing page + fix pre-existing test failures",
+    "diffStat": "1 file changed, 95 insertions(+) — test file only, no production code",
+    "changedFiles": [
+      "tests/e2e/fix-no-urgency-or-scarcity-mechanism.test.js (95 lines, new file)"
+    ],
+    "existsOnRemote": true,
+    "priorInvestigation": {
+      "prNumber": 1894,
+      "title": "Investigate orphan branch: dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+      "state": "MERGED",
+      "mergedAt": "2026-07-17T00:50:20Z",
+      "verdict": "already-shipped-safe-delete",
+      "docCommit": "485ea5be"
+    },
+    "relatedPRs": [
+      {
+        "number": 1878,
+        "title": "Fix: Verify and close UC fix-no-urgency-or-scarcity-mechanism",
+        "state": "MERGED",
+        "mergedAt": "2026-07-16T19:14:47Z",
+        "note": "UC fully completed and accepted; supersedes this branch's content"
+      },
+      {
+        "number": 1552,
+        "title": "Dev (re-merge): fix-no-urgency-or-scarcity-mechanism",
+        "headRefName": "dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+        "state": "CLOSED",
+        "mergedAt": null
+      },
+      {
+        "number": 1314,
+        "title": "Dev: fix-no-urgency-or-scarcity-mechanism",
+        "headRefName": "dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+        "state": "CLOSED",
+        "mergedAt": null
+      }
+    ],
+    "workShippedToMain": [
+      "485ea5be docs: investigate orphan branch dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism (#1894)",
+      "a3fdf857 fix: align urgency banner text and regression test with UC acceptance criteria (#1878)",
+      "806c4578 fix: add landing urgency deadline and scarcity regression test",
+      "5bd68dc7 fix: update urgency banner with pilot spots and Q1 2026 deadline"
+    ]
+  },
+  "risk": "none — branch contains only a test file superseded by superior main tests; no production code; UC shipped and closed; prior investigation already merged",
+  "recommendation": "safe-delete — no unmerged value remains. This is a duplicate investigation; prior task (de2a726d) already reached the same verdict and was accepted via PR #1894.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+    "git diff --stat main...origin/dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+    "git ls-remote --heads origin dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+    "gh pr list --state all --search dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+    "gh pr list --state all --search urgency scarcity",
+    "git log --oneline --all | grep -i 14e80f40",
+    "gh pr view 1894 --json title,body,mergedAt,state",
+    "git show 485ea5be --stat"
+  ]
+}
