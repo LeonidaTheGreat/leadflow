@@ -1,0 +1,60 @@
+{
+  "taskId": "15572e3e-8d45-40b0-9945-116798fa5bd1",
+  "status": "completed",
+  "verdict": "shippable-needs-task-pr",
+  "branch": "dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+  "investigation": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      "6a13f966 fix: plaintext_token code quality issue (2026-04-24 19:57)",
+      "57b3c284 test: E2E test verifying token URLs not stored in email_events metadata (2026-04-24 21:10)"
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/lib/email-service.ts (+4/-2, removes resetUrl and inviteUrl from sendEmail() metadata args)",
+      "product/lead-response/dashboard/tests/4b9cb6bf-token-not-logged-in-email-events.test.js (+153 new E2E test)"
+    ],
+    "pr": {
+      "number": 1311,
+      "title": "Fix code quality: Token possibly stored without hashing",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-04-27T04:31:53Z",
+      "closedReason": "Closed without merge — original task row 46e03c87-c56f-49c3-ad9e-1d3787e20148 absent from tasks table (purged)"
+    },
+    "originalTask": {
+      "id": "46e03c87-c56f-49c3-ad9e-1d3787e20148",
+      "foundInDB": false,
+      "note": "Task row missing — deleted/purged from tasks table, confirming orphan status"
+    },
+    "fixOnMain": {
+      "landed": false,
+      "evidence": "git log main -- email-service.ts shows no commit removing resetUrl/inviteUrl from metadata. Current main line 521: 'resetUrl: data.resetUrl', line 802: 'inviteUrl: data.inviteUrl' — both still log raw token URLs to email_events metadata.",
+      "subsequentFixesForSameTitle": "10+ tasks titled 'Fix code quality: Token possibly stored without hashing' exist (done/failed/cancelled), but each targeted a DIFFERENT file (admin/outreach/blast/route.ts, admin/demo-link/route.ts, AuthService.ts, etc.) — none fixed the email-service.ts resetUrl/inviteUrl logging"
+    }
+  },
+  "risk": "MEDIUM",
+  "riskReason": "Branch is 85+ days old. email-service.ts has had 4 subsequent commits on main (#1573, #1475, #1397, #1212) — a direct merge would likely conflict. The security issue (raw token URLs stored in email_events metadata) is real and unfixed on main.",
+  "recommendation": "Create a new dev task to re-implement this fix on a fresh branch from main. The change is small (2 function calls, remove resetUrl and inviteUrl from sendEmail() metadata args in sendPasswordResetEmail() and sendPilotInviteEmail()). Do NOT attempt to merge this branch directly — too many email-service.ts changes since April 24 will cause conflicts. Safe to delete this branch after the new task is created.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git diff --stat main...origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git ls-remote --heads origin dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "gh pr list --state all --head dev/46e03c87-fix-code-quality-token-possibly-stored-w --json number,title,state,mergedAt,url",
+    "gh pr view 1311 --json number,title,state,mergedAt,closedAt,body,labels",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name,pr_number FROM tasks WHERE id = '46e03c87-c56f-49c3-ad9e-1d3787e20148'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name,pr_number FROM tasks WHERE title ILIKE '%token%stored%' ORDER BY created_at DESC\"",
+    "git diff main...origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w -- product/lead-response/dashboard/lib/email-service.ts",
+    "git log --oneline main | grep -i 'token|plaintext|email-service'",
+    "git log --oneline main -- product/lead-response/dashboard/lib/email-service.ts",
+    "grep -n 'resetUrl|inviteUrl|plaintext' product/lead-response/dashboard/lib/email-service.ts"
+  ],
+  "rootCauseAnalysis": {
+    "failurePoint": "PR #1311 closed without merge on 2026-04-27; original task row purged from DB",
+    "why": "The task ID 46e03c87-c56f-49c3-ad9e-1d3787e20148 no longer exists in the tasks table. PR was auto-closed (likely due to awaiting_merge exhaustion or a failed QC gate) without landing the fix. The code review scanner continued detecting the same plaintext_token issue and spawned new tasks, but each subsequent task targeted a different file — the email-service.ts resetUrl/inviteUrl issue was never re-addressed.",
+    "fix": "New task required to apply the 2-line fix (remove resetUrl/inviteUrl from sendEmail() metadata) to a fresh branch"
+  },
+  "testResults": { "passed": 0, "total": 0, "passRate": 1.0, "note": "Metadata-only investigation — no code changes, no tests run" },
+  "filesCreated": ["completion-reports/COMPLETION-15572e3e-8d45-40b0-9945-116798fa5bd1-20260719.json"],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-15572e3e-8d45-40b0-9945-116798fa5bd1-20260719.json"
+}
