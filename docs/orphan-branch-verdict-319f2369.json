@@ -1,0 +1,49 @@
+{
+  "verdict": "shippable-needs-task-pr",
+  "branch": "dev/319f2369-fix-inactivity-schedule",
+  "commitSHA": "61d04f299fc89d3050586bba94966db825bcb4a2",
+  "commitDate": "2026-05-16T20:12:16-04:00",
+  "commitSubject": "fix: set inactivity-alerts cron to */30 schedule; add unit test",
+  "evidence": {
+    "taskRecord": null,
+    "prSearch": "No PR found for this branch. Related PR #242 (dev/24f3078f-dev-fix-inactivity-alerting-cron-not-imp) implemented the feature and was MERGED 2026-03-11 — this branch is a follow-up schedule-correction fix.",
+    "remoteExists": true,
+    "commitsAheadOfMain": 1,
+    "filesChanged": [
+      "product/lead-response/dashboard/vercel.json (6 lines changed — changes inactivity-alerts cron from '0 9 * * *' daily to '*/30 * * * *' every 30 min; removes duplicate inactivity-check entry)",
+      "tests/unit/inactivity-alerts-cron.test.js (288 lines added — new unit test covering dedup, dry-run, and alert paths)"
+    ],
+    "fixOnMain": false,
+    "mainVercelJsonState": "vercel.json on main has inactivity-alerts at '0 9 * * *' (daily) with a duplicate inactivity-check entry at '0 9 * * *' — regression is present",
+    "unitTestOnMain": false,
+    "mergeBase": "54c28f4650f7b3359e7d11c4ea87cfe35fa6dd84"
+  },
+  "rootCause": {
+    "whyOrphan": "Commit message references a 're-merge' conflict ('conflicting re-merge') that overwrote the correct */30 schedule with the old daily schedule. Task row is missing — the branch was authored by Stojan Madjunkov directly on 2026-05-16, likely as a manual hotfix that never got a corresponding task created or PR opened.",
+    "fixDescription": "FR-5 requires the inactivity-alerts cron to fire every 30 minutes, not daily. The vercel.json regression set it back to '0 9 * * *'. Branch corrects the schedule to '*/30 * * * *', removes the duplicate inactivity-check cron entry, and adds a 288-line unit test that validates dedup, dry-run, and alert code paths without requiring the Next.js runtime."
+  },
+  "risk": {
+    "level": "low",
+    "factors": [
+      "Branch is 2 months old (May 2026 vs July 2026 current date) — merge-base is close to recent main commits",
+      "vercel.json is a simple JSON config — no logic changes, no migrations",
+      "Unit test is new file — no conflict risk",
+      "Changing from daily to every-30-min cron could increase Vercel function invocations; acceptable per FR-5 spec"
+    ]
+  },
+  "recommendation": "shippable-needs-task-pr — the fix corrects a real regression (FR-5 requires 30-min cron, main currently fires daily). Branch is recent, low-risk, and already includes a unit test. Create a task + PR to QC and merge this branch. If the branch has drifted from current main, a rebase is likely clean given the only changed files are vercel.json and a new test file.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/319f2369-fix-inactivity-schedule",
+    "git fetch origin dev/319f2369-fix-inactivity-schedule",
+    "git log --oneline main..origin/dev/319f2369-fix-inactivity-schedule",
+    "git diff --stat main...origin/dev/319f2369-fix-inactivity-schedule",
+    "git log --format='%H %s %ad %an' --date=short origin/dev/319f2369-fix-inactivity-schedule -5",
+    "git show origin/dev/319f2369-fix-inactivity-schedule --stat",
+    "gh pr list --state all --search '319f2369'",
+    "gh pr list --state all --search 'inactivity-schedule'",
+    "gh pr list --state all --search 'inactivity-alerts cron'",
+    "git log --oneline main | grep 'inactivity|cron'",
+    "git show main:product/lead-response/dashboard/vercel.json (grep inactivity)",
+    "git merge-base main origin/dev/319f2369-fix-inactivity-schedule"
+  ]
+}
