@@ -1,0 +1,47 @@
+{
+  "branch": "dev/319f2369-fix-inactivity-schedule",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": [
+      "61d04f29 fix: set inactivity-alerts cron to */30 schedule; add unit test"
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/vercel.json (6 lines: schedule change + duplicate entry removal)",
+      "tests/unit/inactivity-alerts-cron.test.js (288 lines: new unit test file)"
+    ],
+    "whatTheFixDoes": "Changes inactivity-alerts cron from '0 9 * * *' (daily 9am) to '*/30 * * * *' (every 30 min) as FR-5 requires; removes duplicate inactivity-check entry; adds unit test for dedup/dry-run/alert paths",
+    "mainCurrentState": "vercel.json on main still has '0 9 * * *' for BOTH inactivity-alerts and inactivity-check — the fix has NOT landed",
+    "supersededBy": [
+      {
+        "branch": "origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+        "headCommit": "8c68d591 feat: fix inactivity alerting cron — schema, schedule, dedup",
+        "scope": "6 files changed (+786/-91): route.ts refactor + TypeScript tests + vercel.json + js unit tests — more comprehensive than orphan"
+      },
+      {
+        "branch": "origin/dev/f9d4a596-dev-re-merge-fix-inactivity-alerting-cro",
+        "headCommit": "ed7ab427 feat: implement inactivity alerting cron for pilots >72h inactive",
+        "scope": "Also ahead of main, contains implementation changes"
+      }
+    ],
+    "relatedMergedPRs": [
+      "#767: fix: handle Date object for alerted_at in inactivity-alerts endpoint",
+      "#242: Dev: fix-inactivity-alerting-cron-not-implemented"
+    ],
+    "remoteExists": true,
+    "remoteSHA": "61d04f299fc89d3050586bba94966db825bcb4a2"
+  },
+  "risk": "LOW — the orphan branch's changes (schedule fix + unit test) are a strict subset of what the re-merge branches contain. The re-merge branches also address route.ts schema bugs. No unique work in this orphan that isn't covered by the re-merge branches.",
+  "recommendation": "Safe to delete this orphan branch once either re-merge branch (dev/eef5e2b6 or dev/f9d4a596) lands on main. The underlying issue (wrong cron schedule) remains unresolved on main — whoever owns the re-merge branches should be unblocked to proceed. Do NOT delete before a re-merge branch is merged.",
+  "commandsRun": [
+    "git fetch origin dev/319f2369-fix-inactivity-schedule",
+    "git log --oneline main..origin/dev/319f2369-fix-inactivity-schedule",
+    "git diff --stat main...origin/dev/319f2369-fix-inactivity-schedule",
+    "git ls-remote --heads origin dev/319f2369-fix-inactivity-schedule",
+    "git log --oneline --all | grep inactivity",
+    "git branch -r --contains 8c68d591",
+    "git branch -r --contains ed7ab427",
+    "git show HEAD:product/lead-response/dashboard/vercel.json (grep inactivity)",
+    "git show 61d04f29:product/lead-response/dashboard/vercel.json (grep inactivity)",
+    "git diff --stat main...origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro"
+  ]
+}
