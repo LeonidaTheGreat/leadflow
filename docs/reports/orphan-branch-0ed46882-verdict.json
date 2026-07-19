@@ -1,0 +1,96 @@
+{
+  "taskId": "c8ea1403-e7a1-462e-bc80-454789d711d7",
+  "investigatedBranch": "dev/0ed46882-dev-re-merge-fix-three-consecutive-verce",
+  "verdict": "duplicate/superseded",
+  "verdictSummary": "This orphan branch contains a single comment-only TypeScript clarification commit that is a strict subset of dev/779a4936-dev-re-merge-fix-three-consecutive-verce, which carries the same fix plus regression tests. Safe to delete.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR (investigation task c8ea1403) adds ONLY this verdict JSON file. It does NOT modify any source code, CI configuration, service files, package.json, or tests. QC should review only this JSON document.",
+    "filesChanged": ["docs/reports/orphan-branch-0ed46882-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "orphanBranchMetadata": {
+    "branch": "dev/0ed46882-dev-re-merge-fix-three-consecutive-verce",
+    "headSha": "264c9938e04a03ab96e2fb8460cce073a95f35b7",
+    "commitSubject": "fix(ts): resolve TS2339 and TS2345 TypeScript errors causing Vercel build failures",
+    "commitAuthor": "Stojan Madjunkov",
+    "commitDate": "2026-05-14T23:01:55-04:00",
+    "commitsAheadOfMain": 1,
+    "existsOnRemote": true,
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (+3 lines — clarifying comment only)",
+      "product/lead-response/dashboard/app/pilot/page.tsx (+2 lines — clarifying comment only)"
+    ],
+    "changeNature": "Comment-only additions. No functional logic changed. Comments clarify TS2339/TS2345 non-errors to prevent future misdiagnosis."
+  },
+
+  "evidence": {
+    "supersedingBranch": {
+      "branch": "dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+      "commitsAheadOfMain": 2,
+      "commits": [
+        {
+          "sha": "8867c0ff",
+          "subject": "fix(ts): resolve TS2339 and TS2345 TypeScript errors causing Vercel build failures",
+          "date": "2026-05-14T23:01:55-04:00",
+          "stat": "Same 2 files, same +5 lines as orphan — identical fix"
+        },
+        {
+          "sha": "12d32a16",
+          "subject": "test: add TS2339 and TS2345 regression tests for Vercel build failures",
+          "stat": "dashboard/__tests__/ts-regression-vercel-build.test.ts (+87 lines)"
+        }
+      ],
+      "note": "dev/779a4936 is a strict superset of dev/0ed46882. It has the same fix (8867c0ff) PLUS a regression test suite (12d32a16). The orphan branch is redundant."
+    },
+    "relatedHistory": [
+      {
+        "prNumber": 165,
+        "branch": "dev/b8e76868-dev-fix-three-consecutive-vercel-builds-",
+        "state": "MERGED",
+        "mergedAt": "2026-03-11T00:14:17Z",
+        "note": "Original fix PR for the same use case (different implementation cycle)"
+      },
+      {
+        "prNumber": 1643,
+        "branch": "dev/d2e9f539-dev-re-merge-fix-three-consecutive-verce",
+        "state": "CLOSED",
+        "closedAt": "2026-05-20T00:30:16Z",
+        "mergedAt": null,
+        "note": "A prior re-merge attempt — CLOSED without merge, branch deleted"
+      },
+      {
+        "prNumber": 1964,
+        "branch": "dev/de3b67e0-investigate-orphan-branch-dev-0047d8d9-d",
+        "state": "MERGED",
+        "mergedAt": "2026-07-19T14:46:04Z",
+        "note": "Investigation of a sibling orphan (0047d8d9) for the same fix-three-consecutive-vercel UC — merged today"
+      }
+    ],
+    "fixOnMain": {
+      "landed": false,
+      "note": "The TS clarification comments are NOT yet on main. They exist only on dev/779a4936 (not merged). However, dev/779a4936 is the correct vehicle — it carries the fix plus tests. The orphan (0ed46882) should NOT be the merge vehicle."
+    }
+  },
+
+  "risk": "low",
+  "riskReason": "Changes are comment-only (no functional code). The same comments exist on dev/779a4936 which also has regression tests. Deleting the orphan loses nothing — dev/779a4936 preserves all content and more.",
+
+  "recommendation": "Safe to delete dev/0ed46882-dev-re-merge-fix-three-consecutive-verce. Its single commit is a strict subset of dev/779a4936, which should be the merge target. No cherry-pick needed from the orphan.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/0ed46882-dev-re-merge-fix-three-consecutive-verce",
+    "git diff --stat main...origin/dev/0ed46882-dev-re-merge-fix-three-consecutive-verce",
+    "git ls-remote --heads origin dev/0ed46882-dev-re-merge-fix-three-consecutive-verce",
+    "git log --oneline --all | grep -i 'ts2339|ts2345|vercel build fail'",
+    "git show --stat 8867c0ff",
+    "git branch -r --contains 8867c0ff",
+    "git log --oneline origin/dev/779a4936-dev-re-merge-fix-three-consecutive-verce ^origin/main",
+    "git diff --stat origin/dev/0ed46882...origin/dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+    "git merge-base --is-ancestor 8867c0ff origin/main",
+    "gh pr list --state all --search 'three consecutive vercel'",
+    "gh pr list --state all --search 're-merge fix-three-consecutive'",
+    "gh pr view 1643 --json number,title,state,body,mergedAt,closedAt,headRefName"
+  ]
+}
