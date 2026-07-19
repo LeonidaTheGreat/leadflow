@@ -18,7 +18,6 @@
   },
   "name": "fub-ai-lead-response",
   "version": "1.0.0",
-  "testSuiteFloor": 0,
   "description": "FUB Webhook Integration - Receives FUB events and triggers AI SMS",
   "main": "server.js",
   "scripts": {
