@@ -1,0 +1,49 @@
+{
+  "taskId": "971bc4c2-5d1e-40ad-8dc2-7f4bf9b7d233",
+  "orphanBranch": "dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+  "verdict": "duplicate/superseded",
+  "risk": "low",
+  "recommendation": "safe-delete",
+  "summary": "Branch adds test-only code (173 lines) testing _buildExportRiskWarnings() — a genome internal function. The production fix shipped in genome repo (PR #484, squash dcc411d). Genome already has its own comprehensive coverage for this function at genome/tests/spawn-message-builder.test.js. LeadFlow main received only a docs commit (PR #1913, merged 2026-07-17). These tests are misplaced (genome internals tested from leadflow) and redundant.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "uniqueCommit": {
+      "sha": "58871aa4e7f472549da69ecd03abd8aa63f3bc8f",
+      "subject": "test: add leadflow integration tests for export risk warning improvements",
+      "author": "Stojan Madjunkov",
+      "date": "2026-05-05",
+      "filesChanged": ["tests/genome/spawn-message-export-risk-warning.test.js"],
+      "linesAdded": 173,
+      "linesRemoved": 0
+    },
+    "existsOnRemote": true,
+    "remoteHead": "58871aa4e7f472549da69ecd03abd8aa63f3bc8f",
+    "matchingTaskRowInDB": null,
+    "functionUnderTest": "_buildExportRiskWarnings() in genome/core/food/spawn-message-builder.js",
+    "genomeAlreadyCoversWith": "genome/tests/spawn-message-builder.test.js",
+    "productionFixShippedTo": "genome repo PR #484 (squash dcc411d)",
+    "leadflowMainUpdate": "PR #1913 merged 2026-07-17 — docs/fix-agent-retry-rate-alt-approach.md only"
+  },
+  "whyNotShippable": [
+    "Tests target genome internals but live in leadflow/tests/genome/ — wrong location",
+    "Genome already has its own test suite covering _buildExportRiskWarnings()",
+    "The production code (retry-context.js, spawn-message-builder) lives in genome, not leadflow",
+    "No task row exists for ID 377200e1"
+  ],
+  "commandsRun": [
+    "git ls-remote --heads origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git fetch origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git log --oneline main..origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git diff --stat main...origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git show --stat 58871aa4",
+    "git log --format='%H %s %ad %an' --date=short origin/dev/377200e1-... | head -5",
+    "git show origin/dev/377200e1-... --name-only --format=''",
+    "ls /Users/clawdbot/projects/leadflow/tests/genome/",
+    "grep -r '_buildExportRiskWarnings' /Users/clawdbot/projects/genome/ --include='*.js' -l",
+    "grep -n '_buildExportRiskWarnings' /Users/clawdbot/projects/genome/tests/spawn-message-builder.test.js | head -10",
+    "git log --format='%H %s' main | grep -i 'export.risk|retry.rate|spawn.message'",
+    "git show 0ed667b1 --stat",
+    "psql openclaw: SELECT tasks WHERE CAST(id AS TEXT) LIKE '377200e1%'",
+    "psql openclaw: SELECT tasks WHERE title ILIKE '%export risk%' OR title ILIKE '%retry rate%'"
+  ]
+}
