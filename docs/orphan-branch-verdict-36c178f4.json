@@ -1,0 +1,101 @@
+{
+  "taskId": "4677c889-6a16-413d-9bec-bad841d2498b",
+  "branch": "dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+  "verdict": "shippable-needs-task-pr",
+  "taskSpec": {
+    "what": "Create docs/orphan-branch-verdict-36c178f4.json only; no product files, routes, services, tests, schemas, generated dashboards, or branch contents are modified.",
+    "verify": "Run metadata-only git commands, targeted local searches, npm test, npm run build, and git status; expected result is a JSON verdict file, successful test/build exits, and only this report file staged.",
+    "boundaries": "Do not read full file contents from the orphan branch, do not read full diffs over 200 lines, do not delete the orphan branch, do not create a PR, do not merge, and do not touch protected generated files."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote-tracking branch origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b contains two commits ahead of main but no locally discoverable task or PR linkage.",
+    "why": "The branch appears to be feature implementation work that was created outside the normal task-to-PR lifecycle or lost its task association; local repository search found no references to the branch name, short SHA, or commit subjects in tracked project metadata, while live GitHub and local PostgreSQL task lookups were blocked by sandbox/network policy.",
+    "fix": "Record the metadata verdict so the orchestrator can create or attach a proper task/PR before any merge decision; do not auto-delete because the feature is not present on main."
+  },
+  "evidence": {
+    "remoteTrackingRef": "refs/remotes/origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b -> 31daea60fd195e235d3936371983a25d8a87f90a",
+    "lsRemote": "Blocked: git ls-remote failed with DNS error for github.com in this sandbox.",
+    "commitsAheadOfMain": [
+      "31daea60 feat: build distinct dashboard reports page and API",
+      "6f0447c4 docs: add marketing copy brief for session analytics agent dashboard"
+    ],
+    "diffStat": {
+      "filesChanged": 9,
+      "insertions": 912,
+      "deletions": 10,
+      "paths": [
+        "docs/design/DESIGN-SPEC-SESSION-ANALYTICS-MARKETING.md (+381)",
+        "product/lead-response/dashboard/app/api/reports/summary/route.ts (+46)",
+        "product/lead-response/dashboard/app/dashboard/dashboard-nav.test.ts (+/-)",
+        "product/lead-response/dashboard/app/dashboard/dashboard-nav.test.tsx (+/-)",
+        "product/lead-response/dashboard/app/dashboard/dashboard-nav.tsx (+/-)",
+        "product/lead-response/dashboard/app/dashboard/reports/page.tsx (+52)",
+        "product/lead-response/dashboard/components/dashboard/ReportsDashboard.tsx (+159)",
+        "product/lead-response/dashboard/lib/services/ReportsService.ts (+169)",
+        "product/lead-response/dashboard/tests/reports-service.test.ts (+98)"
+      ]
+    },
+    "mainState": "git ls-tree on main found no matching reports summary route, reports page, ReportsDashboard, ReportsService, reports-service test, or session analytics design spec paths.",
+    "relatedBranches": [
+      "origin/pm/823c9c5d-alt-approach-reports-page contains patch-equivalent commits cf300f7f and 27e5a192 plus an additional PRD file in its stat.",
+      "sync/main-2026-05-29T10-33-01 and sync/main-2026-05-29T10-35-48 contain the orphan commits, but current main does not."
+    ],
+    "patchIdentity": [
+      "31daea60 and cf300f7f share stable patch-id ba37f175481219bfe43b1b5a3cd4bfb9709847b4.",
+      "6f0447c4 and 27e5a192 share stable patch-id 7994f40c4afa9475e309afe0bf03b25c60d32eae."
+    ],
+    "prIssueTaskSearch": {
+      "localTextSearch": "No tracked-file hits for branch name, 36c178f4, 31daea60, 6f0447c4, or commit subjects.",
+      "githubPrSearch": "Blocked: gh pr list could not connect to api.github.com.",
+      "githubIssueSearch": "Blocked: gh issue list could not connect to api.github.com.",
+      "taskDbSearch": "Blocked: psql to localhost/openclaw failed with Operation not permitted; TaskStore has no getTasks method in this runtime."
+    }
+  },
+  "risk": {
+    "level": "medium",
+    "factors": [
+      "Feature branch is not merged into current main.",
+      "Changes are substantive dashboard/API/service/test work, not metadata-only cleanup.",
+      "Live GitHub PR/issue and database task verification could not be completed from this sandbox.",
+      "Patch-equivalent work exists on another non-main branch, suggesting possible duplicate branch handling is needed before opening a PR."
+    ]
+  },
+  "recommendation": "Create or attach a proper task and PR for this work before any merge decision. Prefer reviewing the newer/PM alternative branch relationship first because origin/pm/823c9c5d-alt-approach-reports-page carries patch-equivalent commits plus an additional PRD artifact. Do not delete the orphan branch until GitHub/task metadata is checked in an environment with network and database access.",
+  "commandsRun": [
+    "git checkout dev/4677c889-investigate-orphan-branch-dev-36c178f4-d",
+    "git branch --show-current",
+    "sed -n '1,220p' CLAUDE.md",
+    "sed -n '1,220p' ARCHITECTURE.md",
+    "sed -n '1,180p' IDENTITY.md",
+    "sed -n '1,180p' SOUL.md",
+    "sed -n '1,180p' HEARTBEAT.md",
+    "sed -n '1,180p' SKILLS.md",
+    "node ~/projects/genome/scripts/where.js \"Investigate orphan branch\"",
+    "node ~/projects/genome/scripts/graph-search.js \"completion-reports\"",
+    "rg -n \"dev/1c19567f-dev-re-merge-fix-api|dev/0fd668fb-fix-codebase-archite|dev/0047d8d9-dev-re-merge-fix-thr|Investigate orphan branch\" completion-reports docs . 2>/dev/null",
+    "sed -n '1,180p' docs/orphan-branch-verdict-0047d8d9.json",
+    "sed -n '1,180p' docs/orphan-branch-verdict-1c19567f.json",
+    "git log --oneline main..dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "git diff --stat main...dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "git ls-remote --heads origin dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "git branch --all --list '*36c178f4*'",
+    "git show-ref | rg '36c178f4|buyer-journey|real-reports'",
+    "git log --oneline main..origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "git diff --stat main...origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "git show --no-patch --format='%H%n%h%n%an%n%ae%n%ai%n%s%n%b' origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "git merge-base main origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "gh pr list --state all --search 'head:dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b' --json number,state,title,headRefName,baseRefName,mergedAt,closedAt,url",
+    "gh issue list --state all --search '36c178f4 OR \"build distinct dashboard reports page\" OR \"session analytics agent dashboard\"' --json number,state,title,url,closedAt",
+    "rg -n \"36c178f4|31daea60|6f0447c4|build distinct dashboard reports page|session analytics agent dashboard|dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b\" . --glob '!node_modules/**' --glob '!product/lead-response/dashboard/node_modules/**'",
+    "git log --oneline --all --grep='build distinct dashboard reports page\\|session analytics agent dashboard' --regexp-ignore-case",
+    "git branch --all --contains 31daea60fd195e235d3936371983a25d8a87f90a",
+    "git branch --all --contains 6f0447c4be24582a9c1b4b1ee822134fb6e76be6",
+    "git patch-id --stable for commits 31daea60, cf300f7f, 6f0447c4, 27e5a192",
+    "git log --cherry-mark --right-only --oneline main...origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b",
+    "node -e \"const {TaskStore}=require('./task-store'); ...\"",
+    "psql \"$LOCAL_PG_URL\" -c \"select 1 as ok;\"",
+    "git ls-tree -r --name-only main | rg 'reports/summary|dashboard/reports|ReportsDashboard|ReportsService|reports-service.test|SESSION-ANALYTICS-MARKETING|REAL-REPORTS-PAGE'",
+    "git log --oneline --all -- product/lead-response/dashboard/app/dashboard/reports/page.tsx product/lead-response/dashboard/lib/services/ReportsService.ts product/lead-response/dashboard/tests/reports-service.test.ts docs/design/DESIGN-SPEC-SESSION-ANALYTICS-MARKETING.md | head -40",
+    "git diff --name-status main...origin/dev/36c178f4-dev-uc-buyer-journey-real-reports-page-b"
+  ]
+}
