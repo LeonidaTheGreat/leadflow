@@ -1,0 +1,76 @@
+{
+  "taskId": "12fa9024-50d0-46ec-b452-19b868b3c68c",
+  "branch": "dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+  "verdict": "shippable-needs-task-pr",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "0ff0b8e98dd36a1bd84c2a8c77f424a758d06c90",
+        "message": "fix(ts): resolve TS2339 and TS2345 TypeScript errors causing Vercel build failures",
+        "date": "2026-05-17"
+      },
+      {
+        "sha": "5b07927de07056df494ed8f6db0303c18170c462",
+        "message": "fix: add catch() and finally() to QueryBuilder to resolve TS2339 Vercel build failure",
+        "date": "2026-05-17"
+      }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/ts-regression-vercel-build.test.ts (new, 87 lines)",
+      "product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (+2 lines)",
+      "product/lead-response/dashboard/app/pilot/page.tsx (+2 lines)",
+      "product/lead-response/dashboard/lib/db.ts (+17 lines — adds catch() and finally() to QueryBuilder)"
+    ],
+    "taskRowExists": false,
+    "matchingTaskRow": "none — no task has branch_name matching dev/2950d127",
+    "relatedTasksFound": [
+      {
+        "id": "0047d8d9-dff0-4e0d-8cc7-519a6862908d",
+        "title": "Dev (re-merge): fix-three-consecutive-vercel-builds-failing-fix-never-",
+        "status": "failed",
+        "branch": "dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce",
+        "note": "sibling fix branch — investigated today (PR #1964 merged), verdict was shippable-needs-task-pr"
+      },
+      {
+        "id": "c8ea1403-e7a1-462e-bc80-454789d711d7",
+        "title": "Investigate orphan branch: dev/0ed46882-dev-re-merge-fix-three-consecutive-verce",
+        "status": "awaiting_merge",
+        "branch": "dev/c8ea1403-investigate-orphan-branch-dev-0ed46882-d",
+        "note": "sibling investigation currently awaiting_merge (PR #1973 open) — fixes route.ts + page.tsx only, no db.ts fix"
+      },
+      {
+        "id": "d2e9f539-d802-4fa1-9d16-1f3b13903323",
+        "status": "cancelled",
+        "branch": "dev/d2e9f539-dev-re-merge-fix-three-consecutive-verce",
+        "note": "earlier re-merge attempt — PR #1643 closed, cancelled"
+      }
+    ],
+    "isFixOnMain": false,
+    "mainDbTsHasCatchFinally": false,
+    "coreIssue": "QueryBuilder in product/lead-response/dashboard/lib/db.ts implements PromiseLike<any> but only defines then(). Missing catch() and finally() causes TS2339 errors at .catch() call sites, blocking Vercel builds.",
+    "prsSearched": [
+      "head:dev/2950d127 — no PR found",
+      "TS2339 Vercel build — no direct match",
+      "QueryBuilder — PR #1370 (unrelated), PR #1129 (closed refactor)",
+      "fix three consecutive — PR #1973 (open, sibling), PR #1964 (merged, sibling investigation), PR #1643 (closed, earlier attempt), PR #165 (merged, original 2026-03-10)"
+    ]
+  },
+  "risk": "medium — branch is ~2 months old (2026-05-17); may conflict with changes merged since then. The route.ts + page.tsx changes overlap with the sibling branch dev/0ed46882 which is awaiting_merge. The db.ts fix (catch/finally) is the unique unshipped part.",
+  "recommendation": "Create a new dev task to re-implement the QueryBuilder catch()/finally() fix from current main. Do not merge this branch directly — it is too old and the route.ts/page.tsx parts are covered by the sibling dev/0ed46882 already in the merge pipeline. The regression test file (ts-regression-vercel-build.test.ts) should also be included in the new task. Do NOT delete the branch until the new task ships.",
+  "commandsRun": [
+    "git fetch origin dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "git log --oneline main..origin/dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "git diff --stat main...origin/dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "git ls-remote --heads origin dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "gh pr list --search 'head:dev/2950d127-dev-re-merge-fix-three-consecutive-verce' --state all",
+    "gh pr list --search 'fix three consecutive' --state all",
+    "git log --oneline --all -- product/lead-response/dashboard/lib/db.ts",
+    "git show main:product/lead-response/dashboard/lib/db.ts (partial — then/catch/finally section only)",
+    "git branch -a --contains d7a1579e",
+    "gh pr view 1643 (closed related PR)",
+    "gh pr view 1964 (merged sibling investigation)",
+    "gh pr view 1973 (open sibling investigation)",
+    "psql: SELECT tasks WHERE branch_name LIKE '%2950d127%' OR title ILIKE '%three consecutive%'"
+  ]
+}
