@@ -1,0 +1,52 @@
+{
+  "taskId": "098f80d4-5d0d-4d3e-b443-c4061f4efd65",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl",
+  "shortSha": "2f345bc0",
+  "commitSubject": "fix: make npm test independent of missing jest binary",
+  "commitDate": "2026-07-17T20:37:03-04:00",
+  "commitsAheadOfMain": 1,
+  "existsOnRemote": true,
+  "evidence": {
+    "prForThisBranchContent": {
+      "number": 1925,
+      "title": "Investigate orphan branch: dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl",
+      "state": "MERGED",
+      "mergedAt": "2026-07-18T12:07:51Z",
+      "taskId": "8f68f0a2-6a0d-4d6c-9cfe-f3b74d805fd8",
+      "headBranch": "dev/8f68f0a2-investigate-orphan-branch-dev-06b4de87-f",
+      "note": "This exact orphan branch was already investigated; that investigation PR was merged to main."
+    },
+    "supersedingFix": {
+      "number": 1933,
+      "title": "Fix: Quality gate \"tests\" failing in leadflow",
+      "state": "MERGED",
+      "mergedAt": "2026-07-18T17:58:23Z",
+      "headBranch": "dev/ff53febc-fix-quality-gate-tests-failing-in-leadfl",
+      "taskId": "ff53febc-83ec-44a0-a71a-db0bc3739163",
+      "note": "A fresh dev task for the same issue was re-implemented from main after the investigation and merged via PR#1933."
+    },
+    "filesChangedOnOrphan": [
+      ".github/workflows/ci.yml",
+      "docs/reports/fix-agent-retry-rate-alt-approach.md (deleted)",
+      "integrations/test-e2e-flow.js",
+      "package.json",
+      "scripts/test-suite-gate.js (new)"
+    ],
+    "mainConfirmation": "654459ef test: QC E2E verification for orphan branch 06b4de87 investigation (PR #1925)"
+  },
+  "risk": "low",
+  "riskReason": "The fix landed on main via PR#1933. The orphan branch holds pre-investigation work. No unique content is at risk.",
+  "recommendation": "Safe to delete. Branch content was superseded by PR#1933 (merged 2026-07-18). Prior investigation already completed via PR#1925 (merged 2026-07-18). No cherry-pick needed.",
+  "commandsRun": [
+    "git log --oneline main..dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl",
+    "git diff --stat main...dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl",
+    "git ls-remote --heads origin dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl",
+    "gh pr list --state all --search 'dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl'",
+    "gh pr list --state all --search 'fix quality gate tests'",
+    "gh pr view 1925",
+    "gh pr view 1933",
+    "git log --all --oneline | grep 'Investigate orphan\\|06b4de87'",
+    "git show 2f345bc0 --stat"
+  ]
+}
