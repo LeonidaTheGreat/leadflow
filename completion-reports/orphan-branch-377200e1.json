@@ -1,0 +1,38 @@
+{
+  "verdict": "needs-human-review",
+  "branch": "dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+  "shortSha": "58871aa4",
+  "commitSubject": "test: add leadflow integration tests for export risk warning improvements",
+  "commitDate": "2026-05-05T07:00:24-0400",
+  "author": "Stojan Madjunkov",
+  "filesChanged": ["tests/genome/spawn-message-export-risk-warning.test.js"],
+  "linesChanged": "+173 / -0",
+  "evidence": {
+    "brokenImportPath": {
+      "pathInTest": "/Users/clawdbot/.openclaw/genome/core/spawn-message-builder",
+      "actualModulePath": "/Users/clawdbot/projects/genome/core/food/spawn-message-builder.js",
+      "note": "~/.openclaw/genome/core/ does not exist — only ~/.openclaw/genome/state/ is present. Genome was migrated to ~/projects/genome/. The test would fail at import with MODULE_NOT_FOUND."
+    },
+    "duplicateCoverage": {
+      "genomeTestExists": "/Users/clawdbot/projects/genome/tests/spawn-message-builder.test.js",
+      "note": "Genome already has its own tests for _buildExportRiskWarnings in spawn-message-builder.js. This branch adds a second set of tests in the leadflow repo pointing at the wrong path."
+    },
+    "noPR": "No open or closed PR found for this branch (GitHub API rate-limited; git log search found no matching PR merge commit).",
+    "noTaskRow": "Task description confirms no matching task row exists in the DB.",
+    "ageMonths": "~2.5 months old (May 5 → July 19)"
+  },
+  "risk": "LOW — test-only change; no business logic, no service code, no schema changes. Cannot break production. However, the test file is broken (wrong import path) and tests a genome-internal module from the wrong repo.",
+  "recommendation": "Safe to delete — the tests are broken (MODULE_NOT_FOUND at import), genome already covers this module in its own test suite, and the branch is 2.5 months old with no open PR. If the export-risk-warning improvements for agents are still desired, the correct fix is to update the import path in ~/projects/genome/tests/spawn-message-builder.test.js, not to add tests in the leadflow repo.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git diff --stat main...origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git ls-remote --heads origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git show --stat 58871aa4",
+    "git log --oneline --all | grep -i 'export-risk|retry-rate|377200e1'",
+    "git diff --name-only main...origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git show origin/dev/377200e1-...:tests/genome/spawn-message-export-risk-warning.test.js | head -40",
+    "grep -r '_buildExportRiskWarnings' /Users/clawdbot/projects/genome/ --include='*.js' -l",
+    "ls /Users/clawdbot/.openclaw/genome/",
+    "ls /Users/clawdbot/projects/genome/tests/spawn-message-builder.test.js"
+  ]
+}
