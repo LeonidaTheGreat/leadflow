@@ -1,0 +1,63 @@
+{
+  "branch": "dev/3e48a9c3-dev-re-merge-fix-utm-fix-branch-not-merg",
+  "investigatedAt": "2026-07-19",
+  "taskId": "8e83775f-9a17-4247-9f18-d5fcc7faef87",
+  "verdict": "duplicate/superseded",
+  "risk": "low",
+  "recommendation": "safe-delete — content was superseded by PRs #314, #515, #1131, #1142, and #1740. Branch is 2 months stale with no PR ever created. Merging would reintroduce a file (lib/onboarding-telemetry.js) intentionally deleted during refactoring.",
+  "evidence": {
+    "commitsAheadOfMain": 5,
+    "branchCreatedApprox": "2026-05-19",
+    "lastCommitDate": "2026-05-19",
+    "mainCommitsAhead": 1138,
+    "remoteExists": true,
+    "prForBranch": null,
+    "commits": [
+      "b01be7ca docs: PRD for repository structure cleanup",
+      "1eaa7492 fix: update auth assertions to accept session-based admin auth",
+      "1820d991 fix: make UTM E2E test Jest-compatible — regex fix + Jest wrapper",
+      "5598dd64 feat: add missing UTM-branch artifacts — telemetry, migration, tests",
+      "5de82f03 fix: add missing pre-commit hook stubs and fix UTM E2E test path"
+    ],
+    "filesChanged": [
+      "docs/prd/PRD-LEADFLOW-REPO-RESTRUCTURE-001.md (+222 lines)",
+      "docs/prd/ (phase2 PRD, +503 lines)",
+      "lib/onboarding-telemetry.js (+38 lines)",
+      "migrations/014_pilot_invites.sql (+17 lines)",
+      "tests/e2e/trial-signup-form.duplicate-email.test.tsx (-17 lines deleted)",
+      "tests/e2e/82660aae-qc-utm-branch-merge-e2e.test.js (modified)",
+      "tests/feat-admin-pilot-invite-flow-e2e.test.js (+11 lines)",
+      "tests/feat-admin-pilot-invite-flow-qc.test.js (+9 lines)",
+      "tests/feat-onboarding-completion-telemetry.test.js (+14 lines)"
+    ],
+    "keyFindings": {
+      "libOnboardingTelemetry": "Added to main in PR #314 (2026-03-15), then DELETED in refactoring PRs #1131 and #1142. Branch re-adds the deleted file — merging would conflict with intentional refactoring.",
+      "migration014PilotInvites": "Slot 014 is absent from main (sequence goes 013→015). Pilot invites table was eventually created via a different path — migrations 019 (fix_pilot_invites_token_type) and 025 (add_pilot_invites_accepted_at) both exist on main, implying the table exists via another route. Adding migration 014 now would be a no-op at best, schema error at worst.",
+      "testFiles": "Tests for admin-pilot-invite-flow and onboarding-telemetry were added to main in PR #314 and #515, then modified in PR #1209. Branch versions are older pre-refactor copies.",
+      "utmCaptureFunctionality": "PR #1740 ('complete UTM parameter capture end-to-end for pilot signups', merged) fully supersedes the UTM fix intent of this branch."
+    },
+    "relatedPRs": [
+      {"number": 314, "state": "MERGED", "mergedAt": "2026-03-15", "title": "Dev: fix-utm-fix-branch-not-merged-to-main-fix-undeployed", "note": "Original UTM fix — shipped the same content this branch carries"},
+      {"number": 515, "state": "MERGED", "title": "Dev (re-merge): feat-admin-pilot-invite-flow", "note": "Admin pilot invite flow landed on main"},
+      {"number": 1131, "state": "MERGED", "title": "Refactor Phase 4B: Rewire BillingService", "note": "Deleted lib/onboarding-telemetry.js during refactoring"},
+      {"number": 1142, "state": "MERGED", "title": "Refactor Phase 4D-v2: delete remaining old lib/ files", "note": "Confirmed deletion of lib/onboarding-telemetry.js"},
+      {"number": 1657, "state": "CLOSED", "closedAt": "2026-05-22", "title": "Dev (re-merge): fix-utm-fix-branch-not-merged-to-main-fix-undeployed", "note": "Prior re-merge attempt — closed without merge"},
+      {"number": 1740, "state": "MERGED", "title": "feat: complete UTM parameter capture end-to-end for pilot signups", "note": "Supersedes this branch's UTM fix intent"},
+      {"number": 1773, "state": "CLOSED", "closedAt": "2026-06-10", "title": "Fix: Merge P2 needs_merge branches: fix-utm-fix-branch-not-merged", "note": "Explicit attempt to merge this content — closed without merge, abandoned"}
+    ]
+  },
+  "commandsRun": [
+    "git log --oneline main..origin/dev/3e48a9c3-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git diff --stat main...origin/dev/3e48a9c3-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git ls-remote --heads origin dev/3e48a9c3-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "gh pr list --search 'head:dev/3e48a9c3-dev-re-merge-fix-utm-fix-branch-not-merg' --state all",
+    "gh pr list --search 'utm fix branch' --state all",
+    "git merge-base main origin/dev/3e48a9c3-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git show main:lib/onboarding-telemetry.js",
+    "git show main:migrations/014_pilot_invites.sql",
+    "git ls-tree --name-only main migrations/",
+    "git log --all --oneline --diff-filter=A -- lib/onboarding-telemetry.js",
+    "git log --oneline main -- lib/onboarding-telemetry.js",
+    "git log --oneline main -- tests/feat-admin-pilot*"
+  ]
+}
