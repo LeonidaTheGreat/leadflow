@@ -1,0 +1,61 @@
+{
+  "investigatedBranch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "investigatedAt": "2026-07-19",
+  "taskId": "425c7390-3725-439c-bedf-3df3e52df88f",
+  "verdict": "needs-human-review",
+  "summary": "Branch contains 2 commits (April 23, 2026) adding a workflow kickoff task seed and an E2E test for UC 'fix-pilot-outreach-has-not-happened-11-days-left'. No task row exists in the DB for this branch (task ID 3507c881 absent). The UC is currently blocked_human. A parallel orphan branch dev/7f073104 also targets the same UC with a different fix approach. Both branches need to be compared before either is deleted.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commitLog": [
+      {
+        "sha": "a3b0e3a2",
+        "message": "feat: add pilot outreach workflow kickoff task",
+        "files": [".local-tasks.json", "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md"]
+      },
+      {
+        "sha": "12a11d63",
+        "message": "test: E2E test for pilot outreach uc_no_tasks seed",
+        "files": ["tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js"]
+      }
+    ],
+    "diffStat": {
+      ".local-tasks.json": "+36 lines",
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md": "+35 lines (new)",
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js": "+81 lines (new)"
+    },
+    "noMatchingTaskRow": true,
+    "relatedUC": {
+      "id": "fix-pilot-outreach-has-not-happened-11-days-left",
+      "name": "Pilot outreach has not happened — 11 days left",
+      "implementation_status": "blocked_human",
+      "updated_at": "2026-05-29"
+    },
+    "priorAttempts": [
+      {"taskId": "4e0baefc", "status": "cancelled", "date": "2026-04-21"},
+      {"taskId": "fe12c74c", "status": "cancelled", "date": "2026-04-22", "pr": 1579},
+      {"taskId": "faf0f478", "status": "cancelled", "date": "2026-05-14", "pr": 1626},
+      {"taskId": "34f585c0", "status": "failed", "date": "2026-05-14", "pr": 1642, "note": "rescue attempt"},
+      {"taskId": "e2fc5e99", "status": "done", "date": "2026-05-18", "agent": "product", "note": "PM re-spec — no subsequent dev task confirmed"}
+    ],
+    "parallelOrphanBranch": {
+      "branch": "dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+      "sha": "b744168c",
+      "commitsAheadOfMain": 2,
+      "approach": "marks stalled pilot outreach as blocked in gtm-status (different from kickoff task seed approach)"
+    }
+  },
+  "risk": "LOW — branch contains only local dev artifacts (.local-tasks.json, task-spec .md) and one E2E test. No production routes, services, or schema changes. Merging would not break production.",
+  "recommendation": "Human review required before merging or deleting. (1) If UC 'fix-pilot-outreach-has-not-happened-11-days-left' is abandoned (blocked_human since May 2026 with no forward progress), delete both this branch and dev/7f073104. (2) If UC is still active, compare this branch's kickoff-task-seed approach vs dev/7f073104's gtm-status-fix approach and pick one. (3) The UC has 5+ failed/cancelled attempts — consider formally closing it if human action has not occurred.",
+  "commandsRun": [
+    "git fetch origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --stat main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline main..origin/dev/3507c881 --name-only",
+    "git ls-remote --heads origin | grep pilot-outreach",
+    "git fetch origin dev/7f073104 && git log --oneline main..origin/dev/7f073104",
+    "psql: SELECT tasks WHERE branch_name LIKE '%3507c881%' OR title ILIKE '%pilot outreach%'",
+    "psql: SELECT use_cases WHERE name ILIKE '%pilot outreach%'",
+    "psql: SELECT code_reviews WHERE branch_name LIKE '%pilot-outreach%'"
+  ]
+}
