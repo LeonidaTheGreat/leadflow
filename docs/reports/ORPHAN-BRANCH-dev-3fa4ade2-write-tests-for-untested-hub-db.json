@@ -1,0 +1,69 @@
+{
+  "taskId": "114be10c-9551-43f0-8422-597bacaaae1d",
+  "investigatedBranch": "dev/3fa4ade2-write-tests-for-untested-hub-db",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch added Jest + 65 lines of db.js hub tests on 2026-05-03. Equivalent and more comprehensive coverage (98 tests) already landed on main via commit 57a0af63 on 2026-05-04. No PR was ever opened for this branch. Safe to delete.",
+  "evidence": {
+    "commits": [
+      {
+        "sha": "ef5a6915",
+        "subject": "test: add edge case coverage for lib/db.js hub",
+        "date": "2026-05-03T22:12:42-04:00",
+        "author": "Stojan Madjunkov"
+      },
+      {
+        "sha": "7afe290f",
+        "subject": "test: add jest as devDependency for unit test runner",
+        "date": "2026-05-03T22:11:00-04:00",
+        "author": "Stojan Madjunkov"
+      }
+    ],
+    "filesChanged": [
+      { "file": "tests/db.test.js", "insertions": 65, "deletions": 0 },
+      { "file": "package.json", "insertions": 1, "deletions": 0 },
+      { "file": "package-lock.json", "insertions": 5406, "deletions": 1154 }
+    ],
+    "supersededBy": {
+      "commitOnMain": "57a0af63",
+      "commitSubject": "test: add 16 edge-case tests for lib/db.js hub (98 total in unit file)",
+      "mergedDate": "2026-05-04",
+      "targetFile": "tests/unit/db.test.js",
+      "testCount": 98,
+      "note": "Main already has more comprehensive coverage (98 tests) than this branch (65 tests)"
+    },
+    "relatedPRs": [
+      {
+        "number": 1405,
+        "title": "Write tests for untested hub: db",
+        "state": "MERGED",
+        "mergedAt": "2026-05-02T17:44:24Z",
+        "branch": "dev/0b492286-write-tests-for-untested-hub-db",
+        "note": "Earlier merge of the same task category that seeded main with db hub tests"
+      },
+      {
+        "number": 1370,
+        "title": "Write tests for untested hub: db",
+        "state": "MERGED",
+        "mergedAt": "2026-04-29T15:15:03Z",
+        "branch": "dev/0b492286-write-tests-for-untested-hub-db",
+        "note": "Earlier attempt, also merged"
+      }
+    ],
+    "noPRFound": true
+  },
+  "risk": "low",
+  "riskRationale": "No PR was ever created; branch content (tests/db.test.js, jest devDependency) is already present on main in a more complete form. Deleting this branch loses nothing.",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/3fa4ade2-write-tests-for-untested-hub-db",
+    "git fetch origin dev/3fa4ade2-write-tests-for-untested-hub-db",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git log --format='%H %s %ai %an' main..FETCH_HEAD",
+    "gh pr list --state all --search 'dev/3fa4ade2-write-tests-for-untested-hub-db'",
+    "gh pr list --state all --search 'write tests for untested hub db'",
+    "gh pr view 1405 --json number,title,state,mergedAt,headRefName",
+    "git log --oneline --all | grep -i 'hub|db.test|jest'",
+    "git show 57a0af63 --stat"
+  ]
+}
