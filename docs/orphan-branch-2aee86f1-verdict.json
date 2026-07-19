@@ -1,0 +1,52 @@
+{
+  "investigationTaskId": "dec4ee35-befe-43a6-bedd-6848a7a023f0",
+  "orphanBranch": "dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+  "branchTipSha": "0c1ecb9f439f511f22807e0b012c81c78f0c039f",
+  "investigatedAt": "2026-07-19",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commitsAheadOfMain": 0,
+    "mergeBaseEqualsHead": true,
+    "mergeBaseNote": "git merge-base origin/main FETCH_HEAD == FETCH_HEAD — branch tip is an ancestor of origin/main; all commits already in main",
+    "remoteExists": true,
+    "relatedPRs": [
+      {
+        "number": 1394,
+        "title": "Fix: verification error on dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "mergeCommit": null,
+        "originalTaskId": "2d9d9a7e-6a48-4b2d-861c-7ced2a5dc51d",
+        "note": "PR closed without GitHub merge but changes reached main through a separate path (cherry-pick or direct push)"
+      },
+      {
+        "number": 1990,
+        "title": "Investigate orphan branch: dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+        "state": "CLOSED",
+        "note": "Previous investigation PR — closed"
+      }
+    ],
+    "taskDbLookup": {
+      "originalTaskId": "2d9d9a7e-6a48-4b2d-861c-7ced2a5dc51d",
+      "foundInDb": false,
+      "note": "Original task no longer in tasks table; use case was fix-nps-cron-pipeline-broken-cron-secret-missing-and-status-filter"
+    },
+    "diffStatSummary": "Branch accumulated 17 files (+1108 lines) of orphan-investigation JSON/MD artifacts from prior merges; no novel product code changes ahead of main"
+  },
+  "risk": "low",
+  "riskNotes": "No product code changes are unique to this branch. All commits are reachable from origin/main. PR #1394 was closed without a GitHub merge commit but changes are confirmed present in main via git ancestry check.",
+  "recommendation": "Safe to delete remote branch dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se. No code will be lost.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git fetch origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git log --oneline origin/main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git log --oneline FETCH_HEAD -10",
+    "git rev-parse FETCH_HEAD && git merge-base origin/main FETCH_HEAD",
+    "git log --oneline FETCH_HEAD ^origin/main",
+    "gh pr list --search 'dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se' --state all",
+    "gh pr view 1394 --json title,state,mergedAt,mergeCommit,body",
+    "psql openclaw SELECT tasks WHERE branch_name LIKE '%2aee86f1%'",
+    "psql openclaw SELECT code_reviews WHERE branch_name LIKE '%2aee86f1%'"
+  ]
+}
