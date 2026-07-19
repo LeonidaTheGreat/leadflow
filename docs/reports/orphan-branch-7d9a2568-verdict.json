@@ -1,0 +1,57 @@
+{
+  "taskId": "7d9a2568-ddba-40f4-93d0-d2b66dba11ae",
+  "investigatedBranch": "dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+  "verdict": "duplicate/superseded",
+  "summary": "Single orphan commit (2026-05-04) adds scripts/run-lint.js to make leadflow's lint runner resilient when devDependencies are omitted. No task row exists for task ID 07c8ed0e. The same quality-gate lint problem in genome was subsequently fixed via genome PR #561 (merged 2026-07-19, task 6ba3645e). scripts/run-lint.js already exists on main via a later commit, so no unique content remains. Safe to delete the orphan branch.",
+  "evidence": {
+    "commitAhead": {
+      "sha": "aa544cbd",
+      "subject": "fix: make lint runner resilient when devDependencies are omitted",
+      "author": "Stojan Madjunkov",
+      "date": "2026-05-04T23:54:41-04:00"
+    },
+    "filesChanged": [
+      "package.json (1 line modified)",
+      "scripts/run-lint.js (47 lines added — new file)",
+      "tests/unit/scripts/run-lint.test.js (56 lines added — new file)"
+    ],
+    "branchExistsOnRemote": true,
+    "prForOrphanBranch": null,
+    "taskRowExists": false,
+    "run-lintJsAlreadyOnMain": true,
+    "supersedingFix": {
+      "taskId": "6ba3645e-7fcc-425d-ae80-ab031d402532",
+      "title": "Fix: Quality gate 'lint' failing in genome",
+      "status": "done",
+      "repo": "LeonidaTheGreat/openclaw-genome",
+      "prNumber": 561,
+      "mergedAt": "2026-07-19T00:43:05Z"
+    },
+    "relatedCancelledTasks": [
+      "5583b8ad (2026-07-15, cancelled — Fix: Quality gate lint failing in genome)",
+      "35529270 (2026-07-17, cancelled — Fix: Quality gate lint failing in genome)",
+      "9ab50caa (2026-07-17, cancelled — Fix: Quality gate lint failing in genome)"
+    ]
+  },
+  "risk": {
+    "level": "low",
+    "rationale": "scripts/run-lint.js already exists on main (added by a later commit). The genome-side lint fix shipped via PR #561. No unique logic in this orphan branch is at risk of being lost."
+  },
+  "recommendation": "safe-delete — delete dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome from origin. Branch is fully superseded: scripts/run-lint.js is already on main, genome lint gate is fixed via PR #561, no task row exists, and no PR was ever created.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+    "git diff --stat main...origin/dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+    "git ls-remote --heads origin dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+    "git log --format='%H %aI %an %s' origin/dev/07c8ed0e-...-in-genome -1",
+    "gh pr list --state all --head dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+    "gh pr list --state all --search 'lint' (leadflow repo)",
+    "gh pr view 1895 (leadflow: merged lint fix 2026-07-17)",
+    "gh pr view 1335 (leadflow: closed earlier lint fix)",
+    "gh pr view 561 --repo LeonidaTheGreat/openclaw-genome (merged 2026-07-19)",
+    "gh pr list --repo LeonidaTheGreat/openclaw-genome --head dev/07c8ed0e-...",
+    "psql: SELECT tasks WHERE branch_name LIKE '%07c8ed0e%'",
+    "psql: SELECT tasks WHERE title ILIKE '%lint%genome%'",
+    "git show origin/main:scripts/run-lint.js (confirmed file exists on main)",
+    "git log --oneline --all -- scripts/run-lint.js"
+  ]
+}
