@@ -11,7 +11,11 @@ jobs:
           node-version: '20'
       - run: npm ci
       - name: API tests
-        run: npm test
+        run: node scripts/test-suite-gate.js
+        timeout-minutes: 3
+      - name: Stripe checkout smoke test
+        run: node tests/integration/stripe-checkout.test.js
+        timeout-minutes: 2
       - name: Dashboard install
         working-directory: product/lead-response/dashboard
         run: npm ci
