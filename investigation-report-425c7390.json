@@ -1,0 +1,69 @@
+{
+  "taskId": "425c7390-3725-439c-bedf-3df3e52df88f",
+  "orphanBranch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "verdict": "needs-human-review",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "a3b0e3a2",
+        "message": "feat: add pilot outreach workflow kickoff task",
+        "date": "2026-04-23T21:44:36-04:00"
+      },
+      {
+        "sha": "12a11d63",
+        "message": "test: E2E test for pilot outreach uc_no_tasks seed",
+        "date": "2026-04-23T22:38:39-04:00"
+      }
+    ],
+    "filesChanged": [
+      ".local-tasks.json (36 lines added — kickoff task definition)",
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md (35 lines — task spec, new file)",
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js (81 lines — E2E test, new file)"
+    ],
+    "mergeBase": "a263507e — 'Start outreach to identified recruitment targets (#1281)' (2026-04-23)",
+    "mainCommitsAheadOfMergeBase": 271,
+    "branchExistsOnRemote": true,
+    "remoteSha": "12a11d63b64b4415423a224db7d54404f75c2b70",
+    "filesOnCurrentMain": {
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md": false,
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js": false
+    },
+    "noMatchingTaskRow": true,
+    "relatedUseCase": {
+      "id": "fix-pilot-outreach-has-not-happened-11-days-left",
+      "name": "Pilot outreach has not happened — 11 days left",
+      "implementation_status": "blocked_human"
+    },
+    "relatedTaskHistory": [
+      "faf0f478 — Dev: fix-pilot-outreach-has-not-happened-11-days-left → cancelled (2026-04-22)",
+      "34f585c0 — Dev (rescue): fix-pilot-outreach-has-not-happened-11-days-left → failed (2026-05-14)",
+      "e2fc5e99 — PM: Re-spec with alternative approach → done (2026-05-18)"
+    ]
+  },
+  "risk": {
+    "level": "medium",
+    "reasons": [
+      "Branch is 271 commits behind main merge base — high conflict probability on .local-tasks.json (frequently modified)",
+      "UC is blocked_human: needs human action before feature can ship; merging test+spec now is premature",
+      "No task row means no PR was ever created; this work was abandoned mid-stream",
+      "The E2E test covers a use case that is not yet unblocked — test would likely fail in CI"
+    ]
+  },
+  "recommendation": "Do not auto-merge. The associated UC (fix-pilot-outreach-has-not-happened-11-days-left) is blocked_human and has been for 3 months. The branch contains a task spec doc and E2E test for a feature that cannot proceed until the human blocker is resolved. Options: (a) delete the branch if the UC will remain blocked indefinitely; (b) if the UC is eventually unblocked, cherry-pick the E2E test (tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js) onto a fresh branch from current main — rebasing 271 commits is impractical. The .local-tasks.json addition should NOT be cherry-picked; re-derive from current state.",
+  "commandsRun": [
+    "git checkout dev/425c7390-investigate-orphan-branch-dev-3507c881-i",
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git fetch origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --stat main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --name-only main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --format='%H %s %ai' origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h | head -5",
+    "git merge-base main origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline a263507e..main | wc -l",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name FROM tasks WHERE branch_name = 'dev/3507c881-...'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id, name, implementation_status FROM use_cases WHERE name ILIKE '%pilot%outreach%'\"",
+    "git log --oneline main | grep -i 'pilot-outreach'",
+    "ls docs/task-specs/fix-pilot-outreach* && ls tests/fix-pilot-outreach*"
+  ]
+}
