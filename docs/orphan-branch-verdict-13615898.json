@@ -1,0 +1,54 @@
+{
+  "taskId": "26ad07fb-1f2f-4429-92b8-5dccc24add36",
+  "branch": "dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+  "investigatedAt": "2026-07-19",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "The single commit on this orphan branch (d8f50ccc, 2026-04-26) adds turbopack.root = process.cwd() to next.config.ts to silence the Turbopack multiple-lockfile warning. The equivalent fix was merged the same day via PR #1338 (commit b0fbbeae) using the more reliable path.resolve(__dirname). The fix is the current state of next.config.ts on main (most recent commit touching that file). No unique content on this branch; safe to delete.",
+  "evidence": {
+    "orphanBranchTip": {
+      "sha": "d8f50ccce2cdbb3fcdba95b7a71cc4af910369cc",
+      "subject": "fix: silence turbopack multiple-lockfile warning in monorepo",
+      "author": "Stojan Madjunkov",
+      "date": "2026-04-26T16:52:43-04:00",
+      "filesChanged": [
+        "product/lead-response/dashboard/next.config.ts"
+      ],
+      "insertions": 4,
+      "deletions": 0,
+      "implementation": "turbopack: { root: process.cwd() }"
+    },
+    "commitsAheadOfMain": 1,
+    "noPRCreated": true,
+    "supersededBy": {
+      "pr": 1338,
+      "title": "Fix: Quality gate build failing in leadflow",
+      "branch": "dev/d8c81797-fix-quality-gate-build-failing-in-leadfl",
+      "state": "MERGED",
+      "mergedAt": "2026-04-26T22:29:37Z",
+      "mainCommit": "b0fbbeae (2026-04-26) fix: set turbopack.root in next.config.ts (#1338) - CURRENT STATE",
+      "implementation": "import path from path; turbopack: { root: path.resolve(__dirname) }",
+      "note": "path.resolve(__dirname) is more reliable than process.cwd() in deployed environments"
+    },
+    "next_config_ts_chronological_history": [
+      "cc438588 (2026-03-31) - transpilePackages for AI SDK, no turbopack.root",
+      "088df421 (2026-04-02) - removed earlier turbopack.root attempt (broke Vercel module resolution)",
+      "b0fbbeae (2026-04-26) - set turbopack.root via PR #1338 \u2014 THIS IS CURRENT STATE"
+    ],
+    "falseLeadNote": "commit 28a509d2 has subject mentioning next.config.ts but its diff only touched auto-generated docs (DASHBOARD.md, USE_CASES.md, etc.) \u2014 NOT next.config.ts; excluded from evidence"
+  },
+  "risk": "none \u2014 the identical fix is already in main via PR #1338 (merged same day). Deleting this branch loses nothing.",
+  "recommendation": "Safe to delete. turbopack.root fix landed in main via PR #1338 on 2026-04-26 and is the current state. The orphan implementation (process.cwd()) was superseded by the merged version (path.resolve(__dirname)).",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git fetch origin dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline origin/main..origin/dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat origin/main...origin/dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git show --stat d8f50ccce2cdbb3fcdba95b7a71cc4af910369cc",
+    "git log --oneline -20 origin/main -- product/lead-response/dashboard/next.config.ts",
+    "git show --no-patch b0fbbeae 088df421 cc438588 (verified dates: 2026-04-26, 2026-04-02, 2026-03-31)",
+    "git show origin/main:product/lead-response/dashboard/next.config.ts (confirmed turbopack.root present)",
+    "git diff d8f50ccc b0fbbeae -- product/lead-response/dashboard/next.config.ts (confirmed implementation diff)",
+    "git show 28a509d2 --stat (confirmed: only DASHBOARD.md/auto-generated docs changed, NOT next.config.ts)",
+    "gh api repos/LeonidaTheGreat/leadflow/pulls/1338 --jq state,mergedAt,headRef"
+  ]
+}
