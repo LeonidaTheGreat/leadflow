@@ -1,0 +1,44 @@
+{
+  "branch": "dev/0b492286-write-tests-for-untested-hub-db",
+  "investigationTaskId": "5129e487-b13f-4a0c-9b87-df8933cec67e",
+  "investigatedAt": "2026-07-19",
+  "verdict": "shippable-needs-task-pr",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "44841b32",
+        "message": "test: fix db.test.js by adding jest.mock for pg module"
+      },
+      {
+        "sha": "bd60301d",
+        "message": "test: E2E contract verification for lib/db.js (task 0b492286)"
+      }
+    ],
+    "filesChanged": [
+      {
+        "file": "tests/0b492286.test.js",
+        "linesAdded": 118,
+        "description": "New standalone E2E contract verification for lib/db.js public API; uses Node assert, not Jest API"
+      },
+      {
+        "file": "tests/unit/db.test.js",
+        "linesAdded": 2,
+        "description": "Adds jest.mock('pg', ...) to fix test isolation — prevents real Pool construction during unit tests"
+      }
+    ],
+    "productionCodeChanged": false,
+    "existingPRs": "none found for this branch",
+    "existingTasks": "original task 0b492286 appears to have been the source task; no live task row found (orphan)"
+  },
+  "risk": "low",
+  "riskNotes": "Changes are test-only. No production code, routes, services, or config files touched. The db.test.js mock fix is a correctness improvement. tests/0b492286.test.js uses a custom assert-based runner inside a .test.js file — Jest will discover and run it; if the file exits via process.exit() Jest may flag it, but the file itself validates lib/db.js API contract without real connections.",
+  "recommendation": "Create a task and PR to merge this branch. The test additions are valid and beneficial — they improve coverage of lib/db.js and fix a pg mock isolation gap in the existing db.test.js unit test. Review whether tests/0b492286.test.js should be converted to proper Jest describe/it blocks before merging to avoid suite-level warnings.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/0b492286-write-tests-for-untested-hub-db",
+    "git fetch origin dev/0b492286-write-tests-for-untested-hub-db",
+    "git log --oneline main..origin/dev/0b492286-write-tests-for-untested-hub-db",
+    "git diff --stat main...origin/dev/0b492286-write-tests-for-untested-hub-db",
+    "git diff main...origin/dev/0b492286-write-tests-for-untested-hub-db -- tests/unit/db.test.js"
+  ]
+}
