@@ -1,0 +1,127 @@
+{
+  "investigatedBranch": "dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+  "taskId": "dec4ee35-befe-43a6-bedd-6848a7a023f0",
+  "investigatedAt": "2026-07-19",
+
+  "verdict": "duplicate/superseded",
+
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "commits": [
+      {
+        "sha": "cd590b83",
+        "message": "docs: Day 80 root cause analysis — 0 paying customers gap",
+        "files": ["PMF.md"],
+        "onMain": false,
+        "notes": "Stale docs snapshot; PMF.md has been updated many times since"
+      },
+      {
+        "sha": "d3c3c34d",
+        "message": "fix: NPS cron pipeline — widen status filter and read CRON_SECRET at call time",
+        "files": [
+          "product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts",
+          "product/lead-response/dashboard/lib/nps-service.ts"
+        ],
+        "onMain": false,
+        "supersededBy": {
+          "pr": 1402,
+          "sha": "510cf770",
+          "approach": "Env-var fix (CRON_SECRET whitespace stripped) rather than code change; merged same day"
+        }
+      },
+      {
+        "sha": "b9682323",
+        "message": "fix: expand NPS survey eligibility to trial and pilot agents",
+        "files": ["product/lead-response/dashboard/lib/nps-service.ts"],
+        "onMain": false,
+        "supersededBy": {
+          "pr": 1392,
+          "sha": "0a3743cc",
+          "message": "Dev: feat-nps-survey-trial-agents - Expand NPS Survey to Trial/Onboarding Agents",
+          "notes": "PR #1392 merged 2026-05-02 (same day orphan PR #1394 was closed); covers same eligibility fix"
+        }
+      },
+      {
+        "sha": "0c1ecb9f",
+        "message": "fix: remove misplaced test file from dashboard __tests__",
+        "files": [
+          "tests/e2e/feat-nps-survey-trial-agents.test.js (197 lines, new)"
+        ],
+        "onMain": false,
+        "supersededBy": {
+          "pr": 1392,
+          "sha": "0a3743cc",
+          "notes": "PR #1392 added equivalent tests: tests/e2e/nps-trial-eligibility.test.js and tests/unit/nps-survey-eligibility.test.js"
+        }
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 5,
+      "insertions": 324,
+      "deletions": 41,
+      "files": [
+        "PMF.md (+84/-41)",
+        "product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts (+9/-1)",
+        "product/lead-response/dashboard/lib/nps-service.ts (+2/-1)",
+        "scripts/db/nps-schedule-cleanup-backfill.js (73 new lines)",
+        "tests/e2e/feat-nps-survey-trial-agents.test.js (197 new lines)"
+      ]
+    },
+    "prHistory": {
+      "pr": 1394,
+      "title": "Fix: verification error on dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-02T16:41:45Z",
+      "originalTaskId": "2d9d9a7e-6a48-4b2d-861c-7ced2a5dc51d",
+      "notes": "Original task row no longer exists in tasks table (purged). PR was closed due to verification failure."
+    },
+    "supersedingMergedWork": [
+      {
+        "pr": 1392,
+        "sha": "0a3743cc",
+        "mergedAt": "2026-05-02",
+        "title": "Dev: feat-nps-survey-trial-agents - Expand NPS Survey to Trial/Onboarding Agents",
+        "covers": ["NPS eligibility expansion", "backfill script", "E2E + unit tests"]
+      },
+      {
+        "pr": 1402,
+        "sha": "510cf770",
+        "mergedAt": "2026-05-02",
+        "title": "chore: trigger fresh deploy with fixed CRON_SECRET (no whitespace)",
+        "covers": ["CRON_SECRET env var fix (different approach — env fix vs code fix)"]
+      },
+      {
+        "pr": 1546,
+        "sha": "a31c0608",
+        "mergedAt": "2026-05-16",
+        "title": "fix: repair nps schedule backfill and orphan cleanup",
+        "covers": ["Extended backfill script (122 lines vs orphan's 73)", "backfill tests"]
+      }
+    ]
+  },
+
+  "risk": "low",
+  "riskNotes": "All functional changes in this branch were re-implemented and merged via PRs #1392, #1402, and #1546. The test file (197 lines) has equivalent coverage in tests/e2e/nps-trial-eligibility.test.js and tests/unit/nps-survey-eligibility.test.js. The backfill script has a superior replacement (scripts/db/backfill-nps-survey-schedules.js, extended in #1546). No unique logic at risk of being lost.",
+
+  "recommendation": "safe-delete",
+  "recommendationDetail": "Branch is fully superseded. PR #1394 was closed without merge on 2026-05-02; all three concerns (CRON_SECRET, eligibility filter, schedule backfill) were addressed by separate PRs that merged on the same day or within 2 weeks. The branch can be deleted without loss of any work.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git diff --stat main...origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git ls-remote --heads origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "gh pr list --state all --head dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se --json number,title,state,mergedAt",
+    "gh pr view 1394 --json number,title,state,mergedAt,closedAt,body",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status FROM tasks WHERE branch_name LIKE '%2aee86f1%' OR id = '2d9d9a7e-...'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id, name, implementation_status FROM use_cases WHERE name ILIKE '%nps%' OR name ILIKE '%cron%'\"",
+    "git log --oneline --all | grep -i 'nps|cron'",
+    "git log --oneline main | grep -E 'ed02718b|510cf770|0a3743cc|b80e49e6|a31c0608'",
+    "git merge-base --is-ancestor <sha> main (for each of 4 commits)",
+    "git log --oneline main -- product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts",
+    "git show main:tests/e2e/feat-nps-survey-trial-agents.test.js",
+    "git show 0a3743cc --stat",
+    "git show 510cf770 --stat",
+    "git show a31c0608 --stat"
+  ]
+}
