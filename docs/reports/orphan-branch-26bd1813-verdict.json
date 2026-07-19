@@ -1,0 +1,37 @@
+{
+  "taskId": "ddf510f8-da6b-4e52-ac5c-12c46db33d68",
+  "orphanBranch": "dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "66f40b28",
+        "message": "test: add Jest tests for lib/logger.js hub (60 tests covering all exported symbols)"
+      }
+    ],
+    "diffStat": "tests/logger.test.js | 520 insertions(+) — 1 file changed",
+    "remoteExists": true,
+    "remoteSha": "66f40b28a379ca1ed479db0b007e33f0f08f9c0c",
+    "pullRequest": {
+      "number": 1378,
+      "title": "Dev Fix: PR #85 rejected: incomplete sweep (2 of 3 task-spec violations remain), branch not rebased onto main, change is redundant on main",
+      "state": "MERGED",
+      "mergedAt": "2026-04-29T22:30:03Z",
+      "mergeCommit": "590f18b428cf6ce65ebb43ed918d17b7c778c421",
+      "baseRef": "main"
+    },
+    "mergeCommitInMain": true,
+    "mergeCommitFoundInMainLog": "590f18b4 test: add Jest tests for lib/logger.js hub (60 tests covering all exported symbols) (#1378)"
+  },
+  "risk": "none — the single commit (tests/logger.test.js, 520 lines of Jest tests) was merged into main via PR #1378 on 2026-04-29. The merge commit 590f18b4 is confirmed present in origin/main. Deleting the branch loses no code.",
+  "recommendation": "safe-delete — run `git push origin --delete dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep` to clean up the remote branch. No task row is needed because the work was already completed and merged.",
+  "commandsRun": [
+    "git log --oneline main..dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep",
+    "git fetch origin dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep",
+    "git diff --stat main...origin/dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep",
+    "git ls-remote --heads origin dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep",
+    "gh pr list --state all --head dev/26bd1813-dev-fix-pr-85-rejected-incomplete-sweep",
+    "gh pr view 1378 --json number,title,state,mergedAt,mergeCommit",
+    "git log --oneline main | grep -i logger"
+  ]
+}
