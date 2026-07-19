@@ -1,0 +1,80 @@
+{
+  "taskId": "dec4ee35-befe-43a6-bedd-6848a7a023f0",
+  "branch": "dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch has 4 commits addressing NPS cron pipeline issues (CRON_SECRET fix, eligibility widening, backfill script, test file). PR #1394 was closed without merge on 2026-05-02 due to a verification error. All three concerns were re-implemented and merged via separate PRs the same day or within 2 weeks: eligibility fix via PR #1392 (merged 2026-05-02), CRON_SECRET via PRs #1401/#1402 (merged 2026-05-02), and schedule backfill via PR #1546 (merged 2026-05-16). Original task row (2d9d9a7e-6a48-4b2d-861c-7ced2a5dc51d) no longer exists in the tasks table. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "commits": [
+      "cd590b83 docs: Day 80 root cause analysis — 0 paying customers gap",
+      "d3c3c34d fix: NPS cron pipeline — widen status filter and read CRON_SECRET at call time",
+      "b9682323 fix: expand NPS survey eligibility to trial and pilot agents",
+      "0c1ecb9f fix: remove misplaced test file from dashboard __tests__"
+    ],
+    "diffStat": "5 files changed, 324 insertions(+), 41 deletions(-)",
+    "changedFiles": [
+      "PMF.md (+84/-41 — stale docs snapshot)",
+      "product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts (+9/-1 — CRON_SECRET fix)",
+      "product/lead-response/dashboard/lib/nps-service.ts (+2/-1 — status filter)",
+      "scripts/db/nps-schedule-cleanup-backfill.js (73 new lines — backfill script)",
+      "tests/e2e/feat-nps-survey-trial-agents.test.js (197 new lines — e2e tests)"
+    ],
+    "existsOnRemote": true,
+    "priorPR": {
+      "number": 1394,
+      "title": "Fix: verification error on dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-02T16:41:45Z",
+      "originalTaskId": "2d9d9a7e-6a48-4b2d-861c-7ced2a5dc51d",
+      "originalTaskInDB": false
+    },
+    "supersedingMerges": [
+      {
+        "pr": 1392,
+        "sha": "0a3743cc",
+        "mergedAt": "2026-05-02T09:59:53Z",
+        "title": "Dev: feat-nps-survey-trial-agents - Expand NPS Survey to Trial/Onboarding Agents",
+        "covers": ["NPS eligibility expansion to trial/onboarding agents", "equivalent E2E + unit tests"]
+      },
+      {
+        "pr": 1401,
+        "sha": "91514061",
+        "mergedAt": "2026-05-02",
+        "title": "chore: trigger redeploy with fixed CRON_SECRET env var",
+        "covers": ["CRON_SECRET env var fix"]
+      },
+      {
+        "pr": 1402,
+        "sha": "510cf770",
+        "mergedAt": "2026-05-02",
+        "title": "chore: trigger fresh deploy with fixed CRON_SECRET (no whitespace)",
+        "covers": ["CRON_SECRET whitespace strip — complementary env fix to code fix in orphan branch"]
+      },
+      {
+        "pr": 1546,
+        "sha": "a31c0608",
+        "mergedAt": "2026-05-16",
+        "title": "fix: repair nps schedule backfill and orphan cleanup",
+        "covers": ["Extended NPS backfill script (superior to 73-line orphan version)"]
+      }
+    ]
+  },
+  "risk": "low",
+  "riskNotes": "All functional changes were re-implemented and merged before the original PR was closed. No unique logic at risk of being lost. The backfill script in main (PR #1546) is a superset of the orphan version.",
+  "recommendation": "safe-delete — branch is fully superseded. No unmerged value remains.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git diff --stat main...origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git ls-remote --heads origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "gh pr list --head dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se --state all",
+    "gh pr view 1394 --json number,title,state,mergedAt,closedAt,body",
+    "gh pr view 1392 --json number,title,state,mergedAt,closedAt,headRefName",
+    "psql $LOCAL_PG_URL: SELECT tasks WHERE id='2d9d9a7e-...' OR branch_name LIKE '%2aee86f1%'",
+    "psql $LOCAL_PG_URL: SELECT tasks WHERE title ILIKE '%nps%' ORDER BY created_at DESC",
+    "git log --oneline --all --grep=nps --since=2026-04-01",
+    "git log --oneline main | grep -E 'nps|NPS'",
+    "git log --oneline main | grep -E 'CRON|cron|repair|backfill'"
+  ]
+}
