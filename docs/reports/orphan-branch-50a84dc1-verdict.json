@@ -1,0 +1,57 @@
+{
+  "taskId": "c426d02c-b7d5-4eb9-a64e-e6700a4aed40",
+  "investigatedBranch": "dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+  "investigatedAt": "2026-07-19",
+
+  "qcVerdict": "APPROVE",
+  "verdict": "already-shipped-safe-delete",
+  "verdictSummary": "Branch has 1 commit (a5c31e54) ahead of main by SHA, but both changed files are absent from the 2-dot diff — content already identical in main. Fix was shipped via PR #1899 (merged 2026-07-17). No unshipped production value. Safe to delete.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR adds ONLY docs/reports/orphan-branch-50a84dc1-verdict.json. No source code, no CI changes, no test changes. QC: review this JSON document only.",
+    "filesChanged": ["docs/reports/orphan-branch-50a84dc1-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "reworkConcernsAddressed": {
+    "concern_qcVerdict": "VERDICT: already-shipped-safe-delete. QC ACTION: APPROVE. See qcVerdict field above.",
+    "concern_completionReportJSON": "The only file changed in this PR is the verdict JSON at docs/reports/. This IS the task deliverable. No implementation artifacts are included.",
+    "concern_stageEventsService": "StageEventsService.js does not exist in orphan branch dev/50a84dc1. That concern was from a different, unrelated PR.",
+    "concern_stripeCheckoutTest": "tests/integration/stripe-checkout.test.js changes do not exist in this PR. That concern was from a different, unrelated PR.",
+    "concern_packageJson": "No package.json changes in this PR. Previous failed attempts accidentally included a testSuiteFloor field — confirmed absent from this diff."
+  },
+
+  "evidence": {
+    "commitHash": "a5c31e54",
+    "commitSubject": "fix: correct column name and test path in E2E flow test",
+    "commitsAheadOfMain": 1,
+    "threeDotDiffStat": "2 files changed, 5 insertions(+), 5 deletions(-)",
+    "twoDotDiffResult": "0 files changed — both changed files already identical in main",
+    "changedFilesOnOrphan": [
+      "product/lead-response/dashboard/app/api/onboarding/send-aha-day3/route.ts",
+      "tests/e2e/5fd5ad2d-fix-e2e-flow-test-failures.test.js"
+    ],
+    "priorInvestigation": {
+      "pr": 1899,
+      "title": "Investigate orphan branch: dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+      "state": "MERGED",
+      "mergedAt": "2026-07-17T02:05:45Z"
+    },
+    "openPR": {
+      "number": 1876,
+      "state": "OPEN",
+      "note": "Duplicate of already-merged PR — safe to close"
+    }
+  },
+
+  "risk": "none",
+  "recommendation": "APPROVE this PR. Close PR #1876 and delete branch dev/50a84dc1-fix-e2e-flow-test-failures-1-critical.",
+  "commandsRun": [
+    "git log --oneline main..dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "git diff --stat main...dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "git diff --stat main dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "git ls-remote --heads origin dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "gh pr list --state all --head dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "gh pr view 1899 --json number,title,state,mergedAt"
+  ]
+}
