@@ -32,7 +32,7 @@ tests/unit/stripe-webhook-secret-health-check.test.js   | 103 ++++++++++++++++++
 
 2. **Original PR #1696 was CLOSED (not merged):** PR "fix: verify Stripe webhook secret in production (task 648ef165)" — companion branch `dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s` — was closed 2026-05-28 without merging.
 
-3. **8+ cancelled merge tasks:** Database query shows 8 "Merge: Verify Stripe webhook secret in production" tasks all marked `cancelled`. This indicates the orchestrator repeatedly tried and failed to merge this work, likely due to merge conflicts as the health route evolved heavily between May–July 2026.
+3. **10 cancelled merge tasks + failed task row:** Database query shows 10 "Merge: Verify Stripe webhook secret in production" tasks all marked `cancelled` (all on 2026-06-13). The originating task row `26ace52b-eb71-4c92-986c-f5d3da0f8054` (title: "Dev (re-merge): fix-verify-stripe-webhook-secret-in-production") has status `failed` with no `branch_name` recorded — the orchestrator spawned the work but lost the branch linkage. This explains why no PR was ever created for this branch.
 
 4. **Re-merge commit d34c6408 (#1910) did NOT include these changes:** The July 2026 re-merge PR covered `config.ts`, `revenue-config-health`, `create-checkout-session`, `upgrade-checkout`, and `activation/page.tsx` — but not `SystemStatusService.js` or the test file.
 

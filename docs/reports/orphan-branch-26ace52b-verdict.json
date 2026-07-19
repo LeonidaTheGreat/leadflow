@@ -3,7 +3,7 @@
   "investigatedAt": "2026-07-19",
   "taskId": "e5196520-b205-45e7-9a5f-cdfeebcd885f",
   "verdict": "shippable-needs-task-pr",
-  "summary": "Branch has 2 commits not on main that add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY health checks to SystemStatusService.getHealthStatus() and the Next.js /api/health route, plus a Jest test file. Original PR #1696 was CLOSED (not merged). 8+ cancelled 'Merge: Verify Stripe webhook secret in production' tasks confirm systematic merge failures. Changes are absent from main and represent valid unshipped functionality.",
+  "summary": "Branch has 2 commits not on main that add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY health checks to SystemStatusService.getHealthStatus() and the Next.js /api/health route, plus a Jest test file. Original PR #1696 was CLOSED (not merged). 10 cancelled 'Merge: Verify Stripe webhook secret in production' tasks confirm systematic merge failures. Changes are absent from main and represent valid unshipped functionality. Task row 26ace52b exists with status='failed' and no branch_name linkage.",
   "evidence": {
     "remoteSha": "b9e59f54a62d903b4eb9e244878e25d4760a5c11",
     "commitsAheadOfMain": [
@@ -15,28 +15,45 @@
       "product/lead-response/dashboard/app/api/health/route.ts (+4 lines: critical checks for Stripe vars)",
       "tests/unit/stripe-webhook-secret-health-check.test.js (new file, 103 lines, Jest format)"
     ],
+    "taskRow": {
+      "id": "26ace52b-eb71-4c92-986c-f5d3da0f8054",
+      "title": "Dev (re-merge): fix-verify-stripe-webhook-secret-in-production",
+      "status": "failed",
+      "branch_name": null,
+      "created_at": "2026-05-15"
+    },
     "relatedPR": {
       "number": 1696,
       "title": "fix: verify Stripe webhook secret in production (task 648ef165)",
+      "headBranch": "dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
       "state": "CLOSED",
       "closedAt": "2026-05-28",
       "mergedAt": null
     },
-    "cancelledMergeTasksInDB": 8,
-    "mainHasChanges": false
+    "pr327Note": "PR #327 (merged 2026-03-15, 'STRIPE_WEBHOOK_SECRET not set in Vercel production') fixed the env var itself — different scope from these health check additions.",
+    "cancelledMergeTasksInDB": 10,
+    "cancelledMergeTasksDate": "2026-06-13",
+    "mainHasChanges": {
+      "STRIPE_WEBHOOK_SECRET_in_SystemStatusService": false,
+      "STRIPE_WEBHOOK_SECRET_in_healthRoute": false,
+      "testFileExists": false
+    }
   },
   "risk": "low-medium — changes are additive and small; /api/health route has changed heavily since May 2026 so a direct merge may conflict",
-  "recommendation": "Do NOT delete. Create a new dev task to port SystemStatusService stripe health checks onto latest main via cherry-pick or re-implementation. Verify /api/health route compatibility before applying the route.ts change.",
+  "recommendation": "Do NOT delete. Create a new dev task to port SystemStatusService stripe health checks onto latest main via cherry-pick or re-implementation. Verify /api/health route compatibility before applying the route.ts change. Branch is 2+ months old — check whether PR #1910 (re-merge of stuck revenue PRs, merged 2026-07-17) already covered this scope.",
   "commandsRun": [
     "git fetch origin dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
     "git log --oneline main..FETCH_HEAD",
     "git diff --stat main...FETCH_HEAD",
     "git ls-remote --heads origin dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+    "gh pr list --state all --head dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
     "gh pr list --state all --search 'stripe webhook secret health check'",
     "gh pr view 1696 --json title,state,mergedAt,closedAt,body,headRefName",
-    "git show 5a64ed44 -- lib/services/SystemStatusService.js",
-    "git show main:lib/services/SystemStatusService.js | grep -n stripe",
-    "git log --oneline main | grep -i 'stripe|webhook'",
-    "psql $LOCAL_PG_URL -c SELECT id,title,status FROM tasks WHERE branch_name LIKE '%26ace52b%' OR title ILIKE '%stripe webhook secret%'"
+    "gh pr view 327 --json number,title,state,mergedAt,headRefName",
+    "git show main:lib/services/SystemStatusService.js | grep -i STRIPE_WEBHOOK_SECRET",
+    "git show main:product/lead-response/dashboard/app/api/health/route.ts | grep -i stripe",
+    "git ls-tree main tests/unit/ | grep -i stripe",
+    "psql $LOCAL_PG_URL (tasks WHERE branch_name LIKE '%26ace52b%' OR title ILIKE '%stripe webhook%')",
+    "psql $LOCAL_PG_URL (tasks WHERE id::text LIKE '26ace52b%')"
   ]
 }
