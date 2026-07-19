@@ -1,0 +1,85 @@
+{
+  "taskId": "dec4ee35-befe-43a6-bedd-6848a7a023f0",
+  "branch": "dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch was QC-rejected and auto-closed due to merge conflicts on 2026-05-02. All underlying problems it addressed — CRON_SECRET resolution, NPS status filter widening, trial-agent eligibility expansion — were subsequently fixed via separate PRs that ARE merged on main. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "0c1ecb9f",
+        "subject": "fix: remove misplaced test file from dashboard __tests__"
+      },
+      {
+        "sha": "b9682323",
+        "subject": "fix: expand NPS survey eligibility to trial and pilot agents"
+      },
+      {
+        "sha": "d3c3c34d",
+        "subject": "fix: NPS cron pipeline — widen status filter and read CRON_SECRET at call time"
+      },
+      {
+        "sha": "cd590b83",
+        "subject": "docs: Day 80 root cause analysis — 0 paying customers gap"
+      }
+    ],
+    "filesChanged": [
+      "PMF.md",
+      "product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts",
+      "product/lead-response/dashboard/lib/nps-service.ts",
+      "scripts/db/nps-schedule-cleanup-backfill.js",
+      "tests/e2e/feat-nps-survey-trial-agents.test.js"
+    ],
+    "pr": {
+      "number": 1394,
+      "state": "CLOSED",
+      "closedAt": "2026-05-02T16:41:45Z",
+      "qcVerdict": "REJECT",
+      "qcScore": "12/25",
+      "qcFindings": [
+        "Missing RCA artifact (no rootCauseAnalysis in completion report)",
+        "Magic number: hardcoded INTERVAL '14 days' in backfill script instead of named constant",
+        "Weak E2E test: string-match checks instead of behavior-level assertions"
+      ],
+      "autoCloseReason": "Merge conflicts with main. Task flagged for retry on fresh branch."
+    },
+    "supersededBy": [
+      {
+        "pr": 1392,
+        "title": "Dev: feat-nps-survey-trial-agents - Expand NPS Survey to Trial/Onboarding Agents",
+        "state": "MERGED",
+        "mergedAt": "2026-04-30T05:53:03Z",
+        "covers": "NPS trial-agent eligibility expansion (same day, fresh branch)"
+      },
+      {
+        "commit": "91514061",
+        "subject": "chore: trigger redeploy with fixed CRON_SECRET env var (#1401)",
+        "covers": "CRON_SECRET env var fix on main"
+      },
+      {
+        "commit": "510cf770",
+        "subject": "chore: trigger fresh deploy with fixed CRON_SECRET (no whitespace) (#1402)",
+        "covers": "CRON_SECRET whitespace fix on main"
+      },
+      {
+        "pr": 1546,
+        "title": "Dev (rescue): fix-nps-schedule-orphans-and-backfill-63-agents",
+        "state": "MERGED",
+        "mergedAt": "2026-05-10T07:41:05Z",
+        "covers": "NPS schedule backfill and orphan cleanup (replaces backfill script)"
+      }
+    ]
+  },
+  "risk": "LOW",
+  "riskRationale": "All functional fixes from this branch landed on main via separate PRs (1392, 1401, 1402, 1546). The branch was never merged and was QC-rejected. No unique unshipped code remains.",
+  "recommendation": "Safe to delete branch dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se. All problem fixes were re-implemented cleanly in follow-up branches and are confirmed on main.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git diff --stat main...origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git ls-remote --heads origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "gh pr list --state all --search 'head:dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se'",
+    "gh pr view 1394 --json state,mergedAt,closedAt,title,body,comments",
+    "gh pr list --state merged --search 'NPS' --limit 10",
+    "git log --oneline --format='%h %s' origin/main | grep -i 'nps|cron'"
+  ]
+}
