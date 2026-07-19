@@ -1,0 +1,76 @@
+{
+  "taskId": "7ce78217-0706-44ed-a8bb-c209e330a400",
+  "investigatedBranch": "dev/05cd51d7-fix-signup-page-smoke",
+  "verdict": "duplicate/superseded",
+  "verdictSummary": "The signup page smoke fix was already shipped via PR #1474 (merged 2026-05-04) and PR #1495 (merged 2026-05-06), both 8-10 days before this orphan's single commit. The orphan modifies the same two files as the merged fix. No unique content at risk. Safe to delete.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR (investigation task 7ce78217) adds ONLY this verdict JSON file. It does NOT modify any source code, tests, or configuration. QC should review only this JSON document.",
+    "filesChanged": ["docs/reports/orphan-branch-05cd51d7-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "orphanBranchMetadata": {
+    "shortSha": "5a14f394",
+    "commitSubject": "fix: harden signup route static rendering for smoke stability",
+    "commitDate": "2026-05-14T10:03:31-04:00",
+    "commitsAheadOfMain": 1,
+    "existsOnRemote": true,
+    "author": "madzunkov@hotmail.com",
+    "filesChangedOnOrphan": [
+      "product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts (+8 lines, new or modified)",
+      "product/lead-response/dashboard/app/signup/page.tsx (+22 lines)"
+    ]
+  },
+
+  "evidence": {
+    "supersededBy": [
+      {
+        "pr": 1474,
+        "title": "fix: replace useSearchParams with client-side URLSearchParams in signup page",
+        "branch": "cherry-pick/signup-fix",
+        "state": "MERGED",
+        "mergedAt": "2026-05-04T19:17:30-04:00",
+        "filesChanged": [
+          "product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts (+13 lines)",
+          "product/lead-response/dashboard/__tests__/middleware-admin-simulator-access.test.ts (+16 lines)",
+          "product/lead-response/dashboard/app/signup/page.tsx (+13, -3 lines)"
+        ],
+        "note": "Root-cause fix (useSearchParams SSR hydration issue) shipped here, same files as orphan, 10 days before orphan commit."
+      },
+      {
+        "pr": 1495,
+        "title": "Fix: Signup page (smoke)",
+        "branch": "dev/45bfe698-fix-signup-page-smoke",
+        "state": "MERGED",
+        "mergedAt": "2026-05-06T00:16:44-04:00",
+        "note": "Follow-up signup smoke fix also merged before orphan commit."
+      }
+    ],
+    "relatedClosedPRs": [
+      {"pr": 1429, "title": "Fix: Signup page (smoke)", "branch": "dev/1047cf7b-fix-signup-page-smoke", "state": "CLOSED"},
+      {"pr": 856, "title": "Fix: Signup page (smoke)", "branch": "dev/f4c668f9-fix-signup-page-smoke-", "state": "MERGED"},
+      {"pr": 851, "title": "Fix: Signup page (smoke)", "branch": "dev/1437ae1e-fix-signup-page-smoke-", "state": "MERGED"}
+    ],
+    "signupPageTouchedOnMainAfterOrphanCommit": false,
+    "signupPageLastModifiedOnMain": "2026-05-04 (PR #1474)"
+  },
+
+  "risk": "low",
+  "riskReason": "The underlying problem (useSearchParams causing SSR/smoke failures) was resolved by PR #1474 before this orphan was committed. signup/page.tsx has not been modified on main after 2026-05-04, indicating the merged fix held. The orphan has no task row, no open PR, and its 10-day-delayed commit pattern matches a stale parallel attempt, not unique work.",
+  "recommendation": "Safe to delete dev/05cd51d7-fix-signup-page-smoke. No cherry-pick needed — the root-cause fix shipped via PR #1474 and is stable on main.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/05cd51d7-fix-signup-page-smoke",
+    "git diff --stat main...origin/dev/05cd51d7-fix-signup-page-smoke",
+    "git ls-remote --heads origin dev/05cd51d7-fix-signup-page-smoke",
+    "git log --format='%H %ae %ai %s' origin/dev/05cd51d7-fix-signup-page-smoke -1",
+    "gh pr list --search '05cd51d7' --state all",
+    "gh pr list --search 'fix-signup-page-smoke' --state all",
+    "gh pr list --search 'harden signup route' --state all",
+    "git log --oneline main | grep -i 'signup|smoke'",
+    "git log --oneline main -- 'product/lead-response/dashboard/app/signup/page.tsx'",
+    "git log --oneline main --after='2026-05-13' -- 'product/lead-response/dashboard/app/signup/page.tsx'",
+    "git show 2ad899d0 --stat"
+  ]
+}
