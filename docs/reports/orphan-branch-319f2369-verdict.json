@@ -1,0 +1,56 @@
+{
+  "investigatedBranch": "dev/319f2369-fix-inactivity-schedule",
+  "investigatedAt": "2026-07-19",
+  "taskId": "893fd54d-621d-414c-8888-08f01d63e027",
+  "verdict": "shippable-needs-task-pr",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitLog": [
+      {
+        "sha": "61d04f29",
+        "message": "fix: set inactivity-alerts cron to */30 schedule; add unit test",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-05-16"
+      }
+    ],
+    "diffStat": {
+      "product/lead-response/dashboard/vercel.json": "6 lines changed",
+      "tests/unit/inactivity-alerts-cron.test.js": "+288 lines (new file)"
+    },
+    "changesSummary": {
+      "vercel.json": "Changed /api/cron/inactivity-alerts schedule from '0 9 * * *' (daily at 9am) to '*/30 * * * *' (every 30 minutes); also removed the separate /api/cron/inactivity-check cron entry entirely",
+      "inactivity-alerts-cron.test.js": "New 288-line unit test for the inactivity-alerts cron endpoint"
+    },
+    "currentMainState": {
+      "vercel.json": "Both /api/cron/inactivity-alerts AND /api/cron/inactivity-check are still present on main with '0 9 * * *' (daily) schedule — branch changes are NOT on main",
+      "tests/unit/inactivity-alerts-cron.test.js": "File does not exist on main"
+    },
+    "relatedMainCommits": [
+      {
+        "sha": "5f0d86fe",
+        "message": "fix: handle Date object for alerted_at in inactivity-alerts endpoint (#767)",
+        "note": "Endpoint bug fix, not a schedule change — orthogonal to this branch"
+      },
+      {
+        "sha": "06df0b16",
+        "message": "Dev: fix-inactivity-alerting-cron-not-implemented - Inactivity alerting cron not implemented (#242)",
+        "note": "Original implementation of the cron endpoint — predates this branch"
+      }
+    ],
+    "openPRs": "none — no PR was ever opened for this branch",
+    "branchAge": "~63 days (created 2026-05-16, now 2026-07-19)"
+  },
+  "risk": "MEDIUM — functional change to cron frequency (daily → every 30 min for inactivity-alerts) could significantly increase Vercel cron invocations and associated costs; removal of inactivity-check cron needs confirmation that the endpoint is no longer needed; branch is 63 days old and will need rebase before merge",
+  "recommendation": "shippable-needs-task-pr — The branch contains real unshipped work: a schedule correction and new unit test coverage. No superseding PRs exist. Action required: (1) create a task to review the schedule frequency justification (daily vs every 30 min), (2) confirm inactivity-check endpoint removal is intentional, (3) rebase onto current main and open a PR. Do NOT auto-merge without human review of the frequency change.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/319f2369-fix-inactivity-schedule",
+    "git fetch origin dev/319f2369-fix-inactivity-schedule",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git log --format='%H %ae %ai %s' main...FETCH_HEAD",
+    "git diff main...FETCH_HEAD -- product/lead-response/dashboard/vercel.json",
+    "git show HEAD:product/lead-response/dashboard/vercel.json | grep -A2 inactivity",
+    "git log --oneline main | grep -i inactivity",
+    "gh pr list --state all --head dev/319f2369-fix-inactivity-schedule"
+  ]
+}
