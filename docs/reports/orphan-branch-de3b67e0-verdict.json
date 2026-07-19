@@ -1,0 +1,55 @@
+{
+  "taskId": "de3b67e0-f226-418c-b9ab-49dad722b249",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce",
+  "shortSha": "d7a1579e",
+  "commitSubject": "fix: resolve TypeScript errors blocking Vercel builds",
+  "commitDate": "2026-05-18T20:09:36-04:00",
+  "commitAuthor": "Stojan Madjunkov",
+  "evidence": {
+    "originalTaskId": "0047d8d9-dff0-4e0d-8cc7-519a6862908d",
+    "originalTaskStatus": "failed",
+    "noPRCreated": true,
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/ts-regression-vercel-build.test.ts (+87 lines, new file)",
+      "product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (+2 lines)",
+      "product/lead-response/dashboard/app/pilot/page.tsx (+2 lines)",
+      "product/lead-response/dashboard/lib/db.ts (+18, -1 lines)"
+    ],
+    "originalUCCompleted": {
+      "originalDevTask": "b8e76868-203f-42d8-ba52-57cef28ec4d5",
+      "originalQCTask": "12a24091-2c26-4950-bc86-3585c61d8d61",
+      "mergedPR": 165,
+      "mergedCommit": "503afe96",
+      "mergedDate": "2026-03-10"
+    },
+    "remergeAttempts": [
+      { "taskId": "d2e9f539-d802-4fa1-9d16-1f3b13903323", "status": "cancelled", "pr": 1643 },
+      { "taskId": "0ed46882-61aa-485b-af3a-5e9fce4a399f", "status": "failed" },
+      { "taskId": "779a4936-c178-47d3-af05-6765e83eb661", "status": "failed" },
+      { "taskId": "2950d127-1082-4f36-a990-ee0ff225856b", "status": "failed" },
+      { "taskId": "0047d8d9-dff0-4e0d-8cc7-519a6862908d", "status": "failed", "branch": "dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce" },
+      { "taskId": "9e3dfcca-181d-494e-9187-e4254db8e4e6", "status": "cancelled" }
+    ],
+    "isAncestorOfMain": false,
+    "mainHasNewerCommitsOnSameFiles": true,
+    "latestMainCommitOnDbTs": "bf6015dd (2026-07)",
+    "latestMainCommitOnTrialSignup": "0f5aa4ae (2026-07)",
+    "latestMainCommitOnPilotPage": "73bf120b (2026-07)"
+  },
+  "risk": "medium-to-high — orphan branch contains 2026-05-18 code on files that have been extensively modified in main through July 2026; merging would likely regress db.ts, trial-signup route, and pilot page",
+  "recommendation": "safe-delete — the UC fix was already shipped via PR #165 (merged 2026-03-10). All 6 re-merge attempts failed or were cancelled. The files touched by this branch have seen 5+ subsequent PRs on main since May 2026. No PR was ever created. Delete branch.",
+  "commandsRun": [
+    "git fetch origin dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce",
+    "git log --oneline main..origin/dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce",
+    "git diff --stat main...origin/dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce",
+    "git ls-remote --heads origin dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce",
+    "git merge-base --is-ancestor d7a1579e main",
+    "gh pr list --state all --search 'head:dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce'",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE branch_name LIKE '%0047d8d9%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name,pr_number FROM tasks WHERE title ILIKE '%fix-three-consecutive-vercel%' ORDER BY created_at DESC\"",
+    "git log --oneline main -- product/lead-response/dashboard/lib/db.ts",
+    "git log --oneline main -- product/lead-response/dashboard/app/api/auth/trial-signup/route.ts",
+    "git log --oneline main -- product/lead-response/dashboard/app/pilot/page.tsx"
+  ]
+}
