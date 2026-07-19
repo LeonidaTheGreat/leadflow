@@ -1,0 +1,67 @@
+{
+  "taskId": "e5196520-b205-45e7-9a5f-cdfeebcd885f",
+  "status": "completed",
+  "verdict": "shippable-needs-task-pr",
+  "branch": "dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+  "remoteSha": "b9e59f54a62d903b4eb9e244878e25d4760a5c11",
+  "commitsAheadOfMain": 2,
+  "commits": [
+    {
+      "sha": "b9e59f54",
+      "message": "test: convert stripe webhook secret health check to Jest format"
+    },
+    {
+      "sha": "5a64ed44",
+      "message": "fix: add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY to health check verification"
+    }
+  ],
+  "filesChanged": [
+    "lib/services/SystemStatusService.js (+6/-1)",
+    "product/lead-response/dashboard/app/api/health/route.ts (+4)",
+    "tests/unit/stripe-webhook-secret-health-check.test.js (+103 new file)"
+  ],
+  "originalTask": {
+    "id": "26ace52b-eb71-4c92-986c-f5d3da0f8054",
+    "title": "Dev (re-merge): fix-verify-stripe-webhook-secret-in-production - Verify Stripe webhook secret in production",
+    "status": "failed",
+    "branchName": "",
+    "createdAt": "2026-05-15T21:02:07-04:00"
+  },
+  "relatedPRs": [
+    {
+      "number": 1653,
+      "branch": "dev/d7186414-dev-re-merge-fix-verify-stripe-webhook-s",
+      "state": "CLOSED",
+      "closedAt": "2026-05-22",
+      "mergedAt": null
+    },
+    {
+      "number": 1696,
+      "branch": "dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
+      "state": "CLOSED",
+      "closedAt": "2026-05-28",
+      "mergedAt": null
+    }
+  ],
+  "alreadyOnMain": false,
+  "evidence": {
+    "systemStatusServiceOnMain": "Only checks FUB_API_KEY and TWILIO_ACCOUNT_SID — STRIPE_WEBHOOK_SECRET absent",
+    "testFileOnMain": "tests/unit/stripe-webhook-secret-health-check.test.js does not exist on main (0 lines)",
+    "prHistory": "2 earlier attempts (PR #1653, #1696) both CLOSED without merging; 9+ 'Merge' tasks from June 2026 all cancelled",
+    "originalTaskStatus": "failed with no branch_name recorded — orchestrator lost track of the branch"
+  },
+  "risk": "LOW — changes are additive only (health check visibility + tests), no behaviour change to production code paths",
+  "recommendation": "Create a new task to re-submit this branch as a PR or cherry-pick the 2 commits onto a fresh branch. The code is correct and valuable: surfacing STRIPE_WEBHOOK_SECRET absence in health checks prevents silent Stripe webhook failures in production.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git diff --stat main...origin/dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git ls-remote --heads origin dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+    "gh pr list --state all --search '26ace52b'",
+    "gh pr list --state all --search 'stripe-webhook-secret'",
+    "gh pr view 1696 --json title,state,mergedAt,closedAt,headRefName,body",
+    "gh pr view 1653 --json title,state,mergedAt,closedAt,headRefName,body",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE id::text LIKE '26ace52b%'\"",
+    "git show main:lib/services/SystemStatusService.js | grep stripe",
+    "git show main:tests/unit/stripe-webhook-secret-health-check.test.js | wc -l"
+  ]
+}
