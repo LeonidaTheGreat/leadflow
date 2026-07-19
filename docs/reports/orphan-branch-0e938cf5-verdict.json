@@ -1,0 +1,118 @@
+{
+  "taskId": "4e4196b4-5bb1-4b3e-9b17-b025b2ec12d8",
+  "investigatedBranch": "dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+  "verdict": "needs-human-review",
+  "verdictSummary": "Branch contains real functional changes not on main — a new checkout.session.expired webhook handler and admin funnel route bug fixes — but multiple prior PR attempts for the same feature area were deliberately closed without merging (#1655, #1670). The branch also has a confused commit history (agent first replaced subscription_attempts with checkout_sessions, then reversed itself in 4 subsequent commits). The webhook handler (94 new lines) is the only substantive unshipped work and may conflict with current webhook routing or the deliberate decision to keep subscription_attempts. Human review required.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR (investigation task 4e4196b4) adds ONLY this verdict JSON file. It does NOT modify any source code, CI configuration, service files, or tests. QC should review only this JSON document.",
+    "filesChanged": ["docs/reports/orphan-branch-0e938cf5-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "orphanBranchMetadata": {
+    "branchName": "dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+    "tipSha": "5a1a781d3d5d5e57c622d6e8bebc59ab73702119",
+    "commitsAheadOfMain": 5,
+    "commitDateRange": "2026-05-16 to 2026-05-17",
+    "existsOnRemote": true,
+    "noPRFound": true,
+    "filesChangedVsMain": [
+      "migrations/022_create_subscription_attempts.sql (cosmetic only: removed task spec comment, added 'public.' schema prefix, removed DOWN block)",
+      "product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts (bug fix: status values 'expired'→'abandoned', 'completed'→'session_completed')",
+      "product/lead-response/dashboard/app/api/stripe/upgrade-checkout/route.ts (minor change)",
+      "product/lead-response/dashboard/app/api/webhooks/stripe/route.ts (NET NEW: +94 lines — handleCheckoutSessionExpired handler)",
+      "product/lead-response/dashboard/jest.config.ts (minor change)",
+      "tests/subscription-funnel-tracking.test.ts (updated to match subscription_attempts schema)",
+      "tests/subscription-funnel-tracking-workflow-task.test.js (updated)"
+    ]
+  },
+
+  "commitHistory": [
+    {
+      "sha": "c6a75166",
+      "date": "2026-05-16",
+      "message": "fix: replace subscription_attempts with checkout_sessions in admin funnel route",
+      "note": "FIRST commit — went in WRONG direction (away from subscription_attempts which is on main)"
+    },
+    {
+      "sha": "432a8688",
+      "date": "2026-05-16",
+      "message": "fix: add subscription_attempts table migration",
+      "note": "Reversal begins — agent added back migration"
+    },
+    {
+      "sha": "2931e85f",
+      "date": "2026-05-17",
+      "message": "fix: restore subscription_attempts — migration schema, upgrade-checkout insert, webhook expired handler, workflow task test to Jest",
+      "note": "Key commit — adds handleCheckoutSessionExpired webhook handler"
+    },
+    {
+      "sha": "787dbff0",
+      "date": "2026-05-17",
+      "message": "fix: restore migration NOT NULL constraints and admin funnel route to query subscription_attempts"
+    },
+    {
+      "sha": "5a1a781d",
+      "date": "2026-05-17",
+      "message": "fix: restore subscription-funnel-tracking test to expect subscription_attempts (not checkout_sessions)"
+    }
+  ],
+
+  "keyFinding": {
+    "netNewCode": "handleCheckoutSessionExpired() in webhooks/stripe/route.ts — 94 lines, handles checkout.session.expired Stripe event, updates subscription_attempts row status to 'session_expired', looks up agent, skips if already on paid plan, logs abandonment event and sends recovery email",
+    "isOnMain": false,
+    "notableRisk": "PRs #1655 and #1670 both targeted the same feature area (subscription_attempts fix) and were CLOSED without merging. PR #1670 body explicitly references task 0e938cf5 ('Genome detection: Rule 8 added to CodebaseRules in the genome (genome PR for task 0e938cf5) — prevents regression'). This suggests task 0e938cf5 was resolved via a genome rule, not via code merge."
+  },
+
+  "relatedPRs": [
+    {
+      "number": 1655,
+      "branch": "dev/fefa5e4d-dev-re-merge-fix-subscription-attempts-t",
+      "title": "Dev (re-merge): fix-subscription-attempts-table-does-not-exist-in-supa",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-22T07:05:15Z"
+    },
+    {
+      "number": 1670,
+      "branch": "fix/subscription-attempts-use-checkout-sessions",
+      "title": "fix: checkout funnel uses checkout_sessions (subscription_attempts table doesn't exist)",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-25T02:06:24Z",
+      "note": "PR body references task 0e938cf5 — this PR is the 'competitor' fix that chose checkout_sessions instead of subscription_attempts"
+    },
+    {
+      "number": 329,
+      "branch": "dev/8ed759a3-dev-fix-subscription-attempts-table-does",
+      "title": "Dev: fix-subscription-attempts-table-does-not-exist-in-supa",
+      "state": "MERGED",
+      "mergedAt": "2026-03-15T12:48:31Z",
+      "note": "Original subscription_attempts fix, merged to main"
+    }
+  ],
+
+  "risk": "medium",
+  "riskReason": "The handleCheckoutSessionExpired handler is real, unshipped code. However, two related PRs were deliberately closed, suggesting the subscription_attempts approach may have been reconsidered at the product/architecture level. Merging the webhook handler could re-introduce complexity that was intentionally left out. Migration file differences are cosmetic and low-risk.",
+
+  "recommendation": "Do NOT auto-merge. Have a human decide: (1) Is the handleCheckoutSessionExpired webhook behavior still wanted? (2) If yes, extract that handler and create a clean PR. (3) If no, delete this branch. Do not cherry-pick the confused back-and-forth commits as-is.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+    "git diff --stat main...origin/dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+    "git ls-remote --heads origin dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+    "gh pr list --state all --head dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+    "gh pr list --state all --search 'subscription_attempts' --limit 10",
+    "gh pr view 1655 --json title,state,mergedAt,closedAt,body,headRefName",
+    "gh pr view 1670 --json title,state,mergedAt,closedAt,body,headRefName",
+    "git log --oneline --all --grep='subscription_attempts'",
+    "git log --oneline --all --grep='subscription_attempts' --after='2026-05-14' --before='2026-05-25'",
+    "git show main:product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts | grep -E 'subscription_attempts|checkout_sessions'",
+    "git show main:migrations/022_create_subscription_attempts.sql | head -5",
+    "git branch -r --contains 164dfcdb20a0fb41c48d48bd2c6f307fb1ddb55b",
+    "git diff main...origin/dev/0e938cf5-... -- migrations/022_create_subscription_attempts.sql",
+    "git diff main...origin/dev/0e938cf5-... -- checkout-attempts/route.ts",
+    "git diff main...origin/dev/0e938cf5-... -- webhooks/stripe/route.ts"
+  ]
+}
