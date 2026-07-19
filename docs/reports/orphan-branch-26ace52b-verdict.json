@@ -1,0 +1,42 @@
+{
+  "investigatedBranch": "dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+  "investigatedAt": "2026-07-19",
+  "taskId": "e5196520-b205-45e7-9a5f-cdfeebcd885f",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch has 2 commits not on main that add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY health checks to SystemStatusService.getHealthStatus() and the Next.js /api/health route, plus a Jest test file. Original PR #1696 was CLOSED (not merged). 8+ cancelled 'Merge: Verify Stripe webhook secret in production' tasks confirm systematic merge failures. Changes are absent from main and represent valid unshipped functionality.",
+  "evidence": {
+    "remoteSha": "b9e59f54a62d903b4eb9e244878e25d4760a5c11",
+    "commitsAheadOfMain": [
+      { "sha": "5a64ed44", "subject": "fix: add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY to health check verification", "date": "2026-05-15" },
+      { "sha": "b9e59f54", "subject": "test: convert stripe webhook secret health check to Jest format", "date": "2026-05-16" }
+    ],
+    "filesChanged": [
+      "lib/services/SystemStatusService.js (+5 lines: stripe_secret_key, stripe_webhook_secret in getHealthStatus)",
+      "product/lead-response/dashboard/app/api/health/route.ts (+4 lines: critical checks for Stripe vars)",
+      "tests/unit/stripe-webhook-secret-health-check.test.js (new file, 103 lines, Jest format)"
+    ],
+    "relatedPR": {
+      "number": 1696,
+      "title": "fix: verify Stripe webhook secret in production (task 648ef165)",
+      "state": "CLOSED",
+      "closedAt": "2026-05-28",
+      "mergedAt": null
+    },
+    "cancelledMergeTasksInDB": 8,
+    "mainHasChanges": false
+  },
+  "risk": "low-medium — changes are additive and small; /api/health route has changed heavily since May 2026 so a direct merge may conflict",
+  "recommendation": "Do NOT delete. Create a new dev task to port SystemStatusService stripe health checks onto latest main via cherry-pick or re-implementation. Verify /api/health route compatibility before applying the route.ts change.",
+  "commandsRun": [
+    "git fetch origin dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git ls-remote --heads origin dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s",
+    "gh pr list --state all --search 'stripe webhook secret health check'",
+    "gh pr view 1696 --json title,state,mergedAt,closedAt,body,headRefName",
+    "git show 5a64ed44 -- lib/services/SystemStatusService.js",
+    "git show main:lib/services/SystemStatusService.js | grep -n stripe",
+    "git log --oneline main | grep -i 'stripe|webhook'",
+    "psql $LOCAL_PG_URL -c SELECT id,title,status FROM tasks WHERE branch_name LIKE '%26ace52b%' OR title ILIKE '%stripe webhook secret%'"
+  ]
+}
