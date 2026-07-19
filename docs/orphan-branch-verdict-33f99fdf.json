@@ -51,17 +51,29 @@
     ]
   },
   "risk": "LOW",
-  "riskDetails": "The only materialy relevant fix (pgrep 'next build') is already on main as f4aa4e20. The 3 unique commits represent iterative intermediate approaches (lsof, orphan-kill) that were superseded when the simpler pgrep approach was cherry-picked to main. No unique functional content would be lost by deleting this branch. Multiple sibling branches (6+) were created for the same issue, indicating this is part of a spawn proliferation pattern.",
-  "recommendation": "safe-delete — the final fix is already on main; intermediate commits are discarded iterations with no unique production value",
+  "riskDetails": "The only materially relevant fix (pgrep 'next build') is already on main as f4aa4e20. The 3 unique commits represent iterative intermediate approaches (lsof, orphan-kill) that were superseded when the simpler pgrep approach was cherry-picked to main. Additionally, PR #1922 (merged 2026-07-18) made further improvements to the same file — current main has 149 MORE lines than the orphan branch version, confirming the orphan is fully superseded. No unique functional content would be lost by deleting this branch. Multiple sibling branches (6+) were created for the same issue, indicating this is part of a spawn proliferation pattern.",
+  "recommendation": "safe-delete — the final fix is already on main; subsequent PR #1922 (2026-07-18) further evolved the same file making these intermediate commits fully obsolete",
+  "supersedingEvidence": {
+    "pr1922": {
+      "number": 1922,
+      "title": "Fix: Quality gate \"build\" failing in leadflow",
+      "headRef": "dev/2402c9a6-fix-quality-gate-build-failing-in-leadfl",
+      "mergedAt": "2026-07-18T08:13:27Z",
+      "filesChanged": ["product/lead-response/dashboard/scripts/cleanup-next-build-lock.js"],
+      "additions": 44,
+      "deletions": 2
+    },
+    "diffVsCurrentMain": "orphan has +35/-149 lines vs current main (main has substantially more content)",
+    "mergeBase": "d24a59775044f241e6d23555df4720dd7ecdfca2 (2026-05-04T00:26:07-04:00)"
+  },
   "commandsRun": [
     "git ls-remote --heads origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
-    "git log --oneline main..origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
-    "git diff --stat main...origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
-    "git log --oneline --all | grep -i 'cleanup-next-build\\|build-lock\\|false-positive.*build\\|pgrep.*next'",
-    "git log --oneline main | grep 'pgrep'",
-    "git branch -r --contains <sha> (for each unique commit)",
-    "git show --stat f4aa4e20",
-    "gh pr list --state all (filtered for 33f99fdf and quality-gate-build)",
-    "psql ... SELECT tasks WHERE branch_name LIKE '%33f99fdf%' OR title ILIKE '%quality-gate-build%'"
+    "git log --oneline origin/main..origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat origin/main...origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git merge-base origin/main origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --state all --search \"fix quality gate build\" --json number,title,state,mergedAt,headRefName",
+    "gh pr view 1922 --json title,mergedAt,headRefName,files",
+    "git diff --stat origin/main origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl -- product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "git log --format=\"%H %ai %s\" origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl -4"
   ]
 }
