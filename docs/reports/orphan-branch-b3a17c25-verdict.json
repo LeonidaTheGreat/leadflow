@@ -1,0 +1,69 @@
+{
+  "taskId": "b3a17c25-e608-4104-a2d8-865a5ef1863b",
+  "branch": "dev/fix-trial-expired-redirect-loop",
+  "investigatedAt": "2026-07-19",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "Orphan branch has 1 commit (668365c1) ahead of main. The commit added '/dashboard/trial-expired' to EXPIRED_TRIAL_ALLOWED_ROUTES in middleware.ts to fix an infinite redirect loop for expired-trial users. Identical fix was merged to main on 2026-06-17 via commit 528b8b06 / PR #1834. The regression test from the orphan also landed on main. Branch has no unique unshipped work — safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitHash": "668365c1d5062f78bf91d3966bb4a8d28d2ca843",
+    "commitSubject": "fix: middleware redirect loop on /login for expired trials",
+    "commitAuthor": "Stojan Madjunkov",
+    "commitDate": "2026-06-13T10:45:51-04:00",
+    "diffStat": "2 files changed, 53 insertions(+), 1 deletion(-)",
+    "changedFiles": [
+      "product/lead-response/dashboard/middleware.ts (+6 lines)",
+      "product/lead-response/dashboard/tests/middleware-trial-expired-redirect-loop.test.ts (+48 lines, new file)"
+    ],
+    "existsOnRemote": true,
+    "originalPR": {
+      "number": 1810,
+      "title": "fix: middleware redirect loop on /login for expired trials",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "note": "Closed without merge — fix landed via separate re-implementation"
+    },
+    "fixLandedOnMain": {
+      "commitOnMain": "528b8b067827d0be2e1b436acec278de877d3a84",
+      "commitSubjectOnMain": "fix: middleware redirect loop on /login for expired trials (#1834)",
+      "mergedViaPR": 1834,
+      "mergedAt": "2026-06-17T01:26:02Z",
+      "mergedFromBranch": "dev/d97c48cd-investigate-orphan-branch-dev-fix-trial"
+    },
+    "priorInvestigations": [
+      {
+        "prNumber": 1834,
+        "branch": "dev/d97c48cd-investigate-orphan-branch-dev-fix-trial",
+        "state": "MERGED",
+        "mergedAt": "2026-06-17T01:26:02Z",
+        "verdict": "already-shipped-safe-delete"
+      },
+      {
+        "prNumber": 1852,
+        "branch": "dev/bffbe730-investigate-orphan-branch-dev-fix-trial",
+        "state": "MERGED",
+        "mergedAt": "2026-07-15T16:33:00Z",
+        "verdict": "already-shipped-safe-delete"
+      },
+      {
+        "prNumber": 1908,
+        "branch": "dev/babadd9c-investigate-orphan-branch-dev-fix-trial",
+        "state": "MERGED",
+        "mergedAt": "2026-07-17T04:36:50Z",
+        "verdict": "already-shipped-safe-delete"
+      }
+    ]
+  },
+  "risk": "none — the fix in this branch is already on main (commit 528b8b06). The regression test is also already on main. No unique unshipped work would be lost.",
+  "recommendation": "safe-delete — run: git push origin --delete dev/fix-trial-expired-redirect-loop",
+  "commandsRun": [
+    "git log --oneline main..dev/fix-trial-expired-redirect-loop",
+    "git ls-remote --heads origin dev/fix-trial-expired-redirect-loop",
+    "git diff --stat main...dev/fix-trial-expired-redirect-loop",
+    "git log --format='%H %ae %ai %s' main..dev/fix-trial-expired-redirect-loop",
+    "gh pr list --state all --search 'fix-trial-expired-redirect-loop' --json number,title,state,mergedAt,headRefName",
+    "gh pr view 1810 --json number,title,state,mergedAt,headRefName",
+    "git log --oneline main | grep -i 'middleware|trial|redirect|login'",
+    "git log --oneline --grep='middleware redirect loop' main"
+  ]
+}
