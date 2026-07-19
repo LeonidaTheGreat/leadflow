@@ -1,0 +1,47 @@
+{
+  "taskId": "1e06598c-b246-4cd6-bb9d-1ad8b3a0f940",
+  "branch": "dev/413be9d6-fix-ci-broken-on-main",
+  "verdict": "duplicate/superseded",
+  "risk": "low",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commitSubjects": [
+      "fix: resolve jest.resetModules() mock disconnection in cleanup-next-build-lock tests",
+      "fix: update dashboard tests to match AuthService refactor and fix stale assertions"
+    ],
+    "commitTimestamps": [
+      "2026-05-04T23:00:42-04:00",
+      "2026-05-04T22:59:44-04:00"
+    ],
+    "mergeBase": "2237297a (PR #1482, 2026-05-04)",
+    "branchAgeDays": 76,
+    "changedFiles": [
+      "product/lead-response/dashboard/__tests__/feedback.test.ts",
+      "product/lead-response/dashboard/__tests__/page-view-logger.test.ts",
+      "product/lead-response/dashboard/__tests__/sample-leads.test.ts",
+      "product/lead-response/dashboard/app/api/onboarding/simulator/route.test.ts",
+      "product/lead-response/dashboard/app/page.tsx",
+      "tests/unit/cleanup-next-build-lock.test.ts"
+    ],
+    "changeCharacter": "test-fixes-only (92 ins / 105 del, net reduction)",
+    "existingPRs": "none",
+    "matchingTaskRow": "none (id 413be9d6 not in tasks table)",
+    "supersededBy": [
+      {"taskId": "331add79", "title": "Fix: CI broken on main", "status": "done", "prStatus": "merged", "prNumber": 402},
+      {"taskId": "50f95b4e", "title": "Fix: CI broken on main", "status": "done", "prStatus": "merged", "prNumber": 511},
+      {"taskId": "78f49345", "title": "Fix: CI broken on main", "status": "done", "prStatus": "merged", "prNumber": 556}
+    ],
+    "commitSubjectsFoundInMain": false
+  },
+  "recommendation": "safe-delete — verify npm test passes on main, then: git push origin --delete dev/413be9d6-fix-ci-broken-on-main",
+  "commandsRun": [
+    "git fetch origin dev/413be9d6-fix-ci-broken-on-main",
+    "git log --oneline main..origin/dev/413be9d6-fix-ci-broken-on-main",
+    "git diff --stat main...origin/dev/413be9d6-fix-ci-broken-on-main",
+    "git ls-remote --heads origin dev/413be9d6-fix-ci-broken-on-main",
+    "gh pr list --search '413be9d6' --state all",
+    "gh pr list --search 'head:dev/413be9d6-fix-ci-broken-on-main' --state all",
+    "psql tasks WHERE branch_name LIKE '%413be9d6%' OR '%fix-ci-broken-on-main%'",
+    "git merge-base main origin/dev/413be9d6-fix-ci-broken-on-main"
+  ]
+}
