@@ -1,0 +1,55 @@
+{
+  "taskId": "f813d9f6-bc7d-439b-86db-4670d060592c",
+  "status": "completed",
+  "verdict": "needs-human-review",
+  "branch": "dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+  "shortSha": "164dfcdb",
+  "commitSubject": "fix: replace subscription_attempts with checkout_sessions in admin funnel route",
+  "commitDate": "2026-05-19T10:56:48-04:00",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts (12 lines changed)",
+      "product/lead-response/dashboard/jest.config.ts (1 line removed — un-skips a test suite)",
+      "product/lead-response/dashboard/tests/subscription-funnel-tracking.test.ts (80 lines changed)"
+    ],
+    "whatTheCommitDoes": "Switches the admin funnel checkout-attempts API endpoint from querying non-existent table 'subscription_attempts' (PGRST205) to 'checkout_sessions'. Updates column names (user_id instead of agent_id) and status values. Removes test suite skip from jest.config.ts.",
+    "currentMainState": "main still queries 'subscription_attempts' at route.ts:39 — fix has NOT landed on main",
+    "relatedPRs": [
+      { "number": 1655, "branch": "dev/fefa5e4d-dev-re-merge-fix-subscription-attempts-t", "state": "CLOSED (not merged)", "closedAt": "2026-05-22" },
+      { "number": 1670, "branch": "fix/subscription-attempts-use-checkout-sessions", "state": "CLOSED (not merged)", "closedAt": "2026-05-25" }
+    ],
+    "conflictingSignal": {
+      "description": "Sibling orphan branch 'dev/0e938cf5' (under active investigation PR #1969) has 5 commits: starts with the same fix then reverts it — adds a migration to CREATE subscription_attempts instead. This reversal suggests a deliberate decision to restore subscription_attempts via migration, not remove it.",
+      "siblingBranchCommits": [
+        "c6a75166 fix: replace subscription_attempts with checkout_sessions in admin funnel route",
+        "432a8688 fix: add subscription_attempts table migration",
+        "2931e85f fix: restore subscription_attempts across migration + upgrade-checkout + webhook",
+        "787dbff0 fix: restore migration NOT NULL constraints and admin funnel route to query subscription_attempts",
+        "5a1a781d fix: restore subscription-funnel-tracking test to expect subscription_attempts"
+      ]
+    },
+    "similarFixOnMain": "commit cbcf9b41: 'fix: replace subscription_attempts with checkout_sessions in upgrade-checkout route' — shows checkout_sessions approach accepted for upgrade-checkout but not admin funnel route"
+  },
+  "risk": "MEDIUM — real bug fix (admin funnel errors with PGRST205 every call), but 2 prior PRs with identical fix were closed without merging, and a sibling branch shows reversal toward creating subscription_attempts via migration. Merging blindly could conflict with in-flight migration work.",
+  "recommendation": "Human review required. Two paths: (A) if subscription_attempts is definitively not being created, merge this branch — the fix is correct; or (B) if subscription_attempts is being created via migration (as sibling branch dev/0e938cf5 suggests), discard this branch and ensure the migration completes. Check current DB schema and pending migrations before deciding. Do NOT auto-delete.",
+  "commandsRun": [
+    "git log --oneline main..dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "git diff --stat main...dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "git ls-remote --heads origin dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "git log --format='%H %ai %s' origin/dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t | head -5",
+    "gh pr list --search 'subscription' --state all",
+    "git show origin/main:...route.ts | grep subscription_attempts",
+    "git log --oneline main..origin/dev/0e938cf5-dev-re-merge-fix-subscription-attempts-t",
+    "git show 164dfcdb --stat"
+  ],
+  "rootCauseAnalysis": {
+    "failurePoint": "No matching task row; orphaned during spawn/lifecycle tracking",
+    "why": "Re-merge attempt of 'fix-subscription-attempts-table-does-not-exist' use case. Multiple prior attempts (PR #1655, #1670) were closed without merging. Fix reached a contentious state: should subscription_attempts be removed (use checkout_sessions) or created via migration?",
+    "fix": "Metadata triage only. No code changes. Deliverable is this investigation report."
+  },
+  "testResults": { "passed": 0, "total": 0, "passRate": null, "note": "Investigation task — no code written, no tests run" },
+  "filesCreated": ["completion-reports/COMPLETION-f813d9f6-bc7d-439b-86db-4670d060592c-20260719.json"],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-f813d9f6-bc7d-439b-86db-4670d060592c-20260719.json"
+}
