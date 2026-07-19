@@ -1,0 +1,79 @@
+{
+  "taskId": "6d9b0bb4-7fa3-4189-85a0-4a1ac7cf77fd",
+  "status": "completed",
+  "verdict": "needs-human-review",
+  "branch": "dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+  "taskSpec": {
+    "what": "Create a metadata-only orphan branch verdict JSON at docs/orphan-branch-verdict-2becf0ef.json. No application files or functions changed.",
+    "verify": "JSON parse succeeds; npm test passes 9/9; npm run build exits 0 after installing missing dashboard dependencies in the assigned worktree.",
+    "boundaries": "Do not read full diffs or orphan-branch file contents, do not modify product code/tests/generated docs/task rows/PRs, and do not delete or mutate the orphan branch."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote-tracking branch origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re has two commits not reachable from main, but no authoritative task/PR match could be verified in this sandbox.",
+    "why": "The branch appears to be a re-merge attempt for transactional email signup work. It has real route/email-service/test impact and overlapping sibling transactional-email re-merge branches, while GitHub API and TaskStore access were blocked.",
+    "fix": "Recorded a conservative metadata-only verdict and left the branch untouched."
+  },
+  "evidence": {
+    "localRemoteRef": "origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re exists locally at b7a2299420445efadfe41ae3e5978e9415aa542d.",
+    "remoteHeadCheck": "git ls-remote --heads origin dev/2becf0ef-dev-re-merge-feat-transactional-email-re failed: github.com could not be resolved.",
+    "commitsAheadOfMain": [
+      "85f1b513 feat: consolidate pilot-signup welcome email to use shared email service",
+      "b7a22994 fix: update email-service.ts domain comment to include 'verified in Resend' for test compliance"
+    ],
+    "diffStat": "3 files changed, 116 insertions(+), 89 deletions(-): product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts, product/lead-response/dashboard/lib/email-service.ts, tests/unit/pilot-signup-welcome-email-shared-service.test.js.",
+    "notOnMain": "git cherry -v main origin/dev/2becf0ef... reported both commits with '+'. main log search found feat-transactional-email-resend PR #170 but not these two commit subjects.",
+    "relatedBranches": [
+      "origin/dev/1528d5c8-dev-re-merge-feat-transactional-email-re has the same implementation subject with a 2-file diff stat.",
+      "origin/dev/8de6f1dd-dev-re-merge-feat-transactional-email-re has similar implementation/test subjects and overlapping route/test diff stat."
+    ],
+    "localSearch": "rg found feat-transactional-email-resend references in current main files, but no local artifact match for 2becf0ef, b7a22994, or 85f1b513 outside git metadata.",
+    "taskSearch": "TaskStore search failed with PostgreSQL EPERM, so the claimed missing task row could not be independently verified.",
+    "prIssueSearch": "gh pr and issue searches failed with api.github.com connectivity errors."
+  },
+  "risk": {
+    "level": "medium",
+    "reasons": [
+      "Branch contains product-route and test changes, not just documentation.",
+      "Sibling branches suggest possible duplicate or superseded work, but metadata alone cannot prove canonical ownership.",
+      "Authoritative PR/task status was unavailable."
+    ]
+  },
+  "recommendation": "Do not auto-delete or auto-merge. Escalate to human review or a larger-context model rung with GitHub and TaskStore access to compare sibling transactional-email branches. If still desired, create a task row and PR from the best surviving implementation.",
+  "testResults": {
+    "passed": 11,
+    "total": 11,
+    "passRate": 1.0,
+    "details": [
+      "JSON parse: passed",
+      "npm test: passed 9/9",
+      "npm run build: passed"
+    ]
+  },
+  "commandsRun": [
+    "git checkout dev/6d9b0bb4-investigate-orphan-branch-dev-2becf0ef-d && git branch --show-current",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,...' IDENTITY.md CLAUDE.md SOUL.md HEARTBEAT.md SKILLS.md ARCHITECTURE.md",
+    "rg -n '0047d8d9|06b4de87|f015a494|investigate-orphan' completion-reports . --glob '!node_modules' --glob '!test-results'",
+    "git log --oneline main..dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git diff --stat main...dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git ls-remote --heads origin dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git branch -a --list '*2becf0ef*'",
+    "git for-each-ref --format='%(refname:short) %(objectname:short) %(subject)' refs/heads refs/remotes | rg '2becf0ef|transactional-email|email-re'",
+    "git log --oneline main..origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git diff --stat main...origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git show --no-patch --format='%H%n%h%n%an%n%ae%n%ai%n%s%n%b' origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "rg -n '2becf0ef|b7a22994|85f1b513|update email-service\\.ts domain comment|consolidate pilot-signup welcome email|transactional-email' . --glob '!node_modules' --glob '!test-results' --glob '!coverage'",
+    "gh pr list --state all --search 'dev/2becf0ef-dev-re-merge-feat-transactional-email-re' --json number,state,title,headRefName,baseRefName,url --limit 20",
+    "gh issue list --state all --search '2becf0ef OR b7a22994 OR 85f1b513 OR \"consolidate pilot-signup welcome email\"' --json number,state,title,url --limit 20",
+    "node ~/projects/genome/scripts/where.js '2becf0ef transactional email'",
+    "node ~/projects/genome/scripts/graph-search.js 'completion-reports'",
+    "node - <<'NODE' ... TaskStore getTasks search ... NODE",
+    "git cherry -v main origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git log main --oneline --grep='consolidate pilot-signup welcome email\\|update email-service.ts domain comment\\|transactional-email' --regexp-ignore-case",
+    "git diff --name-status main...origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "node -e \"JSON.parse(require('fs').readFileSync('docs/orphan-branch-verdict-2becf0ef.json','utf8')); console.log('valid json')\"",
+    "npm test",
+    "npm run build"
+  ]
+}
