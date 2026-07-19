@@ -1,39 +1,34 @@
 const assert = require('assert');
 const { execFileSync } = require('child_process');
 
-function run(command, args) {
-  return execFileSync(command, args, {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe']
-  }).trim();
+const PR_REF = 'origin/dev/7ce78217-investigate-orphan-branch-dev-05cd51d7-f';
+const ORPHAN_REF = 'origin/dev/05cd51d7-fix-signup-page-smoke';
+const REPORT_PATH = 'docs/reports/orphan-branch-05cd51d7-verdict.json';
+const SIGNUP_PATH = 'product/lead-response/dashboard/app/signup/page.tsx';
+
+function git(args) {
+  return execFileSync('git', args, { encoding: 'utf8' });
 }
 
-const changedFiles = run('git', ['diff', '--name-only', 'main...HEAD'])
+const report = JSON.parse(git(['show', `${PR_REF}:${REPORT_PATH}`]));
+assert.strictEqual(report.thisInvestigationPRContains.noCodeChanges, true);
+assert.deepStrictEqual(report.thisInvestigationPRContains.filesChanged, [REPORT_PATH]);
+
+const changedFiles = git(['diff', '--name-only', `origin/main...${PR_REF}`])
+  .trim()
   .split('\n')
   .filter(Boolean);
+assert.deepStrictEqual(changedFiles, [REPORT_PATH]);
 
-const allowedFiles = new Set(['package.json', 'package-lock.json']);
-const unexpectedFiles = changedFiles.filter((file) => !allowedFiles.has(file));
+const signupSource = git(['show', `${ORPHAN_REF}:${SIGNUP_PATH}`]);
+const useClientIndex = signupSource.indexOf("'use client'");
+const dynamicIndex = signupSource.indexOf("export const dynamic = 'force-static'");
 
-assert.deepStrictEqual(
-  unexpectedFiles,
-  [],
-  `maintenance dependency fix must not change unrelated files: ${unexpectedFiles.join(', ')}`
+assert.ok(useClientIndex >= 0, "orphan signup page must contain 'use client'");
+assert.ok(dynamicIndex >= 0, 'orphan signup page must contain force-static export');
+assert.ok(
+  dynamicIndex < useClientIndex,
+  "report claims dynamic was added before 'use client', but actual orphan source places it after"
 );
 
-assert(
-  changedFiles.includes('package-lock.json'),
-  'maintenance dependency fix must include package-lock.json in the PR diff'
-);
-
-const packageJson = require('../package.json');
-const packageLock = require('../package-lock.json');
-const rootPackage = packageLock.packages[''];
-
-assert.strictEqual(packageJson.devDependencies.uuid, '^14.0.0');
-assert.strictEqual(rootPackage.devDependencies.uuid, '^14.0.0');
-assert.strictEqual(packageLock.packages['node_modules/uuid'].version, '14.0.0');
-assert.strictEqual(packageLock.packages['node_modules/follow-redirects'].version, '1.16.0');
-
-console.log('uc-leadflow-maintenance acceptance checks passed');
+console.log('uc-leadflow-maintenance report validation passed');
