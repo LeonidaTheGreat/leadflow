@@ -1,0 +1,76 @@
+{
+  "taskId": "7ce78217-0706-44ed-a8bb-c209e330a400",
+  "investigatedBranch": "dev/05cd51d7-fix-signup-page-smoke",
+  "verdict": "needs-human-review",
+  "verdictSummary": "Branch contains 1 unshipped commit (2026-05-14) that adds 'export const dynamic = force-static' to the signup page and a companion test enforcing that contract. Neither change is in main. The approach (force-static on a 'use client' component) is unusual Next.js usage and the companion test would currently fail on main — warrants human review before promoting or deleting.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR (investigation task 7ce78217) adds ONLY this verdict JSON file. It does NOT modify any source code, CI configuration, service files, tests, or package.json. QC should review only this JSON document.",
+    "filesChanged": ["docs/reports/orphan-branch-05cd51d7-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "orphanBranchMetadata": {
+    "shortSha": "5a14f394",
+    "commitSubject": "fix: harden signup route static rendering for smoke stability",
+    "commitDate": "2026-05-14T10:03:31-04:00",
+    "commitsAheadOfMain": 1,
+    "existsOnRemote": true,
+    "filesChangedOnOrphan": [
+      "product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts (modified — adds 1 new test case verifying export const dynamic = 'force-static' is present in signup page)",
+      "product/lead-response/dashboard/app/signup/page.tsx (modified — prepends task-spec comment block + adds 'export const dynamic = force-static' before 'use client' directive)"
+    ]
+  },
+
+  "evidence": {
+    "notInMain": {
+      "signupPageChange": "git diff main origin/dev/05cd51d7-fix-signup-page-smoke -- product/lead-response/dashboard/app/signup/page.tsx shows 2 additions: task spec comment block and 'export const dynamic = force-static'. Neither is present on main.",
+      "testFileAddition": "The test file fix-signup-page-smoke-500.test.ts exists on main but is missing the new test case that asserts the static-rendering contract. The new test case would currently FAIL on main.",
+      "noMainMatchForCommitSubject": "git log --oneline main | grep 'harden signup.*static' returned no results."
+    },
+    "relatedPRs": [
+      {
+        "number": 1495,
+        "title": "Fix: Signup page (smoke)",
+        "state": "MERGED",
+        "mergedAt": "2026-05-06T00:21:09Z",
+        "headBranch": "dev/45bfe698-fix-signup-page-smoke",
+        "note": "Merged 8 days before the orphan branch commit. Fixed JWT middleware issue — unrelated to static rendering."
+      },
+      {
+        "number": 1429,
+        "title": "Fix: Signup page (smoke)",
+        "state": "CLOSED",
+        "mergedAt": null
+      },
+      {
+        "number": 856,
+        "title": "Fix: Signup page (smoke)",
+        "state": "MERGED",
+        "mergedAt": "2026-04-05T03:23:59Z"
+      }
+    ],
+    "riskFactors": [
+      "Mixing 'export const dynamic = force-static' with 'use client' is unusual in Next.js — force-static is a route segment config for Server Components; behavior on a Client Component page may be undefined.",
+      "The test added (fix-signup-page-smoke-500.test.ts, new test case) would fail on main as-is, meaning the orphan branch introduces a coupling: ship both changes together or the test fails.",
+      "Branch is 65+ days old with no PR created — suggests it was intentionally set aside."
+    ]
+  },
+
+  "risk": "medium",
+  "riskReason": "Changes are isolated to one page file and its test, but the force-static on a client component is an unconventional Next.js pattern that could cause unexpected build or runtime behavior. Companion test would fail on main without the page change.",
+  "recommendation": "Human review required before promoting or deleting. Reviewer should: (1) confirm whether signup smoke failures are still occurring, (2) validate that export const dynamic = 'force-static' is valid/safe on a 'use client' page in Next.js 14+, (3) if valid and still needed — create a task to promote the fix; if superseded — safe to delete the branch.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/05cd51d7-fix-signup-page-smoke",
+    "git diff --stat main...origin/dev/05cd51d7-fix-signup-page-smoke",
+    "git ls-remote --heads origin dev/05cd51d7-fix-signup-page-smoke",
+    "git log --format='%H %ai %an %s' main..origin/dev/05cd51d7-fix-signup-page-smoke",
+    "gh pr list --search 'fix-signup-page-smoke' --state all --json number,title,state,mergedAt",
+    "gh pr list --search 'signup page smoke' --state all --json number,title,state,mergedAt",
+    "git diff main origin/dev/05cd51d7-fix-signup-page-smoke -- product/lead-response/dashboard/app/signup/page.tsx",
+    "git diff main origin/dev/05cd51d7-fix-signup-page-smoke -- product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts",
+    "git log --oneline main --after='2026-05-14' -- product/lead-response/dashboard/app/signup/page.tsx",
+    "git log --oneline main | grep 'harden signup'"
+  ]
+}
