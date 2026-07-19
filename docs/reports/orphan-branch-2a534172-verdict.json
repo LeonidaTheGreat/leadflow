@@ -1,0 +1,35 @@
+{
+  "taskId": "02d23fcb-8ae7-4481-b5db-16d1377e653e",
+  "investigatedBranch": "dev/2a534172-fix-e2e-flow-test-failures-1-critical",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "efbcdc3501c38314ef3332283d4da17cf2883d69",
+    "commitDate": "2026-05-08T23:08:05-0400",
+    "commitMessage": "fix: add retry + increased timeout to dashboard E2E test",
+    "filesChanged": ["scripts/e2e-flow-tests.sh"],
+    "changeStats": "1 file changed, 20 insertions(+), 6 deletions(-)",
+    "remoteExists": true,
+    "prFound": false,
+    "subsequentMergesOnSameFile": [
+      "#1533 Fix: E2E flow test failures (1 critical) — merged 2026-05-09",
+      "#1807 fix: harden health-api-connectivity e2e test against transient failures — merged 2026-06-11",
+      "#1846 fix: harden dashboard-no-errors e2e test against transient tunnel latency — merged 2026-07-15",
+      "#1898 fix: harden reset-password-chain e2e test against Vercel cold-start — merged 2026-07-17",
+      "#1921 fix: harden dashboard-no-errors user lookup against tunnel latency — merged 2026-07-18"
+    ]
+  },
+  "risk": "low",
+  "riskRationale": "The single changed file (scripts/e2e-flow-tests.sh) has been modified 5 times on main since this branch's commit date (2026-05-08). All subsequent merges address the same recurring E2E test stability issue with more targeted, incremental fixes. No PR was ever opened for this branch.",
+  "recommendation": "safe-delete",
+  "recommendationDetail": "Branch is over 2 months old, no PR was created, and the only file it modifies (scripts/e2e-flow-tests.sh) has 5 later fixes merged to main. The fix (retry + timeout for dashboard E2E) is fully superseded by subsequent improvements.",
+  "commandsRun": [
+    "git fetch origin dev/2a534172-fix-e2e-flow-test-failures-1-critical",
+    "git log --oneline main..origin/dev/2a534172-fix-e2e-flow-test-failures-1-critical",
+    "git diff --stat main...origin/dev/2a534172-fix-e2e-flow-test-failures-1-critical",
+    "git ls-remote --heads origin dev/2a534172-fix-e2e-flow-test-failures-1-critical",
+    "gh pr list --search 'fix-e2e-flow-test-failures' --state all",
+    "git log --format='%H %ai %s' origin/dev/2a534172-fix-e2e-flow-test-failures-1-critical | head -5",
+    "git log --oneline main -- scripts/e2e-flow-tests.sh"
+  ]
+}
