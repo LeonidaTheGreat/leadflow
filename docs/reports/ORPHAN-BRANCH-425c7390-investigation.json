@@ -1,8 +1,9 @@
 {
   "taskId": "425c7390-3725-439c-bedf-3df3e52df88f",
   "investigatedBranch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
-  "verdict": "needs-human-review",
-  "summary": "Branch has 2 commits not in main, no matching task row, and affects .local-tasks.json for a UC whose prior implementation attempts were all cancelled/failed.",
+  "verdict": "duplicate/superseded",
+  "verdictUpdated": "2026-07-19 (upgraded from needs-human-review — PM re-spec task e2fc5e99 completed with no follow-up dev work created, confirming feature path was abandoned after full evaluation cycle)",
+  "summary": "Branch has 2 commits not in main, no matching task row, and contains only scaffolding (task spec, E2E test, .local-tasks.json seed) for the pilot-outreach feature. That feature was attempted 3 times (PRs #1579, #1626, #1642 all closed) and re-specced by PM (task e2fc5e99 done) with no follow-up dev work. The E2E test file tests non-existent production functionality; merging would introduce failing tests. .local-tasks.json is 87 days stale. Branch is safe to delete.",
   "evidence": {
     "commitsAheadOfMain": [
       {
@@ -60,11 +61,19 @@
       {"pr_number": 1642, "status": "closed"}
     ]
   },
+  "additionalEvidence": {
+    "pmRespecTask": {
+      "id": "e2fc5e99-fc54-42e5-a3f8-543b888c3ac6",
+      "title": "PM: Re-spec with alternative approach — fix-pilot-outreach-has-not-happened-11-days-left",
+      "status": "done",
+      "significance": "PM completed a re-evaluation of this feature. No dev task was spawned from it, confirming the feature path was consciously closed out, not abandoned mid-flight."
+    }
+  },
   "risk": {
     "level": "low",
-    "detail": "No production code changed. Files are: a task-spec markdown doc, an E2E test file, and .local-tasks.json. The .local-tasks.json change would re-seed tasks for a UC whose previous implementation attempts all failed or were cancelled — merging could re-trigger abandoned work. The task-spec doc and test carry no runtime risk."
+    "detail": "No production code changed. Files are: a task-spec markdown doc, an E2E test file, and .local-tasks.json. Merging would introduce a test that tests non-existent functionality (causing CI failures) and re-seed .local-tasks.json with 87-day-old state. Production runtime is unaffected."
   },
-  "recommendation": "Do NOT auto-merge. Human review needed to decide: (1) Was this uc_no_tasks seed intentional or an orphan from a failed automation cycle? (2) Should the UC fix-pilot-outreach-has-not-happened-11-days-left be re-attempted? If yes, the .local-tasks.json seed and task-spec are valuable — create a proper task row and merge. If no, delete the branch safely — no production code is at risk.",
+  "recommendation": "Safe to delete. The feature was attempted 3 times, re-specced by PM, and consciously not re-implemented. No production code is on this branch. If the pilot-outreach feature is ever revisited, a fresh branch from main is preferred over this stale scaffold.",
   "commandsRun": [
     "git fetch origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
     "git log --oneline main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",

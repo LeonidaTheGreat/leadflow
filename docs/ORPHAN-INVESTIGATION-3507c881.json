@@ -1,0 +1,53 @@
+{
+  "verdict": "duplicate/superseded",
+  "branch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "commitsAheadOfMain": 2,
+  "commits": [
+    {
+      "sha": "a3b0e3a2",
+      "subject": "feat: add pilot outreach workflow kickoff task",
+      "date": "2026-04-23T21:44:36-04:00",
+      "author": "Stojan Madjunkov"
+    },
+    {
+      "sha": "12a11d63",
+      "subject": "test: E2E test for pilot outreach uc_no_tasks seed",
+      "date": "2026-04-23T22:38:39-04:00",
+      "author": "Stojan Madjunkov"
+    }
+  ],
+  "filesChanged": [
+    ".local-tasks.json (+36 lines)",
+    "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md (+35 lines)",
+    "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js (+81 lines)"
+  ],
+  "evidence": {
+    "noTaskRow": "No tasks row with branch_name matching '3507c881'. The only DB hit is the current investigation task (425c7390).",
+    "ucStatus": "Use case 'fix-pilot-outreach-has-not-happened-11-days-left' exists but is 'blocked_human' — meaning it requires human intervention before proceeding.",
+    "supersededBy": [
+      "dev/4e0baefc-dev-fix-pilot-outreach-has-not-happened (cancelled, no PR, 2026-04-21)",
+      "dev/fe12c74c-dev-fix-pilot-outreach-has-not-happened (cancelled, PR #1579, 2026-04-22)",
+      "dev/faf0f478-dev-fix-pilot-outreach-has-not-happened (cancelled, PR #1626, 2026-05-14)",
+      "dev/34f585c0-dev-rescue-fix-pilot-outreach-has-not-ha (failed, PR #1642, 2026-05-14)"
+    ],
+    "pmRespec": "PM completed 'Re-spec with alternative approach' for this UC on 2026-05-18 — the work on this branch predates that re-spec.",
+    "filesNotOnMain": "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js and docs/task-specs/...workflow-task.md do not exist on main — this branch was never merged.",
+    "noProductionCode": "All 3 changed files are non-production: .local-tasks.json (local task management), a task spec doc, and a test file."
+  },
+  "risk": "LOW — no production code, no routes/services/API changes. Only test artifacts, task spec docs, and local-tasks.json.",
+  "recommendation": "safe-delete — Branch is a stale artifact from April 2026, predating at least 3 further cancelled/failed attempts and a PM re-spec. The UC is blocked_human and won't be auto-retried. If the UC is ever unblocked, work should start fresh from the May 2026 re-spec output, not this branch.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --stat main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git show --stat a3b0e3a2",
+    "git show --stat 12a11d63",
+    "git diff --name-only main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "psql: SELECT tasks WHERE branch_name LIKE '%3507c881%'",
+    "psql: SELECT tasks WHERE title ILIKE '%pilot outreach%'",
+    "psql: SELECT tasks WHERE use_case_id = 'fix-pilot-outreach-has-not-happened-11-days-left'",
+    "psql: SELECT use_cases WHERE name ILIKE '%pilot outreach%'",
+    "git log --oneline --all | grep 3507c881",
+    "git log --oneline main | grep 'pilot outreach'"
+  ]
+}
