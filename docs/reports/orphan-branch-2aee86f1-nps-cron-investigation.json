@@ -1,0 +1,80 @@
+{
+  "verdict": "duplicate/superseded",
+  "branch": "dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+  "tipSha": "0c1ecb9f439f511f22807e0b012c81c78f0c039f",
+  "remoteExists": true,
+  "taskId": "2d9d9a7e-6a48-4b2d-861c-7ced2a5dc51d",
+  "prHistory": [
+    {
+      "number": 1394,
+      "title": "Fix: verification error on dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-02T16:41:45Z",
+      "note": "PR was closed without merging — superseded by parallel implementation"
+    }
+  ],
+  "commits": [
+    {
+      "sha": "cd590b83",
+      "subject": "docs: Day 80 root cause analysis — 0 paying customers gap",
+      "onMain": true,
+      "note": "Doc commit present in main as 2a2e1e4b"
+    },
+    {
+      "sha": "d3c3c34d",
+      "subject": "fix: NPS cron pipeline — widen status filter and read CRON_SECRET at call time",
+      "onMain": false,
+      "supersededBy": "PR #1392 (merged 2026-05-02) addressed status filter; PR #1216 addressed cron fail-closed auth"
+    },
+    {
+      "sha": "b9682323",
+      "subject": "fix: expand NPS survey eligibility to trial and pilot agents",
+      "onMain": false,
+      "supersededBy": "PR #1392 merged 2026-05-02 removed the active-only filter entirely (same goal, different approach); PR #1546 merged 2026-05-16 handled backfill and orphan cleanup"
+    },
+    {
+      "sha": "0c1ecb9f",
+      "subject": "fix: remove misplaced test file from dashboard __tests__",
+      "onMain": false,
+      "supersededBy": "Moot — the misplaced file no longer exists on main; different test layout evolved"
+    }
+  ],
+  "diffStat": {
+    "filesChanged": 5,
+    "insertions": 283,
+    "deletions": 41,
+    "files": [
+      "PMF.md (docs only — 84 lines changed)",
+      "product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts (9 lines — CRON_SECRET moved inside handler)",
+      "product/lead-response/dashboard/lib/nps-service.ts (2 lines — .in() status filter added)",
+      "scripts/db/nps-schedule-cleanup-backfill.js (73 lines — new file, NOT on main)",
+      "tests/e2e/feat-nps-survey-trial-agents.test.js (197 lines — new file, NOT on main)"
+    ]
+  },
+  "supersededEvidence": {
+    "npsEligibilityExpansion": "PR #1392 merged 2026-05-02 from dev/c2c0922a-dev-feat-nps-survey-trial-agents-expand removed the active-only filter entirely (different approach, same business outcome)",
+    "backfillScript": "PR #1546 merged 2026-05-16 'fix: repair nps schedule backfill and orphan cleanup' addressed schedule backfill and orphan row cleanup",
+    "cronSecretFix": "PR #1216 already handled cron fail-closed auth; main has module-level read with null-guard (if (!CRON_SECRET) → 503) which is functionally equivalent",
+    "misplacedTest": "The file this commit deleted no longer exists on main — moot"
+  },
+  "risk": "low",
+  "riskRationale": "All functional goals (NPS eligibility broadening, CRON_SECRET auth hardening, backfill) were addressed through alternative PRs already merged. The orphan's .in() filter approach differs from PR #1392's remove-filter approach, but both achieve the same outcome. No unique production logic needs salvaging.",
+  "recommendation": "safe-delete — branch fully superseded by PRs #1392 (merged 2026-05-02) and #1546 (merged 2026-05-16). Closed PR #1394 confirms branch was intentionally abandoned. Delete after confirming with Stojan.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git fetch origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git log --oneline main..origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git diff --stat main...origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "gh pr list --search 'dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se' --state all",
+    "gh pr view 1394 --json number,title,state,mergedAt,closedAt,headRefName,baseRefName,body,commits",
+    "gh pr list --search 'fix-nps-cron' --state all",
+    "gh pr view 1392 --json number,title,state,mergedAt,headRefName",
+    "gh pr view 1546 --json number,title,state,mergedAt,headRefName",
+    "git log --oneline main --grep='nps' -i",
+    "git show main:product/lead-response/dashboard/lib/nps-service.ts",
+    "git show origin/dev/2aee86f1...:product/lead-response/dashboard/lib/nps-service.ts",
+    "git show main:product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts",
+    "git show 0a3743cc --stat"
+  ]
+}
