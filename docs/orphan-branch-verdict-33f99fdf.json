@@ -1,0 +1,63 @@
+{
+  "taskId": "db4f9a12-e25c-4832-a7cf-a51e9c31974d",
+  "branch": "dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+  "summary": "Four commits on this branch refine cleanup-next-build-lock.js to fix false-positive stuck-process detection and orphaned next build processes blocking the quality gate. A subsequent branch dev/844c84ec-fix-quality-gate-build-failing-in-leadfl addressed the same root cause with a broader fix (orphan detection + timeout kills + 8 unit tests) and was merged as PR #1537 on 2026-05-16. This branch has no open PR, no matching task row, and main is 191 commits ahead of the merge base. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "commits": [
+      {
+        "sha": "a1f4767a",
+        "subject": "fix: prevent false-positive stuck-process detection in cleanup-next-build-lock"
+      },
+      {
+        "sha": "11bd8bd0",
+        "subject": "fix: use lsof + orphan-check for build lock cleanup (replaces ps+awk)"
+      },
+      {
+        "sha": "caa9038b",
+        "subject": "fix: detect and kill orphaned next build processes in lock cleanup"
+      },
+      {
+        "sha": "44e0f83b",
+        "subject": "fix: pgrep \"next build\" not \"next\" to avoid false-positive from dev servers"
+      }
+    ],
+    "filesChanged": {
+      "stat": "1 file changed, 65 insertions(+), 32 deletions(-)",
+      "files": [
+        "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js"
+      ]
+    },
+    "existingPRs": "None found for this branch",
+    "supersededBy": {
+      "branch": "dev/844c84ec-fix-quality-gate-build-failing-in-leadfl",
+      "pr": 1537,
+      "title": "Fix: kill stuck builds after timeout to prevent lock interference",
+      "mergedAt": "2026-05-16T16:43:15Z",
+      "mergeCommit": "54c28f46",
+      "inMain": true
+    },
+    "mergeBase": "d24a59775044f241e6d23555df4720dd7ecdfca2",
+    "mainCommitsAheadOfMergeBase": 191
+  },
+  "risk": "low",
+  "riskDetails": "All functional improvements on this branch are fully covered by the superseding PR #1537 which is already in main. Deleting this branch loses no work.",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git fetch origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline main..origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat main...origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git ls-remote --heads origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --state all --head dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --state all --search cleanup-next-build-lock",
+    "git log --oneline --all | grep -E '44e0f83|caa9038|11bd8bd|a1f4767'",
+    "git log --oneline main | grep -E 'cleanup-next-build-lock|pgrep|lsof.*orphan|false.positive'",
+    "git merge-base main origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline d24a5977..main | wc -l",
+    "gh pr view 1537 --json title,body,mergedAt,headRefName,mergeCommit",
+    "git log --oneline main | grep 54c28f46"
+  ]
+}
