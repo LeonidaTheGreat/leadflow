@@ -1,0 +1,89 @@
+{
+  "taskId": "425c7390-3725-439c-bedf-3df3e52df88f",
+  "investigatedBranch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "verdict": "duplicate/superseded",
+  "verdictUpdated": "2026-07-19 (upgraded from needs-human-review — PM re-spec task e2fc5e99 completed with no follow-up dev work created, confirming feature path was abandoned after full evaluation cycle)",
+  "summary": "Branch has 2 commits not in main, no matching task row, and contains only scaffolding (task spec, E2E test, .local-tasks.json seed) for the pilot-outreach feature. That feature was attempted 3 times (PRs #1579, #1626, #1642 all closed) and re-specced by PM (task e2fc5e99 done) with no follow-up dev work. The E2E test file tests non-existent production functionality; merging would introduce failing tests. .local-tasks.json is 87 days stale. Branch is safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "a3b0e3a2",
+        "subject": "feat: add pilot outreach workflow kickoff task",
+        "inMain": false
+      },
+      {
+        "sha": "12a11d63",
+        "subject": "test: E2E test for pilot outreach uc_no_tasks seed",
+        "inMain": false
+      }
+    ],
+    "filesChanged": [
+      ".local-tasks.json",
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md",
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js"
+    ],
+    "taskRowExists": false,
+    "taskIdFromBranchPrefix": "3507c881 — no UUID match in tasks table",
+    "remoteExists": true,
+    "remoteSha": "12a11d63b64b4415423a224db7d54404f75c2b70",
+    "relatedTasksInDB": [
+      {
+        "id": "fe12c74c-f8e5-49a5-b3a2-0ca5011be56a",
+        "title": "Dev: fix-pilot-outreach-has-not-happened-11-days-left",
+        "status": "cancelled",
+        "pr_number": 1579,
+        "branch": "dev/fe12c74c-dev-fix-pilot-outreach-has-not-happened"
+      },
+      {
+        "id": "faf0f478-1a20-4008-85f4-b7b38b150c72",
+        "title": "Dev: fix-pilot-outreach-has-not-happened-11-days-left",
+        "status": "cancelled",
+        "pr_number": 1626,
+        "branch": "dev/faf0f478-dev-fix-pilot-outreach-has-not-happened"
+      },
+      {
+        "id": "34f585c0-9549-442b-9386-d00d278e9de6",
+        "title": "Dev (rescue): fix-pilot-outreach-has-not-happened-11-days-left",
+        "status": "failed",
+        "pr_number": 1642,
+        "branch": "dev/34f585c0-dev-rescue-fix-pilot-outreach-has-not-ha"
+      },
+      {
+        "id": "e2fc5e99-fc54-42e5-a3f8-543b888c3ac6",
+        "title": "PM: Re-spec with alternative approach — fix-pilot-outreach-has-not-happened-11-days-left",
+        "status": "done",
+        "branch": null
+      }
+    ],
+    "codeReviewsForRelatedBranches": [
+      {"pr_number": 1579, "status": "closed"},
+      {"pr_number": 1626, "status": "closed"},
+      {"pr_number": 1642, "status": "closed"}
+    ]
+  },
+  "additionalEvidence": {
+    "pmRespecTask": {
+      "id": "e2fc5e99-fc54-42e5-a3f8-543b888c3ac6",
+      "title": "PM: Re-spec with alternative approach — fix-pilot-outreach-has-not-happened-11-days-left",
+      "status": "done",
+      "significance": "PM completed a re-evaluation of this feature. No dev task was spawned from it, confirming the feature path was consciously closed out, not abandoned mid-flight."
+    }
+  },
+  "risk": {
+    "level": "low",
+    "detail": "No production code changed. Files are: a task-spec markdown doc, an E2E test file, and .local-tasks.json. Merging would introduce a test that tests non-existent functionality (causing CI failures) and re-seed .local-tasks.json with 87-day-old state. Production runtime is unaffected."
+  },
+  "recommendation": "Safe to delete. The feature was attempted 3 times, re-specced by PM, and consciously not re-implemented. No production code is on this branch. If the pilot-outreach feature is ever revisited, a fresh branch from main is preferred over this stale scaffold.",
+  "commandsRun": [
+    "git fetch origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --stat main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --name-only main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline main | grep -E 'pilot outreach workflow kickoff|E2E test for pilot outreach uc_no_tasks'",
+    "git log --oneline --all | grep -E '12a11d63|a3b0e3a2'",
+    "psql $LOCAL_PG_URL: SELECT tasks WHERE branch_name LIKE '%3507c881%'",
+    "psql $LOCAL_PG_URL: SELECT tasks WHERE title ILIKE '%fix-pilot-outreach-has-not-happened%'",
+    "psql $LOCAL_PG_URL: SELECT code_reviews WHERE branch_name LIKE '%pilot-outreach%'"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "branch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "investigatedAt": "2026-07-19",
+  "taskId": "425c7390-3725-439c-bedf-3df3e52df88f",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch is a 3-month-old abandoned iteration of the 'fix-pilot-outreach-has-not-happened-11-days-left' UC. The UC cycled through 4 dev attempts (all cancelled/failed) and a PM re-spec before being shelved. No PR was ever opened, no task row exists for the branch prefix 3507c881, and the content (local task + E2E test seed) is not on main. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "a3b0e3a2",
+        "subject": "feat: add pilot outreach workflow kickoff task",
+        "date": "2026-04-23T21:44:36-04:00",
+        "author": "Stojan Madjunkov"
+      },
+      {
+        "sha": "12a11d63",
+        "subject": "test: E2E test for pilot outreach uc_no_tasks seed",
+        "date": "2026-04-23T22:38:39-04:00",
+        "author": "Stojan Madjunkov"
+      }
+    ],
+    "filesChanged": [
+      ".local-tasks.json",
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md",
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js"
+    ],
+    "prExists": false,
+    "taskRowExists": false,
+    "taskRowSearchResult": "id::text LIKE '3507c881%' returned 0 rows",
+    "testFileOnMain": false,
+    "branchExistsOnRemote": true,
+    "remoteSha": "12a11d63b64b4415423a224db7d54404f75c2b70",
+    "ucLifecycle": [
+      { "taskId": "4e0baefc", "title": "Dev: fix-pilot-outreach-has-not-happened-11-days-left", "status": "cancelled", "date": "2026-04-21" },
+      { "taskId": "fe12c74c", "title": "Dev: fix-pilot-outreach-has-not-happened-11-days-left", "status": "cancelled", "pr": 1579, "date": "2026-04-22" },
+      { "taskId": "faf0f478", "title": "Dev: fix-pilot-outreach-has-not-happened-11-days-left", "status": "cancelled", "pr": 1626, "date": "2026-05-14" },
+      { "taskId": "34f585c0", "title": "Dev (rescue): fix-pilot-outreach-has-not-happened-11-days-left", "status": "failed", "pr": 1642, "date": "2026-05-14" },
+      { "taskId": "e2fc5e99", "title": "PM: Re-spec with alternative approach", "status": "done", "date": "2026-05-18" }
+    ],
+    "mainHasSimilarContent": {
+      "pilotOutreachManager": "feat: pilot outreach manager for manual recruitment campaign (#930)",
+      "pilotOutreachAdmin": "feat: add pilot outreach candidates admin page and API (#867)",
+      "pilotOutreachDocs": "docs: add direct pilot outreach content brief and scripts for zero-pilots-recruited fix"
+    }
+  },
+  "risk": "low",
+  "riskRationale": "Only adds .local-tasks.json entry + doc + test file. No production code changes. The .local-tasks.json on main has diverged substantially since April; merging would create conflicts. The E2E test covers a UC scenario ('11 days left') that was abandoned after 4 failed attempts.",
+  "recommendation": "safe-delete — delete remote branch. The UC scenario was abandoned after exhausting all retry attempts and PM re-spec. Subsequent iterations addressed pilot outreach via different mechanisms already merged to main.",
+  "commandsRun": [
+    "git fetch origin main dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline origin/main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --stat origin/main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline --format='%H %s %P' origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h | head -5",
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --name-only origin/main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git show origin/main:tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js",
+    "git log --oneline origin/main | grep -i 'pilot outreach'",
+    "psql $LOCAL_PG_URL SELECT tasks WHERE branch/title match pilot outreach",
+    "psql $LOCAL_PG_URL SELECT tasks WHERE id::text LIKE '3507c881%'"
+  ]
+}

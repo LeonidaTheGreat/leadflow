@@ -1,0 +1,75 @@
+{
+  "investigatedBranch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "investigatedAt": "2026-07-19",
+  "taskId": "425c7390-3725-439c-bedf-3df3e52df88f",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch contains 2 commits (April 23, 2026) seeding a kickoff task pointing at PRD-PILOT-SIGNUP-FOLLOW-UP-SEQUENCE.md and an E2E test for UC 'fix-pilot-outreach-has-not-happened-11-days-left'. The implementation this branch was trying to kickstart (PilotSignupOutreachService — Email + Cal.com Booking for 20 signups) had already shipped via PR #1272 on 2026-04-22, ONE DAY before this branch was created. The UC was subsequently cancelled per main commit 66561ed8 ('docs: PM investigation — cancel stale fix-pilot-outreach UC'). Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commitLog": [
+      {
+        "sha": "a3b0e3a2",
+        "date": "2026-04-23",
+        "message": "feat: add pilot outreach workflow kickoff task",
+        "files": [".local-tasks.json", "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md"]
+      },
+      {
+        "sha": "12a11d63",
+        "date": "2026-04-23",
+        "message": "test: E2E test for pilot outreach uc_no_tasks seed",
+        "files": ["tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js"]
+      }
+    ],
+    "diffStat": {
+      ".local-tasks.json": "+36 lines",
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md": "+35 lines (new)",
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js": "+81 lines (new)"
+    },
+    "noMatchingTaskRow": true,
+    "supersededBy": {
+      "sha": "cc84ac9822dc5c3ff8260cd2eacd2c0ed0138423",
+      "date": "2026-04-22",
+      "subject": "Dev: feat-pilot-signup-follow-up-sequence - Pilot Signup Follow-Up Sequence — Email + Cal.com Booking for 20 Existing Signups (#1272)",
+      "note": "Full implementation of PilotSignupOutreachService landed on main ONE DAY before this branch was created. The uc_no_tasks kickoff task seeded in this branch pointed at PRD-PILOT-SIGNUP-FOLLOW-UP-SEQUENCE.md — work already done."
+    },
+    "ucCancelledOnMain": {
+      "sha": "66561ed8",
+      "subject": "docs: PM investigation — cancel stale fix-pilot-outreach UC",
+      "note": "After the implementation shipped, PM explicitly cancelled the UC on main"
+    },
+    "relatedUC": {
+      "id": "fix-pilot-outreach-has-not-happened-11-days-left",
+      "name": "Pilot outreach has not happened — 11 days left",
+      "implementation_status": "blocked_human",
+      "updated_at": "2026-05-29"
+    },
+    "priorAttempts": [
+      {"taskId": "4e0baefc", "status": "cancelled", "date": "2026-04-21"},
+      {"taskId": "fe12c74c", "status": "cancelled", "date": "2026-04-22", "pr": 1579},
+      {"taskId": "faf0f478", "status": "cancelled", "date": "2026-05-14", "pr": 1626},
+      {"taskId": "34f585c0", "status": "failed", "date": "2026-05-14", "pr": 1642, "note": "rescue attempt"},
+      {"taskId": "e2fc5e99", "status": "done", "date": "2026-05-18", "agent": "product", "note": "PM re-spec — no subsequent dev task confirmed"}
+    ],
+    "parallelOrphanBranch": {
+      "branch": "dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+      "sha": "b744168c",
+      "commitsAheadOfMain": 2,
+      "approach": "marks stalled pilot outreach as blocked in gtm-status (different approach, also superseded by UC cancellation)"
+    }
+  },
+  "risk": "LOW — branch contains only local dev artifacts (.local-tasks.json, task-spec .md) and one E2E test. No production routes, services, or schema changes. Merging would add a duplicate .local-tasks.json entry for a cancelled UC.",
+  "recommendation": "Safe to delete. The implementation this branch was preparing to kickstart (pilot signup follow-up sequence) shipped via PR #1272 on 2026-04-22, before this branch was created. The UC was subsequently cancelled by the PM. The E2E test added covers a feature that shipped through a different code path — if desired it can be evaluated separately, but requires updating to reference the correct implementation paths. Also safe to delete companion orphan branch dev/7f073104.",
+  "commandsRun": [
+    "git fetch origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline main..origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git diff --stat main...origin/dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --format='%H %s %ad' --date=short main..origin/dev/3507c881",
+    "git show a3b0e3a2 --name-only --format=''",
+    "git show origin/dev/3507c881 --name-only --format=''",
+    "git show a3b0e3a2:'docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md' (head 40)",
+    "git log --format='%H %s' main | grep -E 'Implement Pilot Signup Follow-Up|pilot.signup.follow'",
+    "git log --oneline --all | grep -E 'pilot.outreach|uc.no.tasks|no_tasks'",
+    "git log --format='%H %s' main | grep '66561ed8'"
+  ]
+}
