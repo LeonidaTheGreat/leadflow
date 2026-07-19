@@ -54,7 +54,7 @@ async function acceptTrialActivationToken(
   let payload: TrialActivationPayload
 
   try {
-    payload = jwt.verify(token, JWT_SECRET, { issuer: TRIAL_ACTIVATION_ISSUER }) as TrialActivationPayload
+    payload = jwt.verify(token, JWT_SECRET, { issuer: TRIAL_ACTIVATION_ISSUER, algorithms: ['HS256'] }) as TrialActivationPayload
   } catch (err: any) {
     const message = err?.name === 'TokenExpiredError'
       ? 'This magic link has expired. Please request a new one.'

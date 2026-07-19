@@ -3,6 +3,9 @@ on: pull_request
 
 jobs:
   test:
+    # Self-hosted Mac Mini runner — has LOCAL_PG_URL and production env vars available.
+    # STRIPE_WEBHOOK_SECRET is available on this runner; the stripe-checkout test
+    # gracefully skips test 4 when the var is absent on other runners.
     runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v4
@@ -11,7 +14,11 @@ jobs:
           node-version: '20'
       - run: npm ci
       - name: API tests
-        run: npm test
+        run: node scripts/test-suite-gate.js
+        timeout-minutes: 3
+      - name: Stripe checkout smoke test
+        run: node tests/integration/stripe-checkout.test.js
+        timeout-minutes: 2
       - name: Dashboard install
         working-directory: product/lead-response/dashboard
         run: npm ci
