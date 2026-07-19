@@ -1,0 +1,65 @@
+{
+  "branchName": "dev/0ba43dd6-fix-nps-survey-delivery-pipeline-status",
+  "taskId": "271c2e05-e846-4a6d-8ef6-664138f64c24",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+  "evidence": {
+    "orphanCommit": {
+      "sha": "1368a889",
+      "fullSha": "1368a8890e2eb695573ce9ca1dd3f0bb8c3de1bf",
+      "date": "2026-04-29T22:35:33-04:00",
+      "message": "fix: include onboarding agents in NPS due-survey filter",
+      "filesChanged": [
+        "product/lead-response/dashboard/lib/nps-service.ts"
+      ],
+      "stat": "1 file changed, 21 insertions(+), 6 deletions(-)"
+    },
+    "relatedPR": {
+      "number": 1389,
+      "title": "Fix: NPS survey delivery pipeline — status filter bug + orphan cleanup",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-04-30T05:46:08Z",
+      "closureReason": "Auto-closed: merge conflicts with main. Task will be retried on a fresh branch."
+    },
+    "supersedingWork": {
+      "pr": 1392,
+      "mergeCommit": "0a3743cc",
+      "date": "2026-05-02T05:59:53-04:00",
+      "message": "Dev: feat-nps-survey-trial-agents - Expand NPS Survey to Trial/Onboarding Agents (#1392)",
+      "filesChanged": [
+        "product/lead-response/dashboard/lib/nps-service.ts",
+        "scripts/db/backfill-nps-survey-schedules.js",
+        "tests/e2e/nps-trial-eligibility.test.js",
+        "tests/unit/nps-survey-eligibility.test.js"
+      ],
+      "notes": "PR #1392 covers the same nps-service.ts fix plus tests — it is the fresh-branch retry explicitly mentioned in PR #1389 closure comment."
+    },
+    "subsequentNPSFixesOnMain": [
+      "a31c0608 fix: repair nps schedule backfill and orphan cleanup (#1546)",
+      "b80e49e6 fix: widen NPS survey status filter to include onboarding agents",
+      "b77a3f56 fix: expand NPS survey eligibility to include trial and pilot agents",
+      "3d80c6df feat: implement NPS metric auto-collection via nps_collector (#1728)"
+    ],
+    "commitInMain": false
+  },
+  "risk": "low",
+  "riskRationale": "PR #1389 was explicitly auto-closed because of merge conflicts and the closure comment states the task would be retried on a fresh branch. PR #1392 (merged 3 days later, 2026-05-02) touches the same file with the same intent, plus adds tests. Multiple subsequent NPS-related commits on main further confirm the fix area has been addressed. The orphan commit's SHA is not reachable from main, but its intent is fully covered by shipped work.",
+  "recommendation": "safe-delete",
+  "recommendationDetail": "Branch dev/0ba43dd6-fix-nps-survey-delivery-pipeline-status can be deleted. Its single commit was superseded by PR #1392 which merged the same functional fix with proper tests. No task row or open PR remains — the orchestrator auto-closed PR #1389 and planned a retry that succeeded.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/0ba43dd6-fix-nps-survey-delivery-pipeline-status",
+    "git fetch origin dev/0ba43dd6-fix-nps-survey-delivery-pipeline-status",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "gh pr list --search 'dev/0ba43dd6-fix-nps-survey-delivery-pipeline-status' --state all",
+    "gh pr list --search 'nps survey delivery pipeline' --state all",
+    "gh pr view 1389 --json number,title,state,mergedAt,closedAt,headRefName,mergeCommit",
+    "gh pr view 1389 --comments",
+    "git merge-base --is-ancestor 1368a8890e2eb695573ce9ca1dd3f0bb8c3de1bf main",
+    "git log --oneline --all | grep -i 'nps|survey'",
+    "git show --format='%H %ai %s' --name-only 0a3743cc",
+    "git show --format='%H %ai %s' 1368a8890e2eb695573ce9ca1dd3f0bb8c3de1bf"
+  ]
+}
