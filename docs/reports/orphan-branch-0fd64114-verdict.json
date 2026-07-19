@@ -1,0 +1,61 @@
+{
+  "branch": "dev/0fd64114-fix-quality-gate-build-failing",
+  "investigatedAt": "2026-07-19",
+  "taskId": "82c0adca-2256-4e90-b6ac-ed1799bebe03",
+
+  "verdict": "already-shipped-safe-delete",
+
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "0e59996f",
+        "subject": "fix: repair build quality gate — stale lock cleanup + email domain + axios vuln",
+        "author": "madzunkov@hotmail.com"
+      },
+      {
+        "sha": "d8c58cad",
+        "subject": "test: fix cleanup-next-build-lock jest.resetModules breaks mock isolation",
+        "author": "madzunkov@hotmail.com"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 7,
+      "lines": "13 insertions, 14 deletions",
+      "filesAffected": [
+        "product/lead-response/dashboard/lib/email-service.ts",
+        "product/lead-response/dashboard/lib/nps-email-service.ts",
+        "product/lead-response/dashboard/lib/outreach-email-service.ts",
+        "product/lead-response/dashboard/lib/trial-emails.ts",
+        "product/lead-response/dashboard/package-lock.json",
+        "product/lead-response/dashboard/package.json",
+        "product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts"
+      ]
+    },
+    "matchedPR": {
+      "number": 1482,
+      "title": "Fix: Quality gate \"build\" failing in leadflow",
+      "state": "MERGED",
+      "mergedAt": "2026-05-05T01:58:05Z",
+      "headRefName": "dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+      "baseRefName": "main",
+      "mergeCommit": "2237297aeb4afeb92ac771e960d39b6ce2150e39"
+    },
+    "remoteBranchExists": true,
+    "remoteSha": "d8c58caddb46eeeaa80be0d13a238fa68450ea69"
+  },
+
+  "risk": "low — PR #1482 was MERGED to main on 2026-05-05. The branch name differs by a suffix ('in-leadfl' vs bare) but the commit SHAs and diff content match. The changes (email domain fixes, axios vulnerability patch, test isolation fix) are small and already in main.",
+
+  "recommendation": "Safe to delete remote branch dev/0fd64114-fix-quality-gate-build-failing. No unshipped work; the task is complete and merged. Run: git push origin --delete dev/0fd64114-fix-quality-gate-build-failing",
+
+  "commandsRun": [
+    "git checkout dev/82c0adca-investigate-orphan-branch-dev-0fd64114-f",
+    "git log --oneline main..origin/dev/0fd64114-fix-quality-gate-build-failing",
+    "git diff --stat main...origin/dev/0fd64114-fix-quality-gate-build-failing",
+    "git ls-remote --heads origin dev/0fd64114-fix-quality-gate-build-failing",
+    "git log --format='%H %ae %s' main..origin/dev/0fd64114-fix-quality-gate-build-failing",
+    "gh pr list --search 'dev/0fd64114-fix-quality-gate-build-failing' --state all",
+    "gh pr list --search 'fix quality gate build' --state all",
+    "gh pr view 1482 --json number,title,state,mergedAt,headRefName,baseRefName,mergeCommit"
+  ]
+}
