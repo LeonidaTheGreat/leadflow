@@ -1,0 +1,69 @@
+{
+  "taskId": "12fa9024-50d0-46ec-b452-19b868b3c68c",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+  "commits": [
+    {
+      "sha": "5b07927d",
+      "subject": "fix: add catch() and finally() to QueryBuilder to resolve TS2339 Vercel build failure",
+      "date": "2026-05-17T21:18:52-04:00",
+      "author": "Stojan Madjunkov"
+    },
+    {
+      "sha": "0ff0b8e9",
+      "subject": "fix(ts): resolve TS2339 and TS2345 TypeScript errors causing Vercel build failures",
+      "date": "2026-05-17T21:08:52-04:00",
+      "author": "Stojan Madjunkov"
+    }
+  ],
+  "evidence": {
+    "originalTaskId": "2950d127-1082-4f36-a990-ee0ff225856b",
+    "originalTaskStatus": "failed",
+    "noPRCreated": true,
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/ts-regression-vercel-build.test.ts (87 lines, new file)",
+      "product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (+2 lines, comment only)",
+      "product/lead-response/dashboard/app/pilot/page.tsx (+2 lines, comment only)",
+      "product/lead-response/dashboard/lib/db.ts (+18, -1 lines, adds catch() and finally() to QueryBuilder)"
+    ],
+    "originalUCCompleted": {
+      "description": "fix-three-consecutive-vercel-builds-failing-fix-never-reached-production",
+      "mergedPR": 165,
+      "mergedCommit": "503afe96",
+      "mergedDate": "2026-03-10",
+      "note": "PR #165 fixed TS2304 (missing PilotStatusBanner import), NOT TS2339/QueryBuilder. Original UC considered shipped."
+    },
+    "remergeAttempts": [
+      { "taskId": "d2e9f539-d802-4fa1-9d16-1f3b13903323", "status": "cancelled", "pr": 1643 },
+      { "taskId": "0ed46882-61aa-485b-af3a-5e9fce4a399f", "status": "failed", "branch": "dev/0ed46882-dev-re-merge-fix-three-consecutive-verce" },
+      { "taskId": "779a4936-c178-47d3-af05-6765e83eb661", "status": "failed", "branch": "dev/779a4936-dev-re-merge-fix-three-consecutive-verce" },
+      { "taskId": "2950d127-1082-4f36-a990-ee0ff225856b", "status": "failed", "branch": "dev/2950d127-dev-re-merge-fix-three-consecutive-verce" },
+      { "taskId": "0047d8d9-dff0-4e0d-8cc7-519a6862908d", "status": "failed", "branch": "dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce", "priorInvestigation": "de3b67e0 — concluded safe-delete" }
+    ],
+    "priorInvestigationRef": {
+      "taskId": "de3b67e0-f226-418c-b9ab-49dad722b249",
+      "reportFile": "docs/reports/orphan-branch-de3b67e0-verdict.json",
+      "verdictForCluster": "safe-delete — all 6 re-merge attempts failed or cancelled",
+      "confirmsThisBranchAs": "4th of 6 failed re-merge attempts; already catalogued in prior investigation"
+    },
+    "mainHasNewerCommitsOnSameFiles": true,
+    "latestMainCommitOnDbTs": "bf6015dd (2026-07, harden health-api-connectivity e2e test)",
+    "catchFinallyOnMain": false
+  },
+  "risk": "medium — branch is from 2026-05-17 on files extensively modified on main through July 2026; merging would risk regressions. The TS2339 (catch/finally) fix is not on main but the UC is considered closed.",
+  "recommendation": "safe-delete — this is the 4th of 6 failed re-merge attempts for the same UC, already catalogued in prior investigation de3b67e0. The UC was shipped via PR #165 (2026-03-10). No PR was ever created for this branch. Files touched have diverged significantly on main since May 2026. Delete branch.",
+  "commandsRun": [
+    "git log --oneline main..dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "git diff --stat main...origin/dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "git ls-remote --heads origin dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "gh pr list --state all --search 'fix three consecutive'",
+    "gh pr list --state all --search '2950d127'",
+    "gh pr list --state all --search '5b07927d'",
+    "git log --oneline --all | grep 'ts2339|querybuilder|TS2345'",
+    "git branch -r | grep 'fix-three-consecutive-verce'",
+    "git diff origin/dev/0047d8d9...origin/dev/2950d127 --stat",
+    "git show origin/main:product/lead-response/dashboard/lib/db.ts | grep -n 'catch(|finally('",
+    "git log --oneline origin/main -- product/lead-response/dashboard/lib/db.ts",
+    "cat docs/reports/orphan-branch-de3b67e0-verdict.json"
+  ]
+}
