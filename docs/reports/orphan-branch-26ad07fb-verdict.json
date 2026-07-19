@@ -1,0 +1,46 @@
+{
+  "taskId": "26ad07fb-1f2f-4429-92b8-5dccc24add36",
+  "branch": "dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "summary": "The single commit on this orphan branch silences the Turbopack multiple-lockfile warning by setting turbopack.root in next.config.ts. That exact fix was already merged to main via PR #1338 on 2026-04-26 — the same day the orphan commit was authored. Main has since had two more iterations on that same config. The branch is safe to delete.",
+  "evidence": {
+    "orphanBranchTip": {
+      "sha": "d8f50ccce2cdbb3fcdba95b7a71cc4af910369cc",
+      "subject": "fix: silence turbopack multiple-lockfile warning in monorepo",
+      "author": "Stojan Madjunkov",
+      "date": "2026-04-26T16:52:43-04:00",
+      "filesChanged": ["product/lead-response/dashboard/next.config.ts"],
+      "insertions": 4,
+      "deletions": 0
+    },
+    "commitsAheadOfMain": 1,
+    "supersededBy": {
+      "pr": 1338,
+      "title": "Fix: Quality gate \"build\" failing in leadflow",
+      "branch": "dev/d8c81797-fix-quality-gate-build-failing-in-leadfl",
+      "state": "MERGED",
+      "mergedAt": "2026-04-26T22:29:37Z",
+      "filesChanged": ["product/lead-response/dashboard/next.config.ts"]
+    },
+    "mainAlreadyContains": [
+      "b0fbbeae — fix: set turbopack.root in next.config.ts to silence multiple-lockfile warning (#1338)",
+      "088df421 — fix: remove turbopack root override — breaks Vercel module resolution",
+      "28a509d2 — fix: silence Turbopack workspace root warning in next.config.ts"
+    ]
+  },
+  "risk": "none — the change is already shipped and main has since iterated on the same config (the turbopack root fix was reverted in 088df421 because it broke Vercel module resolution, then re-applied in 28a509d2). The orphan branch content is stale.",
+  "recommendation": "Safe to delete. No unique work would be lost.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git fetch origin dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline origin/main..origin/dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat origin/main...origin/dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "git log --format='%H %s %ai %an' origin/dev/13615898-fix-quality-gate-build-failing-in-leadfl | head -5",
+    "git show --stat origin/dev/13615898-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --search 'quality gate build' --state all",
+    "gh pr view 1338 --json title,state,mergedAt,headRefName,body",
+    "gh pr diff 1338 --name-only",
+    "git log --oneline origin/main | grep -i 'turbopack|lockfile|next.config'"
+  ]
+}
