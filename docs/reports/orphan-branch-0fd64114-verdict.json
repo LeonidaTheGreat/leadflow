@@ -1,0 +1,54 @@
+{
+  "taskId": "aad0b35f-586e-42fd-8483-477ab1b2005b",
+  "investigatedBranch": "dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+  "verdict": "already-shipped-safe-delete",
+  "verdictSummary": "Branch was merged via PR #1482 on 2026-05-05T01:58:05Z. The single commit 'fix: tighten next build lock cleanup to avoid false positives from next dev' is present on main as merge commit 2237297a. Safe to delete. No code changes in this investigation.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR (investigation task aad0b35f) adds ONLY this verdict JSON file. It does NOT modify any source code, CI configuration, service files, or tests. QC should review only this JSON document.",
+    "filesChanged": ["docs/reports/orphan-branch-0fd64114-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "orphanBranchMetadata": {
+    "shortSha": "f657fbad",
+    "commitSubject": "fix: tighten next build lock cleanup to avoid false positives from next dev",
+    "commitsAheadOfMain": 1,
+    "existsOnRemote": true,
+    "filesChangedOnOrphan": [
+      "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js (modified — 91 lines changed)",
+      "product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts (new file — 101 lines)"
+    ]
+  },
+
+  "evidence": {
+    "mergedPR": {
+      "number": 1482,
+      "title": "Fix: Quality gate \"build\" failing in leadflow",
+      "state": "MERGED",
+      "mergedAt": "2026-05-05T01:58:05Z",
+      "headBranch": "dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+      "mergeCommit": "2237297aeb4afeb92ac771e960d39b6ce2150e39"
+    },
+    "commitOnMain": {
+      "shortSha": "2237297a",
+      "subject": "fix: tighten next build lock cleanup to avoid false positives from next dev (#1482)",
+      "confirmedViaGitLog": true
+    }
+  },
+
+  "risk": "low",
+  "riskReason": "The entire diff was merged to main via PR #1482 on 2026-05-05. The merge commit 2237297a is confirmed present in git log on main. No unique work is at risk of being lost.",
+  "recommendation": "Safe to delete dev/0fd64114-fix-quality-gate-build-failing-in-leadfl. All work from this branch is already on main.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+    "git fetch origin dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline origin/main..origin/dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat origin/main...origin/dev/0fd64114-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --search '0fd64114' --state all",
+    "gh pr view 1482 --json number,title,state,mergedAt,mergeCommit,headRefName",
+    "git fetch origin main",
+    "git log origin/main --oneline | grep -i 'cleanup-next-build-lock'"
+  ]
+}
