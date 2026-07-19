@@ -1,0 +1,146 @@
+{
+  "taskId": "1b7186f1-f722-465d-b858-8cd62d2ad62e",
+  "status": "completed",
+  "verdict": "duplicate/superseded",
+  "taskSpec": {
+    "what": "Create one metadata-only investigation report at completion-reports/COMPLETION-1b7186f1-f722-465d-b858-8cd62d2ad62e-20260718T201929-0400.json. Functions changed: none. Application files changed: none.",
+    "verify": "Run git metadata commands for dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin, validate this JSON with node -e, run npm test, run npm run build, run npm run lint, and confirm only this completion report is staged.",
+    "boundaries": "Do not read full file contents or full diffs over 200 lines, do not modify runtime code, do not delete the orphan branch, do not create a PR, do not merge, and do not touch protected generated files."
+  },
+  "acceptanceCriteria": [
+    "A one-page JSON investigation report exists for task 1b7186f1-f722-465d-b858-8cd62d2ad62e.",
+    "The report includes verdict, evidence, risk, recommendation, and commandsRun.",
+    "The report is based only on metadata-first triage commands and local PR/task references.",
+    "JSON validation prints json ok; project test, build, and lint gates are attempted and recorded."
+  ],
+  "rootCauseAnalysis": {
+    "failurePoint": "Orphan branch dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin exists locally and as origin remote-tracking metadata with 3 commits ahead of main and no active task row available to this task.",
+    "why": "The branch is a rescue/admin variant of the Admin Sales Cockpit work. Local history already contains prior investigation reports for the same 943b9f7f work, including an exact report for this branch, concluding that the Express service/route implementation was superseded by PR #1844's Next.js dashboard API implementation.",
+    "fix": "No product code fix is needed. Record the metadata evidence and recommend normal human-approved branch cleanup rather than opening a new PR or deleting the branch automatically."
+  },
+  "evidence": {
+    "targetBranch": "dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+    "branchAheadOfMain": {
+      "count": 3,
+      "commits": [
+        "36a3b8f9 feat: admin pilots sales cockpit (cherry-pick from feature branch)",
+        "e181cf76 feat(admin): add Sales Cockpit link to admin dashboard Execution Areas",
+        "f4636206 feat(admin): link Sales Cockpit in admin dashboard + add formal migration"
+      ]
+    },
+    "diffStatAgainstMain": {
+      "filesChanged": 6,
+      "insertions": 688,
+      "deletions": 0,
+      "paths": [
+        "lib/services/AdminPilotsService.js",
+        "migrations/024_outreach_log.sql",
+        "product/lead-response/dashboard/app/admin/page.tsx",
+        "routes/admin/pilots.js",
+        "server.js",
+        "tests/unit/admin-pilots.test.js"
+      ]
+    },
+    "remotePresence": {
+      "lsRemote": "failed: ssh: Could not resolve hostname github.com: -65563",
+      "localRemoteTrackingRef": "remotes/origin/dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin exists"
+    },
+    "duplicationSignals": [
+      "git cherry -v main dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin marks all 3 commits with '+', so they are not patch-equivalent to main by Git patch-id.",
+      "main history contains 3cb003c8 docs: investigate orphan branch dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit (#1893), whose report names this exact branch and concludes it is superseded by PR #1844.",
+      "main history contains b51c6011 docs: investigate orphan branch dev/943b9f7f-admin-sales-cockpit (#1896), concluding the related original branch was already shipped/superseded.",
+      "Current working tree search finds shipped Admin Sales Cockpit implementation artifacts at product/lead-response/dashboard/app/api/admin/sales-cockpit/route.ts, product/lead-response/dashboard/app/api/admin/sales-cockpit/payment-link/route.ts, scripts/db/create-outreach-log-table.sql, and tests/e2e/92eafbe3-admin-sales-cockpit.test.js."
+    ],
+    "searches": {
+      "localRepo": "rg found existing completion reports for the 943b9f7f original and rescue branches, shipped Admin Sales Cockpit dashboard API artifacts, and no additional working-tree references to the exact target branch outside those reports.",
+      "gitHubCli": "gh pr list and gh issue list searches failed because api.github.com was unreachable from the sandbox.",
+      "taskStore": "TaskStore getTasksByUseCase('uc-leadflow-maintenance') failed with AggregateError [EPERM] from local PostgreSQL access in this sandbox."
+    }
+  },
+  "risk": {
+    "level": "medium",
+    "details": "Merging this branch would add a second Admin Sales Cockpit implementation path through Express routes and AdminPilotsService while the shipped product uses Next.js dashboard API routes. It also adds migration 024_outreach_log.sql while the current tree already has scripts/db/create-outreach-log-table.sql for the same domain. Because live GitHub/task lookup was unavailable, branch deletion should remain a human/orchestrator action."
+  },
+  "recommendation": "Do not open a PR for dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin. Treat it as duplicate/superseded by PR #1844 and prior investigations #1893/#1896, then delete the branch only through the normal approved cleanup process.",
+  "commandsRun": [
+    {
+      "command": "git checkout dev/1b7186f1-investigate-orphan-branch-dev-943b9f7f-d && git branch --show-current",
+      "result": "checkout failed because sandbox could not create .git/worktrees/.../index.lock; git branch --show-current then confirmed dev/1b7186f1-investigate-orphan-branch-dev-943b9f7f-d"
+    },
+    {
+      "command": "git log --oneline main..dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+      "result": "3 commits: 36a3b8f9, e181cf76, f4636206"
+    },
+    {
+      "command": "git diff --stat main...dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+      "result": "6 files changed, 688 insertions(+)"
+    },
+    {
+      "command": "git ls-remote --heads origin dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+      "result": "failed: ssh: Could not resolve hostname github.com: -65563"
+    },
+    {
+      "command": "git diff --name-status main...dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+      "result": "A AdminPilotsService, A outreach_log migration, M admin page, A admin pilots route, M server.js, A admin-pilots unit test"
+    },
+    {
+      "command": "git cherry -v main dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+      "result": "all 3 orphan commits marked '+'"
+    },
+    {
+      "command": "git log --cherry-mark --oneline --left-right main...dev/943b9f7f-dev-rescue-uc-admin-sales-cockpit-admin",
+      "result": "main includes prior orphan investigations #1893/#1896 and shipped Admin Sales Cockpit context; branch side includes the 3 target commits"
+    },
+    {
+      "command": "rg --hidden --glob '!node_modules/**' --glob '!.git/**' -n target branch, short SHA, commit SHAs, and commit subjects",
+      "result": "found local completion reports and shipped Admin Sales Cockpit artifacts; no new active task artifact found"
+    },
+    {
+      "command": "gh pr list / gh issue list searches for target branch",
+      "result": "failed: error connecting to api.github.com"
+    },
+    {
+      "command": "node -e TaskStore getTasksByUseCase('uc-leadflow-maintenance') search",
+      "result": "failed: AggregateError [EPERM] from local PostgreSQL access"
+    },
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('completion-reports/COMPLETION-1b7186f1-f722-465d-b858-8cd62d2ad62e-20260718T201929-0400.json','utf8')); console.log('json ok')\"",
+      "result": "json ok"
+    },
+    {
+      "command": "npm test",
+      "result": "passed: 9 passed, 0 failed, 100% success rate"
+    },
+    {
+      "command": "npm run build",
+      "result": "first attempt failed because dashboard next was missing; after dependency repair partially restored next, retry failed because Next/Turbopack could not fetch Geist, Geist Mono, and Inter from Google Fonts in the restricted network sandbox"
+    },
+    {
+      "command": "npm --prefix product/lead-response/dashboard ci",
+      "result": "failed: npm ENOTEMPTY while cleaning corrupted dashboard node_modules"
+    },
+    {
+      "command": "npm --prefix product/lead-response/dashboard install",
+      "result": "failed: repeated tar ENOENT warnings followed by npm error 'Exit handler never called'"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed: eslint . exited 0"
+    },
+    {
+      "command": "npm --prefix product/lead-response/dashboard run prebuild && npm run build",
+      "result": "failed: Turbopack build failed with 3 next/font Google Fonts fetch errors"
+    }
+  ],
+  "testResults": {
+    "passed": 3,
+    "total": 4,
+    "passRate": 0.75,
+    "notes": "JSON validation, npm test, and npm run lint passed. npm run build was attempted multiple times: initial dependency-state failures were partially repaired inside the assigned temp worktree, then the final build failed because restricted network access prevented next/font from fetching Google Fonts."
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-1b7186f1-f722-465d-b858-8cd62d2ad62e-20260718T201929-0400.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-1b7186f1-f722-465d-b858-8cd62d2ad62e-20260718T201929-0400.json"
+}
