@@ -1,0 +1,64 @@
+{
+  "investigationTaskId": "971bc4c2-5d1e-40ad-8dc2-7f4bf9b7d233",
+  "orphanBranch": "dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+  "investigatedAt": "2026-07-19",
+  "verdict": "needs-human-review",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitLog": [
+      {
+        "sha": "58871aa4e7f472549da69ecd03abd8aa63f3bc8f",
+        "shortSha": "58871aa4",
+        "date": "2026-05-05T07:00:24-04:00",
+        "author": "Stojan Madjunkov",
+        "subject": "test: add leadflow integration tests for export risk warning improvements"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 1,
+      "insertions": 173,
+      "deletions": 0,
+      "file": "tests/genome/spawn-message-export-risk-warning.test.js"
+    },
+    "remoteBranchExists": true,
+    "remoteRef": "refs/heads/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "relatedMainMerges": [
+      {
+        "sha": "0ed667b1",
+        "subject": "docs: task spec for fix-agent-retry-rate merge-only rescue (#1913)",
+        "note": "Implementation landed in genome repo (PR #484, squash dcc411d). This established the retry-rate fix as genome-side code (retry-context.js, spawn-message-builder.js)."
+      },
+      {
+        "sha": "832aaced",
+        "subject": "test: E2E structural verification for fix-agent-retry-rate PR #1913",
+        "note": "E2E structural tests added to leadflow repo verifying genome retry-rate fix (168-line test file tests/9ac42fa8-retry-rate-fix-structural.test.js)."
+      }
+    ],
+    "testFileAlreadyInMain": false,
+    "note": "The file tests/genome/spawn-message-export-risk-warning.test.js does NOT exist in main. However, the retry-rate feature itself was implemented in the genome repo (PR #484) and documented in the leadflow repo via PR #1913. This branch contains additional integration tests specifically for the export-risk-warning portion of that work — it is unclear whether these tests are complementary to the genome-side implementation or superseded by it."
+  },
+  "risk": {
+    "level": "low",
+    "reasons": [
+      "Branch contains only a new test file — no production code changes.",
+      "No deletions or modifications to existing files.",
+      "Test targets genome-level spawn-message export risk warning logic.",
+      "The genome repo (not this repo) is the canonical location for that logic; tests in this repo for genome internals are unconventional.",
+      "The retry-rate feature was resolved via an alternative approach (merge-only rescue in genome PR #484) — these tests may cover a discarded implementation path."
+    ]
+  },
+  "recommendation": "Human review needed to decide whether tests/genome/spawn-message-export-risk-warning.test.js should be merged, adapted, or dropped. Key questions: (1) Does the genome PR #484 / spawn-message-builder.js already cover the export-risk-warning behavior these tests target? (2) Should integration tests for genome internals live in the leadflow repo at all, or should they be in the genome repo (LeonidaTheGreat/openclaw-genome)? If the tests are still valid and the behavior untested elsewhere, merge via a new task+PR. If the genome tests already cover this, safe to delete the branch.",
+  "commandsRun": [
+    "git fetch origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git log --format='%H %ai %an %s' main..FETCH_HEAD",
+    "git ls-remote --heads origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git show FETCH_HEAD --name-only --format=''",
+    "git log --oneline --all | grep -i 'export.risk|retry.rate|spawn.message'",
+    "git show 0ed667b1 --stat --format='%s%n%b'",
+    "git show 832aaced --stat --format='%s%n%b'",
+    "git log --oneline --since=2026-05-01 --until=2026-05-10 main",
+    "ls tests/genome/"
+  ]
+}

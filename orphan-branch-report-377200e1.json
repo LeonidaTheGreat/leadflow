@@ -1,0 +1,50 @@
+{
+  "branch": "dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+  "investigatedAt": "2026-07-19",
+  "taskId": "971bc4c2-5d1e-40ad-8dc2-7f4bf9b7d233",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "58871aa4e7f472549da69ecd03abd8aa63f3bc8f",
+    "commitSubject": "test: add leadflow integration tests for export risk warning improvements",
+    "commitDate": "2026-05-05T07:00:24-04:00",
+    "filesChanged": [
+      "tests/genome/spawn-message-export-risk-warning.test.js (173 lines added, new file)"
+    ],
+    "commitBody": "Tests verify that _buildExportRiskWarnings() fires correctly against the leadflow CODE_GRAPH.json with improvements: module-level blast radius warnings (5+ dependents), full caller paths instead of basenames, actionable checklist with npm test instructions, integration with buildCoreMessage() for dev vs non-dev agents.",
+    "matchingTask": "No task row with branch_name matching dev/377200e1*; task ID 377200e1 does not exist in tasks table",
+    "relatedContext": {
+      "ucId": "fix-agent-retry-rate-23-vs-10-target-dev-task-completi",
+      "ucName": "Agent retry rate 23% vs 10% target; dev task completion rate 41%",
+      "ucStatus": "complete",
+      "multipleOrphanBranchesForSameProblem": [
+        "dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+        "dev/0700787d-dev-fix-agent-retry-rate-export-risk-war",
+        "dev/87052c3e-dev-fix-agent-retry-rate-export-risk-war",
+        "dev/9759f088-dev-fix-agent-retry-rate-export-risk-war",
+        "dev/b3de70bd-dev-fix-agent-retry-rate-export-risk-war"
+      ],
+      "successfulUCResolution": "UC fix-agent-retry-rate-23-vs-10-target-dev-task-completi was completed via tasks 172bbb0b (dev done), 9ac42fa8 (rescue done), 204dc794 (QC approved PR #1913)",
+      "testFileInMain": "tests/genome/spawn-message-export-risk-warning.test.js does NOT exist on main — test was never merged"
+    }
+  },
+  "risk": {
+    "level": "low",
+    "detail": "Branch contains only a test file addition (173 lines). No production code changes. The parent UC (fix-agent-retry-rate) is already marked complete and the implementation was shipped via a different branch (dev/172bbb0b / PR #1913). The test on this branch tests _buildExportRiskWarnings() improvements that were part of the same UC — the test was never merged, making this branch stale test work that was superseded when the UC was completed by a different dev attempt. Five sibling orphan branches (same prefix, different SHA) exist for the same problem, all of which have their own investigation tasks queued, indicating a spawn-loop that created multiple competing attempts before any merged."
+  },
+  "recommendation": "safe-delete — The UC this branch was addressing is complete. The test file it adds does not exist on main and its subject function (_buildExportRiskWarnings improvements) was addressed by the merged implementation on dev/172bbb0b. Merging this stale test-only branch risks introducing tests that reference genome internals that may have changed since 2026-05-05. No action needed on the UC. Branch can be deleted after the other four sibling orphan investigations confirm the same pattern.",
+  "commandsRun": [
+    "git fetch origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git log --oneline main..origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git diff --stat main...origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git ls-remote --heads origin dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git log --format='%H %ai %s' main..origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war",
+    "git show origin/dev/377200e1-dev-fix-agent-retry-rate-export-risk-war --name-only --format='...'",
+    "git ls-files tests/genome/",
+    "git log --oneline --all | grep -i 'export.risk|spawn.message'",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE branch_name LIKE '%377200e1%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE title ILIKE '%export risk%' OR title ILIKE '%spawn-message%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,name,implementation_status FROM use_cases WHERE name ILIKE '%retry%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE use_case_id='fix-agent-retry-rate-23-vs-10-target-dev-task-completi' ORDER BY created_at DESC\""
+  ]
+}
