@@ -1,0 +1,62 @@
+{
+  "investigationTaskId": "db4f9a12-e25c-4832-a7cf-a51e9c31974d",
+  "orphanBranch": "dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "All 4 commits touch only cleanup-next-build-lock.js. The same fixes were subsequently landed on main via PRs #1471, #1482, and #1922. The top commit has an identical message to a commit already on main (f4aa4e20). The branch is fully superseded.",
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "commitLog": [
+      "44e0f83b fix: pgrep \"next build\" not \"next\" to avoid false-positive from dev servers",
+      "caa9038b fix: detect and kill orphaned next build processes in lock cleanup",
+      "11bd8bd0 fix: use lsof + orphan-check for build lock cleanup (replaces ps+awk)",
+      "a1f4767a fix: prevent false-positive stuck-process detection in cleanup-next-build-lock"
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js"
+    ],
+    "mergeBase": "d24a59775044f241e6d23555df4720dd7ecdfca2",
+    "openPRs": [],
+    "equivalentCommitsOnMain": [
+      {
+        "sha": "f4aa4e20",
+        "message": "fix: pgrep \"next build\" not \"next\" to avoid false-positive from dev servers",
+        "note": "Identical commit message to orphan branch top commit — confirms fix was re-landed"
+      },
+      {
+        "sha": "62b7dc85",
+        "message": "Improve build lock cleanup with lsof-based orphan detection (#1471)",
+        "mergedPR": 1471,
+        "note": "Covers lsof + orphan-check work from commits 2-3"
+      },
+      {
+        "sha": "2237297a",
+        "message": "fix: tighten next build lock cleanup to avoid false positives from next dev (#1482)",
+        "mergedPR": 1482,
+        "note": "Further refinement of the same fix"
+      },
+      {
+        "sha": "a81e29dd",
+        "message": "fix: clean stale Next build artifacts (#1922)",
+        "mergedPR": 1922,
+        "mergedAt": "2026-07-18T08:13:27Z",
+        "note": "Most recent quality-gate build fix, merged 2026-07-18"
+      }
+    ]
+  },
+  "risk": "low",
+  "riskRationale": "Only one file changed (cleanup-next-build-lock.js). That file received multiple subsequent fixes via merged PRs that supersede all 4 orphan commits. No unique logic in the orphan branch is absent from main.",
+  "recommendation": "Safe to delete. The underlying quality-gate build problem was fixed via PRs #1471, #1482, and #1922, all of which are already on main. No open PR references this branch.",
+  "commandsRun": [
+    "git fetch origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline origin/main..origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat origin/main...origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git ls-remote --heads origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --state all --head dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --state all --search '33f99fdf OR cleanup-next-build-lock OR fix-quality-gate-build-failing'",
+    "git log --format='%H %s' origin/main | grep -i 'pgrep|lsof.*orphan|false.positive.stuck'",
+    "git merge-base origin/main origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr view 1471 --json title,headRefName,state,mergedAt,body",
+    "gh pr view 1482 --json title,headRefName,state,mergedAt,body",
+    "gh pr view 1922 --json title,headRefName,state,mergedAt,body"
+  ]
+}
