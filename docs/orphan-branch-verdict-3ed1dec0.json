@@ -1,0 +1,55 @@
+{
+  "taskId": "3859a058-3f87-4595-ab37-1d697673b395",
+  "investigatedBranch": "dev/3ed1dec0-fix-ci-broken-on-main",
+  "investigationDate": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 3,
+    "commitSHAs": [
+      "3cd8293d7f9cc3492f77783f6493371b219a450c",
+      "fd32307fa11f8f0bc5ee42c25991478d02b0d138",
+      "a4fa61468fd94203d6043182ab367c4ab995b435"
+    ],
+    "commitSubjects": [
+      "fix: align 15 failing test suites to actual implementation",
+      "fix: resolve all failing CI test suites",
+      "fix: update landing page tests and ignore infra-dependent test files"
+    ],
+    "commitDates": "2026-04-29 (all 3 commits, same day)",
+    "branchExistsOnRemote": true,
+    "mergedIntoMain": false,
+    "existingPRs": [],
+    "matchingTaskRow": null,
+    "relatedCancelledTask": "ebfe3d47 — Dev: Fix CI-blocking test failures (108 tests, 4 root causes) — cancelled",
+    "siblingBranch": {
+      "name": "dev/3ed1dec0-fix-ci-final",
+      "existsOnRemote": true,
+      "commitsAheadOfMain": 2,
+      "relationship": "Refined successor — same task prefix (3ed1dec0), same commit subjects but rewritten SHAs, drops earliest commit. This sibling is under investigation by task d5933dc5."
+    },
+    "massCleanupContext": "7+ orphan 'fix-ci-broken-on-main' branches all swept on 2026-07-19 — indicates a prior parallel CI-fix effort that spawned many competing attempts, none of which were merged."
+  },
+  "filesChanged": {
+    "summary": "18 files, 172 insertions(+), 235 deletions(-) — net code removal",
+    "productionCode": [
+      "product/lead-response/dashboard/lib/email-service.ts (minor)",
+      "product/lead-response/dashboard/lib/nps-email-service.ts (minor)",
+      "product/lead-response/dashboard/lib/trial-emails.ts (minor)"
+    ],
+    "testAndConfig": "14 test files + jest.config.ts — all in product/lead-response/dashboard/__tests__/ and /tests/"
+  },
+  "risk": "LOW — predominantly test-only changes. No routes, schema, or API surface modified. Three month staleness means test fixes may not apply to current main state.",
+  "recommendation": "Safe to delete. This is the intermediate predecessor to dev/3ed1dec0-fix-ci-final, which supersedes it with a rebased 2-commit version. Both branches are orphaned from main. If CI test fixes are still needed, they should be re-implemented from current main. If task d5933dc5 (investigating the -fix-ci-final sibling) also recommends deletion, delete both together.",
+  "commandsRun": [
+    "git log --oneline main..dev/3ed1dec0-fix-ci-broken-on-main",
+    "git ls-remote --heads origin dev/3ed1dec0-fix-ci-broken-on-main",
+    "git fetch origin dev/3ed1dec0-fix-ci-broken-on-main",
+    "git diff --stat main...origin/dev/3ed1dec0-fix-ci-broken-on-main",
+    "git log --oneline --format='%H %s %ai' main..origin/dev/3ed1dec0-fix-ci-broken-on-main",
+    "gh pr list --state all --head dev/3ed1dec0-fix-ci-broken-on-main --json number,title,state,mergedAt,url",
+    "psql $LOCAL_PG_URL -c SELECT tasks WHERE branch_name LIKE '%3ed1dec0%' OR title ILIKE '%fix-ci%'",
+    "git log --oneline main | grep -E '3cd8293|fd32307|a4fa614'",
+    "git ls-remote --heads origin dev/3ed1dec0-fix-ci-final",
+    "git log --oneline main..origin/dev/3ed1dec0-fix-ci-final"
+  ]
+}
