@@ -1,0 +1,64 @@
+{
+  "branch": "dev/452b83c3-fix-quality-gate-completion-reports-fail",
+  "investigationDate": "2026-07-19",
+  "taskId": "a1be9e14-a8a2-4331-9b63-840fb3bd0752",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch introduced a completion-reports retention quality gate fix that was closed without merging (PR #1336, closed 2026-04-26). The same problem was subsequently fixed by at least 6 successive branches/PRs that were all merged into main. The branch's approach (scripts/quality/completion-reports.js) differs from what landed in main (scripts/tasks/completion-reports-retention.js), but the underlying issue is fully resolved. No unique value remains; safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 3,
+    "commits": [
+      "4c01adce — fix: add completion reports retention quality gate",
+      "5742dcfd — ci: re-trigger CI",
+      "a5bae61d — test: E2E test for completion-reports quality gate"
+    ],
+    "filesChanged": [
+      "package.json (+3/-1)",
+      "scripts/quality/completion-reports.js (new, 143 lines)",
+      "tests/452b83c3-fix-completion-reports-gate.test.js (new, 75 lines)",
+      "tests/unit/completion-reports.test.js (new, 56 lines)"
+    ],
+    "prHistory": {
+      "thisBranchPR": {
+        "number": 1336,
+        "state": "CLOSED",
+        "closedAt": "2026-04-26T21:30:37Z",
+        "mergedAt": null,
+        "note": "Closed without merge — superseded by PR #1347 spawned same day"
+      },
+      "successorPRsMerged": [
+        { "number": 1347, "branch": "dev/bf9448cd-fix-quality-gate-completion-reports-fail", "state": "MERGED" },
+        { "number": 1348, "branch": "dev/59cb7af3-fix-quality-gate-completion-reports-fail", "state": "MERGED" },
+        { "number": 1363, "branch": "dev/46efadad-fix-quality-gate-completion-reports-fail", "state": "MERGED" },
+        { "number": 1496, "branch": "dev/3ac7337c-fix-quality-gate-completion-reports-fail", "state": "MERGED" },
+        { "number": 1518, "branch": "dev/13489e85-fix-quality-gate-completion-reports-fail", "state": "MERGED" },
+        { "number": 1887, "branch": "dev/b586e5cb-fix-quality-gate-completion-reports-fail", "state": "MERGED" }
+      ]
+    },
+    "commitsInMain": {
+      "4c01adce": false,
+      "5742dcfd": false,
+      "a5bae61d": false,
+      "note": "None of the orphan commits are in main by SHA, but the functionality was re-implemented by successor branches"
+    },
+    "mainHasEquivalentFix": {
+      "file": "scripts/tasks/completion-reports-retention.js",
+      "mergedVia": "PR #1348 (commit f68e4b7e)"
+    }
+  },
+  "risk": "low — the orphan branch's changes are fully superseded. The file it introduced (scripts/quality/completion-reports.js) does not exist in main, but the retention problem is handled by the merged implementation in scripts/tasks/completion-reports-retention.js. Test files are also orphaned but non-conflicting.",
+  "recommendation": "safe-delete — branch can be deleted. PR #1336 is already closed. No unique work remains. An active OPEN PR (#1912, dev/d168cdf1) is still working on a follow-up fix for the same gate, so the issue context is alive, but this specific branch adds nothing to it.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/452b83c3-fix-quality-gate-completion-reports-fail",
+    "git diff --stat main...origin/dev/452b83c3-fix-quality-gate-completion-reports-fail",
+    "git ls-remote --heads origin dev/452b83c3-fix-quality-gate-completion-reports-fail",
+    "gh pr list --state all --search '452b83c3'",
+    "gh pr list --state all --search 'completion-reports quality gate'",
+    "gh pr view 1336 --json state,mergedAt,closedAt,headRefName,commits,body",
+    "git merge-base --is-ancestor 4c01adce main (→ NOT in main)",
+    "git merge-base --is-ancestor 5742dcfd main (→ NOT in main)",
+    "git merge-base --is-ancestor a5bae61d main (→ NOT in main)",
+    "git log --oneline main | grep -i 'completion.report'",
+    "git show main:scripts/quality/completion-reports.js (→ does not exist in main)",
+    "git show f68e4b7e --stat (PR #1348 merged equivalent fix via different file)"
+  ]
+}
