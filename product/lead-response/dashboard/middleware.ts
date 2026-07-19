@@ -176,7 +176,9 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
         ...(POSTGREST_KEY && { 'Authorization': `Bearer ${POSTGREST_KEY}` }),
       }
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s timeout
+      // 8s timeout — the Cloudflare tunnel to the local PostgREST can take 6-7s
+      // under load; 5s was too tight and caused transient auth failures in prod.
+      const timeoutId = setTimeout(() => controller.abort(), 8000)
 
       const res = await fetch(url, { headers, signal: controller.signal })
       clearTimeout(timeoutId)
