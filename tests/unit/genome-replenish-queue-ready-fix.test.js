@@ -18,8 +18,8 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
-const EXECUTION_LOOP_PATH = path.join(process.env.HOME, '.openclaw/genome/core/loops/execution-loop.js')
-const QUEUE_REPLENISHER_PATH = path.join(process.env.HOME, '.openclaw/genome/core/loops/queue-replenisher.js')
+const EXECUTION_LOOP_PATH = path.join(process.env.HOME, 'projects/genome/core/loops/execution-loop.js')
+const QUEUE_REPLENISHER_PATH = path.join(process.env.HOME, 'projects/genome/core/loops/queue-replenisher.js')
 
 // Test 1: sweepUCCompletions includes 'ready' in its implementation_status filter
 function testSweepUCCompletionsIncludesReady() {
