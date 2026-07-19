@@ -1,0 +1,76 @@
+{
+  "taskId": "643eff8e-6717-413d-94ff-077a445b1dd6",
+  "investigatedBranch": "dev/044194d5-fix-vercel-deploy-outage",
+  "verdict": "duplicate/superseded",
+  "summary": "The primary fix for this task was already shipped via PR #1527 (merged 2026-05-09T02:07:10Z). The orphan branch is a secondary agent attempt created ~18 hours AFTER the PR merged, adding code-level regression guardrails that were never PR'd and have since gone stale (2+ months old, health route evolved via 4+ subsequent PRs).",
+
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "8f2eab27",
+        "subject": "test: add regression guard for Vercel deployment configuration",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-05-09T20:23:03-04:00",
+        "filesChanged": [
+          "product/lead-response/dashboard/__tests__/vercel-deployment-config.test.ts (+41 lines, NEW FILE)"
+        ]
+      },
+      {
+        "sha": "1d76cfff",
+        "subject": "fix: add deployment identity to health endpoint + E2E guardrail test",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-05-09T20:25:21-04:00",
+        "filesChanged": [
+          "product/lead-response/dashboard/app/api/health/route.ts (+3 lines)",
+          "product/lead-response/dashboard/tests/fix-health-route-db-timeout-guard.test.js (+4 lines)"
+        ]
+      }
+    ],
+    "diffStat": "3 files changed, 48 insertions(+), 0 deletions",
+    "remoteBranchExists": true,
+    "remoteSha": "1d76cfffb48ef09b35cf45c931bd54ada693c571",
+    "prForThisBranch": null,
+    "originalTaskPR": {
+      "number": 1527,
+      "title": "dev: fix-dashboard-full-page-500-vercel-all-routes-crash - Fix Dashboard Full Outage — All Pages 500 FUNCTION_INVOCATION_FAILED on Vercel",
+      "branch": "dev/044194d5-dev-fix-dashboard-full-page-500-vercel-a",
+      "state": "MERGED",
+      "mergedAt": "2026-05-09T02:07:10Z"
+    },
+    "orphanBranchCreatedAfterOriginalPRMergedHours": 18,
+    "commitsSHAsInMain": {
+      "8f2eab27": false,
+      "1d76cfff": false
+    },
+    "healthRouteSubsequentPRsOnMain": [
+      "PR #1375 (2026-04-29) — Fix: Vercel dashboard health (smoke)",
+      "PR #1381 — complete PR85 task-spec sweep in dashboard runtime routes",
+      "PR #1897 — fix: unblock Stripe checkout, add revenue-config-health endpoint",
+      "PR #1807 — fix: harden health-api-connectivity e2e test against transient failures"
+    ],
+    "vercelDeploymentConfigTestOnMain": false
+  },
+
+  "risk": {
+    "level": "low",
+    "mergeConflictRisk": "medium — health/route.ts modified by 4+ PRs after orphan branch base date",
+    "contentObsolescenceRisk": "medium — deployment identity addition may not align with current health route implementation"
+  },
+
+  "recommendation": "Safe to delete the remote orphan branch. The original deploy outage is fixed (PR #1527 merged 2026-05-09). The secondary guardrails on this branch were never actioned in 2+ months. If deployment-identity guardrails are still desired, open a fresh task from main.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/044194d5-fix-vercel-deploy-outage",
+    "git diff --stat main...origin/dev/044194d5-fix-vercel-deploy-outage",
+    "git ls-remote --heads origin dev/044194d5-fix-vercel-deploy-outage",
+    "git log --format='%H %ae %ai %s' main..origin/dev/044194d5-fix-vercel-deploy-outage",
+    "git merge-base --is-ancestor 1d76cfff main",
+    "git merge-base --is-ancestor 8f2eab27 main",
+    "gh pr list --state all --head dev/044194d5-fix-vercel-deploy-outage --json ...",
+    "gh pr list --state all --search '044194d5' --json ...",
+    "git log --oneline main -- product/lead-response/dashboard/app/api/health/route.ts",
+    "git log --oneline main -- product/lead-response/dashboard/__tests__/vercel-deployment-config.test.ts",
+    "gh pr view 1527 --json headRefName,mergedAt"
+  ]
+}
