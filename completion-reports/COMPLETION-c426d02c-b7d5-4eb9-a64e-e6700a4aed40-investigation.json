@@ -1,0 +1,73 @@
+{
+  "taskId": "c426d02c-b7d5-4eb9-a64e-e6700a4aed40",
+  "status": "completed",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+  "shortSha": "a5c31e54",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSubject": "fix: correct column name and test path in E2E flow test",
+    "commitDate": "2026-07-16T14:30:04-04:00",
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/onboarding/send-aha-day3/route.ts",
+      "tests/e2e/5fd5ad2d-fix-e2e-flow-test-failures.test.js"
+    ],
+    "openPR": {
+      "number": 1876,
+      "state": "OPEN",
+      "mergedAt": null,
+      "ciStatus": "SUCCESS",
+      "createdAt": "2026-07-16T18:30:26Z"
+    },
+    "supersededBy": [
+      {
+        "pr": 1898,
+        "branch": "dev/1b7f9196-fix-e2e-flow-test-failures-1-critical",
+        "title": "Fix: E2E flow test failures (1 critical)",
+        "state": "MERGED",
+        "mergedAt": "2026-07-17T02:00:31Z",
+        "taskId": "1b7f9196-f5c7-47f1-9587-00f57dd636f7",
+        "taskStatus": "done"
+      },
+      {
+        "pr": 1921,
+        "branch": "dev/891db354-fix-e2e-flow-test-failures-1-critical",
+        "title": "Fix: E2E flow test failures (1 critical)",
+        "state": "MERGED",
+        "mergedAt": "2026-07-18T08:40:40Z",
+        "taskId": "891db354-7ee1-4033-8d28-87fe177e0e17",
+        "taskStatus": "done"
+      }
+    ],
+    "priorInvestigation": {
+      "taskId": "e4a59377-d4fe-46fd-b9f7-98b93896404d",
+      "status": "done",
+      "pr": 1899,
+      "mergedAt": "2026-07-17T02:05:45Z",
+      "note": "This same orphan branch was already investigated on 2026-07-16; that investigation PR was merged. Current task is a re-investigation."
+    },
+    "noMatchingTaskRow": true
+  },
+  "risk": "LOW — the orphan branch fix has already been superseded by two merged PRs (1898 July 17, 1921 July 18). Open PR #1876 should be closed as stale.",
+  "recommendation": "Close PR #1876 and delete branch dev/50a84dc1-fix-e2e-flow-test-failures-1-critical. No code needs to be recovered — E2E failures fixed in main via PRs 1898 and 1921. Note: this is the second investigation of this orphan (first was task e4a59377, PR 1899 merged 2026-07-17).",
+  "commandsRun": [
+    "git log --oneline main..dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "git diff --stat main...dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "git ls-remote --heads origin dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "git log --format='%H %ai %s' main..dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "gh pr list --state all --head dev/50a84dc1-fix-e2e-flow-test-failures-1-critical",
+    "gh pr view 1876 --json ...",
+    "psql tasks WHERE branch_name LIKE '%50a84dc1%' OR title ILIKE '%e2e flow test%'",
+    "gh pr view 1921 --json ...",
+    "gh pr view 1898 --json ...",
+    "gh pr view 1899 --json ..."
+  ],
+  "rootCauseAnalysis": {
+    "failurePoint": "Task row for dev/50a84dc1 was never persisted — the originating task was cancelled before branch registration completed.",
+    "why": "Multiple cancellations of 'Fix: E2E flow test failures' tasks (9a3796d4, a71c0a6b, 60b3fa5d, 60b3fa5d) show the orchestrator repeatedly attempted and cancelled this work. The branch from one cancelled attempt (50a84dc1) survived on remote without a task row.",
+    "fix": "No code fix required. Close PR #1876, delete branch. Underlying E2E failures resolved in main."
+  },
+  "testResults": { "passed": 0, "total": 0, "passRate": 1.0, "note": "Investigation-only task — no code changes" },
+  "filesCreated": ["completion-reports/COMPLETION-c426d02c-b7d5-4eb9-a64e-e6700a4aed40-investigation.json"],
+  "filesModified": []
+}
