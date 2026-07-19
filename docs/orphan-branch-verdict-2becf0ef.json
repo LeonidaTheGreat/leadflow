@@ -1,0 +1,88 @@
+{
+  "taskId": "6d9b0bb4-7fa3-4189-85a0-4a1ac7cf77fd",
+  "status": "completed",
+  "verdict": "needs-human-review",
+  "branch": "dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+  "taskSpec": {
+    "what": "Create one metadata-only investigation report at docs/orphan-branch-verdict-2becf0ef.json. No application files or functions changed.",
+    "verify": "Run the required git metadata commands, search local/GitHub/task metadata for branch ownership, validate this JSON with node -e, run npm test, npm run lint, and npm run build.",
+    "boundaries": "Do not read full diffs or orphan-branch file contents, do not modify product code/tests/generated docs/task rows/PRs, and do not delete or mutate the orphan branch."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote-tracking branch origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re contains two commits not reachable from main, but no authoritative task/PR match could be verified in this sandbox.",
+    "why": "The branch appears to be a re-merge attempt for transactional email signup work. It has real route/email-service/test impact and overlapping sibling transactional-email re-merge branches, while GitHub API and TaskStore access were blocked.",
+    "fix": "Recorded a conservative metadata-only verdict and left the branch untouched."
+  },
+  "evidence": {
+    "localRemoteRef": "origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re exists locally at b7a2299420445efadfe41ae3e5978e9415aa542d.",
+    "remoteHeadCheck": "git ls-remote --heads origin dev/2becf0ef-dev-re-merge-feat-transactional-email-re failed: github.com could not be resolved.",
+    "commitsAheadOfMain": [
+      "85f1b513 feat: consolidate pilot-signup welcome email to use shared email service",
+      "b7a22994 fix: update email-service.ts domain comment to include 'verified in Resend' for test compliance"
+    ],
+    "diffStat": "3 files changed, 116 insertions(+), 89 deletions(-): product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts, product/lead-response/dashboard/lib/email-service.ts, tests/unit/pilot-signup-welcome-email-shared-service.test.js.",
+    "notOnMain": "git cherry -v main origin/dev/2becf0ef... reported both commits with '+'. main log search found feat-transactional-email-resend PR #170 but not these two commit subjects.",
+    "relatedBranches": [
+      "origin/dev/1528d5c8-dev-re-merge-feat-transactional-email-re has the same implementation subject with a 2-file diff stat.",
+      "origin/dev/8de6f1dd-dev-re-merge-feat-transactional-email-re has similar implementation/test subjects and overlapping route/test diff stat."
+    ],
+    "localSearch": "rg found feat-transactional-email-resend references in current main files, but no local artifact match for 2becf0ef, b7a22994, or 85f1b513 outside git metadata and prior investigation reports.",
+    "taskSearch": "TaskStore search failed with PostgreSQL AggregateError after selecting postgresql://*@localhost/openclaw, so the claimed missing task row could not be independently verified.",
+    "prIssueSearch": "gh pr and issue searches failed with api.github.com connectivity errors."
+  },
+  "risk": {
+    "level": "medium",
+    "reasons": [
+      "Branch contains product-route and test changes, not just documentation.",
+      "Sibling branches suggest possible duplicate or superseded work, but metadata alone cannot prove canonical ownership.",
+      "Authoritative PR/task status was unavailable."
+    ]
+  },
+  "recommendation": "Do not auto-delete or auto-merge. Escalate to human review or a larger-context model rung with GitHub and TaskStore access to compare sibling transactional-email branches. If still desired, create a task row and PR from the best surviving implementation.",
+  "testResults": {
+    "passed": 11,
+    "total": 12,
+    "passRate": 0.9167,
+    "details": [
+      "JSON parse: passed",
+      "npm test: passed 9/9",
+      "npm run lint: passed",
+      "npm run build: not yet passed in this run; first attempt exited 143 after stale-lock cleanup and second attempt failed because Next reported another build process already running"
+    ]
+  },
+  "commandsRun": [
+    "git checkout dev/6d9b0bb4-investigate-orphan-branch-dev-2becf0ef-d && git branch --show-current",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,200p' IDENTITY.md",
+    "sed -n '1,200p' SOUL.md",
+    "sed -n '1,200p' HEARTBEAT.md",
+    "sed -n '1,200p' SKILLS.md",
+    "sed -n '1,200p' CLAUDE.md",
+    "git log --oneline main..dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git diff --stat main...dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git ls-remote --heads origin dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "node ~/projects/genome/scripts/where.js \"dev/2becf0ef-dev-re-merge-feat-transactional-email-re\"",
+    "git branch -a --list '*2becf0ef*'",
+    "git show-ref | rg '2becf0ef|transactional-email|dev/2becf0ef'",
+    "rg -n \"dev/2becf0ef-dev-re-merge-feat-transactional-email-re|2becf0ef|transactional email|transactional-email|feat:.*transactional|transactional\" completion-reports docs product scripts state .agents .codex .github 2>/dev/null",
+    "rg -n \"dev/2becf0ef-dev-re-merge-feat-transactional-email-re|2becf0ef|transactional email|transactional-email|feat:.*transactional|transactional\" --glob '!node_modules/**' --glob '!package-lock.json' --glob '!CODE_GRAPH.json'",
+    "git log --oneline main..origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git diff --stat main...origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git diff --name-status main...origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git cherry -v main origin/dev/2becf0ef-dev-re-merge-feat-transactional-email-re",
+    "git log --all --oneline --grep='transactional email' --grep='pilot-signup welcome email' --regexp-ignore-case",
+    "gh pr list --state all --search \"dev/2becf0ef-dev-re-merge-feat-transactional-email-re OR 2becf0ef OR 85f1b513 OR b7a22994\" --json number,title,state,headRefName,baseRefName,url --limit 20",
+    "gh issue list --state all --search \"dev/2becf0ef-dev-re-merge-feat-transactional-email-re OR 2becf0ef OR 85f1b513 OR b7a22994\" --json number,title,state,url --limit 20",
+    "node -e \"const {TaskStore}=require('./task-store'); ... TaskStore getTasks search ...\"",
+    "git branch -a --contains b7a22994 && git branch -a --contains 85f1b513",
+    "git for-each-ref --format='%(refname:short) %(objectname:short) %(subject)' refs/heads refs/remotes | rg '2becf0ef|1528d5c8|8de6f1dd|transactional-email|email-re'",
+    "node -e \"JSON.parse(require('fs').readFileSync('docs/orphan-branch-verdict-2becf0ef.json','utf8')); console.log('valid json')\"",
+    "npm test",
+    "npm run build",
+    "npm run lint",
+    "pgrep -af 'next build|next-server|turbopack'",
+    "ls -la product/lead-response/dashboard/.next 2>/dev/null | sed -n '1,80p'",
+    "test -e product/lead-response/dashboard/.next/lock && stat -f '%Sm %N' product/lead-response/dashboard/.next/lock || echo 'no .next/lock'"
+  ]
+}
