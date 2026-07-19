@@ -1,0 +1,42 @@
+{
+  "taskId": "b635161b-a431-4709-accb-f57b7358ab6f",
+  "investigatedBranch": "dev/21ffc900-sweep-find-and-fix-all-stale-paths-left",
+  "verdict": "needs-human-review",
+  "shortSha": "8d12a9eb",
+  "commitSubject": "fix: remove stale hardcoded leadflow paths from runtime scripts",
+  "commitDate": "2026-05-12",
+  "commitAuthor": "Stojan Madjunkov",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "filesChanged": 37,
+    "insertions": 95,
+    "deletions": 44,
+    "remoteExists": true,
+    "prExists": false,
+    "taskRowFound": true,
+    "taskId": "21ffc900-74c9-48dd-ae66-ced71b8ccbe3",
+    "taskTitle": "Sweep: find and fix all stale paths left by the 5-wave DNA reorganization",
+    "taskStatus": "cancelled",
+    "taskCreatedAt": "2026-05-11T07:52:54-04:00"
+  },
+  "summary": "Branch has 1 meaningful commit touching 37 files in scripts/ — all changing hardcoded /Users/clawdbot/projects/leadflow paths to use a newly-introduced scripts/project-root.js utility module. The originating task (21ffc900) was marked cancelled in the DB. No PR was ever created or merged. The work has never been reviewed.",
+  "filesChangedHighlights": [
+    "scripts/project-root.js (NEW — 32-line utility that computes project root dynamically)",
+    "36 scripts and plist files updated to use project-root.js instead of hardcoded paths",
+    "Includes .plist launch agent files (ai.openclaw.bo2026.*, ai.openclaw.leadflow.*)",
+    "Includes shell scripts (orchestrator-heartbeat-runner.sh, spawn-orchestrator.sh, watchdog-orchestrator.sh)",
+    "Includes all JS scripts under scripts/, scripts/db/, scripts/diagnostics/, scripts/tasks/, scripts/utilities/"
+  ],
+  "risk": "MEDIUM",
+  "riskRationale": "The new scripts/project-root.js module uses __dirname-relative path resolution to compute the project root. If the computation is wrong for any script location, it could silently break path resolution in runtime scripts and launch agents. The plist changes are particularly sensitive — a broken path in a launchd plist causes the service to fail at OS level. The task being cancelled may indicate the work was abandoned for a reason (e.g., discovered a flaw in the approach, or the paths were fixed another way). No PR means no review gate was applied.",
+  "recommendation": "Human review required before any action. Specifically: (1) verify scripts/project-root.js logic is correct for all calling script locations — some scripts are nested (scripts/db/, scripts/utilities/) which may compute different __dirname values; (2) check whether main already has equivalent path fixes via another route (the task was cancelled 2 months ago); (3) if the work is valid, create a new task to open a PR for QC review rather than directly merging. Do NOT auto-delete — the work represents real effort. Do NOT auto-merge — plist + runtime path changes without review is high risk.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/21ffc900-sweep-find-and-fix-all-stale-paths-left",
+    "git diff --stat main...origin/dev/21ffc900-sweep-find-and-fix-all-stale-paths-left",
+    "git ls-remote --heads origin dev/21ffc900-sweep-find-and-fix-all-stale-paths-left",
+    "git log --format='%H %s %ad %an' --date=short origin/dev/21ffc900-sweep-find-and-fix-all-stale-paths-left -2",
+    "gh pr list --state all --search '21ffc900'",
+    "gh pr list --state all --head 'dev/21ffc900-sweep-find-and-fix-all-stale-paths-left' --json number,title,state,mergedAt,closedAt",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name FROM tasks WHERE branch_name LIKE '%21ffc900%'\""
+  ]
+}
