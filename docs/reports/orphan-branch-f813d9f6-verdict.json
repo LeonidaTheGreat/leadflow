@@ -1,0 +1,45 @@
+{
+  "taskId": "f813d9f6-bc7d-439b-86db-4670d060592c",
+  "investigatedBranch": "dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch contains 1 commit (164dfcdb) that fixes the admin funnel checkout-attempts route to read from checkout_sessions instead of the non-existent subscription_attempts table. The bug is confirmed still present on main (line 39 of checkout-attempts/route.ts). Related PR #1670 was closed without merging; no other PR covers this specific file. Safe and necessary to ship.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "tipCommit": "164dfcdb",
+    "commitSubject": "fix: replace subscription_attempts with checkout_sessions in admin funnel route",
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts",
+      "product/lead-response/dashboard/jest.config.ts",
+      "product/lead-response/dashboard/tests/subscription-funnel-tracking.test.ts"
+    ],
+    "bugConfirmedOnMain": "main:checkout-attempts/route.ts:39 still reads .from('subscription_attempts') — table does not exist in DB",
+    "relatedPRs": [
+      {
+        "number": 1670,
+        "state": "CLOSED",
+        "closedAt": "2026-05-25T02:06:24Z",
+        "mergedAt": null,
+        "note": "Covered upgrade-checkout/route.ts and tests, CLOSED without merge. Does NOT cover checkout-attempts/route.ts."
+      },
+      {
+        "number": 329,
+        "state": "MERGED",
+        "note": "Earlier fix merged Mar 2026. Did not cover checkout-attempts/route.ts (admin funnel route)."
+      }
+    ],
+    "mainHistoryNote": "commit cbcf9b41 on main fixed upgrade-checkout/route.ts but left checkout-attempts/route.ts broken."
+  },
+  "risk": "LOW",
+  "riskDetail": "Single admin-only route; fix is table name substitution with aligned status field names; tests updated to match; no schema changes; no new dependencies; endpoint already fails at runtime on main.",
+  "recommendation": "Create a task row for this branch and open a PR: dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t → main. Run QC and merge. The admin funnel checkout-attempts endpoint is broken on production today; this is the only pending fix.",
+  "commandsRun": [
+    "git log --oneline main..dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "git diff --stat main...origin/dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "git ls-remote --heads origin dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "gh pr list --state all --search 'subscription_attempts checkout_sessions'",
+    "gh pr list --state all --search 'funnel checkout'",
+    "gh pr view 1670 --json state,mergedAt,closedAt,headRefName,title,body",
+    "git log --oneline main | grep -E 'subscription_attempts|checkout_sessions|checkout-attempts|funnel'",
+    "git show main:product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts | grep -n 'subscription_attempts|checkout_sessions'"
+  ]
+}
