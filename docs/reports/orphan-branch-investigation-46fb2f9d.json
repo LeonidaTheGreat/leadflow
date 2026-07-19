@@ -1,0 +1,55 @@
+{
+  "branch": "dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+  "investigationDate": "2026-07-19",
+  "verdict": "already-shipped-safe-delete",
+  "confidence": "high",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "f890d8d52feeade940ee18fa28cb53edeadcaf4e",
+    "commitMessage": "fix: add missing branch commit for task 46fb2f9d",
+    "commitAuthor": "Stojan Madjunkov",
+    "commitDate": "2026-05-06T20:34:21-04:00",
+    "filesChanged": 0,
+    "commitIsEmpty": true,
+    "commitNotes": "Empty placeholder commit — no file changes whatsoever. Created as a tombstone to satisfy the branch requirement for task 46fb2f9d.",
+    "taskRowExists": false,
+    "taskDbQuery": "SELECT * FROM tasks WHERE id::text LIKE '%46fb2f9d%' — returned 0 rows",
+    "relatedPRs": [
+      {
+        "number": 1477,
+        "title": "Dev: fix-signup-activated-rate-metric-collection - Fix Signup to Activated Rate Metric Collection",
+        "branch": "dev/53e0259c-dev-fix-signup-activated-rate-metric-col",
+        "state": "CLOSED",
+        "merged": false,
+        "closedAt": "2026-05-05T00:24:46Z",
+        "notes": "A parallel attempt on a different branch/task; closed without merge one day before this branch was created"
+      },
+      {
+        "number": 1555,
+        "title": "Dev (rescue): fix-signup-to-activated-rate-1-6-target-60 - Signup to Activated Rate: 1.6% (target 60%)",
+        "branch": "dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+        "state": "MERGED",
+        "merged": true,
+        "mergedAt": "2026-05-10T14:34:18Z",
+        "notes": "Rescue PR that implemented the same fix; MERGED to main — this is the shipped version of the work"
+      }
+    ]
+  },
+  "risk": "none",
+  "riskNotes": "The orphan commit is an empty commit (zero file changes). Deleting the branch loses no code. The intended fix (signup-to-activated-rate metric collection) was shipped via PR #1555 on 2026-05-10.",
+  "recommendation": "Safe to delete. The branch contains only a placeholder empty commit with no code changes. The underlying work was completed and merged via the rescue branch dev/b35bfeed (PR #1555, merged 2026-05-10).",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git fetch origin dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git log --oneline main..origin/dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git show --name-only f890d8d5",
+    "git show --format='%H %P %s' f890d8d5",
+    "git merge-base main origin/dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "gh pr list --state all --search '46fb2f9d'",
+    "gh pr list --state all --search 'signup-activated-rate-metric-col'",
+    "gh pr list --state merged --search 'signup-activated-rate'",
+    "gh pr view 1477 --json title,state,mergedAt,closedAt,headRefName",
+    "psql openclaw -c \"SELECT * FROM tasks WHERE branch_name LIKE '%46fb2f9d%'\"",
+    "psql openclaw -c \"SELECT * FROM tasks WHERE title ILIKE '%signup%activated%rate%'\""
+  ]
+}
