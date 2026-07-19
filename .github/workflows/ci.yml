@@ -1,14 +1,43 @@
 name: CI
 on: pull_request
 
+# Superseded runs cancel; hung jobs die; setup-node dropped (self-hosted:
+# system Node is installed — genome's setup-node hung 20min on empty
+# toolcaches, 2026-07-19). Docs-only PRs skip heavy jobs. Ported from
+# genome docs/CI-SETUP-SELF-HOSTED.md.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  changes:
     runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        with: { fetch-depth: 0 }
+      - id: filter
+        name: docs-only filter
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE" 2>/dev/null; then BASE=$(git rev-parse HEAD~1 2>/dev/null || echo ""); fi
+          CHANGED=$(git diff --name-only "$BASE"...HEAD 2>/dev/null || echo "unknown")
+          echo "$CHANGED"
+          if [ -n "$CHANGED" ] && [ "$CHANGED" != "unknown" ] && ! echo "$CHANGED" | grep -qvE '^docs/.*\.md$|\.md$'; then
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
       - run: npm ci
       - name: API tests
         run: npm test
