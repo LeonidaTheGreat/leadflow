@@ -1,0 +1,80 @@
+{
+  "investigatedBranch": "dev/0fd668fb-fix-codebase-architecture-md-drift",
+  "investigatedAt": "2026-07-19",
+  "taskId": "69d3c21f-1751-4735-9b9b-8f94c2b5f467",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commitLog": [
+      {
+        "sha": "33621e15",
+        "message": "docs: fix TrialActivationService description in ARCHITECTURE.md",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-04-20"
+      },
+      {
+        "sha": "04a0024a",
+        "message": "feat: add StripeService and EmailService upgrade offer methods",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-04-20"
+      }
+    ],
+    "diffStat": {
+      "ARCHITECTURE.md": "+4 lines",
+      "lib/services/EmailService.js": "+96 lines (new at time of branch)",
+      "lib/services/StripeService.js": "+136 lines (new at time of branch)",
+      "lib/services/TrialActivationService.js": "+3 lines"
+    },
+    "supersededBy": [
+      {
+        "pr": 1264,
+        "commit": "2b895b96",
+        "title": "Dev: feat-personal-upgrade-offer-tool - Personal Upgrade Offer Tool",
+        "status": "MERGED",
+        "date": "2026-04-20",
+        "note": "Merged same day; includes upgrade-offer endpoint, integration tests, and PRD — covers the functional intent of this orphan branch"
+      },
+      {
+        "commit": "4a803486",
+        "title": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+        "date": "2026-04-21",
+        "note": "StripeService was re-created on main the next day (49 lines). The orphan's 136-line version was never merged."
+      },
+      {
+        "pr": 1263,
+        "title": "docs: add TrialActivationService to ARCHITECTURE.md services table",
+        "status": "CLOSED (not merged)",
+        "date": "2026-04-22",
+        "note": "Sibling doc-fix PR also closed; superseded by b522a476 (auto-regenerate) and subsequent drift fixes on main"
+      },
+      {
+        "commit": "b522a476",
+        "pr": 1159,
+        "title": "feat: auto-regenerate ARCHITECTURE.md services table from lib/services/",
+        "note": "ARCHITECTURE.md is now auto-generated; any manual drift fix from this orphan is permanently obsolete"
+      }
+    ],
+    "currentMainState": {
+      "lib/services/EmailService.js": "248 lines on main — evolved through multiple PRs post-April-2026, far supersedes the orphan's 96-line addition",
+      "lib/services/StripeService.js": "49 lines on main — createPromoCode only; orphan's additional methods were never required after PR #1264",
+      "ARCHITECTURE.md": "Auto-generated since PR #1159; manual doc fixes in this branch are permanently obsolete"
+    }
+  },
+  "risk": "LOW — branch is 3 months old (2026-04-20); all functional intent was delivered via PR #1264 and subsequent evolution; no unique unshipped code remains",
+  "recommendation": "safe-delete — fully superseded. All three change areas (ARCHITECTURE.md doc fix, StripeService upgrade offer methods, EmailService upgrade offer methods) were addressed on main through different paths within 24 hours of this branch being created.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/0fd668fb-fix-codebase-architecture-md-drift",
+    "git fetch origin dev/0fd668fb-fix-codebase-architecture-md-drift",
+    "git log --oneline main..origin/dev/0fd668fb-fix-codebase-architecture-md-drift",
+    "git diff --stat main...origin/dev/0fd668fb-fix-codebase-architecture-md-drift",
+    "git log --oneline origin/dev/0fd668fb-fix-codebase-architecture-md-drift --format='%H %s %ae %ad' --date=short",
+    "git log --oneline main | grep -i 'stripe|email.*upgrade|architecture.*drift'",
+    "gh pr list --search '0fd668fb OR architecture-md-drift' --state all",
+    "gh pr view 1263 --json title,state,body,mergedAt,closedAt,headRefName",
+    "git show --stat 2b895b96",
+    "git log --oneline main | grep -i 'TrialActivation|upgrade.*offer|EmailService'",
+    "wc -l lib/services/StripeService.js lib/services/EmailService.js",
+    "git log --oneline main -- lib/services/EmailService.js",
+    "git log --oneline main -- lib/services/StripeService.js"
+  ]
+}
