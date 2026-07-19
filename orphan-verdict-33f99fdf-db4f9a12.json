@@ -1,0 +1,39 @@
+{
+  "taskId": "db4f9a12-e25c-4832-a7cf-a51e9c31974d",
+  "branch": "dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+  "summary": "4 commits on this orphan branch (2026-05-04) fixed false-positive stuck-process detection in cleanup-next-build-lock.js. The top commit (44e0f83b) is a cherry-pick of main commit f4aa4e20 — identical message and timestamp. Main has received 5 more commits to the same file since divergence (PRs #1471, #1482, #1534, #1537, #1922), making this branch fully superseded. No PR was ever created for this branch. A prior investigation on 2026-07-19 (commit 814cdae5) reached the same verdict.",
+  "evidence": {
+    "orphanCommits": [
+      "44e0f83b 2026-05-04T01:15:41 fix: pgrep \"next build\" not \"next\" to avoid false-positive from dev servers",
+      "caa9038b 2026-05-04T01:15:41 fix: detect and kill orphaned next build processes in lock cleanup",
+      "11bd8bd0 2026-05-04T01:15:41 fix: use lsof + orphan-check for build lock cleanup (replaces ps+awk)",
+      "a1f4767a 2026-05-04T01:15:41 fix: prevent false-positive stuck-process detection in cleanup-next-build-lock"
+    ],
+    "mergeBase": "d24a5977 2026-05-04T00:26:07 test: add e2e validation for rolling 24h uptime metric",
+    "fileChanged": "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "cherryPickEvidence": "Orphan top commit (44e0f83b) matches main commit f4aa4e20 — identical subject line and timestamp (2026-05-04T01:13:11-04:00)",
+    "mainCommitsToSameFileSinceDivergence": [
+      "f4aa4e20 2026-05-04 — fix: pgrep (cherry-pick of orphan top commit)",
+      "62b7dc85 2026-05-04 — Improve build lock cleanup with lsof-based orphan detection (#1471)",
+      "2237297a 2026-05-04 — fix: tighten next build lock cleanup (#1482)",
+      "6114e9d5 2026-05-09 — Fix: Quality gate build failing (#1534)",
+      "54c28f46 2026-05-16 — fix: kill stuck builds after timeout (#1537)",
+      "a81e29dd 2026-07-18 — fix: clean stale Next build artifacts (#1922)"
+    ],
+    "prForOrphanBranch": "none — no PR was ever created for dev/33f99fdf",
+    "priorInvestigation": "814cdae5 on main (2026-07-19) reached same verdict: duplicate/superseded"
+  },
+  "risk": "low — orphan only touches one script file that main has evolved well beyond; merging would be a regression",
+  "recommendation": "safe-delete — branch is fully superseded. Content was cherry-picked to main (f4aa4e20) and the file received 5 more fixes since. No unique work would be lost.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat main...origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git ls-remote --heads origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline --all -- product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "git merge-base main origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git show 814cdae5:orphan-verdict-33f99fdf.json",
+    "git log --oneline --all | grep 'cleanup-next-build-lock|33f99fdf|quality-gate'"
+  ]
+}
