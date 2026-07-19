@@ -1,0 +1,50 @@
+{
+  "taskId": "69c51399-bc7e-4663-b83a-e9d7ed736230",
+  "status": "completed",
+  "verdict": "needs-human-review",
+  "branch": "dev/3561d1d5-fix-pipeline-api-response-time-regressed",
+  "shortSha": "3561d1d5",
+  "commitCount": 1,
+  "commits": [
+    {
+      "sha": "ffa8acfe",
+      "subject": "fix: add perf_endpoint to project.config.json to stop false performance regressions",
+      "author": "Stojan Madjunkov",
+      "date": "2026-04-29T10:00:38-04:00"
+    }
+  ],
+  "filesChanged": ["project.config.json"],
+  "changeSummary": "+1 line: adds `\"perf_endpoint\": \"/api/ping\"` inside dashboard config block",
+  "evidence": {
+    "noMatchingTaskRow": true,
+    "noPRFound": "GitHub API rate-limited; no PR discoverable via DB lookup",
+    "siblingBranches": [
+      "origin/fix/58b5d07e-perf-endpoint (commit db404db5 — same 1-line config fix, also not in main)",
+      "origin/fix/perf-endpoint-config (commit feb8c33a — same 1-line config fix, also not in main)"
+    ],
+    "allThreeAttemptsMissedMain": true,
+    "changeVerification": "main:project.config.json confirmed missing perf_endpoint key via git grep + JSON parse",
+    "changeIsCorrect": "Commit message accurately describes the problem — /api/health makes Supabase round-trip (200-400ms variable); /api/ping is lightweight (~130ms stable). The perf_endpoint fallback in pipeline-health.js already exists.",
+    "humanAuthored": "Commit author is Stojan Madjunkov (not an AI agent), written 2026-04-29"
+  },
+  "risk": {
+    "level": "medium",
+    "reason": "project.config.json is listed in CLAUDE.md's NEVER-commit protected-files list — this is almost certainly why all three prior attempts failed to land. The change is trivially correct (1-line config) but the protected-file rule keeps blocking agent-driven merges."
+  },
+  "recommendation": "Manual 1-line merge required. Add `\"perf_endpoint\": \"/api/ping\"` to the dashboard block in project.config.json on main. The fix is correct and has been authored three times (ffa8acfe, db404db5, feb8c33a) without landing because agents correctly avoid committing this protected file. Do NOT delete this branch — it documents an unfixed root cause. After manual merge, all three sibling branches (this one + fix/58b5d07e-perf-endpoint + fix/perf-endpoint-config) can be deleted.",
+  "commandsRun": [
+    "git -C /Users/clawdbot/projects/leadflow log --oneline main..origin/dev/3561d1d5-fix-pipeline-api-response-time-regressed",
+    "git -C /Users/clawdbot/projects/leadflow diff --stat main...origin/dev/3561d1d5-fix-pipeline-api-response-time-regressed",
+    "git -C /Users/clawdbot/projects/leadflow ls-remote --heads origin dev/3561d1d5-fix-pipeline-api-response-time-regressed",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name, pr_number FROM tasks WHERE branch_name LIKE '%3561d1d5%' OR title ILIKE '%pipeline%api%response%' ...\"",
+    "git -C /Users/clawdbot/projects/leadflow show ffa8acfe -- project.config.json",
+    "git -C /Users/clawdbot/projects/leadflow branch -r --contains db404db5",
+    "git -C /Users/clawdbot/projects/leadflow merge-base --is-ancestor ffa8acfe main",
+    "git -C /Users/clawdbot/projects/leadflow grep perf_endpoint -- project.config.json"
+  ],
+  "rootCauseAnalysis": {
+    "failurePoint": "project.config.json is in CLAUDE.md's NEVER-commit list — agents correctly refuse to commit it",
+    "why": "The protected-file rule prevents agents from landing this config-only fix. Three independent agent attempts authored the correct change but none could merge it.",
+    "fix": "Human must manually apply the 1-line change: add `\"perf_endpoint\": \"/api/ping\"` to project.config.json on main, then push directly or via a non-agent PR."
+  }
+}
