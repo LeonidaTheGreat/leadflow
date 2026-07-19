@@ -1,0 +1,51 @@
+{
+  "taskId": "c0c0c3fe-6032-4afc-b19e-3aafbf21c9f0",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/20972e06-fix-quality-gate-build-failing-in-leadfl",
+  "shortSha": "c0a20899",
+  "commitSubject": "fix: detect orphaned next build processes before removing stale lock",
+  "commitDate": "2026-05-04T04:46:19-04:00",
+  "commitAuthor": "Stojan Madjunkov",
+  "evidence": {
+    "noPRCreated": true,
+    "filesChanged": [
+      "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js (modified, +68 net)",
+      "tests/unit/cleanup-build-lock.test.js (new file, +88 lines)"
+    ],
+    "equivalentWorkShipped": {
+      "pr": 1471,
+      "prTitle": "Improve build lock cleanup with lsof-based orphan detection",
+      "mergedAt": "2026-05-04T23:12:58Z",
+      "mergedCommit": "62b7dc85",
+      "sourceNote": "Cherry-picked from sync/main-2026-05-04T05-08-42 (PR #1452), NOT from this orphan branch"
+    },
+    "testFileStatus": "tests/unit/cleanup-build-lock.test.js was NOT included in PR #1471 and does not exist on main — stale relative to 4+ subsequent changes to cleanup-next-build-lock.js",
+    "mainHistoryOnChangedFiles": {
+      "cleanup-next-build-lock.js": [
+        "a81e29dd fix: clean stale Next build artifacts (#1922)",
+        "54c28f46 fix: kill stuck builds after timeout to prevent lock interference (#1537)",
+        "6114e9d5 Fix: Quality gate 'build' failing in leadflow (#1534)",
+        "2237297a fix: tighten next build lock cleanup to avoid false positives from next dev (#1482)",
+        "62b7dc85 Improve build lock cleanup with lsof-based orphan detection (#1471)"
+      ],
+      "tests/unit/cleanup-build-lock.test.js": "does not exist on main"
+    },
+    "isAncestorOfMain": false
+  },
+  "risk": "medium — cleanup-next-build-lock.js has had 4 subsequent PRs on main since the orphan commit (May 2026 → Jul 2026); merging this branch would regress those improvements. The test file is the only unshipped content but tests stale code.",
+  "recommendation": "safe-delete — the core orphan-detection fix shipped via PR #1471 (merged 2026-05-04, 14h after this orphan commit) from a sync cherry-pick. The cleanup-next-build-lock.js has since had 4 additional improvements on main. The test file in this branch is stale and incompatible with the current script. No PR was ever created. Safe to delete branch.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/20972e06-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat main...origin/dev/20972e06-fix-quality-gate-build-failing-in-leadfl",
+    "git ls-remote --heads origin dev/20972e06-fix-quality-gate-build-failing-in-leadfl",
+    "git log --format='%H %an %ai %s' main..origin/dev/20972e06-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --state all --search 'dev/20972e06-fix-quality-gate-build-failing-in-leadfl'",
+    "gh pr list --state all --search 'c0a20899'",
+    "gh pr list --state all --search 'cleanup-next-build-lock'",
+    "gh pr view 1471 --json number,title,state,mergedAt,headRefName,body",
+    "gh pr view 1452 --json number,title,state,mergedAt,headRefName",
+    "git log --oneline origin/main -- product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "git ls-tree origin/main -- tests/unit/cleanup-build-lock.test.js",
+    "git show 62b7dc85 --stat"
+  ]
+}
