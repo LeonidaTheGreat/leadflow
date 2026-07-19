@@ -1,0 +1,41 @@
+{
+  "taskId": "5129e487-b13f-4a0c-9b87-df8933cec67e",
+  "branch": "dev/0b492286-write-tests-for-untested-hub-db",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "prNumber": 1405,
+    "prTitle": "Write tests for untested hub: db",
+    "prState": "MERGED",
+    "prMergedAt": "2026-05-02T17:27:14Z",
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "bd60301d",
+        "message": "test: E2E contract verification for lib/db.js (task 0b492286)",
+        "date": "2026-05-02T13:33:07-04:00",
+        "author": "Stojan Madjunkov"
+      },
+      {
+        "sha": "44841b32",
+        "message": "test: fix db.test.js by adding jest.mock for pg module",
+        "date": "2026-05-02T12:30:35-04:00",
+        "author": "Stojan Madjunkov"
+      }
+    ],
+    "filesChanged": [
+      "tests/0b492286.test.js (+118 lines)",
+      "tests/unit/db.test.js (+2 lines)"
+    ]
+  },
+  "risk": "none — all commits already merged to main via PR #1405",
+  "recommendation": "Delete remote branch dev/0b492286-write-tests-for-untested-hub-db. Work is already in main.",
+  "note": "This PR contains ONLY the verdict JSON. No code changes are included.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/0b492286-write-tests-for-untested-hub-db",
+    "git fetch origin dev/0b492286-write-tests-for-untested-hub-db",
+    "git log --oneline main..origin/dev/0b492286-write-tests-for-untested-hub-db",
+    "git diff --stat main...origin/dev/0b492286-write-tests-for-untested-hub-db",
+    "git log --format='%H %s %ai %an' origin/dev/0b492286-write-tests-for-untested-hub-db | head -5",
+    "gh pr list --search '0b492286' --state all"
+  ]
+}
