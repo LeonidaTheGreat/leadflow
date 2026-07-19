@@ -1,0 +1,72 @@
+{
+  "investigationTaskId": "425c7390-3725-439c-bedf-3df3e52df88f",
+  "orphanBranch": "dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+
+  "evidence": {
+    "commits": [
+      {
+        "sha": "a3b0e3a2",
+        "subject": "feat: add pilot outreach workflow kickoff task",
+        "author": "Stojan Madjunkov",
+        "date": "2026-04-23T21:44:36-04:00"
+      },
+      {
+        "sha": "12a11d63",
+        "subject": "test: E2E test for pilot outreach uc_no_tasks seed",
+        "author": "Stojan Madjunkov",
+        "date": "2026-04-23T22:38:39-04:00"
+      }
+    ],
+    "filesChanged": [
+      ".local-tasks.json (+36 lines)",
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md (+35 lines, new file)",
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js (+81 lines, new file)"
+    ],
+    "pullRequest": {
+      "number": 1300,
+      "title": "Improve: uc_no_tasks — fix-pilot-outreach-has-not-happened-11-days-left",
+      "state": "closed",
+      "mergedAt": null,
+      "createdAt": "2026-04-24T02:35:33Z",
+      "closedAt": "2026-04-24T19:35:17Z",
+      "body": "Auto-generated PR for task 3507c881-f6dd-4053-b185-a47af40f8973\\n\\nUse case: N/A",
+      "url": "https://github.com/LeonidaTheGreat/leadflow/pull/1300"
+    },
+    "filesOnMain": {
+      "docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md": false,
+      "tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js": false,
+      "note": "Neither file was shipped to main via any route"
+    },
+    "relatedFilesOnMain": [
+      "docs/design/CONTENT-BRIEF-pilot-outreach-email-blast.md",
+      "docs/marketing-handoff/CONTENT-BRIEF-PILOT-OUTREACH-DIRECT.md",
+      "product/lead-response/dashboard/__tests__/pilot-outreach-blast.test.ts",
+      "product/lead-response/dashboard/lib/services/pilot-outreach-blast-service.ts",
+      "tests/integration/pilot-outreach-manager.test.js",
+      "tests/unit/pilot-outreach-blast.test.js"
+    ]
+  },
+
+  "risk": "low",
+  "riskRationale": "All three changed files are non-production artifacts: a local dev task queue JSON, a task-spec markdown document, and an E2E test for an internal UC gap. No route handler, service, or migration code was modified. No production behaviour changes.",
+
+  "reasoning": "PR #1300 was auto-generated for task 3507c881 on 2026-04-24 and closed the same day without merging (merged_at is null). The PR body lists 'Use case: N/A', indicating the underlying task had no parent UC — consistent with an orphan uc_no_tasks gap fill. The branch is now ~87 days old. The pilot outreach domain has since evolved significantly: main now contains a full pilot-outreach-blast-service, a pilot-outreach-manager integration test, and multiple other outreach artefacts that were not present when this branch was cut. The specific scenario this branch addressed ('pilot-outreach-has-not-happened-11-days-left') is a narrow timing trigger that would need to be re-evaluated and re-implemented against the current service architecture anyway. The uc_no_tasks gap this was seeded from is likely resolved or superseded by the UC pipeline's subsequent evolution.",
+
+  "recommendation": "safe-delete — branch can be deleted from origin. No content needs to be rescued: (1) the task-spec doc addressed an ephemeral uc gap that is now stale; (2) the E2E test covers a timing scenario that must be re-written against the current pilot-outreach-blast-service; (3) .local-tasks.json is a local dev artefact. If the '11-days-left' timing logic is still a product requirement, it should be re-specified as a fresh use case against the current architecture rather than cherry-picking these commits.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git fetch origin dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git log --oneline FETCH_HEAD ^origin/main",
+    "git log --format='%H %ai %an %s' FETCH_HEAD ^origin/main",
+    "git diff --stat origin/main...FETCH_HEAD",
+    "git diff --name-only origin/main...FETCH_HEAD",
+    "gh api repos/LeonidaTheGreat/leadflow/pulls?state=all&head=LeonidaTheGreat:dev/3507c881-improve-uc-no-tasks-fix-pilot-outreach-h",
+    "git show origin/main:docs/task-specs/fix-pilot-outreach-has-not-happened-11-days-left-workflow-task.md",
+    "git show origin/main:tests/fix-pilot-outreach-has-not-happened-11-days-left.test.js",
+    "git ls-tree -r origin/main --name-only | grep -i pilot-outreach"
+  ]
+}
