@@ -1,0 +1,55 @@
+{
+  "branch": "dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+  "investigationTaskId": "db4f9a12-e25c-4832-a7cf-a51e9c31974d",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch contains 4 commits fixing false-positive stuck-process detection in cleanup-next-build-lock.js. All 4 commits were cherry-picked into main via cherry-pick/build-lock-fix (PR #1471, merged 2026-05-04), and 4 additional follow-up PRs (#1482, #1534, #1537, #1922) have since been merged on top. Main is strictly ahead. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "filesChanged": [
+      "product/lead-response/dashboard/scripts/cleanup-next-build-lock.js"
+    ],
+    "commitMessages": [
+      "44e0f83b fix: pgrep \"next build\" not \"next\" to avoid false-positive from dev servers",
+      "caa9038b fix: detect and kill orphaned next build processes in lock cleanup",
+      "11bd8bd0 fix: use lsof + orphan-check for build lock cleanup (replaces ps+awk)",
+      "a1f4767a fix: prevent false-positive stuck-process detection in cleanup-next-build-lock"
+    ],
+    "mergeBase": "d24a59775044f241e6d23555df4720dd7ecdfca2 (test: add e2e validation for rolling 24h uptime metric)",
+    "mainHasSameContent": true,
+    "mainCommitsOnSameFile": [
+      "f4aa4e20 fix: pgrep \"next build\" not \"next\" to avoid false-positive from dev servers (identical message to orphan top commit)",
+      "62b7dc85 Improve build lock cleanup with lsof-based orphan detection (#1471) — cherry-pick of orphan work",
+      "2237297a fix: tighten next build lock cleanup to avoid false positives from next dev (#1482)",
+      "6114e9d5 Fix: Quality gate \"build\" failing in leadflow (#1534)",
+      "54c28f46 fix: kill stuck builds after timeout to prevent lock interference (#1537)",
+      "a81e29dd fix: clean stale Next build artifacts (#1922) — merged 2026-07-18"
+    ],
+    "relatedPRs": [
+      {"number": 1471, "title": "Improve build lock cleanup with orphan detection", "branch": "cherry-pick/build-lock-fix", "status": "MERGED", "mergedAt": "2026-05-04"},
+      {"number": 1482, "title": "fix: tighten next build lock cleanup", "status": "MERGED"},
+      {"number": 1534, "title": "Fix: Quality gate 'build' failing in leadflow", "status": "MERGED"},
+      {"number": 1537, "title": "Fix: kill stuck builds after timeout to prevent lock interference", "status": "MERGED"},
+      {"number": 1922, "title": "Fix: Quality gate 'build' failing in leadflow (clean stale artifacts)", "status": "MERGED", "mergedAt": "2026-07-18"}
+    ],
+    "openPRsForBranch": [],
+    "taskRowInDB": null,
+    "remoteExists": true,
+    "remoteSHA": "44e0f83bffd960d83654c63eb5bc2f00f87364b8"
+  },
+  "risk": "low — content fully absorbed into main; no unique commits, no open PR, no task row",
+  "recommendation": "safe-delete — branch can be deleted via: git push origin --delete dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git fetch origin dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline main..origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat main...origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline -8 -- product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "git log --oneline origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl -- product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "git merge-base main origin/dev/33f99fdf-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline d24a5977..main -- product/lead-response/dashboard/scripts/cleanup-next-build-lock.js",
+    "gh pr list --state all --search 'cleanup-next-build-lock'",
+    "gh pr list --state all --search 'fix-quality-gate-build'",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name FROM tasks WHERE branch_name LIKE '%33f99fdf%'\""
+  ],
+  "investigatedAt": "2026-07-19"
+}
