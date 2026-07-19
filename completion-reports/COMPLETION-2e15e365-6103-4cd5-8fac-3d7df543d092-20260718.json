@@ -1,0 +1,43 @@
+{
+  "taskId": "2e15e365-6103-4cd5-8fac-3d7df543d092",
+  "status": "completed",
+  "rootCauseAnalysis": {
+    "failurePoint": "Orphan branch dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism exists with 1 commit ahead of main and no matching task row",
+    "why": "The original task (14e80f40) PRs (#1314, #1552) were closed without merging. The feature (urgency/scarcity banner) was re-implemented in successor branches and shipped via PR #1878 (merged 2026-07-16). The orphan branch only contains a test file (95 lines) superseded by improved tests on main via commits 806c4578 and a3fdf857. This is also a duplicate investigation — the same branch was already investigated in task de2a726d (PR #1894, merged 2026-07-17).",
+    "fix": "Investigation complete — no code action needed. Branch is safe to delete."
+  },
+  "investigation": {
+    "orphanBranch": "dev/14e80f40-dev-fix-no-urgency-or-scarcity-mechanism",
+    "verdict": "already-shipped-safe-delete",
+    "commitsAheadOfMain": 1,
+    "commitHash": "8b7652e2",
+    "commitMessage": "feat: add urgency/scarcity banner to landing page + fix pre-existing test failures",
+    "filesChanged": [
+      "tests/unit/fix-no-urgency-or-scarcity-mechanism.test.js — added (95 lines, test file only)"
+    ],
+    "orphanBranchPRs": [
+      { "pr": 1314, "state": "CLOSED", "closedAt": "2026-04-25" },
+      { "pr": 1552, "state": "CLOSED", "closedAt": "2026-05-10" }
+    ],
+    "featureShippedVia": [
+      { "pr": 1878, "title": "Fix: Verify and close UC fix-no-urgency-or-scarcity-mechanism", "state": "MERGED", "mergedAt": "2026-07-16" }
+    ],
+    "relevantCommitsOnMain": [
+      "a3fdf857 — fix: align urgency banner text and regression test with UC acceptance criteria (#1878)",
+      "806c4578 — fix: add landing urgency deadline and scarcity regression test",
+      "5bd68dc7 — fix: update urgency banner with pilot spots and Q1 2026 deadline",
+      "485ea5be — docs: investigate orphan branch dev/14e80f40 (#1894)"
+    ],
+    "previousInvestigationTask": "de2a726d-f70d-4d2a-9e5f-0b0d89ed9840",
+    "previousInvestigationPR": 1894,
+    "previousInvestigationMerged": "2026-07-17",
+    "note": "Duplicate investigation — prior investigation reached the same verdict.",
+    "risk": "LOW",
+    "recommendation": "safe-delete",
+    "safeToDelete": true
+  },
+  "testResults": { "passed": 0, "total": 0, "passRate": 1.0, "note": "Investigation task — no code written, tests N/A" },
+  "filesCreated": ["completion-reports/COMPLETION-2e15e365-6103-4cd5-8fac-3d7df543d092-20260718.json"],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-2e15e365-6103-4cd5-8fac-3d7df543d092-20260718.json"
+}
