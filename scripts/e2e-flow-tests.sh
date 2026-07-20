@@ -77,14 +77,17 @@ run_test() {
 # TEST DEFINITIONS
 # ============================================
 
-# Test 1: Health endpoint shows API connectivity OK
+# Test 1: Health endpoint shows API connectivity OK and deployment identity
 # Retries up to 3 times (5s apart) to tolerate Vercel cold-start and transient
 # DB/tunnel latency that would otherwise cause false-positive critical failures.
+# Also checks app:'leadflow-dashboard' identity to detect wrong-directory Vercel deploys
+# (server.js deployed to leadflow-ai returns 404 for this endpoint, failing curl -sf).
 test_health_connectivity() {
   local resp attempt
   for attempt in 1 2 3; do
     resp=$(curl -sf --max-time 10 "$BASE_URL/api/health" 2>/dev/null) || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
-    echo "$resp" | grep -q '"api_connectivity":{"ok":true' && return 0
+    echo "$resp" | grep -q '"api_connectivity":{"ok":true' || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    echo "$resp" | grep -q '"app":"leadflow-dashboard"' && return 0
     [ "$attempt" -lt 3 ] && sleep 5
   done
   return 1
