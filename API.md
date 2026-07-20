@@ -1,16 +1,19 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from routes/. -->
 # API Reference
 
-> Generated: 2026-05-10T08:39:30.666Z | Source: `routes/`, `integration/`
+> Generated: 2026-07-20T03:08:33.513Z | Source: `routes/`, `integration/`
 
-**21 endpoints across 9 files**
+**25 endpoints across 12 files**
 
 ## Summary
 
 | Method | Path | Services | Auth | File |
 |--------|------|----------|------|------|
+| **POST** | `/api/admin/magic-link` | - | None | `routes/admin-magic-link.js` |
 | **GET** | `/api/admin/activation-list` | - | Bearer token | `routes/admin/activation-outreach.js` |
 | **POST** | `/api/admin/send-activation-email` | - | Bearer token | `routes/admin/activation-outreach.js` |
+| **GET** | `/api/admin/payment-link-candidates` | - | Bearer token | `routes/admin/payment-link.js` |
+| **POST** | `/api/admin/create-payment-link` | - | Bearer token | `routes/admin/payment-link.js` |
 | **POST** | `/api/admin/reactivation-campaign` | `LapsedTrialReactivationService` | None | `routes/admin/reactivation-campaign.js` |
 | **POST** | `/webhook/stripe` | - | None | `routes/billing.js` |
 | **POST** | `/api/billing/checkout` | - | Bearer token | `routes/billing.js` |
@@ -24,12 +27,21 @@
 | **POST** | `/api/calcom/webhooks/:id/test` | - | Bearer token | `routes/calcom-webhook.js` |
 | **GET** | `/api/cron/check-stuck-pilots` | - | Vercel cron | `routes/internal/check-stuck-pilots.js` |
 | **GET** | `/api/cron/dead-letter-replay` | - | Vercel cron | `routes/internal/dead-letter-replay.js` |
+| **POST** | `/api/internal/test-lead-response` | - | Bearer token | `routes/internal/test-lead-response.js` |
 | **GET** | `/api/cron/weekly-performance` | `WeeklyPerformanceService` | Bearer token | `routes/internal/weekly-performance.js` |
 | **GET** | `/api/cron/weekly-performance/preview` | `weeklyPerformanceService` | Bearer token | `routes/internal/weekly-performance.js` |
 | **GET** | `/` | `systemStatusService` | None | `routes/system.js` |
 | **GET** | `/health` | `systemStatusService` | None | `routes/system.js` |
 | **GET** | `/health/breakers` | - | None | `routes/system.js` |
 | **POST** | `/webhook/fub` | - | None | `integration/fub-webhook-listener.js` |
+
+---
+
+## `routes/admin-magic-link.js`
+
+### POST `/api/admin/magic-link`
+
+- **Auth:** None
 
 ---
 
@@ -40,6 +52,18 @@
 - **Auth:** Bearer token
 
 ### POST `/api/admin/send-activation-email`
+
+- **Auth:** Bearer token
+
+---
+
+## `routes/admin/payment-link.js`
+
+### GET `/api/admin/payment-link-candidates`
+
+- **Auth:** Bearer token
+
+### POST `/api/admin/create-payment-link`
 
 - **Auth:** Bearer token
 
@@ -117,6 +141,14 @@ Stuck Pilots Cron Route
 ### GET `/api/cron/dead-letter-replay`
 
 - **Auth:** Vercel cron
+
+---
+
+## `routes/internal/test-lead-response.js`
+
+### POST `/api/internal/test-lead-response`
+
+- **Auth:** Bearer token
 
 ---
 

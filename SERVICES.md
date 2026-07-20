@@ -1,13 +1,14 @@
 <!-- AUTO-GENERATED — DO NOT EDIT. Regenerated every heartbeat from lib/services/. -->
 # Services Reference
 
-> Generated: 2026-05-10T08:39:30.661Z | Source: `lib/services/`
+> Generated: 2026-07-20T03:08:33.507Z | Source: `lib/services/`
 
-**21 services across 21 files**
+**26 services across 25 files**
 
 | Service | File | Methods | Dependencies |
 |---------|------|---------|-------------|
 | [ActivationService](#activationservice) | `ActivationService.js` | 5 | crypto, EmailService |
+| [AdminMagicLinkService](#adminmagiclinkservice) | `AdminMagicLinkService.js` | 8 | crypto, db, config |
 | [BillingService](#billingservice) | `BillingService.js` | 20 | stripe, db, logger, circuit-breaker… |
 | [BookingLinkService](#bookinglinkservice) | `BookingLinkService.js` | 6 | db, CalcomClient, logger |
 | [CalcomClient](#calcomclient) | `CalcomClient.js` | 16 | axios, circuit-breaker, request-context, config |
@@ -16,9 +17,13 @@
 | [CalcomWebhookManagement](#calcomwebhookmanagement) | `CalcomWebhookManagement.js` | 13 | db, crypto, logger, circuit-breaker… |
 | [EmailService](#emailservice) | `EmailService.js` | 9 | request-context, circuit-breaker |
 | [FUBService](#fubservice) | `FUBService.js` | 15 | crypto, events, axios, logger… |
+| [FirstResponseNotificationService](#firstresponsenotificationservice) | `FirstResponseNotificationService.js` | 1 | db, EmailService, TwilioService, logger |
 | [LapsedTrialReactivationService](#lapsedtrialreactivationservice) | `LapsedTrialReactivationService.js` | 1 | EmailService |
+| [PaymentLinkService](#paymentlinkservice) | `PaymentLinkService.js` | 2 | stripe, config, db, logger |
 | [PilotConversionService](#pilotconversionservice) | `PilotConversionService.js` | 12 | logger, circuit-breaker |
 | [PilotSignupOutreachService](#pilotsignupoutreachservice) | `PilotSignupOutreachService.js` | 3 | EmailService |
+| [RevenueMetricsService](#revenuemetricsservice) | `RevenueMetricsService.js` | 5 | https, revenue-funnel |
+| [RevenueMetricsService](#revenuemetricsservice) | `RevenueMetricsService.js` | 5 | https, revenue-funnel |
 | [SatisfactionService](#satisfactionservice) | `SatisfactionService.js` | 5 | db |
 | [SequenceService](#sequenceservice) | `SequenceService.js` | 5 | db, logger |
 | [StripeService](#stripeservice) | `StripeService.js` | 1 | stripe, config, logger |
@@ -48,6 +53,29 @@
 | `formatListAsCsv()` | `rows` | Format activation list rows as a CSV string. |
 | `formatListAsJson()` | `rows` | Format activation list rows as a JSON summary object. |
 | `sendActivationEmail()` | `agentId` | Send a personalized activation email to a single agent, then mark |
+
+---
+
+## AdminMagicLinkService
+
+**File:** `lib/services/AdminMagicLinkService.js`
+
+**Dependencies:** `crypto`, `db`, `config`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `createMagicLink()` | `input` | - |
+| `validateInput()` | `input` | - |
+| `findOrCreateAgent()` | `{ email`, `firstName`, `lastName }` | - |
+| `signTrialActivationToken()` | `agent` | - |
+| `signJwt()` | `payload` | - |
+| `base64UrlEncode()` | `value` | - |
+| `tokenTtlMs()` | - | - |
+| `isValidEmail()` | `email` | - |
 
 ---
 
@@ -281,6 +309,22 @@
 
 ---
 
+## FirstResponseNotificationService
+
+**File:** `lib/services/FirstResponseNotificationService.js`
+
+**Dependencies:** `db`, `EmailService`, `TwilioService`, `logger`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `notify()` | `agentId`, `context` | Fire the one-time first-AI-response notification for an agent. |
+
+---
+
 ## LapsedTrialReactivationService
 
 **File:** `lib/services/LapsedTrialReactivationService.js`
@@ -294,6 +338,23 @@
 | Method | Params | Description |
 |--------|--------|-------------|
 | `runCampaign()` | `{ dryRun`, `limit }` | - |
+
+---
+
+## PaymentLinkService
+
+**File:** `lib/services/PaymentLinkService.js`
+
+**Dependencies:** `stripe`, `config`, `db`, `logger`
+
+**Constructor params:** `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `listCompletedOnboardingAgents()` | - | - |
+| `createPaymentLink()` | `agentId`, `planTier` | - |
 
 ---
 
@@ -339,6 +400,46 @@
 | `getSignupsForStep()` | `step` | - |
 | `sendStepEmail()` | `signup`, `step` | - |
 | `runSequence()` | - | - |
+
+---
+
+## RevenueMetricsService
+
+**File:** `lib/services/RevenueMetricsService.js`
+
+**Dependencies:** `https`, `revenue-funnel`
+
+**Constructor params:** `dbPool`, `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `upsertSnapshot()` | `snapshot` | - |
+| `maybeSendThresholdAlert()` | `snapshot` | - |
+| `getFunnelSeries()` | `days` | - |
+| `scalar()` | `query`, `params` | - |
+| `sendTelegramMessage()` | `text` | - |
+
+---
+
+## RevenueMetricsService
+
+**File:** `lib/services/RevenueMetricsService.js`
+
+**Dependencies:** `https`, `revenue-funnel`
+
+**Constructor params:** `dbPool`, `options`
+
+### Methods
+
+| Method | Params | Description |
+|--------|--------|-------------|
+| `upsertSnapshot()` | `snapshot` | - |
+| `maybeSendThresholdAlert()` | `snapshot` | - |
+| `getFunnelSeries()` | `days` | - |
+| `scalar()` | `query`, `params` | - |
+| `sendTelegramMessage()` | `text` | - |
 
 ---
 

@@ -54,6 +54,7 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 |---------|----------|---------------|
 | DB Client | `lib/db.js` | PostgreSQL connection pool |
 | ActivationService | `lib/services/ActivationService.js` | ActivationService — Admin outreach to verified-but-unactivated agents |
+| AdminMagicLinkService | `lib/services/AdminMagicLinkService.js` | — |
 | BillingService | `lib/services/BillingService.js` | — |
 | BookingLinkService | `lib/services/BookingLinkService.js` | BookingLinkService |
 | CalcomClient | `lib/services/CalcomClient.js` | Cal.com API Client |
@@ -62,9 +63,12 @@ Every file in the codebase belongs to exactly one layer. Agents MUST follow this
 | CalcomWebhookManagement | `lib/services/CalcomWebhookManagement.js` | Cal.com Webhook Management Service |
 | EmailService | `lib/services/EmailService.js` | — |
 | FUBService | `lib/services/FUBService.js` | — |
+| FirstResponseNotificationService | `lib/services/FirstResponseNotificationService.js` | Fire the one-time first-AI-response notification for an agent. |
 | LapsedTrialReactivationService | `lib/services/LapsedTrialReactivationService.js` | — |
+| PaymentLinkService | `lib/services/PaymentLinkService.js` | — |
 | PilotConversionService | `lib/services/PilotConversionService.js` | PilotConversionService — Pilot-to-Paid Conversion Email Service |
 | PilotSignupOutreachService | `lib/services/PilotSignupOutreachService.js` | — |
+| RevenueMetricsService | `lib/services/RevenueMetricsService.js` | TASK SPEC (40007d35-be7a-446d-b26d-606cb81472e7) |
 | SatisfactionService | `lib/services/SatisfactionService.js` | — |
 | SequenceService | `lib/services/SequenceService.js` | SequenceService — Follow-up sequence creation and management |
 | StripeService | `lib/services/StripeService.js` | Creates a Stripe coupon + promo code for a personal upgrade offer. |
