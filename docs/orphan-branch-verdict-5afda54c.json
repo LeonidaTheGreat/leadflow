@@ -1,0 +1,54 @@
+{
+  "branch": "dev/5afda54c-fix-stripe-price-ids",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      { "sha": "35e51137", "subject": "test: add unit test verifying pilot-signup uses shared email service" },
+      { "sha": "bb18bba2", "subject": "feat: consolidate pilot-signup welcome email to use shared email service" }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts (96 lines, mostly deletions)",
+      "scripts/check-migration-completeness.js (empty file added)",
+      "scripts/check-schema-coupling.js (empty file added)",
+      "tests/unit/pilot-signup-welcome-email-shared-service.test.js (103 lines added)"
+    ],
+    "parentTask": {
+      "id": "5afda54c-b8a4-46bf-b779-32d47e3a77e3",
+      "title": "Dev (re-merge): fix-stripe-price-ids-are-placeholder-values-not-real-s",
+      "status": "failed",
+      "createdAt": "2026-05-15"
+    },
+    "contentMismatch": "Branch is named 'fix-stripe-price-ids' but all commits are about pilot-signup welcome email consolidation — completely different concern. No Stripe-related changes in diff.",
+    "originalIssueResolved": {
+      "pr": 1897,
+      "title": "Stripe Checkout Unblock — Merge Price ID Fix + ENV Validation Endpoint",
+      "state": "MERGED",
+      "mergedAt": "2026-07-17T00:19:23Z",
+      "task": "e0aed5ec-cf61-4cbd-9e94-a0749e9a3ee9"
+    },
+    "duplicateEmailWork": {
+      "sameCommitOnOtherOrphanBranches": [
+        "dev/1528d5c8-dev-re-merge-feat-transactional-email-re (commit f3363b0b, task status: failed, already investigated)",
+        "dev/2becf0ef-dev-re-merge-feat-transactional-email-re (commit 85f1b513, task status: failed, already investigated)"
+      ],
+      "emailConsolidationInMain": false
+    },
+    "openPR": null
+  },
+  "risk": "LOW",
+  "riskRationale": "The Stripe price ID problem this task targeted was fixed and merged via PR #1897 (2026-07-17). The misrouted email consolidation commits duplicate work present in two other orphaned branches already investigated today. No unique work would be lost by deleting this branch.",
+  "recommendation": "Safe to delete. The Stripe price ID task (5afda54c) was superseded by PR #1897. The email consolidation commits on this branch are misrouted work that also appears in other orphaned branches (already investigated). No open PR exists and the content is not in main.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/5afda54c-fix-stripe-price-ids",
+    "git fetch origin dev/5afda54c-fix-stripe-price-ids && git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "gh pr list --state all --search 'fix-stripe-price-ids'",
+    "gh pr list --state all --head 'dev/5afda54c-fix-stripe-price-ids'",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status FROM tasks WHERE id::text LIKE '5afda54c%'\"",
+    "git log --oneline --all -- 'product/lead-response/dashboard/app/api/auth/pilot-signup/route.ts'",
+    "git branch -r --contains f3363b0b",
+    "gh pr list --state all --search 'transactional-email'",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status FROM tasks WHERE branch_name LIKE '%1528d5c8%' OR branch_name LIKE '%2becf0ef%'\""
+  ]
+}
