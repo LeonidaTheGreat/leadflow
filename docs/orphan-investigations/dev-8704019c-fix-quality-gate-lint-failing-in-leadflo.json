@@ -1,0 +1,37 @@
+{
+  "taskId": "8044a4fe-4cd9-4859-b3e8-be3ded0ac9be",
+  "branch": "dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch fixed the ESLint flat-config quality gate. PR #1335 ('Fix: Quality gate \"lint\" failing in leadflow') was opened from this branch but CLOSED without merging on 2026-04-26T21:30:36Z. The core fix later landed on main via commit 1b7da10a ('fix: add flat eslint config and root lint/build scripts'). The orphan branch's 3 commits are: (1) f0659967 — an earlier/variant eslint.config.js now superseded by the main version, (2) two CI re-trigger attempts (510b2ca0, 3a1a927b) with no lasting value. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": [
+      "3a1a927b ci: trigger CI",
+      "510b2ca0 ci: re-trigger CI",
+      "f0659967 fix: restore root lint gate with eslint flat config"
+    ],
+    "filesChanged": [
+      ".gitignore (+1 line)",
+      "eslint.config.js (+68 lines — variant of main's 56-line version from 1b7da10a)",
+      "package-lock.json (+827 lines)",
+      "package.json (+3 lines)"
+    ],
+    "prStatus": "CLOSED without merge — PR #1335 'Fix: Quality gate \"lint\" failing in leadflow', closedAt: 2026-04-26T21:30:36Z, mergedAt: null",
+    "fixAlreadyOnMain": "eslint.config.js present on main via commit 1b7da10a ('fix: add flat eslint config and root lint/build scripts') — confirmed with git merge-base --is-ancestor 1b7da10a main",
+    "orphanCommitNotOnMain": "f0659967 confirmed NOT on main — it is a variant/predecessor superseded by the canonical 1b7da10a which IS on main"
+  },
+  "risk": "low — the lint fix is already on main; nothing unique would be lost by deleting this branch",
+  "recommendation": "safe-delete — PR was closed without merge; the canonical eslint flat-config fix shipped separately on main. The two CI-trigger commits have no lasting value.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+    "git diff --stat main...origin/dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+    "git ls-remote --heads origin dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+    "git log --format='%H %ae %s' main..origin/dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+    "gh pr list --head dev/8704019c-fix-quality-gate-lint-failing-in-leadflo --json number,title,state,url",
+    "gh pr view 1335 --json number,title,state,mergedAt,closedAt,headRefName",
+    "git merge-base --is-ancestor f0659967 main",
+    "git merge-base --is-ancestor 1b7da10a main",
+    "git diff --stat 1b7da10a f0659967",
+    "git log --oneline --all --follow -- eslint.config.js"
+  ]
+}
