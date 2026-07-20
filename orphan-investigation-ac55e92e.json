@@ -1,0 +1,59 @@
+{
+  "taskId": "805baf6a-8da7-4c88-9bcf-b6b005c200b0",
+  "branch": "dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+  "checkedRef": "origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+  "verdict": "already-shipped-safe-delete",
+  "taskSpec": {
+    "what": "Create orphan-investigation-ac55e92e.json only; no application files or functions changed.",
+    "verify": "Metadata-only Git commands prove the orphan branch commits are represented by main commit 61eadbb5 / PR #1375; expected result is git merge-base --is-ancestor 61eadbb5 main returning 0 and git diff --stat 61eadbb5..origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke returning no output.",
+    "boundaries": "Do not read full file contents, do not read full diffs over 200 lines, do not modify code, do not run destructive branch deletion, do not change protected generated files."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote branch origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke remained after its two commits were squash-merged to main.",
+    "why": "The original commits 042cab26 and 9945ca06 are not ancestors of main, but their exact file-level result is present in squash commit 61eadbb5, titled 'Fix: Vercel dashboard health (smoke) (#1375)', which is an ancestor of main.",
+    "fix": "No code fix required; classify the orphan branch as already shipped and recommend safe deletion after normal branch-retention policy checks."
+  },
+  "evidence": {
+    "aheadOfMain": [
+      "9945ca06 test: QC behavioral test for withTimeout runtime behavior in health route",
+      "042cab26 fix: bound health db probe with timeout guard"
+    ],
+    "diffStat": [
+      "product/lead-response/dashboard/app/api/health/route.ts | 43 ++++++-",
+      "product/lead-response/dashboard/tests/fix-health-route-db-timeout-guard.test.js | 47 ++++++++",
+      "product/lead-response/dashboard/tests/qc-health-timeout-behavior.test.js | 127 +++++++++++++++++++++",
+      "3 files changed, 215 insertions(+), 2 deletions(-)"
+    ],
+    "remoteRef": "origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke 9945ca06",
+    "matchingMainCommit": "61eadbb5 Fix: Vercel dashboard health (smoke) (#1375)",
+    "matchingMainCommitIsAncestorOfMain": true,
+    "equivalenceCheck": "git diff --stat 61eadbb5..origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke produced no output.",
+    "searchFindings": [
+      "git log --all --grep found both orphan commit subjects and matching main commit 61eadbb5.",
+      "repo rg for branch name, short SHAs, and subjects found no separate task/issue artifact for this branch beyond the checked-in health timeout test text."
+    ]
+  },
+  "risk": "Low. The branch tip is not merged by ancestry, but metadata shows the same changes were squash-merged to main via PR #1375. Main already contains the shipped result.",
+  "recommendation": "Do not auto-delete in this task. Mark as already shipped; branch can be deleted through normal orphan-branch cleanup after confirming no external retention requirement.",
+  "commandsRun": [
+    "git checkout dev/805baf6a-investigate-orphan-branch-dev-ac55e92e-f-retry-1",
+    "git branch --show-current",
+    "git diff --stat main...dev/805baf6a-investigate-orphan-branch-dev-ac55e92e-f",
+    "git log --oneline main..dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git diff --stat main...dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git ls-remote --heads origin dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git branch -a --list '*ac55e92e*'",
+    "git for-each-ref --format='%(refname:short) %(objectname:short) %(subject)' refs/heads refs/remotes | rg 'ac55e92e|vercel-dashboard-health-smoke'",
+    "git show-ref | rg 'ac55e92e|vercel-dashboard-health-smoke'",
+    "rg -n 'dev/ac55e92e-fix-vercel-dashboard-health-smoke|ac55e92e|fix-vercel-dashboard-health-smoke|vercel dashboard health smoke' . --glob '!node_modules' --glob '!.git'",
+    "git log --oneline main..origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git diff --stat main...origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git log --all --oneline --grep='QC behavioral test for withTimeout runtime behavior in health route'",
+    "git log --all --oneline --grep='bound health db probe with timeout guard'",
+    "git merge-base --is-ancestor 61eadbb5 main; printf '%s\\n' $?",
+    "git show --stat --oneline --no-renames 61eadbb5",
+    "git diff --stat 61eadbb5..origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git diff --name-status main...origin/dev/ac55e92e-fix-vercel-dashboard-health-smoke",
+    "git for-each-ref --format='%(refname:short) %(objectname:short) %(subject)' refs/remotes/origin refs/remotes/pr refs/heads | rg '1375|Vercel dashboard health|ac55e92e|9945ca06|042cab26'"
+  ]
+}
