@@ -1,0 +1,32 @@
+{
+  "branch": "dev/4a475636-dev-fix-email-delivery-resend-from-domai",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "a6832a32d9621e14fc79b241e64baafff7b58953",
+    "commitMessage": "feat: Dev: fix-email-delivery-resend-from-domain-not-verified - Fix Email Delivery — Resend Test Domain Blocks All Outgoing Emails",
+    "pr": {
+      "number": 1525,
+      "title": "Dev: fix-email-delivery-resend-from-domain-not-verified - Fix Email Delivery — Resend Test Domain Blocks All Outgoing Emails",
+      "state": "MERGED",
+      "mergedAt": "2026-05-09T01:05:45Z",
+      "mergeCommit": "803aa647054486c4cd7beeb3e65b74e3f8098552"
+    },
+    "mergeCommitPresentInMain": true,
+    "diffStat": [
+      ".orchestrator-heartbeat: 2 insertions/deletions",
+      "routes/billing.js: 4 insertions/deletions"
+    ]
+  },
+  "risk": "none — changes are fully merged into main via PR #1525 (merged 2026-05-09)",
+  "recommendation": "Safe to delete. Branch was merged via PR #1525 on 2026-05-09. Merge commit 803aa647 is present in main. The diff only touched .orchestrator-heartbeat and routes/billing.js (net -2 lines), confirming a small targeted fix that shipped successfully.",
+  "commandsRun": [
+    "git fetch origin dev/4a475636-dev-fix-email-delivery-resend-from-domai",
+    "git log --oneline main..origin/dev/4a475636-dev-fix-email-delivery-resend-from-domai",
+    "git diff --stat main...origin/dev/4a475636-dev-fix-email-delivery-resend-from-domai",
+    "git ls-remote --heads origin dev/4a475636-dev-fix-email-delivery-resend-from-domai",
+    "gh pr list --state all --head dev/4a475636-dev-fix-email-delivery-resend-from-domai",
+    "gh pr view 1525 --json state,mergedAt,mergeCommit,title",
+    "git log --oneline main | grep 803aa647"
+  ]
+}
