@@ -1,0 +1,53 @@
+{
+  "investigationTaskId": "5928e077-a346-4b7b-bc30-2be537da208a",
+  "orphanBranch": "dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2",
+  "verdict": "duplicate/superseded",
+  "summary": "Single-commit branch from 2026-04-26 that added a smoke-test pilot agent fallback to scripts/e2e-flow-tests.sh. No matching task row exists. The file on main is now 27 lines longer (396 vs 369), indicating multiple subsequent e2e hardening PRs (#1533, #1807, #1846, #1898, #1921) have superseded this change entirely. Safe to delete.",
+  "evidence": {
+    "commits": [
+      {
+        "sha": "e226aae273cec6dc909171fc7733349dfb69a12d",
+        "date": "2026-04-26T23:42:21-04:00",
+        "author": "madzunkov@hotmail.com",
+        "message": "fix: make dashboard-no-errors e2e test self-healing via smoke-test pilot agent",
+        "filesChanged": ["scripts/e2e-flow-tests.sh"],
+        "linesAdded": 16,
+        "linesRemoved": 0
+      }
+    ],
+    "remoteExists": true,
+    "remoteSha": "e226aae273cec6dc909171fc7733349dfb69a12d",
+    "matchingTaskRow": null,
+    "relatedPRs": [
+      { "number": 2093, "title": "Investigate orphan branch: dev/c33edf00-fix-e2e-flow-test-failures-1-critical", "state": "OPEN", "branch": "dev/6645c9e6-investigate-orphan-branch-dev-c33edf00-f" }
+    ],
+    "supersedingPRsMergedAfterBranch": [
+      { "number": 1533, "title": "Fix: E2E flow test failures (1 critical)", "mergedAt": "2026-05-10", "branch": "dev/aa2064a5-fix-e2e-flow-test-failures-1-critical" },
+      { "number": 1807, "title": "Fix: E2E flow test failures (1 critical)", "mergedAt": "2026-06-11" },
+      { "number": 1846, "title": "fix: harden dashboard-no-errors e2e test against transient tunnel latency", "mergedAt": "2026-07-15" },
+      { "number": 1898, "title": "fix: harden reset-password-chain e2e test against Vercel cold-start", "mergedAt": "2026-07-17" },
+      { "number": 1921, "title": "fix: harden dashboard-no-errors user lookup against tunnel latency", "mergedAt": "2026-07-18" }
+    ],
+    "fileLineCounts": {
+      "mainBranch": 396,
+      "orphanBranch": 369,
+      "note": "main is 27 lines longer — change from orphan branch not present in main, but superseded by later PRs"
+    },
+    "smokeTestFallbackInMain": false,
+    "note": "The specific 'smoketest@testlead.com PATCH fallback' pattern from this branch was NOT cherry-picked to main. However, subsequent dashboard-no-errors hardening PRs (1846, 1921) addressed the same root cause (no valid agent in test env) with different approaches. The orphan fix is stale."
+  },
+  "risk": "low — single file changed (scripts/e2e-flow-tests.sh), never merged, no task row, fully superseded by 5 later PRs that rewrote the same area more thoroughly",
+  "recommendation": "safe-delete — branch has no task row, was never PR'd, is 87 days old, and the problem it solved has been addressed multiple times via more complete fixes on main. No information would be lost by deleting it.",
+  "commandsRun": [
+    "git fetch origin dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2",
+    "git log --oneline main..origin/dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2",
+    "git diff --stat main...origin/dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2",
+    "git ls-remote --heads origin dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2",
+    "git log --format='%H %ae %ai %s' main..origin/dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2",
+    "gh pr list --search 'c33edf00' --state all",
+    "gh pr list --search 'e2e-flow-test-failures' --state all",
+    "git show main:scripts/e2e-flow-tests.sh | grep -n 'smoketest|smoke-test|PATCH|onboarding_completed'",
+    "git log --oneline main -- scripts/e2e-flow-tests.sh (after 2026-04-26)",
+    "psql: SELECT id,title,status,branch_name FROM tasks WHERE branch_name='dev/c33edf00-fix-e2e-flow-test-failures-1-critical-v2'"
+  ]
+}
