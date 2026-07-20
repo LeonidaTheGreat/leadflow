@@ -1,0 +1,72 @@
+{
+  "investigationDate": "2026-07-20",
+  "branch": "dev/85359977-fix-quality-gate-clean-worktree-failing",
+  "branchTip": "5a4a684cbe5b839c30c620a0f8e1ef2d8b801866",
+  "commitsAheadOfMain": 2,
+  "verdict": "shippable-needs-task-pr",
+
+  "evidence": {
+    "commits": [
+      {
+        "sha": "5a4a684c",
+        "subject": "fix: untrack auto-generated docs (API.md, SCHEMA.md, SERVICES.md) from git",
+        "date": "2026-05-09"
+      },
+      {
+        "sha": "cf147510",
+        "subject": "fix: add branch commit for completion_reports gate verification",
+        "date": "2026-05-09",
+        "note": "Placeholder commit (same subject exists on main as fe3a59c3 — not the substantive change)"
+      }
+    ],
+    "diffStat": {
+      ".gitignore": "+4 lines (API.md, SCHEMA.md, SERVICES.md added to ignore list)",
+      "API.md": "-154 lines (file deleted from tracking)",
+      "SCHEMA.md": "-512 lines (file deleted from tracking)",
+      "SERVICES.md": "-491 lines (file deleted from tracking)"
+    },
+    "mainState": {
+      "API.md": "still tracked on main",
+      "SCHEMA.md": "still tracked on main",
+      "SERVICES.md": "still tracked on main",
+      ".gitignore": "does NOT contain API.md, SCHEMA.md, or SERVICES.md entries"
+    },
+    "existingCoverageOnMain": {
+      "commit": "0fd180b6 fix: ignore generated architecture artifacts (#1920) 2026-07-18",
+      "note": "This PR added other generated files (ARCHITECTURE.md, DISCOVERIES.md, etc.) but missed API.md, SCHEMA.md, SERVICES.md"
+    }
+  },
+
+  "analysis": {
+    "substantiveChange": "The only real change is commit 5a4a684c: adds API.md, SCHEMA.md, SERVICES.md to .gitignore and removes them from git tracking. The second commit (cf147510) is a placeholder verification artifact that has an equivalent on main.",
+    "validityOfFix": "Confirmed valid. CLAUDE.md §'Generated Files' explicitly lists SERVICES.md (from lib/services/) and API.md (from routes/ and integration/) as auto-generated on every heartbeat. SCHEMA.md is similarly auto-generated. Tracking generated files causes merge conflicts and noise in every PR — untracking is correct.",
+    "alreadyShipped": false,
+    "whyNotShipped": "The branch was created 2026-05-09, before the bulk of the .gitignore cleanup work (e.g. #1920 on 2026-07-18). It likely got orphaned when the task row was lost or not created. The equivalent cleanup for other generated files landed later but these three were missed.",
+    "rebaseRisk": "MEDIUM — main has diverged ~140 commits since 2026-05-09. The .gitignore change is additive (3 new lines at EOF), low conflict probability. The file deletions of API.md/SCHEMA.md/SERVICES.md may conflict if those files changed on main (they are auto-generated so content changes are likely, but the intent — delete them — is still correct)."
+  },
+
+  "risk": "LOW-MEDIUM",
+  "riskNotes": [
+    "Additive .gitignore change — no functional code modified",
+    "Deletes auto-generated files from tracking — safe and correct by CLAUDE.md spec",
+    "Rebase required before merge due to 140-commit divergence from main",
+    "No tests to write — this is a git config change, not a code change",
+    "Once merged, heartbeat will regenerate API.md/SCHEMA.md/SERVICES.md locally but they won't pollute PRs"
+  ],
+
+  "recommendation": "Rebase onto current main, create a PR, and merge. The fix is valid, small (4 .gitignore lines + 3 file deletions), and the gap it closes (3 auto-generated files still tracked) was confirmed by inspecting main right now. A new task should be created to rebase and ship this, since the original task row is missing.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/85359977-fix-quality-gate-clean-worktree-failing",
+    "git fetch origin dev/85359977-fix-quality-gate-clean-worktree-failing",
+    "git log --oneline origin/main..FETCH_HEAD",
+    "git diff --stat origin/main...FETCH_HEAD",
+    "git log --format='%H %s %ae %ad' --date=short origin/main...FETCH_HEAD",
+    "git show origin/main:.gitignore | grep -E 'API\\.md|SCHEMA\\.md|SERVICES\\.md'",
+    "git show origin/main:SERVICES.md (existence check)",
+    "git show origin/main:API.md (existence check)",
+    "git show origin/main:SCHEMA.md (existence check)",
+    "git show FETCH_HEAD:.gitignore | tail -30",
+    "git show origin/main:.gitignore | tail -30"
+  ]
+}
