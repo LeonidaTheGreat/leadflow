@@ -1,0 +1,47 @@
+{
+  "investigationTask": "c9dcd252-7049-4c9c-b83a-edfd95a9dd0b",
+  "orphanBranch": "dev/bc26753b-fix-codebase-broken-imports",
+  "owningTask": "bc26753b-e9e4-4fa4-a6f6-1daa5b74c085",
+  "verdict": "already-shipped-safe-delete",
+  "confidence": "high",
+  "summary": "Branch created StripeService.js to fix a broken import in upgrade-offer-endpoint.test.js. Identical fix (same file, same purpose) was shipped to main via commit 4a803486 ~84 minutes later from a different branch. The orphan branch's change is fully superseded.",
+  "evidence": {
+    "orphanCommit": {
+      "sha": "be3d2fe896eb2336eb029d80726eff5ab390c870",
+      "subject": "fix: add StripeService with createPromoCode to resolve broken import",
+      "date": "2026-04-21T02:08:52-04:00",
+      "filesChanged": ["lib/services/StripeService.js"],
+      "insertions": 67,
+      "deletions": 0
+    },
+    "mainEquivalent": {
+      "sha": "4a803486f07b2d82e62ece89dafbfdab95d7a736",
+      "subject": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "date": "2026-04-21T03:32:26-04:00",
+      "filesChanged": ["lib/services/StripeService.js"],
+      "insertions": 49
+    },
+    "existingPRs": [],
+    "relatedOrphanInvestigations": [
+      "dev/b9af3cda-fix-codebase-broken-imports",
+      "dev/8dcc06a2-fix-codebase-broken-imports",
+      "dev/695d554a-fix-codebase-broken-imports",
+      "dev/94ef4e75-fix-codebase-broken-imports",
+      "dev/4c2f6afe-fix-codebase-broken-imports"
+    ]
+  },
+  "risk": "low",
+  "riskRationale": "The fix introduced in this branch (lib/services/StripeService.js) already exists on main (commit 4a803486). Deleting this branch loses nothing — no unique code, no unique tests, no migration. The orphan is one of at least 5 similar 'fix-codebase-broken-imports' branches all investigating the same broken-import problem; the fix landed via a parallel branch.",
+  "recommendation": "safe-delete — the branch's only commit is functionally superseded by main commit 4a803486. Branch owner task (bc26753b) has status 'failed/parked'; no active work depends on this branch.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/bc26753b-fix-codebase-broken-imports",
+    "git fetch origin dev/bc26753b-fix-codebase-broken-imports",
+    "git log --oneline main..origin/dev/bc26753b-fix-codebase-broken-imports",
+    "git diff --stat main...origin/dev/bc26753b-fix-codebase-broken-imports",
+    "gh pr list --state all --head dev/bc26753b-fix-codebase-broken-imports --json number,title,state,url",
+    "git show --stat origin/dev/bc26753b-fix-codebase-broken-imports",
+    "git log --oneline --all | grep 'fix-codebase-broken-imports'",
+    "git log --oneline main | grep -i 'StripeService|createPromoCode|broken-import'",
+    "git show --stat 4a803486"
+  ]
+}
