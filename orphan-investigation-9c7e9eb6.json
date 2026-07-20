@@ -1,0 +1,148 @@
+{
+  "taskId": "0cbda7f4-544a-48c0-929a-b5dc0896a0b6",
+  "orphanBranch": "dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+  "investigatedAt": "2026-07-20T06:17:32Z",
+  "verdict": "shippable-needs-task-pr",
+  "taskSpec": {
+    "what": {
+      "filesToChange": [
+        "orphan-investigation-9c7e9eb6.json"
+      ],
+      "functionsToChange": []
+    },
+    "verify": [
+      {
+        "command": "node -e \"JSON.parse(require('fs').readFileSync('orphan-investigation-9c7e9eb6.json','utf8')); console.log('valid json')\"",
+        "expectedOutput": "valid json"
+      },
+      {
+        "command": "npm test",
+        "expectedOutput": "exit code 0"
+      },
+      {
+        "command": "npm run build",
+        "expectedOutput": "exit code 0"
+      }
+    ],
+    "boundaries": [
+      "Do not modify application code, routes, services, package scripts, tests, migrations, generated dashboards, or protected config files.",
+      "Do not read full file contents or full diffs over 200 lines for the orphan branch.",
+      "Do not delete the orphan branch, create a PR, merge, or alter task database rows."
+    ]
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Branch dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi contains a useful package.json test-script wiring commit but has no reachable matching task row in this sandboxed triage.",
+    "why": "The feature implementation test file already exists on main, but npm test on main only runs integrations/test-e2e-flow.js. The orphan commit adds the missing script wiring for tests/unit/auto-activation-email-on-verification.test.js without a task row available to anchor normal PR lifecycle.",
+    "fix": "Create a new task and PR to reapply the package.json test-script wiring from current main, then run the full quality gates before merge."
+  },
+  "summary": "The orphan branch is one commit ahead of main and changes only package.json: it adds tests/unit/auto-activation-email-on-verification.test.js to npm test and adds test:activation-unit. Main already contains the unit test file, so the unshipped value is CI/test-pipeline wiring rather than product logic.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commit": {
+      "sha": "12a76c5af462f18dfc1f441c2f5aac9ebd082365",
+      "shortSha": "12a76c5a",
+      "date": "2026-05-08 21:23:44 -0400",
+      "subject": "feat: wire activation-email unit test into npm test pipeline"
+    },
+    "diffStat": {
+      "filesChanged": 1,
+      "insertions": 2,
+      "deletions": 1,
+      "stat": "package.json | 3 ++-"
+    },
+    "changedFiles": [
+      {
+        "path": "package.json",
+        "status": "modified",
+        "numstat": {
+          "insertions": 2,
+          "deletions": 1
+        },
+        "changeSummary": "Updates npm test to also run tests/unit/auto-activation-email-on-verification.test.js and adds test:activation-unit."
+      }
+    ],
+    "remoteHead": {
+      "lsRemoteStatus": "blocked",
+      "error": "git ls-remote failed because github.com could not be resolved in the sandbox.",
+      "localRemoteTrackingRefExists": true,
+      "localContainingRemoteBranches": [
+        "origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi"
+      ]
+    },
+    "searchResults": {
+      "localExactBranchShaSubjectMatches": [
+        "CODE_GRAPH.json references tests/unit/auto-activation-email-on-verification.test.js",
+        "tests/unit/auto-activation-email-on-verification.test.js exists in the worktree",
+        "No local exact match found for branch name 9c7e9eb6, commit SHA 12a76c5a, or commit subject outside Git history"
+      ],
+      "githubPrSearch": "blocked: gh pr list failed because api.github.com is unreachable in the sandbox",
+      "taskDbSearch": "blocked: psql to LOCAL_PG_URL localhost:5432 failed with Operation not permitted"
+    },
+    "mainState": {
+      "activationUnitTestExistsOnMain": true,
+      "packageJsonDoesNotWireActivationUnitTestIntoNpmTest": true
+    },
+    "metadataTriageSufficient": true
+  },
+  "verification": {
+    "jsonParse": {
+      "status": "passed",
+      "output": "valid json"
+    },
+    "npmTest": {
+      "status": "passed",
+      "passed": 9,
+      "failed": 0,
+      "passRate": 1.0
+    },
+    "npmRunBuild": {
+      "status": "passed",
+      "note": "Initial build failed because dashboard node_modules/ was absent in the task worktree. Ran npm --prefix product/lead-response/dashboard ci inside the assigned worktree only, then npm run build passed."
+    }
+  },
+  "risk": {
+    "level": "low",
+    "rationale": "The orphan branch changes only npm scripts, not runtime application code. Risk is limited to making npm test slower or exposing pre-existing failures in the activation-email unit test. That is desirable for a regression guard but should still go through a normal task and PR because it changes the required test gate."
+  },
+  "recommendation": "Create a new task and PR to apply the package.json test-script wiring from current main. Do not merge the stale orphan branch directly and do not delete it until the replacement task ships.",
+  "commandsRun": [
+    "git checkout dev/0cbda7f4-investigate-orphan-branch-dev-9c7e9eb6-d",
+    "git branch --show-current",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,260p' SOUL.md",
+    "sed -n '1,260p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "sed -n '1,260p' CLAUDE.md",
+    "sed -n '1,260p' ARCHITECTURE.md",
+    "node ~/projects/genome/scripts/graph-search.js \"orphan investigation\"",
+    "sed -n '1,220p' orphan-investigation-73c3e811.json",
+    "sed -n '1,220p' orphan-investigation-2950d127.json",
+    "sed -n '1,220p' investigation-report-413be9d6.json",
+    "git branch --list dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi && git show-ref --verify --quiet refs/remotes/origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi; echo $?",
+    "git ls-remote --heads origin dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "rg -n \"9c7e9eb6|auto-activation-email-on-verifi|auto activation email|activation email|verifi\" --glob '!node_modules/**' --glob '!test-results/**' --glob '!coverage/**'",
+    "git log --oneline --all --grep='auto activation email\\|activation email\\|verifi' --regexp-ignore-case -n 50",
+    "git log --oneline main..origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git diff --stat main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git show -s --format='%H%n%h%n%ci%n%s' origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git merge-base main origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi && git branch -r --contains origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "gh pr list --state all --search '9c7e9eb6 OR dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi' --json number,title,state,mergedAt,closedAt,headRefName,url --limit 20",
+    "psql \"$LOCAL_PG_URL\" -At -F $'\\t' -c \"SELECT id,title,status,agent_id,branch_name,pr_number FROM tasks WHERE branch_name ILIKE '%9c7e9eb6%' OR title ILIKE '%auto-activation-email-on-verifi%' OR title ILIKE '%auto activation email%' OR title ILIKE '%activation email%' ORDER BY created_at DESC LIMIT 30;\"",
+    "rg -n \"9c7e9eb6|12a76c5a|12a76c5af462f18dfc1f441c2f5aac9ebd082365|wire activation-email unit test|auto-activation-email-on-verifi\" completion-reports docs agents orchestrator scripts tests product routes lib migrations sql *.json *.md 2>/dev/null",
+    "git log --oneline --all --grep='wire activation-email unit test into npm test pipeline' -n 20",
+    "git grep -n \"activation.*email\\|activation-email\" main -- package.json tests/unit product/lead-response/dashboard/__tests__ 2>/dev/null | head -80",
+    "git grep -n \"activation.*email\\|activation-email\" origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi -- package.json tests/unit product/lead-response/dashboard/__tests__ 2>/dev/null | head -80",
+    "git diff --name-status main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi && git diff --numstat main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git diff --unified=0 main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi -- package.json",
+    "date -u +%Y-%m-%dT%H:%M:%SZ",
+    "node -e \"JSON.parse(require('fs').readFileSync('orphan-investigation-9c7e9eb6.json','utf8')); console.log('valid json')\"",
+    "npm test",
+    "test -d node_modules && echo root-node_modules-present || echo root-node_modules-missing; test -x node_modules/.bin/next && echo root-next-present || echo root-next-missing",
+    "test -d product/lead-response/dashboard/node_modules && echo dashboard-node_modules-present || echo dashboard-node_modules-missing; test -x product/lead-response/dashboard/node_modules/.bin/next && echo dashboard-next-present || echo dashboard-next-missing",
+    "node -e \"const p=require('./package.json'); const d=require('./product/lead-response/dashboard/package.json'); console.log(JSON.stringify({rootBuild:p.scripts.build,dashboardBuild:d.scripts.build,next:d.dependencies?.next||d.devDependencies?.next},null,2))\"",
+    "pwd -P && npm --prefix product/lead-response/dashboard ci",
+    "npm run build",
+    "git status --short --ignored | head -120",
+    "git status --short"
+  ]
+}
