@@ -1,0 +1,75 @@
+{
+  "branch": "dev/9ecd403f-fix-ci-broken-on-main",
+  "shortSha": "f48815fa",
+  "verdict": "shippable-needs-task-pr",
+  "investigatedAt": "2026-07-20",
+  "taskId": "7603de62-1d0d-414a-982b-e0b1f04795ac",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitMessage": "fix: resolve CI failures — email domain and test mock isolation",
+    "commitSha": "f48815fa3f61d6fc157ecca7d7f463dd58cfba67",
+    "author": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitDate": "2026-05-05T23:00:38-04:00",
+    "filesChanged": [
+      "lib/services/CalcomClient.js",
+      "product/lead-response/dashboard/lib/email-service.ts",
+      "product/lead-response/dashboard/lib/nps-email-service.ts",
+      "product/lead-response/dashboard/lib/outreach-email-service.ts",
+      "product/lead-response/dashboard/lib/trial-emails.ts",
+      "product/lead-response/dashboard/tests/unit/cleanup-next-build-lock.test.ts"
+    ],
+    "diffStat": "6 files changed, 8 insertions(+), 9 deletions(-)",
+    "branchExistsOnRemote": true,
+    "mergeBase": "c2e84927",
+    "commitsInMainSinceBranchPoint": 175,
+    "existingPRs": "none found for this branch or SHA",
+    "relatedOrphanInvestigations": [
+      "dev/6dfad36e-fix-ci-broken-on-main (open PR #2033)",
+      "dev/413be9d6-fix-ci-broken-on-main (merged PR #2006)",
+      "dev/3ed1dec0-fix-ci-broken-on-main (closed PR #2003)"
+    ]
+  },
+
+  "changeAnalysis": {
+    "calcomClientSyntaxFix": {
+      "description": "logger.error() call was placed inside return object literal — JS syntax error that would cause CalcomClient.getMe() to throw at parse time",
+      "statusInMain": "NOT MERGED — syntax error still present at lib/services/CalcomClient.js line 260",
+      "critical": true
+    },
+    "emailDomainFix": {
+      "description": "FROM_EMAIL fallback updated to onboarding@landyourleads.com (verified Resend domain) in email-service.ts, trial-emails.ts, outreach-email-service.ts, nps-email-service.ts",
+      "statusInMain": "SUPERSEDED — PR #1573 (4f5fa44c, 2026-05-14) merged a broader email domain fix covering same files plus verification-email.ts",
+      "critical": false
+    },
+    "testMockIsolationFix": {
+      "description": "Removed jest.resetModules() from beforeEach in cleanup-next-build-lock.test.ts — was disconnecting child_process mock from the script under test",
+      "statusInMain": "NOT MERGED — no resetModules reference in current main's test file, and no matching commit found in main after branch point",
+      "critical": false
+    }
+  },
+
+  "risk": {
+    "level": "medium",
+    "rationale": "The CalcomClient.js syntax error is still present in main (confirmed at line 260). This is a real, active bug — the logger call inside the return object literal will cause a JS syntax error on parse. The email-domain changes are superseded by PR #1573. The test mock isolation fix is low-risk but not yet in main. The branch is 175 commits behind main so will need rebase before merging.",
+    "mergeConflictRisk": "high — 175 commits of drift, email service files likely touched again by PR #1573"
+  },
+
+  "recommendation": "shippable-needs-task-pr — The CalcomClient.js syntax fix is the only unique, non-superseded change and it is still broken in main. However, given 175-commit drift and that email changes are superseded, a new targeted dev task should be created to apply only the CalcomClient syntax fix (lib/services/CalcomClient.js lines 258-260: move logger.error before the return statement) rather than merging this full branch. The branch itself should be deleted after the targeted fix is applied.",
+
+  "commandsRun": [
+    "git checkout dev/7603de62-investigate-orphan-branch-dev-9ecd403f-f",
+    "git log --oneline main..origin/dev/9ecd403f-fix-ci-broken-on-main",
+    "git diff --stat main...origin/dev/9ecd403f-fix-ci-broken-on-main",
+    "git ls-remote --heads origin dev/9ecd403f-fix-ci-broken-on-main",
+    "git show --stat f48815fa",
+    "git log --oneline --all | grep fix-ci-broken-on-main",
+    "gh pr list --state all --search fix-ci-broken-on-main",
+    "gh pr list --state all --search 9ecd403f",
+    "git merge-base main origin/dev/9ecd403f-fix-ci-broken-on-main",
+    "git log --oneline c2e84927..main | grep -iE calcom|email.*domain|FROM_EMAIL",
+    "git diff main...origin/dev/9ecd403f-fix-ci-broken-on-main -- lib/services/CalcomClient.js",
+    "grep -n logger.error.*getMe lib/services/CalcomClient.js",
+    "awk NR>=253&&NR<=265 lib/services/CalcomClient.js"
+  ]
+}
