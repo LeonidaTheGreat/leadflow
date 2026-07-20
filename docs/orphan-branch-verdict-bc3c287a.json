@@ -1,0 +1,87 @@
+{
+  "taskId": "25a7113c-7cb0-4e73-9408-f75af7c9c1f5",
+  "branch": "dev/bc3c287a-auto-activation-email-on-verification",
+  "investigatedAt": "2026-07-20",
+  "verdict": "needs-human-review",
+  "taskSpec": {
+    "what": "Create this metadata-only JSON verdict at docs/orphan-branch-verdict-bc3c287a.json. Do not change application modules or functions.",
+    "verify": "Run node -e \"JSON.parse(require('fs').readFileSync('docs/orphan-branch-verdict-bc3c287a.json','utf8')); console.log('valid json')\" and expect 'valid json'. Run npm test and npm run build per project gate.",
+    "boundaries": "Do not read full file contents or full diffs over 200 lines, do not modify product code or tests, do not delete the orphan branch, do not create or merge PRs, and do not touch protected generated files."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote branch dev/bc3c287a-auto-activation-email-on-verification remains ahead of main by two commits with no matching task row available to this investigation.",
+    "why": "The auto-activation email feature appears to have shipped on main through PR #1526, but this branch contains later non-patch-equivalent commits touching dashboard middleware and tests. Metadata triage cannot prove whether the middleware hardening is redundant, valid but unshipped, or stale without reviewing implementation context.",
+    "fix": "Recorded a metadata-only verdict and stopped at human review instead of expanding into full file/diff review or deleting the branch."
+  },
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "b995ff9b",
+        "subject": "fix: harden signup middleware jwt path and add smoke regression test"
+      },
+      {
+        "sha": "17e23af9",
+        "subject": "test: add unit tests for auto-activation-email-on-verification"
+      }
+    ],
+    "diffStat": "3 files changed, 181 insertions(+), 10 deletions(-)",
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts",
+      "product/lead-response/dashboard/middleware.ts",
+      "tests/unit/auto-activation-email-on-verification.test.js"
+    ],
+    "remoteBranch": {
+      "localRemoteTrackingRefExists": true,
+      "localRemoteHeadSha": "b995ff9b2103571b7463d8151cc79f2d62ac318d",
+      "gitLsRemote": "failed: sandbox DNS could not resolve github.com"
+    },
+    "mainAlreadyHasRelatedFeature": {
+      "commit": "ba0e2333",
+      "subject": "feat: auto-send activation email on email verification + fix e2e test (#1526)",
+      "stat": "2 files changed, 197 insertions(+), 2 deletions(-)"
+    },
+    "patchEquivalence": "git log --cherry-mark showed the orphan commits as unique '>' commits, not '=' patch-equivalent commits on main.",
+    "relatedLocalMetadata": [
+      "Current main contains tests/unit/auto-activation-email-on-verification.test.js.",
+      "Main history later modified product/lead-response/dashboard/middleware.ts after PR #1526, including auth/session/security-related commits.",
+      "A sibling branch exists: origin/dev/b4cb2d9d-auto-activation-email-tests, previously investigated by commit 60b5779b on a separate investigation branch."
+    ],
+    "prIssueSearch": "GitHub CLI PR and issue searches failed because api.github.com was unreachable from this sandbox.",
+    "taskSearch": "Local artifact search found only the existing auto-activation unit test references. PostgreSQL task lookup could not run because sandbox networking blocked localhost:5432; assignment metadata states no matching task row exists."
+  },
+  "risk": {
+    "level": "medium",
+    "reason": "The feature intent appears shipped, but the orphan branch includes a unique middleware change in an auth/signup path. Safe deletion cannot be proven from metadata alone, and blindly opening a PR could replay stale middleware behavior over later auth changes."
+  },
+  "recommendation": "Do not auto-delete and do not open a direct PR from this orphan branch. Escalate to a larger-context or human review focused on whether b995ff9b's middleware hardening is already covered by current main. If it is still needed, create a fresh task to re-implement the minimal fix from current main rather than merging the stale orphan branch.",
+  "commandsRun": [
+    "git checkout dev/25a7113c-investigate-orphan-branch-dev-bc3c287a-a",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,200p' CLAUDE.md",
+    "sed -n '1,200p' IDENTITY.md",
+    "sed -n '1,200p' SOUL.md",
+    "sed -n '1,200p' HEARTBEAT.md",
+    "sed -n '1,200p' SKILLS.md",
+    "sed -n '1,220p' ARCHITECTURE.md",
+    "node ~/projects/genome/scripts/where.js \"orphan branch verdict\"",
+    "node ~/projects/genome/scripts/graph-search.js \"orphan branch verdict\"",
+    "git show-ref --verify refs/remotes/origin/dev/bc3c287a-auto-activation-email-on-verification",
+    "git log --oneline main..origin/dev/bc3c287a-auto-activation-email-on-verification",
+    "git diff --stat main...origin/dev/bc3c287a-auto-activation-email-on-verification",
+    "git ls-remote --heads origin dev/bc3c287a-auto-activation-email-on-verification",
+    "git diff --name-status main...origin/dev/bc3c287a-auto-activation-email-on-verification",
+    "git log --cherry-mark --oneline --left-right main...origin/dev/bc3c287a-auto-activation-email-on-verification",
+    "git branch -r --contains b995ff9b",
+    "git branch -r --contains 17e23af9",
+    "git show --stat --oneline --decorate ba0e2333",
+    "git log --oneline --decorate main -- tests/unit/auto-activation-email-on-verification.test.js product/lead-response/dashboard/middleware.ts product/lead-response/dashboard/__tests__/fix-signup-page-smoke-500.test.ts | head -80",
+    "git log --oneline --decorate --all --grep='auto-send activation email\\|auto-activation-email\\|email verification' --regexp-ignore-case --max-count=80",
+    "rg -n \"bc3c287a|dev/bc3c287a-auto-activation-email-on-verification|b995ff9b|17e23af9|harden signup middleware jwt path|auto-activation-email-on-verification\" . --glob '!node_modules/**' --glob '!test-results/**'",
+    "rg -n \"b4cb2d9d|auto-activation-email-tests\" . --glob '!node_modules/**' --glob '!test-results/**'",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search 'dev/bc3c287a-auto-activation-email-on-verification' --json number,title,state,headRefName,mergedAt,closedAt,url",
+    "gh issue list --repo LeonidaTheGreat/leadflow --state all --search 'bc3c287a auto activation email verification' --json number,title,state,url",
+    "psql \"$LOCAL_PG_URL\" -Atc \"SELECT id, title, status FROM tasks WHERE id::text LIKE 'bc3c287a%' OR title ILIKE '%bc3c287a%' OR title ILIKE '%auto-activation-email-on-verification%' OR title ILIKE '%auto activation email%' OR title ILIKE '%activation email%verification%' ORDER BY created_at DESC LIMIT 20;\""
+  ]
+}
