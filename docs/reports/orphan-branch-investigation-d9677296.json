@@ -1,0 +1,119 @@
+{
+  "investigationTaskId": "03414cd3-0c19-4138-95bc-da91b590146c",
+  "orphanBranch": "dev/d9677296-fix-zero-conversions-checkout-blocking-bugs",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch fixes a regex bug that rejected valid Stripe price IDs in checkout routes. The identical fix landed on main via commit 26e6207b (PR #1283, 'Fix checkout regex bug immediately') one day after this branch was created. Since then, the same routes have been modified 7+ more times through July 2026. Tests added on the orphan branch (310 lines) were never merged and would require significant rework to apply against current code.",
+
+  "evidence": {
+    "orphanCommits": [
+      {
+        "sha": "f4acb4f0dfbf9c4ef41eb2376aa9674a340ac3ac",
+        "date": "2026-04-21",
+        "message": "fix: unblock checkout flow — regex bug rejected all valid Stripe price IDs",
+        "author": "madzunkov@hotmail.com"
+      },
+      {
+        "sha": "0f79846002b313941743ed40bf163b8e69dda996",
+        "date": "2026-04-21",
+        "message": "test: add unit tests for checkout price ID validation",
+        "author": "madzunkov@hotmail.com"
+      }
+    ],
+    "divergedFrom": {
+      "sha": "2b895b9691e73b551113d22165b150cb66bd5f4d",
+      "message": "Dev: feat-personal-upgrade-offer-tool — Personal Upgrade Offer Tool (#1264)"
+    },
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/billing/create-checkout/route.ts",
+      "product/lead-response/dashboard/app/api/stripe/upgrade-checkout/route.ts",
+      "tests/integration/fix-checkout-price-validation-bugs.test.js",
+      "tests/unit/checkout-price-validation.test.js"
+    ],
+    "diffStats": "+332 lines / -12 lines across 4 files (majority are tests)",
+    "remoteExists": true,
+    "remoteSha": "0f79846002b313941743ed40bf163b8e69dda996",
+    "relatedPR": {
+      "number": 1283,
+      "title": "Fix checkout regex bug immediately",
+      "branch": "dev/b4b9f900-fix-checkout-regex-bug-immediately",
+      "state": "MERGED",
+      "mergedAt": "2026-04-23",
+      "additions": 9,
+      "deletions": 12
+    },
+    "mainSupersedingCommits": [
+      {
+        "sha": "26e6207b03d7d696cd4b6d2606be234ebb69c456",
+        "date": "2026-04-22",
+        "message": "fix: correct checkout price id regex",
+        "note": "Identical fix landed the day after orphan branch; part of PR #1283"
+      },
+      {
+        "sha": "9a235b9a1d3f418038f79fccebac64140f50a9e6",
+        "date": "2026-04-29",
+        "message": "fix: complete PR85 task-spec sweep in dashboard runtime routes (#1381)"
+      },
+      {
+        "sha": "cbcf9b419f6ab036b8f0315cc800c780da69363b",
+        "date": "2026-05-15",
+        "message": "fix: replace subscription_attempts with checkout_sessions in upgrade-checkout route"
+      },
+      {
+        "sha": "0487954f50a1be6784cb26d97f1f188d10b890fd",
+        "date": "2026-05-15",
+        "message": "fix: remove trial from annual billing checkout"
+      },
+      {
+        "sha": "1b52bc3ad562fcae49d4672ce67f6ae7896b6db6",
+        "date": "2026-07-16",
+        "message": "fix: stripe checkout broken for pro/team — wrong env var names (#1877)"
+      },
+      {
+        "sha": "ea4b8fb3085820e7a6f2fb22c5b2b3f14d184d0f",
+        "date": "2026-07-16",
+        "message": "fix: unblock Stripe checkout — validate price IDs, add revenue-config-health endpoint (#1897)"
+      },
+      {
+        "sha": "050858e591f4a19fba49ed67565ed7f67f848324",
+        "date": "2026-07-17",
+        "message": "fix: harden Stripe webhook and checkout routes for Day 151 revenue unblock (#1909)"
+      },
+      {
+        "sha": "d34c6408275aa1d8acd3ffbcfba8ca901f25f02e",
+        "date": "2026-07-17",
+        "message": "fix: re-merge two stuck revenue PRs — Stripe config cleanup + activation banner (#1910)"
+      }
+    ],
+    "testFilesOnMain": {
+      "tests/unit/checkout-price-validation.test.js": "never merged — 0 commits on main",
+      "tests/integration/fix-checkout-price-validation-bugs.test.js": "never merged — 0 commits on main"
+    }
+  },
+
+  "risk": "LOW — The checkout regex fix has been on main since 2026-04-22. The route files have been updated 8 more times since, fully superseding the orphan branch. Test files are orphan artifacts that would not apply cleanly.",
+
+  "recommendation": "Safe to delete. The core bug fix shipped via PR #1283 on 2026-04-23. The 310 lines of tests were never merged and would require significant rework to apply against current route code (3 months of changes). No unique production code is at risk.",
+
+  "commandsRun": [
+    "git fetch origin dev/d9677296-fix-zero-conversions-checkout-blocking-bugs",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git diff --name-only main...FETCH_HEAD",
+    "git log --format='%H %ae %ad %s' --date=short main..FETCH_HEAD",
+    "git ls-remote --heads origin dev/d9677296-fix-zero-conversions-checkout-blocking-bugs",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search 'fix-zero-conversions'",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search 'checkout price validation'",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search 'price ID'",
+    "gh pr view 1283 --repo LeonidaTheGreat/leadflow",
+    "git log --oneline --format='%H %s' origin/main | grep -i 'checkout|regex|price'",
+    "git show 17ebf882fb748ac4cb5947cb18f861589bd7a619 --stat",
+    "git show 3b1ffabdfcb348018567cd7584a624664439ec8a --stat",
+    "git log --oneline origin/main -- tests/unit/checkout-price-validation.test.js",
+    "git log --oneline origin/main -- tests/integration/fix-checkout-price-validation-bugs.test.js",
+    "git log --oneline origin/main -- product/lead-response/dashboard/app/api/billing/create-checkout/route.ts",
+    "git log --oneline origin/main -- product/lead-response/dashboard/app/api/stripe/upgrade-checkout/route.ts",
+    "git merge-base origin/main FETCH_HEAD",
+    "git log --oneline --format='%H %ad %s' --date=short <merge-base>..origin/main -- <route files>"
+  ]
+}
