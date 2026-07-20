@@ -1,0 +1,71 @@
+{
+  "branch": "dev/ed09564f-fix-auto-recovery-rate-metric-to-use-uc",
+  "investigatedAt": "2026-07-20",
+  "taskId": "885078a9-ee5d-46d3-b00c-9fee5cf82a15",
+
+  "verdict": "shippable-needs-task-pr",
+
+  "evidence": {
+    "remoteExists": true,
+    "remoteSHA": "d2d705b8fb3aa25ee90fac489417d7ea22ec977c",
+    "commitsAheadOfMain": 2,
+    "existingPR": null,
+    "matchingTaskRow": null,
+    "commits": [
+      {
+        "sha": "20707a30",
+        "subject": "test: verify Auto-Recovery Rate uses UC-level recovery (task ed09564f)",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-02",
+        "filesChanged": ["tests/ed09564f-auto-recovery-uc-level.test.js"],
+        "linesAdded": 117,
+        "linesRemoved": 0
+      },
+      {
+        "sha": "d2d705b8",
+        "subject": "fix: remove orphaned test subscriptions and harden cleanup to prevent phantom MRR",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-02",
+        "filesChanged": ["tests/integration/stripe-subscription-schema-alignment.test.js"],
+        "linesAdded": 22,
+        "linesRemoved": 8
+      }
+    ],
+    "filesChanged": [
+      "tests/ed09564f-auto-recovery-uc-level.test.js (new, +117 lines)",
+      "tests/integration/stripe-subscription-schema-alignment.test.js (modified, +22/-8 lines)"
+    ],
+    "scopeType": "tests-only — no production source code changed",
+    "relatedTask": {
+      "id": "25190291-75ca-4ad3-9ecb-60a496a73877",
+      "title": "Fix: Auto-Recovery Rate metric — terminal-tasks-only denominator",
+      "status": "done",
+      "branch": "dev/25190291-fix-auto-recovery-rate-metric-terminal-t"
+    }
+  },
+
+  "risk": "low",
+  "riskRationale": [
+    "All changes are test-only — no production code modified.",
+    "Commit 1 adds static code-analysis test verifying genome uses UC-level Auto-Recovery Rate (companion verification for done task 25190291).",
+    "Commit 2 fixes orphaned test subscriptions in stripe-subscription-schema-alignment.test.js that could inflate subscription count queries and produce phantom MRR reads — a real data-quality bug in the test suite.",
+    "No merge conflicts expected: changes are in test files unlikely to have been touched since 2026-05-02.",
+    "Task ID ed09564f does not exist in the tasks table — the branch was authored directly (human commits, not AI-spawned), so the 'orphan' status is expected."
+  ],
+
+  "recommendation": "Merge via new PR. Both commits have standalone value: the static analysis test documents the UC-level contract for Auto-Recovery Rate, and the stripe cleanup fix prevents phantom MRR from leaked test rows. Create a task referencing this branch and open a PR to main. No code changes needed before merging.",
+
+  "commandsRun": [
+    "git fetch origin dev/ed09564f-fix-auto-recovery-rate-metric-to-use-uc",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git ls-remote --heads origin dev/ed09564f-fix-auto-recovery-rate-metric-to-use-uc",
+    "git show --stat 20707a30",
+    "git show --stat d2d705b8",
+    "gh pr list --search 'head:dev/ed09564f-fix-auto-recovery-rate-metric-to-use-uc'",
+    "gh pr list --search 'ed09564f'",
+    "gh pr list --search 'auto-recovery-rate-metric'",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,agent_id,branch_name FROM tasks WHERE id::text LIKE 'ed09564f%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,agent_id,branch_name FROM tasks WHERE branch_name LIKE '%ed09564f%' OR title ILIKE '%auto-recovery%'\""
+  ]
+}
