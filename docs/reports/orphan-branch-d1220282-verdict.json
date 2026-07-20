@@ -1,0 +1,56 @@
+{
+  "branch": "dev/d1220282-fix-e2e-flow-test-failures-7-critical",
+  "investigatedAt": "2026-07-20",
+  "taskId": "d34c9f14-2208-4d0d-ba2b-d2330965b325",
+  "verdict": "needs-human-review",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "b9ac877c",
+        "message": "test: E2E test for infra-watchdog.sh (PR #1304)"
+      },
+      {
+        "sha": "2e581821",
+        "message": "fix: restore cloudflare tunnel + api-server; add infra watchdog"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 3,
+      "filesAdded": [
+        "scripts/infra-watchdog.sh (108 lines)",
+        "tests/d1220282-fix-e2e-flow-test-failures.test.js (103 lines)"
+      ],
+      "filesModified": [
+        "scripts/e2e-flow-tests.sh (+13 lines)"
+      ]
+    },
+    "pr": {
+      "number": 1304,
+      "title": "Fix: E2E flow test failures (7 critical)",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-04-27T04:31:55Z",
+      "mergeCommit": null
+    },
+    "filesOnMain": {
+      "scripts/infra-watchdog.sh": "NOT PRESENT — not merged",
+      "tests/d1220282-fix-e2e-flow-test-failures.test.js": "NOT PRESENT — not merged"
+    },
+    "taskDbMatch": "No task row found for d1220282 (original task); only the current investigation task d34c9f14 references this branch"
+  },
+  "risk": "MEDIUM",
+  "riskRationale": "PR was closed without merge on 2026-04-27. Branch adds infra-watchdog.sh (cloudflare tunnel + api-server recovery script, 108 lines) and a matching E2E test (103 lines). Neither file exists on main. Closure reason is unknown — could be intentional rejection (content issue, superseded approach) or system failure (merge conflict auto-close). Merging blindly would be wrong if closed intentionally; discarding would lose potentially useful infra tooling.",
+  "recommendation": "Human should review: (1) Why was PR #1304 closed without merge on 2026-04-27? Check PR comments, CI status at closure time. (2) Does infra-watchdog.sh duplicate any current infra recovery tooling? (3) If closure was due to system error or merge conflict and the content is sound, re-implement from main on a fresh branch. Do NOT auto-delete — content is unshipped.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/d1220282-fix-e2e-flow-test-failures-7-critical",
+    "git fetch origin dev/d1220282-fix-e2e-flow-test-failures-7-critical",
+    "git log --oneline main..origin/dev/d1220282-fix-e2e-flow-test-failures-7-critical",
+    "git diff --stat main...origin/dev/d1220282-fix-e2e-flow-test-failures-7-critical",
+    "gh pr list --state all --search 'infra-watchdog'",
+    "gh pr view 1304 --json number,title,state,mergedAt,closedAt,baseRefName,headRefName,mergeCommit",
+    "git log --oneline main -- scripts/infra-watchdog.sh tests/d1220282-fix-e2e-flow-test-failures.test.js",
+    "ls scripts/infra-watchdog.sh tests/d1220282-fix-e2e-flow-test-failures.test.js",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name FROM tasks WHERE branch_name LIKE '%d1220282%'\""
+  ]
+}
