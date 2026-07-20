@@ -1,0 +1,78 @@
+{
+  "investigationTask": "89142081-7f15-422b-ad5d-757eed6d1ceb",
+  "orphanBranch": "dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+  "investigatedAt": "2026-07-20",
+  "verdict": "needs-human-review",
+  "summary": "PR #1387 was opened and closed on the same day (2026-04-30) without merge and with no reviews. The branch contains 3 substantive commits (a quality gate fix, E2E tests, and a PRD doc) that are NOT present on main. The original task (a1456f39-6420-435c-a294-591b17c946d1) no longer exists in the DB. The rapid close with no review trace suggests the branch was deliberately abandoned, but the reason is unknown from metadata alone.",
+
+  "evidence": {
+    "remoteExists": true,
+    "remoteSHA": "d3e6f546a9ca10ef150e3a4a1b003e90967a7239",
+    "commitsAheadOfMain": 3,
+    "commits": [
+      "d3e6f546 test: E2E tests for build-dashboard.js functions (task e428b523)",
+      "4f2c8753 fix: harden dashboard build gate in clean worktrees",
+      "b6f7d833 docs: PM analysis — Signup to Activated Rate metric gap root cause"
+    ],
+    "filesChanged": [
+      "docs/prd/PRD-SIGNUP-ACTIVATION-RATE-GAP.md (+125 lines, new file)",
+      "package.json (2 lines changed)",
+      "scripts/build-dashboard.js (+85 lines, new file)",
+      "tests/e428b523-fix-quality-gate-build-dashboard.test.js (+86 lines, new file)"
+    ],
+    "contentOnMain": {
+      "scripts/build-dashboard.js": false,
+      "docs/prd/PRD-SIGNUP-ACTIVATION-RATE-GAP.md": false,
+      "testFile": false
+    },
+    "pr": {
+      "number": 1387,
+      "title": "Fix: Quality gate \"build\" failing in leadflow",
+      "state": "CLOSED",
+      "merged": false,
+      "mergedAt": null,
+      "mergeCommit": null,
+      "closedAt": "2026-04-30T02:41:04Z",
+      "openedAt": "2026-04-30T02:29:53Z",
+      "openDurationMinutes": 11,
+      "reviews": 0,
+      "body": "Auto-generated PR for task a1456f39-6420-435c-a294-591b17c946d1"
+    },
+    "originalTask": {
+      "id": "a1456f39-6420-435c-a294-591b17c946d1",
+      "foundInDB": false,
+      "note": "Task row missing — either deleted or never fully persisted"
+    }
+  },
+
+  "risk": {
+    "level": "medium",
+    "reasons": [
+      "PR was closed 11 minutes after opening with zero reviews — suggests automated close, merge conflict, or deliberate abandonment",
+      "scripts/build-dashboard.js is a new infrastructure file not on main; introducing it now may conflict with current quality gate setup (which has evolved since April 2026)",
+      "package.json was modified — dependency change may conflict with main",
+      "E2E test references task e428b523 which may also be absent or completed differently"
+    ]
+  },
+
+  "recommendation": "DO NOT auto-merge or auto-delete. Human review required to determine: (1) why PR #1387 was closed without merge 11 minutes after opening — likely merge conflict or superseding task, (2) whether scripts/build-dashboard.js is still needed given quality gate changes since April 2026, (3) whether the PRD doc (PRD-SIGNUP-ACTIVATION-RATE-GAP.md) should be recovered and inserted into the prds table. If the quality gate issue was fixed by other means (e.g. dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl which WAS investigated on main), this branch is likely superseded and safe to delete after confirming.",
+
+  "supersededBy": {
+    "candidate": "dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl",
+    "evidence": "git log main shows commit 8cad722c 'Investigate orphan branch: dev/06b4de87-fix-quality-gate-tests-failing-in-leadfl (#1956)' — a related quality gate fix branch was shipped to main after this one was closed"
+  },
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+    "git fetch origin dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "gh pr list --state all --head dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr view 1387 --json state,mergedAt,closedAt,mergeCommit,title,body",
+    "gh pr view 1387 --json comments,reviews,closedAt",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status FROM tasks WHERE id='a1456f39-6420-435c-a294-591b17c946d1'\"",
+    "git log --oneline main | grep -i 'build-dashboard|quality-gate|a1456f39|e428b523'",
+    "ls scripts/build-dashboard.js",
+    "ls docs/prd/PRD-SIGNUP-ACTIVATION-RATE-GAP.md"
+  ]
+}
