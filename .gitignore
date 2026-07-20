@@ -104,6 +104,13 @@ spawn-logs/
 completion-reports/
 reports/
 
+# Orphan branch investigation artifacts — written by genome, not source code
+# Investigation findings must not be committed to the repo (they go to completion-reports/ or are ephemeral)
+orphan-investigation-*.json
+docs/orphan-branch-*.json
+docs/orphan-branch-*.md
+spawn-log.jsonl
+
 # OpenClaw / Claude workspace
 .openclaw/
 .claude/projects/
