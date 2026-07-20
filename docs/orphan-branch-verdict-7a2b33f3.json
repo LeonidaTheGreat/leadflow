@@ -1,0 +1,42 @@
+{
+  "branch": "dev/7a2b33f3-fix-codebase-architecture-md-drift",
+  "shortSha": "85994d2c",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+  "summary": "Documentation-only branch (ARCHITECTURE.md +91/-12) created 2026-05-12 to document routes, dashboard lib, and PostgREST DB client. ARCHITECTURE.md has been modified 5+ times on main since the orphan's base, most recently via PR #1753 (genome path canonicalization). No PR was ever opened. Commit is not reachable from origin/main. Identical pattern to dev/0fd668fb-fix-codebase-architecture-md-drift, which was also an ARCHITECTURE.md drift fix and was ruled duplicate/superseded by PR #1974 (merged 2026-07-19).",
+  "evidence": {
+    "commits_ahead_of_main": 1,
+    "commit_sha": "85994d2c92a27b94a78228db36f46e62da7c22f5",
+    "commit_date": "2026-05-12T10:41:32-0400",
+    "commit_author": "madzunkov@hotmail.com",
+    "commit_subject": "docs: fix ARCHITECTURE.md drift — routes, dashboard lib, PostgREST DB client",
+    "files_changed": ["ARCHITECTURE.md"],
+    "stat": "+91 insertions, -12 deletions",
+    "pr_found": false,
+    "branch_exists_on_remote": true,
+    "commit_reachable_from_main": false,
+    "architecture_md_commits_on_main_after_orphan": [
+      "97066f9c — Canonicalize ~/.openclaw/genome paths to ~/projects/genome (#1753)",
+      "034e496b — fix-high-intent-conversion-call-feature-not-started-fe (#1550)",
+      "3d919c16 — add LapsedTrialReactivationService and ApiKeyAuthService"
+    ],
+    "analogous_branch": "dev/0fd668fb-fix-codebase-architecture-md-drift",
+    "analogous_branch_verdict": "duplicate/superseded (PR #1974, merged 2026-07-19)"
+  },
+  "risk": "low",
+  "risk_rationale": "Documentation-only change (no source code). ARCHITECTURE.md has been edited multiple times on main since May 12, making a clean merge impossible without conflicts and manual review. Missing content (if any) is bounded to docs drift — it does not affect runtime behavior.",
+  "recommendation": "safe-delete",
+  "recommendation_rationale": "No PR ever opened, docs-only, analogous branch already ruled superseded, 5+ subsequent ARCHITECTURE.md updates on main subsume the intended fixes. Delete origin/dev/7a2b33f3-fix-codebase-architecture-md-drift.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/7a2b33f3-fix-codebase-architecture-md-drift",
+    "git fetch origin dev/7a2b33f3-fix-codebase-architecture-md-drift",
+    "git log --oneline origin/main..FETCH_HEAD",
+    "git diff --stat origin/main...FETCH_HEAD",
+    "git log --format='%H %ae %ai %s' FETCH_HEAD -1",
+    "gh pr list --state all --search '7a2b33f3'",
+    "gh pr list --state all --search 'fix-codebase-architecture-md-drift'",
+    "git branch -r --contains 85994d2c",
+    "git log --oneline origin/main -- ARCHITECTURE.md",
+    "git log --oneline origin/main --grep='ARCHITECTURE'"
+  ]
+}
