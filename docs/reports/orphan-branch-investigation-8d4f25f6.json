@@ -1,0 +1,86 @@
+{
+  "branch": "dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Test-only orphan branch adding 45 lines of re-submit reset coverage for the duplicate-email error fix. Content is a functional duplicate of sibling branch dev/83239a56 (same commit message, same test describe block). Original fix already shipped in main via PR #195 (merged 2026-03-11). At least 4 other re-merge branches exist for the same use case; dev/83239a56 is being actively investigated in PR #2044.",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commit": {
+      "sha": "336c249d",
+      "message": "test: add re-submit reset coverage for duplicate-email error in TrialSignupForm",
+      "date": "2026-05-17",
+      "author": "Stojan Madjunkov"
+    },
+    "diffStat": {
+      "filesChanged": 1,
+      "file": "product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx",
+      "insertions": 45,
+      "deletions": 0,
+      "changeType": "test-only (new describe block: isDuplicateEmailError reset on re-submit)"
+    },
+    "existsOnRemote": true,
+    "remoteSha": "336c249daba92954b00e5b9b91dc2f8d40c5c5eb",
+    "originalFixStatus": {
+      "pr": 195,
+      "branch": "dev/87e220db-dev-fix-duplicate-email-error-shows-plai",
+      "state": "MERGED",
+      "mergedAt": "2026-03-11",
+      "testFileAlreadyInMain": true
+    },
+    "relatedBranches": [
+      {
+        "branch": "dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+        "commit": "3adaf335",
+        "commitMessage": "test: add re-submit reset coverage for duplicate-email error in TrialSignupForm",
+        "note": "Identical commit message and test content; actively investigated in PR #2044 (OPEN 2026-07-20)"
+      },
+      {
+        "branch": "dev/95bdda35-dev-re-merge-fix-duplicate-email-error-s",
+        "commit": "914fd7b6",
+        "commitMessage": "test: add re-submit reset coverage for duplicate-email error in TrialSignupForm",
+        "pr": 1693,
+        "prState": "CLOSED",
+        "prClosedAt": "2026-05-21"
+      },
+      {
+        "branch": "dev/f167334d-fix-duplicate-email-signin-link",
+        "commit": "325e11c8",
+        "commitMessage": "test: add re-submit reset coverage for duplicate-email error in TrialSignupForm",
+        "note": "Another variant with the same test commit"
+      },
+      {
+        "branch": "dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s",
+        "note": "Yet another re-merge variant; not further investigated"
+      },
+      {
+        "branch": "dev/baac6654-dev-re-merge-fix-duplicate-email-error-s",
+        "pr": 1635,
+        "prState": "CLOSED",
+        "prClosedAt": "2026-05-20"
+      }
+    ]
+  },
+
+  "risk": "low",
+  "riskRationale": "Test-only change (+45 lines in a test file). No production code changes. Original fix already in main. Sibling branch dev/83239a56 carries identical test coverage and is actively being triaged.",
+
+  "recommendation": "safe-delete — this branch is a functional duplicate of dev/83239a56 which is already being investigated in PR #2044. If dev/83239a56's test coverage is decided to be valuable and merged, this branch becomes fully redundant. Do NOT delete until PR #2044 resolves. If #2044 merges the test coverage, delete this branch. If #2044 is also closed without merging, delete both.",
+
+  "commandsRun": [
+    "git checkout dev/c224374a-investigate-orphan-branch-dev-8d4f25f6-d",
+    "git ls-remote --heads origin dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s",
+    "git fetch origin dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s",
+    "git log --oneline main..origin/dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s",
+    "git diff --stat main...origin/dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s",
+    "git log --format='%H %s %ai %an' origin/dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s ^main",
+    "gh pr list --state all --search '8d4f25f6'",
+    "gh pr list --state all --search 'duplicate-email-error'",
+    "gh pr list --state all --search 'duplicate email'",
+    "git log --oneline --all --grep='duplicate-email'",
+    "git branch -r --contains 88f0b9af",
+    "git branch -r --contains c37421a2",
+    "git show main:product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx",
+    "git diff main...origin/dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s -- 'product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx'"
+  ]
+}
