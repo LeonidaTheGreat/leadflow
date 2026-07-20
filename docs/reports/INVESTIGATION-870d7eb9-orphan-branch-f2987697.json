@@ -1,0 +1,51 @@
+{
+  "taskId": "870d7eb9-3585-4f50-82c3-f202385bfb94",
+  "orphanBranch": "dev/f2987697-fix-task-create-js-dedup-cooldown-preven",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commits": [
+      {
+        "sha": "97ba1a33",
+        "date": "2026-05-04T21:45:24-04:00",
+        "subject": "test: add unit tests for failed-task cooldown in createTask()"
+      },
+      {
+        "sha": "ec3ea16f",
+        "date": "2026-05-04T21:50:45-04:00",
+        "subject": "fix: task-create.js dedup cooldown — fix failed QC task recreation loop"
+      },
+      {
+        "sha": "bafa3986",
+        "date": "2026-05-04T21:53:03-04:00",
+        "subject": "test: self-contained cooldown spec for task-create dedup fix"
+      }
+    ],
+    "filesChanged": [
+      "tests/f2987697-task-create-dedup-regression.test.js (+80 lines)",
+      "tests/genome/task-create-dedup-cooldown.test.js (+185 lines)"
+    ],
+    "productionCodeChanged": false,
+    "existingPR": null,
+    "taskRowFound": false,
+    "fixAlreadyInGenome": {
+      "file": "genome/core/actuators/task-create.js",
+      "evidence": "Lines 17, 58-66 already implement 2h cooldown after failed task (TWO_HOURS_MS constant, updated_at check). Comment says 'Also blocks re-creation within 2h of a failed task (prevents QC retry storms).'",
+      "genomeTestCoverage": "genome/tests/task-create.test.js already covers the same dedup+cooldown scenarios (tests at lines 31, 39, 47, 61)"
+    }
+  },
+  "risk": "LOW — branch contains ONLY test files (no production code). The actual fix (cooldown logic in task-create.js) was implemented in the genome repo (genome/core/actuators/task-create.js) and genome/tests/task-create.test.js already covers the same cases. The tests added to the leadflow repo duplicate coverage that belongs in genome. No functional regression risk from deleting this branch.",
+  "recommendation": "Safe to delete. The fix this branch was testing is already shipped in genome/core/actuators/task-create.js. The companion tests (genome/tests/task-create.test.js) already cover the cooldown behavior. The test files on this branch are redundant coverage in the wrong repo (leadflow vs genome where task-create.js actually lives). No PR was ever created; the branch was abandoned after the fix landed in genome via a different path. Branch is 77 days old with no PR activity.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/f2987697-fix-task-create-js-dedup-cooldown-preven",
+    "git diff --stat main...origin/dev/f2987697-fix-task-create-js-dedup-cooldown-preven",
+    "git ls-remote --heads origin dev/f2987697-fix-task-create-js-dedup-cooldown-preven",
+    "gh pr list --state all --search 'f2987697'",
+    "gh pr list --state all --search 'task-create dedup cooldown'",
+    "gh pr list --state all --head dev/f2987697-fix-task-create-js-dedup-cooldown-preven",
+    "psql $LOCAL_PG_URL -c 'SELECT id, title, status FROM tasks WHERE branch_name LIKE \"%f2987697%\" OR title ILIKE \"%dedup cooldown%\"'",
+    "git log --oneline --all | grep 'f2987697'",
+    "git log --format '%H %ai %s' origin/dev/f2987697-fix-task-create-js-dedup-cooldown-preven ^main",
+    "grep -n 'cooldown|dedup|failed' genome/core/actuators/task-create.js",
+    "grep -n 'cooldown|dedup|failed' genome/tests/task-create.test.js"
+  ]
+}
