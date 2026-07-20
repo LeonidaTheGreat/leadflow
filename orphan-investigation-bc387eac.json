@@ -1,0 +1,77 @@
+{
+  "investigationTaskId": "979fa63d-e3f1-4e4c-8fc1-a08649d10b9d",
+  "orphanBranch": "dev/bc387eac-fix-codebase-broken-imports",
+  "owningTaskId": "bc387eac-8276-44c4-b5a8-b215ea009ff4",
+  "owningTaskStatus": "failed",
+  "owningTaskRetries": "2/3",
+  "owningTaskLastError": "PARKED: Stale >24h + already retried",
+  "investigatedAt": "2026-07-20",
+
+  "verdict": "already-shipped-safe-delete",
+
+  "evidence": {
+    "commits": [
+      {
+        "sha": "0c30a445074eb22d2d00ec0182935b4b4bf665ff",
+        "subject": "fix: add missing StripeService class for upgrade offer promo code creation",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-04-21T02:18:20-04:00"
+      }
+    ],
+    "filesChanged": [
+      {
+        "file": "lib/services/StripeService.js",
+        "changes": "+50 insertions"
+      }
+    ],
+    "branchExistsOnRemote": true,
+    "remoteSha": "0c30a445074eb22d2d00ec0182935b4b4bf665ff",
+    "mergeBase": "2b895b9691e73b551113d22165b150cb66bd5f4d",
+    "mergeBaseSubject": "Dev: feat-personal-upgrade-offer-tool - Personal Upgrade Offer Tool — Admin Sends Promo Code to Specific Trial Agents (#1264)",
+    "existingPRsForBranch": [],
+    "fileAlreadyOnMain": true,
+    "fileOnMainEvidence": "git show main:lib/services/StripeService.js returns valid content (StripeService class with Stripe require)",
+    "relatedMergedPRs": [
+      {
+        "number": 1264,
+        "title": "Dev: feat-personal-upgrade-offer-tool - Personal Upgrade Offer Tool — Admin Sends Promo Code to Specific Trial Agents",
+        "state": "MERGED",
+        "date": "2026-04-21T03:53:05Z"
+      },
+      {
+        "number": 1117,
+        "title": "Refactor: Convert stripe-portal.js to StripeService class",
+        "state": "CLOSED",
+        "date": "2026-04-10T04:03:07Z"
+      }
+    ],
+    "supersededByContext": "lib/services/StripeService.js was needed to fix a broken import in the upgrade-offer tool (PR #1264). Multiple parallel agents attempted the same fix (at least 10+ commits in git log --all with near-identical subjects). The fix landed on main via one of these parallel attempts. The branch's single commit adds the same StripeService.js that already exists on main."
+  },
+
+  "risk": {
+    "level": "none",
+    "rationale": "The branch's only change (lib/services/StripeService.js) already exists on main with equivalent or more complete content. No unique work would be lost by deleting this branch. No PR was ever created for it. The owning task failed/parked with no retries remaining."
+  },
+
+  "recommendation": {
+    "action": "safe-delete",
+    "details": "Branch dev/bc387eac-fix-codebase-broken-imports is safe to delete. Its sole change (adding StripeService.js) was already shipped via concurrent fix tasks for the same broken import. The owning task failed after 2 retries and was parked as stale. No PR was created. No unique work exists on this branch.",
+    "command": "git push origin --delete dev/bc387eac-fix-codebase-broken-imports"
+  },
+
+  "commandsRun": [
+    "git fetch origin dev/bc387eac-fix-codebase-broken-imports",
+    "git log --oneline main..origin/dev/bc387eac-fix-codebase-broken-imports",
+    "git diff --stat main...origin/dev/bc387eac-fix-codebase-broken-imports",
+    "git ls-remote --heads origin dev/bc387eac-fix-codebase-broken-imports",
+    "git log --format='%H %s %ae %ai' main..origin/dev/bc387eac-fix-codebase-broken-imports",
+    "gh pr list --search 'bc387eac' --state all",
+    "gh pr list --search 'fix-codebase-broken-imports' --state all",
+    "gh pr list --search 'StripeService' --state all",
+    "gh pr list --search 'head:dev/bc387eac-fix-codebase-broken-imports' --state all",
+    "git show main:lib/services/StripeService.js (first 5 lines)",
+    "git log --oneline --all --grep='StripeService'",
+    "git merge-base main origin/dev/bc387eac-fix-codebase-broken-imports",
+    "git log --oneline -3 <merge-base-sha>"
+  ]
+}
