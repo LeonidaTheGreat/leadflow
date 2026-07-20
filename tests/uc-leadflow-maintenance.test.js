@@ -4,6 +4,7 @@ const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..');
 
+// Reports using the `investigatedBranch` field name (older format)
 const reports = [
   {
     path: 'docs/orphan-branch-verdict-3ed1dec0.json',
@@ -42,6 +43,36 @@ for (const report of reports) {
   assert.ok(
     Array.isArray(data.commandsRun) && data.commandsRun.length >= 3,
     `${report.path} should include command provenance`
+  );
+}
+
+// b8112be4 verdict uses `branch` (not `investigatedBranch`) — test it directly
+{
+  const verdictPath = path.join(repoRoot, 'docs/orphan-branch-verdict-b8112be4.json');
+  assert.ok(fs.existsSync(verdictPath), 'docs/orphan-branch-verdict-b8112be4.json should exist');
+
+  const data = JSON.parse(fs.readFileSync(verdictPath, 'utf8'));
+  assert.strictEqual(
+    data.branch,
+    'dev/b8112be4-write-tests-for-untested-hub-index',
+    'b8112be4 verdict should identify the investigated branch via `branch` field'
+  );
+  assert.strictEqual(data.verdict, 'already-shipped-safe-delete', 'b8112be4 verdict should be already-shipped-safe-delete');
+  assert.ok(
+    data.rootCauseAnalysis && data.rootCauseAnalysis.failurePoint && data.rootCauseAnalysis.why && data.rootCauseAnalysis.fix,
+    'b8112be4 verdict should have complete rootCauseAnalysis'
+  );
+  assert.ok(
+    data.evidence && data.evidence.matchingMainCommit && typeof data.evidence.matchingMainCommit.samePatchId === 'string',
+    'b8112be4 verdict should include patch-id match evidence'
+  );
+  assert.ok(
+    typeof data.recommendation === 'string' && data.recommendation.length > 20,
+    'b8112be4 verdict should include actionable recommendation'
+  );
+  assert.ok(
+    Array.isArray(data.commandsRun) && data.commandsRun.length >= 3,
+    'b8112be4 verdict should include command provenance'
   );
 }
 
