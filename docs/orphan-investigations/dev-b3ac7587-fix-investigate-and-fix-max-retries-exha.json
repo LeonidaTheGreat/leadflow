@@ -1,0 +1,63 @@
+{
+  "taskId": "6841ad10-1091-4736-a69d-cf71f2ce7825",
+  "investigationType": "orphan-branch-triage",
+  "orphanBranch": "dev/b3ac7587-fix-investigate-and-fix-max-retries-exha",
+  "investigatedAt": "2026-07-20",
+  "verdict": "already-shipped-safe-delete",
+  "confidence": "high",
+
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "816cbca8",
+        "message": "docs: record spawn retry verification",
+        "date": "2026-07-18",
+        "filesChanged": ["completion-reports/COMPLETION-b3ac7587-de7c-4083-a866-864723493cf0-20260718T112312-0400.md"]
+      },
+      {
+        "sha": "c4259673",
+        "message": "docs: record spawn retry repair report",
+        "date": "2026-07-18",
+        "filesChanged": ["completion-reports/COMPLETION-b3ac7587-de7c-4083-a866-864723493cf0-20260718T113301-0400.json"]
+      }
+    ],
+    "filesChanged": [
+      "completion-reports/COMPLETION-b3ac7587-de7c-4083-a866-864723493cf0-20260718T112312-0400.md",
+      "completion-reports/COMPLETION-b3ac7587-de7c-4083-a866-864723493cf0-20260718T113301-0400.json"
+    ],
+    "noSourceCodeChanges": true,
+    "branchExistsOnRemote": true,
+    "remoteSha": "c4259673e9036cf1605dffe77a552461a37e783e",
+    "linkedTask": {
+      "taskId": "b3ac7587-de7c-4083-a866-864723493cf0",
+      "title": "Fix: Investigate and fix 'Max retries exhausted at spawn time' sp",
+      "status": "cancelled",
+      "branchNameInDB": null,
+      "createdAt": "2026-07-18T11:15:40-04:00"
+    },
+    "prFound": false,
+    "prSearched": ["head:dev/b3ac7587-fix-investigate-and-fix-max-retries-exha", "max-retries (topic search)"]
+  },
+
+  "risk": "none",
+  "riskRationale": "Branch contains only completion report documentation files — no source code, no migrations, no config changes. The linked task (b3ac7587) was cancelled in the database. No PR was ever created. Deleting the branch discards only two documentation artifacts for a task that was already abandoned.",
+
+  "recommendation": "safe-delete",
+  "recommendationDetail": "Delete the remote branch. The linked task b3ac7587 has status=cancelled in the DB. The only branch content is completion report docs for that cancelled task — no functional code was changed. There is nothing to merge or preserve.",
+
+  "commandsRun": [
+    "git fetch origin dev/b3ac7587-fix-investigate-and-fix-max-retries-exha",
+    "git log --oneline origin/main..origin/dev/b3ac7587-fix-investigate-and-fix-max-retries-exha",
+    "git diff --stat origin/main...origin/dev/b3ac7587-fix-investigate-and-fix-max-retries-exha",
+    "git diff --name-only origin/main...origin/dev/b3ac7587-fix-investigate-and-fix-max-retries-exha",
+    "git show --stat 816cbca8",
+    "git show --stat c4259673",
+    "git ls-remote --heads origin dev/b3ac7587-fix-investigate-and-fix-max-retries-exha",
+    "gh pr list --head dev/b3ac7587-fix-investigate-and-fix-max-retries-exha --state all",
+    "gh pr list --search max-retries --state all",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name, created_at FROM tasks WHERE branch_name LIKE '%b3ac7587%' OR id::text LIKE '%b3ac7587%'\""
+  ],
+
+  "status": "completed"
+}
