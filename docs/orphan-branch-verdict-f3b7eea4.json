@@ -1,0 +1,50 @@
+{
+  "branch": "dev/f3b7eea4-fix-quality-gate-no-direct-db-failing-in",
+  "investigatedAt": "2026-07-20",
+  "taskId": "eff8936a-4f6e-4367-967e-60c870c7dbd4",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch was the source of merged PR #1403. Two post-merge commits added after the merge are superseded by newer main commits that cover the same files.",
+  "evidence": {
+    "originalPR": {
+      "number": 1403,
+      "title": "Fix: Quality gate \"no_direct_db\" failing in leadflow",
+      "state": "MERGED",
+      "headRefName": "dev/f3b7eea4-fix-quality-gate-no-direct-db-failing-in",
+      "mergeCommit": "fcd1550be8c85ffd8948c538bb483ff78b08a835"
+    },
+    "commitsAheadOfMain": 2,
+    "commitsDetail": [
+      {
+        "sha": "3c217e26",
+        "message": "fix: replace hardcoded worktree paths with __dirname-relative paths in QC test",
+        "targetFile": "scripts/playwright-browser-setup.js"
+      },
+      {
+        "sha": "2cf4df00",
+        "message": "test: replace hardcoded-path QC script with portable E2E test",
+        "targetFile": "tests/uc-leadflow-maintenance.test.js"
+      }
+    ],
+    "supersededBy": {
+      "scripts/playwright-browser-setup.js": "a85082ef (#2021) and a1056c0a (#1937) on main — more recent versions already merged",
+      "tests/uc-leadflow-maintenance.test.js": "cfd13c85 (investigate orphan branch dev/3ed1dec0 #2004) on main — already contains portable path fix"
+    },
+    "nonCodeFiles": {
+      "count": 49,
+      "description": "Accumulated orphan investigation JSON reports in docs/ and repo root — not code, not intended for main"
+    }
+  },
+  "risk": "LOW — both modified files already have newer versions on main; original fix was fully shipped via PR #1403",
+  "recommendation": "safe-to-delete — original fix already merged; post-merge commits superseded by main; accumulated JSON artifacts should not be shipped",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/f3b7eea4-fix-quality-gate-no-direct-db-failing-in",
+    "git fetch origin dev/f3b7eea4-fix-quality-gate-no-direct-db-failing-in",
+    "git log --oneline origin/main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "gh pr list --search 'fix-quality-gate-no-direct-db' --state all",
+    "gh pr view 1403 --json number,title,state,url,headRefName,mergeCommit,commits",
+    "git log --oneline origin/main -- tests/uc-leadflow-maintenance.test.js",
+    "git log --oneline origin/main -- scripts/playwright-browser-setup.js",
+    "psql ... SELECT tasks WHERE branch_name LIKE '%f3b7eea4%'"
+  ]
+}
