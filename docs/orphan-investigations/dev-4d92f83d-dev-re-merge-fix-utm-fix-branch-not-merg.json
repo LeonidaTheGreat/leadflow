@@ -1,0 +1,61 @@
+{
+  "taskId": "99cb765c-df2d-4ab9-85b6-346efaa08296",
+  "branch": "dev/4d92f83d-dev-re-merge-fix-utm-fix-branch-not-merg",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+  "summary": "Branch was created by task 4d92f83d (status: failed, 2026-05-15) — one of five re-merge attempts at the same UTM-fix UC, all failed or cancelled. The sibling branch dev/3e48a9c3 was already investigated (PR #2005, merged 2026-07-19) with the same verdict. Both unique artifacts in this branch are superseded: lib/onboarding-telemetry.js was addressed via PR #789 at a different path (dashboard lib); migrations/014_pilot_invites.sql is orphaned — main skips slot 014 (gap 013→015) and pilot_invites work landed via migrations 019 and 025. UTM capture feature shipped via PRs #574, #575, #827, #871, #1740.",
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "commitSubjects": [
+      "fix: update auth assertions to accept session-based admin auth (54d92a19)",
+      "fix: make UTM E2E test Jest-compatible — regex fix + Jest wrapper (5175612e)",
+      "feat: add missing UTM-branch artifacts — telemetry, migration, tests (4f8a7ec2)",
+      "fix: add missing pre-commit hook stubs and fix UTM E2E test path (6e375ef1)"
+    ],
+    "filesChangedVsMain": [
+      "lib/onboarding-telemetry.js (+38, new file — NOT on main)",
+      "migrations/014_pilot_invites.sql (+17, new file — slot 014 EMPTY on main, gap 013→015)",
+      "tests/e2e/82660aae-qc-utm-branch-merge-e2e.test.js (modified)",
+      "tests/feat-admin-pilot-invite-flow-e2e.test.js (+11)",
+      "tests/feat-admin-pilot-invite-flow-qc.test.js (+9)",
+      "tests/feat-onboarding-completion-telemetry.test.js (+14)",
+      "product/lead-response/dashboard/src/app/components/trial-signup-form.duplicate-email.test.tsx (-17)"
+    ],
+    "sourceTask": {
+      "id": "4d92f83d-5b14-4f68-b44c-ef54ac17a1cd",
+      "title": "Dev (re-merge): fix-utm-fix-branch-not-merged-to-main-fix-undeployed",
+      "status": "failed",
+      "createdAt": "2026-05-15"
+    },
+    "siblingAttempts": [
+      {"taskId": "4bb0fd11", "status": "cancelled", "date": "2026-05-15"},
+      {"taskId": "3e48a9c3", "status": "failed", "date": "2026-05-17", "note": "investigated via PR #2005 — same verdict"},
+      {"taskId": "4b410af1", "status": "failed", "date": "2026-05-17"},
+      {"taskId": "d03492fb", "status": "cancelled", "date": "2026-05-19", "note": "investigation pending task dddcbf0a"}
+    ],
+    "supersededBy": {
+      "onboardingTelemetry": "PR #789 (merged 2026-04-02) added dashboard-path version at product/lead-response/dashboard/lib/onboarding-telemetry.js",
+      "pilotInvitesMigration": "Pilot invites table created via different path; later fixes via migrations/019_fix_pilot_invites_token_type.sql and migrations/025_add_pilot_invites_accepted_at.sql on main",
+      "utmFeatureItself": "Core UTM capture shipped via PRs #574, #575, #827, #871, #1740 — all merged to main"
+    },
+    "noPROpened": true,
+    "remoteRef": "54d92a196f770315c4b599478856d2f4cb8634c7"
+  },
+  "risk": "low",
+  "riskRationale": "All functional work is superseded. Migration slot 014 gap on main is intentional. Merging would introduce a conflicting migration and a stale root telemetry lib against an already-evolved codebase.",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git fetch origin dev/4d92f83d-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git log --oneline main..origin/dev/4d92f83d-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git diff --stat main...origin/dev/4d92f83d-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git ls-remote --heads origin dev/4d92f83d-dev-re-merge-fix-utm-fix-branch-not-merg",
+    "git ls-tree origin/main migrations/",
+    "git show origin/main:lib/onboarding-telemetry.js",
+    "git show origin/main:migrations/014_pilot_invites.sql",
+    "git log --format='%H %s' origin/main | grep -i utm",
+    "gh pr list --state all --search utm",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status FROM tasks WHERE branch_name LIKE '%4d92f83d%' OR title ILIKE '%utm%' ORDER BY created_at DESC LIMIT 10\"",
+    "git show 5e95149e --name-only"
+  ]
+}
