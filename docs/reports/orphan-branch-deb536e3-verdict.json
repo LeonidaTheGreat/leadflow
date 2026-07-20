@@ -1,0 +1,40 @@
+{
+  "branch": "dev/deb536e3-fix-codebase-broken-imports",
+  "shortSha": "deb536e3",
+  "investigatedAt": "2026-07-20",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "Single commit removes broken payment-links import from server.js. The identical fix was subsequently applied to main via commit ebbf856e ('fix: remove stale payment-links import from server', 2026-05-05). The route file (routes/admin/payment-links.js) never existed; main currently has zero references to payment-links.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSha": "09c599d137a53c4369400201fc379e03fa455256",
+    "commitMessage": "fix: remove broken payment-links import — route file never created",
+    "commitDate": "2026-05-05T05:54:27-04:00",
+    "author": "Stojan Madjunkov",
+    "filesChanged": ["server.js"],
+    "linesDeleted": 4,
+    "whatWasRemoved": [
+      "const paymentLinksRouter = require('./routes/admin/payment-links');",
+      "// Admin: shareable payment links",
+      "app.use('/', paymentLinksRouter);"
+    ],
+    "fixAlreadyOnMain": {
+      "commitSha": "ebbf856e83ce5632bbc9ab53e6e1a8e9533164c7",
+      "commitMessage": "fix: remove stale payment-links import from server",
+      "commitDate": "2026-05-05T05:57:22-04:00"
+    },
+    "currentMainState": "server.js has zero references to payment-links"
+  },
+  "risk": "none — fix is already live on main; this branch adds no new information",
+  "recommendation": "safe-delete — the fix shipped 3 minutes after this branch was cut (same author, same day). No task row, no PR. Branch can be deleted without any code loss.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/deb536e3-fix-codebase-broken-imports",
+    "git fetch origin dev/deb536e3-fix-codebase-broken-imports",
+    "git log --oneline main..origin/dev/deb536e3-fix-codebase-broken-imports",
+    "git diff --stat main...origin/dev/deb536e3-fix-codebase-broken-imports",
+    "git show --stat 09c599d137a53c4369400201fc379e03fa455256",
+    "git diff main...origin/dev/deb536e3-fix-codebase-broken-imports -- server.js",
+    "grep -n payment-links server.js (on main: zero results)",
+    "git log --oneline main | grep payment-links",
+    "gh pr list --search deb536e3 --state all"
+  ]
+}
