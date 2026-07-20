@@ -1,0 +1,59 @@
+{
+  "branch": "dev/ad71cfab-fix-auto-retry-transient-zero-retry-task",
+  "investigatedAt": "2026-07-20",
+  "taskId": "1eeaf62e-c87d-4901-8bb9-49e330a7f11e",
+
+  "verdict": "needs-human-review",
+
+  "summary": "Branch has 1 commit (2026-05-02, ~79 days old) that adds a 322-line test-only file: tests/unit/genome-zero-retry-transient-fix.test.js. No production code changes. No PR was ever created. No originating task row found. A sibling branch dev/f90ad980-fix-auto-retry-transient-zero-retry-task exists in the tasks table as a 'ready' investigation task but has no remote ref — likely a failed prior spawn. The test file targets genome's zero-retry transient fix behavior, but genome was extracted to its own repo (~/.openclaw/genome/) around 2026-03-04. The test may reference stale genome paths or APIs that have since changed. Cannot auto-delete: if the tests still pass, the content has value. Cannot auto-merge: test may be stale after 79 days of genome evolution.",
+
+  "evidence": {
+    "remoteExists": true,
+    "remoteSHA": "a478d91e518c87cbe19c15bdfee5bcf16e14e647",
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "a478d91e",
+        "date": "2026-05-02T21:51:36-04:00",
+        "message": "test: add genome zero-retry transient fix verification tests",
+        "ageAtInvestigation": "~79 days"
+      }
+    ],
+    "filesChanged": [
+      {
+        "path": "tests/unit/genome-zero-retry-transient-fix.test.js",
+        "stat": "+322 / -0",
+        "type": "pure-addition, test-only"
+      }
+    ],
+    "testFileExistsOnMain": false,
+    "prFound": false,
+    "originatingTaskRowFound": false,
+    "relatedBranches": [
+      {
+        "name": "dev/f90ad980-fix-auto-retry-transient-zero-retry-task",
+        "remoteExists": false,
+        "note": "Same subject, listed as 'ready' investigate task in DB — likely a failed prior spawn"
+      }
+    ]
+  },
+
+  "risk": "LOW overall — branch is pure test addition, no production code modified. Primary risk: test may reference stale genome internals post-extraction (~79 days of genome drift). Secondary risk: if deleted without checking, potentially valid test coverage is lost.",
+
+  "recommendation": "Run the test file locally before deciding: `cd ~/projects/leadflow && npx jest tests/unit/genome-zero-retry-transient-fix.test.js --no-coverage`. If it PASSES: create a task, create a PR, merge. If it FAILS or references stale paths: delete the branch (`git push origin --delete dev/ad71cfab-fix-auto-retry-transient-zero-retry-task`). Do NOT auto-delete without this check.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/ad71cfab-fix-auto-retry-transient-zero-retry-task",
+    "git fetch origin dev/ad71cfab-fix-auto-retry-transient-zero-retry-task",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git log --format='%H %ai %s' main..FETCH_HEAD",
+    "gh pr list --state all --search 'head:dev/ad71cfab-fix-auto-retry-transient-zero-retry-task'",
+    "gh pr list --state all --search 'ad71cfab'",
+    "gh pr list --state all --search 'auto-retry transient'",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, branch_name FROM tasks WHERE branch_name LIKE '%ad71cfab%' OR title ILIKE '%zero-retry transient%' OR title ILIKE '%auto-retry transient%'\"",
+    "git ls-remote --heads origin dev/f90ad980-fix-auto-retry-transient-zero-retry-task",
+    "git show main:tests/unit/ | grep -i 'genome-zero\\|zero-retry\\|transient'",
+    "git log --oneline --all | grep -i 'zero-retry\\|transient'"
+  ]
+}
