@@ -3,9 +3,9 @@
   "investigatedAt": "2026-07-20",
   "taskId": "c11be1ef-42e3-42a5-b112-579e37420ada",
 
-  "verdict": "needs-human-review",
+  "verdict": "already-shipped-safe-delete",
 
-  "summary": "Branch has 2 unmerged commits (2026-05-12) that rename model_performance.success_rate_percent → success_rate in DB setup scripts and add a schema-safe backfill migration. Three related PRs (274, 289, 703) covering the same fix were all CLOSED without merging. Main still uses success_rate_percent. It is unclear whether the rename was abandoned intentionally, applied via a different path, or simply never shipped.",
+  "summary": "Branch has 2 unmerged commits (2026-05-12) that rename model_performance.success_rate_percent → success_rate in DB setup scripts and add a schema-safe backfill migration. The live model_performance table already has the 'success_rate' column (confirmed via psql \\d model_performance), meaning the rename was applied through a different path (genome migrations 002_autonomy_tasks.sql or a manual script run). Three related PRs (274, 289, 703) were all CLOSED without merging. The originating task (7d2969fe) is DB-marked 'done' with code_review.status='merged' but PR 240 belongs to a completely different branch and was never merged — a data integrity inconsistency in the orchestrator. The fix content is already live in the database; the branch adds no new value and is safe to delete.",
 
   "evidence": {
     "commitsAheadOfMain": 2,
@@ -29,34 +29,43 @@
       "scripts/utilities/setup-dashboard-tables.js (+9 / -7)"
     ],
     "keyChange": "Renames DB column success_rate_percent → success_rate in model_performance table; adds ADD COLUMN IF NOT EXISTS migration + COALESCE backfill to avoid errors when legacy column is absent",
-    "mainCurrentlyUses": "success_rate_percent (unchanged from before this branch)",
+    "mainCurrentlyUses": "success_rate_percent in setup scripts (stale — live DB already has success_rate)",
+    "liveDBColumnName": "success_rate (confirmed: psql \\d model_performance shows 'success_rate | integer')",
     "relatedPRs": [
       { "number": 274, "title": "Dev (rescue): Genome fix: success_rate — model_performance", "branch": "dev/dc267ea9-dev-rescue-genome-fix-success-rate-model", "state": "CLOSED", "merged": false, "date": "2026-03-13" },
       { "number": 289, "title": "Genome fix: success_rate — model_performance", "branch": "dev/46e9d643-genome-fix-success-rate-model-performanc", "state": "CLOSED", "merged": false, "date": "2026-03-13" },
       { "number": 703, "title": "Genome fix: success_rate — model_performance", "branch": "dev/46e9d643-genome-fix-success-rate-model-performanc", "state": "CLOSED", "merged": false, "date": "2026-03-31" }
     ],
+    "originatingTask": {
+      "id": "7d2969fe-a8cd-4c15-b18f-275a205d0827",
+      "status": "done",
+      "prNumber": 240,
+      "prActualBranch": "dev/bde152bf-dev-integrate-claude-ai-sms-integrate-cl",
+      "prMerged": false,
+      "codeReviewStatus": "merged (INCORRECT — data integrity issue in orchestrator)"
+    },
     "remoteExists": true,
     "remoteSha": "1adfb79a29d49ab3ce648f8bcb6afc6895a50a49"
   },
 
   "risk": {
-    "level": "medium",
-    "reason": "Changes touch DB schema setup scripts. If the rename is still needed and was never applied, running setup scripts on a fresh DB could fail with column-mismatch errors. If the rename was intentionally abandoned (e.g. genome was updated to use success_rate_percent consistently), merging this would introduce a conflicting migration. Three prior PRs being closed without explanation is a yellow flag — could mean the underlying issue was resolved differently."
+    "level": "low",
+    "reason": "The rename this branch implements is already applied in the live database. The branch only touches offline DB setup/utility scripts, not runtime application code. Deleting has no production impact. The only residual concern is that main's setup scripts still say 'success_rate_percent' — a fresh-install divergence, but that is a separate issue from this branch."
   },
 
-  "recommendation": "Human review needed. Verify two things: (1) Does the live model_performance table have success_rate or success_rate_percent as the column name? (2) Does genome code (~/projects/genome/) reference success_rate or success_rate_percent when reading model performance? If genome references success_rate and the DB has success_rate_percent, this branch should be revived and merged. If they are already consistent, the branch is superseded and safe to delete.",
+  "recommendation": "safe-delete — The fix is already live in the DB. The branch adds no new value. All 3 PRs for this fix were closed without merging, and the live schema already has the 'success_rate' column the branch intended to create. Note for orchestrator health: task 7d2969fe has a bogus pr_number=240 (points to unrelated PR) and code_reviews.status='merged' is incorrect. These are data integrity issues worth fixing in the orchestrator to prevent future false-positive 'already done' signals.",
 
   "commandsRun": [
     "git log --oneline main..origin/dev/7d2969fe-genome-fix-success-rate-model-performanc",
     "git diff --stat main...origin/dev/7d2969fe-genome-fix-success-rate-model-performanc",
     "git ls-remote --heads origin dev/7d2969fe-genome-fix-success-rate-model-performanc",
-    "gh pr list --state all --search 'dev/7d2969fe'",
-    "gh pr list --state all --search 'success_rate model_performance'",
-    "gh pr view 703 --json state,mergedAt,mergeCommit,headRefName,title,body",
-    "gh pr view 289 --json state,mergedAt,mergeCommit,headRefName,title",
-    "gh pr view 274 --json state,mergedAt,mergeCommit,headRefName,title",
-    "git log --oneline --all -- scripts/db/add-dashboard-tables.sql",
-    "git show main:scripts/db/add-dashboard-tables.sql | grep -i 'success_rate|model_perf'",
-    "git show origin/dev/7d2969fe-...:scripts/db/add-dashboard-tables.sql | grep -i 'success_rate|model_perf'"
+    "gh pr list --state all --search 'model_performance'",
+    "gh pr view 703 --json number,title,state,mergedAt,headRefName,body",
+    "gh pr view 240 --json number,title,state,mergedAt,headRefName,mergeCommit",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name,pr_number FROM tasks WHERE branch_name LIKE '%7d2969fe%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,task_id,status FROM code_reviews WHERE task_id='7d2969fe-a8cd-4c15-b18f-275a205d0827'\"",
+    "psql $LOCAL_PG_URL -c \"\\d model_performance\" (live DB column check)",
+    "git show origin/dev/7d2969fe...:scripts/db/add-dashboard-tables.sql | grep success_rate",
+    "grep -rn success_rate /Users/clawdbot/projects/genome/core/ | grep model_performance"
   ]
 }
