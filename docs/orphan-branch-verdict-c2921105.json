@@ -1,0 +1,68 @@
+{
+  "investigationTaskId": "a51994c2-44d7-46dd-8b3d-a0ef11a3ffc1",
+  "orphanBranch": "dev/c2921105-dev-re-merge-fix-verify-stripe-webhook-s",
+  "associatedTaskId": "c2921105-16a3-4df4-a106-768671a0cccd",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch carries 1 real commit (763337f4) not in main: routes/billing.js is refactored to use stripeConfig.webhookSecret (config layer) instead of process.env.STRIPE_WEBHOOK_SECRET directly, and lib/config/index.js gets an improved startup error message pointing to Vercel Dashboard. Both changes are genuine improvements not yet merged. The originating task c2921105 failed before saving a branch_name or PR, leaving the branch as an orphan.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSha": "763337f4b9e23c85afa7ff9f7c40dfc23703d71f",
+    "commitDate": "2026-05-17",
+    "commitMessage": "fix: add startup validation for STRIPE_WEBHOOK_SECRET env var",
+    "filesChanged": [
+      { "file": "lib/config/index.js", "changes": "+9/-1", "nature": "Improved startup error message — adds Vercel Dashboard instructions for STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY" },
+      { "file": "routes/billing.js", "changes": "+5/-2", "nature": "Imports stripeConfig from lib/config; replaces direct process.env.STRIPE_WEBHOOK_SECRET read with stripeConfig.webhookSecret (config-layer alignment)" }
+    ],
+    "inMainAlready": false,
+    "verificationPoints": {
+      "lib/config/index.js_on_main": "Still has OLD error message (no Vercel instructions)",
+      "routes/billing.js_on_main_line34": "Still uses process.env.STRIPE_WEBHOOK_SECRET directly — orphan branch change NOT applied"
+    },
+    "taskDbRecord": {
+      "id": "c2921105-16a3-4df4-a106-768671a0cccd",
+      "title": "Dev (re-merge): fix-verify-stripe-webhook-secret-in-production",
+      "status": "failed",
+      "branch_name": null,
+      "pr_number": null,
+      "created_at": "2026-05-16",
+      "updated_at": "2026-05-18"
+    },
+    "relatedPRs": [
+      { "pr": 371, "status": "MERGED", "branch": "dev/8cbc844c-dev-fix-verify-stripe-webhook-secret-in-", "note": "Original UC implementation — merged Mar 2026. Does NOT include config-layer refactor of billing.js." },
+      { "pr": 1653, "status": "CLOSED", "branch": "dev/d7186414-dev-re-merge-fix-verify-stripe-webhook-s", "task": "d7186414 (cancelled)", "note": "Earlier re-merge attempt — closed, not merged" },
+      { "pr": 1696, "status": "CLOSED", "branch": "dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s", "task": "648ef165 (cancelled)", "note": "Second re-merge attempt — closed, not merged" },
+      { "pr": 1984, "status": "CLOSED", "branch": "dev/26ace52b-dev-re-merge-fix-verify-stripe-webhook-s", "task": "26ace52b (failed)", "note": "Third investigation — closed" },
+      { "pr": 2028, "status": "OPEN", "branch": "dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s", "note": "Investigation still open" },
+      { "pr": 2085, "status": "OPEN", "branch": "dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s", "note": "Sibling orphan investigation open — different commit (health-check approach, 3 files, 146 lines)" }
+    ],
+    "siblingOrphan_bc461c80": {
+      "branch": "dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s",
+      "commit": "75acdbf9",
+      "approach": "Adds STRIPE_WEBHOOK_SECRET/STRIPE_SECRET_KEY to SystemStatusService health check + dashboard health route + 137-line test file",
+      "verdict_note": "Different approach to same UC; neither is superseded by the other"
+    }
+  },
+  "risk": {
+    "level": "low",
+    "mergeConflictRisk": "low — only 2 small files changed; main has touched lib/config/index.js (PR #1916, removal of LOCAL_PG_URL) and routes/billing.js (PRs #1909, #1206) since May 2026, so a merge may require a trivial rebase",
+    "functionalRisk": "low — routes/billing.js change is a pure refactor (same behaviour, config layer as single source of truth); lib/config/index.js change is documentation text only",
+    "patternRisk": "none — aligns with ARCHITECTURE.md rule: no raw process.env reads in routes; use config layer"
+  },
+  "recommendation": "Create a new dev task to rebase and open a PR for this branch. The config-layer alignment in billing.js (stripeConfig.webhookSecret over process.env) is a genuine architectural improvement matching ARCHITECTURE.md standards and is not yet in main. Given the history of cancelled re-merge tasks, the new task should explicitly scope to just this 2-file commit and NOT try to re-implement the broader UC. Alternatively, if PR 2085 (bc461c80 sibling) is merged first, reassess whether the billing.js change is still needed. Do NOT auto-delete this branch.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/c2921105-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git fetch origin dev/c2921105-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git log --oneline main..origin/dev/c2921105-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git diff --stat main...origin/dev/c2921105-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git show --stat 763337f4",
+    "git diff 763337f4^..763337f4 -- lib/config/index.js routes/billing.js (partial, <80 lines)",
+    "git show main:lib/config/index.js (head 40 lines)",
+    "git show main:routes/billing.js | grep webhookSecret",
+    "gh pr list --search 'fix-verify-stripe-webhook' --state all",
+    "gh pr list --search 'c2921105' --state all",
+    "psql $LOCAL_PG_URL -c SELECT ... FROM tasks WHERE branch_name LIKE '%c2921105%' OR title ILIKE '%stripe-webhook-secret%'",
+    "git ls-remote --heads origin dev/bc461c80-... dev/648ef165-...",
+    "git fetch + diff --stat for sibling bc461c80 branch",
+    "git log --oneline main | grep -i 'stripe|webhook'"
+  ]
+}
