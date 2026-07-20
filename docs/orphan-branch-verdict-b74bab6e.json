@@ -1,0 +1,78 @@
+{
+  "branch": "dev/b74bab6e-dev-fix-email-delivery-completely-broken",
+  "taskId": "b74bab6e",
+  "investigationTaskId": "923a723e-293d-41e6-872f-aee2299b55fc",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch has 2 commits ahead of main. The email domain fix (resend.dev → leadflow.ai) is superseded by PR #1525 which shipped a better fix (→ landyourleads.com). The gtm-status stalled outreach logic is not yet in main but is being tracked separately in branch dev/7f073104 (investigation PR #2043 open). PR #1354 from this branch was closed without merging on 2026-05-02.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "0f4ccbca",
+        "subject": "fix: mark stalled pilot outreach as blocked in gtm status",
+        "date": "2026-04-25",
+        "verdict": "superseded — same logic exists on dev/7f073104 which is being separately investigated (PR #2043)"
+      },
+      {
+        "sha": "c4ca61e3",
+        "subject": "fix: replace onboarding@resend.dev with onboarding@leadflow.ai in all email services",
+        "date": "2026-04-25",
+        "verdict": "superseded — PR #1525 (merged 2026-05-09) shipped a better fix using onboarding@landyourleads.com"
+      }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/gtm-status-route.test.ts (+169 lines, new)",
+      "product/lead-response/dashboard/app/api/admin/gtm-status/route.ts (+41/-0)",
+      "product/lead-response/dashboard/lib/email-service.ts (email domain fix)",
+      "product/lead-response/dashboard/lib/nps-email-service.ts (email domain fix)",
+      "product/lead-response/dashboard/lib/trial-emails.ts (email domain fix)"
+    ],
+    "prHistory": {
+      "pr": 1354,
+      "title": "fix: replace onboarding@resend.dev with onboarding@leadflow.ai in all email services",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-02T17:52:53Z",
+      "conclusion": "closed without merge"
+    },
+    "supersedingPRs": [
+      {
+        "pr": 1525,
+        "title": "Dev: fix-email-delivery-resend-from-domain-not-verified — Fix Email Delivery",
+        "state": "MERGED",
+        "mergedAt": "2026-05-09T01:05:45Z",
+        "note": "Ships email fix with onboarding@landyourleads.com — supersedes the resend.dev → leadflow.ai fix on this branch"
+      }
+    ],
+    "mainStateVerification": {
+      "emailServiceFromEmail": "onboarding@landyourleads.com (FROM PR #1525 — not this branch)",
+      "gtmStatusOutreachBlocked": "NOT in main — still uses .eq('status','WAITING') and .limit(5)",
+      "resendDevPresent": false
+    },
+    "relatedOrphanInvestigation": {
+      "branch": "dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+      "investigationPR": 2043,
+      "note": "Contains identical gtm-status commit subject; being investigated separately as of 2026-07-20"
+    }
+  },
+  "risk": "low",
+  "riskRationale": "Email fix is fully superseded by a merged PR. GTM-status changes are being tracked on a separate branch (dev/7f073104) with its own open investigation. No unique value remains on this branch that isn't accounted for elsewhere.",
+  "recommendation": "safe-delete — both changes on this branch are accounted for: email fix was superseded by PR #1525, gtm-status fix is under separate investigation on dev/7f073104. Confirm dev/7f073104 investigation closes first before deleting, since they share the gtm-status logic.",
+  "commandsRun": [
+    "git fetch origin dev/b74bab6e-dev-fix-email-delivery-completely-broken",
+    "git log --oneline main..origin/dev/b74bab6e-dev-fix-email-delivery-completely-broken",
+    "git diff --stat main...origin/dev/b74bab6e-dev-fix-email-delivery-completely-broken",
+    "git ls-remote --heads origin dev/b74bab6e-dev-fix-email-delivery-completely-broken",
+    "gh pr list --repo LeonidaTheGreat/leadflow --search 'b74bab6e OR fix-email-delivery OR replace onboarding@resend.dev' --state all",
+    "gh pr view 1354 --repo LeonidaTheGreat/leadflow --json state,mergedAt,closedAt,mergeCommit,title,headRefName,body",
+    "gh pr view 1525 --repo LeonidaTheGreat/leadflow --json state,mergedAt,title,headRefName",
+    "git show origin/main:product/lead-response/dashboard/lib/email-service.ts | grep -E 'resend.dev|leadflow.ai|FROM_EMAIL|onboarding'",
+    "git show origin/main:product/lead-response/dashboard/app/api/admin/gtm-status/route.ts | grep -E 'outreachBlocked|isActionItemPending|WAITING|.limit'",
+    "git diff origin/main...origin/dev/b74bab6e-dev-fix-email-delivery-completely-broken -- product/lead-response/dashboard/app/api/admin/gtm-status/route.ts",
+    "git log --oneline --all | grep -i 'gtm'",
+    "git merge-base --is-ancestor c7d0c90c origin/main",
+    "git branch -r --contains c7d0c90c",
+    "gh pr list --repo LeonidaTheGreat/leadflow --search 'fix-pilot-outreach-has-not-happened' --state all"
+  ]
+}
