@@ -1,0 +1,77 @@
+{
+  "branch": "dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+  "investigatedAt": "2026-07-20",
+  "taskId": "b536e716-9f31-4b4e-be1d-c0a3bf606400",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "fecfaed1",
+        "message": "docs: PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001 — spec for admin auth unification"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 1,
+      "file": "docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md",
+      "insertions": 216,
+      "deletions": 0
+    },
+    "relatedPRs": [
+      {
+        "number": 1556,
+        "title": "Dev (rescue): uc-emergency-merge-email-fix-pr1343 - Emergency: Merge Email Fix PR #1343 — 344 Trial Users Receiving Zero Emails",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "closedAt": "2026-05-10T15:11:15Z",
+        "note": "PR from this orphan branch — closed without merge"
+      },
+      {
+        "number": 1475,
+        "title": "Dev: uc-emergency-merge-email-fix-pr1343 - Emergency: Merge Email Fix PR #1343 — 344 Trial Users Receiving Zero Emails",
+        "state": "MERGED",
+        "mergedAt": "2026-05-05T00:14:26Z",
+        "note": "Original UC resolved via this PR"
+      },
+      {
+        "number": 1497,
+        "title": "Dev: uc-emergency-merge-email-fix-pr1343 - Emergency: Merge Email Fix PR #1343 — 344 Trial Users Receiving Zero Emails",
+        "state": "MERGED",
+        "mergedAt": "2026-05-06T00:46:53Z",
+        "note": "Second merge of original UC"
+      },
+      {
+        "number": 1674,
+        "title": "Dev: uc-buyer-journey-admin-auth-standardization - Standardize admin auth — pick one pattern, migrate the other two",
+        "headRefName": "dev/699bbf24-dev-uc-buyer-journey-admin-auth-standard",
+        "state": "MERGED",
+        "mergedAt": "2026-05-22T03:49:41Z",
+        "note": "Superseding PR — merged a more complete version of the admin auth PRD (262 lines vs 216 lines in orphan branch)"
+      }
+    ],
+    "fileStatusOnMain": {
+      "path": "docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md",
+      "existsOnMain": true,
+      "mainLineCount": 262,
+      "orphanBranchLineCount": 216,
+      "conclusion": "Main has a more complete version (46 more lines); orphan branch is an earlier, smaller draft"
+    }
+  },
+  "risk": "low",
+  "riskRationale": "The only change on this orphan branch (the PRD doc) already exists on main in a MORE complete form (262 lines vs 216 lines). The underlying UC (emergency-merge-email-fix) was resolved via PRs #1475 and #1497. The admin auth PRD itself was superseded by PR #1674 from a different branch. PR #1556 from this branch was closed without merging.",
+  "recommendation": "safe-delete",
+  "recommendationDetail": "Branch can be safely deleted. All substantive content is already on main in a more complete form via PR #1674 (merged 2026-05-22). No code changes, only a docs-only early draft that was superseded.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git fetch origin dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git log --oneline main..origin/dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git diff --stat main...origin/dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "gh pr list --state all --search 'd78a3d63'",
+    "gh pr list --state all --search 'emergency-merge-email'",
+    "gh pr list --state all --search 'admin-auth-standardization'",
+    "gh pr view 1556 --json number,title,state,closedAt,body",
+    "git show main:docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md | wc -l",
+    "git show origin/dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix:docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md | wc -l",
+    "git log --oneline --all -- docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md"
+  ]
+}
