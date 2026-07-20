@@ -1,0 +1,72 @@
+{
+  "branch": "dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+  "investigatedAt": "2026-07-20",
+  "taskId": "cdd8842f-29b7-4254-8aef-e7f3e9eb6903",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch contains two meaningful commits that never landed on main: a GTM-status logic fix (broadens action-item detection beyond WAITING status, adds outreachBlocked flag) and a test-file relocation to the correct tests/ directory. No task row exists for UUID 7f073104, and the two PRs that targeted the same work area (PR #1322, PR #1355, from branch dev/305465ed-…) were both CLOSED without merging. The test file (tests/gtm-status-route.test.ts) does not exist on main in any form. Changes are additive and low-risk.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "c7d0c90c",
+        "subject": "fix: mark stalled pilot outreach as blocked in gtm status",
+        "date": "2026-04-25T16:07:51-04:00",
+        "author": "Stojan Madjunkov"
+      },
+      {
+        "sha": "b744168c",
+        "subject": "fix: move gtm-status test to tests/ directory",
+        "date": "2026-04-25T22:10:19-04:00",
+        "author": "Stojan Madjunkov"
+      }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/admin/gtm-status/route.ts (41 lines changed: removes .eq('status','WAITING') filter, adds isActionItemPending() helper, adds outreachBlocked detection)",
+      "product/lead-response/dashboard/tests/gtm-status-route.test.ts (new file, 169 lines — renamed from __tests__/)"
+    ],
+    "diffStat": "2 files changed, 206 insertions(+), 4 deletions(-)",
+    "remoteExists": true,
+    "remoteSha": "b744168c8df6ef0ec0bdde17a400f4dc1c41eb0f",
+    "taskRowExists": false,
+    "taskRowSearchResult": "id::text LIKE '7f073104%' OR branch_name='dev/7f073104-...' returned 0 rows",
+    "relatedPRs": [
+      {
+        "number": 1322,
+        "title": "Dev: fix-pilot-outreach — move gtm-status test to correct directory and merge",
+        "branch": "dev/305465ed-dev-fix-pilot-outreach-move-gtm-status-t",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "note": "Different branch, same objective — closed without merging"
+      },
+      {
+        "number": 1355,
+        "title": "Dev: fix-pilot-outreach — move gtm-status test to correct directory and merge",
+        "branch": "dev/305465ed-dev-fix-pilot-outreach-move-gtm-status-t",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "note": "Duplicate of 1322, also closed without merging"
+      }
+    ],
+    "contentOnMain": {
+      "gtmStatusRouteTs": "EXISTS on main (188 lines); branch version is 221 lines — adds 33 lines of logic",
+      "gtmStatusTestTs": "DOES NOT EXIST on main in tests/ or __tests__/"
+    }
+  },
+  "risk": "low",
+  "riskNotes": "Changes are additive and well-tested. The route fix removes an overly narrow .eq('status', 'WAITING') filter replacing it with isActionItemPending() helper covering resolved/closed/done statuses. Also adds outreachBlocked detection when targets exist but none contacted. No schema changes, no API contract changes. The test file is self-contained. Possible minor merge conflict on route.ts (33-line region) but main has not changed that function since April 25.",
+  "recommendation": "Create a new dev task targeting this branch or cherry-pick both commits onto a fresh branch, open a PR, and route through normal QC. The original task row (7f073104) is gone — a new task row is required before the orchestrator can manage the PR lifecycle. The GTM-status fix and test are genuine improvements that have never shipped.",
+  "commandsRun": [
+    "git fetch origin dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+    "git log --oneline main..origin/dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+    "git diff --stat main...origin/dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+    "git ls-remote --heads origin dev/7f073104-dev-fix-pilot-outreach-has-not-happened",
+    "git show --stat b744168c",
+    "git show --stat c7d0c90c",
+    "gh pr list --state all --search '7f073104'",
+    "gh pr list --state all --search 'pilot outreach'",
+    "gh pr view 1355 --json state,mergedAt,mergedBy,title,headRefName,body",
+    "psql $LOCAL_PG_URL -c SELECT id,title,status,branch_name FROM tasks WHERE id::text LIKE '7f073104%'",
+    "git show origin/main:product/.../tests/gtm-status-route.test.ts (fatal — not on main)",
+    "git diff origin/main...origin/dev/7f073104-... -- route.ts (first 80 lines reviewed)"
+  ]
+}
