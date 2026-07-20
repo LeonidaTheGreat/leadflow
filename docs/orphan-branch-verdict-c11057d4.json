@@ -1,0 +1,95 @@
+{
+  "verdict": "already-shipped-safe-delete",
+  "branch": "dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+  "taskId": "13f4eb81-dace-424d-9bf8-e66ef14b2fe6",
+  "investigatedAt": "2026-07-20",
+  "evidence": {
+    "taskSpec": {
+      "what": "Create docs/orphan-branch-verdict-c11057d4.json only; do not change product code, routes, services, tests, tasks, or branch state.",
+      "verify": "Run node -e \"JSON.parse(require('fs').readFileSync('docs/orphan-branch-verdict-c11057d4.json','utf8')); console.log('valid json')\"; run npm test; run npm run build.",
+      "boundaries": "Metadata-first triage only; no full file contents or diffs over 200 lines; do not delete the orphan branch; do not open or merge PRs; do not touch generated/protected project files."
+    },
+    "rootCauseAnalysis": {
+      "failurePoint": "Remote-tracking orphan branch origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call is one commit ahead of main with no matching task row available to this investigation.",
+      "why": "The branch is an April 2026 uc_no_tasks seed artifact that added a local task entry, task spec, and test for a conversion-call booking workflow, but the actual high-intent conversion call feature later shipped on main via PR #1550.",
+      "fix": "Record the metadata verdict and recommend branch cleanup through the normal orchestrator/operator process; no product code changes are needed."
+    },
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "c029b40f",
+        "fullSha": "c029b40f3c31f33d5c9c032d41ea105b407438fd",
+        "subject": "feat: seed conversion call booking workflow task",
+        "author": "Stojan Madjunkov",
+        "date": "2026-04-24"
+      }
+    ],
+    "filesChanged": [
+      ".local-tasks.json (+35)",
+      "docs/task-specs/feat-conversion-call-booking-workflow-task.md (+63)",
+      "tests/feat-conversion-call-booking-workflow-task.test.js (+89)"
+    ],
+    "diffStat": "3 files changed, 187 insertions(+)",
+    "remoteTrackingRef": "origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call -> c029b40f3c31f33d5c9c032d41ea105b407438fd",
+    "liveRemoteCheck": "git ls-remote failed because github.com DNS/network access is unavailable in this sandbox.",
+    "prSearch": "gh PR/issue searches for branch name, short SHA, and commit subject all failed due unavailable GitHub API connectivity.",
+    "taskSearch": "Local repository search found no matching branch/SHA/subject references; TaskStore lookup was blocked by EPERM connecting to local PostgreSQL. Assignment context states no matching task row.",
+    "supersededBy": {
+      "commit": "034e496b",
+      "pr": 1550,
+      "subject": "Dev (re-merge): fix-high-intent-conversion-call-feature-not-started-fe - High-intent conversion call feature not started (#1550)",
+      "date": "2026-05-16",
+      "evidence": "Main commit 034e496b touches product/lead-response/dashboard/app/pricing/page.tsx and product/lead-response/dashboard/__tests__/pricing-page.test.tsx; current main contains Demo Call CTA tests for feat-conversion-call-booking."
+    },
+    "productionCodeInOrphan": false
+  },
+  "risk": {
+    "level": "low",
+    "reasoning": "The orphan branch has no production code changes and only seeds local task/spec/test artifacts from April 2026. The underlying conversion-call user-facing work was shipped on main in May 2026 by PR #1550. Merging this stale branch now would reintroduce an obsolete .local-tasks.json task artifact and duplicate workflow-test scaffolding."
+  },
+  "recommendation": "Safe to delete after normal operator confirmation. Do not open a PR for this orphan branch; no unique unshipped product work remains. If task coverage for conversion-call booking is still desired, create a fresh task against current main rather than reviving this April seed branch.",
+  "commandsRun": [
+    "git checkout dev/13f4eb81-investigate-orphan-branch-dev-c11057d4-i",
+    "git branch --show-current",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "sed -n '1,240p' CLAUDE.md",
+    "sed -n '1,260p' ARCHITECTURE.md",
+    "node ~/projects/genome/scripts/where.js \"orphan branch investigation\"",
+    "node ~/projects/genome/scripts/graph-search.js \"orphan-investigation\"",
+    "git status --short",
+    "sed -n '1,220p' orphan-investigation-ac04a5a6.json",
+    "sed -n '1,220p' orphan-investigation-8cbe7d5f.json",
+    "rg -n \"dev/9e72a419|dev/a0f1df45|dev/ac04a5a6|orphan branch\" completion-reports docs . -g '*.json' -g '*.md'",
+    "git rev-parse --verify origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git log --oneline main..origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git diff --stat main...origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git ls-remote --heads origin dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git log -1 --format='%H%n%h%n%s%n%an%n%ad' --date=short origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git branch -r --contains c029b40f3c31f33d5c9c032d41ea105b407438fd",
+    "git branch -r --merged main | rg 'c11057d4|conversion-call|uc-no-tasks'",
+    "git log --oneline main --grep='conversion call' --grep='no tasks' --grep='uc-no-tasks' --all-match",
+    "rg -n \"dev/c11057d4-improve-uc-no-tasks-feat-conversion-call|c11057d4|c029b40f|seed conversion call booking workflow task|conversion call booking workflow\" . -g '*.json' -g '*.md' -g '*.js' -g '*.txt'",
+    "gh pr list --state all --search 'dev/c11057d4-improve-uc-no-tasks-feat-conversion-call' --json number,title,state,mergedAt,closedAt,headRefName",
+    "gh pr list --state all --search 'c029b40f' --json number,title,state,mergedAt,closedAt,headRefName",
+    "gh pr list --state all --search '\"seed conversion call booking workflow task\"' --json number,title,state,mergedAt,closedAt,headRefName",
+    "gh issue list --state all --search 'dev/c11057d4-improve-uc-no-tasks-feat-conversion-call OR c029b40f OR \"seed conversion call booking workflow task\"' --json number,title,state,closedAt",
+    "git log --oneline --all --grep='seed conversion call booking workflow task'",
+    "node TaskStore metadata search for branch/SHA/subject",
+    "git diff --name-status main...origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git diff --numstat main...origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call",
+    "git log --cherry-mark --oneline --left-right main...origin/dev/c11057d4-improve-uc-no-tasks-feat-conversion-call | sed -n '1,80p'",
+    "git show --name-only --format='%h %s' --no-renames c029b40f3c31f33d5c9c032d41ea105b407438fd",
+    "rg -n \"conversion call|booking workflow|feat-conversion-call|uc-no-tasks\" docs completion-reports tests scripts product routes lib .local-tasks.json 2>/dev/null",
+    "sed -n '1,140p' docs/orphan-investigations/dev-3507c881-improve-uc-no-tasks-fix-pilot-outreach-h.json",
+    "sed -n '1,120p' docs/ORPHAN-INVESTIGATION-3507c881.json",
+    "rg -n \"feat-conversion-call-booking|Demo Call CTA|conversion call\" product/lead-response/dashboard/__tests__/pricing-page.test.tsx docs/prd/PRD-MRR-GAP-ROOT-CAUSE-D73.md docs/prd/PRD-PILOT-CONVERSION-SPRINT-DIRECT-OUTREACH.md",
+    "git log --oneline main --grep='high-intent conversion call' --grep='conversion call feature' --grep='Demo Call CTA'",
+    "git show --stat --format='%H%n%h%n%s%n%ad' --date=short 034e496b",
+    "git show --name-only --format='%h %s' 034e496b",
+    "git merge-base --is-ancestor c029b40f3c31f33d5c9c032d41ea105b407438fd main; echo $?",
+    "git merge-base --is-ancestor 034e496b main; echo $?"
+  ]
+}
