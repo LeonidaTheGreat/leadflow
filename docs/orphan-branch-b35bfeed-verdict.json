@@ -1,0 +1,44 @@
+{
+  "taskId": "b6cde81e-2e29-4d82-bc12-9810bdd9c5ee",
+  "branch": "dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+  "investigatedAt": "2026-07-20",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch had PR #1555 merged on 2026-05-10T14:39:17Z, but commit 25a50ab1 was pushed to the branch 6 minutes later (14:45:24Z) after the PR was already merged. This post-merge commit contains substantive onboarding persistence code and a new 146-line unit test that were never included in the original PR and are not in main.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "orphanCommit": {
+      "sha": "25a50ab1c872aa738bc68068d2eb3daa4d48ce3f",
+      "message": "fix: persist onboarding wizard progress server-side to prevent drop-off",
+      "authorDate": "2026-05-10T10:45:24-04:00"
+    },
+    "relatedPR": {
+      "number": 1555,
+      "title": "Dev (rescue): fix-signup-to-activated-rate-1-6-target-60 - Signup to Activated Rate: 1.6% (target 60%)",
+      "state": "MERGED",
+      "mergedAt": "2026-05-10T14:39:17Z",
+      "mergeCommitSha": "34521c3aa8a717545eab9840c57599a9b83a06d1",
+      "mergeCommitMessage": "fix: enable trial email drip sequence (activation rate fix) (#1555)"
+    },
+    "timingAnalysis": "PR merged at 14:39:17Z; orphan commit authored at 14:45:24Z (+6 min after merge). The orphan commit's parent IS the merge commit, confirming it was pushed after the PR was already closed.",
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/onboarding/complete/route.ts (+1)",
+      "product/lead-response/dashboard/app/api/setup/progress/route.ts (±6)",
+      "product/lead-response/dashboard/app/dashboard/onboarding/page.tsx (+150/-43)",
+      "tests/unit/onboarding-step-persistence.test.js (+146, new file)"
+    ],
+    "prSearched": "gh pr list --head dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate --state all",
+    "mainContainsCommit": false
+  },
+  "risk": "MEDIUM — The commit addresses onboarding drop-off prevention by persisting wizard progress server-side. The changes include real product code (onboarding page.tsx refactored significantly +150/-43) and a new unit test. Dropping this commit would lose work that was clearly intended to ship alongside the activation-rate fix but missed the merge window by 6 minutes.",
+  "recommendation": "Create a new task and PR to ship commit 25a50ab1 to main. The changes should pass QC review since a unit test is included. Do NOT delete this branch until the new PR is merged. The commit is not a duplicate of PR #1555 content (that PR only touched send-trial-emails/route.ts and trial-emails.ts).",
+  "commandsRun": [
+    "git fetch origin dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git log --oneline main..origin/dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git diff --stat main...origin/dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git ls-remote --heads origin dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "gh pr list --head dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate --state all --json number,title,state,mergedAt,url",
+    "git log --format='%H %aI' origin/dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate -2",
+    "git show 34521c3aa8a717545eab9840c57599a9b83a06d1 --stat",
+    "git log --all --format='%H %ai %s' | grep 25a50ab1"
+  ]
+}
