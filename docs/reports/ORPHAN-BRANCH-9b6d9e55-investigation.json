@@ -1,0 +1,64 @@
+{
+  "taskId": "629a708f-d391-4acf-9390-862eae57bec6",
+  "investigatedBranch": "dev/9b6d9e55-dev-re-merge-fix-subscription-attempts-t",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch has 1 commit ahead of main fixing the admin funnel route (subscription_attempts → checkout_sessions). It is a spawn duplicate of dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t, which carries identical changes to the same 3 files and is already under active investigation (PR #1983, opened 2026-07-19). The underlying problem was first fixed by PR #329 (merged 2026-03-15). A broader re-fix was attempted in PR #1670 (closed May 2026 without merging). These re-merge branches appear to be repeated re-spawns of the same unresolved fix. Safe to delete — no unique work is lost.",
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "23551ce1",
+        "subject": "fix: redirect admin funnel route from subscription_attempts to checkout_sessions",
+        "inMain": false
+      }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/app/api/admin/funnel/checkout-attempts/route.ts (+/-12)",
+      "product/lead-response/dashboard/jest.config.ts (-1)",
+      "product/lead-response/dashboard/tests/subscription-funnel-tracking.test.ts (80 changes, net -9)"
+    ],
+    "taskRowExists": false,
+    "remoteExists": true,
+    "remoteSha": "23551ce1d7843b9ed06981b405d464f984156e5a",
+    "relatedPRs": [
+      {
+        "number": 329,
+        "title": "Dev: fix-subscription-attempts-table-does-not-exist-in-supa",
+        "state": "MERGED",
+        "mergedAt": "2026-03-15T12:55:01Z",
+        "note": "Original subscription_attempts fix — merged to main March 2026"
+      },
+      {
+        "number": 1670,
+        "title": "fix: checkout funnel uses checkout_sessions (subscription_attempts table doesn't exist)",
+        "state": "CLOSED",
+        "note": "Re-attempt covering same admin funnel route — closed without merging May 2026"
+      },
+      {
+        "number": 1983,
+        "title": "Investigate orphan branch: dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+        "state": "OPEN",
+        "note": "Near-identical sibling branch already under active investigation as of 2026-07-19"
+      }
+    ],
+    "duplicateBranch": {
+      "name": "dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+      "commit": "164dfcdb fix: replace subscription_attempts with checkout_sessions in admin funnel route",
+      "diffStat": "Same 3 files, identical change counts (42 insertions, 51 deletions)",
+      "activeInvestigation": "PR #1983"
+    }
+  },
+  "risk": "low",
+  "riskRationale": "Changes are a targeted route redirect (subscription_attempts → checkout_sessions). Exact same fix lives on sibling branch under active investigation. No unique logic in this branch.",
+  "recommendation": "safe-delete — Branch is a spawn duplicate of dev/242f6ee1 (PR #1983 active). Delete once PR #1983 investigation resolves. If admin funnel fix is still needed, merge from 242f6ee1 only.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/9b6d9e55-dev-re-merge-fix-subscription-attempts-t",
+    "git diff --stat main...origin/dev/9b6d9e55-dev-re-merge-fix-subscription-attempts-t",
+    "git ls-remote --heads origin dev/9b6d9e55-dev-re-merge-fix-subscription-attempts-t",
+    "gh pr list --state all --search 'subscription_attempts checkout_sessions'",
+    "gh pr view 1670 --json title,state,mergedAt,headRefName,body",
+    "gh pr view 329 --json title,state,mergedAt,headRefName",
+    "git log --oneline main..origin/dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t",
+    "git diff --stat main...origin/dev/242f6ee1-dev-re-merge-fix-subscription-attempts-t"
+  ]
+}
