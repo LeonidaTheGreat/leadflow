@@ -1,0 +1,87 @@
+{
+  "taskId": "309272a8-417f-4760-ab98-b93cff3f0ad2",
+  "investigatedBranch": "dev/ccc753d0-dev-fix-4-needs-merge-revenue-prs-blocke",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch has 1 unmerged commit seeding workflow scaffolding (task specs + test files) to re-implement 4 needs_merge revenue PRs. Both PRs created from this branch (1395, 1396) were CLOSED without merge on 2026-05-02. The original task row (ccc753d0-d32f-41ac-90bc-a13e0f9eb661) no longer exists in the DB. The underlying revenue unblocking was accomplished by subsequent merged PRs. Safe to delete.",
+  "evidence": {
+    "branchExists": true,
+    "branchTip": "07455365e76841b6b9a9a0e04fa2a73a94f7f93b",
+    "commitsAheadOfMain": 1,
+    "commitSubject": "feat: seed missing revenue UC workflow tasks for reimplementation",
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitDate": "2026-04-30T20:49:08-04:00",
+    "filesChanged": [
+      ".local-tasks.json (+48 lines)",
+      "docs/task-specs/fix-zero-real-pilots-recruited-workflow-task.md (+29 lines)",
+      "docs/task-specs/uc-marketing-campaign-launch-workflow-task.md (+48 lines)",
+      "tests/fix-zero-real-pilots-recruited-workflow-task.test.js (+73 lines)",
+      "tests/uc-marketing-campaign-launch-workflow-task.test.js (+73 lines)"
+    ],
+    "pullRequests": [
+      {
+        "number": 1395,
+        "title": "Dev: fix-4-needs-merge-revenue-prs-blocked - Re-implement 4 needs_merge revenue PRs",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "closedAt": "2026-05-02T16:31:34Z"
+      },
+      {
+        "number": 1396,
+        "title": "Dev: fix-4-needs-merge-revenue-prs-blocked - Re-implement 4 needs_merge revenue PRs",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "closedAt": "2026-05-02T16:56:23Z"
+      }
+    ],
+    "originalTaskInDB": false,
+    "originalTaskId": "ccc753d0-d32f-41ac-90bc-a13e0f9eb661",
+    "originalUCInDB": false,
+    "originalUCId": "fix-4-needs-merge-revenue-prs-blocked",
+    "targetUCsCurrentStatus": {
+      "fix-zero-real-pilots-recruited": "blocked_human",
+      "uc-marketing-campaign-launch": "complete"
+    },
+    "supersededBy": [
+      {
+        "pr": 1553,
+        "branch": "dev/819887e6-dev-re-merge-fix-unblock-needs-merge-rev",
+        "state": "MERGED",
+        "title": "Dev: fix-unblock-needs-merge-revenue-pipeline - Unblock Needs-Merge Revenue Pipeline",
+        "mergedAt": "2026-05-10T10:00:14Z"
+      },
+      {
+        "pr": 1675,
+        "branch": "dev/b28633c4-dev-fix-uc-revenue-aha-moment-stuck-at-n",
+        "state": "MERGED",
+        "title": "Dev: fix-uc-revenue-aha-moment-stuck-at-needs-merge-despite",
+        "mergedAt": "2026-05-19T00:52:15Z"
+      },
+      {
+        "pr": 1910,
+        "branch": "dev/0ba096f4-dev-re-merge-fix-two-critical-revenue-pr",
+        "state": "MERGED",
+        "title": "Dev: fix-two-critical-revenue-prs-stuck-in-needs-merge-awai",
+        "mergedAt": "2026-07-17T05:06:19Z"
+      }
+    ]
+  },
+  "risk": "LOW — branch contains only scaffolding/seed files (.local-tasks.json, task spec docs, test stubs). No feature code, no schema changes, no routes. Neither PR was merged. The revenue unblocking goal was achieved by 3 separate merged PRs after this branch was closed.",
+  "recommendation": "safe-delete — branch is fully superseded. PRs were closed without merge. Original task row deleted from DB. The revenue unblocking was accomplished via subsequent PRs 1553, 1675, and 1910. No content from this branch needs to land in main.",
+  "commandsRun": [
+    "git checkout dev/309272a8-investigate-orphan-branch-dev-ccc753d0-d",
+    "git ls-remote --heads origin dev/ccc753d0-dev-fix-4-needs-merge-revenue-prs-blocke",
+    "git fetch origin dev/ccc753d0-dev-fix-4-needs-merge-revenue-prs-blocke",
+    "git fetch origin main",
+    "git log --oneline remotes/origin/main..07455365e76841b6b9a9a0e04fa2a73a94f7f93b",
+    "git diff --stat remotes/origin/main...07455365e76841b6b9a9a0e04fa2a73a94f7f93b",
+    "git show 07455365e76841b6b9a9a0e04fa2a73a94f7f93b --stat",
+    "gh pr list --state all --search 'ccc753d0'",
+    "gh pr view 1395 --json title,state,closedAt,mergedAt,body",
+    "gh pr view 1396 --json title,state,closedAt,mergedAt,body",
+    "gh pr list --state all --search 'needs-merge revenue' --limit 10",
+    "psql: SELECT tasks WHERE id='ccc753d0-d32f-41ac-90bc-a13e0f9eb661'",
+    "psql: SELECT tasks WHERE branch_name LIKE '%ccc753d0%'",
+    "psql: SELECT use_cases WHERE id='fix-4-needs-merge-revenue-prs-blocked'",
+    "psql: SELECT use_cases WHERE id IN ('fix-zero-real-pilots-recruited','uc-marketing-campaign-launch')"
+  ]
+}
