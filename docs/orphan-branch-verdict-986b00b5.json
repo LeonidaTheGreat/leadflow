@@ -1,0 +1,50 @@
+{
+  "branch": "dev/986b00b5-fix-quality-gate-completion-reports-fail",
+  "taskId": "55af7491-e1f9-40e3-8e22-7d40f5f4180c",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch was a May 2026 fix for quality gate overflow that was never merged. The same underlying problem has since been addressed by multiple merged PRs and an open PR. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 3,
+    "commitSubjects": [
+      "fix: lower completion-reports-gate limits to prevent recurrent quality gate failure",
+      "fix: create branch-unique commit for completion_reports verification",
+      "fix: add branch commit for completion_reports gate verification"
+    ],
+    "oldestCommitDate": "2026-05-09",
+    "filesChanged": ["scripts/diagnostics/completion-reports-gate.js"],
+    "changeDescription": "Lowered MAX_COUNT 500→400 and TARGET_COUNT 450→380 in completion-reports-gate.js to give more headroom before gate failures",
+    "noOpenPR": true,
+    "supersededBy": [
+      {
+        "pr": 1887,
+        "title": "Fix: Quality gate 'completion_reports' failing in leadflow",
+        "branch": "dev/b586e5cb-fix-quality-gate-completion-reports-fail",
+        "state": "MERGED",
+        "mergedAt": "2026-07-17T00:07:28Z",
+        "note": "Added a cleanup script to prevent overflow — addresses same root cause more robustly"
+      },
+      {
+        "pr": 1912,
+        "title": "fix: lower completion-reports retention to 50 + untrack leaked git files",
+        "branch": "dev/d168cdf1-fix-quality-gate-completion-reports-fail",
+        "state": "OPEN",
+        "note": "Currently open PR reduces retention limit to 50 (more aggressive than this branch's 400) AND untracks leaked git files"
+      }
+    ],
+    "branchExistsOnRemote": true,
+    "branchSHA": "e7f9592f4fdda3a34e27e76a6219e79e6de235c4"
+  },
+  "risk": "low",
+  "riskJustification": "Only one file changed (diagnostic script only), no tests added, no new services or dependencies. The branch's gate threshold approach is now superseded by open PR #1912 which takes a fundamentally different (and better) strategy.",
+  "recommendation": "safe-delete — the problem was addressed by PR #1887 (merged 2026-07-17) and further improved by PR #1912 (open). No unique work on this branch.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/986b00b5-fix-quality-gate-completion-reports-fail",
+    "git diff --stat main...origin/dev/986b00b5-fix-quality-gate-completion-reports-fail",
+    "git ls-remote --heads origin dev/986b00b5-fix-quality-gate-completion-reports-fail",
+    "gh pr list --state all --search '986b00b5'",
+    "gh pr list --state all --search 'completion-reports-gate'",
+    "git diff main...origin/dev/986b00b5-fix-quality-gate-completion-reports-fail -- scripts/diagnostics/completion-reports-gate.js",
+    "gh pr view 1912 --json number,title,state,headRefName,body"
+  ]
+}
