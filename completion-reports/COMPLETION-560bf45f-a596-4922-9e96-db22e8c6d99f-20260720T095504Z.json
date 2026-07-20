@@ -1,0 +1,90 @@
+{
+  "taskId": "560bf45f-a596-4922-9e96-db22e8c6d99f",
+  "status": "completed",
+  "taskSpec": {
+    "what": "Create one metadata-only investigation report at completion-reports/COMPLETION-560bf45f-a596-4922-9e96-db22e8c6d99f-20260720T095504Z.json. Do not modify product source, tests, PRDs, routes, services, or generated dashboard files.",
+    "verify": "Run git log --oneline main..origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded, git diff --stat main...origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded, git ls-remote --heads origin dev/eb5ef675-update-prd-spec-to-match-implemented-ded, local rg/gh searches for branch/SHA/subject, git cherry main origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded, npm test, npm run build, and npm run lint. Expected: metadata is sufficient for a verdict; npm test passes 9/9; npm run build exits 0; npm run lint exits 0.",
+    "boundaries": "No branch deletion, no PR creation, no merge, no full diffs, no full file reads of the target branch, no dependency manifest changes, no node_modules changes outside the assigned task worktree, no edits to protected generated files."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Orphan branch detection flagged origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded because the branch still exists as a remote-tracking ref and is one commit ahead of main by commit identity.",
+    "why": "The branch commit c317afb4 has the same patch as a different commit already on main, b6282957, whose subject is 'docs: align distribution loop PRD dedup and cooldown windows (#1506)'. This indicates the work was merged or replayed through PR #1506, leaving the original branch orphaned by metadata rather than containing unique unshipped work.",
+    "fix": "No code fix required. Recommend safe branch deletion after human or automation confirms current remote state, because git cherry reports the orphan patch as already present on main."
+  },
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "targetBranch": "dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "localRemoteTrackingRef": "origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "branchCommit": "c317afb4 docs: align distribution loop PRD dedup and cooldown windows",
+    "diffStat": "docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md | 41 +++++++++++++++++++++++++----------; 1 file changed, 30 insertions(+), 11 deletions(-)",
+    "remoteLookup": "git ls-remote --heads origin dev/eb5ef675-update-prd-spec-to-match-implemented-ded failed: DNS/network error resolving github.com in this sandbox.",
+    "localSearch": "rg found only docs/prd/PRD-FIX-DISTRIBUTION-LOOP.md:3 containing TASK SPEC (eb5ef675-2276-4dbd-a86b-a68822452c02); no local PR/task/report references found for branch name, c317afb4, or subject.",
+    "prIssueSearch": "gh pr list and gh issue list failed because api.github.com was unreachable from this sandbox.",
+    "sameSubjectOnMain": "b6282957 docs: align distribution loop PRD dedup and cooldown windows (#1506)",
+    "mainContainment": "git merge-base --is-ancestor b6282957 main exited 0.",
+    "patchEquivalence": "git cherry main origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded returned '- c317afb4ad6961b2f19d63a8be22c1fefd467d54', meaning the patch is already represented upstream."
+  },
+  "risk": {
+    "level": "low",
+    "notes": "The orphan branch is docs-only by stat and patch-equivalent to main. Risk is limited to stale remote metadata. Live remote/PR/issue state could not be refreshed due network restrictions, so deletion should be performed only by an actor with network access confirming the branch still exists."
+  },
+  "recommendation": "Delete the orphan branch after a network-capable check confirms the remote branch still exists. Do not create a task or PR for this branch; the patch is already shipped via PR #1506 metadata.",
+  "testResults": {
+    "passed": 9,
+    "total": 9,
+    "passRate": 1.0,
+    "commands": {
+      "npm test": "passed: 9 passed, 0 failed",
+      "npm run build": "passed after installing task-worktree dependencies and clearing stale local .next/lock via existing cleanup script",
+      "npm run lint": "passed"
+    }
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-560bf45f-a596-4922-9e96-db22e8c6d99f-20260720T095504Z.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-560bf45f-a596-4922-9e96-db22e8c6d99f-20260720T095504Z.json",
+  "commandsRun": [
+    "git checkout dev/560bf45f-investigate-orphan-branch-dev-eb5ef675-u",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "sed -n '1,220p' CLAUDE.md",
+    "sed -n '1,220p' ARCHITECTURE.md",
+    "node ~/projects/genome/scripts/graph-search.js \"completion-reports\"",
+    "node ~/projects/genome/scripts/where.js \"dev/eb5ef675-update-prd-spec-to-match-implemented-ded\"",
+    "git log --oneline main..dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git diff --stat main...dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git ls-remote --heads origin dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git branch -a --list '*eb5ef675*'",
+    "git log --oneline main..origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git diff --stat main...origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git rev-parse --short origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git log -1 --pretty=%s origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "rg -n --hidden --glob '!node_modules/**' --glob '!.git/**' \"dev/eb5ef675-update-prd-spec-to-match-implemented-ded|eb5ef675|c317afb4|align distribution loop PRD dedup and cooldown windows|PRD dedup and cooldown\" .",
+    "gh pr list --state all --search \"dev/eb5ef675-update-prd-spec-to-match-implemented-ded OR c317afb4 OR \\\"align distribution loop PRD dedup and cooldown windows\\\"\" --json number,title,state,headRefName,baseRefName,url --limit 20",
+    "gh issue list --state all --search \"dev/eb5ef675-update-prd-spec-to-match-implemented-ded OR c317afb4 OR \\\"align distribution loop PRD dedup and cooldown windows\\\"\" --json number,title,state,url --limit 20",
+    "git branch -a --contains c317afb4",
+    "git log --all --oneline --decorate --grep='align distribution loop PRD dedup and cooldown windows' --max-count=20",
+    "git branch -a --contains b6282957",
+    "git merge-base --is-ancestor b6282957 main; printf '%s\\n' $?",
+    "git cherry main origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "git diff --name-status main...origin/dev/eb5ef675-update-prd-spec-to-match-implemented-ded",
+    "npm test",
+    "npm run build",
+    "npm run lint",
+    "npm install",
+    "cd product/lead-response/dashboard && npm install",
+    "npm --prefix product/lead-response/dashboard exec -- next --version",
+    "cd product/lead-response/dashboard && node scripts/cleanup-next-build-lock.js",
+    "npm run build"
+  ],
+  "workflowBlockers": [
+    "Initial required checkout to dev/560bf45f-investigate-orphan-branch-dev-eb5ef675-u failed because Git could not create the shared worktree index.lock under /Users/clawdbot/projects/leadflow/.git/worktrees; current branch is dev/560bf45f-investigate-orphan-branch-dev-eb5ef675-u-retry-1.",
+    "git ls-remote and gh PR/issue searches could not reach GitHub due network/DNS restrictions.",
+    "git fetch origin main failed because Git could not write FETCH_HEAD under the shared worktree metadata directory; current HEAD is verified as containing local origin/main."
+  ]
+}
