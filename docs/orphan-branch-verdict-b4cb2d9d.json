@@ -1,0 +1,74 @@
+{
+  "taskId": "db384169-26c1-40db-b4a1-e7817bca293d",
+  "branch": "dev/b4cb2d9d-auto-activation-email-tests",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Orphan test branch for a use case that shipped via a different path. The feature (auto-activation email on verification) merged via PR #1526 with its own test file. This branch's companion PR #1412 was closed without merge.",
+
+  "evidence": {
+    "commits": [
+      {
+        "sha": "b95c8dd25f5189d4c1076303d2ccd73168ac2977",
+        "subject": "test: add verify-email auto-activation unit tests",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-03"
+      }
+    ],
+    "filesChanged": [
+      {
+        "path": "tests/unit/verify-email-auto-activation.test.js",
+        "additions": 233,
+        "deletions": 0,
+        "existsOnMain": false
+      }
+    ],
+    "relatedPRs": [
+      {
+        "number": 1412,
+        "title": "Dev: feat-auto-activation-email-on-verification - Auto-Send Activation Email Within 1 Hour of Email Verification",
+        "headRefName": "dev/b4cb2d9d-dev-feat-auto-activation-email-on-verifi",
+        "state": "CLOSED",
+        "mergedAt": null,
+        "closedAt": "2026-05-04T21:06:08Z",
+        "note": "Same b4cb2d9d task ID — companion feature branch, closed without merge"
+      },
+      {
+        "number": 1526,
+        "title": "Dev: feat-auto-activation-email-on-verification - Auto-Send Activation Email Within 1 Hour of Email Verification",
+        "headRefName": "dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+        "state": "MERGED",
+        "mergedAt": "2026-05-09T01:20:44Z",
+        "filesChanged": [
+          "integrations/test-e2e-flow.js",
+          "tests/unit/auto-activation-email-on-verification.test.js"
+        ],
+        "note": "Successor branch that shipped the feature with its own test file (186 lines)"
+      }
+    ],
+    "mainCoverage": {
+      "featureShipped": true,
+      "existingTestFile": "tests/unit/auto-activation-email-on-verification.test.js",
+      "existingTestFileMergedViaPR": 1526
+    }
+  },
+
+  "risk": "low",
+  "riskRationale": "The use case is fully shipped and tested on main via PR #1526. The orphan branch adds a test file (verify-email-auto-activation.test.js) that is a different name from the shipped tests (auto-activation-email-on-verification.test.js), so no direct collision, but the content is likely redundant or based on the superseded implementation from PR #1412.",
+
+  "recommendation": "safe-delete",
+  "recommendationRationale": "The feature shipped on 2026-05-09 via PR #1526 with its own tests. The orphan branch was a companion to PR #1412 (closed 2026-05-04), which was the first failed implementation attempt. Since the feature and tests are already on main, this branch serves no purpose. Verify tests/unit/auto-activation-email-on-verification.test.js on main passes before deleting.",
+
+  "commandsRun": [
+    "git fetch origin dev/b4cb2d9d-auto-activation-email-tests",
+    "git log --oneline main..origin/dev/b4cb2d9d-auto-activation-email-tests",
+    "git diff --stat main...origin/dev/b4cb2d9d-auto-activation-email-tests",
+    "git ls-remote --heads origin dev/b4cb2d9d-auto-activation-email-tests",
+    "git log --format='%H %s %an %ad' --date=short origin/dev/b4cb2d9d-auto-activation-email-tests ^main",
+    "git show main:tests/unit/verify-email-auto-activation.test.js",
+    "gh pr list --state all --search 'b4cb2d9d'",
+    "gh pr list --state all --search 'auto-activation-email-tests'",
+    "gh pr list --state all --search 'verify-email auto-activation'",
+    "gh pr view 1412 --json state,mergedAt,closedAt,title,body,headRefName",
+    "gh pr view 1526 --json state,mergedAt,title,headRefName,additions,deletions,changedFiles,files"
+  ]
+}
