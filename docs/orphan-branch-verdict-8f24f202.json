@@ -1,0 +1,45 @@
+{
+  "investigationDate": "2026-07-20",
+  "taskId": "11d2e0c1-e466-4f8c-b765-6eda3475ab7c",
+  "orphanBranch": "dev/8f24f202-dev-feat-lapsed-trial-reactivation-lapse",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "edca29d0d36beb872033cb029395f0f19e91072f",
+    "commitSubject": "feat: add lapsed trial reactivation admin campaign endpoint",
+    "commitAuthor": "Stojan Madjunkov",
+    "commitDate": "2026-04-29T22:10:48-04:00",
+    "prNumber": 1384,
+    "prTitle": "Dev: feat-lapsed-trial-reactivation — Lapsed Trial Reactivation — Win Back Cold Signups",
+    "prState": "MERGED",
+    "prMergedAt": "2026-04-30T02:25:12Z",
+    "mergeCommitSHA": "63f54d4c56590202e7e5bbe614d4edb23ba17bf1",
+    "mergeCommitOnMain": true,
+    "mergeStrategy": "squash",
+    "filesChanged": [
+      "lib/services/EmailService.js (+66 lines)",
+      "lib/services/LapsedTrialReactivationService.js (+95 lines, new file)",
+      "routes/admin/reactivation-campaign.js (+93 lines, new file)",
+      "server.js (+4 lines)",
+      "tests/unit/lapsed-trial-reactivation-service.test.js (+103 lines, new file)"
+    ],
+    "totalLinesAdded": 361,
+    "relatedPRs": [
+      {"pr": 1384, "state": "MERGED", "branch": "dev/8f24f202-dev-feat-lapsed-trial-reactivation-lapse"},
+      {"pr": 1594, "state": "CLOSED", "branch": "dev/74cd888f-dev-feat-lapsed-trial-reactivation-lapse", "note": "follow-up attempt, closed"},
+      {"pr": 1743, "state": "CLOSED", "branch": "dev/lapsed-trial-stats-2026-05-30", "note": "stats endpoint follow-up"}
+    ]
+  },
+  "risk": "none",
+  "riskRationale": "PR #1384 was squash-merged into main on 2026-04-30 as commit 63f54d4c. The feature (lapsed trial reactivation campaign admin endpoint) is fully shipped. The original branch commit (edca29d0) appears non-ancestor only because GitHub squash-merged it — the code is present on main via the merge commit.",
+  "recommendation": "Safe to delete remote branch dev/8f24f202-dev-feat-lapsed-trial-reactivation-lapse. The feature is shipped via PR #1384. No code is at risk.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/8f24f202-dev-feat-lapsed-trial-reactivation-lapse",
+    "git diff --stat main...origin/dev/8f24f202-dev-feat-lapsed-trial-reactivation-lapse",
+    "git ls-remote --heads origin dev/8f24f202-dev-feat-lapsed-trial-reactivation-lapse",
+    "gh pr list --search 'lapsed trial reactivation' --state all --limit 10",
+    "gh pr view 1384 --json state,mergedAt,mergeCommit,headRefName",
+    "git log --oneline main | grep '63f54d4c'",
+    "git merge-base --is-ancestor edca29d0 main"
+  ]
+}
