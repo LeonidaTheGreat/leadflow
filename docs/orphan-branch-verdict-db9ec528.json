@@ -1,0 +1,93 @@
+{
+  "investigationTaskId": "edbc0675-20f6-4477-81ac-7e8f3de9a220",
+  "branch": "dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+  "remoteTrackingRef": "origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+  "verdict": "already-shipped-safe-delete",
+  "confidence": "high",
+  "investigatedAt": "2026-07-20",
+  "taskSpec": {
+    "what": [
+      "Create tests/uc-leadflow-maintenance-orphan-db9ec528.test.js to verify the metadata-only verdict.",
+      "Create docs/orphan-branch-verdict-db9ec528.json to record the one-page orphan-branch investigation result.",
+      "Change no application functions."
+    ],
+    "verify": [
+      "node tests/uc-leadflow-maintenance-orphan-db9ec528.test.js exits 0 and prints 6/6 passed.",
+      "npm test exits 0.",
+      "npm run build exits 0.",
+      "npm run lint exits 0."
+    ],
+    "boundaries": [
+      "Do not inspect full file contents from the orphan branch or full diffs over 200 lines.",
+      "Do not modify product code, generated protected docs, task rows, PRs, or branch state.",
+      "Do not delete the orphan branch or create a PR."
+    ]
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote branch origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt exists with one commit ahead of main and no matching task row available in local metadata search.",
+    "why": "The lone commit 7ca36fbb is an empty verification commit: git diff --stat main...origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt produced no output, git diff --name-status produced no paths, and the commit tree c995848d28b894b4a783c74a3607be8257dccb38 exactly matches its parent tree.",
+    "fix": "Record a safe-delete metadata verdict instead of opening a PR. There is no code, test, or documentation payload to merge from this orphan branch."
+  },
+  "evidence": {
+    "uniqueCommitsAheadOfMain": 1,
+    "commit": {
+      "sha": "7ca36fbba057fb13538c358490eb74e0450367bf",
+      "shortSha": "7ca36fbb",
+      "subject": "fix: add branch commit for db9ec528 verification",
+      "authorDate": "2026-05-07 07:58:06 -0400",
+      "author": "Stojan Madjunkov <madzunkov@hotmail.com>",
+      "parent": "b62829570e642361a4f48cc4170522957d7b9556",
+      "tree": "c995848d28b894b4a783c74a3607be8257dccb38",
+      "parentTree": "c995848d28b894b4a783c74a3607be8257dccb38"
+    },
+    "diffStat": "empty",
+    "changedPaths": [],
+    "remotePresence": {
+      "localRemoteTrackingRef": "7ca36fbba057fb13538c358490eb74e0450367bf refs/remotes/origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+      "gitLsRemote": "failed: ssh could not resolve github.com in this sandbox"
+    },
+    "metadataSearch": {
+      "localRepoSearch": "no matches for branch name, db9ec528, 7ca36fbb, or commit subject outside this investigation",
+      "githubPrSearch": "attempted with gh pr list for branch name, db9ec528, and 7ca36fbb; failed because api.github.com is unreachable in this sandbox",
+      "githubIssueSearch": "attempted with gh issue list for db9ec528; failed because api.github.com is unreachable in this sandbox",
+      "taskDbSearch": "attempted psql task lookup for branch name, db9ec528, broken import comment filt, and commit subject; failed because localhost PostgreSQL connections are blocked in this sandbox"
+    }
+  },
+  "risk": {
+    "level": "low",
+    "reason": "The branch has no file changes relative to main and the only unique commit has the same tree as its parent. Deleting it after normal human approval would not remove any source, test, or documentation content."
+  },
+  "recommendation": "Do not auto-delete. Recommended action is safe-delete after normal human approval because the orphan branch contains only an empty verification commit and has no mergeable payload. Do not create a task or PR for this branch.",
+  "commandsRun": [
+    "git checkout dev/edbc0675-investigate-orphan-branch-dev-db9ec528-d",
+    "git branch --show-current",
+    "sed -n '1,220p' CLAUDE.md",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "node ~/projects/genome/scripts/where.js \"dev/db9ec528-dev-uc-genome-broken-import-comment-filt\"",
+    "node ~/projects/genome/scripts/graph-search.js \"orphan branch\"",
+    "git show-ref | rg \"dev/db9ec528-dev-uc-genome-broken-import-comment-filt|refs/heads/main|refs/remotes/origin/main\"",
+    "git ls-remote --heads origin dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git log --oneline main..origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git log --oneline origin/main..origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git diff --stat main...origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git diff --stat origin/main...origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git log -1 --format='%h%n%H%n%s%n%ci%n%an <%ae>' origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git branch --contains 7ca36fbba057fb13538c358490eb74e0450367bf --all",
+    "rg -n \"dev/db9ec528-dev-uc-genome-broken-import-comment-filt|db9ec528|7ca36fbb|fix: add branch commit for db9ec528 verification|add branch commit for db9ec528 verification\" . --glob '!node_modules/**' --glob '!package-lock.json' --glob '!*.log'",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search \"dev/db9ec528-dev-uc-genome-broken-import-comment-filt\" --json number,state,title,headRefName,baseRefName,mergedAt,closedAt,url",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search \"db9ec528\" --json number,state,title,headRefName,baseRefName,mergedAt,closedAt,url",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search \"7ca36fbb\" --json number,state,title,headRefName,baseRefName,mergedAt,closedAt,url",
+    "gh issue list --repo LeonidaTheGreat/leadflow --state all --search \"db9ec528\" --json number,state,title,closedAt,url",
+    "git log --all --oneline --grep=\"add branch commit for db9ec528 verification\"",
+    "psql \"$LOCAL_PG_URL\" -P pager=off -c \"SELECT id, title, status, branch_name FROM tasks WHERE branch_name ILIKE '%db9ec528%' OR title ILIKE '%db9ec528%' OR title ILIKE '%broken import comment filt%' OR title ILIKE '%add branch commit for db9ec528 verification%' ORDER BY created_at DESC LIMIT 20;\"",
+    "git show --stat --oneline --summary --no-renames 7ca36fbba057fb13538c358490eb74e0450367bf",
+    "git rev-list --count main..origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "git show -s --format='commit=%H%nparent=%P%ntree=%T%nsubject=%s' 7ca36fbba057fb13538c358490eb74e0450367bf",
+    "git show -s --format='commit=%H%ntree=%T%nsubject=%s' 7ca36fbba057fb13538c358490eb74e0450367bf^",
+    "git diff --name-status main...origin/dev/db9ec528-dev-uc-genome-broken-import-comment-filt",
+    "rg -n \"db9ec528|7ca36fbb|broken-import-comment-filt|broken import comment filt\" docs completion-reports tests .github 2>/dev/null"
+  ]
+}
