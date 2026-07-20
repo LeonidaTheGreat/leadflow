@@ -1,0 +1,65 @@
+{
+  "investigationTaskId": "cdf86ae4-9d75-4cc0-a977-6c78131c71d1",
+  "orphanBranch": "dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "The orphan branch's core fix (expand NPS survey eligibility to trial/pilot agents) was already shipped via merged PR #1392 on 2026-05-02. PR #1393 (this branch) was closed the same day without merging. The two PRs took different implementation approaches to the same problem; #1392 was deliberately chosen and merged first.",
+  "evidence": {
+    "commits": [
+      {
+        "sha": "b77a3f56",
+        "subject": "fix: expand NPS survey eligibility to include trial and pilot agents",
+        "date": "2026-04-30"
+      },
+      {
+        "sha": "cd590b83",
+        "subject": "docs: Day 80 root cause analysis — 0 paying customers gap",
+        "date": "2026-04-30"
+      }
+    ],
+    "filesChanged": [
+      "PMF.md (84 changed lines — Day 80 docs)",
+      "product/lead-response/dashboard/__tests__/nps-survey-eligibility.test.ts (104 lines added)",
+      "product/lead-response/dashboard/lib/nps-service.ts (1 line changed)",
+      "scripts/db/nps-orphan-schedule-cleanup.js (57 lines added)"
+    ],
+    "relatedPRs": [
+      {
+        "number": 1393,
+        "title": "Dev: fix-nps-survey-eligibility-status-filter - Fix NPS survey eligibility to include trial and pilot agents",
+        "state": "CLOSED",
+        "closedAt": "2026-05-02T16:31:23Z",
+        "headRefName": "dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi",
+        "note": "This orphan branch's PR — closed without merging"
+      },
+      {
+        "number": 1392,
+        "title": "Dev: feat-nps-survey-trial-agents - Expand NPS Survey to Trial/Onboarding Agents",
+        "state": "MERGED",
+        "mergedAt": "2026-05-02T09:59:53Z",
+        "headRefName": "dev/c2c0922a-dev-feat-nps-survey-trial-agents-expand",
+        "note": "Superseding PR — merged 6.5 hours BEFORE #1393 was closed"
+      }
+    ]
+  },
+  "implementationDifference": {
+    "orphanBranchApproach": "Added .in('real_estate_agents.status', ['trial', 'pilot', 'active']) filter — keeps a status filter but expands it to include trial and pilot alongside active",
+    "mergedPR1392Approach": "Removed .eq('real_estate_agents.status', 'active') entirely — no status filter, all agents are eligible",
+    "mainCurrentState": "No status filter on getAgentsDueForSurvey() — PR #1392's approach is what shipped",
+    "unitTestConfirmation": "PR #1392 added test named 'getAgentsDueForSurvey does not filter by agent status' explicitly asserting no status filter — confirms the intentional design choice"
+  },
+  "risk": "LOW — the feature intent is fully shipped via PR #1392. The orphan branch approach (keep status filter, expand it) differs from what was merged (remove filter entirely). Neither the orphan branch code nor the cleanup script is needed on main. The PMF.md docs change is 2+ months stale.",
+  "recommendation": "safe-delete — branch can be deleted. PR #1393 is already closed. The NPS eligibility expansion is live on main via merged PR #1392. No unique code needs salvaging.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi",
+    "git diff --stat main...origin/dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi",
+    "git ls-remote --heads origin dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi",
+    "git log --format='%H %s %ad' --date=short main..origin/dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi",
+    "gh pr list --state all --search 'nps-survey-eligibility OR ab640b54 OR NPS survey eligibility'",
+    "gh pr view 1393 --json number,title,state,closedAt,headRefName,body",
+    "gh pr view 1392 --json number,title,state,mergedAt,headRefName",
+    "git show main:product/lead-response/dashboard/lib/nps-service.ts (lines 160-185)",
+    "git show origin/dev/ab640b54-dev-fix-nps-survey-eligibility-status-fi:product/lead-response/dashboard/lib/nps-service.ts (lines 160-195)",
+    "gh pr diff 1392 (partial, nps-service.ts and test sections)"
+  ]
+}
