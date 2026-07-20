@@ -1,0 +1,71 @@
+{
+  "investigationTaskId": "c5934adb-d133-4732-8394-7e693e2b54e2",
+  "branch": "dev/8f569cae-fix-quality-gate-lint-failing-in-genome",
+  "shortSha": "8f569cae",
+  "investigatedAt": "2026-07-20",
+
+  "verdict": "duplicate/superseded",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "158c1201e5f87c6f26dec1b239b3e42eb7d37072",
+        "subject": "fix: make lint quality gate resilient in clean worktrees",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-03T23:25:33-0400"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 2,
+      "insertions": 64,
+      "deletions": 1,
+      "files": [
+        "package.json (+1/-1): lint script changed from 'eslint .' to 'node scripts/run-eslint.js'",
+        "scripts/run-eslint.js (+63/-0): new wrapper that prefers local node_modules/.bin/eslint, falls back to npx"
+      ]
+    },
+    "remoteExists": true,
+    "remoteRef": "refs/heads/dev/8f569cae-fix-quality-gate-lint-failing-in-genome",
+    "prSearch": {
+      "byBranchSha": "no PR found for 8f569cae",
+      "byCommitSubject": "no PR found for 'lint quality gate resilient'"
+    },
+    "supersededBy": {
+      "branch": "dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+      "sha": "aa544cbd",
+      "subject": "fix: make lint runner resilient when devDependencies are omitted",
+      "investigationPR": 1977,
+      "investigationPRState": "MERGED",
+      "investigationMergedAt": "2026-07-19T20:26:30Z",
+      "advantage": "dev/07c8ed0e adds scripts/run-lint.js WITH unit tests (tests/unit/scripts/run-lint.test.js, 56 lines), while 8f569cae adds scripts/run-eslint.js WITHOUT tests"
+    },
+    "mainStatus": {
+      "runEslintJsInMain": false,
+      "runLintJsInMain": false,
+      "currentLintScript": "eslint .",
+      "note": "Neither fix branch has been merged to main yet — both are still ahead of main"
+    }
+  },
+
+  "risk": "low — no tests, no routes, no DB schema changes; only adds a new script wrapper and updates one package.json line. However, shipping this would introduce a duplicate approach alongside dev/07c8ed0e which has test coverage.",
+
+  "recommendation": "Safe to delete this branch. The same problem (lint quality gate failing in clean worktrees) is addressed more completely by dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome, which includes unit tests. That branch was already investigated (PR #1977, merged 2026-07-19) and should be shipped instead. Deleting 8f569cae avoids confusion from two competing lint wrappers (run-eslint.js vs run-lint.js) entering the codebase.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/8f569cae-fix-quality-gate-lint-failing-in-genome",
+    "git diff --stat main...origin/dev/8f569cae-fix-quality-gate-lint-failing-in-genome",
+    "git ls-remote --heads origin dev/8f569cae-fix-quality-gate-lint-failing-in-genome",
+    "gh pr list --state all --search '8f569cae'",
+    "gh pr list --state all --search 'lint quality gate resilient'",
+    "gh pr list --state all --search 'fix-quality-gate-lint'",
+    "gh pr view 1977 --json title,state,body,mergedAt",
+    "git diff --stat main...origin/dev/07c8ed0e-fix-quality-gate-lint-failing-in-genome",
+    "git show main:scripts/run-eslint.js",
+    "git show main:scripts/run-lint.js",
+    "git show origin/dev/8f569cae:package.json | grep lint",
+    "git show origin/dev/07c8ed0e:package.json | grep lint",
+    "git show main:package.json | grep lint",
+    "git log --oneline --all -- scripts/run-eslint.js scripts/run-lint.js"
+  ]
+}
