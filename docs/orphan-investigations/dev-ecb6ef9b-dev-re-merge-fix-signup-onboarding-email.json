@@ -1,0 +1,70 @@
+{
+  "branch": "dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+  "investigatedAt": "2026-07-20",
+  "taskId": "0631db23-189d-4619-852d-08165f897a59",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch adds one regression-guard test (tests/unit/check-email-table-fix.test.js, 54 lines) that does not exist on main. The underlying bug fix (check-email routes querying wrong 'agents' table) was already shipped via PR #171 (2026-03-11). This branch is the designated 'lead branch' from previous sibling investigations — dev/581c75ac and dev/694e69a0 were both marked duplicate/superseded with explicit instruction to resolve ecb6ef9b first. The test file cleanly adds value with no merge conflicts expected.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "24d7e38d97b55c63da9a52cc0844e91611a599b0",
+    "commitSubject": "test: regression guard — check-email routes must query real_estate_agents",
+    "commitDate": "2026-05-16",
+    "commitAuthor": "Stojan Madjunkov",
+    "filesChanged": [
+      {
+        "path": "tests/unit/check-email-table-fix.test.js",
+        "additions": 54,
+        "deletions": 0,
+        "existsOnMain": false
+      }
+    ],
+    "commitMessage": "Routes were querying .from('agents') (orchestration table, no email field), causing duplicate email checks to always return available. Fix was applied in daea6410; this adds a Jest regression guard to tests/unit/ to prevent reversion.",
+    "underlyingFixOnMain": {
+      "pr": 171,
+      "branch": "dev/daea6410-dev-fix-signup-onboarding-email-check-qu",
+      "mergedAt": "2026-03-11T00:51:25Z",
+      "title": "Dev: fix-signup-onboarding-email-check-queries-wrong-table-"
+    },
+    "siblingBranches": [
+      {
+        "branch": "dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+        "investigationPR": 2024,
+        "investigationMerged": "2026-07-20T05:02:49Z",
+        "verdict": "duplicate/superseded",
+        "note": "Sibling with 129-line test in tests/routes/; investigation said to resolve ecb6ef9b first"
+      },
+      {
+        "branch": "dev/694e69a0-dev-re-merge-fix-signup-onboarding-email",
+        "investigationPR": 2042,
+        "investigationStatus": "OPEN",
+        "verdict": "duplicate/superseded",
+        "note": "Sibling with 129-line test in tests/routes/; also said ecb6ef9b is strict superset"
+      }
+    ],
+    "closedReMergePRs": [
+      {"pr": 1648, "branch": "dev/0cef347b-dev-re-merge-fix-signup-onboarding-email", "state": "CLOSED"},
+      {"pr": 1695, "branch": "dev/85db1478-dev-re-merge-fix-signup-onboarding-email", "state": "CLOSED"}
+    ]
+  },
+  "risk": {
+    "level": "low",
+    "details": "Branch adds only a test file (no production code changes). The test is a regression guard — it prevents the 'agents' table bug from reverting. No merge conflict risk since main has no file at this path. Risk of NOT merging: the bug could silently recur without the regression guard."
+  },
+  "recommendation": "Create a task to merge this branch's test file onto main. The test (tests/unit/check-email-table-fix.test.js) provides genuine value as a regression guard for the real_estate_agents table fix. Once merged, all three sibling branches (ecb6ef9b, 581c75ac, 694e69a0) can be deleted. Close open investigation PR #2042 (dev/694e69a0) as superseded by this merge.",
+  "commandsRun": [
+    "git fetch origin dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+    "git ls-remote --heads origin dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+    "git log --oneline main..origin/dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+    "git diff --stat main...origin/dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+    "git show --stat 24d7e38d",
+    "gh pr list --state all --head dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+    "gh pr list --state all --search 'fix-signup-onboarding-email'",
+    "gh pr view 277 --json number,title,state,mergedAt,headRefName,url",
+    "git log --oneline main | grep -i 'check-email\\|real_estate_agents\\|signup.onboarding'",
+    "git show c73cf76a --stat",
+    "ls tests/unit/check-email-table-fix.test.js",
+    "gh pr view 2024 --json files",
+    "git show 6ab20445 --stat",
+    "git show e0f6f5a5 --stat"
+  ]
+}
