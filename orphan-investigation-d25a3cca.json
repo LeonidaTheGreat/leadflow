@@ -1,0 +1,45 @@
+{
+  "taskId": "d25a3cca-b4fd-47d9-aaad-f23c71293f1b",
+  "branch": "dev/c8eab95b-fix-codebase-broken-imports",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitAheadOfMain": {
+      "sha": "70766558",
+      "subject": "feat: add StripeService with createPromoCode for upgrade offer tool",
+      "date": "2026-04-21",
+      "filesChanged": ["lib/services/StripeService.js"],
+      "stat": "1 file changed, 49 insertions(+)"
+    },
+    "alreadyInMain": {
+      "sha": "4a803486",
+      "subject": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "note": "Identical change (lib/services/StripeService.js, 49 insertions) already merged to main on 2026-04-21 via a different branch"
+    },
+    "relatedMergedPR": {
+      "number": 1264,
+      "title": "Dev: feat-personal-upgrade-offer-tool - Personal Upgrade Offer Tool — Admin Sends Promo Code to Specific Trial Agents",
+      "state": "MERGED",
+      "url": "https://github.com/LeonidaTheGreat/leadflow/pull/1264"
+    },
+    "existsOnRemote": true,
+    "prForThisBranch": null,
+    "owningTaskStatus": "cancelled",
+    "owningTaskRetries": "0/3",
+    "owningTaskError": "Parent task failed"
+  },
+  "risk": "low",
+  "riskDetail": "The sole file changed (lib/services/StripeService.js) is already present on main with identical content merged via commit 4a803486. Deleting this branch carries zero risk of losing work.",
+  "recommendation": "safe-delete — the only commit on this branch (70766558) introduces lib/services/StripeService.js with createPromoCode, which was already merged to main via commit 4a803486 (PR #1264). The owning task was cancelled with 0 retries. No PR exists for this branch. Branch can be deleted without any data loss.",
+  "commandsRun": [
+    "git fetch origin dev/c8eab95b-fix-codebase-broken-imports",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git ls-remote --heads origin dev/c8eab95b-fix-codebase-broken-imports",
+    "git log --format='%H %s %ad' --date=short FETCH_HEAD -1",
+    "gh pr list --search 'head:dev/c8eab95b-fix-codebase-broken-imports' --state all",
+    "gh pr list --search '70766558 OR fix-codebase-broken-imports OR StripeService createPromoCode' --state all",
+    "git log --oneline main | grep -i 'createPromoCode|StripeService|upgrade.*offer|promo'",
+    "git show --stat 4a803486",
+    "git show main:lib/services/StripeService.js"
+  ]
+}
