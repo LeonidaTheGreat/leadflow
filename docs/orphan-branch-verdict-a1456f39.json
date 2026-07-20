@@ -1,0 +1,79 @@
+{
+  "taskId": "89142081-7f15-422b-ad5d-757eed6d1ceb",
+  "investigatedBranch": "dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch was rejected by QC (PR #1387, closed 2026-04-30) due to merge conflict with main and duplicate implementation. The underlying problem was already fixed on main via three commits before this PR was opened. Safe to delete.",
+  "commits": [
+    {
+      "sha": "b6f7d833",
+      "message": "docs: PM analysis — Signup to Activated Rate metric gap root cause",
+      "note": "Out-of-scope for the task; PRD-SIGNUP-ACTIVATION-RATE-GAP.md was flagged as OOB by QC. File not present on main."
+    },
+    {
+      "sha": "4f2c8753",
+      "message": "fix: harden dashboard build gate in clean worktrees",
+      "note": "Adds scripts/build-dashboard.js (85 lines, lock-retry wrapper). QC rejected as duplicate of cleanup-next-build-lock.js already on main. Conflicts with main package.json."
+    },
+    {
+      "sha": "d3e6f546",
+      "message": "test: E2E tests for build-dashboard.js functions (task e428b523)",
+      "note": "E2E tests for the rejected build-dashboard.js script. No value without the script."
+    }
+  ],
+  "filesChanged": {
+    "docs/prd/PRD-SIGNUP-ACTIVATION-RATE-GAP.md": "125 insertions — PM analysis doc, out-of-scope, not present on main",
+    "package.json": "2 char change — build command replaced, CONFLICTS with main",
+    "scripts/build-dashboard.js": "85 insertions — new lock-retry wrapper script, NOT present on main",
+    "tests/e2e/e428b523-fix-quality-gate-build-dashboard.test.js": "86 insertions — E2E tests for rejected script"
+  },
+  "prHistory": {
+    "prNumber": 1387,
+    "title": "Fix: Quality gate \"build\" failing in leadflow",
+    "state": "CLOSED",
+    "mergedAt": null,
+    "closedAt": "2026-04-30T02:41:04Z",
+    "closureReason": "Auto-closed: merge conflicts with main. Task will be retried on a fresh branch.",
+    "qcVerdicts": [
+      {
+        "score": "11/25",
+        "verdict": "REJECT",
+        "reason": "Problem already solved on main (commits 846f334b, b74cf5fa, eca62d1c). Duplicate of cleanup-next-build-lock.js. Merge conflict on package.json. npm ci on every build adds unnecessary overhead."
+      },
+      {
+        "score": "14/25",
+        "verdict": "REJECT",
+        "reason": "Same issues: merge conflict, parallel lock-clearing implementation, npm ci overhead, build-health.js in genome not updated."
+      }
+    ]
+  },
+  "mainAlreadyFixed": {
+    "commits": [
+      "846f334b — fix: clear stale next build lock before dashboard build",
+      "b74cf5fa — test: E2E tests for build gate lock-cleanup fix",
+      "eca62d1c — fix: add process guard to lock cleanup script and QC E2E test"
+    ],
+    "mechanism": "cleanup-next-build-lock.js wired into dashboard prebuild hook (pgrep-guarded, safer than this PR's approach)"
+  },
+  "risk": "LOW — branch contains no unique fixes. All code was rejected by QC for good reasons (duplicate, conflicting, out-of-scope). The PRD doc (PRD-SIGNUP-ACTIVATION-RATE-GAP.md) is the only potentially valuable artifact but was flagged OOB and has not been shipped.",
+  "recommendation": "Safe to delete. The build-gate problem is solved on main. If the PRD-SIGNUP-ACTIVATION-RATE-GAP.md doc has value, it should be cherry-picked into a separate docs PR — it was not part of the approved task scope.",
+  "evidence": {
+    "remoteExists": true,
+    "remoteSha": "d3e6f546a9ca10ef150e3a4a1b003e90967a7239",
+    "prClosed": true,
+    "mergeConflict": true,
+    "buildDashboardOnMain": false,
+    "prdOnMain": false
+  },
+  "commandsRun": [
+    "git log --oneline main..origin/dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat main...origin/dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+    "git ls-remote --heads origin dev/a1456f39-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --search 'head:dev/a1456f39-fix-quality-gate-build-failing-in-leadfl' --state all --json number,title,state,mergedAt",
+    "gh pr view 1387 --json number,title,state,mergedAt,closedAt,body,headRefName,baseRefName",
+    "gh pr view 1387 --json comments",
+    "git log --oneline main -- docs/prd/PRD-SIGNUP-ACTIVATION-RATE-GAP.md",
+    "git log --oneline main -- scripts/build-dashboard.js",
+    "ls scripts/build-dashboard.js"
+  ]
+}
