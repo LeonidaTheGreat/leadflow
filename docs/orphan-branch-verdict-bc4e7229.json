@@ -1,0 +1,51 @@
+{
+  "branch": "dev/bc4e7229-fix-codebase-broken-imports",
+  "investigationTaskId": "ffd6eca4-3611-4250-b729-3b38a16750a8",
+  "owningTaskId": "4b6587c6-34df-4514-8ead-1dea797f7119",
+  "owningTaskStatus": "cancelled",
+  "owningTaskError": "Parent task failed",
+  "investigatedAt": "2026-07-20",
+
+  "verdict": "duplicate/superseded",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "f15ee1fc4525b2a520b2dfc3ec380d6ffbc8d595",
+    "commitSubject": "fix: add StripeService with createPromoCode for upgrade offer tool",
+    "filesChanged": ["lib/services/StripeService.js"],
+    "linesAdded": 47,
+    "existsOnRemote": true,
+    "existingPRs": "none — no PR was ever opened for this branch",
+    "supersededBy": {
+      "commitOnMain": "4a803486f07b2d82e62ece89dafbfdab95d7a736",
+      "commitSubject": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "filesChanged": ["lib/services/StripeService.js"],
+      "linesAdded": 49,
+      "mergedVia": "direct commit to main (2026-04-21)"
+    },
+    "similarBranchesAlreadyInvestigated": [
+      "dev/bc387eac-fix-codebase-broken-imports (PR #2084 open)",
+      "dev/bc26753b-fix-codebase-broken-imports (PR #2083 open)",
+      "dev/b9af3cda-fix-codebase-broken-imports (PR #2081 open)",
+      "dev/8dcc06a2-fix-codebase-broken-imports (PR #2054 open)",
+      "dev/94ef4e75-fix-codebase-broken-imports (PR #2057 open)",
+      "dev/4c2f6afe-fix-codebase-broken-imports (PR #2016 merged)"
+    ]
+  },
+
+  "risk": "low — the sole change (StripeService.js, 47 lines) was independently shipped to main via commit 4a803486 on 2026-04-21 with 49 lines (functionally equivalent). No unique content remains on this branch. Deleting it carries no risk of lost work.",
+
+  "recommendation": "safe-delete — the branch change is already on main. Delete remote branch dev/bc4e7229-fix-codebase-broken-imports. No task or PR needs to be created.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/bc4e7229-fix-codebase-broken-imports",
+    "git fetch origin dev/bc4e7229-fix-codebase-broken-imports",
+    "git log --oneline main..origin/dev/bc4e7229-fix-codebase-broken-imports",
+    "git diff --stat main...origin/dev/bc4e7229-fix-codebase-broken-imports",
+    "gh pr list --state all --search 'bc4e7229'",
+    "gh pr list --state all --search 'fix-codebase-broken-imports'",
+    "gh pr list --state all --head 'dev/bc4e7229-fix-codebase-broken-imports'",
+    "git log --oneline --grep='StripeService' main",
+    "git show 4a803486 --stat"
+  ]
+}
