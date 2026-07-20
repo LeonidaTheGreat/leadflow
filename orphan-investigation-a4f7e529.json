@@ -1,0 +1,94 @@
+{
+  "taskId": "443dc124-4e29-4a14-bcfa-31c0318cf364",
+  "branch": "dev/a4f7e529-fix-ci-broken-on-main",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      "66db58c8 fix: sync 5 dashboard tests with current implementation"
+    ],
+    "commitDate": "2026-05-08T21:42:21-04:00",
+    "ageAtInvestigationDays": 72,
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/email-domain-configuration.test.ts (+/- 33 lines)",
+      "product/lead-response/dashboard/__tests__/landing-page-cta-analytics.test.tsx (+3 lines)",
+      "product/lead-response/dashboard/__tests__/wizard-auto-trigger.test.ts (+/- 2 lines)",
+      "product/lead-response/dashboard/app/dashboard/dashboard-nav.test.tsx (+/- 9 lines)",
+      "product/lead-response/dashboard/lib/email-service.ts (+/- 2 lines)",
+      "tests/unit/cleanup-next-build-lock.test.ts (+/- 4 lines)"
+    ],
+    "associatedPR": null,
+    "branchExistsOnRemote": true,
+    "relatedCompletedTasksInDB": [
+      {
+        "id": "331add79-dfbd-49ce-8c1e-348996d69e5c",
+        "title": "Fix: CI broken on main",
+        "status": "done",
+        "branch": "dev/331add79-fix-ci-broken-on-main",
+        "createdAt": "2026-07-15"
+      },
+      {
+        "id": "50f95b4e-ce08-4f58-8f0d-62fa55316776",
+        "title": "Fix: CI broken on main",
+        "status": "done",
+        "branch": "dev/50f95b4e-fix-ci-broken-on-main",
+        "createdAt": "2026-07-17"
+      },
+      {
+        "id": "78f49345-ca49-439e-ac34-d5e2648412af",
+        "title": "Fix: CI broken on main",
+        "status": "done",
+        "branch": "dev/78f49345-fix-ci-broken-on-main",
+        "createdAt": "2026-07-18"
+      }
+    ],
+    "supersedingCommitsOnMain": [
+      {
+        "sha": "1fa7e06e",
+        "subject": "fix: resolve 55 CI test failures across 16 test suites",
+        "date": "2026-05-04",
+        "note": "Touches landing-page-cta-analytics.test.tsx and wizard-auto-trigger.test.ts — same files; predates orphan branch by 4 days"
+      },
+      {
+        "sha": "edf0c4b9",
+        "subject": "fix: update email domain from leadflow.ai to landyourleads.com (#1397)",
+        "note": "Updated email-domain-configuration.test.ts — same file as orphan"
+      },
+      {
+        "sha": "0bb02205",
+        "subject": "Dev: uc-emergency-merge-email-fix-pr1343 (#1475)",
+        "note": "Updated email-service.ts — same file as orphan"
+      },
+      {
+        "sha": "4f5fa44c",
+        "subject": "fix: use verified landyourleads sender fallback for resend emails (#1573)",
+        "note": "Updated email-service.ts again — same file as orphan"
+      }
+    ]
+  },
+  "risk": "low",
+  "riskReason": "All 6 files changed on the orphan branch have been substantially updated on main in the 72 days since the branch was cut. The branch had no PR. Three newer 'Fix: CI broken on main' tasks (created Jul 2026, status done) represent the successful resolution of the same problem through separate branches. The orphan's changes are entirely superseded and cannot merge cleanly.",
+  "recommendation": "safe-delete — branch is 72 days stale, no PR was ever created, all 6 affected files have since been updated on main through multiple merged commits, and three newer completed tasks addressed the same CI fix successfully. Safe to run: git push origin --delete dev/a4f7e529-fix-ci-broken-on-main",
+  "commandsRun": [
+    "git log --oneline main..dev/a4f7e529-fix-ci-broken-on-main",
+    "git diff --stat main...dev/a4f7e529-fix-ci-broken-on-main",
+    "git ls-remote --heads origin dev/a4f7e529-fix-ci-broken-on-main",
+    "git log --format='%H %ae %ai %s' origin/dev/a4f7e529-fix-ci-broken-on-main -3",
+    "gh pr list --state all --head dev/a4f7e529-fix-ci-broken-on-main",
+    "gh pr list --state all --search 'fix-ci-broken-on-main'",
+    "gh pr list --state all --search 'sync 5 dashboard tests'",
+    "gh pr list --state all --search '66db58c'",
+    "git log --oneline --all | grep -i 'ci-broken|dashboard test|sync.*test'",
+    "git branch -a --contains 66db58c8",
+    "git log --oneline main | grep -E 'sync.*test|dashboard test|ci.broken'",
+    "git show 4243b060 --stat",
+    "git log --oneline main -- [6 affected test files]",
+    "psql $LOCAL_PG_URL -c SELECT tasks WHERE branch_name LIKE '%fix-ci-broken%'",
+    "gh pr view 402,511,556",
+    "gh pr list --state all --head dev/331add79|50f95b4e|78f49345-fix-ci-broken-on-main",
+    "git log --oneline main | grep -i 'ci|test.*fix'",
+    "git log --oneline --after=2026-05-08 --before=2026-05-12 main",
+    "git show 1fa7e06e --stat"
+  ]
+}
