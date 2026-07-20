@@ -1,0 +1,65 @@
+{
+  "taskId": "ba33a76e-313f-4abc-adc2-b2d5455b08ee",
+  "branch": "dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "3adaf335d8e6de968224b291e9fbe33d6affec08",
+    "commitDate": "2026-05-17T20:55:39-04:00",
+    "commitSubject": "test: add re-submit reset coverage for duplicate-email error in TrialSignupForm",
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx"
+    ],
+    "linesChanged": "+45 insertions",
+    "existsOnRemote": true,
+    "prHistory": {
+      "noPRForThisBranch": true,
+      "relatedClosedPRs": [
+        {
+          "number": 1693,
+          "branch": "dev/95bdda35-dev-re-merge-fix-duplicate-email-error-s",
+          "state": "CLOSED",
+          "mergedAt": null,
+          "date": "2026-05-21"
+        },
+        {
+          "number": 1635,
+          "branch": "dev/baac6654-dev-re-merge-fix-duplicate-email-error-s",
+          "state": "CLOSED",
+          "mergedAt": null,
+          "date": "2026-05-15"
+        }
+      ],
+      "originalFixPR": {
+        "number": 195,
+        "branch": "dev/87e220db-dev-fix-duplicate-email-error-shows-plai",
+        "state": "MERGED",
+        "date": "2026-03-11"
+      }
+    },
+    "supersededBy": {
+      "commitSHA": "88f0b9af0a36d8f7cec9b4f1bbab589a47afe061",
+      "commitDate": "2026-05-16T20:47:26-04:00",
+      "commitSubject": "test: strengthen duplicate-email sign-in link tests for TrialSignupForm",
+      "note": "This commit touched the SAME file one day BEFORE the orphan branch commit, with a more comprehensive rewrite (+117 lines to the same file, plus 4 other files). The orphan branch's additional +45 lines for re-submit reset coverage were likely superseded by this comprehensive strengthening."
+    }
+  },
+  "risk": "low",
+  "riskRationale": "The orphan branch only adds test-only code (+45 lines, no production changes). The same test file was already comprehensively rewritten in main (commit 88f0b9af, 2026-05-16) with +117 lines covering sign-in link logic and isDuplicateEmailError detection. Two prior re-merge PRs for this fix were already closed without merging. No task row or PR exists for this branch. The original fix (PR #195) is fully merged.",
+  "recommendation": "safe-delete — The original production fix is in main (PR #195, MERGED). The test file was already strengthened in main (88f0b9af) more comprehensively than this branch's +45 lines. Two prior re-merge attempts for this same feature were already closed. No new production risk from deletion.",
+  "commandsRun": [
+    "git fetch origin dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+    "git log --oneline origin/main..origin/dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+    "git diff --stat origin/main...origin/dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+    "git diff --name-only origin/main...origin/dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+    "git ls-remote --heads origin dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+    "gh pr list --state all --head dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+    "gh pr list --state all --search 'duplicate email error'",
+    "git log --format='%H %s' origin/main | grep 'duplicate.email'",
+    "git log --format='%H %aI %s' origin/main -- product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx",
+    "git log --format='%aI %s' origin/dev/83239a56-dev-re-merge-fix-duplicate-email-error-s --not origin/main",
+    "git show 88f0b9af --stat",
+    "gh pr view 1693 --json state,mergedAt,mergeCommit,headRefName",
+    "gh pr view 1635 --json state,mergedAt,mergeCommit,headRefName"
+  ]
+}
