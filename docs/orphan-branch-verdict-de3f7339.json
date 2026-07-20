@@ -1,0 +1,64 @@
+{
+  "branch": "dev/de3f7339-dev-fix-nps-cron-pipeline-broken-cron-se",
+  "investigationTaskId": "ad86d5c3-4269-45a7-b75b-4007b8411e64",
+  "investigatedAt": "2026-07-20",
+  "verdict": "shippable-needs-task-pr",
+  "commitCount": 1,
+  "commits": [
+    {
+      "sha": "ed02718b",
+      "subject": "fix: NPS cron pipeline — read CRON_SECRET per-request and add status filter"
+    }
+  ],
+  "filesChanged": [
+    "product/lead-response/dashboard/app/api/cron/nps-surveys/route.ts  (+/- 10 lines)",
+    "product/lead-response/dashboard/lib/nps-service.ts  (+/- 3 lines)",
+    "tests/unit/nps-cron-pipeline.test.js  (+114 lines, new file)"
+  ],
+  "evidence": {
+    "remoteExists": true,
+    "remoteSHA": "ed02718b0d070acb79c7ba589a7ed85685130927",
+    "prFound": false,
+    "matchingTaskInDB": false,
+    "dbSearchNote": "No task row with id prefix 'de3f7339' found in tasks table",
+    "mainContainsEquivalentFix": false,
+    "mainSearchNote": "Checked git log for 'nps cron', 'CRON_SECRET', 'per-request', 'status filter' — no equivalent fix found on main. Closest main entries are chore/#1401 and #1402 which fixed whitespace in CRON_SECRET env var, not the per-request read pattern.",
+    "siblingBranch": {
+      "name": "dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+      "investigationTask": "dec4ee35 (status: cancelled)",
+      "commitsAheadOfMain": 4,
+      "relatedCommit": "d3c3c34d fix: NPS cron pipeline — widen status filter and read CRON_SECRET at call time",
+      "prHistory": "PR #1394 (closed 2026-04-30, was a verification-error fix task, not a merge PR)",
+      "mergedToMain": false,
+      "scopeDifference": "2aee86f1 also includes PMF.md changes, nps-schedule-cleanup-backfill.js script, E2E tests, and NPS eligibility expansion — broader scope"
+    }
+  },
+  "risk": {
+    "level": "low",
+    "notes": [
+      "Focused 1-commit fix with 114 lines of new unit tests — clean scope",
+      "Does not touch auth, billing, or external API integrations",
+      "The fix (per-request CRON_SECRET read + status filter) is a correctness improvement, not a breaking change",
+      "Sibling branch 2aee86f1 has overlapping changes to the same 2 source files — must confirm no conflict before merging",
+      "Neither this branch nor sibling has been merged; the underlying NPS cron pipeline bug remains unresolved on main"
+    ]
+  },
+  "recommendation": "Create a task and PR to merge this branch. The fix is valid and unmerged. The branch is clean (1 commit, focused scope, proper unit tests). Before merging, diff against sibling branch 2aee86f1 to confirm they are compatible — de3f7339 appears to be a cleaner re-attempt of the same fix that was left orphaned when 2aee86f1's investigation was cancelled. If 2aee86f1 is to be abandoned (investigation was cancelled), this branch should be shipped instead. Do NOT merge both — they touch the same source files.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/de3f7339-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git fetch origin dev/de3f7339-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git log --oneline main..origin/dev/de3f7339-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git diff --stat main...origin/dev/de3f7339-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "gh pr list --state all --head dev/de3f7339-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "gh pr list --state all --search 'nps cron pipeline'",
+    "gh pr list --state all --search 'de3f7339'",
+    "gh pr list --state all --search 'NPS cron CRON_SECRET'",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE id::text LIKE 'de3f7339%' OR branch_name LIKE '%de3f7339%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE title ILIKE '%nps%cron%'\"",
+    "git log --oneline origin/main | grep -i 'nps\\|cron'",
+    "git ls-remote --heads origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git fetch origin dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git log --oneline main..origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se",
+    "git diff --stat main...origin/dev/2aee86f1-dev-fix-nps-cron-pipeline-broken-cron-se"
+  ]
+}
