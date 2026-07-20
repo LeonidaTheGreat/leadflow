@@ -1,0 +1,29 @@
+{
+  "taskId": "2fbc6b49-85e3-458d-834a-8d5dfcadfdee",
+  "branch": "dev/94ae0f36-fix-genome-step-health-critical-steps-no",
+  "investigatedAt": "2026-07-20",
+  "verdict": "shippable-needs-task-pr",
+  "confidence": "high",
+  "summary": "Branch adds test-only regression guards for the genome step health false-alarm fix. Two commits (2026-04-29) add tests/genome/heartbeat-step-health.test.js (91 lines, new file not on main) with 5 assertions covering heartbeat timeout config and resolveStatePath() config-pass behavior. The underlying production fix was completed via task d52de6ac (done 2026-04-13) — this branch is the follow-up regression test suite that was never PR'd. Task ID 94ae0f36 has no DB row. Risk: LOW (test-only). Recommend opening a PR and merging.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "d79e06ea",
+        "subject": "test: regression guard for genome step health — heartbeat timeout fixes",
+        "date": "2026-04-29"
+      },
+      {
+        "sha": "7e2eace3",
+        "subject": "test: add config-pass regression guard to genome step health tests",
+        "date": "2026-04-29"
+      }
+    ],
+    "filesChanged": ["tests/genome/heartbeat-step-health.test.js (+91 new)", "tests/genome/README.md (+3/-1)"],
+    "targetFileOnMain": false,
+    "pullRequest": null,
+    "taskRowForBranchId": null,
+    "relatedTasksFound": ["d52de6ac (done, same title, no branch_name)", "eebb4a81 (cancelled, same title, no branch_name)"]
+  },
+  "recommendation": "Open PR from dev/94ae0f36-fix-genome-step-health-critical-steps-no → main. Run npm test to verify tests pass. Merge."
+}

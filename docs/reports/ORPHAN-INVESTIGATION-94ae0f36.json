@@ -1,0 +1,65 @@
+{
+  "taskId": "2fbc6b49-85e3-458d-834a-8d5dfcadfdee",
+  "investigatedBranch": "dev/94ae0f36-fix-genome-step-health-critical-steps-no",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch adds test-only regression guards (91 lines in new file tests/genome/heartbeat-step-health.test.js) for the genome step health false-alarm fix. The underlying production fix was completed via task d52de6ac (done 2026-04-13) but the regression tests were authored 2026-04-29 and never submitted as a PR. Task ID 94ae0f36 does not exist in the DB. Low-risk — test-only, no production code changes. Recommend creating a PR and merging.",
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "d79e06ea",
+        "date": "2026-04-29T10:35:05-0400",
+        "author": "Stojan Madjunkov",
+        "subject": "test: regression guard for genome step health — heartbeat timeout fixes"
+      },
+      {
+        "sha": "7e2eace3",
+        "date": "2026-04-29T10:52:52-0400",
+        "author": "Stojan Madjunkov",
+        "subject": "test: add config-pass regression guard to genome step health tests"
+      }
+    ],
+    "filesChanged": [
+      "tests/genome/heartbeat-step-health.test.js (+91 lines, new file — not present on main)",
+      "tests/genome/README.md (+3/-1)"
+    ],
+    "remoteExists": true,
+    "remoteSha": "7e2eace3676441fcb61a5cc0d278f652c621b5c6",
+    "pullRequestFound": false,
+    "taskIdInBranchName": "94ae0f36",
+    "taskRowForBranchId": null,
+    "relatedTasks": [
+      {
+        "id": "eebb4a81-cc4c-4752-9b2b-5c0bf07673fe",
+        "title": "Fix: Genome step health — critical steps not running",
+        "status": "cancelled",
+        "branchName": null,
+        "createdAt": "2026-04-03"
+      },
+      {
+        "id": "d52de6ac-101f-4ad1-a0a1-8b756daa3c64",
+        "title": "Fix: Genome step health — critical steps not running",
+        "status": "done",
+        "branchName": null,
+        "createdAt": "2026-04-13"
+      }
+    ]
+  },
+  "risk": "LOW — test-only changes. Production code is unaffected. The underlying genome fix (heartbeat-wrapper.js timeout, dispatcher-health.js watchdog spawn mode, heartbeat-executor.js start timestamp) is already live. The test file adds 5 regression assertions that guard against future regressions on those config values.",
+  "recommendation": "Create a PR from dev/94ae0f36-fix-genome-step-health-critical-steps-no → main and merge. Steps: (1) open PR, (2) run QC (npm test should pass), (3) merge. Alternatively, if tests/genome/ is duplicated in the genome repo, confirm the correct location and delete this branch after copying heartbeat-step-health.test.js there.",
+  "commandsRun": [
+    "git log --oneline main..dev/94ae0f36-fix-genome-step-health-critical-steps-no",
+    "git diff --stat main...dev/94ae0f36-fix-genome-step-health-critical-steps-no",
+    "git ls-remote --heads origin dev/94ae0f36-fix-genome-step-health-critical-steps-no",
+    "gh pr list --state all --head dev/94ae0f36-fix-genome-step-health-critical-steps-no",
+    "gh pr list --state all --search 'genome step health critical'",
+    "git log --format '%H %ai %an %s' origin/dev/94ae0f36-fix-genome-step-health-critical-steps-no | head -5",
+    "git log --all --oneline --grep='genome step health'",
+    "git log --oneline --merges --grep='94ae0f36' main",
+    "psql $LOCAL_PG_URL -t -c \"SELECT id,title,status,branch_name FROM tasks WHERE branch_name LIKE '%94ae0f36%' OR title ILIKE '%genome step health%' OR title ILIKE '%heartbeat timeout%'\"",
+    "psql $LOCAL_PG_URL -t -c \"SELECT id FROM tasks WHERE id::text LIKE '94ae0f36%'\"",
+    "ls tests/genome/",
+    "git log --oneline origin/main -- tests/genome/heartbeat-step-health.test.js",
+    "git show --stat d79e06ea",
+    "git show --stat 7e2eace3"
+  ]
+}
