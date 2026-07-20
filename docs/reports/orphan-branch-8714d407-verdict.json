@@ -1,0 +1,60 @@
+{
+  "taskId": "5da874ca-8545-4d02-875f-0c7dd40e7e95",
+  "branch": "dev/8714d407-improve-uc-no-tasks-fix-phantom-mrr-test",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Early 'Improve: uc_no_tasks' attempt for the phantom-MRR fix UC. PR #1309 was closed (not merged) on 2026-04-25. The underlying fix was subsequently shipped via PR #1406 (merged 2026-05-03) on a proper dev task branch. Branch has no task row because the original task (8714d407-e805-4f75-96b4-45353f81e2ea) was abandoned when the UC was re-queued. Safe to delete — no production code is stranded; changes are a PRD doc, a test file, and .local-tasks.json.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "53bca678",
+        "subject": "test: E2E test for phantom MRR workflow task creation UC",
+        "date": "2026-04-24T21:05:23-04:00"
+      },
+      {
+        "sha": "ad7875c8",
+        "subject": "fix: add workflow task for phantom mrr metric pollution",
+        "date": "2026-04-24T20:11:00-04:00"
+      }
+    ],
+    "diffStat": "3 files changed, 126 insertions(+) — PRD doc, test file, .local-tasks.json only",
+    "changedFiles": [
+      ".local-tasks.json (config, not shipped)",
+      "docs/prd/fix-phantom-mrr-test-data-polluting-metric-workflow-task.md (PRD doc)",
+      "tests/f3d0e72e-phantom-mrr-workflow-task.test.js (test file)"
+    ],
+    "existsOnRemote": true,
+    "thisBranchPR": {
+      "number": 1309,
+      "title": "Improve: uc_no_tasks — fix-phantom-mrr-test-data-polluting-metric",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-04-25T02:05:29Z",
+      "originalTaskId": "8714d407-e805-4f75-96b4-45353f81e2ea"
+    },
+    "successorPRs": [
+      {
+        "number": 1406,
+        "title": "Dev: fix-phantom-mrr-test-data-polluting-metric - Fix: Phantom MRR from test subscription data",
+        "branch": "dev/9390baf2-dev-fix-phantom-mrr-test-data-polluting",
+        "state": "MERGED",
+        "mergedAt": "2026-05-03T02:02:07Z",
+        "note": "Successor dev task that actually shipped the phantom MRR fix to main"
+      }
+    ]
+  },
+  "risk": "low",
+  "riskRationale": "No production code on this branch — only a PRD doc, a test, and local config. The phantom MRR fix shipped via PR #1406.",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/8714d407-improve-uc-no-tasks-fix-phantom-mrr-test",
+    "git diff --stat main...origin/dev/8714d407-improve-uc-no-tasks-fix-phantom-mrr-test",
+    "git ls-remote --heads origin dev/8714d407-improve-uc-no-tasks-fix-phantom-mrr-test",
+    "git log --format='%H %an %ae %ai %s' main..origin/dev/8714d407-improve-uc-no-tasks-fix-phantom-mrr-test",
+    "gh pr list --search '8714d407' --state all",
+    "gh pr list --search 'phantom mrr' --state all",
+    "gh pr view 1309 --json state,mergedAt,closedAt,title,body,headRefName",
+    "gh pr view 1406 --json state,mergedAt,closedAt,title,body,headRefName"
+  ]
+}
