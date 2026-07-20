@@ -1,0 +1,124 @@
+{
+  "taskId": "8cc21210-3594-4a51-8ce0-428253abe82a",
+  "status": "completed",
+  "verdict": "duplicate/superseded",
+  "taskSpec": {
+    "what": {
+      "filesToChange": [
+        "completion-reports/COMPLETION-8cc21210-3594-4a51-8ce0-428253abe82a-20260720T012912-0400.json"
+      ],
+      "functionsToChange": []
+    },
+    "verify": [
+      {
+        "command": "node -e \"JSON.parse(require('fs').readFileSync('completion-reports/COMPLETION-8cc21210-3594-4a51-8ce0-428253abe82a-20260720T012912-0400.json','utf8')); console.log('valid json')\"",
+        "expected": "valid json"
+      },
+      {
+        "command": "git diff --check -- completion-reports/COMPLETION-8cc21210-3594-4a51-8ce0-428253abe82a-20260720T012912-0400.json",
+        "expected": "exit 0 with no whitespace errors"
+      }
+    ],
+    "boundaries": [
+      "Do not modify product code, routes, services, migrations, generated dashboards, or protected project metadata.",
+      "Do not read full file contents or full diffs for the orphan branch.",
+      "Do not delete, merge, or push changes to the orphan branch."
+    ]
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote branch origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a exists as an orphan remote-tracking ref with commit 69dbbd82 ahead of main and no matching task row available through local metadata checks.",
+    "why": "The feature appears to have been initiated from PRD branch pm/feat-shareable-stripe-payment-link-admin, then superseded by later mainline payment-link work merged in PR #1907 and adjusted in PR #1938. The orphan commit was never incorporated verbatim into main.",
+    "fix": "No product fix was made. Metadata-only triage records the orphan branch as superseded by shipped payment-link admin functionality and recommends no automatic deletion."
+  },
+  "evidence": {
+    "branch": "dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "remoteTrackingRef": "refs/remotes/origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a -> 69dbbd82ae4b2cf669fed83e2bb7fc68d29f9ff0",
+    "commitAheadOfMain": {
+      "count": 1,
+      "commit": "69dbbd82 feat: add shareable admin payment link generation for direct Stripe checkout"
+    },
+    "requiredDiffStat": [
+      "8 files changed, 1609 insertions(+), 1 deletion(-)",
+      "Adds lib/services/AdminPaymentLinkService.js, dashboard upgrade-offers page, dashboard api/admin/payment-links route, root routes/admin/payment-link.js, and unit/integration tests.",
+      "Modifies server.js and dashboard Stripe webhook route."
+    ],
+    "shipHistoryOnMain": [
+      "15aead78 docs: add PRD for shareable Stripe payment link admin feature on pm/feat-shareable-stripe-payment-link-admin.",
+      "d76062c9 (#1907) added PaymentLinkService, admin payment-links dashboard page, create-payment-link API route, root routes/admin/payment-link.js, server.js wiring, and tests.",
+      "fc38538d (#1938) aligned the admin payment link dashboard route and test."
+    ],
+    "searchResults": [
+      "Exact local rg search for branch name, short SHA, and commit subject found no task/PR artifact matches.",
+      "Related PRD reference found in docs/prd/PRD-TRIAL-PAID-CONVERSION-GAP-ANALYSIS.md: feat-shareable-stripe-payment-link-admin manual checkout links.",
+      "git cherry -v main origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a reports '+ 69dbbd82...', so the exact patch is not in main."
+    ],
+    "limitations": [
+      "git ls-remote --heads origin dev/8b491fed-dev-feat-shareable-stripe-payment-link-a failed because github.com could not be resolved in this sandbox.",
+      "gh PR/issue searches failed because api.github.com was unreachable.",
+      "TaskStore.getTasks() failed with EPERM connecting to local PostgreSQL, so task DB absence could not be independently revalidated from this sandbox."
+    ]
+  },
+  "risk": "MEDIUM: main has later shipped admin payment-link functionality, but the orphan commit is not patch-equivalent and metadata shows unique filenames such as AdminPaymentLinkService.js and upgrade-offers/page.tsx. Full behavioral comparison is intentionally out of scope for this metadata-only task.",
+  "recommendation": "Do not open a PR from this orphan branch as-is. Treat it as superseded by PR #1907/#1938 payment-link work. Before deleting the remote branch, have a human or larger-context review confirm that the unique upgrade-offers/AdminPaymentLinkService surface is not still desired; do not auto-delete.",
+  "verification": {
+    "passed": [
+      "Report JSON parsed successfully.",
+      "git diff --check passed for the report file.",
+      "npm test passed: 9 passed, 0 failed, 100% success rate."
+    ],
+    "blockedOrFailed": [
+      "npm run build failed before build execution because dashboard next binary was missing: sh: next: command not found.",
+      "npm run lint failed before lint execution because root eslint binary was missing: sh: eslint: command not found.",
+      "Dependency check showed root-node_modules-missing and dashboard-node_modules-missing. No npm install/npm ci was run."
+    ]
+  },
+  "commandsRun": [
+    "git checkout dev/8cc21210-investigate-orphan-branch-dev-8b491fed-d",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,220p' CLAUDE.md",
+    "sed -n '1,260p' ARCHITECTURE.md",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "node ~/projects/genome/scripts/graph-search.js \"completion report\"",
+    "node ~/projects/genome/scripts/where.js \"completion report\"",
+    "git log --oneline main..dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git diff --stat main...dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git ls-remote --heads origin dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git branch --all --contains dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git branch --all --list '*8b491fed*'",
+    "git show-ref | rg '8b491fed|shareable-stripe-payment-link'",
+    "git log --oneline main..origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git diff --stat main...origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git log --oneline main..origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a --format='%h%x09%s'",
+    "git branch --all --contains origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "rg -n --glob '!node_modules/**' --glob '!product/lead-response/dashboard/node_modules/**' 'dev/8b491fed-dev-feat-shareable-stripe-payment-link-a|69dbbd82|shareable admin payment link generation|direct Stripe checkout|shareable-stripe-payment-link' .",
+    "gh pr list --state all --search 'dev/8b491fed-dev-feat-shareable-stripe-payment-link-a OR 69dbbd82 OR \"shareable admin payment link generation\"' --json number,state,title,headRefName,baseRefName,url --limit 20",
+    "gh issue list --state all --search 'dev/8b491fed-dev-feat-shareable-stripe-payment-link-a OR 69dbbd82 OR \"shareable admin payment link generation\"' --json number,state,title,url --limit 20",
+    "node TaskStore metadata search for branch/SHA/subject",
+    "rg -n --glob '!node_modules/**' --glob '!product/lead-response/dashboard/node_modules/**' 'feat-shareable-stripe-payment-link-admin|payment link admin|payment-links|AdminPaymentLinkService' .",
+    "git log --all --oneline --decorate --grep='shareable admin payment link generation' --grep='shareable.*payment.*link' --regexp-ignore-case",
+    "git diff --name-status main...origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git ls-tree -r --name-only main | rg 'AdminPaymentLinkService|admin/payment-links|admin/upgrade-offers|api/admin/payment-links|routes/admin/payment-link|stripe/route.ts'",
+    "git log main --oneline --decorate -- lib/services/AdminPaymentLinkService.js product/lead-response/dashboard/app/admin/upgrade-offers/page.tsx product/lead-response/dashboard/app/api/admin/payment-links/route.ts routes/admin/payment-link.js tests/integration/admin-payment-link-route.test.js tests/unit/admin-payment-link-service.test.js product/lead-response/dashboard/app/admin/payment-links/page.tsx product/lead-response/dashboard/app/api/admin/stripe/payment-link/route.ts",
+    "git merge-base --is-ancestor origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a main; printf 'ancestor_exit=%s\\n' \"$?\"",
+    "git cherry -v main origin/dev/8b491fed-dev-feat-shareable-stripe-payment-link-a",
+    "git log main --all --oneline --decorate --grep='admin payment link' --grep='stripe payment link' --grep='payment link dashboard' --regexp-ignore-case",
+    "git show --name-status --oneline --no-renames --format='%h %s' fc38538d -- product/lead-response/dashboard/app/admin/payment-links/page.tsx product/lead-response/dashboard/app/api/admin/create-payment-link/route.ts routes/admin/payment-link.js server.js tests/admin-payment-link.test.js product/lead-response/dashboard/__tests__/admin-create-payment-link.test.ts",
+    "git show --name-status --oneline --no-renames --format='%h %s' d76062c9 -- product/lead-response/dashboard/app/admin/payment-links/page.tsx product/lead-response/dashboard/app/api/admin/create-payment-link/route.ts routes/admin/payment-link.js server.js tests/admin-payment-link.test.js product/lead-response/dashboard/__tests__/admin-create-payment-link.test.ts lib/services/PaymentLinkService.js",
+    "git show --name-status --oneline --no-renames --format='%h %s' 15aead78 -- docs/prd/PRD-TRIAL-PAID-CONVERSION-GAP-ANALYSIS.md docs/**",
+    "git log main --oneline --decorate --all -- 'product/lead-response/dashboard/app/admin/payment-links/page.tsx' 'routes/admin/payment-link.js' 'product/lead-response/dashboard/app/api/admin/create-payment-link/route.ts' 'tests/admin-payment-link.test.js' | sed -n '1,80p'"
+  ],
+  "testResults": {
+    "passed": 11,
+    "total": 13,
+    "passRate": 0.8461538462
+  },
+  "filesCreated": [
+    "completion-reports/COMPLETION-8cc21210-3594-4a51-8ce0-428253abe82a-20260720T012912-0400.json"
+  ],
+  "filesModified": [],
+  "completionReportPath": "completion-reports/COMPLETION-8cc21210-3594-4a51-8ce0-428253abe82a-20260720T012912-0400.json"
+}
