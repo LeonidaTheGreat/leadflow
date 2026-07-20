@@ -1,0 +1,44 @@
+{
+  "investigationTaskId": "2b5937c2-6955-44bc-82a9-61ea936bd8e8",
+  "orphanBranch": "dev/bd1023af-fix-codebase-architecture-md-drift",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch contains a single docs commit that adds LapsedTrialReactivationService to ARCHITECTURE.md services table. The identical entry already exists on main at line 65, confirming the change was absorbed by a later commit. No PR was created for this branch; it is safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "27576d9d46e66530cef84b9e2f481b64f74ff5c4",
+    "commitSubject": "docs: add LapsedTrialReactivationService to ARCHITECTURE.md services table",
+    "filesChanged": ["ARCHITECTURE.md"],
+    "linesChanged": "+1 insertion",
+    "changeDetail": "Added '| LapsedTrialReactivationService | lib/services/LapsedTrialReactivationService.js | — |' to services table",
+    "mainAlreadyContains": "grep found LapsedTrialReactivationService at ARCHITECTURE.md:65 on main",
+    "relatedPRs": [
+      {
+        "number": 2038,
+        "title": "Investigate orphan branch: dev/7a2b33f3-fix-codebase-architecture-md-drift",
+        "state": "MERGED",
+        "note": "Similar architecture-md-drift branch investigation — merged 2026-07-20"
+      },
+      {
+        "number": 1974,
+        "title": "Investigate orphan branch: dev/0fd668fb-fix-codebase-architecture-md-drift",
+        "state": "MERGED",
+        "note": "Another architecture-md-drift branch investigation — merged 2026-07-19"
+      }
+    ],
+    "remoteBranchExists": true
+  },
+  "risk": "none — docs-only change, content already on main, no code impact",
+  "recommendation": "safe-delete — the single commit's change is already present on main. Branch can be deleted without any data loss. No task row needed.",
+  "commandsRun": [
+    "git fetch origin dev/bd1023af-fix-codebase-architecture-md-drift",
+    "git log --oneline main..origin/dev/bd1023af-fix-codebase-architecture-md-drift",
+    "git diff --stat main...origin/dev/bd1023af-fix-codebase-architecture-md-drift",
+    "git ls-remote --heads origin dev/bd1023af-fix-codebase-architecture-md-drift",
+    "gh pr list --state all --search 'bd1023af'",
+    "gh pr list --state all --search 'LapsedTrialReactivationService'",
+    "gh pr list --state all --search 'architecture-md-drift'",
+    "grep -n 'LapsedTrialReactivationService' ARCHITECTURE.md",
+    "git diff main...origin/dev/bd1023af-fix-codebase-architecture-md-drift -- ARCHITECTURE.md"
+  ]
+}
