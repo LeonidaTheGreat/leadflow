@@ -1,0 +1,91 @@
+{
+  "taskId": "b58c6e93-3771-4e84-bfbd-9fdbb3082896",
+  "branch": "dev/b8112be4-write-tests-for-untested-hub-index",
+  "investigatedAt": "2026-07-20",
+  "verdict": "already-shipped-safe-delete",
+  "taskSpec": {
+    "what": "Create docs/orphan-branch-verdict-b8112be4.json only; no application files or functions are changed.",
+    "verify": "Run metadata triage commands, validate JSON with node -e, then run npm test and npm run build. Expected: JSON parses, required metadata proves verdict, tests/build exit 0.",
+    "boundaries": "Do not read full file contents or full diffs over 200 lines; do not modify application code, tests, routes, services, package files, generated dashboard docs, or the orphan branch itself; do not delete the orphan branch."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote branch origin/dev/b8112be4-write-tests-for-untested-hub-index remains present and one commit ahead of origin/main even though its test patch is already present on main.",
+    "why": "The orphan commit 600cb9de and main commit 63ecbebb have the same subject, same stat footprint, and identical stable patch-id dff87877a4b3a38b183cca726a32aa5195780598, indicating the same changes landed on main through PR #1313 under a different commit SHA while the original feature branch was left behind.",
+    "fix": "Record metadata-only verdict that the branch is already shipped and safe to delete after human/orchestrator cleanup; no code change is needed."
+  },
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "orphanCommit": {
+      "sha": "600cb9dee04058bb50810dafe9377ea5e28d0067",
+      "shortSha": "600cb9de",
+      "subject": "test: add coverage for lib/config/index hub (32 tests)",
+      "author": "Stojan Madjunkov",
+      "date": "2026-04-25T08:58:07-04:00"
+    },
+    "diffStatAgainstMain": {
+      "filesChanged": 1,
+      "insertions": 374,
+      "files": [
+        "tests/index.test.js"
+      ]
+    },
+    "matchingMainCommit": {
+      "sha": "63ecbebb07d338376c8986534f420f2acbfa855f",
+      "shortSha": "63ecbebb",
+      "subject": "test: add coverage for lib/config/index hub (32 tests) (#1313)",
+      "samePatchId": "dff87877a4b3a38b183cca726a32aa5195780598"
+    },
+    "localSearch": {
+      "branchNameMatches": 0,
+      "shortShaMatches": 0,
+      "commitSubjectMatch": "git log --all found matching main commit 63ecbebb with PR marker (#1313).",
+      "taskDbSearch": "Attempted, but local PostgreSQL connection was blocked by sandbox permissions.",
+      "githubSearch": "Attempted, but GitHub API/network access was unavailable in this sandbox."
+    },
+    "remoteBranch": {
+      "localRemoteTrackingRefExists": true,
+      "lsRemote": "Attempted git ls-remote --heads origin dev/b8112be4-write-tests-for-untested-hub-index; failed because github.com DNS/network access was unavailable."
+    }
+  },
+  "risk": {
+    "level": "low",
+    "reason": "The orphan branch adds only tests/index.test.js, and the identical patch-id is already present on main. Deleting the branch should not remove unique application or test behavior. Residual risk is limited to unverified live GitHub PR/task state because network and PostgreSQL were unavailable from this sandbox."
+  },
+  "recommendation": "Do not create a new task or PR for this branch. Treat it as already shipped via main commit 63ecbebb / PR #1313 and safe-delete the orphan branch after an operator verifies remote PR/task state outside this sandbox. Do not auto-delete.",
+  "commandsRun": [
+    "git checkout dev/b58c6e93-investigate-orphan-branch-dev-b8112be4-w",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "sed -n '1,240p' CLAUDE.md",
+    "sed -n '1,260p' ARCHITECTURE.md",
+    "rg --files | rg 'orphan|verdict|completion|report'",
+    "node ~/projects/genome/scripts/graph-search.js \"orphan-branch-verdict\"",
+    "node ~/projects/genome/scripts/where.js \"orphan branch verdict\"",
+    "sed -n '1,240p' tests/uc-leadflow-maintenance-investigate-orphan-branch.test.js",
+    "sed -n '1,220p' docs/orphan-branch-verdict-7d2969fe.json",
+    "git log --oneline main..dev/b8112be4-write-tests-for-untested-hub-index",
+    "git diff --stat main...dev/b8112be4-write-tests-for-untested-hub-index",
+    "git ls-remote --heads origin dev/b8112be4-write-tests-for-untested-hub-index",
+    "git branch --all --list '*b8112be4*'",
+    "git log --oneline origin/main..origin/dev/b8112be4-write-tests-for-untested-hub-index",
+    "git diff --stat origin/main...origin/dev/b8112be4-write-tests-for-untested-hub-index",
+    "git log -1 --format='%H%n%h%n%s%n%an%n%aI' origin/dev/b8112be4-write-tests-for-untested-hub-index",
+    "git rev-list --count origin/main..origin/dev/b8112be4-write-tests-for-untested-hub-index",
+    "gh pr list --state all --search \"dev/b8112be4-write-tests-for-untested-hub-index\" --json number,title,state,mergedAt,headRefName,url",
+    "gh issue list --state all --search \"dev/b8112be4-write-tests-for-untested-hub-index\" --json number,title,state,url",
+    "rg -n \"b8112be4|600cb9de|write-tests-for-untested-hub-index|test: add coverage for lib/config/index hub\" --glob '!node_modules/**' --glob '!*.log'",
+    "psql \"$LOCAL_PG_URL\" -c \"SELECT id,title,status,branch_name,pr_number FROM tasks WHERE branch_name ILIKE '%b8112be4%' OR title ILIKE '%hub index%' OR title ILIKE '%lib/config/index%' OR title ILIKE '%untested hub index%' OR id::text ILIKE '%b8112be4%';\"",
+    "git log --all --oneline --decorate --grep=\"test: add coverage for lib/config/index hub\"",
+    "git branch --all --contains 600cb9dee04058bb50810dafe9377ea5e28d0067",
+    "git log --all --oneline -- tests/index.test.js",
+    "rg -n \"lib/config/index hub|untested hub index|tests/index\\.test\\.js|600cb9de|b8112be4|write-tests-for-untested\" docs completion-reports tests scripts package.json 2>/dev/null",
+    "git show --stat --oneline --no-renames 600cb9dee04058bb50810dafe9377ea5e28d0067",
+    "git show --stat --oneline --no-renames 63ecbebb",
+    "git show 600cb9dee04058bb50810dafe9377ea5e28d0067 -- tests/index.test.js | git patch-id --stable",
+    "git show 63ecbebb -- tests/index.test.js | git patch-id --stable"
+  ]
+}
