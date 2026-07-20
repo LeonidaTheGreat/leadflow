@@ -1,0 +1,69 @@
+{
+  "branch": "dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+  "shortSha": "fecfaed1",
+  "investigationDate": "2026-07-20",
+  "taskId": "b536e716-9f31-4b4e-be1d-c0a3bf606400",
+
+  "verdict": "duplicate/superseded",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSubject": "docs: PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001 — spec for admin auth unification",
+    "commitDate": "2026-05-10T10:45:10-04:00",
+    "filesChanged": ["docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md"],
+    "linesAdded": 216,
+
+    "branchNameMismatch": {
+      "note": "Branch name suggests 'rescue-uc-emergency-merge-email-fix' but the single commit is a PRD doc for admin auth standardization — no email fix code present."
+    },
+
+    "prHistory": {
+      "prNumber": 1556,
+      "prTitle": "Dev (rescue): uc-emergency-merge-email-fix-pr1343 - Emergency: Merge Email Fix PR #1343 — 344 Trial Users Receiving Zero Emails",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "closedAt": "2026-05-10T15:11:15Z",
+      "note": "PR was closed without being merged ~26 minutes after creation. Likely closed by the orchestrator due to the branch/task mismatch or because the content was determined to be wrong content on the wrong branch."
+    },
+
+    "originalTaskRow": {
+      "taskId": "d78a3d63-a4ed-4b75-bd5b-f6888d6baed7",
+      "status": "NOT FOUND — row deleted or never persisted"
+    },
+
+    "useCaseRow": {
+      "id": "uc-emergency-merge-email-fix-pr1343",
+      "status": "NOT FOUND — row deleted or never persisted"
+    },
+
+    "mainAlreadyHasWork": {
+      "prdFileOnMain": "docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md (262 lines — larger than orphan's 216)",
+      "relatedCommitsOnMain": [
+        "59bae8db docs: PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001",
+        "a67f1336 docs: update PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001 with audit findings",
+        "6b042993 feat: standardize admin auth — replace isAdminUser/x-admin-token with requireAdmin()",
+        "72816d8d feat: standardize admin auth to requireAdmin from AuthService (#1674)"
+      ],
+      "note": "The PRD from the orphan branch is an earlier draft. A more complete version (and full implementation) was later landed on main via other branches/PRs."
+    }
+  },
+
+  "risk": "low",
+  "riskDetail": "The only change is a draft PRD document. The PRD already exists on main in a more complete form. The implementation it specifies (requireAdmin() standardization) is also already shipped on main via PR #1674. No production code is affected.",
+
+  "recommendation": "safe-delete — Branch contains an early draft PRD that was superseded by later, more complete work that landed on main. PR #1556 was already closed without merging. Both the task row and use case row are gone from the DB. Branch can be deleted with no risk of data loss.",
+
+  "commandsRun": [
+    "git fetch origin dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git log --oneline main..origin/dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git diff --stat main...origin/dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git ls-remote --heads origin dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix",
+    "git log --format='%H %ai %s' origin/dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix -1",
+    "gh pr list --search 'dev/d78a3d63-dev-rescue-uc-emergency-merge-email-fix' --state all",
+    "gh pr view 1556 --json title,state,mergedAt,closedAt,body,headRefName,baseRefName,commits",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status FROM tasks WHERE id='d78a3d63-a4ed-4b75-bd5b-f6888d6baed7' OR branch_name LIKE '%d78a3d63%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id,name FROM use_cases WHERE id='uc-emergency-merge-email-fix-pr1343'\"",
+    "git log --oneline --all | grep -i 'admin auth\\|email fix\\|PRD-LEADFLOW-ADMIN'",
+    "git show main:docs/prd/PRD-LEADFLOW-ADMIN-AUTH-STANDARDIZATION-001.md | wc -l"
+  ]
+}
