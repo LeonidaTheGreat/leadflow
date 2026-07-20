@@ -1,0 +1,42 @@
+{
+  "investigationTaskId": "e903407f-9436-40a1-a4bc-1fe22fcaf43e",
+  "orphanBranch": "dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+  "investigatedAt": "2026-07-19",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "PR #1299 (merged 2026-04-24) delivered this branch's single commit into main. The branch is a stale artifact — safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "601bac2e",
+        "message": "fix: remove plaintext token from API responses",
+        "filesChanged": 1,
+        "linesChanged": "-2"
+      }
+    ],
+    "fileChanged": "product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts",
+    "changeDescription": "2 lines deleted — removes plaintext token from API response payload",
+    "prNumber": 1299,
+    "prTitle": "Fix code quality: Token possibly stored without hashing",
+    "prState": "MERGED",
+    "prMergedAt": "2026-04-24T02:35:18Z",
+    "mergeCommitOid": "cfb6fabe042a116f659f448aeb3075eedf773380",
+    "mergeCommitInMain": true,
+    "taskRowInDB": false,
+    "taskRowNote": "No tasks row found with branch_name='dev/59a0d1e9-fix-code-quality-token-possibly-stored-w'; task record was likely purged after completion"
+  },
+  "risk": "none — change is already merged and deployed; branch is a stale remote ref only",
+  "recommendation": "Safe to delete remote branch: git push origin --delete dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+    "git fetch origin main dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+    "git log --oneline origin/main..origin/dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+    "git diff --stat origin/main...origin/dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search '59a0d1e9'",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE branch_name LIKE '%59a0d1e9%' ...\"",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE branch_name = 'dev/59a0d1e9-...'\"",
+    "gh pr view 1299 --repo LeonidaTheGreat/leadflow --json number,title,state,mergedAt,headRefName,mergeCommit",
+    "git log --oneline origin/main | grep 'cfb6fabe'",
+    "git branch -r --contains cfb6fabe042a116f659f448aeb3075eedf773380"
+  ]
+}
