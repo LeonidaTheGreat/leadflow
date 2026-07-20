@@ -1,0 +1,57 @@
+{
+  "investigatedBranch": "dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
+  "taskId": "49526d6f-4d97-47f3-a065-42feaef53a41",
+  "investigatedAt": "2026-07-20",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch has 1 commit with real, unmerged changes: adds STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET to SystemStatusService health output and marks them as required+critical in the Next.js /api/health route. PR #1696 was created but closed without merging (2026-05-28). The changes are NOT on main — the test file and both code changes are absent from origin/main.",
+  "evidence": {
+    "commit": {
+      "sha": "2e58c4f568c027a39754a8df2e598e6d7e5c440b",
+      "message": "fix: add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY to health check verification",
+      "author": "Stojan Madjunkov <madzunkov@hotmail.com>",
+      "date": "2026-05-18T22:23:03-04:00",
+      "filesChanged": [
+        "lib/services/SystemStatusService.js",
+        "product/lead-response/dashboard/app/api/health/route.ts",
+        "tests/unit/stripe-webhook-secret-health-check.test.js (new, 137 lines)"
+      ],
+      "stat": "3 files changed, 146 insertions(+), 1 deletion(-)"
+    },
+    "prStatus": {
+      "number": 1696,
+      "title": "fix: verify Stripe webhook secret in production (task 648ef165)",
+      "state": "CLOSED",
+      "mergedAt": null,
+      "mergeCommit": null,
+      "closedAt": "2026-05-28T01:33:03Z",
+      "note": "PR was closed without merging — changes never landed on main"
+    },
+    "remoteExists": true,
+    "remoteSha": "2e58c4f568c027a39754a8df2e598e6d7e5c440b",
+    "mainState": {
+      "SystemStatusService": "No Stripe key checks — still only FUB and Twilio",
+      "healthRoute": "No STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET in requiredEnvVars",
+      "testFile": "tests/unit/stripe-webhook-secret-health-check.test.js does not exist on main"
+    },
+    "relatedBranch": {
+      "name": "dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s",
+      "note": "Duplicate re-merge attempt with same commit message; no PR found; also not on main"
+    }
+  },
+  "risk": "low",
+  "riskRationale": "Changes are purely additive — health endpoint gains visibility into two critical Stripe env vars. No deletion, no behavior changes to existing flows. A 137-line test file validates the new checks. Stripe is production-critical for billing so surfacing missing config is valuable.",
+  "recommendation": "Re-open or re-create a PR from dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s onto main. The work is complete and tested. Alternatively, cherry-pick commit 2e58c4f5 onto a fresh branch and submit a new PR. Do NOT delete the branch until merged.",
+  "commandsRun": [
+    "git fetch origin dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git log --oneline origin/main..origin/dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git diff --stat origin/main...origin/dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git ls-remote --heads origin dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s",
+    "gh pr list --search 'head:dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s' --state all --json number,title,state,url,mergedAt",
+    "gh pr view 1696 --json number,title,state,url,mergedAt,closedAt,baseRefName,headRefName,mergeCommit",
+    "git log --all --oneline --grep='STRIPE_WEBHOOK_SECRET'",
+    "git branch -r --contains 75acdbf9",
+    "git show origin/main:lib/services/SystemStatusService.js",
+    "git show origin/main:product/lead-response/dashboard/app/api/health/route.ts",
+    "git show origin/main:tests/unit/stripe-webhook-secret-health-check.test.js"
+  ]
+}
