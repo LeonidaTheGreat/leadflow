@@ -1,0 +1,54 @@
+{
+  "taskId": "99404777-31a3-4687-bf05-97b722c551f9",
+  "status": "completed",
+  "verdict": "shippable-needs-task-pr",
+  "branch": "dev/49d90d4d-fix-architecture-md-trial-activation-drift",
+  "remoteSHA": "088521f24f588e94f335f97b9a0a8b21db53e86e",
+  "commitsAheadOfMain": 4,
+  "rootCauseAnalysis": {
+    "failurePoint": "Branch has real work (1276 lines inserted) but no matching task row and no PR",
+    "why": "Original task 49d90d4d-63e9-45f0-9e88-1f228eec9bf7 ('Fix: Codebase: ARCHITECTURE.md drift') failed and used branch dev/49d90d4d-fix-codebase-architecture-md-drift. This orphan branch (dev/49d90d4d-fix-architecture-md-trial-activation-drift) shares the same task-ID prefix but differs in slug, suggesting a second dev attempt or variant that ran to completion but was never registered in the task system or promoted to PR.",
+    "fix": "No code fix needed — this is an investigation task. Recommendation: create a new task+PR for this branch so the work can be QC-reviewed and merged."
+  },
+  "evidence": {
+    "commits": [
+      "088521f2 docs: add TrialActivationService to ARCHITECTURE.md and fix JSDoc description",
+      "3ea1170f test: add unit tests for lib/logger.js (37 tests, 100% pass)",
+      "13442b07 test: add unit tests for lib/db.js hub (69 tests, 100% pass)",
+      "973a9077 fix: npm_audit code quality issue"
+    ],
+    "diffStat": {
+      "ARCHITECTURE.md": "+3 lines",
+      "lib/services/TrialActivationService.js": "+4 lines",
+      "tests/unit/db.test.js": "+670 lines (new file)",
+      "tests/unit/logger.test.js": "+599 lines (new file)"
+    },
+    "totalInsertions": 1276,
+    "existingPRs": "none",
+    "relatedTask": {
+      "id": "49d90d4d-63e9-45f0-9e88-1f228eec9bf7",
+      "title": "Fix: Codebase: ARCHITECTURE.md drift",
+      "status": "failed",
+      "branch": "dev/49d90d4d-fix-codebase-architecture-md-drift"
+    }
+  },
+  "risk": "low — changes are purely additive: new unit tests (db + logger) and minor doc/JSDoc fixes. No deletions, no schema changes, no service logic rewrites.",
+  "recommendation": "Create a task and PR for this branch. The 1276 lines of new unit test coverage (db.test.js + logger.test.js) are valuable and should not be discarded. The ARCHITECTURE.md and TrialActivationService.js changes are minimal. QC review should confirm tests are meaningful and not trivially passing.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/49d90d4d-fix-architecture-md-trial-activation-drift",
+    "git fetch origin dev/49d90d4d-fix-architecture-md-trial-activation-drift",
+    "git log --oneline main..origin/dev/49d90d4d-fix-architecture-md-trial-activation-drift",
+    "git diff --stat main...origin/dev/49d90d4d-fix-architecture-md-trial-activation-drift",
+    "gh pr list --search 'head:dev/49d90d4d-fix-architecture-md-trial-activation-drift'",
+    "gh pr list --search '49d90d4d'",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name FROM tasks WHERE branch_name LIKE '%49d90d4d%' OR title ILIKE '%architecture%trial%'\""
+  ],
+  "testResults": {
+    "passed": 0,
+    "total": 0,
+    "passRate": 1.0,
+    "note": "Investigation task — no code changes made, no tests to run"
+  },
+  "filesCreated": ["completion-reports/COMPLETION-99404777-31a3-4687-bf05-97b722c551f9-investigation.json"],
+  "filesModified": []
+}
