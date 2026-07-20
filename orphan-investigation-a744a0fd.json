@@ -1,0 +1,57 @@
+{
+  "branch": "dev/a744a0fd-fix-browser-tests-v3",
+  "taskId": "7392f65a-ac5f-4a22-ac62-f654b862829b",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch contains 2 commits from 2026-05-04 that add ignoreCommand and git.deploymentEnabled to the ROOT vercel.json to prevent git-triggered deploys from accidentally deploying the dashboard with the webhook server config. This exact problem was independently fixed the same day by PR #1434 (merged), which took a cleaner approach: disabling git-triggered deploys in the DASHBOARD's vercel.json instead. The root vercel.json on main still lacks these protections, but the dashboard's vercel.json already has git.deploymentEnabled:false, making the orphan branch's changes redundant. No PR was ever created for this branch.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "b8d9fc6fea6f0a1b1f3441eebc2788e8a9272d37",
+        "date": "2026-05-04",
+        "author": "Stojan Madjunkov",
+        "message": "fix: disable GitHub auto-deploy in root vercel.json to prevent leadflow-ai 500 errors"
+      },
+      {
+        "sha": "1c25a9b29218571c614d78d1b01a7ae9a6c804c2",
+        "date": "2026-05-04",
+        "author": "Stojan Madjunkov",
+        "message": "fix: add ignoreCommand to prevent leadflow-ai git-triggered deploys from root"
+      }
+    ],
+    "filesChanged": ["vercel.json"],
+    "changeSummary": "+7 lines in root vercel.json: adds git.deploymentEnabled:{main:false,preview:false} and ignoreCommand that skips build if VERCEL_PROJECT_ID matches the leadflow-ai dashboard project (prj_p9ZX952UhE1cl1PYZAgVW53FqVm9)",
+    "existsOnRemote": true,
+    "remoteSha": "1c25a9b29218571c614d78d1b01a7ae9a6c804c2",
+    "matchingPRs": [],
+    "supersededBy": {
+      "prNumber": 1434,
+      "mergeCommit": "0fb284e2102f8514d336f849ea9d5ebf37543650",
+      "mergedDate": "2026-05-04",
+      "title": "fix: disable git-triggered deploys that broke dashboard with wrong build config",
+      "approach": "Disabled git.deploymentEnabled in dashboard/vercel.json (project-level) rather than root vercel.json",
+      "currentStateOnMain": "product/lead-response/dashboard/vercel.json has git.deploymentEnabled:{main:false,preview:false}; root vercel.json has neither ignoreCommand nor deploymentEnabled"
+    },
+    "dbTasksFound": [
+      "No task row matching branch dev/a744a0fd-fix-browser-tests-v3 found",
+      "Related tasks found: bb88e491 (Investigate orphan: dev/a744a0fd-fix-browser-tests-failing-41-failed, in_progress)"
+    ]
+  },
+  "risk": "LOW — branch only touches root vercel.json. The protection it adds (preventing root vercel.json from triggering dashboard deploys) is already provided by the dashboard's own vercel.json on main. Merging would add belt-and-suspenders protection to root vercel.json, but is not needed given current state. No test, no application logic, no DB changes.",
+  "recommendation": "safe-delete — the problem is already solved by PR #1434 via a cleaner mechanism (dashboard-level config). The ignoreCommand approach in this branch is a more complex workaround that's no longer needed. Delete the remote branch.",
+  "commandsRun": [
+    "git log --oneline main..dev/a744a0fd-fix-browser-tests-v3",
+    "git log --oneline --format='%H %s %ad %an' --date=short main..origin/dev/a744a0fd-fix-browser-tests-v3",
+    "git diff --stat main...origin/dev/a744a0fd-fix-browser-tests-v3",
+    "git diff main...origin/dev/a744a0fd-fix-browser-tests-v3 -- vercel.json",
+    "git ls-remote --heads origin dev/a744a0fd-fix-browser-tests-v3",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search 'fix-browser-tests-v3'",
+    "gh pr list --repo LeonidaTheGreat/leadflow --state all --search 'disable GitHub auto-deploy'",
+    "git show main:vercel.json",
+    "git show main:product/lead-response/dashboard/vercel.json",
+    "git log --oneline main | grep 0fb284e2",
+    "git show --stat 0fb284e2",
+    "psql $LOCAL_PG_URL -c SELECT tasks WHERE branch_name LIKE '%a744a0fd%' OR title ILIKE '%browser test%'"
+  ]
+}
