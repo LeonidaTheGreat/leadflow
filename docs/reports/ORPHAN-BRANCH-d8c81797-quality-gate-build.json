@@ -1,0 +1,62 @@
+{
+  "investigation": {
+    "branch": "dev/d8c81797-fix-quality-gate-build-failing-in-leadfl",
+    "taskId": "80ad2700-53db-404d-bd77-b40d0ed5d8c4",
+    "investigatedAt": "2026-07-20",
+    "verdict": "duplicate/superseded"
+  },
+  "evidence": {
+    "orphanCommit": {
+      "sha": "d18105e7948df49828fd2d1d298f423b151f112c",
+      "message": "test: E2E test for turbopack.root config preventing multiple-lockfile warning",
+      "author": "Stojan Madjunkov",
+      "date": "2026-04-26",
+      "filesChanged": [
+        "product/lead-response/dashboard/tests/d8c81797-turbopack-root-config.test.js (+92 lines)"
+      ]
+    },
+    "relatedPR": {
+      "number": 1338,
+      "title": "Fix: Quality gate \"build\" failing in leadflow",
+      "state": "MERGED",
+      "mergedAt": "2026-04-26T22:29:37Z",
+      "mergeCommit": "b0fbbeaea108153bf581ac2e9a803f1f7e7a4afe",
+      "headRef": "dev/d8c81797-fix-quality-gate-build-failing-in-leadfl"
+    },
+    "subsequentRevert": {
+      "sha": "088df421e6085ec709ca6bdff10317f6f2fd0667",
+      "message": "fix: remove turbopack root override — breaks Vercel module resolution",
+      "date": "2026-04-02",
+      "note": "The turbopack.root fix from PR #1338 was reverted because it broke Vercel module resolution"
+    },
+    "remotePresence": "Branch exists at origin/dev/d8c81797-fix-quality-gate-build-failing-in-leadfl (SHA d18105e7)",
+    "mainContainsOrphanCommit": false
+  },
+  "timeline": [
+    "2026-04-02: turbopack.root fix attempt (1b6e1b7e) and revert (088df421) on main",
+    "2026-04-26: PR #1338 merged — fix commit (b0fbbeae) included, set turbopack.root to silence lockfile warning",
+    "2026-04-26: Orphan commit (d18105e7) pushed to branch AFTER PR merge — E2E test for turbopack.root config",
+    "2026-04-26: Post-merge revert — 'fix: remove turbopack root override — breaks Vercel module resolution' (088df421)"
+  ],
+  "risk": {
+    "level": "none",
+    "detail": "The test file (d8c81797-turbopack-root-config.test.js) tests a turbopack.root config that was subsequently reverted from main because it broke Vercel module resolution. The test was added after the PR merged and was never included in any PR. Merging it would add a test for non-existent (reverted) behavior."
+  },
+  "recommendation": {
+    "action": "safe-delete",
+    "reason": "The branch's PR (#1338) was already merged. The single orphan commit is an E2E test for the turbopack.root fix, which was subsequently reverted on main (088df421) because it broke Vercel. The test has no value — it tests behavior that no longer exists — and was never submitted for review. Delete the remote branch.",
+    "deleteCommand": "git push origin --delete dev/d8c81797-fix-quality-gate-build-failing-in-leadfl"
+  },
+  "commandsRun": [
+    "git log --oneline main..dev/d8c81797-fix-quality-gate-build-failing-in-leadfl",
+    "git diff --stat main...dev/d8c81797-fix-quality-gate-build-failing-in-leadfl",
+    "git ls-remote --heads origin dev/d8c81797-fix-quality-gate-build-failing-in-leadfl",
+    "gh pr list --search 'd8c81797' --state all --json number,title,state,mergedAt,headRefName",
+    "gh pr view 1338 --json number,title,state,mergedAt,headRefName,baseRefName,mergeCommit",
+    "git branch -r --contains d18105e7",
+    "git log --oneline --all -- 'product/lead-response/dashboard/tests/d8c81797-turbopack-root-config.test.js'",
+    "git log --all --oneline --format='%H %s' | grep -i 'turbopack'",
+    "git show origin/main:product/lead-response/dashboard/next.config.ts | grep turbopack",
+    "git show 088df421 --format='%H %s %ad' --date=short --stat"
+  ]
+}
