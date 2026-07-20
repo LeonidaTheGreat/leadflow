@@ -1,0 +1,93 @@
+{
+  "branch": "dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+  "remoteSha": "8c68d5911619d482b2e1702ccfd95e2e567dfef5",
+  "commitsAheadOfMain": 1,
+  "investigatedAt": "2026-07-20",
+  "taskId": "3dd71b2b-599d-4fe0-8c94-74622b5d96ff",
+
+  "verdict": "shippable-needs-task-pr",
+
+  "evidence": {
+    "commitLog": [
+      "8c68d591 feat: fix inactivity alerting cron — schema, schedule, dedup"
+    ],
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitDate": "2026-05-15",
+    "diffStat": {
+      "filesChanged": 6,
+      "insertions": 786,
+      "deletions": 91,
+      "files": [
+        "product/lead-response/dashboard/__tests__/inactivity-alerts.test.ts",
+        "product/lead-response/dashboard/app/api/cron/inactivity-alerts/route.ts",
+        "product/lead-response/dashboard/app/api/cron/inactivity-check/route.ts",
+        "product/lead-response/dashboard/tests/unit/inactivity-alerts-cron.test.ts",
+        "product/lead-response/dashboard/vercel.json",
+        "tests/unit/inactivity-alerts-cron.test.js"
+      ]
+    },
+    "commitBodySummary": "Fixes runtime failures in both inactivity cron routes caused by referencing non-existent DB columns (last_active_at → last_used_at). Adds migration 046 to create alerted_at + channel columns in inactivity_alerts. Fixes vercel.json schedule from daily to */30. Adds comprehensive unit tests.",
+    "prHistory": {
+      "directPRForThisBranch": "none",
+      "relatedPRs": [
+        {
+          "number": 242,
+          "state": "MERGED",
+          "title": "Dev: fix-inactivity-alerting-cron-not-implemented",
+          "branch": "dev/24f3078f-dev-fix-inactivity-alerting-cron-not-imp",
+          "note": "Original implementation — merged to main"
+        },
+        {
+          "number": 397,
+          "state": "CLOSED (not merged)",
+          "title": "Dev: fix-inactivity-alerting-cron-not-implemented",
+          "branch": "dev/24f3078f-dev-fix-inactivity-alerting-cron-not-imp",
+          "note": "Second attempt on same branch — closed without merge"
+        },
+        {
+          "number": 1645,
+          "state": "CLOSED (not merged)",
+          "title": "Dev (re-merge): fix-inactivity-alerting-cron-not-implemented",
+          "branch": "dev/08f3cfa1-dev-re-merge-fix-inactivity-alerting-cro",
+          "note": "Previous re-merge attempt — closed without merge 2026-05-20"
+        },
+        {
+          "number": 2048,
+          "state": "OPEN",
+          "title": "Investigate orphan branch: dev/88ee0f54-dev-re-merge-fix-inactivity-alerting-cro",
+          "note": "Another sibling re-merge orphan investigation currently open"
+        }
+      ]
+    },
+    "provenancePR272": {
+      "note": "PR #272 in provenance data is unrelated — it was for brokerage tier pricing fix on a different branch, closed 2026-03-12"
+    },
+    "mainBranchState": {
+      "lastCommitToInactivityAlertsRoute": "c84f530e (security: cron fail-closed, PR #1216)",
+      "lastCommitToVercelJson": "79bd1a7c (pilot recruitment outreach cron, PR #1483)",
+      "verdict": "Main has received subsequent commits on both files, but the specific schema/column/schedule fixes in this branch do not appear in main history — no migration 046, no last_used_at fix, no */30 schedule commit found in main log"
+    }
+  },
+
+  "risk": "MEDIUM — Branch has a third re-merge attempt pattern (PRs #1645, #88ee0f54, #eef5e2b6 all named 're-merge-fix-inactivity-alerting-cro'). Main has had security and config changes on the same files since May 2026 (PRs #1216, #1209, #1483), so merge conflicts are likely. The schema fix (last_used_at) and migration 046 (alerted_at + channel) are substantive and may have been applied out-of-band or superseded by other work. A human should verify current DB schema and route column usage before merging.",
+
+  "recommendation": "Do not auto-delete. Create a task to review whether the DB schema changes (migration 046: alerted_at, channel columns) and column reference fixes (last_used_at) are already reflected in main via out-of-band work. If not already applied, create a new dev task to re-implement the fix cleanly from current main — the branch is 2 months old and main has diverged significantly. The vercel.json schedule fix (*/30) should be verified against the current schedule config. Given three prior re-merge failures on this same feature, human review is warranted before another automated attempt.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "git fetch origin dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "git log --oneline main..origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "git diff --stat main...origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "git diff --name-only main...origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "git show --stat origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "git log --oneline -3 origin/dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "gh pr list --state all --head dev/eef5e2b6-dev-re-merge-fix-inactivity-alerting-cro",
+    "gh pr view 272 --json number,title,state,headRefName,mergedAt,closedAt,url,body",
+    "gh pr list --state all --search 'inactivity alerting'",
+    "gh pr list --state all --search 'eef5e2b6'",
+    "git log --oneline --all | grep inactivity",
+    "git log --oneline main | grep -E 'inactivity|alerted_at|last_used_at|FR-5'",
+    "git log --oneline main -- product/lead-response/dashboard/app/api/cron/inactivity-alerts/route.ts",
+    "git log --oneline main -- product/lead-response/dashboard/vercel.json"
+  ]
+}
