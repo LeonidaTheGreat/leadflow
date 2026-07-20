@@ -1,0 +1,86 @@
+{
+  "investigationTarget": "dev/6dfad36e-fix-ci-broken-on-main",
+  "verdict": "shippable-needs-task-pr",
+  "investigatedAt": "2026-07-20",
+  "taskId": "9082e7c1-4451-4a25-99b2-6d4c65d5addb",
+
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "53d5a52c",
+        "message": "fix: restore landyourleads.com as default sender domain in all email services",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-04"
+      },
+      {
+        "sha": "547368c0",
+        "message": "test: add unit regression tests for 3 pr-review-loop dedup bugs"
+      },
+      {
+        "sha": "f764005b",
+        "message": "test: regression tests for 3 pr-review-loop dedup bugs (task 73f2e7c5)"
+      }
+    ],
+    "filesChanged": {
+      "modified": [
+        "product/lead-response/dashboard/lib/email-service.ts (+3/-3)",
+        "product/lead-response/dashboard/lib/nps-email-service.ts (+2/-2)",
+        "product/lead-response/dashboard/lib/outreach-email-service.ts (+1/-1)",
+        "product/lead-response/dashboard/lib/trial-emails.ts (+1/-1)"
+      ],
+      "added": [
+        "tests/genome/pr-review-dedup.test.js (252 lines, NEW)",
+        "tests/unit/pr-review-loop-dedup.test.js (325 lines, NEW)"
+      ]
+    },
+    "remoteExists": true,
+    "remoteSha": "53d5a52cfb166c870934e876502aad9b37cf2c6a",
+    "prHistory": {
+      "prForThisBranch": "none — no PR was ever created for dev/6dfad36e-fix-ci-broken-on-main",
+      "relatedMergedPRs": [
+        "#1397 — fix: update email domain to landyourleads.com (MERGED 2026-05-01)",
+        "#1573 — fix: use verified landyourleads sender fallback for resend emails (MERGED)"
+      ]
+    },
+    "mainStateVerification": {
+      "emailServiceLandyourleads": "ALREADY ON MAIN — email-service.ts already uses landyourleads.com as default sender",
+      "testsPrReviewDedup": "NOT ON MAIN — tests/genome/pr-review-dedup.test.js and tests/unit/pr-review-loop-dedup.test.js do not exist on main",
+      "relatedOrphanTasks": [
+        "084fbea2 — Investigate orphan branch: dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating (status: ready)",
+        "6207a213 — Investigate orphan branch: dev/a7f3f5ca-fix-pr-review-loop-3-dedup-bugs-creating (status: ready)"
+      ]
+    }
+  },
+
+  "risk": {
+    "level": "low",
+    "details": [
+      "Email domain changes (4 modified files) are superseded — main already has the landyourleads.com fix via PRs #1397 and #1573. Merging would likely cause minor conflicts that resolve trivially (same final state).",
+      "The 577 lines of new test files (pr-review-dedup.test.js and pr-review-loop-dedup.test.js) are pure additions — zero conflict risk with main.",
+      "No PR was created, so no CI run history is available to verify tests pass as-of this branch."
+    ]
+  },
+
+  "recommendation": {
+    "action": "shippable-needs-task-pr",
+    "priority": "medium",
+    "rationale": "The regression tests for pr-review-loop dedup bugs (577 lines across 2 new test files) are not on main and represent real coverage value. The branch was created to fix CI broken on main, and these tests are the lasting artifact. The email domain fix is superseded. A new task should cherry-pick or port only the two test files (tests/genome/pr-review-dedup.test.js, tests/unit/pr-review-loop-dedup.test.js) to main. Do not merge the email service file changes — they will conflict with the already-merged domain fixes.",
+    "suggestedNextStep": "Create a dev task to add tests/genome/pr-review-dedup.test.js and tests/unit/pr-review-loop-dedup.test.js to main (verify they pass, then PR). Skip the email service modifications.",
+    "doNotDelete": "Branch should be preserved until test files are ported to main."
+  },
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/6dfad36e-fix-ci-broken-on-main",
+    "git diff --stat main...origin/dev/6dfad36e-fix-ci-broken-on-main",
+    "git ls-remote --heads origin dev/6dfad36e-fix-ci-broken-on-main",
+    "gh pr list --state all --head dev/6dfad36e-fix-ci-broken-on-main",
+    "gh pr list --state all --search 'fix-ci-broken-on-main'",
+    "gh pr list --state all --search 'landyourleads'",
+    "gh pr list --state all --search 'sender domain'",
+    "psql ... SELECT ... FROM tasks WHERE title ILIKE '%6dfad36e%'",
+    "psql ... SELECT ... FROM tasks WHERE title ILIKE '%73f2e7c5%'",
+    "git log --oneline main | grep -E 'landyourleads|pr-review.*dedup|email-service'",
+    "ls tests/genome/ && ls tests/unit/pr-review*",
+    "grep -r 'landyourleads' product/lead-response/dashboard/lib/email-service.ts"
+  ]
+}
