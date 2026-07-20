@@ -1,0 +1,102 @@
+{
+  "taskId": "0cbda7f4-544a-48c0-929a-b5dc0896a0b6",
+  "branch": "dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "taskSpec": {
+    "what": "Create metadata-only orphan branch investigation artifact at docs/orphan-investigations/dev-9c7e9eb6-dev-feat-auto-activation-email-on-verifi.json. No application functions or modules changed.",
+    "verify": "Run git log --oneline main..origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi, git diff --stat main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi, git ls-remote --heads origin dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi, local branch/task/PR searches, npm test, and npm run build. Expected: branch metadata collected; npm gates pass if environment supports them.",
+    "boundaries": "Do not read full diffs over 200 lines; do not inspect unrelated file contents; do not modify product code, package scripts, generated/protected markdown, project config, tasks, PRs, or remote branches; do not delete the orphan branch."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote-tracking branch origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi remains one commit ahead of main with no matching task row accessible in this runtime and no PR discoverable through local metadata.",
+    "why": "The branch was cut from an old base to wire a now-existing activation-email unit test directly into package.json's npm test command. Main has since moved root testing to scripts/test-suite-gate.js and contains the underlying activation email feature/test via PR-style commit ba0e2333 (#1526), leaving this older package.json-only branch orphaned.",
+    "fix": "No production fix applied. The correct action is to treat the branch as superseded and avoid merging its package.json change because it would regress the current root test gate wiring."
+  },
+  "summary": "The orphan branch contains one commit, 12a76c5a (feat: wire activation-email unit test into npm test pipeline), changing only package.json (+2/-1). The activation-email feature and its 186-line unit test are already present on main via ba0e2333 (#1526). Current main package.json now delegates npm test to scripts/test-suite-gate.js; the orphan branch replaces that with an older direct e2e + activation-unit command and lacks newer script entries such as test:stripe-checkout. The branch is therefore obsolete as-is.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitsBehindMain": 163,
+    "commit": {
+      "sha": "12a76c5af462f18dfc1f441c2f5aac9ebd082365",
+      "shortSha": "12a76c5a",
+      "subject": "feat: wire activation-email unit test into npm test pipeline",
+      "author": "Stojan Madjunkov",
+      "date": "Fri May 8 21:23:44 2026 -0400"
+    },
+    "diffStat": {
+      "files": [
+        "package.json"
+      ],
+      "summary": "1 file changed, 2 insertions(+), 1 deletion(-)"
+    },
+    "remoteBranch": {
+      "localRemoteTrackingRef": "refs/remotes/origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+      "sha": "12a76c5af462f18dfc1f441c2f5aac9ebd082365",
+      "lsRemote": "blocked: ssh could not resolve github.com in restricted network"
+    },
+    "mainContainsExactCommit": false,
+    "mainContainsUnderlyingFeature": true,
+    "mainEvidence": [
+      "ba0e2333 feat: auto-send activation email on email verification + fix e2e test (#1526)",
+      "tests/unit/auto-activation-email-on-verification.test.js exists on main",
+      "main package.json test script is node scripts/test-suite-gate.js"
+    ],
+    "relatedBranches": [
+      "origin/dev/b4cb2d9d-auto-activation-email-tests",
+      "origin/dev/bc3c287a-auto-activation-email-on-verification"
+    ],
+    "taskSearch": {
+      "status": "blocked",
+      "reason": "TaskStore PostgreSQL query failed with EPERM in this sandbox after connecting to postgresql://*@localhost/openclaw"
+    },
+    "prSearch": {
+      "status": "blocked",
+      "reason": "gh pr list failed because api.github.com was unreachable in restricted network"
+    }
+  },
+  "risk": {
+    "level": "medium",
+    "reason": "The orphan branch itself is low production risk because it changes only package.json, but merging it is medium risk because it would replace the current root test gate with stale May 2026 direct test commands and omit newer test wiring."
+  },
+  "recommendation": "Do not merge this branch as-is. Mark it duplicate/superseded and delete only after human confirmation. If the activation-email unit test is not currently included by scripts/test-suite-gate.js, create a fresh task to add that test to the current gate instead of reviving this old package.json branch.",
+  "commandsRun": [
+    "git checkout dev/0cbda7f4-investigate-orphan-branch-dev-9c7e9eb6-d",
+    "git branch --show-current",
+    "git status --short --branch",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "sed -n '1,220p' CLAUDE.md",
+    "git log --oneline main..dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git diff --stat main...dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git ls-remote --heads origin dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git branch -a --list '*9c7e9eb6*'",
+    "git show-ref | rg '9c7e9eb6|auto-activation|verifi'",
+    "git for-each-ref --format='%(refname:short)' refs/heads refs/remotes | rg '9c7e9eb6|auto|activation|verifi'",
+    "git log --oneline main..origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git diff --stat main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git show --no-patch --format='%H%n%h%n%s%n%an%n%ad' origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "gh pr list --state all --head dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi --json number,state,title,headRefName,baseRefName,url",
+    "rg -n '9c7e9eb6|12a76c5a|12a76c5af462f18dfc1f441c2f5aac9ebd082365|dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi|wire activation-email unit test into npm test pipeline|activation-email unit test|auto-activation-email-on-verifi' .",
+    "git log --all --oneline --grep='wire activation-email unit test into npm test pipeline'",
+    "git branch -r --contains 12a76c5af462f18dfc1f441c2f5aac9ebd082365",
+    "git merge-base --is-ancestor 12a76c5af462f18dfc1f441c2f5aac9ebd082365 main; printf '%s\\n' $?",
+    "node TaskStore search for 9c7e9eb6/12a76c5a/activation-email metadata",
+    "git for-each-ref --format='%(refname:short) %(objectname:short) %(committerdate:short) %(subject)' refs/remotes/origin refs/heads | rg 'activation-email|auto-activation|verification'",
+    "git log --all --oneline --grep='activation-email' --grep='auto-activation' --grep='verification' --all-match",
+    "rg -n 'auto-activation-email|activation-email|on-verification|12a76c5a|9c7e9eb6' completion-reports docs .agents .codex",
+    "git show --stat --oneline ba0e2333",
+    "git show --stat --oneline b95c8dd2",
+    "git log --oneline main -- package.json | sed -n '1,40p'",
+    "git diff --shortstat main...origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "node -e \"const p=require('./package.json'); console.log(JSON.stringify(p.scripts,null,2))\"",
+    "git show origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi:package.json | node -e parse scripts",
+    "git log --oneline main -- tests/unit/auto-activation-email-on-verification.test.js tests/unit/verify-email-auto-activation.test.js | sed -n '1,40p'",
+    "git merge-base --is-ancestor b95c8dd25f5189d4c1076303d2ccd73168ac2977 main; printf '%s\\n' $?",
+    "rg -n 'auto-activation-email-on-verification|verify-email-auto-activation|activation' scripts/test-suite-gate.js tests/unit package.json",
+    "git merge-base main origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi",
+    "git rev-list --count main..origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi && git rev-list --count origin/dev/9c7e9eb6-dev-feat-auto-activation-email-on-verifi..main"
+  ]
+}
