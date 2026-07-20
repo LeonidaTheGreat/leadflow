@@ -1,0 +1,79 @@
+{
+  "branch": "dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s",
+  "investigatedAt": "2026-07-20",
+  "taskId": "47ca1b9f-9812-4d73-bba7-c77302cf0f73",
+  "owningTask": {
+    "id": "bc461c80-dd46-4435-8f0c-b82e30c0cc50",
+    "title": "Dev (re-merge): fix-verify-stripe-webhook-secret-in-production - Verify Stripe webhook secret in production",
+    "status": "failed",
+    "retries": "2/3",
+    "lastError": "PARKED: Stale >24h + already retried",
+    "prNumber": null
+  },
+  "useCase": {
+    "id": "fix-verify-stripe-webhook-secret-in-production",
+    "name": "Verify Stripe webhook secret in production",
+    "implementationStatus": "complete"
+  },
+  "commits": [
+    {
+      "sha": "75acdbf9",
+      "message": "fix: add STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY to health check verification",
+      "author": "Stojan Madjunkov",
+      "date": "2026-05-18",
+      "coAuthoredBy": "Claude Sonnet 4.6"
+    }
+  ],
+  "filesChanged": [
+    "lib/services/SystemStatusService.js (+/-6 lines)",
+    "product/lead-response/dashboard/app/api/health/route.ts (+4 lines)",
+    "tests/stripe-webhook-secret-health-check.test.js (+137 lines, new file)"
+  ],
+  "remoteBranchExists": true,
+  "remoteSha": "75acdbf9877aa3f1d1acdd8294b07403128ecb55",
+  "relatedPRs": [
+    { "number": 663, "branch": "dev/8cbc844c-dev-fix-verify-stripe-webhook-secret-in-", "state": "CLOSED", "mergedAt": null, "note": "Original dev task PR — closed, not merged" },
+    { "number": 1653, "branch": "dev/d7186414-dev-re-merge-fix-verify-stripe-webhook-s", "state": "CLOSED", "mergedAt": null, "note": "Re-merge attempt — closed, not merged" },
+    { "number": 1696, "branch": "dev/648ef165-dev-re-merge-fix-verify-stripe-webhook-s", "state": "CLOSED", "mergedAt": null, "note": "Re-merge attempt — closed, not merged" }
+  ],
+  "codeOnMain": {
+    "stripeWebhookSecretInHealthRoute": false,
+    "healthRouteContainsStripeCheck": false,
+    "evidence": "git show main:product/lead-response/dashboard/app/api/health/route.ts | grep -i 'stripe|webhook' returned no results"
+  },
+  "verdict": "shippable-needs-task-pr",
+  "evidence": [
+    "1 commit ahead of main with well-formed commit message and Co-Authored-By attribution",
+    "3 files changed: SystemStatusService.js (env var check), health/route.ts (required+critical marking), new test file (137 lines)",
+    "No PR was ever created for this branch — owning task bc461c80 failed before PR creation",
+    "All related PRs (663, 1653, 1696) are CLOSED without being merged",
+    "Health route on main does NOT contain STRIPE_WEBHOOK_SECRET or STRIPE_SECRET_KEY checks",
+    "diff --stat main...FETCH_HEAD confirms all 3 files diverge from main",
+    "UC implementation_status=complete is likely a false positive — the code was never merged to main",
+    "4 other sibling orphan branches exist (c2921105, 648ef165, 26ace52b, d7186414) all with same UC — serial re-merge attempts all failing at PR creation step"
+  ],
+  "risk": "medium",
+  "riskNotes": [
+    "UC is marked 'complete' — some mechanism set this despite no merged PR. If another code path delivered the changes, shipping this branch could create a duplicate or conflict.",
+    "STRIPE_SECRET_KEY vs STRIPE_WEBHOOK_SECRET naming should be verified against actual .env key names before merging.",
+    "The 'awaiting_merge requires pr_number' recurring failure pattern in this project caused all re-merge tasks to fail at PR creation — root cause is a genome orchestrator bug, not a code bug."
+  ],
+  "recommendation": "Create a new task to open a PR for this branch and merge it. The code is valid, test-accompanied, and not on main. Before merging, verify: (1) env var names match production .env, (2) confirm UC 'complete' status is indeed a false positive by checking if STRIPE_WEBHOOK_SECRET appears anywhere in main's health check code. If it does appear via a different file, cancel instead.",
+  "systemic_note": "The 'awaiting_merge requires pr_number' error pattern caused all re-merge tasks for this UC to fail. This is a genome orchestrator bug (task bc461c80, d7186414, 648ef165 all hit it). Fix: genome should create PRs for re-merge tasks before marking them awaiting_merge.",
+  "commandsRun": [
+    "git log --oneline main..dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git fetch origin dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git diff --stat main...FETCH_HEAD",
+    "git ls-remote --heads origin dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s",
+    "git show 75acdbf9 --stat",
+    "gh pr list --search 'head:dev/bc461c80-dev-re-merge-fix-verify-stripe-webhook-s'",
+    "gh pr view 663 --json ...",
+    "gh pr view 1653 --json ...",
+    "gh pr view 1696 --json ...",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE id = 'bc461c80-...'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT id, name, implementation_status FROM use_cases WHERE id = 'fix-verify-stripe-webhook-secret-in-production'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE use_case_id = 'fix-verify-stripe-webhook-secret-in-production' AND (status = 'done' OR pr_number IS NOT NULL)\"",
+    "git show main:product/lead-response/dashboard/app/api/health/route.ts | grep -i 'stripe|webhook'",
+    "git log --oneline main | grep -i 'stripe.webhook|webhook.secret'"
+  ]
+}
