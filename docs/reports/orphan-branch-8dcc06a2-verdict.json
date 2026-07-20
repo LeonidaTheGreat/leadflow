@@ -1,0 +1,57 @@
+{
+  "branch": "dev/8dcc06a2-fix-codebase-broken-imports",
+  "investigationTaskId": "d28786d6-1b88-4ceb-b870-b298df3d2759",
+  "investigatedAt": "2026-07-20",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "6be14a0d",
+        "message": "fix: add StripeService with createPromoCode to resolve broken import",
+        "author": "Stojan Madjunkov",
+        "date": "2026-04-21T03:25:05-04:00"
+      }
+    ],
+    "filesChanged": [
+      {
+        "file": "lib/services/StripeService.js",
+        "linesAdded": 43,
+        "description": "New StripeService class with createPromoCode method to fix broken import in upgrade-offer feature test"
+      }
+    ],
+    "fixAlreadyOnMain": true,
+    "mainEquivalentCommit": {
+      "sha": "4a803486",
+      "message": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "date": "2026-04-21T03:32:26-04:00",
+      "note": "Landed on main 7 minutes after the orphan branch commit — same session, parallel/follow-up attempt"
+    },
+    "mainHasCreatePromoCode": true,
+    "relatedPRs": [
+      {
+        "number": 1264,
+        "title": "Dev: feat-personal-upgrade-offer-tool - Personal Upgrade Offer Tool — Admin Sends Promo Code to Specific Trial Agents",
+        "state": "MERGED",
+        "mergedAt": "2026-04-21T03:59:07Z"
+      }
+    ],
+    "existingTaskRow": "none — branch is an orphan with no matching task row"
+  },
+  "risk": "low",
+  "riskNotes": "The single changed file (lib/services/StripeService.js) is already present on main with an equivalent createPromoCode implementation. The orphan branch was a superseded attempt from the same coding session. No unique code exists on this branch that is not already on main. Safe to delete with zero risk of losing work.",
+  "recommendation": "Delete the branch. The fix it introduced (StripeService.createPromoCode) shipped on main via commit 4a803486 on 2026-04-21 and was part of PR #1264 (merged). This branch was abandoned in favour of the re-implementation that merged successfully. No task, PR, or unique content is at risk.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/8dcc06a2-fix-codebase-broken-imports",
+    "git diff --stat main...origin/dev/8dcc06a2-fix-codebase-broken-imports",
+    "git ls-remote --heads origin dev/8dcc06a2-fix-codebase-broken-imports",
+    "git log --format='%H %an %ai %s' origin/dev/8dcc06a2-fix-codebase-broken-imports -1",
+    "gh pr list --search '8dcc06a2' --state all --json number,title,state,mergedAt",
+    "gh pr list --search 'fix-codebase-broken-imports' --state all --json number,title,state,mergedAt",
+    "gh pr list --search 'StripeService createPromoCode' --state all --json number,title,state,mergedAt",
+    "git log --oneline --all --grep='StripeService'",
+    "git show main:lib/services/StripeService.js | grep -c createPromoCode",
+    "git log --oneline main -- lib/services/StripeService.js",
+    "git log --format='%H %ai %s' 4a803486 -1"
+  ]
+}
