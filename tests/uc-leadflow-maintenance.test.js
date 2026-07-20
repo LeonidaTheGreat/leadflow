@@ -46,3 +46,16 @@ for (const report of reports) {
 }
 
 console.log('PASS: orphan branch investigation reports are valid');
+
+// ac55e92e investigation — uses flat schema (branch/taskId at root, no investigatedBranch key)
+const ac55e92ePath = path.join(repoRoot, 'orphan-investigation-ac55e92e.json');
+assert.ok(fs.existsSync(ac55e92ePath), 'orphan-investigation-ac55e92e.json should exist');
+const ac55 = JSON.parse(fs.readFileSync(ac55e92ePath, 'utf8'));
+assert.strictEqual(ac55.branch, 'dev/ac55e92e-fix-vercel-dashboard-health-smoke', 'should name the investigated branch');
+assert.strictEqual(ac55.verdict, 'already-shipped-safe-delete', 'should classify as already shipped');
+assert.ok(ac55.rootCauseAnalysis && ac55.rootCauseAnalysis.failurePoint && ac55.rootCauseAnalysis.why, 'should have root cause analysis');
+assert.ok(ac55.evidence && ac55.evidence.matchingMainCommit, 'should reference the squash commit that shipped the work');
+assert.ok(ac55.evidence.matchingMainCommitIsAncestorOfMain === true, 'squash commit must be confirmed as ancestor of main');
+assert.ok(Array.isArray(ac55.commandsRun) && ac55.commandsRun.length >= 5, 'should document at least 5 commands run');
+assert.ok(typeof ac55.recommendation === 'string' && ac55.recommendation.length > 20, 'should include a recommendation');
+console.log('PASS: ac55e92e orphan investigation report is valid');
