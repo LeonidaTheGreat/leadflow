@@ -1,0 +1,73 @@
+{
+  "investigationTask": "084fbea2-1e8a-466a-b6b9-947787f15acd",
+  "orphanBranch": "dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating",
+  "remoteSHA": "9ead6ed22ec2a3531af4dd6a34235a4fd3cdd4e9",
+  "commitsAheadOfMain": 2,
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+
+  "summary": "Branch contains 2 test-only commits (229 lines added to tests/genome/pr-review-loop-dedup.test.js). No task row exists for this branch (prefix '73f2e7c5' matches no task ID in DB). No PR was ever created. The test file does not exist on main. However, the descendant branch dev/6dfad36e-fix-ci-broken-on-main contains further-iterated versions of the same tests (commits 547368c0 and f764005b explicitly reference task 73f2e7c5), making this branch superseded.",
+
+  "evidence": {
+    "commitsOnBranch": [
+      {
+        "sha": "9ead6ed2",
+        "date": "2026-05-05T07:35:40-04:00",
+        "message": "fix: harden dedup regression tests — hardcode jest.mock paths to fix hoisting"
+      },
+      {
+        "sha": "f20fef4e",
+        "date": "2026-05-05T06:59:19-04:00",
+        "message": "test: add regression tests for 3 pr-review-loop dedup bugs"
+      }
+    ],
+    "filesChanged": [
+      { "file": "tests/genome/pr-review-loop-dedup.test.js", "insertions": 229, "deletions": 0 }
+    ],
+    "prFound": false,
+    "taskRowFound": false,
+    "testFileExistsOnMain": false,
+    "supersededBy": {
+      "branch": "dev/6dfad36e-fix-ci-broken-on-main",
+      "commitsWithSameWork": [
+        "547368c0 — test: add unit regression tests for 3 pr-review-loop dedup bugs",
+        "f764005b — test: regression tests for 3 pr-review-loop dedup bugs (task 73f2e7c5)"
+      ],
+      "note": "6dfad36e branch contains subsequent iterations of the same pr-review-loop dedup tests plus additional CI fixes. It has not been merged to main either."
+    },
+    "siblingOrphan": {
+      "branch": "dev/a7f3f5ca-fix-pr-review-loop-3-dedup-bugs-creating",
+      "existsOnRemote": false,
+      "investigationTaskId": "6207a213-7694-430f-b46f-239d1f8ac358",
+      "note": "Sibling investigation task exists (ready status) but branch does not exist on remote — likely a re-attempt that never pushed"
+    }
+  },
+
+  "risk": {
+    "level": "low",
+    "rationale": "Branch contains only new test files — no production code changed. The test content was iterated further on dev/6dfad36e-fix-ci-broken-on-main which has a more complete version. The only risk is losing the dedup test coverage entirely if 6dfad36e is also dropped before merging."
+  },
+
+  "recommendation": "safe-delete, conditional — The test work from this branch was superseded by further iteration on dev/6dfad36e-fix-ci-broken-on-main. Before deleting, confirm that 6dfad36e is either merged to main or scheduled for merge. If 6dfad36e is also orphaned and at risk of deletion, recover the tests from 73f2e7c5 first via a new PR. Do NOT auto-delete until 6dfad36e status is confirmed.",
+
+  "actionItems": [
+    "Verify status of dev/6dfad36e-fix-ci-broken-on-main — it supersedes this branch's test work",
+    "If 6dfad36e is merged or scheduled to merge to main, this branch can be safely deleted",
+    "If 6dfad36e is also orphaned and at risk, rescue the dedup tests from either branch before deleting both"
+  ],
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating",
+    "git fetch origin dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating",
+    "git log --oneline main..origin/dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating",
+    "git diff --stat main...origin/dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating",
+    "git log --format='%H %ai %s' origin/dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating ^main",
+    "gh pr list --search 'head:dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating' --state all",
+    "psql $LOCAL_PG_URL -c SELECT tasks WHERE branch_name LIKE '%73f2e7c5%'",
+    "git log --all --oneline --grep='pr-review-loop dedup'",
+    "git branch -a --contains f764005b",
+    "git diff --stat origin/dev/6dfad36e-fix-ci-broken-on-main...origin/dev/73f2e7c5-fix-pr-review-loop-3-dedup-bugs-creating",
+    "git log --format='%H %s' origin/dev/73f2e7c5... ^origin/dev/6dfad36e...",
+    "ls tests/genome/pr-review-loop-dedup.test.js"
+  ]
+}
