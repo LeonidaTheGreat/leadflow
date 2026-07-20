@@ -1,0 +1,88 @@
+{
+  "branch": "dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+  "investigatedAt": "2026-07-20",
+  "taskId": "7554255e-1a6c-4f42-a693-45419b167cfb",
+  "verdict": "shippable-needs-task-pr",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "5e2988b7",
+        "message": "fix: close UTM merge verification gap — fix E2E test paths + add missing artifacts"
+      },
+      {
+        "sha": "c8d3bdd1",
+        "message": "fix: correct broken test path and remove invalid git-diff assertion in 84fedae6 test"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 8,
+      "insertions": 630,
+      "deletions": 33,
+      "files": [
+        "lib/onboarding-telemetry.js (+100, new file)",
+        "migrations/014_pilot_invites.sql (+17, new file)",
+        "scripts/check-migration-completeness.js (+79, full impl vs stub on main)",
+        "scripts/check-schema-coupling.js (+278, full impl vs stub on main)",
+        "tests/feat-admin-pilot-invite-flow-e2e.test.js (+42, new file)",
+        "tests/feat-admin-pilot-invite-flow-qc.test.js (+27, new file)",
+        "tests/feat-onboarding-completion-telemetry.test.js (+41, new file)",
+        "tests/*84fedae6*.test.js (-33, test path/assertion fixes)"
+      ]
+    },
+    "remoteExists": true,
+    "remoteSha": "5e2988b75d806228def26dd858fed8098d7f7673",
+    "matchingTaskRow": {
+      "id": "d440e2bb-964c-4c85-9af4-6b2049062490",
+      "title": "Dev (re-merge): fix-prd-objective-not-fully-implemented-product-api-ro",
+      "status": "failed",
+      "branch_name": null,
+      "created_at": "2026-05-15T20:28:47"
+    },
+    "relatedPRs": [
+      {
+        "number": 1637,
+        "branch": "dev/4d366c87-dev-re-merge-fix-prd-objective-not-fully",
+        "state": "CLOSED",
+        "note": "Different branch, same UC — closed 2026-05-15"
+      },
+      {
+        "number": 251,
+        "branch": "dev/a3d83cb2-dev-fix-prd-objective-not-fully-implemen",
+        "state": "MERGED",
+        "note": "Original implementation merged 2026-03-11"
+      }
+    ],
+    "openPRForThisBranch": null,
+    "mainOverlap": {
+      "lib/onboarding-telemetry.js": "NOT on main — branch adds new service",
+      "migrations/014_pilot_invites.sql": "NOT on main — branch adds new migration",
+      "scripts/check-migration-completeness.js": "EXISTS on main as stub (exit 0 only); branch has full 79-line implementation",
+      "scripts/check-schema-coupling.js": "EXISTS on main as stub (exit 0 only); branch has full 278-line implementation",
+      "tests/*": "None of the 3 test files exist on main"
+    }
+  },
+  "risk": "medium",
+  "riskNotes": [
+    "Migration 014_pilot_invites.sql may conflict if a later migration numbered 014 already exists — verify migration numbering before merging",
+    "check-migration-completeness.js and check-schema-coupling.js both exist on main as stubs; branch replaces with real implementations — content conflict possible",
+    "lib/onboarding-telemetry.js is a new service file; cross-check whether a later UC implemented the same service under a different name",
+    "Task d440e2bb is marked 'failed' with no branch_name — the branch was created by the dev agent but the task was not updated, suggesting the agent may have failed after pushing commits"
+  ],
+  "recommendation": "Create a PR for this branch against main. The work is real and unshipped: a new service (onboarding-telemetry), a DB migration, full script implementations replacing stubs, and 3 new test files. Before merging, verify (1) migration numbering doesn't collide, (2) the script stub-to-real upgrades don't break existing callers, (3) lib/onboarding-telemetry.js isn't a duplicate of a service added after May 2026. Update task d440e2bb branch_name field and reopen/create a new PR.",
+  "commandsRun": [
+    "git fetch origin dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "git log --oneline main..origin/dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "git diff --stat main...origin/dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "git ls-remote --heads origin dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "gh pr list --state all --search 'd440e2bb'",
+    "gh pr list --state all --search 'fix-prd-objective-not-fully'",
+    "gh pr list --state all --search 'head:dev/d440e2bb'",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE branch_name LIKE '%d440e2bb%' OR title ILIKE '%prd-objective-not-fully%'\"",
+    "git show main:lib/onboarding-telemetry.js (fatal — not on main)",
+    "git show main:migrations/014_pilot_invites.sql (fatal — not on main)",
+    "git show main:scripts/check-migration-completeness.js (stub only)",
+    "git show main:scripts/check-schema-coupling.js (stub only)",
+    "git log --oneline main | grep -i 'UTM|pilot-invite|check-migration-completeness|check-schema-coupling'"
+  ]
+}
