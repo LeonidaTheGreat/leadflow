@@ -1,0 +1,50 @@
+{
+  "taskId": "6645c9e6-005f-4547-b3bd-11b2aea6539f",
+  "status": "completed",
+  "type": "orphan-branch-investigation",
+  "branch": "dev/c33edf00-fix-e2e-flow-test-failures-1-critical",
+
+  "verdict": "shippable-needs-task-pr",
+
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      "3faf49cd fix: add privileged route auth to all debug/admin routes",
+      "3ee51d16 fix: export processWebhookEvent bound to singleton in BillingService"
+    ],
+    "filesChanged": 23,
+    "insertions": 615,
+    "deletions": 27,
+    "keyFilesChanged": [
+      "lib/services/BillingService.js (2 lines — bound export fix)",
+      "product/lead-response/dashboard/lib/security/privileged-route-auth.ts (NEW — 30 lines)",
+      "product/lead-response/dashboard/app/api/admin/* (9 route files — auth added)",
+      "product/lead-response/dashboard/app/api/debug/* (7 route files — auth added)",
+      "product/lead-response/dashboard/app/api/smoke/stripe-checkout-e2e/route.ts (auth added)",
+      "tests/security-audit-list-all-debug-admin-inte.test.js (NEW — 190 lines)",
+      "tests/82c869fc-invite-url-on-email-failure.test.js (NEW — 135 lines)",
+      "tests/f3d0e72e-testimonials-social-proof.test.js (NEW — 87 lines)",
+      "scripts/check-debug-routes.js (NEW — 80 lines)"
+    ],
+    "existingPRForBranch": null,
+    "matchingTaskRow": null,
+    "remoteExists": true,
+    "remoteSHA": "3faf49cdf5855d07bf2aa671224f009a203f9b04"
+  },
+
+  "risk": "LOW",
+  "riskRationale": "Both commits are additive security hardening: (1) adds a privileged-route-auth guard to all debug/admin/smoke routes that were previously unauthenticated, and (2) fixes a bound-method export bug in BillingService. Neither commit modifies core business logic or existing data flows. Three new test files are included. No deletions of production code.",
+
+  "recommendation": "Create a task row and PR for this branch. The security work (locking down unauthenticated debug/admin routes) is high-value and ready to ship. The BillingService bound-export fix is also a legitimate correctness improvement. No conflicts with recent merged PRs (PR #1921, #1898 addressed different E2E failures; this branch addresses route auth). Recommend the orchestrator: (1) create a task record with agent_id=dev, status=done, branch_name=dev/c33edf00-fix-e2e-flow-test-failures-1-critical, and (2) open a PR from this branch to main.",
+
+  "commandsRun": [
+    "git fetch origin dev/c33edf00-fix-e2e-flow-test-failures-1-critical",
+    "git log --oneline origin/main..origin/dev/c33edf00-fix-e2e-flow-test-failures-1-critical",
+    "git diff --stat origin/main...origin/dev/c33edf00-fix-e2e-flow-test-failures-1-critical",
+    "git ls-remote --heads origin dev/c33edf00-fix-e2e-flow-test-failures-1-critical",
+    "gh pr list --state all --head dev/c33edf00-fix-e2e-flow-test-failures-1-critical --json number,title,state,mergedAt,closedAt,url",
+    "gh pr list --state all --search 'c33edf00'",
+    "gh pr list --state all --search 'privileged route auth'",
+    "psql $LOCAL_PG_URL -c \"SELECT id, title, status, agent_id, branch_name, created_at FROM tasks WHERE branch_name LIKE '%c33edf00%' OR title ILIKE '%e2e flow test failures%' ORDER BY created_at DESC LIMIT 20;\""
+  ]
+}
