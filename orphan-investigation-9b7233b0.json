@@ -1,0 +1,97 @@
+{
+  "branch": "dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s",
+  "taskId": "07c1762b-2529-4af3-af1f-31dfc092a071",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Test-only orphan branch; one of multiple re-merge attempts for an already-shipped fix (PR #195). A semantically equivalent test commit already landed on main (88f0b9af). Two other orphan branches with identical naming patterns are being investigated concurrently (PRs #2044, #2053), one of which likely covers this ground.",
+
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "c37421a2",
+        "message": "test: strengthen duplicate-email sign-in link coverage for TrialSignupForm",
+        "date": "2026-05-16T20:50:43-0400"
+      },
+      {
+        "sha": "6af68b2d",
+        "message": "test: add component rendering tests for duplicate email sign-in link",
+        "date": "2026-05-16T20:50:32-0400"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 5,
+      "insertions": 264,
+      "deletions": 9,
+      "files": [
+        "product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx (+100)",
+        "product/lead-response/dashboard/__tests__/trial-signup.test.ts (+27/-9)",
+        "scripts/check-migration-completeness.js (+3)",
+        "scripts/check-schema-coupling.js (+3)",
+        "tests/unit/duplicate-email-error-shows-plain-text.test.js (+140)"
+      ],
+      "note": "All changes are test files and minor script additions — no production code changed."
+    },
+    "remoteExists": true,
+    "remoteSha": "c37421a2f362505c3a65395bf1927d0dc3371922",
+    "originalFix": {
+      "pr": 195,
+      "status": "MERGED",
+      "mergedAt": "2026-03-11T03:23:08Z",
+      "branch": "dev/87e220db-dev-fix-duplicate-email-error-shows-plai",
+      "title": "Dev: fix-duplicate-email-error-shows-plain-text-missing-sig"
+    },
+    "previousReMergeAttempts": [
+      {
+        "pr": 1635,
+        "status": "CLOSED",
+        "closedAt": "2026-05-15T01:26:22Z",
+        "branch": "dev/baac6654-dev-re-merge-fix-duplicate-email-error-s"
+      },
+      {
+        "pr": 1693,
+        "status": "CLOSED",
+        "closedAt": "2026-05-21T00:07:25Z",
+        "branch": "dev/95bdda35-dev-re-merge-fix-duplicate-email-error-s"
+      }
+    ],
+    "concurrentInvestigations": [
+      {
+        "pr": 2044,
+        "status": "OPEN",
+        "branch": "dev/83239a56-dev-re-merge-fix-duplicate-email-error-s",
+        "openedAt": "2026-07-20T05:13:26Z"
+      },
+      {
+        "pr": 2053,
+        "status": "OPEN",
+        "branch": "dev/8d4f25f6-dev-re-merge-fix-duplicate-email-error-s",
+        "openedAt": "2026-07-20T05:41:37Z"
+      }
+    ],
+    "mainHasRelatedCommit": {
+      "sha": "88f0b9af",
+      "message": "test: strengthen duplicate-email sign-in link tests for TrialSignupForm",
+      "date": "2026-05-16T20:47:26-0400",
+      "note": "Committed 3 minutes BEFORE the orphan branch commits. Near-identical subject line with 'tests' vs 'coverage' wording difference, suggesting parallel agent work on same topic. Main has the earlier version; orphan branch has a slightly renamed variant plus one additional commit."
+    }
+  },
+
+  "risk": {
+    "level": "low",
+    "rationale": "All changes are test-only — no production code, no migrations, no service logic. The underlying fix landed in March 2026. The test additions address real coverage gaps but are superseded by (a) the related commit already on main and (b) concurrent orphan investigations covering the same branch naming pattern. Deleting this branch loses only test variants that may already be covered."
+  },
+
+  "recommendation": "Safe to delete. The underlying fix (duplicate-email sign-in link) is already on main via PR #195. A related test commit (88f0b9af) already landed on main. The concurrent investigations of similar branches (PRs #2044, #2053) will determine whether any remaining test gaps need addressing. No unique production code is lost by deleting this branch.",
+
+  "commandsRun": [
+    "git ls-remote --heads origin dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s",
+    "git fetch origin dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s",
+    "git log --oneline main..origin/dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s",
+    "git diff --stat main...origin/dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s",
+    "gh pr list --search 'dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s' --state all",
+    "gh pr list --search 'duplicate-email-error' --state all",
+    "git log --oneline main --since='2026-01-01' --grep='duplicate-email'",
+    "git log --oneline 88f0b9af -1 --format='%H %s %ai'",
+    "git log --oneline origin/dev/9b7233b0-dev-re-merge-fix-duplicate-email-error-s --format='%H %s %ai'"
+  ]
+}
