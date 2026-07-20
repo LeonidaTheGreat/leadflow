@@ -1,0 +1,69 @@
+{
+  "branch": "dev/7a305eed-dev-fix-uptime-metric-rolling-window-fix",
+  "taskId": "a580d423-5b8f-4143-a42c-be16dbb48c57",
+  "investigatedAt": "2026-07-20",
+  "verdict": "already-shipped-safe-delete",
+
+  "evidence": {
+    "commitsAheadOfMain": [
+      {
+        "sha": "a8f60047",
+        "subject": "test: QC verification for uptime rolling-window consolidation"
+      },
+      {
+        "sha": "0b86f833",
+        "subject": "fix: clean up duplicate uptime rolling-window tests"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 3,
+      "insertions": 99,
+      "deletions": 243,
+      "filesDeleted": [
+        "tests/7c6c2de2-uptime-rolling-window.e2e.test.js (57 lines)",
+        "tests/unit/uptime-metric-rolling-window.test.js (186 lines)"
+      ],
+      "filesAdded": [
+        "tests/qc/qc-uptime-rolling-window-verification.test.js (99 lines)"
+      ]
+    },
+    "originalPR": {
+      "number": 1439,
+      "title": "Dev: fix-uptime-metric-rolling-window - Fix Uptime Metric: Rolling 24h Window",
+      "state": "MERGED",
+      "mergedAt": "2026-05-04T03:57:43Z",
+      "mergeCommitOid": "6d14bcac98453f4c615ac64890c5cbb523383673",
+      "taskId": "7a305eed-2469-4379-9602-bd948bd13830",
+      "useCaseId": "fix-uptime-metric-rolling-window"
+    },
+    "followUpPR": {
+      "number": 1539,
+      "title": "Dev: fix-uptime-metric-rolling-window - Fix Uptime Metric: Rolling 24h Window",
+      "state": "MERGED",
+      "mergedAt": "2026-05-10T07:05:47Z",
+      "branch": "dev/777abc4c-dev-fix-uptime-metric-rolling-window-fix",
+      "note": "Second PR on the same use case merged 6 days later"
+    }
+  },
+
+  "analysis": {
+    "whatHappened": "The original dev task (7a305eed) was completed and merged via PR #1439 on 2026-05-04. After the PR merged, QC added 2 more commits to the same branch — cleaning up duplicate test files and adding a QC verification test. Because the PR was already merged, these QC commits were never included in a new PR and were never merged to main.",
+    "contentType": "test-only — no production code changes in the 2 orphan commits",
+    "mainStateUnaffected": "The files deleted by the orphan commits still exist in main. Deleting this branch does not affect main.",
+    "superseded": "A follow-up PR #1539 also merged uptime rolling-window changes on 2026-05-10. The QC verification test in this orphan branch was likely superseded or re-addressed by that follow-up."
+  },
+
+  "risk": "LOW — all 3 changed files are test files only. No production code, no configuration, no routes, no services. The original fix is already in main via PR #1439. The orphan commits represent post-merge QC cleanup that was never raised as a new PR.",
+
+  "recommendation": "Safe to delete the remote branch. The original work shipped via PR #1439. The 2 orphan commits (test cleanup + QC verification) are superseded by follow-up PR #1539. No action required other than branch deletion.",
+
+  "commandsRun": [
+    "git fetch origin dev/7a305eed-dev-fix-uptime-metric-rolling-window-fix",
+    "git log --oneline main..origin/dev/7a305eed-dev-fix-uptime-metric-rolling-window-fix",
+    "git diff --stat main...origin/dev/7a305eed-dev-fix-uptime-metric-rolling-window-fix",
+    "git ls-remote --heads origin dev/7a305eed-dev-fix-uptime-metric-rolling-window-fix",
+    "gh pr list --search 'dev/7a305eed-dev-fix-uptime-metric-rolling-window-fix' --state all",
+    "gh pr list --search 'uptime rolling-window' --state all",
+    "gh pr view 1439 --json number,title,state,mergedAt,mergeCommit,baseRefName,headRefName,body"
+  ]
+}
