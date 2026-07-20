@@ -1,0 +1,34 @@
+{
+  "taskId": "8044a4fe-4cd9-4859-b3e8-be3ded0ac9be",
+  "branch": "dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch fixed the ESLint flat-config quality gate. PR #1335 was opened but CLOSED without merging (2026-04-26T21:30:36Z). The identical fix later landed on main via commit 1b7da10a ('fix: add flat eslint config and root lint/build scripts'). Branch content is fully superseded — safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": [
+      "3a1a927b ci: trigger CI",
+      "510b2ca0 ci: re-trigger CI",
+      "f0659967 fix: restore root lint gate with eslint flat config"
+    ],
+    "filesChanged": [
+      ".gitignore (+1 line)",
+      "eslint.config.js (+68 lines, new file)",
+      "package-lock.json (+827 lines)",
+      "package.json (+3 lines)"
+    ],
+    "prStatus": "CLOSED (not merged) — PR #1335 closed 2026-04-26T21:30:36Z",
+    "fixAlreadyOnMain": "eslint.config.js exists on main via commit 1b7da10a ('fix: add flat eslint config and root lint/build scripts')"
+  },
+  "risk": "low",
+  "recommendation": "safe-delete — PR was closed without merge and the fix shipped separately on main via a different commit. No unique work at risk.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+    "git fetch origin dev/8704019c-fix-quality-gate-lint-failing-in-leadflo",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "gh pr list --state all --search '8704019c'",
+    "gh pr view 1335 --json state,mergedAt,closedAt,title",
+    "git log --oneline -5 main -- eslint.config.js",
+    "git show main:eslint.config.js (first 5 lines only)"
+  ]
+}
