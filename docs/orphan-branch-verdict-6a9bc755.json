@@ -1,0 +1,54 @@
+{
+  "taskId": "d1b200cc-5c14-4e48-8c2f-9d186beecce8",
+  "status": "completed",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si",
+  "summary": "Orphan branch from 2026-05-15 — a re-merge attempt to wire the OnboardingSimulator step into the onboarding signup wizard. The original fix landed via PR #181 (MERGED 2026-03-10, commit 4d669d94, position 1017 in main history). A sibling re-merge orphan (dev/4f2ba099) attempted the same on 2026-05-16 and was already investigated and documented (PR #2019, merged to main as commit 6eda996a). This branch is yet another re-merge attempt of the same fix — no PR was ever opened, and the single changed file (onboarding/page.tsx) already has the simulator step wired in via main. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "27a2c9657cc742305c62648f3e81d939220dd5e9",
+        "message": "feat: wire OnboardingSimulator step into onboarding signup wizard",
+        "date": "2026-05-15",
+        "author": "Stojan Madjunkov",
+        "filesChanged": 1,
+        "additions": 22,
+        "deletions": 2
+      }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/app/onboarding/page.tsx (+22/-2)"
+    ],
+    "originalFixOnMain": {
+      "sha": "4d669d94",
+      "prNumber": 181,
+      "title": "Dev: fix-page-tsx-not-updated-simulator-step-not-wired-into - page.tsx not updated — simulator step not wired into wizard",
+      "mergedDate": "2026-03-10",
+      "positionInMainHistory": 1017
+    },
+    "relatedOrphanInvestigation": {
+      "branch": "dev/4f2ba099-dev-re-merge-fix-page-tsx-not-updated-si",
+      "investigationPR": 2019,
+      "mergedToMain": "6eda996a",
+      "verdict": "duplicate/superseded"
+    },
+    "prSearch": "No open or merged PR found for this branch"
+  },
+  "risk": "low",
+  "riskRationale": "Single-file change to onboarding/page.tsx. The underlying fix is already on main via PR #181. No unique logic in this branch.",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si",
+    "git fetch origin dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si",
+    "git log --oneline origin/main..origin/dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si",
+    "git diff --stat origin/main...origin/dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si",
+    "git log --format='%H %s %an %ad' --date=short origin/dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si -5",
+    "gh pr list --search 'head:dev/6a9bc755-dev-re-merge-fix-page-tsx-not-updated-si' --state all",
+    "gh pr list --search 'onboarding' --state all --limit 20",
+    "git log --oneline --all | grep -i 'onboarding|6a9bc755|27a2c965'",
+    "git branch -r --contains 8d32aa1d",
+    "git show --stat 4d669d948eb8433521b77304cd060bbade153d49",
+    "git log --oneline origin/main | grep -n '4d669d94'"
+  ]
+}
