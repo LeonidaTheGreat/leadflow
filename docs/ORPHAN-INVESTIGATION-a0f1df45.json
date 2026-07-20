@@ -1,0 +1,57 @@
+{
+  "verdict": "already-shipped-safe-delete",
+  "branch": "dev/a0f1df45-fix-code-quality-1-high-critical-npm-vul",
+  "commitsAheadOfMain": 2,
+  "commits": [
+    {
+      "sha": "9200269c",
+      "message": "test: E2E coverage for uuid v14 upgrade and npm audit pass"
+    },
+    {
+      "sha": "501b3b30",
+      "message": "fix: npm_audit code quality issue"
+    }
+  ],
+  "filesChanged": [
+    "package.json",
+    "package-lock.json",
+    "tests/e2e/fix-code-quality-npm-vuln-uuid-upgrade.test.js"
+  ],
+  "diffStatSummary": "3 files changed, 101 insertions(+), 11 deletions(-)",
+  "evidence": {
+    "pr1320": {
+      "number": 1320,
+      "title": "Fix code quality: 1 high/critical npm vulnerabilities",
+      "state": "MERGED",
+      "mergedAt": "2026-04-26T02:46:39Z",
+      "mergeCommit": "6517642c8a2506b3190abe3c26baf92fd286b8e5",
+      "mergeCommitOnMain": true
+    },
+    "pr1357": {
+      "number": 1357,
+      "title": "Fix code quality: 1 high/critical npm vulnerabilities",
+      "state": "CLOSED",
+      "closedAt": "2026-04-27T17:14:38Z",
+      "mergeCommit": null,
+      "note": "Duplicate PR, closed without merge"
+    },
+    "branchOnRemote": true,
+    "branchTipSha": "9200269c32ef3fa0595df73d7ccce05dff3a76db"
+  },
+  "risk": "none",
+  "recommendation": "Safe to delete remote branch. PR #1320 was merged on 2026-04-26 and the merge commit (6517642c) is present on main. PR #1357 was a duplicate that was closed without merging. GitHub squash/rebase merge means original commit SHAs do not appear on main, but the content is fully present.",
+  "deleteCommand": "git push origin --delete dev/a0f1df45-fix-code-quality-1-high-critical-npm-vul",
+  "commandsRun": [
+    "git fetch origin dev/a0f1df45-fix-code-quality-1-high-critical-npm-vul",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git ls-remote --heads origin dev/a0f1df45-fix-code-quality-1-high-critical-npm-vul",
+    "gh pr list --state all --search 'a0f1df45' --json number,title,state,headRefName",
+    "gh pr view 1320 --json number,title,state,headRefName,mergedAt,mergeCommit",
+    "gh pr view 1357 --json number,title,state,headRefName,closedAt,mergeCommit",
+    "git merge-base --is-ancestor 6517642c main",
+    "git branch -r --contains 9200269c"
+  ],
+  "investigatedAt": "2026-07-20",
+  "taskId": "a2d68317-b8d5-487b-9344-afd10d5dd6d2"
+}
