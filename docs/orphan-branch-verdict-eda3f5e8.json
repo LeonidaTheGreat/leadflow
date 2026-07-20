@@ -1,0 +1,49 @@
+{
+  "verdict": "duplicate/superseded",
+  "branch": "dev/eda3f5e8-genome-fix-stale-waiting-items-action-it",
+  "taskId": "eda3f5e8-0916-49f7-bd5e-cc7ee994bf6b",
+  "investigationDate": "2026-07-20",
+  "summary": "The single commit on this orphan branch was superseded by a more comprehensive commit (acc68dc3) that reached main on 2026-05-03. Both commits modify the same two files from the same parent commit — they are sibling patches, not independent work. The main-merged version is strictly broader in scope.",
+  "evidence": {
+    "orphanCommit": {
+      "sha": "137de362",
+      "subject": "fix: resolve stale waiting action items in leadflow scope",
+      "author": "Stojan Madjunkov",
+      "date": "2026-05-03T21:02:30-04:00",
+      "filesChanged": [
+        "scripts/db/resolve-stale-action-items.js (+28 -4)",
+        "tests/unit/resolve-stale-action-items.test.js (+75 new file)"
+      ],
+      "linesAdded": 99
+    },
+    "supersedingCommit": {
+      "sha": "acc68dc3",
+      "subject": "fix: resolve stale action items across awaiting statuses",
+      "mergedToMain": true,
+      "date": "2026-05-03T20:57:48-04:00",
+      "filesChanged": [
+        "scripts/db/resolve-stale-action-items.js (+31 -5)",
+        "tests/unit/resolve-stale-action-items.test.js (+94 new file)"
+      ],
+      "linesAdded": 120,
+      "note": "Broader scope ('across awaiting statuses' vs 'in leadflow scope'), more lines added"
+    },
+    "sharedParent": "66851d7c — fix: replace weak randomness in runtime request ids and retry jitter",
+    "relatedPRs": "No PR was ever created for the orphan branch. PR #1418 (CLOSED, not merged) was a sync branch unrelated to this fix.",
+    "mainlineCheck": "acc68dc3 is present in origin/main lineage with sync tags from 2026-05-04T01:07 — confirmed merged."
+  },
+  "risk": "low — the fix is already shipped to main via acc68dc3 (a superset). Merging the orphan would conflict on the same files and add no new value. Deleting the branch loses nothing.",
+  "recommendation": "safe-delete — the fix is already in main via a more comprehensive sibling commit (acc68dc3). No further action on this branch is needed. The owning task (eda3f5e8, status: failed, 2/3 retries) should be cancelled or marked resolved-by-supersession.",
+  "commandsRun": [
+    "git log --oneline main..dev/eda3f5e8-genome-fix-stale-waiting-items-action-it",
+    "git ls-remote --heads origin dev/eda3f5e8-genome-fix-stale-waiting-items-action-it",
+    "git diff --stat origin/main...origin/dev/eda3f5e8-genome-fix-stale-waiting-items-action-it",
+    "git log --format='%H %an %ae %ai %s' origin/dev/eda3f5e8-genome-fix-stale-waiting-items-action-it -5",
+    "gh pr list --state all --head dev/eda3f5e8-genome-fix-stale-waiting-items-action-it",
+    "gh pr list --state all --search 'resolve stale waiting action items'",
+    "git log --oneline origin/main | grep -i 'stale|action.item|eda3f5e8'",
+    "git show acc68dc3 --stat",
+    "git log --oneline acc68dc3 -3 && git log --oneline 137de362 -3",
+    "git log --oneline --decorate origin/main | grep -A2 -B2 'acc68dc3'"
+  ]
+}
