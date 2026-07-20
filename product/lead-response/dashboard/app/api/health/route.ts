@@ -106,6 +106,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: allOk ? 'ok' : 'degraded',
+      app: 'leadflow-dashboard',
       checks,
       ...(criticalFailed.length > 0 && { errors: criticalFailed }),
       ...(warningFailed.length > 0 && { warnings: warningFailed }) },
