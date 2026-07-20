@@ -1,0 +1,51 @@
+{
+  "branch": "dev/f167334d-fix-duplicate-email-signin-link",
+  "shortSha": "f167334d",
+  "investigationDate": "2026-07-20",
+  "taskId": "53536798-fde6-49a4-873e-18eaac7c0ed6",
+
+  "verdict": "duplicate/superseded",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSha": "325e11c8325acb2c922892f6faee5e565f0369d1",
+    "commitDate": "2026-05-21T20:05:14-04:00",
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitSubject": "test: add re-submit reset coverage for duplicate-email error in TrialSignupForm",
+    "commitBody": "Adds a test verifying that isDuplicateEmailError resets on the next submit, so the sign-in link clears when the user retries with a different email. Covers the reset path (setIsDuplicateEmailError(false) at handleSubmit start) that the existing 4 tests did not exercise.",
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx (+43 lines)"
+    ],
+    "remoteExists": true,
+    "openPRs": [],
+    "supersedingCommitOnMain": {
+      "sha": "88f0b9af0a36d8f7cec9b4f1bbab589a47afe061",
+      "date": "2026-05-16T20:47:26-04:00",
+      "subject": "test: strengthen duplicate-email sign-in link tests for TrialSignupForm",
+      "note": "This commit (5 days before the orphan commit) already created the same file with MORE comprehensive coverage — 117 lines including detection logic for 409 status, 'already exists' message, sign-in link rendering in both compact/full variants, and e2e code-inspection tests. The orphan's 43-line reset test is a strict subset of what main already provides.",
+      "filesChanged": [
+        "product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx (+117 lines)",
+        "product/lead-response/dashboard/__tests__/trial-signup.test.ts (28 changes)"
+      ]
+    }
+  },
+
+  "risk": "low",
+  "riskRationale": "The test file already exists on main with a superset of the orphan's coverage. No unique logic is lost by deleting the orphan branch. No open PR was ever created. The orphan's only commit is a net subset of what main already contains.",
+
+  "recommendation": "safe-delete",
+  "recommendationDetail": "Delete remote branch dev/f167334d-fix-duplicate-email-signin-link. The single commit adds a test for isDuplicateEmailError reset-on-resubmit, but main's 88f0b9af (2026-05-16) already includes that same file with broader coverage. The orphan was created after the superseding commit landed and was never turned into a PR.",
+
+  "commandsRun": [
+    "git fetch origin dev/f167334d-fix-duplicate-email-signin-link",
+    "git log --oneline main..FETCH_HEAD",
+    "git show 325e11c8 --stat",
+    "git log -1 --format='%H %an %ae %ai %s' 325e11c8",
+    "git ls-remote --heads origin dev/f167334d-fix-duplicate-email-signin-link",
+    "gh pr list --head dev/f167334d-fix-duplicate-email-signin-link --state all --json number,title,state,url",
+    "find . -name 'trial-signup-form.duplicate-email.test.tsx'",
+    "git log --oneline --follow -- 'product/lead-response/dashboard/__tests__/trial-signup-form.duplicate-email.test.tsx'",
+    "git log -1 --format='%H %ai %s' 88f0b9af",
+    "git show 88f0b9af --stat"
+  ]
+}
