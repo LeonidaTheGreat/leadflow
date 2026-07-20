@@ -82,28 +82,44 @@ test_health_connectivity() {
 }
 
 # Test 2: Login rejects invalid credentials
+# Retries up to 3 times (5s apart) to tolerate Vercel cold-start latency that
+# causes the first request to time out before the function warms up.
 test_login_rejects_bad() {
-  local resp
-  resp=$(curl -s --max-time 10 -X POST "$BASE_URL/api/auth/login" \
-    -H "Content-Type: application/json" \
-    -d '{"email":"e2e-nonexistent@example.com","password":"wrongpass123"}' 2>/dev/null) || return 1
-  echo "$resp" | grep -q 'Invalid email or password' || return 1
+  local resp attempt
+  for attempt in 1 2 3; do
+    resp=$(curl -s --max-time 10 -X POST "$BASE_URL/api/auth/login" \
+      -H "Content-Type: application/json" \
+      -d '{"email":"e2e-nonexistent@example.com","password":"wrongpass123"}' 2>/dev/null) || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    echo "$resp" | grep -q 'Invalid email or password' && return 0
+    [ "$attempt" -lt 3 ] && sleep 5
+  done
+  return 1
 }
 
 # Test 3: Forgot-password returns success (anti-enumeration)
+# Retries up to 3 times (5s apart) to tolerate Vercel cold-start latency.
 test_forgot_password() {
-  local resp
-  resp=$(curl -s --max-time 10 -X POST "$BASE_URL/api/auth/forgot-password" \
-    -H "Content-Type: application/json" \
-    -d '{"email":"e2e-nonexistent@example.com"}' 2>/dev/null) || return 1
-  echo "$resp" | grep -q '"success":true' || return 1
+  local resp attempt
+  for attempt in 1 2 3; do
+    resp=$(curl -s --max-time 10 -X POST "$BASE_URL/api/auth/forgot-password" \
+      -H "Content-Type: application/json" \
+      -d '{"email":"e2e-nonexistent@example.com"}' 2>/dev/null) || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    echo "$resp" | grep -q '"success":true' && return 0
+    [ "$attempt" -lt 3 ] && sleep 5
+  done
+  return 1
 }
 
 # Test 4: Signup page loads
+# Retries up to 3 times (5s apart) to tolerate Vercel cold-start latency.
 test_signup_page() {
-  local code
-  code=$(curl -sf --max-time 10 -o /dev/null -w '%{http_code}' "$BASE_URL/signup" 2>/dev/null) || return 1
-  [ "$code" = "200" ] || return 1
+  local code attempt
+  for attempt in 1 2 3; do
+    code=$(curl -sf --max-time 10 -o /dev/null -w '%{http_code}' "$BASE_URL/signup" 2>/dev/null) || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    [ "$code" = "200" ] && return 0
+    [ "$attempt" -lt 3 ] && sleep 5
+  done
+  return 1
 }
 
 # Test 5: Landing page loads
@@ -114,16 +130,24 @@ test_landing_page() {
 }
 
 # Test 6: Trial signup creates account + returns agentId
+# Retries up to 3 times (5s apart) to tolerate Vercel cold-start latency.
+# Each attempt uses a unique email (ts+attempt suffix) to avoid 409 conflicts
+# on retry. The cleanup_test_accounts() step at the end removes all attempts.
 test_trial_signup_flow() {
-  local ts email resp
+  local ts email resp attempt
   ts=$(date +%s)
-  email="e2e-flow-${ts}@leadflow-test.com"
 
-  resp=$(curl -s --max-time 15 -X POST "$BASE_URL/api/auth/trial-signup" \
-    -H "Content-Type: application/json" \
-    -d "{\"email\":\"$email\",\"password\":\"E2eTest123!\",\"firstName\":\"E2E\",\"lastName\":\"Test\"}" 2>/dev/null) || return 1
+  for attempt in 1 2 3; do
+    email="e2e-flow-${ts}-${attempt}@leadflow-test.com"
 
-  echo "$resp" | grep -q '"agentId"' || return 1
+    resp=$(curl -s --max-time 15 -X POST "$BASE_URL/api/auth/trial-signup" \
+      -H "Content-Type: application/json" \
+      -d "{\"email\":\"$email\",\"password\":\"E2eTest123!\",\"firstName\":\"E2E\",\"lastName\":\"Test\"}" 2>/dev/null) || { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+
+    echo "$resp" | grep -q '"agentId"' && break
+    [ "$attempt" -lt 3 ] && sleep 5 && continue
+    return 1
+  done
 
   E2E_TOKEN=$(echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null) || true
   E2E_EMAIL="$email"
