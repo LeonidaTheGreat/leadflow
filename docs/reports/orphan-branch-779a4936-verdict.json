@@ -1,0 +1,101 @@
+{
+  "taskId": "d36695a0-a9e2-4f30-acb3-2b73a2498567",
+  "investigatedBranch": "dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+  "verdict": "duplicate/superseded",
+  "verdictSummary": "This branch is the 3rd of 6 failed re-merge attempts for UC 'fix-three-consecutive-vercel-builds-failing-fix-never-' (original shipped via PR #165, 2026-03-10). Its task (779a4936-c178-47d3-af05-6765e83eb661) has status 'failed' with no PR ever created. The changes — comment-only TS2339/TS2345 clarifications in 2 source files plus a new regression test — were never merged to main and have been superseded by 5+ months of commits on the same files. The entire cluster of re-merge attempts (0ed46882, 779a4936, 2950d127, 0047d8d9, plus others) has been catalogued in prior investigation de3b67e0. Safe to delete.",
+
+  "thisInvestigationPRContains": {
+    "note": "This PR (investigation task d36695a0) adds ONLY this verdict JSON file. It does NOT modify any source code, CI configuration, service files, package.json, or tests. QC should review only this JSON document.",
+    "filesChanged": ["docs/reports/orphan-branch-779a4936-verdict.json"],
+    "noCodeChanges": true
+  },
+
+  "orphanBranchMetadata": {
+    "branch": "dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+    "headSha": "8867c0ff2556b81252f7120bee178cd93614e7ce",
+    "existsOnRemote": true,
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "8867c0ff",
+        "subject": "fix(ts): resolve TS2339 and TS2345 TypeScript errors causing Vercel build failures",
+        "date": "2026-05-14T23:01:55-04:00",
+        "author": "Stojan Madjunkov"
+      },
+      {
+        "sha": "12d32a16",
+        "subject": "test: add TS2339 and TS2345 regression tests for Vercel build failures",
+        "date": "2026-05-15T20:13:51-04:00",
+        "author": "Stojan Madjunkov"
+      }
+    ],
+    "filesChanged": [
+      "product/lead-response/dashboard/__tests__/ts-regression-vercel-build.test.ts (87 lines, new test file)",
+      "product/lead-response/dashboard/app/api/auth/trial-signup/route.ts (+3 lines, clarifying comment only)",
+      "product/lead-response/dashboard/app/pilot/page.tsx (+2 lines, clarifying comment only)"
+    ],
+    "changeNature": "Comment-only clarifications for TS2339/TS2345 false-positive TypeScript errors plus a regression test suite. No functional logic changed.",
+    "noPRCreated": true,
+    "originalTaskStatus": "failed",
+    "originalTaskId": "779a4936-c178-47d3-af05-6765e83eb661"
+  },
+
+  "evidence": {
+    "originalUC": {
+      "id": "fix-three-consecutive-vercel-builds-failing-fix-never-reached-production",
+      "mergedPR": 165,
+      "mergedCommit": "503afe96",
+      "mergedDate": "2026-03-10",
+      "note": "PR #165 fixed TS2304 (missing PilotStatusBanner import), not TS2339/TS2345. UC is considered shipped."
+    },
+    "remergeAttemptsForThisUC": [
+      { "taskId": "d2e9f539-d802-4fa1-9d16-1f3b13903323", "status": "cancelled", "pr": 1643 },
+      { "taskId": "0ed46882-61aa-485b-af3a-5e9fce4a399f", "status": "failed", "branch": "dev/0ed46882-dev-re-merge-fix-three-consecutive-verce", "investigated": "PR #1973 — concluded safe-delete" },
+      { "taskId": "779a4936-c178-47d3-af05-6765e83eb661", "status": "failed", "branch": "dev/779a4936-dev-re-merge-fix-three-consecutive-verce", "note": "THIS BRANCH" },
+      { "taskId": "2950d127-1082-4f36-a990-ee0ff225856b", "status": "failed", "branch": "dev/2950d127-dev-re-merge-fix-three-consecutive-verce", "investigated": "PR #1986 — concluded safe-delete" },
+      { "taskId": "0047d8d9-dff0-4e0d-8cc7-519a6862908d", "status": "failed", "branch": "dev/0047d8d9-dev-re-merge-fix-three-consecutive-verce", "investigated": "PR #1964 — concluded safe-delete" }
+    ],
+    "priorInvestigationRef": {
+      "reportFile": "docs/reports/orphan-branch-de3b67e0-verdict.json",
+      "verdictForCluster": "safe-delete — all re-merge attempts failed or cancelled",
+      "taskId12fa9024": "Catalogued this branch as '3rd of 6 failed re-merge attempts' in orphan-branch-12fa9024-verdict.json"
+    },
+    "mainDivergence": {
+      "mainHasNewerCommitsOnSameFiles": true,
+      "filesOnMainHaveEvolvedBeyondBranch": true,
+      "catchFinallyOnMain": false,
+      "testFileOnMain": false,
+      "note": "Both source files exist on main with 5+ months of subsequent commits. Merging branch would require conflict resolution and risk regressions in evolved code."
+    },
+    "siblingBranchStatus": {
+      "0ed46882": "investigated — safe-delete",
+      "2950d127": "investigated — safe-delete",
+      "0047d8d9": "investigated — safe-delete"
+    }
+  },
+
+  "risk": "low — branch has no PR, its task is failed, the UC is considered shipped, and the same investigation conclusion has been reached for 3 sibling branches. Comment-only changes carry no risk if not merged.",
+
+  "recommendation": "safe-delete — this is the 3rd of 5+ failed re-merge attempts for a UC shipped via PR #165 (2026-03-10). No PR was ever created. Three sibling branches have already been investigated and cleared for deletion. Delete branch: git push origin --delete dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+
+  "commandsRun": [
+    "git fetch origin dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git ls-remote --heads origin dev/779a4936-dev-re-merge-fix-three-consecutive-verce",
+    "git log --format='%H %ai %s' main..FETCH_HEAD",
+    "gh pr list --state all --search '779a4936'",
+    "gh pr list --state all --search 'fix three consecutive verce'",
+    "gh pr list --state all --search 'TS2339'",
+    "git log --oneline --all --grep='TS2339'",
+    "git log --oneline --all --grep='Vercel build failures'",
+    "git show 0ff0b8e9 --stat",
+    "git show 264c9938 --stat",
+    "git merge-base --is-ancestor 0ff0b8e9 origin/main",
+    "git log --oneline origin/main | grep -E 'TS2339|Vercel build'",
+    "git show origin/main:product/lead-response/dashboard/app/api/auth/trial-signup/route.ts | grep -n 'clarifying|TS2339'",
+    "git log --oneline main..origin/dev/2950d127-dev-re-merge-fix-three-consecutive-verce",
+    "cat docs/reports/orphan-branch-12fa9024-verdict.json",
+    "cat docs/reports/orphan-branch-0ed46882-verdict.json"
+  ]
+}
