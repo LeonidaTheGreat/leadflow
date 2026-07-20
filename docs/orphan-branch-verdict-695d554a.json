@@ -1,0 +1,100 @@
+{
+  "taskId": "e323c58f-3956-4e6d-87fb-ec67d231e6e3",
+  "status": "completed",
+  "verdict": "shippable-needs-task-pr",
+  "branch": "dev/695d554a-fix-codebase-broken-imports",
+  "summary": "Branch contains 4 commits (all 2026-04-22) adding 1405 lines of new test coverage for lib/db.js (670 lines, 69 tests) and lib/logger.js (599 lines, 37 tests), an import-path stabilization for pilot-signup-outreach-e2e tests (136 lines), and 3 ARCHITECTURE.md service table entries. None of this test coverage is present in current main HEAD. No PR was ever created for this branch. The npm_audit commit (973a9077) was likely superseded by PR #1273 (merged same day on a different branch). The branch is ~3 months old and 327 commits behind its fork point — it needs rebasing before merging, but the test content itself is unique and valuable.",
+  "evidence": {
+    "commitsAheadOfMain": 4,
+    "commits": [
+      {
+        "sha": "f1fc4e40",
+        "subject": "fix: stabilize pilot signup outreach import paths",
+        "date": "2026-04-22T17:25:07-04:00"
+      },
+      {
+        "sha": "3ea1170f",
+        "subject": "test: add unit tests for lib/logger.js (37 tests, 100% pass)",
+        "date": "2026-04-22T17:17:22-04:00"
+      },
+      {
+        "sha": "13442b07",
+        "subject": "test: add unit tests for lib/db.js hub (69 tests, 100% pass)",
+        "date": "2026-04-22T16:58:25-04:00"
+      },
+      {
+        "sha": "973a9077",
+        "subject": "fix: npm_audit code quality issue",
+        "date": "2026-04-22T16:52:50-04:00"
+      }
+    ],
+    "forkPoint": "cc84ac98",
+    "forkPointSubject": "Dev: feat-pilot-signup-follow-up-sequence (PR merged 2026-04-22)",
+    "mainCommitsAheadOfForkPoint": 327,
+    "filesChangedVsCurrentMain": [
+      {
+        "file": "ARCHITECTURE.md",
+        "change": "3 new service rows added: PilotSignupOutreachService, StripeService, TrialActivationService",
+        "linesAdded": 3
+      },
+      {
+        "file": "tests/unit/db.test.js",
+        "change": "new file — unit tests for lib/db.js (createClient, getPool, QueryBuilder, HTTP handling, auth stubs, pg Pool singleton)",
+        "linesAdded": 670
+      },
+      {
+        "file": "tests/unit/logger.test.js",
+        "change": "new file — unit tests for lib/logger.js (debug/info/warn/error/fatal/child/withLogging, requestLogger middleware)",
+        "linesAdded": 599
+      },
+      {
+        "file": "tests/unit/pilot-signup-outreach-e2e.test.js",
+        "change": "new file — import-path stabilization using repo-root helper for PilotSignupOutreachService, pilot-signup-outreach.js, migrate-pilot-signup-follow-up.js",
+        "linesAdded": 136
+      }
+    ],
+    "totalNewLines": 1408,
+    "relatedPRs": [
+      {
+        "number": 1273,
+        "title": "Fix code quality: 1 high/critical npm vulnerabilities",
+        "branch": "dev/c01e60f4-fix-code-quality-1-high-critical-npm-vul",
+        "state": "MERGED",
+        "mergedAt": "2026-04-22T20:51:51Z",
+        "note": "npm_audit commit 973a9077 intent likely already landed here — skip when rebasing"
+      }
+    ],
+    "noPRCreatedForThisBranch": true,
+    "remoteExists": true
+  },
+  "risk": {
+    "level": "medium",
+    "reasons": [
+      "327 commits of drift — rebase will likely produce conflicts, especially in test infrastructure files",
+      "npm_audit commit (973a9077) may duplicate content in PR #1273 — must resolve during rebase",
+      "ARCHITECTURE.md rows may already be present in current auto-generated main version",
+      "Test module paths (lib/db.js, lib/logger.js) should be verified against current main before PR"
+    ],
+    "dataLoss": "none — only test files and docs, no source code modified"
+  },
+  "recommendation": "Create a new dev task to port the test coverage onto a fresh branch from current main. Recommended approach: cherry-pick commits 3ea1170f and 13442b07 (the db.test.js and logger.test.js tests) and f1fc4e40 (pilot-signup import fix) onto main. Skip 973a9077 (npm_audit — already in main via #1273). Skip ARCHITECTURE.md (auto-generated). Verify all tests pass against current lib/ before submitting PR.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/695d554a-fix-codebase-broken-imports",
+    "git fetch origin dev/695d554a-fix-codebase-broken-imports",
+    "git fetch origin main",
+    "git log --oneline $MAIN..FETCH_HEAD",
+    "git diff --stat $MAIN...$ORPHAN",
+    "git diff --name-only $MAIN...$ORPHAN",
+    "git log --format='%H %s %ai' on 4 commits",
+    "git merge-base $ORPHAN $MAIN",
+    "git log --oneline $FORK..$MAIN | wc -l",
+    "git diff $MAIN...$ORPHAN -- ARCHITECTURE.md | head -20",
+    "git diff $MAIN...$ORPHAN -- tests/unit/db.test.js | head -30",
+    "git diff $MAIN...$ORPHAN -- tests/unit/logger.test.js | head -10",
+    "git diff $MAIN...$ORPHAN -- tests/unit/pilot-signup-outreach-e2e.test.js | head -20",
+    "gh pr list --search 'fix-codebase-broken-imports' --state all",
+    "gh pr list --search 'stabilize pilot signup' --state all",
+    "gh pr list --search 'npm_audit code quality' --state all",
+    "gh pr list --search 'head:dev/695d554a' --state all"
+  ]
+}
