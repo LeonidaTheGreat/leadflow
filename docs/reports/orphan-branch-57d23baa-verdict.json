@@ -1,0 +1,103 @@
+{
+  "taskId": "dd2b4ef5-c5d7-4048-9f1b-87bf22a08f51",
+  "investigatedBranch": "dev/57d23baa-write-tests-for-untested-hub-logger",
+  "investigatedAt": "2026-07-20",
+  "verdict": "needs-human-review",
+  "taskSpec": {
+    "what": "Create docs/reports/orphan-branch-57d23baa-verdict.json only; no product files, functions, routes, services, tests, generated dashboards, or branch contents are modified.",
+    "verify": "Run metadata-only git commands, JSON parse check, git status, npm test, npm run build, and npm run lint where available; expected result is valid JSON, only this report file changed, and no product-code regression from this documentation-only investigation.",
+    "boundaries": "Do not delete the orphan branch, do not open full diffs or file contents from the orphan branch, do not modify code, do not create a PR, do not merge, do not touch protected generated files."
+  },
+  "rootCauseAnalysis": {
+    "failurePoint": "Remote branch origin/dev/57d23baa-write-tests-for-untested-hub-logger has commits ahead of main but no matching local task trace found by metadata search.",
+    "why": "The branch appears to be an orphaned test-coverage attempt around logger hub wiring. Local history shows related logger-hub commits and PR-number references, but the live GitHub/task lookups were unavailable in this sandbox, and the branch is 250 commits behind current main.",
+    "fix": "No code fix was made. The investigation records a needs-human-review verdict because metadata shows unique branch changes that cannot be safely deleted or shipped automatically without live PR/task confirmation."
+  },
+  "evidence": {
+    "remoteTrackingRef": "refs/remotes/origin/dev/57d23baa-write-tests-for-untested-hub-logger -> 00dd89db2a706be7456822d3186e08cbeb23eb15",
+    "liveRemoteLookup": "git ls-remote failed: ssh could not resolve github.com in sandbox",
+    "commitsAheadOfMain": [
+      "00dd89db test: E2E verification for logger hub wiring (task 57d23baa, PR #1369)",
+      "cca6306a test: convert logger tests to Jest format (83 tests)",
+      "c4fadcf2 test: add lib/index.js hub tests for logger exports"
+    ],
+    "diffStat": [
+      "tests/57d23baa-logger-hub-e2e.test.js | 53 ++",
+      "tests/unit/lib-index-logger.test.js | 164 ++++",
+      "tests/unit/logger-requestcontext-integration.test.js | 165 ++--",
+      "tests/unit/logger.test.js | 917 ++++++++++-----------",
+      "4 files changed, 713 insertions(+), 586 deletions(-)"
+    ],
+    "mainComparison": {
+      "ahead": 3,
+      "behind": 250,
+      "gitCherry": "All 3 target commits are patch-unique relative to local main.",
+      "filesAlreadyOnMain": [
+        "tests/unit/lib-index-logger.test.js",
+        "tests/unit/logger-requestcontext-integration.test.js",
+        "tests/unit/logger.test.js"
+      ],
+      "filesOnlyOnTargetBranch": [
+        "tests/57d23baa-logger-hub-e2e.test.js"
+      ]
+    },
+    "relatedHistory": [
+      "Local history contains sync/main-2026-04-29T15-08-37 commit 5ea33fb1: test: E2E verification for logger hub wiring (PR #1369).",
+      "Current main contains 3c81d84b: test: convert logger tests to Jest format (83 tests), 590f18b4: test: add Jest tests for lib/logger.js hub (60 tests covering all exported symbols) (#1378), and c2f3778c: test: expand logger hub coverage with 16 edge-case tests (77 total).",
+      "Sibling remote-tracking branches exist for the same task title: 61c092e5, dd534c90, dfee33e3, e91772bc."
+    ],
+    "searches": {
+      "localTextSearch": "No matches for branch name, task id, short SHAs, PR #1369, or commit subjects in repo text excluding node_modules/.next.",
+      "githubCli": "gh pr view 1369 failed: error connecting to api.github.com.",
+      "taskStore": "TaskStore lookup failed with EPERM connecting to local PostgreSQL."
+    }
+  },
+  "risk": "MEDIUM: branch is old and heavily behind main, but metadata shows one test file absent from main and patch-unique commits, while live PR/task status could not be verified.",
+  "recommendation": "Do not auto-delete or auto-ship. Human review should verify PR #1369/task 57d23baa in GitHub/task DB, then either cherry-pick any still-valuable test coverage onto a fresh branch rebased on current main or mark this branch superseded by later logger coverage (#1378 and c2f3778c).",
+  "verification": {
+    "jsonParse": "passed",
+    "npmTest": "passed: 9/9",
+    "npmRunBuild": "passed after npm ci in root and product/lead-response/dashboard",
+    "npmRunLint": "passed after npm ci in root"
+  },
+  "commandsRun": [
+    "git checkout dev/dd2b4ef5-investigate-orphan-branch-dev-57d23baa-w",
+    "git branch --show-current",
+    "sed -n '1,220p' CLAUDE.md",
+    "sed -n '1,220p' IDENTITY.md",
+    "sed -n '1,220p' SOUL.md",
+    "sed -n '1,220p' HEARTBEAT.md",
+    "sed -n '1,220p' SKILLS.md",
+    "sed -n '1,220p' ARCHITECTURE.md",
+    "git log --oneline main..dev/57d23baa-write-tests-for-untested-hub-logger",
+    "git diff --stat main...dev/57d23baa-write-tests-for-untested-hub-logger",
+    "git ls-remote --heads origin dev/57d23baa-write-tests-for-untested-hub-logger",
+    "node ~/projects/genome/scripts/where.js \"dev/57d23baa-write-tests-for-untested-hub-logger\"",
+    "git branch -a --list '*57d23baa*'",
+    "git show-ref | rg '57d23baa|write-tests-for-untested-hub-logger'",
+    "rg -n \"57d23baa|write-tests-for-untested-hub-logger|hub logger|hub-logger|untested hub logger\" . /Users/clawdbot/projects/leadflow --glob '!node_modules/**' --glob '!product/lead-response/dashboard/.next/**'",
+    "git log --oneline main..origin/dev/57d23baa-write-tests-for-untested-hub-logger",
+    "git diff --stat main...origin/dev/57d23baa-write-tests-for-untested-hub-logger",
+    "git branch -r --list '*write-tests-for-untested-hub-logger'",
+    "gh pr view 1369 --json number,state,title,headRefName,baseRefName,mergeCommit,headRefOid,url,mergedAt,closedAt",
+    "node -e \"TaskStore getTasks search for 57d23baa/PR #1369/logger hub\"",
+    "git cherry -v main origin/dev/57d23baa-write-tests-for-untested-hub-logger",
+    "git log --oneline --decorate --all --grep='PR #1369'",
+    "git log --oneline --decorate --all --grep='logger hub' --regexp-ignore-case",
+    "git log --oneline --decorate main --grep='logger' --regexp-ignore-case -n 50",
+    "git ls-tree -r --name-only main | rg target logger test paths",
+    "git ls-tree -r --name-only origin/dev/57d23baa-write-tests-for-untested-hub-logger | rg target logger test paths",
+    "git diff --shortstat main...origin/dev/57d23baa-write-tests-for-untested-hub-logger",
+    "git merge-base main origin/dev/57d23baa-write-tests-for-untested-hub-logger && git rev-list --count main..origin/dev/57d23baa-write-tests-for-untested-hub-logger && git rev-list --count origin/dev/57d23baa-write-tests-for-untested-hub-logger..main",
+    "node ~/projects/genome/scripts/graph-search.js \"docs/reports orphan branch verdict\"",
+    "node -e \"JSON.parse(require('fs').readFileSync('docs/reports/orphan-branch-57d23baa-verdict.json','utf8')); console.log('valid json')\"",
+    "npm test",
+    "npm run build",
+    "npm run lint",
+    "npm ci",
+    "cd product/lead-response/dashboard && npm ci",
+    "npm test",
+    "npm run build",
+    "npm run lint"
+  ]
+}
