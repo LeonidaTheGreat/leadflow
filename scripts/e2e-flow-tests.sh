@@ -267,14 +267,19 @@ test_dashboard_no_errors() {
     curl -s --max-time 10 -X DELETE "$API_URL/sessions?id=eq.$session_id" \
       -H "apikey: $API_KEY" >/dev/null 2>&1 || true
 
-    [ $exit_code -ne 0 ] && { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    [ $exit_code -ne 0 ] && { [ "$attempt" -lt 3 ] && sleep 7 && continue || return 1; }
+    # HTTP 3xx = middleware redirect — session validation timed out in the Cloudflare tunnel.
+    # The middleware has a 5s timeout on the PostgREST session lookup; if it expires the user
+    # is treated as unauthenticated and redirected to /login. Use a longer sleep (10s) to give
+    # the tunnel more time to recover before the next attempt.
+    [[ "$http_status" == 3* ]] && { $VERBOSE && echo "    ↳ dashboard redirected (http $http_status) — session validation timed out, retrying..."; [ "$attempt" -lt 3 ] && sleep 10 && continue || return 1; }
     # HTTP 5xx = server/deployment failure (e.g. wrong Vercel deploy directory)
-    [[ "$http_status" == 5* ]] && { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    [[ "$http_status" == 5* ]] && { [ "$attempt" -lt 3 ] && sleep 7 && continue || return 1; }
     # Should not contain PostgREST or Vercel error patterns
-    echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error\|FUNCTION_INVOCATION_FAILED' && { [ "$attempt" -lt 3 ] && sleep 5 && continue || return 1; }
+    echo "$html" | grep -qi 'does not exist\|Internal Server Error\|Application error\|FUNCTION_INVOCATION_FAILED' && { [ "$attempt" -lt 3 ] && sleep 7 && continue || return 1; }
     # Should contain dashboard content
     echo "$html" | grep -q 'Lead Feed' && return 0
-    [ "$attempt" -lt 3 ] && sleep 5
+    [ "$attempt" -lt 3 ] && sleep 7
   done
   return 1
 }
