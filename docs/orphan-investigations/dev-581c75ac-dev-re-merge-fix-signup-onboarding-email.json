@@ -1,0 +1,83 @@
+{
+  "taskId": "c74094af-40e3-4278-9687-379a9fccfa2f",
+  "branch": "dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+  "investigatedAt": "2026-07-19",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch adds a single regression test (tests/routes/check-email-table.test.js, 129 lines) guarding the check-email route's real_estate_agents table fix. The underlying fix is already on main via PR #171 (merged 2026-03-11). The test itself is NOT on main, but at least two sibling branches (dev/ecb6ef9b, dev/694e69a0) contain the same test plus additional fix content, superseding this branch. Multiple closed re-merge PRs (#1648, #1695) confirm repeated failed attempts to land this work.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "7bcf5396",
+        "message": "test: add regression guard for check-email table fix",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-21T20:02:36-04:00",
+        "filesChanged": ["tests/routes/check-email-table.test.js"],
+        "insertions": 129,
+        "deletions": 0
+      }
+    ],
+    "relatedPRs": [
+      {
+        "number": 171,
+        "branch": "dev/daea6410-dev-fix-signup-onboarding-email-check-qu",
+        "state": "MERGED",
+        "mergedAt": "2026-03-11T00:51:25Z",
+        "note": "Original fix merged — did not include regression test file"
+      },
+      {
+        "number": 1648,
+        "branch": "dev/0cef347b-dev-re-merge-fix-signup-onboarding-email",
+        "state": "CLOSED",
+        "mergedAt": null
+      },
+      {
+        "number": 1695,
+        "branch": "dev/85db1478-dev-re-merge-fix-signup-onboarding-email",
+        "state": "CLOSED",
+        "mergedAt": null
+      }
+    ],
+    "siblingBranchesAheadOfMain": [
+      {
+        "branch": "dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+        "commitsAhead": 2,
+        "commits": [
+          "27161b88 fix: check email against real_estate_agents table not agents",
+          "24d7e38d test: regression guard — check-email routes must query real_estate_agents"
+        ],
+        "noPR": true,
+        "note": "More complete than orphan — has both fix and test"
+      },
+      {
+        "branch": "dev/694e69a0-dev-re-merge-fix-signup-onboarding-email",
+        "commitsAhead": 2,
+        "commits": [
+          "27161b88 fix: check email against real_estate_agents table not agents",
+          "24d7e38d test: regression guard — check-email routes must query real_estate_agents"
+        ],
+        "noPR": true,
+        "note": "More complete than orphan — has both fix and test"
+      }
+    ],
+    "testFileOnMain": false,
+    "fixOnMain": true,
+    "openPRForThisBranch": false
+  },
+  "risk": "low",
+  "riskDetails": "Branch contains only a test addition, no production code changes. The underlying fix is already on main. Sibling branches (ecb6ef9b, 694e69a0) are more complete versions of the same work.",
+  "recommendation": "safe-delete — superseded by dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email which contains both the fix commit and the same regression test. If the regression test is desired on main, the ecb6ef9b or 694e69a0 branch should be used instead (they are also orphans needing investigation). Do NOT auto-delete — a human should confirm ecb6ef9b/694e69a0 disposition first.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+    "git diff --stat main...origin/dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+    "git ls-remote --heads origin dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+    "git show --stat origin/dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+    "git log --oneline --all -- tests/routes/check-email-table.test.js",
+    "git log --oneline --all --format='%H %d %s' | grep check-email",
+    "gh pr list --state all --head dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+    "gh pr list --state all --search check-email",
+    "gh pr view 171 --json files,mergedAt,title",
+    "git log --oneline main..origin/dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+    "git log --oneline main..origin/dev/694e69a0-dev-re-merge-fix-signup-onboarding-email"
+  ]
+}
