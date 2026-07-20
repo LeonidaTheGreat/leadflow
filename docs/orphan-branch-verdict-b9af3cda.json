@@ -1,0 +1,44 @@
+{
+  "branch": "dev/b9af3cda-fix-codebase-broken-imports",
+  "investigatedAt": "2026-07-20",
+  "taskId": "e5425d68-f9c8-4b17-a9cc-32f9c242e210",
+  "verdict": "duplicate/superseded",
+  "confidence": "high",
+  "summary": "Branch added StripeService.js (68 lines, createPromoCode) on 2026-04-21 to fix a broken import in the upgrade-offer test. A trimmed version of the same fix (49 lines) was shipped to main ~2.5 hours later via sync/main-2026-04-21T07-32-37 (PR #1268, merged 2026-04-21). The orphan's content is fully superseded — StripeService.js exists on main and covers the same broken import. Safe to delete.",
+  "evidence": {
+    "orphanBranchCommit": {
+      "sha": "ff26d505",
+      "subject": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "author": "Stojan Madjunkov <madzunkov@hotmail.com>",
+      "date": "2026-04-21T00:58:00-04:00",
+      "filesChanged": ["lib/services/StripeService.js"],
+      "insertions": 68
+    },
+    "mainEquivalent": {
+      "sha": "4a803486",
+      "subject": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "mergedViaPR": 1268,
+      "prTitle": "sync: push 1 local commit(s) to main",
+      "mergedAt": "2026-04-21T07:32:40Z",
+      "note": "Identical subject; file trimmed to 49 lines on main vs 68 lines on orphan. Functionality equivalent — createPromoCode present on main."
+    },
+    "branchExistsOnRemote": true,
+    "noOpenPR": true,
+    "owningTaskStatus": "cancelled",
+    "relatedMergedPR": "#1268 (merged 2026-04-21)"
+  },
+  "risk": "low",
+  "recommendation": "safe-delete — the fix shipped via a separate commit to main; the orphan adds nothing new. No task row, no open PR, owning task cancelled.",
+  "commandsRun": [
+    "git log --oneline main..origin/dev/b9af3cda-fix-codebase-broken-imports",
+    "git diff --stat main...origin/dev/b9af3cda-fix-codebase-broken-imports",
+    "git ls-remote --heads origin dev/b9af3cda-fix-codebase-broken-imports",
+    "git log --format='%H %an %ae %ai %s' main..origin/dev/b9af3cda-fix-codebase-broken-imports",
+    "gh pr list --search 'b9af3cda' --state all",
+    "gh pr list --search 'fix-codebase-broken-imports' --state all",
+    "git log --oneline lib/services/StripeService.js",
+    "git show 4a803486 --stat",
+    "git diff --stat origin/dev/b9af3cda-fix-codebase-broken-imports..4a803486 -- lib/services/StripeService.js",
+    "gh pr list --search '4a803486' --state all"
+  ]
+}
