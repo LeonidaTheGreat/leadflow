@@ -1,0 +1,77 @@
+{
+  "taskId": "15572e3e-8d45-40b0-9945-116798fa5bd1",
+  "branch": "dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+  "verdict": "shippable-needs-task-pr",
+  "risk": "MEDIUM",
+  "summary": "Real security fix not yet on main. Removes raw token URLs (resetUrl, inviteUrl) from email_events DB metadata in email-service.ts. PR #1311 was closed without merging; the specific email-service.ts fix was never re-implemented in any subsequent merged PR.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "6a13f9667f1a3df6c89896656ded2130aff6a1c7",
+        "message": "fix: plaintext_token code quality issue",
+        "date": "2026-04-24T19:57:39-04:00",
+        "filesChanged": ["product/lead-response/dashboard/lib/email-service.ts"],
+        "linesChanged": "+4/-2",
+        "detail": "Removes resetUrl from sendPasswordResetEmail metadata and inviteUrl from sendPilotInviteEmail metadata — both contained raw tokens that should never be stored in DB"
+      },
+      {
+        "sha": "57b3c2842b50edf4632e84ced62a87bfdf704198",
+        "message": "test: E2E test verifying token URLs not stored in email_events metadata",
+        "date": "2026-04-24T21:10:57-04:00",
+        "filesChanged": ["product/lead-response/dashboard/tests/4b9cb6bf-token-not-logged-in-email-events.test.js"],
+        "linesChanged": "+153/-0",
+        "detail": "153-line E2E test verifying that email_events metadata does not include raw token URLs"
+      }
+    ],
+    "prNumber": 1311,
+    "prState": "CLOSED",
+    "prClosedAt": "2026-04-27T04:31:53Z",
+    "prMergedAt": null,
+    "fixLandedOnMain": false,
+    "confirmationOfMiss": "git grep on origin/main shows email-service.ts still has `resetUrl: data.resetUrl` (line ~521) and `inviteUrl: data.inviteUrl` (line ~802) passed to sendEmail() metadata — the raw token URLs are still being stored in email_events table",
+    "relatedMergedPRs": [
+      {
+        "number": 1433,
+        "mergedAt": "2026-05-04T20:51:35Z",
+        "files": ["product/lead-response/dashboard/app/api/admin/outreach/blast/route.ts"],
+        "note": "Different file — did not cover email-service.ts"
+      },
+      {
+        "number": 1299,
+        "mergedAt": "2026-04-24T02:35:18Z",
+        "files": ["product/lead-response/dashboard/app/api/admin/pilot-targets/[id]/invite/route.ts"],
+        "note": "Different file — did not cover email-service.ts"
+      }
+    ],
+    "siblingOrphanBranches": [
+      "dev/59a0d1e9-fix-code-quality-token-possibly-stored-w",
+      "dev/73c3e811-fix-code-quality-token-possibly-stored-w",
+      "dev/ac04a5a6-fix-code-quality-token-possibly-stored-w",
+      "dev/ac9ce98e-fix-code-quality-token-possibly-stored-w"
+    ],
+    "siblingNote": "Siblings address different aspects (admin token timing-safe comparison, blast route, static analysis guards) — none re-implement the email-service.ts metadata fix"
+  },
+  "securityAssessment": {
+    "issue": "Raw password reset URLs and pilot invite URLs are logged to email_events.metadata in PostgreSQL. These URLs contain full plaintext tokens. A DB read compromise exposes all active reset links and invite links.",
+    "severity": "MEDIUM",
+    "fixCorrectness": "The orphan branch fix is minimal and correct — removes the URL fields from metadata while retaining agentName and other non-sensitive fields. The actual email still sends the full URL to the user."
+  },
+  "recommendation": "Create a new PR from this branch (or cherry-pick both commits) onto main. The fix is small (6 lines in email-service.ts), correct, and addresses a real security gap that survived multiple rounds of token-related fixes. Do NOT delete this branch until the fix is re-landed.",
+  "commandsRun": [
+    "git fetch origin dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git log --oneline origin/main..origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git diff --stat origin/main...origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git show --stat origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git show --stat origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w~1",
+    "gh pr list --head dev/46e03c87-fix-code-quality-token-possibly-stored-w --state all",
+    "gh pr view 1311 --json state,title,closedAt,mergedAt,reviewDecision",
+    "git log --oneline origin/main | grep -i 'token|email.service|plaintext|invite'",
+    "git diff origin/main...origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w -- product/lead-response/dashboard/lib/email-service.ts",
+    "git show origin/main:product/lead-response/dashboard/lib/email-service.ts | grep -n 'resetUrl|inviteUrl'",
+    "gh pr list --state all --search 'token possibly stored'",
+    "gh pr view 1433 --json files",
+    "gh pr view 1299 --json files",
+    "git ls-remote --heads origin | grep token"
+  ]
+}
