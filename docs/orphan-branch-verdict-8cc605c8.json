@@ -1,0 +1,54 @@
+{
+  "branch": "dev/8cc605c8-genome-fix-checkucexhausted-race-conditi",
+  "shortSha": "8cc605c8",
+  "investigatedAt": "2026-07-20",
+  "verdict": "shippable-needs-task-pr",
+  "confidence": "high",
+
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSha": "c6827b701cc8f89355e785a171c838397cabb8e2",
+    "commitDate": "2026-05-10T04:59:12-04:00",
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitMessage": "fix: genome checkUCExhausted TOCTOU race condition — atomic dedup_key",
+    "filesChanged": [
+      "tests/unit/genome-uc-exhausted-dedup-fix.test.js"
+    ],
+    "linesAdded": 151,
+    "linesRemoved": 0,
+    "productionCodeChanged": false,
+    "remoteExists": true,
+    "prFound": false,
+    "taskRowFound": false,
+    "testFileOnMain": false
+  },
+
+  "summary": "Branch adds a single regression test file (151 lines, tests-only, no production code) for a genome checkUCExhausted TOCTOU race condition fix. The commit message describes the actual fix as having been applied to genome (uc-lifecycle.js, task-store-base.js, rescue-strategies.js) — the test in this branch is a regression guard for that fix. The file `tests/unit/genome-uc-exhausted-dedup-fix.test.js` does not exist on main. No PR was ever created; the branch has been orphaned since May 10, 2026 (~71 days). The branch is safe to merge: it only adds a test, the production code fix was already applied in genome.",
+
+  "risk": {
+    "level": "low",
+    "rationale": "Tests-only change. No production code, no schema changes, no config changes. Worst case: the test fails on main if genome's API changed in the 71 days since the branch was cut — that's a discoverable build failure, not data loss or regression. The test file tests against genome behavior from the leadflow test suite, which may require genome to be accessible during test runs.",
+    "watchPoints": [
+      "Test may have import paths or dependencies that reference genome modules — verify `npm test` passes after merge",
+      "Genome's uc-lifecycle.js / task-store-base.js may have been refactored in the 71 days since May 10; test assertions could be stale"
+    ]
+  },
+
+  "recommendation": "Merge via a new task+PR. Steps: (1) create a task row for this investigation result, (2) run `npm test` with the test file included to verify it still passes against current main, (3) open a PR from this branch if tests pass. If tests fail, the test needs updating before merge — create a fix task to update it.",
+
+  "commandsRun": [
+    "git log --oneline main..dev/8cc605c8-genome-fix-checkucexhausted-race-conditi",
+    "git log --oneline origin/main..origin/dev/8cc605c8-genome-fix-checkucexhausted-race-conditi",
+    "git diff --stat origin/main...origin/dev/8cc605c8-genome-fix-checkucexhausted-race-conditi",
+    "git ls-remote --heads origin dev/8cc605c8-genome-fix-checkucexhausted-race-conditi",
+    "git log --oneline c6827b70 -3",
+    "gh pr list --state all --search '8cc605c8'",
+    "gh pr list --state all --search 'checkUCExhausted'",
+    "gh pr list --state all --head 'dev/8cc605c8-genome-fix-checkucexhausted-race-conditi'",
+    "git log --oneline origin/main | grep -i 'checkUC|uc-exhaust|genome-fix'",
+    "git show --stat origin/dev/8cc605c8-genome-fix-checkucexhausted-race-conditi",
+    "ls tests/unit/ | grep -i 'genome|exhaust|dedup'",
+    "git log --oneline --since='2026-05-08' --until='2026-05-12' origin/main",
+    "git log --format='%H %ai %s' origin/dev/8cc605c8-genome-fix-checkucexhausted-race-conditi -1"
+  ]
+}
