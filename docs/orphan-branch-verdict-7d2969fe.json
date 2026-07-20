@@ -1,0 +1,62 @@
+{
+  "branch": "dev/7d2969fe-genome-fix-success-rate-model-performanc",
+  "investigatedAt": "2026-07-20",
+  "taskId": "c11be1ef-42e3-42a5-b112-579e37420ada",
+
+  "verdict": "needs-human-review",
+
+  "summary": "Branch has 2 unmerged commits (2026-05-12) that rename model_performance.success_rate_percent → success_rate in DB setup scripts and add a schema-safe backfill migration. Three related PRs (274, 289, 703) covering the same fix were all CLOSED without merging. Main still uses success_rate_percent. It is unclear whether the rename was abandoned intentionally, applied via a different path, or simply never shipped.",
+
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "121f2393",
+        "subject": "fix: align model_performance success_rate field naming",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-05-12T12:28:46-04:00"
+      },
+      {
+        "sha": "1adfb79a",
+        "subject": "fix: make model_performance success_rate backfill schema-safe",
+        "author": "madzunkov@hotmail.com",
+        "date": "2026-05-12T12:36:09-04:00"
+      }
+    ],
+    "filesChanged": [
+      "scripts/db/add-dashboard-tables.sql (+28 / -4)",
+      "scripts/db/setup-dashboard-tables.js (+9 / -7)",
+      "scripts/utilities/setup-dashboard-tables.js (+9 / -7)"
+    ],
+    "keyChange": "Renames DB column success_rate_percent → success_rate in model_performance table; adds ADD COLUMN IF NOT EXISTS migration + COALESCE backfill to avoid errors when legacy column is absent",
+    "mainCurrentlyUses": "success_rate_percent (unchanged from before this branch)",
+    "relatedPRs": [
+      { "number": 274, "title": "Dev (rescue): Genome fix: success_rate — model_performance", "branch": "dev/dc267ea9-dev-rescue-genome-fix-success-rate-model", "state": "CLOSED", "merged": false, "date": "2026-03-13" },
+      { "number": 289, "title": "Genome fix: success_rate — model_performance", "branch": "dev/46e9d643-genome-fix-success-rate-model-performanc", "state": "CLOSED", "merged": false, "date": "2026-03-13" },
+      { "number": 703, "title": "Genome fix: success_rate — model_performance", "branch": "dev/46e9d643-genome-fix-success-rate-model-performanc", "state": "CLOSED", "merged": false, "date": "2026-03-31" }
+    ],
+    "remoteExists": true,
+    "remoteSha": "1adfb79a29d49ab3ce648f8bcb6afc6895a50a49"
+  },
+
+  "risk": {
+    "level": "medium",
+    "reason": "Changes touch DB schema setup scripts. If the rename is still needed and was never applied, running setup scripts on a fresh DB could fail with column-mismatch errors. If the rename was intentionally abandoned (e.g. genome was updated to use success_rate_percent consistently), merging this would introduce a conflicting migration. Three prior PRs being closed without explanation is a yellow flag — could mean the underlying issue was resolved differently."
+  },
+
+  "recommendation": "Human review needed. Verify two things: (1) Does the live model_performance table have success_rate or success_rate_percent as the column name? (2) Does genome code (~/projects/genome/) reference success_rate or success_rate_percent when reading model performance? If genome references success_rate and the DB has success_rate_percent, this branch should be revived and merged. If they are already consistent, the branch is superseded and safe to delete.",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/7d2969fe-genome-fix-success-rate-model-performanc",
+    "git diff --stat main...origin/dev/7d2969fe-genome-fix-success-rate-model-performanc",
+    "git ls-remote --heads origin dev/7d2969fe-genome-fix-success-rate-model-performanc",
+    "gh pr list --state all --search 'dev/7d2969fe'",
+    "gh pr list --state all --search 'success_rate model_performance'",
+    "gh pr view 703 --json state,mergedAt,mergeCommit,headRefName,title,body",
+    "gh pr view 289 --json state,mergedAt,mergeCommit,headRefName,title",
+    "gh pr view 274 --json state,mergedAt,mergeCommit,headRefName,title",
+    "git log --oneline --all -- scripts/db/add-dashboard-tables.sql",
+    "git show main:scripts/db/add-dashboard-tables.sql | grep -i 'success_rate|model_perf'",
+    "git show origin/dev/7d2969fe-...:scripts/db/add-dashboard-tables.sql | grep -i 'success_rate|model_perf'"
+  ]
+}
