@@ -1,0 +1,36 @@
+{
+  "branch": "dev/6ae63f55-fix-hub-module-task-success-rate-metric",
+  "shortSha": "8c54e88b",
+  "investigationDate": "2026-07-20",
+  "verdict": "shippable-needs-task-pr",
+  "confidence": "high",
+  "summary": "Branch contains 1 commit that adds a documentation guide about a genome-side fix to the Hub Module Task Success Rate metric. No PR was ever created. The actual code fix lives in the genome repo (~/.openclaw/genome/core/mission-metric-collector.js, genome commit d4043ac). The only change to the leadflow repo is a new doc file. Branch has no matching task row — classic orphan from a workflow that produced the commit but never progressed to PR creation.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSubject": "fix: Hub Module Task Success Rate — exclude pipeline failures, tighten detection",
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "commitDate": "2026-05-02T13:09:47-04:00",
+    "filesChanged": [
+      "docs/guides/GENOME-HUB-METRIC-FIX-6ae63f55.md (+42 lines, new file)"
+    ],
+    "existingPRs": "none — searched by branch name, title keywords ('Hub Module Task Success Rate'), and short SHA (8c54e88b); no matches found",
+    "mergedToMain": false,
+    "docFileOnMain": false,
+    "branchExistsOnRemote": true,
+    "remoteRef": "8c54e88bd33f8a1e3470a62d5ae619717c0c589b refs/heads/dev/6ae63f55-fix-hub-module-task-success-rate-metric"
+  },
+  "risk": "low",
+  "riskRationale": "Change is documentation-only (a new .md file in docs/guides/). No production code, no schema changes, no test changes. The doc describes a genome fix already applied separately. Merging cannot regress functionality.",
+  "recommendation": "Create a task and PR to merge this doc into main. The doc (docs/guides/GENOME-HUB-METRIC-FIX-6ae63f55.md) is a useful reference for the metric-collector fix context. Alternatively, if the doc is considered genome-internal detail not belonging in the leadflow repo, the branch is safe to delete — the genome fix itself is already in the genome repo.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/6ae63f55-fix-hub-module-task-success-rate-metric",
+    "git fetch origin dev/6ae63f55-fix-hub-module-task-success-rate-metric",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git show --stat FETCH_HEAD",
+    "gh pr list --state all --limit 100 --json number,title,headRefName,state,mergedAt | grep -i '6ae63f55|Hub Module|mission-metric'",
+    "git log --oneline main | grep '8c54e88|GENOME-HUB-METRIC'",
+    "git show main:docs/guides/GENOME-HUB-METRIC-FIX-6ae63f55.md",
+    "git log --oneline --all | grep -i 'hub|metric|success.rate|mission-metric'"
+  ]
+}
