@@ -1,0 +1,88 @@
+{
+  "taskId": "fdace96d-2b2e-4d9e-afd8-feb611a684f6",
+  "branch": "dev/694e69a0-dev-re-merge-fix-signup-onboarding-email",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch has 1 commit ahead of main (27161b88 'fix: check email against real_estate_agents table not agents') that adds only a test file (tests/routes/check-email-table.test.js, 129 lines). The underlying production code fix already shipped via PR #171 (merged 2026-03-11). The test file never landed on main. Two prior re-merge PRs (#1648, #1695) for the same UC were CLOSED without merging. No PR was ever created for this branch. Sibling branch dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email is a newer commit (24d7e38d) on top of this one and supersedes it.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "27161b88",
+        "message": "fix: check email against real_estate_agents table not agents",
+        "author": "Stojan Madjunkov",
+        "date": "2026-05-17",
+        "filesChanged": ["tests/routes/check-email-table.test.js"],
+        "insertions": 129,
+        "deletions": 0,
+        "note": "Despite 'fix:' prefix, this commit only adds a test file — no production code change"
+      }
+    ],
+    "remoteExists": true,
+    "remoteSHA": "27161b88cd8ffb7f1e8826c5e1edad115eb01d77",
+    "openPRForThisBranch": false,
+    "relatedPRs": [
+      {
+        "number": 171,
+        "branch": "dev/daea6410-dev-fix-signup-onboarding-email-check-qu",
+        "state": "MERGED",
+        "mergedAt": "2026-03-11T00:51:25Z",
+        "note": "Original fix merged — did not include regression test file"
+      },
+      {
+        "number": 1648,
+        "branch": "dev/0cef347b-dev-re-merge-fix-signup-onboarding-email",
+        "state": "CLOSED",
+        "closedAt": "2026-05-20T00:20:02Z",
+        "mergedAt": null,
+        "useCase": "fix-signup-onboarding-email-check-queries-wrong-table-"
+      },
+      {
+        "number": 1695,
+        "branch": "dev/85db1478-dev-re-merge-fix-signup-onboarding-email",
+        "state": "CLOSED",
+        "closedAt": "2026-05-22T02:59:41Z",
+        "mergedAt": null,
+        "useCase": "fix-signup-onboarding-email-check-queries-wrong-table-"
+      }
+    ],
+    "siblingBranches": [
+      {
+        "branch": "dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email",
+        "remoteSHA": "24d7e38d97b55c63da9a52cc0844e91611a599b0",
+        "commitsAheadOfMain": 1,
+        "tipCommit": "24d7e38d test: regression guard — check-email routes must query real_estate_agents",
+        "note": "Newer commit on top of 27161b88 — supersedes this branch; also an orphan needing investigation"
+      },
+      {
+        "branch": "dev/581c75ac-dev-re-merge-fix-signup-onboarding-email",
+        "commitsAheadOfMain": 1,
+        "verdict": "duplicate/superseded (investigated 2026-07-20, PR #2024)"
+      }
+    ],
+    "testFileOnMain": false,
+    "productionFixOnMain": true,
+    "priorInvestigation": "dev/581c75ac investigated same day (PR #2024) — same UC, same verdict"
+  },
+  "risk": "low",
+  "riskDetails": "Branch contains only a test file addition (129 lines). No production code changes. Underlying fix already shipped. Safe to delete once ecb6ef9b disposition is confirmed.",
+  "recommendation": "safe-delete — production fix is already on main (PR #171). The regression test in this branch is superseded by dev/ecb6ef9b which has a newer test commit on top of this one. If the regression test is desired on main, use ecb6ef9b (also orphan, needs investigation). Do NOT delete before ecb6ef9b is resolved.",
+  "commandsRun": [
+    "git checkout dev/fdace96d-investigate-orphan-branch-dev-694e69a0-d",
+    "git ls-remote --heads origin dev/694e69a0-dev-re-merge-fix-signup-onboarding-email",
+    "git fetch origin dev/694e69a0-dev-re-merge-fix-signup-onboarding-email:refs/remotes/origin/orphan-694e69a0",
+    "git log --oneline origin/main..origin/orphan-694e69a0",
+    "git diff --stat origin/main...origin/orphan-694e69a0",
+    "git log --format='%H %ae %ad %s' --date=short origin/orphan-694e69a0 -5",
+    "gh pr list --head dev/694e69a0-dev-re-merge-fix-signup-onboarding-email --state all",
+    "gh pr list --search '694e69a0 OR check-email-table OR real_estate_agents' --state all --limit 10",
+    "gh pr view 1648 --json title,state,headRefName,mergedAt,closedAt,body",
+    "gh pr view 1695 --json title,state,headRefName,mergedAt,closedAt,body",
+    "git log --all --oneline -- tests/routes/check-email-table.test.js",
+    "git show origin/main:tests/routes/check-email-table.test.js",
+    "git show 6ab20445 (prior 581c75ac investigation for sibling branch context)",
+    "git ls-remote --heads origin | grep re-merge-fix-signup-onboarding",
+    "git fetch origin dev/ecb6ef9b-dev-re-merge-fix-signup-onboarding-email:refs/remotes/origin/orphan-ecb6ef9b",
+    "git log --oneline origin/main..origin/orphan-ecb6ef9b"
+  ]
+}
