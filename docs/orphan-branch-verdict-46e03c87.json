@@ -1,0 +1,87 @@
+{
+  "investigationTaskId": "15572e3e-8d45-40b0-9945-116798fa5bd1",
+  "orphanBranch": "dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+  "verdict": "needs-human-review",
+  "summary": "Branch has 2 commits that remove raw token URLs from email_events metadata logging in email-service.ts and add an E2E test to verify this. The core security fix (resetUrl and inviteUrl still stored in DB metadata on main) is genuine and unresolved. However, the security fix commit is mixed with email domain changes (leadflow.ai fallbacks) that conflict with main's subsequent work reverting back to landyourleads.com. Two prior CLOSED PRs (#1358, #1410) targeted the same issue and were never merged, suggesting repeated abandonment. Branch cannot be merged as-is without conflicts; a human must decide whether to isolate and re-apply just the security fix.",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "6a13f9667f1a3df6c89896656ded2130aff6a1c7",
+        "subject": "fix: plaintext_token code quality issue",
+        "author": "Stojan Madjunkov <madzunkov@hotmail.com>",
+        "date": "2026-04-24T19:57:39-04:00",
+        "description": "Remove raw tokens from email_events database logging — sendPilotInviteEmail: removed inviteUrl from metadata, sendPasswordResetEmail: removed resetUrl from metadata"
+      },
+      {
+        "sha": "57b3c2842b50edf4632e84ced62a87bfdf704198",
+        "subject": "test: E2E test verifying token URLs not stored in email_events metadata",
+        "author": "Stojan Madjunkov <madzunkov@hotmail.com>",
+        "date": "2026-04-24T21:10:57-04:00"
+      }
+    ],
+    "filesChanged": [
+      {
+        "path": "product/lead-response/dashboard/lib/email-service.ts",
+        "insertions": 4,
+        "deletions": 2,
+        "type": "modified",
+        "note": "Removes resetUrl and inviteUrl from sendEmail metadata args; also changes email domain fallbacks from landyourleads.com to leadflow.ai/resend.dev"
+      },
+      {
+        "path": "tests/0e9cb6bf-token-not-logged-in-email-events.test.js",
+        "insertions": 153,
+        "deletions": 0,
+        "type": "new-file",
+        "note": "E2E test verifying token URLs are not stored in email_events table metadata"
+      }
+    ],
+    "existsOnRemote": true,
+    "remoteRef": "refs/heads/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "prFound": false,
+    "relatedClosedPRs": [
+      {
+        "number": 1358,
+        "title": "Fix code quality: Token possibly stored without hashing",
+        "state": "CLOSED",
+        "headRefName": "dev/ac04a5a6-fix-code-quality-token-possibly-stored-w",
+        "closedAt": "2026-04-29T21:58:49Z",
+        "mergedAt": null
+      },
+      {
+        "number": 1410,
+        "title": "Fix code quality: Token possibly stored without hashing",
+        "state": "CLOSED",
+        "headRefName": "dev/73c3e811-fix-code-quality-token-possibly-stored-w",
+        "closedAt": "2026-05-03T02:07:08Z",
+        "mergedAt": null
+      }
+    ],
+    "securityFixStatusOnMain": {
+      "resetUrlInMetadata": "STILL PRESENT — main email-service.ts line ~519: resetUrl: data.resetUrl passed to sendEmail metadata",
+      "inviteUrlInMetadata": "STILL PRESENT — main email-service.ts line ~799: inviteUrl: data.inviteUrl passed to sendEmail metadata",
+      "conclusion": "The security fix from this branch has NOT been merged to main. Raw token URLs are still being stored in email_events metadata."
+    },
+    "conflictsWithMain": {
+      "emailDomainChanges": "Branch changes FROM_EMAIL fallback to onboarding@resend.dev and SUPPORT_EMAIL to support@leadflow.ai. Main subsequently reverted these (commit edf0c4b9 2026-05-02: 'fix: update email domain from leadflow.ai to landyourleads.com'; commit 4f5fa44c 2026-05-14: 'fix: use verified landyourleads sender fallback for resend emails'). Merging this branch as-is would re-introduce the reverted email domain changes.",
+      "mixedCommit": "The security fix (removing resetUrl/inviteUrl from metadata) and the email domain changes are in the same commit (6a13f966), making cherry-pick non-trivial."
+    }
+  },
+  "risk": "medium-high — the underlying security issue (raw reset/invite token URLs stored in email_events DB metadata) is real and unresolved on main. Three separate fix branches have been created (this one + PRs #1358 and #1410) without any being merged, suggesting the fix keeps being abandoned. The branch itself cannot be merged without reintroducing conflicting email domain changes.",
+  "recommendation": "Human review required. Recommended action: create a fresh, targeted fix task that ONLY removes resetUrl and inviteUrl from the metadata dict in email-service.ts sendPasswordResetEmail() and sendPilotInviteEmail() — without touching email domain constants. The E2E test (tests/0e9cb6bf-token-not-logged-in-email-events.test.js) can be adapted. Once the focused fix is merged, this orphan branch can be safely deleted.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git fetch origin",
+    "git log --oneline origin/main..origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git diff --stat origin/main...origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w",
+    "git show --stat 6a13f9667f1a3df6c89896656ded2130aff6a1c7",
+    "git show --stat 57b3c2842b50edf4632e84ced62a87bfdf704198",
+    "gh pr list --state all --search 'token email' --json number,title,state,headRefName,mergedAt,closedAt",
+    "git log --oneline origin/main | grep -i 'token.stored|token.hash|email.event|inviteUrl|resetUrl'",
+    "git show origin/main:product/lead-response/dashboard/lib/email-service.ts | grep -n 'resetUrl|inviteUrl'",
+    "git show origin/main:product/lead-response/dashboard/lib/email-service.ts | sed -n '515,525p'",
+    "git show origin/main:product/lead-response/dashboard/lib/email-service.ts | sed -n '795,810p'",
+    "git diff origin/main origin/dev/46e03c87-fix-code-quality-token-possibly-stored-w -- product/lead-response/dashboard/lib/email-service.ts",
+    "git log --oneline origin/main | grep -i 'landyourleads|resend.dev|FROM_EMAIL'"
+  ]
+}
