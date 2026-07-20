@@ -1,0 +1,50 @@
+{
+  "taskId": "8584a597-7d92-402f-ad9e-e7e8c241112a",
+  "status": "completed",
+  "verdict": "duplicate/superseded",
+  "branch": "dev/bcf00df0-fix-codebase-broken-imports",
+  "summary": "Orphan branch from 2026-04-21 that fixed a broken StripeService import in tests/integration/upgrade-offer-endpoint.test.js by routing through BillingService instead. A parallel fix landed on main 3 hours later (commit 4a803486) via a different approach: creating a standalone StripeService.js. The orphan branch approach conflicts with the accepted solution and has no PR. The owning task was cancelled. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commits": [
+      {
+        "sha": "7e528ba4",
+        "date": "2026-04-21T00:04:41-04:00",
+        "message": "fix: resolve broken import in upgrade-offer test by using BillingService"
+      }
+    ],
+    "filesChanged": [
+      "lib/services/BillingService.js (+10 lines — adds createPromoCode method)",
+      "tests/integration/upgrade-offer-endpoint.test.js (2 lines changed — swap StripeService import for BillingService)"
+    ],
+    "prsFound": [],
+    "taskRowFound": true,
+    "taskStatus": "cancelled",
+    "taskRetries": "0/3",
+    "taskError": "Parent task failed",
+    "mergedToMain": false,
+    "supersededBy": {
+      "commit": "4a803486",
+      "message": "fix: add StripeService with createPromoCode to resolve broken import in upgrade-offer test",
+      "date": "2026-04-21T03:32:26-04:00",
+      "onMain": true,
+      "approach": "Created standalone lib/services/StripeService.js (49 lines) rather than extending BillingService",
+      "conflictNote": "The orphan branch changes upgrade-offer test to import BillingService; main now has StripeService — merging would create a direct conflict"
+    }
+  },
+  "risk": "low",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git fetch origin dev/bcf00df0-fix-codebase-broken-imports",
+    "git log --oneline origin/main..origin/dev/bcf00df0-fix-codebase-broken-imports",
+    "git diff --stat origin/main...origin/dev/bcf00df0-fix-codebase-broken-imports",
+    "git show --stat origin/dev/bcf00df0-fix-codebase-broken-imports",
+    "git ls-remote --heads origin dev/bcf00df0-fix-codebase-broken-imports",
+    "gh pr list --state all --head dev/bcf00df0-fix-codebase-broken-imports",
+    "git merge-base --is-ancestor 7e528ba4 origin/main",
+    "git log --oneline --all --grep='broken import' --grep='BillingService' --all-match",
+    "git log --oneline origin/main | grep 'broken import|BillingService|createPromoCode|StripeService|upgrade-offer'",
+    "git show 4a803486 --stat",
+    "git diff origin/main...origin/dev/bcf00df0-fix-codebase-broken-imports -- tests/integration/upgrade-offer-endpoint.test.js"
+  ]
+}
