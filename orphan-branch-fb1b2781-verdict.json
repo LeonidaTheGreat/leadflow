@@ -1,0 +1,45 @@
+{
+  "branch": "dev/fb1b2781-write-tests-for-auto-decompose",
+  "verdict": "duplicate/superseded",
+  "investigatedAt": "2026-07-20",
+  "taskId": "01e62995-da68-4833-a433-2204b336fddc",
+  "evidence": {
+    "branchTip": "ef6122fba977f9a487336c0a3197bd3adfef5f00",
+    "commitsAheadOfMain": 1,
+    "commitSubject": "test: add unit coverage for auto-decompose intelligence hub",
+    "commitDate": "2026-05-03",
+    "commitAuthor": "Stojan Madjunkov <madzunkov@hotmail.com>",
+    "filesChanged": ["tests/genome/auto-decompose.test.js"],
+    "linesAdded": 434,
+    "testCountOnBranch": 22,
+    "supersededBy": {
+      "commit": "b7289a73b27aebe2fcec22077825b1fd096f2287",
+      "subject": "test: add unit tests for auto-decompose intelligence module (#1442)",
+      "date": "2026-05-04",
+      "pr": 1442,
+      "prTitle": "sync: push 1 local commit(s) to main",
+      "mergedAt": "2026-05-04T23:33:47Z",
+      "testCountOnMain": 27,
+      "note": "Main has 27 tests (vs 22 on branch), covering 4 functions with expanded coverage of all 5 patterns for generateSubtasks"
+    },
+    "relatedTasks": [
+      {"status": "cancelled", "title": "Write tests for untested hub: auto-decompose", "count": 10, "dates": "2026-04-21"}
+    ],
+    "existingPRs": [],
+    "branchExistsOnRemote": true
+  },
+  "risk": "low — the branch adds only a test file (tests/genome/auto-decompose.test.js); main already has a more complete version of the same tests merged via PR #1442 on 2026-05-04. No product code, no migrations, no config changes.",
+  "recommendation": "safe-delete — the branch work was superseded by a more complete implementation (27 tests vs 22) that is already on main. The original task rows were all cancelled. No PR was ever created for this branch. Delete with: git push origin --delete dev/fb1b2781-write-tests-for-auto-decompose",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/fb1b2781-write-tests-for-auto-decompose",
+    "git fetch origin dev/fb1b2781-write-tests-for-auto-decompose",
+    "git log --oneline main..origin/dev/fb1b2781-write-tests-for-auto-decompose",
+    "git diff --stat main...origin/dev/fb1b2781-write-tests-for-auto-decompose",
+    "gh pr list --state all --head dev/fb1b2781-write-tests-for-auto-decompose --json number,title,state,mergedAt,closedAt",
+    "git log --oneline -5 main -- tests/genome/auto-decompose.test.js",
+    "git show --stat ef6122fb",
+    "git show --stat b7289a73",
+    "gh pr view 1442 --json number,title,state,mergedAt,headRefName",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,agent_id,branch_name FROM tasks WHERE branch_name LIKE '%fb1b2781%' OR title ILIKE '%auto-decompose%'\""
+  ]
+}
