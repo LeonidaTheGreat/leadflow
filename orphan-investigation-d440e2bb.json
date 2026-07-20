@@ -1,0 +1,111 @@
+{
+  "branch": "dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+  "investigatedAt": "2026-07-20",
+  "taskId": "7554255e-1a6c-4f42-a693-45419b167cfb",
+  "verdict": "needs-human-review",
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "5e2988b7",
+        "message": "fix: close UTM merge verification gap — fix E2E test paths + add missing artifacts"
+      },
+      {
+        "sha": "c8d3bdd1",
+        "message": "fix: correct broken test path and remove invalid git-diff assertion in 84fedae6 test"
+      }
+    ],
+    "diffStat": {
+      "filesChanged": 8,
+      "insertions": 630,
+      "deletions": 33,
+      "files": [
+        "lib/onboarding-telemetry.js (+100, new file on branch)",
+        "migrations/014_pilot_invites.sql (+17, new file on branch)",
+        "scripts/check-migration-completeness.js (+79, stub->full impl)",
+        "scripts/check-schema-coupling.js (+278, stub->full impl)",
+        "tests/feat-admin-pilot-invite-flow-e2e.test.js (+42, new file on branch)",
+        "tests/feat-admin-pilot-invite-flow-qc.test.js (+27, new file on branch)",
+        "tests/feat-onboarding-completion-telemetry.test.js (+41, new file on branch)",
+        "tests/*84fedae6*.test.js (-33, test path/assertion fixes)"
+      ]
+    },
+    "remoteExists": true,
+    "remoteSha": "5e2988b75d806228def26dd858fed8098d7f7673",
+    "matchingTaskRow": null,
+    "relatedTasks": [
+      {
+        "id": "4d366c87-93b9-4d64-b8f5-a049f831e20a",
+        "title": "Dev (re-merge): fix-prd-objective-not-fully-implemented-product-api-ro",
+        "status": "cancelled",
+        "pr_number": 1637,
+        "prState": "CLOSED",
+        "note": "PR #1637 closed without merging 2026-05-14"
+      },
+      {
+        "id": "f035a8cc-8e78-4aa6-933e-28eee0cd2254",
+        "status": "failed",
+        "note": "Same title, failed 2026-05-17"
+      },
+      {
+        "id": "2ace3e41-909f-421b-9646-ca6d073b5d20",
+        "status": "failed",
+        "note": "Same title, failed 2026-05-16"
+      }
+    ],
+    "openPRForThisBranch": null,
+    "conflictsWithMainHistory": {
+      "lib/onboarding-telemetry.js": {
+        "status": "INTENTIONALLY DELETED from main in PR #1142 (refactor Phase 4D-v2: delete remaining old lib/ files, rewire to service classes). Commit 36395e04. Adding it back would revert an architectural decision.",
+        "addedToMainVia": "PR #789 (c70a5e8e)",
+        "deletedFromMainVia": "PR #1142 (36395e04)"
+      },
+      "tests/feat-admin-pilot-invite-flow-e2e.test.js": {
+        "status": "Was in main, then deleted in PR #1150 (fix: delete 25+ broken test files referencing deleted lib modules). These tests depend on lib/onboarding-telemetry.js which no longer exists — they would fail on current main.",
+        "deletedFromMainVia": "PR #1150 (8d8ef9da)"
+      },
+      "tests/feat-onboarding-completion-telemetry.test.js": {
+        "status": "Same as above — deleted because it references lib/onboarding-telemetry.js"
+      },
+      "migrations/014_pilot_invites.sql": {
+        "status": "File not on main, but pilot_invites TABLE already exists in live DB (confirmed via psql). Migration was applied without the SQL file being tracked in repo.",
+        "liveDBTableExists": true
+      },
+      "scripts/check-migration-completeness.js": {
+        "status": "EXISTS on main as 3-line stub (process.exit(0)). Branch replaces with 79-line full implementation. Upgrade is safe but low priority.",
+        "mainContent": "3-line stub (#!/usr/bin/env node + comment + process.exit(0))"
+      },
+      "scripts/check-schema-coupling.js": {
+        "status": "EXISTS on main as 3-line stub (process.exit(0)). Branch replaces with 278-line full implementation. Could be valuable but needs review.",
+        "mainContent": "3-line stub (#!/usr/bin/env node + comment + process.exit(0))"
+      }
+    }
+  },
+  "risk": "high",
+  "riskNotes": [
+    "CRITICAL: lib/onboarding-telemetry.js was intentionally deleted from main in Phase 4D-v2 refactor (PR #1142). Merging re-introduces a module the architecture explicitly ejected.",
+    "CRITICAL: Test files (feat-admin-pilot-invite-flow-e2e, feat-onboarding-completion-telemetry) depend on lib/onboarding-telemetry.js. They would fail immediately on current main since the dependency was deleted.",
+    "migrations/014_pilot_invites.sql: pilot_invites table already exists in live DB. Adding this SQL file is benign (CREATE TABLE would fail if schema isn't idempotent) but confusing — the migration is orphaned from the file.",
+    "The branch commit subjects ('UTM merge verification gap') do not match the branch purpose ('fix-prd-objective-not-fully'). Agent pivoted to a different problem mid-task.",
+    "Original PRD objective (product API routes) was already shipped via PR #251 (c873de64). This branch is a failed re-merge attempt on a problem already solved."
+  ],
+  "recommendation": "Do NOT merge as-is. The branch re-introduces intentionally-deleted code (lib/onboarding-telemetry.js, its dependent tests). The useful salvageable pieces are: (1) scripts/check-migration-completeness.js and scripts/check-schema-coupling.js full implementations — these could be cherry-picked if the scripts are desired. Do NOT cherry-pick lib/onboarding-telemetry.js or the test files — they conflict with the Phase 4D-v2 architectural refactor. The branch is safe to delete after human confirms no salvageable value in the script implementations.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "git fetch origin dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "git log --oneline main..origin/dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "git diff --stat main...origin/dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully",
+    "gh pr list --head dev/d440e2bb-dev-re-merge-fix-prd-objective-not-fully --state all",
+    "gh pr view 1637 --json number,title,state,mergedAt,headRefName",
+    "psql $LOCAL_PG_URL -c \"SELECT id,title,status,branch_name,pr_number FROM tasks WHERE branch_name LIKE '%d440e2bb%' OR title LIKE '%re-merge-fix-prd-objective%'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT EXISTS(SELECT FROM pg_tables WHERE tablename='pilot_invites')\"",
+    "git log --oneline main | grep -i 'prd-objective|utm|onboarding-telemetry|check-migration|pilot-invite'",
+    "git show main:lib/onboarding-telemetry.js (fatal: not on main)",
+    "git show main:migrations/014_pilot_invites.sql (fatal: not on main)",
+    "git show main:scripts/check-migration-completeness.js (3-line stub)",
+    "git show main:scripts/check-schema-coupling.js (3-line stub)",
+    "git log --oneline -1 -- lib/onboarding-telemetry.js (last commit: 36395e04 — deletion in refactor PR #1142)",
+    "git log --oneline main -- tests/feat-admin-pilot-invite-flow-e2e.test.js (deleted via PR #1150)",
+    "git branch -r --contains 5598dd64 (confirms UTM-artifact branch never merged to main)"
+  ]
+}
