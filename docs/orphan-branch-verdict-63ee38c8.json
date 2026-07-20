@@ -1,0 +1,50 @@
+{
+  "taskId": "53853eab-32e3-41c9-9bb0-7774fb079004",
+  "investigatedBranch": "dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep",
+  "verdict": "already-shipped-safe-delete",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitLog": [
+      "0425a212 fix: complete PR85 task-spec sweep in dashboard runtime routes"
+    ],
+    "diffStat": {
+      "filesChanged": 4,
+      "insertions": 40,
+      "deletions": 41,
+      "files": [
+        "product/lead-response/dashboard/app/api/billing/create-checkout/route.ts (-14 lines)",
+        "product/lead-response/dashboard/app/api/health/route.ts (-13 lines)",
+        "product/lead-response/dashboard/app/api/metrics/roi/route.ts (-14 lines)",
+        "tests/e2e/63ee38c8-pr85-taskspec-sweep.test.js (+40 lines, new test)"
+      ]
+    },
+    "associatedPR": {
+      "number": 1381,
+      "title": "Dev Fix: PR #85 rejected: incomplete sweep (2 of 3 task-spec violations remain), branch not rebased onto main, change is redundant on main",
+      "state": "MERGED",
+      "mergedAt": "2026-04-30T00:32:28Z",
+      "headRef": "dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep",
+      "baseRef": "main",
+      "taskId": "63ee38c8-fa65-48b9-b497-2484d382d4f6"
+    },
+    "ciChecks": {
+      "vercel-leadflow": "pass",
+      "vercel-leadflow-ai": "pass",
+      "test": "pass (3m3s)"
+    },
+    "remoteExists": true,
+    "remoteSha": "0425a21235f6ee078672de698b712c190658f326"
+  },
+  "risk": "low",
+  "riskNotes": "Branch was merged via PR #1381 on 2026-04-30 with all CI checks passing. The single commit removed inline DB/API calls from 3 dashboard API route files and added a companion E2E test. All content is on main. No open PRs reference this branch.",
+  "recommendation": "Safe to delete. Branch content merged into main 81 days ago via PR #1381. Task row 63ee38c8-fa65-48b9-b497-2484d382d4f6 is missing from the tasks table (bookkeeping gap only — does not affect shipped code).",
+  "commandsRun": [
+    "git fetch origin dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep",
+    "git log --oneline origin/main..origin/dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep",
+    "git diff --stat origin/main...origin/dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep",
+    "git ls-remote --heads origin dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep",
+    "gh pr list --search 'head:dev/63ee38c8-dev-fix-pr-85-rejected-incomplete-sweep' --state all",
+    "gh pr view 1381 --json number,title,state,mergedAt,headRefName,baseRefName,body",
+    "gh pr checks 1381"
+  ]
+}
