@@ -1,0 +1,41 @@
+{
+  "taskId": "aa251bf4-55a7-45ae-857c-1dd5107ca94f",
+  "branch": "dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+  "verdict": "already-shipped-safe-delete",
+  "risk": "LOW",
+  "summary": "Empty placeholder branch — 1 commit ahead of main with 0 files changed. Safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "f890d8d52feeade940ee18fa28cb53edeadcaf4e",
+    "commitMessage": "fix: add missing branch commit for task 46fb2f9d",
+    "commitDate": "2026-05-06T20:34:21-04:00",
+    "filesChanged": 0,
+    "prNumber": null,
+    "matchingTaskInDB": false,
+    "relatedClosedPR": {
+      "number": 1477,
+      "branch": "dev/53e0259c-dev-fix-signup-activated-rate-metric-col",
+      "state": "CLOSED",
+      "closedAt": "2026-05-05T00:24:46Z",
+      "note": "Original implementation attempt closed without merge; this branch created 1 day later as empty placeholder"
+    },
+    "siblingOrphanBranches": [
+      "dev/9e72a419-dev-fix-signup-activated-rate-metric-col",
+      "dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate"
+    ],
+    "fixLandedOnMain": false
+  },
+  "recommendation": "Delete branch. No code was committed — this was a manual placeholder created to satisfy branch-verification checks after PR #1477 (task 53e0259c) was closed without merging. If the signup-to-activated rate metric fix is still needed, review sibling branches (9e72a419 or b35bfeed) which may contain actual implementation.",
+  "commandsRun": [
+    "git fetch origin main && git fetch origin dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git log --oneline origin/main..origin/dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git diff --stat origin/main...origin/dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git show --stat origin/dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col",
+    "git ls-remote --heads origin dev/*signup*activated*",
+    "gh pr list --head dev/46fb2f9d-dev-fix-signup-activated-rate-metric-col --state all",
+    "gh pr list --search 'signup activated rate metric' --state all",
+    "gh pr view 1477",
+    "psql: SELECT tasks WHERE title ILIKE '%signup%activated%' ORDER BY created_at DESC",
+    "psql: SELECT tasks WHERE id LIKE '46fb2f9d%'"
+  ]
+}
