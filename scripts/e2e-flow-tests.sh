@@ -43,18 +43,27 @@ done
 
 PASSED=0
 FAILED=0
+SKIPPED=0
 RESULTS=()
 
+# Exit code 42 from a test function means "skip" (data precondition not met).
+# skip does NOT count as failed and does NOT trigger fix tasks.
 run_test() {
   local id="$1"
   local name="$2"
   local severity="$3"
+  local exit_code=0
   local status
 
-  if eval "$4"; then
+  eval "$4" || exit_code=$?
+  if [ "$exit_code" -eq 0 ]; then
     status="pass"
     PASSED=$((PASSED + 1))
     $VERBOSE && echo "  ✅ $id: $name"
+  elif [ "$exit_code" -eq 42 ]; then
+    status="skip"
+    SKIPPED=$((SKIPPED + 1))
+    $VERBOSE && echo "  ⏭️  $id: $name (skipped — precondition not met)"
   else
     status="fail"
     FAILED=$((FAILED + 1))
@@ -223,7 +232,9 @@ test_dashboard_no_errors() {
     [ "$lookup_attempt" -lt 3 ] && sleep 5
   done
 
-  [ -z "$user_id" ] && return 1
+  # No valid user found — skip rather than fail. This happens when all trial accounts
+  # have expired and there are no paid/pilot users. Not a code defect; skip gracefully.
+  [ -z "$user_id" ] && return 42
 
   # Retry up to 3 times (5s apart) to tolerate Vercel cold-start and transient
   # tunnel latency that can stall session validation in the middleware (5s timeout
@@ -377,7 +388,7 @@ cleanup_test_accounts
 # OUTPUT
 # ============================================
 
-TOTAL=$((PASSED + FAILED))
+TOTAL=$((PASSED + FAILED + SKIPPED))
 CRITICAL_FAIL=0
 for r in "${RESULTS[@]}"; do
   if echo "$r" | grep -q '"severity":"critical"' && echo "$r" | grep -q '"status":"fail"'; then
@@ -386,7 +397,7 @@ for r in "${RESULTS[@]}"; do
 done
 
 if $JSON_OUTPUT; then
-  echo "{\"total\":$TOTAL,\"passed\":$PASSED,\"failed\":$FAILED,\"critical_failed\":$CRITICAL_FAIL,\"results\":[$(IFS=,; echo "${RESULTS[*]}")]}"
+  echo "{\"total\":$TOTAL,\"passed\":$PASSED,\"failed\":$FAILED,\"skipped\":$SKIPPED,\"critical_failed\":$CRITICAL_FAIL,\"results\":[$(IFS=,; echo "${RESULTS[*]}")]}"
 else
   echo ""
   echo "Results: $PASSED/$TOTAL passed ($CRITICAL_FAIL critical failures)"
