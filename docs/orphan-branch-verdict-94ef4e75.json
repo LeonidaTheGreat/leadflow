@@ -1,0 +1,60 @@
+{
+  "investigationTaskId": "450fcbe3-23d9-4d59-91fd-5817ae0f2e61",
+  "orphanBranch": "dev/94ef4e75-fix-codebase-broken-imports",
+  "investigatedAt": "2026-07-20",
+  "verdict": "already-shipped-safe-delete",
+  "summary": "Branch made one fix (add StripeService.js stub for upgrade-offer test import). The file now exists on main, and the parent upgrade-offer feature was merged via PR #1264 on 2026-04-21. Both task rows for this branch (original + verification retry) are terminal (failed / cancelled). No PR was ever created for this branch. Content is superseded and safe to delete.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "3f3bcf5fa1354acb3d0366e9cf086376d8d9dcde",
+    "commitMessage": "fix: add missing StripeService for upgrade-offer test import",
+    "commitAuthor": "madzunkov@hotmail.com",
+    "commitDate": "2026-04-21T02:29:10-04:00",
+    "filesChanged": ["lib/services/StripeService.js"],
+    "changeStats": "1 file changed, 46 insertions(+)",
+    "fileAlreadyOnMain": true,
+    "relatedTaskRows": [
+      {
+        "id": "94ef4e75-6aed-41f1-a55e-4cd8e68bc996",
+        "title": "Fix: Codebase: broken imports",
+        "status": "failed",
+        "createdAt": "2026-04-21T02:24:36-04:00"
+      },
+      {
+        "id": "78e4e57f-d357-44ef-9c4f-31cfd5e25edc",
+        "title": "Fix: verification error on dev/94ef4e75-fix-codebase-broken-imports",
+        "status": "cancelled",
+        "createdAt": "2026-04-21T02:30:26-04:00"
+      }
+    ],
+    "relatedPRs": [
+      {
+        "number": 1264,
+        "title": "Dev: feat-personal-upgrade-offer-tool - Personal Upgrade Offer Tool — Admin Sends Promo Code to Specific Trial Agents",
+        "state": "MERGED",
+        "mergedAt": "2026-04-21T03:59:07Z",
+        "branch": "dev/03a3a9ad-dev-feat-personal-upgrade-offer-tool-per",
+        "note": "Parent feature that needed the StripeService — merged via separate branch after this fix branch was abandoned"
+      }
+    ],
+    "prsForOrphanBranch": [],
+    "context": "This was one of 10+ similarly-named 'fix-codebase-broken-imports' branches created on 2026-04-21, all of which were cancelled. The fix attempt was part of a fix-loop around upgrade-offer test import failures."
+  },
+  "risk": "none",
+  "riskRationale": "lib/services/StripeService.js already exists on main with content. No unreleased functionality is lost by deleting this branch. Both task rows are in terminal states.",
+  "recommendation": "safe-delete",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/94ef4e75-fix-codebase-broken-imports",
+    "git fetch origin dev/94ef4e75-fix-codebase-broken-imports",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git log --format='%H %ae %ai %s' FETCH_HEAD -1",
+    "git show main:lib/services/StripeService.js (head -5 to verify existence)",
+    "gh pr list --state all --search 'dev/94ef4e75-fix-codebase-broken-imports'",
+    "gh pr list --state all --search '3f3bcf5f'",
+    "gh pr list --state all --search 'StripeService upgrade-offer'",
+    "gh pr view 1264 --json number,title,state,mergedAt,headRefName",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE branch_name = 'dev/94ef4e75-fix-codebase-broken-imports'\"",
+    "psql $LOCAL_PG_URL -c \"SELECT ... FROM tasks WHERE branch_name LIKE '%94ef4e75%' OR title ILIKE '%broken-imports%'\""
+  ]
+}
