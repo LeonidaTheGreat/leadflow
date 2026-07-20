@@ -2,21 +2,30 @@
 'use strict'
 
 /**
- * Playwright globalSetup — ensures the Chromium browser binary is installed.
+ * Playwright globalSetup — ensures Chromium is installed and selects base URL.
  *
- * The genome runs `npx playwright test` directly (project.config.json browser_tests.command)
- * without a prior `playwright install` step. When the ~/.cache/ms-playwright cache is cleared
- * (OS cache purge, fresh machine, CI), every test fails with "Executable doesn't exist".
+ * Two responsibilities:
  *
- * This setup runs before any test and installs Chromium if the binary is missing.
- * It is a no-op when the binary is already present (playwright install detects this).
+ * 1. Browser install: The genome runs `npx playwright test` without a prior
+ *    `playwright install` step. When ~/.cache/ms-playwright is cleared, every
+ *    test fails with "Executable doesn't exist". This setup installs Chromium
+ *    if the binary is missing (no-op when already present).
+ *
+ * 2. Base URL selection: If PLAYWRIGHT_BASE_URL is already set, use it.
+ *    Otherwise, prefer the local Next.js dev server on port 3030 (always
+ *    running on the Mac Mini). Falling back to the live Vercel deployment
+ *    causes ~33/47 test failures on cold starts (Vercel cold boot >15s
+ *    exceeds navigation/perf timeouts). Local server is stable and fast.
  */
 
 const { execFileSync } = require('child_process')
+const http = require('http')
 const path = require('path')
 const fs = require('fs')
 
 const LIVE_CHECKOUT = '/Users/clawdbot/projects/leadflow'
+const LOCAL_URL = 'http://localhost:3030'
+const VERCEL_URL = 'https://leadflow-ai-five.vercel.app'
 
 /**
  * Resolve the playwright CLI binary, preferring the locally installed version.
@@ -34,7 +43,39 @@ function resolvePlaywrightBin() {
   return null
 }
 
+/**
+ * Check if the local Next.js dev server is responding on the given URL.
+ * Returns true if the server responds with any HTTP status within 3 seconds.
+ */
+function isLocalServerReachable(url) {
+  return new Promise((resolve) => {
+    const parsed = new URL(url)
+    const req = http.request(
+      { hostname: parsed.hostname, port: parsed.port || 80, path: '/', method: 'HEAD', timeout: 3000 },
+      (res) => { resolve(res.statusCode < 600) }
+    )
+    req.on('error', () => resolve(false))
+    req.on('timeout', () => { req.destroy(); resolve(false) })
+    req.end()
+  })
+}
+
 async function globalSetup() {
+  // ── 1. Select base URL ────────────────────────────────────────────────────
+  if (!process.env.PLAYWRIGHT_BASE_URL) {
+    const localAvailable = await isLocalServerReachable(LOCAL_URL)
+    if (localAvailable) {
+      process.env.PLAYWRIGHT_BASE_URL = LOCAL_URL
+      console.log(`[playwright-setup] Using local server: ${LOCAL_URL}`)
+    } else {
+      process.env.PLAYWRIGHT_BASE_URL = VERCEL_URL
+      console.log(`[playwright-setup] Local server not reachable — falling back to Vercel: ${VERCEL_URL}`)
+    }
+  } else {
+    console.log(`[playwright-setup] Using PLAYWRIGHT_BASE_URL=${process.env.PLAYWRIGHT_BASE_URL}`)
+  }
+
+  // ── 2. Install Chromium if missing ────────────────────────────────────────
   const bin = resolvePlaywrightBin()
   if (!bin) {
     console.warn('[playwright-setup] No local playwright binary found; skipping browser install.')
