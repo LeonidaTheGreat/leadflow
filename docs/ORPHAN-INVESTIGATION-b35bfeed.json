@@ -1,0 +1,46 @@
+{
+  "verdict": "already-shipped-safe-delete",
+  "branch": "dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+  "commitsAheadOfMain": 1,
+  "commits": [
+    {
+      "sha": "25a50ab1",
+      "message": "fix: persist onboarding wizard progress server-side to prevent drop-off"
+    }
+  ],
+  "filesChanged": [
+    "product/lead-response/dashboard/app/api/onboarding/complete/route.ts",
+    "product/lead-response/dashboard/app/api/setup/progress/route.ts",
+    "product/lead-response/dashboard/app/dashboard/onboarding/page.tsx",
+    "tests/unit/onboarding-step-persistence.test.js"
+  ],
+  "diffStatSummary": "4 files changed, 260 insertions(+), 43 deletions(-)",
+  "evidence": {
+    "pr1555": {
+      "number": 1555,
+      "title": "Dev (rescue): fix-signup-to-activated-rate-1-6-target-60 - Signup to Activated Rate: 1.6% (target 60%)",
+      "state": "MERGED",
+      "mergedAt": "2026-05-10T14:39:17Z",
+      "mergeCommit": "34521c3aa8a717545eab9840c57599a9b83a06d1",
+      "mergeCommitOnMain": true
+    },
+    "branchOnRemote": true,
+    "branchTipSha": "25a50ab1c872aa738bc68068d2eb3daa4d48ce3f"
+  },
+  "risk": "none",
+  "recommendation": "Safe to delete remote branch. PR #1555 was merged on 2026-05-10 and the merge commit (34521c3a) is confirmed present on main via git merge-base. The branch implements onboarding wizard server-side persistence to reduce signup drop-off. Content is fully shipped.",
+  "deleteCommand": "git push origin --delete dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git fetch origin dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git log --oneline main..origin/dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git diff --stat main...origin/dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "git log --format='%H %s %ae %ai' main..origin/dev/b35bfeed-dev-rescue-fix-signup-to-activated-rate",
+    "gh pr list --search 'b35bfeed' --state all --json number,title,state,mergedAt",
+    "gh pr list --search 'fix-signup-to-activated-rate' --state all --json number,title,state,mergedAt",
+    "gh pr view 1555 --json number,title,state,mergedAt,headRefName,mergeCommit",
+    "git merge-base --is-ancestor 34521c3aa8a717545eab9840c57599a9b83a06d1 main"
+  ],
+  "investigatedAt": "2026-07-20",
+  "taskId": "b6cde81e-2e29-4d82-bc12-9810bdd9c5ee"
+}
