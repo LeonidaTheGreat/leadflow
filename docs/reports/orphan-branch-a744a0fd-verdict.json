@@ -1,0 +1,70 @@
+{
+  "taskId": "7392f65a-ac5f-4a22-ac62-f654b862829b",
+  "investigatedBranch": "dev/a744a0fd-fix-browser-tests-v3",
+  "verdict": "shippable-needs-task-pr",
+  "summary": "Branch adds two Vercel config guards to vercel.json (root): `deploymentEnabled: false` for main/preview, and an `ignoreCommand` that prevents accidental leadflow-ai redeploys from the root project. These changes were never PR'd and are absent from main. PR #2021 (merged 2026-07-20) fixed the browser test symptom via a different approach (localhost detection in playwright-browser-setup.js), but did NOT ship the root-cause guard in vercel.json. The CLAUDE.md policy explicitly states 'No GitHub auto-deploy — all deployments are CLI-only', which this branch enforces. Changes are clean (vercel.json only, +7 lines), low-risk, and independently valuable.",
+
+  "evidence": {
+    "commitsAheadOfMain": 2,
+    "commits": [
+      {
+        "sha": "1c25a9b2",
+        "subject": "fix: add ignoreCommand to prevent leadflow-ai git-triggered deploys from root",
+        "filesChanged": ["vercel.json"]
+      },
+      {
+        "sha": "b8d9fc6f",
+        "subject": "fix: disable GitHub auto-deploy in root vercel.json to prevent leadflow-ai 500 errors",
+        "filesChanged": ["vercel.json"]
+      }
+    ],
+    "diffStat": "vercel.json | 7 +++++++  (1 file changed, 7 insertions(+))",
+    "changesOnBranch": {
+      "vercel.json": {
+        "added": [
+          "\"git\": {\"deploymentEnabled\": {\"main\": false, \"preview\": false}}",
+          "\"ignoreCommand\": \"[ \\\"$VERCEL_PROJECT_ID\\\" = \\\"prj_p9ZX952UhE1cl1PYZAgVW53FqVm9\\\" ] && exit 0 || exit 1\""
+        ],
+        "note": "deploymentEnabled:false is the primary guard; ignoreCommand protects leadflow-ai project ID (dashboard) from accidental root-triggered deploys"
+      }
+    },
+    "remoteExists": true,
+    "remoteSha": "1c25a9b29218571c614d78d1b01a7ae9a6c804c2",
+    "prSearchResults": {
+      "byBranchName": "no PR found",
+      "byShortSha1c25a9b2": "no PR found",
+      "byShortSha_b8d9fc6f": "no PR found",
+      "bySubject_ignoreCommand": "no PR found",
+      "bySubject_autoDisable": "no PR found"
+    },
+    "relatedMergedPRs": [
+      {
+        "pr": 2021,
+        "title": "fix: prefer local Next.js server over Vercel for browser tests",
+        "mergedAt": "2026-07-20",
+        "approach": "Changed playwright-browser-setup.js to probe localhost:3030 before each test run — different file, different fix path. Did NOT touch vercel.json."
+      }
+    ],
+    "mainVercelJsonLacksChanges": true,
+    "claudeMdPolicy": "No GitHub auto-deploy — all deployments are CLI-only (CLAUDE.md Vercel Deployment section)"
+  },
+
+  "risk": "LOW — vercel.json config-only change, no application code, aligns with documented CLAUDE.md policy. The ignoreCommand logic is belt-and-suspenders (exits 0/skip for leadflow-ai project ID, exits 1/proceed otherwise), which is safe. The deploymentEnabled:false flag is a standard Vercel control.",
+
+  "recommendation": "Create a new task to PR this branch. The `deploymentEnabled: false` guard enforces CLAUDE.md policy and prevents a class of accidental auto-deploy incidents. Not superseded by PR #2021 (different files, complementary approaches). Review the `ignoreCommand` condition (prj_p9ZX952UhE1cl1PYZAgVW53FqVm9 is leadflow-ai dashboard project — verify this is still the correct project ID before merging).",
+
+  "commandsRun": [
+    "git log --oneline main..origin/dev/a744a0fd-fix-browser-tests-v3",
+    "git diff --stat origin/main...origin/dev/a744a0fd-fix-browser-tests-v3",
+    "git ls-remote --heads origin dev/a744a0fd-fix-browser-tests-v3",
+    "gh pr list --state all --search 'dev/a744a0fd-fix-browser-tests-v3' --json number,title,state,mergedAt",
+    "gh pr list --state all --search 'ignoreCommand' --json number,title,state,mergedAt",
+    "gh pr list --state all --search 'disable GitHub auto-deploy' --json number,title,state,mergedAt",
+    "gh pr list --state all --search '1c25a9b2' --json number,title,state,mergedAt",
+    "gh pr list --state all --search 'b8d9fc6f' --json number,title,state,mergedAt",
+    "git log --oneline origin/main | grep -i 'vercel|browser-test|ignoreCommand|auto-deploy'",
+    "git show origin/main:vercel.json",
+    "git show origin/dev/a744a0fd-fix-browser-tests-v3:vercel.json",
+    "git show a85082ef --stat"
+  ]
+}
