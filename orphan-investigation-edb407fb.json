@@ -1,0 +1,57 @@
+{
+  "investigationTaskId": "be0e0953-da02-4294-8bd6-fb06c5506be1",
+  "orphanBranch": "dev/edb407fb-fix-verification-error-on-dev-bd1023af-f",
+  "investigatedAt": "2026-07-20",
+  "verdict": "duplicate/superseded",
+  "summary": "Branch adds scripts/ensure-deps.js (58 lines) and three npm lifecycle hooks (prebuild/prelint/pretest) to auto-install missing dependencies before verification gates. It was a verification-error fix for parent task bd1023af (ARCHITECTURE.md drift docs), which was itself found superseded in a prior investigation (merged 2026-07-20 as PR #9631d833 on main). The branch commit is from 2026-05-03; its package.json diff reveals the test script still references the old integrations/test-e2e-flow.js runner, not the current scripts/test-suite-gate.js — confirming the branch is 2.5 months stale and based on a superseded codebase state. The dep-install problem it solved has since been addressed via separate fixes (PR #828, #817, #1937: Playwright/Chromium auto-install). No PR was ever created for this branch.",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "3bf605c0c97c2eccfc2b5bafa21db9e9a45f1fcf",
+    "commitDate": "2026-05-03",
+    "commitAuthor": "Stojan Madjunkov",
+    "commitSubject": "fix: auto-install missing deps before verification gates",
+    "filesChanged": ["package.json", "scripts/ensure-deps.js"],
+    "linesChanged": "+61 insertions",
+    "packageJsonChanges": [
+      "prebuild: node scripts/ensure-deps.js dashboard (added)",
+      "prelint: node scripts/ensure-deps.js root (added)",
+      "pretest: node scripts/ensure-deps.js root (added)",
+      "test script: still references integrations/test-e2e-flow.js (STALE — main now uses scripts/test-suite-gate.js)"
+    ],
+    "ensureDepsMissingOnMain": "scripts/ensure-deps.js does NOT exist on current main",
+    "remoteBranchExists": true,
+    "remoteSHA": "3bf605c0c97c2eccfc2b5bafa21db9e9a45f1fcf",
+    "noPRCreated": true,
+    "parentTaskInvestigation": {
+      "parentTaskId": "bd1023af",
+      "parentBranch": "dev/bd1023af-fix-codebase-architecture-md-drift",
+      "parentVerdict": "duplicate/superseded",
+      "parentMergedAs": "9631d833 (docs: investigate orphan branch dev/bd1023af-fix-codebase-architecture-md-drift)",
+      "note": "The parent task's orphan was also superseded; this branch was a verification fix for a now-irrelevant parent"
+    },
+    "laterFixesThatSupersede": [
+      "PR #828 (fix: browser tests — install chromium, fix health endpoint 503 on api_connectivity)",
+      "PR #817 (fix: ensure Playwright Chromium browser is installed before running browser tests)",
+      "PR #1937 (fix: auto-install Playwright Chromium binary before browser tests)"
+    ]
+  },
+  "risk": "low — code (ensure-deps.js) is not on main and never shipped; stale branch off May 2026 state; merging would require significant reconciliation with 2.5 months of main evolution including test runner change",
+  "recommendation": "safe-delete — the specific verification error this fixed no longer applies (parent task bd1023af was itself superseded). The dep-install problem was addressed through later targeted fixes. No code loss since ensure-deps.js was never on main. Delete the branch.",
+  "commandsRun": [
+    "git checkout dev/be0e0953-investigate-orphan-branch-dev-edb407fb-f",
+    "git fetch origin dev/edb407fb-fix-verification-error-on-dev-bd1023af-f",
+    "git log --oneline main..origin/dev/edb407fb-fix-verification-error-on-dev-bd1023af-f",
+    "git diff --stat main...origin/dev/edb407fb-fix-verification-error-on-dev-bd1023af-f",
+    "git ls-remote --heads origin dev/edb407fb-fix-verification-error-on-dev-bd1023af-f",
+    "gh pr list --state all --head dev/edb407fb-fix-verification-error-on-dev-bd1023af-f",
+    "gh pr list --state all --search 'fix verification error'",
+    "gh pr list --state all --search 'auto-install missing deps'",
+    "git log --oneline main | grep -i 'ensure-deps|missing dep'",
+    "ls scripts/*.js | grep -i 'deps|ensure|install'",
+    "git log --all --oneline --grep='bd1023af'",
+    "git show --stat 9631d833",
+    "git show 9631d833:orphan-investigation-bd1023af.json",
+    "git diff main...origin/dev/edb407fb-fix-verification-error-on-dev-bd1023af-f -- package.json",
+    "git log --oneline main | grep -i 'deps|install|playwright'"
+  ]
+}
