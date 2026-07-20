@@ -1,0 +1,51 @@
+{
+  "taskId": "8b7dc7f7-0ccb-4f26-9318-ca60de201827",
+  "investigatedBranch": "dev/aa2064a5-fix-e2e-flow-test-failures-1-critical",
+  "verdict": "shippable-needs-task-pr",
+  "evidence": {
+    "commitsAheadOfMain": 1,
+    "commitSHA": "b72a59b104c80007cedab242225e305036e54b22",
+    "commitDate": "2026-05-09T20:42:19-0400",
+    "commitMessage": "fix: add build-time Vercel deployment config guard test",
+    "commitBody": "Adds a Jest guard test that catches deployment configuration drift at npm test time — before it ever reaches production. This is a different approach from PR #1533's E2E bash test hardening (post-deploy detection). Guards five invariants: Dashboard .vercel/project.json links to leadflow-ai; Root .vercel/project.json does NOT link to leadflow-ai; next.config.ts exists; package.json build script uses next build; No vercel.json builds override. Root cause: the 2026-05-08 outage happened because server.js was deployed to the leadflow-ai project.",
+    "filesChanged": ["tests/__tests__/vercel-deployment-config.test.ts"],
+    "changeStats": "1 file changed, 45 insertions(+)",
+    "fileExistsOnMain": false,
+    "remoteExists": true,
+    "remoteSHA": "b72a59b104c80007cedab242225e305036e54b22",
+    "relatedPR": {
+      "number": 1533,
+      "title": "Fix: E2E flow test failures (1 critical)",
+      "state": "MERGED",
+      "mergedAt": "2026-05-10T00:08:07Z",
+      "headRefName": "dev/aa2064a5-fix-e2e-flow-test-failures-1-critical",
+      "mergedContent": "Hardened bash E2E test (scripts/e2e-flow-tests.sh) to catch HTTP 5xx and FUNCTION_INVOCATION_FAILED — post-deploy detection",
+      "note": "PR #1533 merged different content than what is on this branch. The branch commit (b72a59b1) was NOT included in the merge commit (c1502514). The branch was repurposed or created after the PR closed — the orphan commit adds a complementary pre-deploy Jest guard."
+    },
+    "priorOrphanInvestigation": {
+      "relatedBranch": "dev/2a534172-fix-e2e-flow-test-failures-1-critical",
+      "investigationPR": 1988,
+      "verdict": "duplicate/superseded",
+      "note": "Different branch — 2a534172 modified scripts/e2e-flow-tests.sh (superseded by 5 later merges). This branch (aa2064a5) adds a separate Jest unit test file not found in 2a534172."
+    },
+    "mainHistoryCheck": "git log --all --oneline -- tests/__tests__/vercel-deployment-config.test.ts returned empty — file has never been on main"
+  },
+  "risk": "low",
+  "riskRationale": "Change is additive (test file only, no production code). File path tests/__tests__/vercel-deployment-config.test.ts does not conflict with anything on main. Branch is 2+ months old but test content is still relevant — Vercel project config drift is an ongoing risk. Caveat: TypeScript test (.ts) requires ts-jest or babel-jest configured — compatibility should be verified before merging.",
+  "recommendation": "shippable-needs-task-pr",
+  "recommendationDetail": "Branch contains a genuinely unshipped pre-deploy guard test (Jest unit test for Vercel deployment config invariants) that complements PR #1533's post-deploy E2E detection. The test guards the exact class of bug that caused the 2026-05-08 outage. A new task should be created to: (1) verify Jest TypeScript support is in place, (2) open a PR from this branch against main. Do NOT delete — the content has value that was never shipped.",
+  "commandsRun": [
+    "git fetch origin main dev/aa2064a5-fix-e2e-flow-test-failures-1-critical",
+    "git log --oneline origin/main..origin/dev/aa2064a5-fix-e2e-flow-test-failures-1-critical",
+    "git diff --stat origin/main...origin/dev/aa2064a5-fix-e2e-flow-test-failures-1-critical",
+    "git ls-remote --heads origin dev/aa2064a5-fix-e2e-flow-test-failures-1-critical",
+    "gh pr list --state all --search 'aa2064a5' --json number,title,state,url",
+    "gh pr view 1533 --json number,title,state,headRefName,mergedAt,body",
+    "git show origin/dev/aa2064a5-fix-e2e-flow-test-failures-1-critical --stat --format='%H%n%an%n%ae%n%ai%n%s%n%b'",
+    "git show c1502514 --stat",
+    "git show origin/main:tests/__tests__/vercel-deployment-config.test.ts",
+    "git log --all --oneline --follow -- tests/__tests__/vercel-deployment-config.test.ts",
+    "git ls-tree -r origin/main --name-only | grep -i vercel",
+    "git show 21472bcb --stat"
+  ]
+}
