@@ -1,0 +1,39 @@
+{
+  "taskId": "a75d11f2-0fde-4451-bb60-8dc9b77a2103",
+  "investigatedBranch": "dev/c72e8e23-fix-codebase-architecture-md-drift",
+  "verdict": "duplicate/superseded",
+  "evidence": {
+    "branchSHA": "d7c7c5d70b7c98aec3afe8fb8815ada1568f997a",
+    "commitDate": "2026-04-21",
+    "commitSubject": "docs: fix TrialActivationService description in ARCHITECTURE.md",
+    "commitsAheadOfMain": 1,
+    "filesChanged": ["ARCHITECTURE.md"],
+    "diffStat": "1 file changed, 1 insertion(+)",
+    "whatBranchDoes": "Inserts a TrialActivationService row into the auto-generated services table in ARCHITECTURE.md with description: 'TrialActivationService — Sends trial CTA email to signed-up pilots, transitions stage to trial_started, creates lead simulation'",
+    "mainCurrentState": "main already contains TrialActivationService at ARCHITECTURE.md line 73 with description: 'Note: trial_email_logs table doesn't have pilot_progress_id, so we check via pilot_progress.trial_cta_sent instead'",
+    "mergeRisk": "Merging this branch onto main would create a DUPLICATE TrialActivationService row in ARCHITECTURE.md — both rows would exist between SystemStatusService and TwilioService",
+    "relatedPRs": [
+      {"number": 2089, "state": "OPEN", "title": "Investigate orphan branch: dev/bd1023af-fix-codebase-architecture-md-drift"},
+      {"number": 2038, "state": "MERGED", "title": "Investigate orphan branch: dev/7a2b33f3-fix-codebase-architecture-md-drift"},
+      {"number": 1974, "state": "MERGED", "title": "Investigate orphan branch: dev/0fd668fb-fix-codebase-architecture-md-drift"}
+    ],
+    "noOpenPRForThisBranch": true,
+    "owningTaskStatus": "done",
+    "owningTaskRetries": 0
+  },
+  "risk": "LOW — only ARCHITECTURE.md touched (docs, no runtime code). Safe to delete. If merged, would silently create a duplicate table row in auto-generated docs.",
+  "recommendation": "safe-delete. The TrialActivationService entry already exists in main (added by a later commit, possibly from dev/0fd668fb or dev/7a2b33f3 chain). This branch's change is superseded. No PR was ever created for it. The owning task is 'done' at 0 retries, consistent with the change having been applied via a different path. Delete branch to clean up.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/c72e8e23-fix-codebase-architecture-md-drift",
+    "git fetch origin dev/c72e8e23-fix-codebase-architecture-md-drift",
+    "git log --oneline main..FETCH_HEAD",
+    "git diff --stat main...FETCH_HEAD",
+    "git show FETCH_HEAD --stat --format='%H %s %ad' --date=short",
+    "gh pr list --state all --search 'c72e8e23' --json number,title,state,headRefName",
+    "gh pr list --state all --search 'fix-codebase-architecture-md-drift' --json number,title,state,headRefName",
+    "git log --oneline --all --grep='TrialActivationService'",
+    "git diff main...FETCH_HEAD -- ARCHITECTURE.md (head 30 lines only)",
+    "git show main:ARCHITECTURE.md | grep -n 'TrialActivation|SystemStatus|TwilioService'",
+    "git show main:ARCHITECTURE.md | grep -c 'TrialActivation'"
+  ]
+}
