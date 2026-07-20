@@ -1,0 +1,95 @@
+{
+  "branch": "dev/88ee0f54-dev-re-merge-fix-inactivity-alerting-cro",
+  "investigatedAt": "2026-07-20",
+  "taskId": "684cd7a5-c1be-4ee0-ad32-7748625cef1d",
+  "verdict": "duplicate/superseded",
+  "summary": "This is a re-merge attempt for inactivity alerting (FR-5). The core feature was already shipped via PR #242 (merged 2026-03-11). A prior re-merge PR #1645 using this branch was explicitly CLOSED on 2026-05-16 without merging. The branch also contains a conflicting migration number (024) and an unrelated OnboardingSimulator commit.",
+  "evidence": {
+    "commitsAheadOfMain": 3,
+    "commits": [
+      {
+        "sha": "3bf7acb1",
+        "date": "2026-05-15",
+        "subject": "fix: FR-5 inactivity alerting cron schedule and dedup migration",
+        "filesChanged": [
+          "scripts/db/migrations/024_agent_sessions_inactivity_alerts.sql (+28 lines)",
+          "product/lead-response/dashboard/vercel.json (cron daily→*/30, remove duplicate inactivity-check)"
+        ]
+      },
+      {
+        "sha": "f867a314",
+        "date": "2026-05-15",
+        "subject": "test: add FR-5 inactivity-alerts cron route tests (6 cases)",
+        "filesChanged": [
+          "product/lead-response/dashboard/tests/inactivity-alerts-cron.test.ts (+179 lines)"
+        ]
+      },
+      {
+        "sha": "18574bda",
+        "date": "2026-05-15",
+        "subject": "feat: wire OnboardingSimulator step into onboarding signup wizard",
+        "filesChanged": [
+          "product/lead-response/dashboard/app/onboarding/page.tsx (+24 lines)"
+        ],
+        "note": "Unrelated to inactivity alerting — likely context contamination from dev agent"
+      }
+    ],
+    "relatedPRs": [
+      {
+        "number": 242,
+        "title": "Dev: fix-inactivity-alerting-cron-not-implemented - Inactivity alerting cron not implemented",
+        "status": "MERGED",
+        "mergedAt": "2026-03-11",
+        "note": "Original inactivity alerting fix — already on main"
+      },
+      {
+        "number": 1645,
+        "title": "Dev (re-merge): fix-inactivity-alerting-cron-not-implemented - Inactivity alerting cron not implemented",
+        "branch": "dev/08f3cfa1-dev-re-merge-fix-inactivity-alerting-cro",
+        "status": "CLOSED",
+        "closedAt": "2026-05-16",
+        "note": "Prior re-merge attempt for same feature — explicitly closed without merging"
+      },
+      {
+        "number": 1999,
+        "title": "Investigate orphan branch: dev/319f2369-fix-inactivity-schedule",
+        "status": "MERGED",
+        "mergedAt": "2026-07-19",
+        "verdict": "shippable-needs-task-pr",
+        "note": "Related branch (same schedule fix) — investigated yesterday, changes still not on main"
+      }
+    ],
+    "migrationConflict": {
+      "branchMigration": "024_agent_sessions_inactivity_alerts.sql",
+      "existingMigrations": [
+        "migrations/024_backfill_lead_sequences.sql",
+        "migrations/024_first_ai_response_tracking.sql"
+      ],
+      "risk": "HIGH — migration number 024 already used twice; applying this would conflict"
+    }
+  },
+  "risk": {
+    "level": "low",
+    "safeToDelete": true,
+    "caveats": [
+      "The OnboardingSimulator commit (18574bda) wires a UI step not elsewhere in this branch — if this work is genuinely needed, it should be cherry-picked onto a fresh branch, not re-merged from here",
+      "The cron schedule change (daily→*/30) and migration in commits 1 and 2 overlap with dev/319f2369 which was already flagged shippable-needs-task-pr — the 319f2369 work should be actioned first",
+      "Migration number 024 is already taken; any future re-implementation would need migration 026 or higher"
+    ]
+  },
+  "recommendation": "safe-delete — the core inactivity alerting feature shipped in PR #242. This re-merge was explicitly closed (PR #1645). The cron schedule change is covered by the still-open dev/319f2369 investigation. The OnboardingSimulator commit is an unrelated stray that should not anchor a merge decision.",
+  "commandsRun": [
+    "git ls-remote --heads origin dev/88ee0f54-dev-re-merge-fix-inactivity-alerting-cro",
+    "git fetch origin dev/88ee0f54-dev-re-merge-fix-inactivity-alerting-cro",
+    "git log --oneline main..origin/dev/88ee0f54-dev-re-merge-fix-inactivity-alerting-cro",
+    "git diff --stat main...origin/dev/88ee0f54-dev-re-merge-fix-inactivity-alerting-cro",
+    "git log --oneline main | grep -i 'inactivity\\|alerting\\|FR-5'",
+    "git log --oneline --all | grep -i 'inactivity\\|alerting\\|cron'",
+    "git log --oneline origin/dev/319f2369-fix-inactivity-schedule",
+    "gh pr list --state all --search 'inactivity-alerting-cro OR inactivity alerting cron' --limit 10",
+    "gh pr list --state merged --limit 50 | grep -i 'inactivity\\|319f2369\\|88ee0f54'",
+    "gh pr view 1999 --json title,body,mergedAt,commits",
+    "git -C /Users/clawdbot/projects/leadflow show 3bf7acb1 --stat",
+    "git -C /Users/clawdbot/projects/leadflow show 18574bda --stat"
+  ]
+}
