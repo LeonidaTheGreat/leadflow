@@ -3,8 +3,10 @@
 /**
  * E2E test: fix-email-delivery-resend-from-domain-not-verified
  *
- * Verifies that dashboard email services use onboarding@landyourleads.com as the default
- * FROM address (verified domain fallback), never a Resend test domain.
+ * Verifies that dashboard email services and diagnostic scripts use
+ * onboarding@landyourleads.com as the FROM address (verified domain),
+ * never Resend's sandbox domain (onboarding@resend.dev) which blocks
+ * delivery to all recipients except the account owner.
  */
 
 const assert = require('assert')
@@ -12,6 +14,7 @@ const fs = require('fs')
 const path = require('path')
 
 const LIB_DIR = path.join(__dirname, '..', 'product', 'lead-response', 'dashboard', 'lib')
+const SCRIPTS_DIR = path.join(__dirname, '..', 'scripts')
 
 let passed = 0
 let total = 0
@@ -51,6 +54,22 @@ for (const file of files) {
     assert.ok(!fallbackLine.includes('onboarding@resend.dev'), `Fallback uses resend.dev: ${fallbackLine.trim()}`)
   })
 }
+
+// Verify the diagnostic script also uses the verified domain
+const verifySrc = fs.readFileSync(path.join(SCRIPTS_DIR, 'verify-resend-key-live.js'), 'utf-8')
+
+test('verify-resend-key-live.js: does not hard-code onboarding@resend.dev as sender', () => {
+  const lines = verifySrc.split('\n')
+  const senderLine = lines.find(line => line.trim().startsWith('from:') && line.includes('resend.dev'))
+  assert.ok(!senderLine, `Script hard-codes resend.dev sender: ${senderLine && senderLine.trim()}`)
+})
+
+test('verify-resend-key-live.js: uses FROM_EMAIL env var with landyourleads.com fallback', () => {
+  assert.ok(
+    verifySrc.includes('FROM_EMAIL') && verifySrc.includes('landyourleads.com'),
+    'Script must use FROM_EMAIL env var with landyourleads.com fallback'
+  )
+})
 
 console.log(`Results: ${passed}/${total} passed`)
 if (passed !== total) process.exit(1)
