@@ -7,6 +7,8 @@
  *   (2) GATE-FIX PRE-CHECK before fixing a gate
  *   (3) NO COMPLETION-REPORT JSON in git
  *   (4) UC DONE-TASK CHECK before starting
+ * task a4f90022 — PHANTOM COMPLETION PROHIBITION rule:
+ *   NEVER call reportSuccess() without verifying branch pushed to GitHub
  */
 
 const fs = require('fs')
@@ -70,6 +72,17 @@ describe('Dev agent instructions', () => {
       if (!soulContent) return
       expect(soulContent).toMatch(/UC DONE-TASK CHECK/)
     })
+
+    // Phantom completion prohibition (task a4f90022)
+    it('contains PHANTOM COMPLETION PROHIBITION rule', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/PHANTOM COMPLETION PROHIBITION/)
+    })
+
+    it('prohibits reportSuccess() without verified remote branch', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/NEVER call.*reportSuccess.*without/)
+    })
   })
 
   describe('role-context.js buildRoleContext() dev section', () => {
@@ -129,6 +142,21 @@ describe('Dev agent instructions', () => {
       const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
       const text = out.spawnRole || out.roleContext || JSON.stringify(out)
       expect(text).toMatch(/UC DONE-TASK CHECK/)
+    })
+
+    // Phantom completion prohibition (task a4f90022)
+    it('PHANTOM COMPLETION PROHIBITION present in spawnRole', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/PHANTOM COMPLETION PROHIBITION/)
+    })
+
+    it('reportSuccess prohibition without verified branch present in spawnRole', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/NEVER call reportSuccess\(\) without first verifying/)
     })
   })
 })
