@@ -15,6 +15,7 @@ const path = require('path')
 
 // Paths relative to dashboard directory
 const DASHBOARD_DIR = path.join(__dirname, '..')
+const CHECKOUT_ROUTE = path.join(DASHBOARD_DIR, 'app/api/billing/create-checkout-session/route.ts')
 const WEBHOOK_ROUTE = path.join(DASHBOARD_DIR, 'app/api/webhooks/stripe/route.ts')
 const BILLING_PAGE = path.join(DASHBOARD_DIR, 'app/settings/billing/page.tsx')
 const DASHBOARD_PAGE = path.join(DASHBOARD_DIR, 'app/dashboard/page.tsx')
@@ -114,7 +115,7 @@ check('Validates planId is one of starter/pro/team', () => {
 check('Maps planId to Stripe price IDs from env vars', () => {
   const content = fs.readFileSync(CHECKOUT_ROUTE, 'utf8')
   assert.ok(content.includes('STRIPE_PRICE_STARTER_MONTHLY'), 'should reference starter price')
-  assert.ok(content.includes('STRIPE_PRICE_PROFESSIONAL_MONTHLY'), 'should reference pro price')
+  assert.ok(content.includes('STRIPE_PRICE_PRO_MONTHLY'), 'should reference pro price')
   assert.ok(content.includes('STRIPE_PRICE_TEAM_MONTHLY'), 'should reference team price')
 })
 
@@ -180,7 +181,7 @@ check('Maps price_id to plan_tier correctly', () => {
   const content = fs.readFileSync(WEBHOOK_ROUTE, 'utf8')
   assert.ok(content.includes('getTierFromPriceId'), 'should have tier mapping function')
   assert.ok(content.includes('STRIPE_PRICE_STARTER_MONTHLY'), 'should map starter price')
-  assert.ok(content.includes('STRIPE_PRICE_PROFESSIONAL_MONTHLY'), 'should map pro price')
+  assert.ok(content.includes('STRIPE_PRICE_PRO_MONTHLY'), 'should map pro price')
   assert.ok(content.includes('STRIPE_PRICE_TEAM_MONTHLY'), 'should map team price')
 })
 

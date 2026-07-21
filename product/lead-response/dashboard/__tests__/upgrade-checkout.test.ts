@@ -15,8 +15,8 @@ process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8788/rest/v1'
 process.env.API_SECRET_KEY = 'test-service-role-key'
 process.env.JWT_SECRET = 'test-secret'
 process.env.STRIPE_PRICE_STARTER_MONTHLY = 'price_starter_monthly_test'
-process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY = 'price_pro_monthly_test'
-process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY = 'price_team_monthly_test'
+process.env.STRIPE_PRICE_PRO_MONTHLY = 'price_pro_monthly_test'
+process.env.STRIPE_PRICE_TEAM_MONTHLY = 'price_team_monthly_test'
 
 // ── Mock next/server ──────────────────────────────────────────────────────────
 
