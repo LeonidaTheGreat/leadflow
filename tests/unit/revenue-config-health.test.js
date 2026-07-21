@@ -218,6 +218,58 @@ test('lists exact env var names', () => {
 })
 
 // ---------------------------------------------------------------------------
+// 7. Regression guard: isValidPriceId must NOT exist in route files
+//    Bug: fix-checkout-regex-blocks-all-payments — the regex /^price_[A-Za-z0-9]{14,30}$/
+//    rejected real Stripe price IDs, blocking all payments. Fixed 2026-07-16.
+// ---------------------------------------------------------------------------
+console.log('\n[7] Regression guard: isValidPriceId not in route files')
+
+test('isValidPriceId not in routes/ directory', () => {
+  const routesDir = path.join(PROJECT, 'routes')
+  function scanDir(dir) {
+    if (!fs.existsSync(dir)) return
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        scanDir(fullPath)
+      } else if (entry.isFile() && entry.name.endsWith('.js')) {
+        const src = fs.readFileSync(fullPath, 'utf8')
+        assert.ok(
+          !src.includes('isValidPriceId'),
+          `Route file ${entry.name} must not use isValidPriceId (blocks all payments)`
+        )
+      }
+    }
+  }
+  scanDir(routesDir)
+})
+
+test('isValidPriceId not in lib/ directory', () => {
+  const libDir = path.join(PROJECT, 'lib')
+  function scanDir(dir) {
+    if (!fs.existsSync(dir)) return
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        scanDir(fullPath)
+      } else if (entry.isFile() && entry.name.endsWith('.js')) {
+        const src = fs.readFileSync(fullPath, 'utf8')
+        assert.ok(
+          !src.includes('isValidPriceId'),
+          `Lib file ${entry.name} must not use isValidPriceId (blocks all payments)`
+        )
+      }
+    }
+  }
+  scanDir(libDir)
+})
+
+test('isValidPriceId not in server.js', () => {
+  const src = fs.readFileSync(path.join(PROJECT, 'server.js'), 'utf8')
+  assert.ok(!src.includes('isValidPriceId'), 'server.js must not use isValidPriceId')
+})
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed (${passed + failed} total)`)
