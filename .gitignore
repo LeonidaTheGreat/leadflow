@@ -123,6 +123,10 @@ test-results/
 playwright-report/
 playwright-report.json
 .completion-reports-archive/
+# Orphan-branch investigation findings (gitignored so agents cannot create PRs from them)
+orphan-investigation-*.json
+docs/orphan-*-investigation.json
+docs/orphan-branch-*-investigation.json
 # Auto-generated orchestrator docs
 dashboard/architecture.html
 docs/ARCHITECTURE-MAP.md
