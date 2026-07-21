@@ -11,6 +11,8 @@
  *   NEVER call reportSuccess() without verifying branch pushed to GitHub
  * task ab27c3e7 — GATE-FIX PRE-CHECK gate_self_resolved:
  *   If gate already passes, report no-op completed with note "Gate self-resolved"
+ * task 2c85a8f1 — ORCHESTRATOR-DECISIONS JSON must never be staged in git:
+ *   covers ORCHESTRATOR-DECISIONS-*.json in addition to completion-reports/
  */
 
 const fs = require('fs')
@@ -95,6 +97,17 @@ describe('Dev agent instructions', () => {
     it('GATE-FIX PRE-CHECK specifies no-op completed with gate self-resolved note', () => {
       if (!soulContent) return
       expect(soulContent).toMatch(/Gate self-resolved/)
+    })
+
+    // ORCHESTRATOR-DECISIONS JSON in git prohibition (task 2c85a8f1)
+    it('covers ORCHESTRATOR-DECISIONS-*.json in the no-commit rule', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/ORCHESTRATOR-DECISIONS/)
+    })
+
+    it('tells dev to check for ORCHESTRATOR-DECISIONS files before committing', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/ORCHESTRATOR-DECISIONS.*\.json/)
     })
   })
 
@@ -185,6 +198,14 @@ describe('Dev agent instructions', () => {
       const out = roleContext.buildRoleContext('dev', 'Fix: build failures', 'desc')
       const text = out.spawnRole || out.roleContext || JSON.stringify(out)
       expect(text).toMatch(/Gate self-resolved/)
+    })
+
+    // ORCHESTRATOR-DECISIONS JSON in git prohibition (task 2c85a8f1)
+    it('Gate 5 catches ORCHESTRATOR-DECISIONS JSON files', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/ORCHESTRATOR-DECISIONS/)
     })
   })
 })
