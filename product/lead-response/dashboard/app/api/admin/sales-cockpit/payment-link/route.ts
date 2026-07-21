@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
   }
 
-  const proPriceId = process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY
+  const proPriceId = process.env.STRIPE_PRICE_PRO_MONTHLY
   if (!proPriceId) {
     return NextResponse.json({ error: 'Pro plan price ID not configured' }, { status: 503 })
   }
