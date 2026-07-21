@@ -9,6 +9,8 @@
  *   (4) UC DONE-TASK CHECK before starting
  * task a4f90022 — PHANTOM COMPLETION PROHIBITION rule:
  *   NEVER call reportSuccess() without verifying branch pushed to GitHub
+ * task ab27c3e7 — GATE-FIX PRE-CHECK gate_self_resolved:
+ *   If gate already passes, report no-op completed with note "Gate self-resolved"
  */
 
 const fs = require('fs')
@@ -82,6 +84,17 @@ describe('Dev agent instructions', () => {
     it('prohibits reportSuccess() without verified remote branch', () => {
       if (!soulContent) return
       expect(soulContent).toMatch(/NEVER call.*reportSuccess.*without/)
+    })
+
+    // Gate self-resolved no-op rule (task ab27c3e7)
+    it('GATE-FIX PRE-CHECK uses gate_self_resolved category', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/gate_self_resolved/)
+    })
+
+    it('GATE-FIX PRE-CHECK specifies no-op completed with gate self-resolved note', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/Gate self-resolved/)
     })
   })
 
@@ -157,6 +170,21 @@ describe('Dev agent instructions', () => {
       const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
       const text = out.spawnRole || out.roleContext || JSON.stringify(out)
       expect(text).toMatch(/NEVER call reportSuccess\(\) without first verifying/)
+    })
+
+    // Gate self-resolved no-op rule (task ab27c3e7)
+    it('GATE-FIX PRE-CHECK uses gate_self_resolved category in fix-task spawnRole', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Fix: build failures', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/gate_self_resolved/)
+    })
+
+    it('GATE-FIX PRE-CHECK instructs gate self-resolved note in fix-task spawnRole', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Fix: build failures', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/Gate self-resolved/)
     })
   })
 })
