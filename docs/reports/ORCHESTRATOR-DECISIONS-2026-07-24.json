@@ -1,0 +1,58 @@
+{
+  "genome_score": 67,
+  "score_rationale": "E2E 11/12 (91.7%), codebase rules 0 violations, task success rate 93.7% (4221/4507). Score penalized by: zombie/timeout pattern blocking all 3 P1 revenue UCs (-15), recurring 'fix didn't resolve root cause' in dev agent (-10), and security gate still open (-8).",
+  "priority_changes": [],
+  "cancellations": [],
+  "action_items": [
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add QUALITY GATE VERIFICATION rule to RULES.md: Before marking any fix task done, run the exact gate command that triggered the task (e.g. `npm audit --audit-level=high`, `npm test`, `npm run lint`, `git status`) and confirm it exits 0 or shows clean. Do NOT self-report success without this step. Three consecutive 'fix didn't resolve root cause' cancellations (tasks ea06566d, 597e0b88, 8170e4f4) show agents closing tasks without end-to-end gate verification.",
+      "priority": 1,
+      "reason": "3 fix tasks were cancelled because the root cause wasn't actually resolved — agents declared done without running the gate that triggered the task."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add GIT NETWORK RESILIENCE rule to RULES.md: If any git remote operation (clone, fetch, push, branch creation) times out within the first 10 minutes, do NOT immediately fail. Retry with: (1) wait 30s, (2) switch to HTTPS remote URL if currently using SSH (`git remote set-url origin https://github.com/...`), (3) retry the operation. If still failing after 2 retries, report branch-creation-failed with the exact error. Three investigation tasks for uc-leadflow-trial-sms-nudge-sequence, uc-leadflow-admin-sms-outreach, uc-leadflow-checkout-failure-diagnostics died as zombies after 5-6 min — all with timeout errors on git operations.",
+      "priority": 1,
+      "reason": "Git network timeouts are killing agent processes before they create a branch, blocking all work on 3 P1 revenue UCs. Retry with HTTPS fallback is the standard remediation."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "qc",
+      "description": "Add PARENT TASK STATUS CHECK rule to RULES.md: At the very start of any QC review task, before checking out any branch, query the parent dev task status: `psql openclaw -c \"SELECT status, last_error FROM tasks WHERE id = '<parent_task_id>'\"`. If status is 'failed' or 'cancelled', self-cancel immediately with reason 'Upstream dev task failed/cancelled — QC review cannot proceed'. Do not attempt to checkout, review, or report on a PR from a failed task. 4 of 4 QC failures this week were cascades from upstream dev failures — all wasted agent cycles.",
+      "priority": 2,
+      "reason": "All 4 QC failures this week were downstream cascades from dev task failures. A status check at task start eliminates wasted QC cycles."
+    }
+  ],
+  "human_action_items": [],
+  "focus_today": "Unblock the 3 P1 revenue UCs (SMS nudges, admin SMS outreach, Stripe checkout diagnostics) before the 2026-07-31 first-paying-customer deadline — investigation tasks are re-queued; the zombie/timeout fix to dev agent instructions is the critical unblocking action.",
+  "stuck_uc_decisions": {
+    "uc-leadflow-trial-sms-nudge-sequence": {
+      "decision": "keep_active",
+      "rationale": "Fresh investigation task (bd7db0a3) already queued as 'ready'. Previous attempts died as zombies due to git timeout, not a spec problem. Spec is concrete and executable. Unblocked by dev agent HTTPS fallback instruction."
+    },
+    "uc-leadflow-admin-sms-outreach": {
+      "decision": "keep_active",
+      "rationale": "Fresh investigation task (97d3267e) already queued as 'ready'. Same zombie/timeout root cause. Spec is solid: /admin/sms-outreach page with Twilio + magic link."
+    },
+    "uc-leadflow-checkout-failure-diagnostics": {
+      "decision": "keep_active",
+      "rationale": "Fresh investigation task (e28c83f4) already queued as 'ready'. Same root cause. High revenue urgency — gives Stojan real-time visibility into checkout failures before 2026-07-31 deadline."
+    }
+  },
+  "genome_self_assessment": {
+    "strengths": [
+      "E2E coverage at 91.7%",
+      "Zero codebase rule violations",
+      "Duplicate dedup guard working correctly (many cancelled tasks show 'Archived: duplicate')"
+    ],
+    "gaps": [
+      "Zombie/timeout pattern for git operations blocks P1 work across multiple UCs",
+      "Dev agents declare done without running verification gate (3 occurrences this week)",
+      "Security gate open (ready task: 30a8f0be)",
+      "clean_worktree gate failing due to auto-generated file drift in tracked .md files"
+    ]
+  }
+}
