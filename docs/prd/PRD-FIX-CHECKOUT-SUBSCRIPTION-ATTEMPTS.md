@@ -1,10 +1,16 @@
 # PRD: Fix Checkout — Replace subscription_attempts with checkout_sessions
 
 **PRD ID:** `PRD-FIX-CHECKOUT-SUBSCRIPTION-ATTEMPTS`  
-**Status:** approved  
+**Status:** reviewed  
 **Date:** 2026-03-15  
+**Review Date:** 2026-07-24  
 **Linked UC:** `fix-subscription-attempts-table-does-not-exist-in-supa`  
 **Severity:** High — every checkout attempt returns HTTP 500
+
+**Review Outcome:** pass_with_issues (score 80/100)  
+- Core fix verified: `subscription_attempts` → `checkout_sessions` implemented correctly  
+- Minor gap: `expires_at` not stored (nullable, non-blocking)  
+- Action required: verify `STRIPE_PRICE_*` env vars in Vercel before live checkout
 
 ---
 
