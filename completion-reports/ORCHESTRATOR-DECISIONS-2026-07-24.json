@@ -6,6 +6,18 @@
   "cancellations": [],
   "action_items": [
     {
+      "type": "fix",
+      "description": "Fix spawn-consumer timeout retry strategy: when a spawn attempt fails with a git network timeout or connection error (not a logic error), do NOT cancel the task after max retries. Park it back as 'ready' with a backoff timestamp (5 min) and skip tasks whose backoff is in the future. Current behavior creates an infinite loop: spawn times out → task cancelled after 4 retries → orchestrator re-creates task next cycle. Three P1 UCs have been stuck in this loop for 3 days.",
+      "priority": 1,
+      "reason": "Root cause of the zombie/timeout pattern blocking uc-leadflow-trial-sms-nudge-sequence, uc-leadflow-admin-sms-outreach, and uc-leadflow-checkout-failure-diagnostics. Agent instructions help individual agents retry, but the spawn-consumer fix prevents the task from being cancelled before any agent runs."
+    },
+    {
+      "type": "fix",
+      "description": "Audit the improve-agent action_item processor in genome: grep -r 'improve-agent' ~/projects/genome/core/. If a handler exists, check the last write timestamp to ~/.openclaw/workspace-dev/SOUL.md vs task completion timestamps (ab27c3e7 done 2026-07-21, 2c85a8f1 done 2026-07-21). If no handler or broken handler, wire one: for agent='dev', append instruction text to ~/.openclaw/workspace-dev/SOUL.md; for 'qc', ~/.openclaw/workspace-qc/SOUL.md. Without a working handler, every improve-agent proposal is a no-op.",
+      "priority": 1,
+      "reason": "Same dev failure categories appear in 4 consecutive daily reviews. Improve-agent tasks were marked done on 2026-07-21 but identical failure patterns persist — either the processor is broken or writing to the wrong path."
+    },
+    {
       "type": "improve-agent",
       "agent": "dev",
       "description": "Add QUALITY GATE VERIFICATION rule to RULES.md: Before marking any fix task done, run the exact gate command that triggered the task (e.g. `npm audit --audit-level=high`, `npm test`, `npm run lint`, `git status`) and confirm it exits 0 or shows clean. Do NOT self-report success without this step. Three consecutive 'fix didn't resolve root cause' cancellations (tasks ea06566d, 597e0b88, 8170e4f4) show agents closing tasks without end-to-end gate verification.",
