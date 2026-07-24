@@ -1,78 +1,106 @@
 {
-  "date": "2026-07-22",
-  "genome_score": 62,
-  "genome_score_rationale": "Technical health is solid: 11/12 E2E tests pass (92%), 0 codebase rules violations. Score penalized for: (1) Day 151 of 180, $0 MRR, 8 days to first-paying-customer deadline — revenue gap is severe and accelerating; (2) all three P1 stuck UCs died with zombie/timeout errors and required re-queue — a process reliability issue; (3) improve-agent action items from reviews on 2026-07-19 and 2026-07-20 have still not been applied (same dev failure patterns recur for 3rd consecutive review); (4) 3 dev failures caused by 'original fix task reopened' indicate root-cause analysis is still not happening before re-implementation. No score improvement from prior day because the structural instruction-gap remains unresolved.",
+  "date": "2026-07-24",
+  "genome_score": 40,
+  "genome_score_rationale": "E2E: 11/12 tests passing (92%), codebase rules: 0 violations — technical baseline solid. Score heavily penalized by: (1) confirmed budget exhaustion ($0.01 daily cap) freezing ALL task execution for 48+ hours — 19 tasks queued, zero executed since 2026-07-22 (-25); (2) all 3 P1 revenue UC investigation tasks (bd7db0a3, e28c83f4, 97d3267e) stuck in 'ready' for 2 days without executing (-12); (3) improve-agent instructions proposed across 5 consecutive daily reviews (2026-07-19 through 2026-07-24) never applied — processor absent or broken (-10); (4) Day 151/180, $0 MRR, 7 days to first-paying-customer deadline (-8); (5) cascade QC failures from dev failures not self-detecting (-5). No improvement from yesterday because budget freeze blocks all work.",
   "priority_changes": [],
   "cancellations": [],
   "action_items": [
     {
-      "type": "improve-agent",
-      "agent": "dev",
-      "description": "Add rule to dev SOUL.md: ROOT CAUSE FIRST — When a task title references 'original fix task reopened (fix didn't resolve root cause)', you MUST read the original fix before writing any code. Steps: (1) grep git log for the original task short ID from the title; (2) run 'git show <branch>:<changed-files>' to read what was changed; (3) identify WHY the fix didn't hold (symptom-level patch vs root cause?); (4) write your fix targeting the root cause, not the symptom. A fix that repeats the same approach as the previous fix will fail QC for the same reason and waste a full pipeline cycle.",
+      "type": "fix",
+      "description": "Add P1 emergency budget bypass to spawn-consumer.js: before skipping a task for budget exhaustion, check if task.priority === 1. If yes, spawn from a P1_EMERGENCY_RESERVE (default $5/day, tracked separately in .budget-config.json as 'p1_reserve'). Log all P1 emergency spawns with '[P1 RESERVE]' prefix. This prevents a single cost overrun from freezing all revenue-critical work. Immediate context: daily budget at $0.01 has blocked 3 P1 revenue UC investigation tasks (bd7db0a3, e28c83f4, 97d3267e) for 48+ hours.",
       "priority": 1,
-      "reason": "3 of 5 dev failures this review are 'Cancelled: original fix task reopened (fix didn't resolve root cause)'. Dev agents restart work without reading the previous fix, producing the same surface patch. Each wasted cycle costs $2+ and a full pipeline slot."
+      "reason": "CONFIRMED ROOT CAUSE of all 3 stuck P1 UCs. The dispatcher is running correctly — it's budget-gated out of firing any task. Without a P1 emergency reserve, any daily cost overrun freezes critical revenue work indefinitely."
+    },
+    {
+      "type": "fix",
+      "description": "Add execution stall detection to genome heartbeat: in heartbeat-executor.js, add a check (run every heartbeat): SELECT COUNT(*) FROM tasks WHERE status IN ('done','in_progress') AND updated_at > NOW() - INTERVAL '6 hours'. If count = 0 AND EXISTS (SELECT 1 FROM tasks WHERE status = 'ready'), send Telegram alert to genome topic: 'EXECUTION FROZEN: X tasks queued in ready, 0 executed in 6h — check budget (state/leadflow/.budget-config.json) and dispatcher'. This would have caught the current 48h freeze within the first 6 hours.",
+      "priority": 1,
+      "reason": "System has been completely frozen for 48 hours with no automatic alert. Stojan had no signal that zero work was executing. Genome must detect and alert on execution stalls — a 48h blind spot is a P1 genome gap."
+    },
+    {
+      "type": "fix",
+      "description": "Wire the improve-agent action_item processor in genome: grep -r 'improve-agent' ~/projects/genome/core/heartbeat-executor.js ~/projects/genome/core/workflow-engine.js ~/projects/genome/core/realtime-dispatcher.js. If a handler exists, check its last write timestamp to ~/.openclaw/workspace-dev/SOUL.md and ~/.openclaw/workspace-qc/SOUL.md vs action_item task completion timestamps. If handler is broken (wrong path, dedup blocking, silent exit), fix it. If no handler exists, implement one: (1) read target agent from action_item.agent ('dev' -> ~/.openclaw/workspace-dev/SOUL.md, 'qc' -> ~/.openclaw/workspace-qc/SOUL.md); (2) append instruction under '## Orchestrator Directives' section (create section if missing); (3) deduplicate by first 80 chars of description before appending.",
+      "priority": 1,
+      "reason": "5 consecutive daily reviews have proposed instruction improvements for dev and qc agents. Identical failure patterns recur each session — processor confirmed absent or broken. Without this, all future improve-agent proposals are no-ops."
     },
     {
       "type": "improve-agent",
       "agent": "dev",
-      "description": "Add rule to dev SOUL.md: GATE PRE-CHECK — At the start of any task whose title begins with 'Fix: Quality gate', immediately re-run the failing gate before touching code. Command: npm run <gate-name> (or the relevant check). If the gate now passes, write a completion report with notes='no-op: gate already resolved before agent started' and call reportSuccess() — do NOT make any code changes. Phantom gate-fix tasks that apply changes to an already-green gate leave the codebase in an inconsistent state.",
+      "description": "ROOT CAUSE FIRST — When a task title contains 'original fix task reopened (fix didn't resolve root cause)', STOP before writing any code. Execute in order: (1) grep 'git log --oneline -30' for the original task short ID from the title; (2) run 'git show <commit>:<changed-files>' to read the previous attempt's exact changes; (3) identify specifically WHY that approach failed (symptom patch vs root cause?); (4) document root cause analysis in a comment block; (5) write your fix to address the root cause only. A fix that repeats the same approach will fail QC for the same reason and waste $2+ in pipeline cost.",
       "priority": 1,
-      "reason": "1 of 5 dev failures was 'Auto-resolved: gate now passes'. The gate fixed itself before the agent started (from a concurrent task), but the agent was already spawned. Without a pre-check, the agent will apply a fix to a resolved problem."
+      "reason": "3 of 5 dev execution failures this cycle match 'Cancelled: original fix task reopened (fix didn't resolve root cause)'. Agents re-implement without reading prior attempts, producing identical patches that fail QC again."
     },
     {
       "type": "improve-agent",
       "agent": "dev",
-      "description": "Add rule to dev SOUL.md: GIT RETRY ON TIMEOUT — When any git network operation (git push, git fetch, git clone, git ls-remote, branch creation via remote) times out or returns a connection error, retry up to 3 times with 10-second sleep between attempts before marking the operation as failed. Do NOT fail the entire task on first network timeout. Use: for i in 1 2 3; do git <operation> && break || sleep 10; done. Log each retry attempt. Only fail the task if all 3 retries fail.",
+      "description": "GATE PRE-CHECK — At the start of any task whose title begins with 'Fix: Quality gate', immediately re-run the failing gate before touching any code. Gate commands by type: security='npm audit --audit-level=high', lint='npm run lint', test='npm test', clean_worktree='git status --porcelain'. If the gate exits 0 (now passes), call reportSuccess() with notes='no-op: gate auto-resolved before agent started' — do NOT make code changes. Phantom gate-fix tasks leave the codebase in inconsistent state.",
       "priority": 1,
-      "reason": "1 of 5 dev failures was 'branch-creation-failed: timeout exceeded when trying to connect'. Transient network timeouts during git operations should not abort an entire task — they are recoverable with a simple retry."
+      "reason": "1 of 5 dev failures was 'Auto-resolved: gate now passes'. Agent spawned after gate self-resolved but applied unnecessary changes."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "GIT NETWORK RESILIENCE — When any git remote operation (push, fetch, clone, ls-remote, branch creation) times out or returns a connection error, retry with exponential backoff: attempt 1 immediately, attempt 2 after 30s with HTTPS fallback (git remote set-url origin https://github.com/LeonidaTheGreat/leadflow.git), attempt 3 after 60s. Only mark the task failed if all 3 retries fail — report branch-creation-failed with the exact error from the last attempt. Never fail a task on the first network timeout.",
+      "priority": 1,
+      "reason": "1 of 5 dev failures was 'branch-creation-failed: timeout exceeded when trying to connect'. Transient network timeout — HTTPS fallback + retry would have recovered."
     },
     {
       "type": "improve-agent",
       "agent": "qc",
-      "description": "Add rule to qc SOUL.md: DEDUP PR CHECK — At task start, before checking out any branch, run: SELECT id, status FROM tasks WHERE agent_id='qc' AND pr_number=<this_pr_number> AND status IN ('done','in_progress','ready') AND id != '<this_task_id>'. If a matching row exists, log the duplicate task ID and call reportSuccess() with notes='no-op: QC already completed or in-progress for PR #<number>'. Do NOT duplicate a QC review that another QC task already completed.",
+      "description": "PARENT TASK STATUS CHECK — At task start, before checking out any branch or running any git command, query the parent dev task status: psql openclaw -c \"SELECT status FROM tasks WHERE id = '<parent_task_id>'\". If status is NOT 'done', call reportSuccess() immediately with notes='skipped: parent dev task status=<status>, QC review cannot proceed'. Do not attempt branch checkout, PR review, or any git operations for a failed, cancelled, or in-progress parent task.",
       "priority": 2,
-      "reason": "3 of 4 QC 'failures' this week were duplicate tasks cancelled with 'Archived: duplicate — UC already has successful task for this agent'. The cascade cancellations (parent dev failed) are correct behavior, but duplicate QC spawns for the same PR waste spawn slots and budget."
-    },
-    {
-      "type": "fix",
-      "description": "Genome spawn-consumer creates duplicate QC tasks for the same PR number. Add a dedup check in the QC task creation path (workflow-engine.js createTask or chainTask for agent_id='qc'): before inserting, query SELECT id FROM tasks WHERE agent_id='qc' AND pr_number=<pr_number> AND status NOT IN ('cancelled','failed'). If a row exists, skip creation and log 'QC task already exists for PR #<pr_number>'. This prevents the 3-duplicate pattern seen this week.",
-      "priority": 2,
-      "reason": "3 QC tasks were cancelled as duplicates for PRs already reviewed. The dedup check in createTask() doesn't catch this because it deduplicates by title, not by (agent_id, pr_number) — and QC task titles include the PR number which may differ from the dedup_key used."
+      "reason": "All 4 QC failures this cycle were cascade failures from upstream dev task failures. A one-line parent check at task start eliminates all wasted QC spawn cycles."
     }
   ],
   "human_action_items": [
     {
-      "description": "Day 151 of 180 — $0 MRR, 8 days to first paying customer deadline (2026-07-31). 35 pilot signups registered; product is complete. This is a sales gap, not a code gap. The genome cannot close this.",
+      "description": "URGENT: Daily budget at $0.01/day has frozen ALL task execution for 48+ hours. Zero dev work has run since 2026-07-22. All 3 P1 revenue UCs (checkout diagnostics, admin SMS outreach, trial SMS nudges) are blocked in 'ready'. Update ~/projects/genome/state/leadflow/.budget-config.json: set daily_budget to 30 to re-enable execution before the 2026-07-31 deadline.",
+      "can_eliminate": true,
+      "elimination_proposal": "The P1 emergency budget reserve (action item 1 above) will prevent budget exhaustion from blocking P1 tasks in future. But that fix itself can't run until the budget is unfrozen manually. Immediate action: cat ~/projects/genome/state/leadflow/.budget-config.json, then update daily_budget to 30."
+    },
+    {
+      "description": "Day 151/180 — $0 MRR, 7 days to first paying customer deadline (2026-07-31). 35 pilot signups registered; product is complete and functional. Even if all 3 revenue UCs ship this week, conversion requires warm prospects. Sales action is the critical path — not more features.",
       "can_eliminate": false,
-      "elimination_proposal": "Personal outreach to pilot signups today. Priority order: (1) agents who reached the dashboard — they saw the product and stalled; (2) email-verified agents with no phone — engaged but didn't complete SMS setup; (3) any agent who started a trial but didn't convert. One warm call or personal SMS can close the first customer faster than any additional feature. Goal: 5 direct contacts today."
+      "elimination_proposal": "Priority outreach: psql openclaw -c \"SELECT first_name, phone_number, email, subscription_status FROM real_estate_agents WHERE subscription_status IN ('trial','verified') ORDER BY created_at DESC LIMIT 10\". Call or SMS the top 5 pilots today. One personal conversation closes the first customer faster than any feature delivery in a 7-day window. Activation rate is 1.3% vs 15% target — find where onboarding is dropping off."
     },
     {
-      "description": "Resend email domain is still not verified — blocks all outgoing emails (trial nurture, aha moment nudges, conversion emails). The entire email pipeline has been silent for at least 3 days.",
+      "description": "improve-agent action items from 5 consecutive daily reviews (2026-07-19 through 2026-07-24) have not changed agent behavior — same dev failure patterns recur each session unchanged. The processor is confirmed broken or absent.",
       "can_eliminate": true,
-      "elimination_proposal": "Add Resend DNS records to the imagineapi.org domain (or whichever send domain is configured in Resend). This is a 10-minute DNS change — no code required. Without it, every email in the product is silently dropped. Fix this before any sales outreach so follow-up sequences actually fire."
-    },
-    {
-      "description": "improve-agent action items from 2026-07-19 and 2026-07-20 reviews (6 total) have not been applied — same dev failure patterns recur for the 3rd consecutive day. The improve-agent processor may not be wired in the genome action_item handler.",
-      "can_eliminate": true,
-      "elimination_proposal": "Audit genome's action_item processor: grep ~/projects/genome/core for 'improve-agent' handler. If the handler exists, check what file it writes to and verify the file was actually updated. If no handler exists, wire one: for agent='dev', append the instruction to ~/.openclaw/genome/roles/dev/SOUL.md; for 'qc', append to ~/.openclaw/genome/roles/qc/SOUL.md. Without this, every improve-agent proposal is a no-op and the same failures recur indefinitely."
+      "elimination_proposal": "Run: grep -r 'improve-agent' ~/projects/genome/core/. If no handler exists, implement one (see action_item above). If handler exists, trace the last write to ~/.openclaw/workspace-dev/SOUL.md vs task completion timestamps — if handler ran but wrote to wrong path, fix the path."
     }
   ],
   "stuck_uc_decisions": {
     "uc-leadflow-trial-sms-nudge-sequence": {
-      "decision": "continue",
-      "rationale": "Investigation task bd7db0a3 is queued in 'ready' status — the UC is already retrying. Previous failures were zombie timeouts (PID died after 6m), not logic errors. Let the queued investigation run. If it fails again with timeout, escalate the timeout threshold in the spawn config for this UC.",
-      "action": "none — already queued"
+      "decision": "blocked_on_budget",
+      "rationale": "Investigation task bd7db0a3 has been in 'ready' status since 2026-07-22 (2 days). Root cause confirmed: budget exhaustion blocks all spawns. DO NOT create duplicate investigation tasks — bd7db0a3 is already correctly queued. Unblock path: (1) Stojan updates budget to $30/day, (2) P1 emergency reserve fix deployed, (3) bd7db0a3 spawns on next dispatcher cycle.",
+      "action": "none — already queued, blocked by budget exhaustion"
     },
     "uc-leadflow-admin-sms-outreach": {
-      "decision": "continue",
-      "rationale": "Investigation task 97d3267e is queued in 'ready' status. Same zombie timeout pattern. Let it run.",
-      "action": "none — already queued"
+      "decision": "blocked_on_budget",
+      "rationale": "Investigation task 97d3267e has been in 'ready' status since 2026-07-22 (2 days). Same budget exhaustion blocker. Do not create duplicate investigation tasks.",
+      "action": "none — already queued, blocked by budget exhaustion"
     },
     "uc-leadflow-checkout-failure-diagnostics": {
-      "decision": "continue",
-      "rationale": "Investigation task e28c83f4 is queued in 'ready' status. Same zombie timeout pattern. Let it run.",
-      "action": "none — already queued"
+      "decision": "blocked_on_budget",
+      "rationale": "Investigation task e28c83f4 has been in 'ready' status since 2026-07-22 (2 days). Same budget exhaustion blocker. Highest revenue urgency — gives Stojan real-time checkout failure visibility into why prospects aren't converting. Do not create duplicate tasks.",
+      "action": "none — already queued, blocked by budget exhaustion"
     }
   },
-  "focus_today": "8 days to deadline, $0 MRR — Stojan must personally contact pilot signups today; fix Resend DNS to unblock email pipeline; apply queued dev instruction improvements that have been proposed but not actioned for 3 consecutive days."
+  "genome_self_assessment": {
+    "strengths": [
+      "E2E coverage: 11/12 tests passing (92%)",
+      "Zero codebase rule violations",
+      "Duplicate dedup guard working (multiple 'Archived: duplicate' cancellations in task log correctly blocked re-work)",
+      "REOPENED FIX GUARD instruction added to dev SOUL.md in prior cycle"
+    ],
+    "gaps": [
+      "CRITICAL: No execution stall detection — system frozen 48h with no alert to Stojan",
+      "CRITICAL: P1 tasks blocked by same budget gate as routine tasks — no P1 emergency reserve",
+      "improve-agent processor broken or absent — 5 days of stacked no-op instruction proposals",
+      "Git network timeouts kill agent processes then cancel task — no retry/park strategy",
+      "QC cascade failures from dev failures not self-detecting at start — wasted spawn cycles",
+      "Signup to Activated Rate: 1.3% vs 15% target — onboarding drop-off not detected by E2E"
+    ]
+  },
+  "focus_today": "UNFREEZE: Stojan must update budget to $30/day in ~/projects/genome/state/leadflow/.budget-config.json to re-enable the 19 queued tasks — without this, zero code ships and the 2026-07-31 deadline is missed with certainty. Second priority: direct personal outreach to pilot signups."
 }
