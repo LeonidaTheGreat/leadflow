@@ -1,0 +1,78 @@
+{
+  "date": "2026-07-22",
+  "genome_score": 62,
+  "genome_score_rationale": "Technical health is solid: 11/12 E2E tests pass (92%), 0 codebase rules violations. Score penalized for: (1) Day 151 of 180, $0 MRR, 8 days to first-paying-customer deadline — revenue gap is severe and accelerating; (2) all three P1 stuck UCs died with zombie/timeout errors and required re-queue — a process reliability issue; (3) improve-agent action items from reviews on 2026-07-19 and 2026-07-20 have still not been applied (same dev failure patterns recur for 3rd consecutive review); (4) 3 dev failures caused by 'original fix task reopened' indicate root-cause analysis is still not happening before re-implementation. No score improvement from prior day because the structural instruction-gap remains unresolved.",
+  "priority_changes": [],
+  "cancellations": [],
+  "action_items": [
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add rule to dev SOUL.md: ROOT CAUSE FIRST — When a task title references 'original fix task reopened (fix didn't resolve root cause)', you MUST read the original fix before writing any code. Steps: (1) grep git log for the original task short ID from the title; (2) run 'git show <branch>:<changed-files>' to read what was changed; (3) identify WHY the fix didn't hold (symptom-level patch vs root cause?); (4) write your fix targeting the root cause, not the symptom. A fix that repeats the same approach as the previous fix will fail QC for the same reason and waste a full pipeline cycle.",
+      "priority": 1,
+      "reason": "3 of 5 dev failures this review are 'Cancelled: original fix task reopened (fix didn't resolve root cause)'. Dev agents restart work without reading the previous fix, producing the same surface patch. Each wasted cycle costs $2+ and a full pipeline slot."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add rule to dev SOUL.md: GATE PRE-CHECK — At the start of any task whose title begins with 'Fix: Quality gate', immediately re-run the failing gate before touching code. Command: npm run <gate-name> (or the relevant check). If the gate now passes, write a completion report with notes='no-op: gate already resolved before agent started' and call reportSuccess() — do NOT make any code changes. Phantom gate-fix tasks that apply changes to an already-green gate leave the codebase in an inconsistent state.",
+      "priority": 1,
+      "reason": "1 of 5 dev failures was 'Auto-resolved: gate now passes'. The gate fixed itself before the agent started (from a concurrent task), but the agent was already spawned. Without a pre-check, the agent will apply a fix to a resolved problem."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "dev",
+      "description": "Add rule to dev SOUL.md: GIT RETRY ON TIMEOUT — When any git network operation (git push, git fetch, git clone, git ls-remote, branch creation via remote) times out or returns a connection error, retry up to 3 times with 10-second sleep between attempts before marking the operation as failed. Do NOT fail the entire task on first network timeout. Use: for i in 1 2 3; do git <operation> && break || sleep 10; done. Log each retry attempt. Only fail the task if all 3 retries fail.",
+      "priority": 1,
+      "reason": "1 of 5 dev failures was 'branch-creation-failed: timeout exceeded when trying to connect'. Transient network timeouts during git operations should not abort an entire task — they are recoverable with a simple retry."
+    },
+    {
+      "type": "improve-agent",
+      "agent": "qc",
+      "description": "Add rule to qc SOUL.md: DEDUP PR CHECK — At task start, before checking out any branch, run: SELECT id, status FROM tasks WHERE agent_id='qc' AND pr_number=<this_pr_number> AND status IN ('done','in_progress','ready') AND id != '<this_task_id>'. If a matching row exists, log the duplicate task ID and call reportSuccess() with notes='no-op: QC already completed or in-progress for PR #<number>'. Do NOT duplicate a QC review that another QC task already completed.",
+      "priority": 2,
+      "reason": "3 of 4 QC 'failures' this week were duplicate tasks cancelled with 'Archived: duplicate — UC already has successful task for this agent'. The cascade cancellations (parent dev failed) are correct behavior, but duplicate QC spawns for the same PR waste spawn slots and budget."
+    },
+    {
+      "type": "fix",
+      "description": "Genome spawn-consumer creates duplicate QC tasks for the same PR number. Add a dedup check in the QC task creation path (workflow-engine.js createTask or chainTask for agent_id='qc'): before inserting, query SELECT id FROM tasks WHERE agent_id='qc' AND pr_number=<pr_number> AND status NOT IN ('cancelled','failed'). If a row exists, skip creation and log 'QC task already exists for PR #<pr_number>'. This prevents the 3-duplicate pattern seen this week.",
+      "priority": 2,
+      "reason": "3 QC tasks were cancelled as duplicates for PRs already reviewed. The dedup check in createTask() doesn't catch this because it deduplicates by title, not by (agent_id, pr_number) — and QC task titles include the PR number which may differ from the dedup_key used."
+    }
+  ],
+  "human_action_items": [
+    {
+      "description": "Day 151 of 180 — $0 MRR, 8 days to first paying customer deadline (2026-07-31). 35 pilot signups registered; product is complete. This is a sales gap, not a code gap. The genome cannot close this.",
+      "can_eliminate": false,
+      "elimination_proposal": "Personal outreach to pilot signups today. Priority order: (1) agents who reached the dashboard — they saw the product and stalled; (2) email-verified agents with no phone — engaged but didn't complete SMS setup; (3) any agent who started a trial but didn't convert. One warm call or personal SMS can close the first customer faster than any additional feature. Goal: 5 direct contacts today."
+    },
+    {
+      "description": "Resend email domain is still not verified — blocks all outgoing emails (trial nurture, aha moment nudges, conversion emails). The entire email pipeline has been silent for at least 3 days.",
+      "can_eliminate": true,
+      "elimination_proposal": "Add Resend DNS records to the imagineapi.org domain (or whichever send domain is configured in Resend). This is a 10-minute DNS change — no code required. Without it, every email in the product is silently dropped. Fix this before any sales outreach so follow-up sequences actually fire."
+    },
+    {
+      "description": "improve-agent action items from 2026-07-19 and 2026-07-20 reviews (6 total) have not been applied — same dev failure patterns recur for the 3rd consecutive day. The improve-agent processor may not be wired in the genome action_item handler.",
+      "can_eliminate": true,
+      "elimination_proposal": "Audit genome's action_item processor: grep ~/projects/genome/core for 'improve-agent' handler. If the handler exists, check what file it writes to and verify the file was actually updated. If no handler exists, wire one: for agent='dev', append the instruction to ~/.openclaw/genome/roles/dev/SOUL.md; for 'qc', append to ~/.openclaw/genome/roles/qc/SOUL.md. Without this, every improve-agent proposal is a no-op and the same failures recur indefinitely."
+    }
+  ],
+  "stuck_uc_decisions": {
+    "uc-leadflow-trial-sms-nudge-sequence": {
+      "decision": "continue",
+      "rationale": "Investigation task bd7db0a3 is queued in 'ready' status — the UC is already retrying. Previous failures were zombie timeouts (PID died after 6m), not logic errors. Let the queued investigation run. If it fails again with timeout, escalate the timeout threshold in the spawn config for this UC.",
+      "action": "none — already queued"
+    },
+    "uc-leadflow-admin-sms-outreach": {
+      "decision": "continue",
+      "rationale": "Investigation task 97d3267e is queued in 'ready' status. Same zombie timeout pattern. Let it run.",
+      "action": "none — already queued"
+    },
+    "uc-leadflow-checkout-failure-diagnostics": {
+      "decision": "continue",
+      "rationale": "Investigation task e28c83f4 is queued in 'ready' status. Same zombie timeout pattern. Let it run.",
+      "action": "none — already queued"
+    }
+  },
+  "focus_today": "8 days to deadline, $0 MRR — Stojan must personally contact pilot signups today; fix Resend DNS to unblock email pipeline; apply queued dev instruction improvements that have been proposed but not actioned for 3 consecutive days."
+}
