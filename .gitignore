@@ -129,6 +129,10 @@ docs/orphan-*-investigation.json
 docs/orphan-branch-*-investigation.json
 # Auto-generated orchestrator docs
 dashboard/architecture.html
+dashboard/taxonomy.html
+dashboard/taxonomy.json
+dashboard/capability.*.html
+dashboard/capability.*.json
 docs/ARCHITECTURE-MAP.md
 DASHBOARD.md
 E2E_MAPPINGS.md
@@ -144,3 +148,7 @@ PROJECT_GRAPH.md
 ARCHITECTURE.md
 DISCOVERIES.md
 MODULE_INDEX.md.generated
+# Auto-generated from routes/ and lib/services/ — always dirty, never edit directly
+API.md
+SCHEMA.md
+SERVICES.md
