@@ -1,0 +1,87 @@
+{
+  "taskId": "58fee62c-bf67-45a3-a8c5-ef04d0d07d38",
+  "taskName": "PM: Proactive Revenue Gap Analysis",
+  "completedAt": "2026-07-24",
+  "status": "completed",
+
+  "gaps_identified": [
+    {
+      "gap": "Payment → access unlock path unverified",
+      "detail": "subscriptions table PR is needs_merge; checkout-failure-diagnostics still in_progress. No confirmed end-to-end path: Stripe webhook fires → subscription_status flips in DB → dashboard unlocks. A user could pay and the product would not know. This is the single hardest blocker to revenue.",
+      "severity": "critical"
+    },
+    {
+      "gap": "Zero real users in trial funnel",
+      "detail": "75 agents in DB, 4 are real (all Stojan's own emails, all expired trials, all in onboarding status). 21 pilot_signups — all test data. No outreach has produced a real trial user. SMS cold outreach UC is in_progress but there is no organic/referral acquisition channel once paying customers exist.",
+      "severity": "critical"
+    },
+    {
+      "gap": "Warm traffic (simulator/demo) converts to nothing",
+      "detail": "Both /demo and /simulator pages exist but have no direct conversion CTA. A prospect who sees the AI work is maximally primed to sign up but must navigate back to homepage to find the form. This drop-off point is unaddressed.",
+      "severity": "high"
+    },
+    {
+      "gap": "No referral / word-of-mouth acquisition channel",
+      "detail": "Once first customers pay, the cheapest acquisition is referral. Real estate agents work in tight networks. No referral mechanic exists anywhere in the product.",
+      "severity": "high"
+    },
+    {
+      "gap": "Auth stack reliability (blocked_human)",
+      "detail": "UC-AUTH-FIX-001, fix-stored-password-cannot-verified-after-account, fix-login-query-realestateagents-table-instead all blocked_human. Signup sets email_verified=true and password_hash via bcrypt — code looks correct, but blocked_human status indicates manual intervention needed. Requires Stojan to verify auth works on live Vercel before any outreach.",
+      "severity": "critical",
+      "note": "blocked_human — not a new UC, requires Stojan action"
+    }
+  ],
+
+  "ucs_created": [
+    {
+      "id": "uc-leadflow-payment-to-access-e2e",
+      "name": "Stripe Payment → Subscription Activation → Feature Unlock — Verified E2E",
+      "priority": 1,
+      "revenue_impact": "critical",
+      "rationale": "Closes the single most dangerous gap: a user pays but the system does not activate their account. Must be verified before any outreach campaign."
+    },
+    {
+      "id": "uc-leadflow-agent-referral-program",
+      "name": "Agent Referral Program — Share With Colleague for 1 Month Free",
+      "priority": 2,
+      "revenue_impact": "high",
+      "rationale": "Turns every paying customer into an acquisition channel. Zero marginal cost once built. Real estate agents work in tight networks."
+    },
+    {
+      "id": "uc-leadflow-demo-trial-conversion-cta",
+      "name": "Interactive Demo → Trial Signup CTA — Convert Warm Traffic Without FUB",
+      "priority": 2,
+      "revenue_impact": "high",
+      "rationale": "Captures warm traffic at peak intent (after seeing AI respond). /demo and /simulator have no CTA today. Pre-filled email + inline trial start removes all friction."
+    }
+  ],
+
+  "ucs_reprioritized": [
+    {
+      "id": "uc-leadflow-checkout-failure-diagnostics",
+      "old_priority": 1,
+      "new_priority": 0,
+      "reason": "First paying customer deadline is 2026-07-31 (7 days). Checkout visibility is prerequisite for knowing if the payment path works."
+    },
+    {
+      "id": "fix-create-subscriptions-table-supabase-for-stripe",
+      "old_priority": 1,
+      "new_priority": 0,
+      "reason": "needs_merge PR blocks subscription recording. Without this, Stripe webhooks cannot persist payment data. Must merge immediately."
+    }
+  ],
+
+  "recommended_focus": "Merge the subscriptions table PR (fix-create-subscriptions-table-supabase-for-stripe) today, then run uc-leadflow-payment-to-access-e2e end-to-end on production with a test card to confirm the full pay → activate → unlock path. Without this verified, all outreach spend produces users who pay but cannot access what they paid for.",
+
+  "context": {
+    "mrr_current": 0,
+    "mrr_target": 20000,
+    "deadline_first_customer": "2026-07-31",
+    "deadline_mrr": "2026-08-13",
+    "real_users_in_funnel": 4,
+    "paying_customers": 0,
+    "trial_to_paid_conversion": "0%",
+    "signup_to_activated": "1.3%"
+  }
+}
