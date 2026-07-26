@@ -707,3 +707,13 @@ if (require.main === module) {
 }
 
 module.exports = { runAllTests, testResults };
+
+// Jest compatibility wrapper — runs the full custom suite as a single test
+if (typeof describe !== 'undefined') {
+  describe('Stripe Checkout E2E (custom suite)', () => {
+    test('all acceptance criteria pass', async () => {
+      const results = await runAllTests();
+      expect(results.failed).toBe(0);
+    }, 30000);
+  });
+}
