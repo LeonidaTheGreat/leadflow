@@ -16,6 +16,7 @@ const testLeadResponseRouter = require('./routes/internal/test-lead-response');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
 const paymentLinkRouter = require('./routes/admin/payment-link');
+const smsOutreachRouter = require('./routes/admin/sms-outreach');
 const adminMagicLinkRouter = require('./routes/admin-magic-link');
 const calcomWebhookRouter = require('./routes/calcom-webhook');
 const billingRouter = require('./routes/billing');
@@ -60,6 +61,9 @@ app.use('/', reactivationCampaignRouter);
 
 // Admin: direct payment links for completed-onboarding agents (bypass broken checkout)
 app.use('/', paymentLinkRouter);
+
+// Admin: SMS cold outreach — direct Twilio SMS to prospects with magic trial links
+app.use('/', smsOutreachRouter);
 
 // Admin: magic links for immediate trial activation while email delivery is blocked
 app.use('/', adminMagicLinkRouter);
