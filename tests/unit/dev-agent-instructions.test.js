@@ -13,6 +13,8 @@
  *   If gate already passes, report no-op completed with note "Gate self-resolved"
  * task 2c85a8f1 — ORCHESTRATOR-DECISIONS JSON must never be staged in git:
  *   covers ORCHESTRATOR-DECISIONS-*.json in addition to completion-reports/
+ * task 7ca3e70c — GIT NETWORK RESILIENCE rule:
+ *   If any git remote operation times out, retry with 30s wait + HTTPS fallback
  */
 
 const fs = require('fs')
@@ -108,6 +110,22 @@ describe('Dev agent instructions', () => {
     it('tells dev to check for ORCHESTRATOR-DECISIONS files before committing', () => {
       if (!soulContent) return
       expect(soulContent).toMatch(/ORCHESTRATOR-DECISIONS.*\.json/)
+    })
+
+    // GIT NETWORK RESILIENCE (task 7ca3e70c)
+    it('contains GIT NETWORK RESILIENCE rule', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/GIT NETWORK RESILIENCE/)
+    })
+
+    it('GIT NETWORK RESILIENCE specifies HTTPS fallback URL', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/https:\/\/github\.com\/LeonidaTheGreat\/leadflow\.git/)
+    })
+
+    it('GIT NETWORK RESILIENCE instructs retry before failing', () => {
+      if (!soulContent) return
+      expect(soulContent).toMatch(/do NOT immediately fail/)
     })
   })
 
@@ -206,6 +224,21 @@ describe('Dev agent instructions', () => {
       const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
       const text = out.spawnRole || out.roleContext || JSON.stringify(out)
       expect(text).toMatch(/ORCHESTRATOR-DECISIONS/)
+    })
+
+    // GIT NETWORK RESILIENCE (task 7ca3e70c)
+    it('GIT NETWORK RESILIENCE present in spawnRole', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/GIT NETWORK RESILIENCE/)
+    })
+
+    it('GIT NETWORK RESILIENCE specifies HTTPS fallback URL in spawnRole', () => {
+      if (!roleContext) return
+      const out = roleContext.buildRoleContext('dev', 'Implement: test', 'desc')
+      const text = out.spawnRole || out.roleContext || JSON.stringify(out)
+      expect(text).toMatch(/https:\/\/github\.com\/LeonidaTheGreat\/leadflow\.git/)
     })
   })
 })
