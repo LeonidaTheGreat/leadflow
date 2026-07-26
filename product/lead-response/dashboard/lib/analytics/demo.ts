@@ -12,7 +12,9 @@ export type DemoEvent =
   | 'demo_started'
   | 'demo_response_generated'
   | 'demo_completed'
+  | 'demo_cta_shown'
   | 'demo_cta_clicked'
+  | 'demo_trial_started'
   | 'demo_error'
 
 export interface DemoEventParams {

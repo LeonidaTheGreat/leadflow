@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { trackDemoEvent, generateDemoSessionId, getResponseTimeBucket } from '@/lib/analytics/demo'
+import StickyTrialCTA from '@/components/StickyTrialCTA'
 
 // Demo stages
 type DemoStage = 'input' | 'processing' | 'responding' | 'complete' | 'error'
@@ -66,6 +67,7 @@ export default function DemoPage() {
   })
   const [elapsedTime, setElapsedTime] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showStickyCTA, setShowStickyCTA] = useState(false)
 
   // Initialize session ID on mount
   useEffect(() => {
@@ -78,6 +80,19 @@ export default function DemoPage() {
       session_id: sessionId,
     })
   }, [])
+
+  // Show sticky CTA after 30 seconds on page
+  useEffect(() => {
+    const timer = setTimeout(() => setShowStickyCTA(true), 30000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Show sticky CTA when AI response completes
+  useEffect(() => {
+    if (state.stage === 'complete') {
+      setShowStickyCTA(true)
+    }
+  }, [state.stage])
 
   // Timer for processing state
   useEffect(() => {
@@ -549,7 +564,7 @@ export default function DemoPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 mt-20">
+      <footer className={`border-t border-slate-800 mt-20 ${showStickyCTA ? 'pb-24' : ''}`}>
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-500">
           <p>© {new Date().getFullYear()} LeadFlow AI. All rights reserved.</p>
           <div className="flex items-center gap-4 mt-4 sm:mt-0">
@@ -558,6 +573,12 @@ export default function DemoPage() {
           </div>
         </div>
       </footer>
+
+      <StickyTrialCTA
+        show={showStickyCTA}
+        source="demo"
+        sessionId={state.sessionId}
+      />
     </div>
   )
 }
