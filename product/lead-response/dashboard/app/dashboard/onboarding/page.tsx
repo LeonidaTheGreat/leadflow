@@ -15,7 +15,7 @@
  * PRD: PRD-SIGNUP-AUTH-TOKEN-FIX-001 (FR-4)
  */
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import OnboardingWelcome from '@/app/onboarding/steps/welcome'
 import OnboardingTryAi from '@/app/onboarding/steps/try-ai'
@@ -61,8 +61,10 @@ interface StoredUser {
 
 function DashboardOnboardingInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const isDemoSource = searchParams?.get('demo_source') === 'true'
   const [authChecked, setAuthChecked] = useState(false)
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome')
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>(isDemoSource ? 'try-ai' : 'welcome')
   const [agentData, setAgentData] = useState({
     email: '',
     password: '',

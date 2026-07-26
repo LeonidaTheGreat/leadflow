@@ -28,6 +28,7 @@ export interface DemoEventParams {
   cta_target?: string
   cta_visible?: boolean
   error_type?: string
+  source?: string
 }
 
 /**

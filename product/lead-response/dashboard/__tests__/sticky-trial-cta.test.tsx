@@ -55,6 +55,27 @@ describe('StickyTrialCTA', () => {
     expect(screen.queryByText('Start your free trial')).not.toBeInTheDocument()
   })
 
+  it('persists dismiss to sessionStorage', () => {
+    const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
+    render(
+      <StickyTrialCTA show={true} source="demo" sessionId="test-123" />
+    )
+    fireEvent.click(screen.getByLabelText('Dismiss'))
+    expect(setItemSpy).toHaveBeenCalledWith('demo_cta_dismissed', '1')
+    setItemSpy.mockRestore()
+  })
+
+  it('starts dismissed when sessionStorage flag is set', () => {
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) =>
+      key === 'demo_cta_dismissed' ? '1' : null
+    )
+    const { container } = render(
+      <StickyTrialCTA show={true} source="demo" sessionId="test-123" />
+    )
+    expect(container.innerHTML).toBe('')
+    jest.spyOn(Storage.prototype, 'getItem').mockRestore()
+  })
+
   it('validates email before submission', async () => {
     render(
       <StickyTrialCTA show={true} source="demo" sessionId="test-123" />

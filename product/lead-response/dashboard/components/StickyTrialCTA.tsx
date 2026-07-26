@@ -13,7 +13,9 @@ interface StickyTrialCTAProps {
 }
 
 export default function StickyTrialCTA({ show, source, sessionId, prefillEmail }: StickyTrialCTAProps) {
-  const [dismissed, setDismissed] = useState(false)
+  const [dismissed, setDismissed] = useState(() => {
+    try { return sessionStorage.getItem('demo_cta_dismissed') === '1' } catch { return false }
+  })
   const [email, setEmail] = useState(prefillEmail || '')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -167,7 +169,10 @@ export default function StickyTrialCTA({ show, source, sessionId, prefillEmail }
             </form>
 
             <button
-              onClick={() => setDismissed(true)}
+              onClick={() => {
+                try { sessionStorage.setItem('demo_cta_dismissed', '1') } catch { /* ignore */ }
+                setDismissed(true)
+              }}
               className="absolute top-2 right-2 sm:static p-1.5 text-slate-500 hover:text-white transition-colors"
               aria-label="Dismiss"
             >

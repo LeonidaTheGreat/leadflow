@@ -112,5 +112,45 @@ describe('UC: Interactive Demo → Trial Signup CTA', () => {
       const content = fs.readFileSync(analyticsPath, 'utf8')
       expect(content).toContain("'demo_trial_started'")
     })
+
+    it('DemoEventParams includes source field', () => {
+      const content = fs.readFileSync(analyticsPath, 'utf8')
+      expect(content).toContain('source?: string')
+    })
+  })
+
+  describe('StickyTrialCTA dismiss persists to sessionStorage', () => {
+    const componentPath = path.join(DASHBOARD_DIR, 'components/StickyTrialCTA.tsx')
+
+    it('reads demo_cta_dismissed from sessionStorage on init', () => {
+      const content = fs.readFileSync(componentPath, 'utf8')
+      expect(content).toContain('demo_cta_dismissed')
+      expect(content).toContain('sessionStorage')
+    })
+
+    it('writes demo_cta_dismissed to sessionStorage on dismiss', () => {
+      const content = fs.readFileSync(componentPath, 'utf8')
+      expect(content).toContain("sessionStorage.setItem('demo_cta_dismissed', '1')")
+    })
+  })
+
+  describe('Onboarding demo_source param skips to try-ai', () => {
+    const onboardingPath = path.join(DASHBOARD_DIR, 'app/dashboard/onboarding/page.tsx')
+
+    it('onboarding page imports useSearchParams', () => {
+      const content = fs.readFileSync(onboardingPath, 'utf8')
+      expect(content).toContain('useSearchParams')
+    })
+
+    it('onboarding page reads demo_source query param', () => {
+      const content = fs.readFileSync(onboardingPath, 'utf8')
+      expect(content).toContain('demo_source')
+    })
+
+    it('onboarding page initialises to try-ai when demo_source=true', () => {
+      const content = fs.readFileSync(onboardingPath, 'utf8')
+      expect(content).toContain("'try-ai'")
+      expect(content).toContain('isDemoSource')
+    })
   })
 })
