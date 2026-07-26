@@ -98,6 +98,11 @@ export const PostHogEvents = {
   FEATURE_USED: 'feature_used',
   FEATURE_FLAG_ENABLED: 'feature_flag_enabled',
   
+  // Referral Program
+  REFERRAL_LINK_GENERATED: 'referral_link_generated',
+  REFERRAL_SIGNUP_COMPLETED: 'referral_signup_completed',
+  REFERRAL_SIGNUP_STARTED: 'referral_signup_started',
+
   // Errors
   ERROR_OCCURRED: 'error_occurred',
   ERROR_BOUNDARY_CAUGHT: 'error_boundary_caught',
