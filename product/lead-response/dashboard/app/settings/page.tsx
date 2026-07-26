@@ -6,6 +6,7 @@ import { User, Plug, Bell, ChevronRight, CreditCard } from 'lucide-react'
 import { useAnalytics, PostHogEvents } from '@/lib/analytics'
 import { BillingCard } from '@/components/billing'
 import { SatisfactionPingToggle } from '@/components/dashboard/SatisfactionPingToggle'
+import ReferralWidget from '@/components/ReferralWidget'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -127,6 +128,11 @@ export default function SettingsPage() {
       {/* Billing Section (inline) */}
       <div id="billing">
         {agentId && <BillingCard agentId={agentId} />}
+      </div>
+
+      {/* Referral Program */}
+      <div id="referral">
+        <ReferralWidget />
       </div>
 
       {/* Notifications Section (inline) */}
