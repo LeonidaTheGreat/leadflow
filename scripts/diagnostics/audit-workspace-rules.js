@@ -14,6 +14,20 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 
+// Source-code checks: verify genome role-context.js contains expected QC prompt additions
+const GENOME_CHECKS = [
+  {
+    file: path.join(os.homedir(), 'projects/genome/core/food/role-context.js'),
+    rules: [
+      {
+        id: 'qc-parent-task-check-in-spawn-role',
+        pattern: /PARENT TASK STATUS CHECK|parent.*task.*status.*before.*checking.*out/i,
+        description: 'QC spawnRole has parent task status check (role-context.js)'
+      }
+    ]
+  }
+]
+
 const CHECKS = [
   {
     workspace: 'workspace-dev',
@@ -67,6 +81,24 @@ const CHECKS = [
 let passed = 0
 let failed = 0
 const results = []
+
+for (const check of GENOME_CHECKS) {
+  let content = ''
+  try {
+    content = fs.readFileSync(check.file, 'utf-8')
+  } catch {
+    content = ''
+  }
+  for (const rule of check.rules) {
+    if (rule.pattern.test(content)) {
+      passed++
+      results.push(`  ✓ [genome] ${rule.description}`)
+    } else {
+      failed++
+      results.push(`  ✗ [genome] MISSING: ${rule.description} (id: ${rule.id})`)
+    }
+  }
+}
 
 for (const check of CHECKS) {
   const workspaceDir = path.join(os.homedir(), '.openclaw', check.workspace)
