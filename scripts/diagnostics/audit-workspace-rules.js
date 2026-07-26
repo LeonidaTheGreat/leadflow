@@ -97,10 +97,60 @@ console.log('\n=== Workspace Rules Audit ===\n')
 results.forEach(r => console.log(r))
 console.log(`\nResult: ${passed} passed, ${failed} failed`)
 
-if (failed > 0) {
-  console.log('\nFailed checks = improve-agent instructions not yet applied.')
-  console.log('Root cause: check ~/projects/genome/intelligence/strategic-review-handler.js')
-  console.log('Fix: handler must write directly to workspace files, not create a dev task.')
+// Workspace file modification timestamps — key diagnostic for "handler ran but no effect" issues.
+// Compare these against task completion timestamps to confirm writes happened after tasks closed.
+console.log('\n=== Workspace File Timestamps ===\n')
+const WORKSPACE_FILES = [
+  ['workspace-dev', 'RULES.md'],
+  ['workspace-dev', 'SOUL.md'],
+  ['workspace-qc', 'RULES.md'],
+  ['workspace-qc', 'SOUL.md']
+]
+for (const [ws, f] of WORKSPACE_FILES) {
+  const filePath = path.join(os.homedir(), '.openclaw', ws, f)
+  try {
+    const stat = fs.statSync(filePath)
+    console.log(`  ${ws}/${f}: last modified ${stat.mtime.toISOString()} (${Math.round((Date.now() - stat.mtime) / 60000)}m ago)`)
+  } catch {
+    console.log(`  ${ws}/${f}: NOT FOUND`)
+  }
+}
+
+// Handler integrity check — confirm genome handler uses direct writes, not dev tasks.
+// A handler that creates dev tasks causes phantom completions (dev runs in worktree,
+// can't reach ~/.openclaw/workspace-* paths, marks done without writing anything).
+console.log('\n=== Handler Integrity Check ===\n')
+const handlerPath = path.join(os.homedir(), 'projects/genome/intelligence/strategic-review-handler.js')
+let handlerOk = false
+try {
+  const src = fs.readFileSync(handlerPath, 'utf-8')
+  const usesDirectWrite = src.includes('appendFileSync')
+  const usesContentDedup = src.includes('existingContent.includes(shortDesc)')
+  const prefersRulesMd = src.includes('RULES.md') && src.includes('rulesPath')
+  handlerOk = usesDirectWrite && usesContentDedup && prefersRulesMd
+  if (handlerOk) {
+    console.log('  ✓ Handler writes directly to workspace files (not dev tasks)')
+    console.log('  ✓ Handler uses content-based dedup')
+    console.log('  ✓ Handler prefers RULES.md (Tier 1) over SOUL.md')
+  } else {
+    console.log('  ✗ HANDLER BROKEN — check ~/projects/genome/intelligence/strategic-review-handler.js')
+    if (!usesDirectWrite) console.log('    missing: appendFileSync (direct write)')
+    if (!usesContentDedup) console.log('    missing: content-based dedup')
+    if (!prefersRulesMd) console.log('    missing: RULES.md preference')
+  }
+} catch (err) {
+  console.log(`  ✗ Handler not found at ${handlerPath}: ${err.message}`)
+}
+
+if (failed > 0 || !handlerOk) {
+  if (failed > 0) {
+    console.log('\nFailed rule checks = improve-agent instructions not yet applied.')
+    console.log('Root cause: check ~/projects/genome/intelligence/strategic-review-handler.js')
+    console.log('Fix: handler must write directly to workspace files, not create a dev task.')
+  }
+  if (!handlerOk) {
+    console.log('\nHandler integrity check failed — improve-agent writes will be no-ops until fixed.')
+  }
   process.exit(1)
 }
 
