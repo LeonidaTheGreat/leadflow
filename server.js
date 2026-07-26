@@ -13,6 +13,7 @@ const weeklyPerformanceRouter = require('./routes/internal/weekly-performance');
 const checkStuckPilotsRouter = require('./routes/internal/check-stuck-pilots');
 const deadLetterReplayRouter = require('./routes/internal/dead-letter-replay');
 const testLeadResponseRouter = require('./routes/internal/test-lead-response');
+const trialSmsNudgeRouter = require('./routes/internal/trial-sms-nudge');
 const activationOutreachRouter = require('./routes/admin/activation-outreach');
 const reactivationCampaignRouter = require('./routes/admin/reactivation-campaign');
 const paymentLinkRouter = require('./routes/admin/payment-link');
@@ -52,6 +53,9 @@ app.use('/', deadLetterReplayRouter);
 
 // Internal: AI response test trigger (validates core product path end-to-end)
 app.use('/', testLeadResponseRouter);
+
+// Trial SMS nudge cron route (sends Twilio SMS to agents in active trials)
+app.use('/', trialSmsNudgeRouter);
 
 // Admin: activation outreach (personal email to verified but unactivated signups)
 app.use('/', activationOutreachRouter);
