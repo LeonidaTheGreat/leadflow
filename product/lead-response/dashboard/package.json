@@ -43,7 +43,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@testing-library/dom": "^10.4.1",
     "ai": "^6.0.86",
-    "axios": "^1.16.0",
+    "axios": "^1.18.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -51,7 +51,7 @@
     "jose": "^6.2.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.564.0",
-    "next": "^16.2.2",
+    "next": "^16.2.11",
     "node-cron": "^3.0.3",
     "posthog-js": "^1.376.4",
     "radix-ui": "^1.4.3",
@@ -90,6 +90,14 @@
     "typescript": "^5"
   },
   "overrides": {
-    "fast-uri": "3.1.2"
+    "brace-expansion": "5.0.8",
+    "fast-uri": "3.1.4",
+    "form-data": ">=4.0.6",
+    "hono": ">=4.12.27",
+    "js-yaml": ">=4.3.0",
+    "postcss": ">=8.5.18",
+    "protobufjs": ">=7.6.5",
+    "sharp": ">=0.35.0",
+    "ws": ">=8.21.0"
   }
 }
