@@ -66,13 +66,13 @@ async function globalSetup() {
     const localAvailable = await isLocalServerReachable(LOCAL_URL)
     if (localAvailable) {
       process.env.PLAYWRIGHT_BASE_URL = LOCAL_URL
-      console.log(`[playwright-setup] Using local server: ${LOCAL_URL}`)
+      process.stderr.write(`[playwright-setup] Using local server: ${LOCAL_URL}\n`)
     } else {
       process.env.PLAYWRIGHT_BASE_URL = VERCEL_URL
-      console.log(`[playwright-setup] Local server not reachable — falling back to Vercel: ${VERCEL_URL}`)
+      process.stderr.write(`[playwright-setup] Local server not reachable — falling back to Vercel: ${VERCEL_URL}\n`)
     }
   } else {
-    console.log(`[playwright-setup] Using PLAYWRIGHT_BASE_URL=${process.env.PLAYWRIGHT_BASE_URL}`)
+    process.stderr.write(`[playwright-setup] Using PLAYWRIGHT_BASE_URL=${process.env.PLAYWRIGHT_BASE_URL}\n`)
   }
 
   // ── 2. Install Chromium if missing ────────────────────────────────────────
@@ -83,7 +83,7 @@ async function globalSetup() {
   }
 
   try {
-    execFileSync(bin, ['install', 'chromium'], { stdio: 'inherit' })
+    execFileSync(bin, ['install', 'chromium'], { stdio: ['ignore', 'ignore', 'inherit'] })
   } catch (err) {
     console.warn('[playwright-setup] playwright install chromium failed:', err.message)
   }
