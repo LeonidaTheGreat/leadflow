@@ -1,13 +1,13 @@
-# TASK SPEC (0271999d-cd6b-41f4-86a4-e63d56fd38bb)
+# TASK SPEC (6c4451a0-7d5d-44b5-a3cc-35d80bacb36a)
 # What:
 # - Change file: .gitignore
-# - Add generated architecture artifacts: dashboard/architecture.html and docs/ARCHITECTURE-MAP.md
+# - Add generated dashboard taxonomy and capability artifact ignore rules.
 # - Functions changed: none; this is repository hygiene configuration only.
 # Verify:
 # - Run: node /Users/clawdbot/projects/genome/scripts/clean-worktree.js from this worktree; expect clean_worktree: PASS.
 # - Run: npm run clean_worktree; expect clean_worktree: PASS.
-# - Run: git check-ignore -v dashboard/architecture.html docs/ARCHITECTURE-MAP.md; expect both paths matched by .gitignore.
-# - Run: npm test and npm run build; expect both commands to exit 0.
+# - Run: git check-ignore -v for every added dashboard artifact; expect each path matched by .gitignore.
+# - Run: npm run lint, npm test, npm run build, and node scripts/quality-audit.js; expect each command to exit 0.
 # Boundaries:
 # - Do not change application source, routes, services, migrations, package manifests, or generated docs.
 # - Do not remove or reorder unrelated ignore rules.
@@ -129,6 +129,10 @@ docs/orphan-*-investigation.json
 docs/orphan-branch-*-investigation.json
 # Auto-generated orchestrator docs
 dashboard/architecture.html
+dashboard/taxonomy.html
+dashboard/taxonomy.json
+dashboard/capability.*.html
+dashboard/capability.*.json
 docs/ARCHITECTURE-MAP.md
 DASHBOARD.md
 E2E_MAPPINGS.md
