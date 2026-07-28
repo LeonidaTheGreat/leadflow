@@ -44,8 +44,28 @@ function resolvePlaywrightBin() {
 }
 
 /**
- * Check if the local Next.js dev server is responding on the given URL.
- * Returns true if the server responds with any HTTP status within 3 seconds.
+ * Make a single HTTP request and return { status, body }.
+ * Resolves to { status: 0, body: '' } on error or timeout.
+ */
+function httpGet(hostname, port, path, method = 'GET') {
+  return new Promise((resolve) => {
+    const req = http.request(
+      { hostname, port: parseInt(port || '80', 10), path, method, timeout: 5000 },
+      (res) => {
+        let body = ''
+        res.on('data', (chunk) => { body += chunk })
+        res.on('end', () => resolve({ status: res.statusCode, body }))
+      }
+    )
+    req.on('error', () => resolve({ status: 0, body: '' }))
+    req.on('timeout', () => { req.destroy(); resolve({ status: 0, body: '' }) })
+    req.end()
+  })
+}
+
+/**
+ * Check if the local Next.js server is responding on the given URL.
+ * Returns true if the server responds with any HTTP status within 5 seconds.
  */
 function isLocalServerReachable(url) {
   return new Promise((resolve) => {
@@ -60,16 +80,51 @@ function isLocalServerReachable(url) {
   })
 }
 
+/**
+ * Verify the local server's build artifacts are healthy.
+ *
+ * A running `next start` server can serve HTML that references CSS/JS chunks
+ * from a now-stale build (e.g. after `npm run build` replaced .next/ without
+ * restarting the server). Those missing chunks return 500, React fails to
+ * hydrate, and browser tests time out waiting for elements like #email.
+ *
+ * This function fetches /login, extracts the first CSS chunk URL from the HTML,
+ * and verifies the chunk returns 200. If it returns anything else (e.g. 500),
+ * the server is unhealthy and we should fall back to Vercel.
+ */
+async function isLocalServerChunksHealthy(url) {
+  const parsed = new URL(url)
+  const hostname = parsed.hostname
+  const port = parsed.port
+
+  const { status, body } = await httpGet(hostname, port, '/login', 'GET')
+  if (status !== 200 || !body) return false
+
+  const cssMatch = body.match(/href="(\/_next\/static\/[^"]+\.css)"/)
+  if (!cssMatch) return true // No CSS chunk to verify; assume healthy
+
+  const chunkPath = cssMatch[1]
+  const { status: chunkStatus } = await httpGet(hostname, port, chunkPath, 'HEAD')
+  if (chunkStatus !== 200) {
+    process.stderr.write(
+      `[playwright-setup] Local server CSS chunk returned ${chunkStatus} for ${chunkPath} — build is stale\n`
+    )
+    return false
+  }
+  return true
+}
+
 async function globalSetup() {
   // ── 1. Select base URL ────────────────────────────────────────────────────
   if (!process.env.PLAYWRIGHT_BASE_URL) {
-    const localAvailable = await isLocalServerReachable(LOCAL_URL)
+    const reachable = await isLocalServerReachable(LOCAL_URL)
+    const localAvailable = reachable && await isLocalServerChunksHealthy(LOCAL_URL)
     if (localAvailable) {
       process.env.PLAYWRIGHT_BASE_URL = LOCAL_URL
       process.stderr.write(`[playwright-setup] Using local server: ${LOCAL_URL}\n`)
     } else {
       process.env.PLAYWRIGHT_BASE_URL = VERCEL_URL
-      process.stderr.write(`[playwright-setup] Local server not reachable — falling back to Vercel: ${VERCEL_URL}\n`)
+      process.stderr.write(`[playwright-setup] Local server not healthy — falling back to Vercel: ${VERCEL_URL}\n`)
     }
   } else {
     process.stderr.write(`[playwright-setup] Using PLAYWRIGHT_BASE_URL=${process.env.PLAYWRIGHT_BASE_URL}\n`)

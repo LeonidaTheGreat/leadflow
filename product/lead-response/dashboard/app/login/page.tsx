@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,11 +10,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 
-function LoginPageContent() {
+export default function LoginPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const redirectUrl = searchParams.get('redirect') || '/dashboard'
-  
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errorType, setErrorType] = useState<string | null>(null)
@@ -85,13 +83,15 @@ function LoginPageContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
 
     setLoading(true)
     setError(null)
     setErrorType(null)
     setResendSuccess(false)
+
+    const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/dashboard'
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -305,13 +305,5 @@ function LoginPageContent() {
         </p>
       </div>
     </div>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
-      <LoginPageContent />
-    </Suspense>
   )
 }
