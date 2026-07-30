@@ -154,8 +154,10 @@ test_trial_status_has_agent_id() {
 
 # Test 8: Reset password creates token in DB
 test_reset_password_chain() {
-  [ -z "${E2E_EMAIL:-}" ] && return 1
-  [ -z "${API_KEY:-}" ] && return 1
+  # Preconditions: trial-signup must have run (E2E_EMAIL set) and PostgREST must be reachable.
+  # Return 42 (skip) rather than 1 (fail) — missing env is infrastructure, not a code defect.
+  [ -z "${E2E_EMAIL:-}" ] && return 42
+  [ -z "${API_KEY:-}" ] && return 42
 
   # Resolve agent_id once from local PostgREST (no cold-start risk — local DB)
   local agent_resp agent_id
@@ -204,7 +206,8 @@ test_lead_capture() {
 
 # Test 10: Dashboard loads without client-side errors (needs session or JWT)
 test_dashboard_no_errors() {
-  [ -z "${API_KEY:-}" ] && return 1
+  # API_KEY required to create a test session via PostgREST. Skip if not set — not a code defect.
+  [ -z "${API_KEY:-}" ] && return 42
 
   # Use a real user who has completed onboarding AND has an active (non-expired) plan.
   # Must exclude agents on expired trials — the middleware redirects them to /upgrade
@@ -309,7 +312,8 @@ test_dashboard_no_errors() {
 
 # Test 11: Billing page loads without errors
 test_billing_no_errors() {
-  [ -z "${API_KEY:-}" ] && return 1
+  # API_KEY required to fetch a session token from PostgREST. Skip if not set — not a code defect.
+  [ -z "${API_KEY:-}" ] && return 42
 
   local session token html
   session=$(curl -s --max-time 10 \
@@ -327,7 +331,8 @@ test_billing_no_errors() {
 
 # Test 12: SMS stats API doesn't crash
 test_sms_stats_no_crash() {
-  [ -z "${API_KEY:-}" ] && return 1
+  # API_KEY required to fetch a session token from PostgREST. Skip if not set — not a code defect.
+  [ -z "${API_KEY:-}" ] && return 42
 
   local session token
   session=$(curl -s --max-time 10 \
