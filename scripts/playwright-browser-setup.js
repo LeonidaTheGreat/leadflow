@@ -85,12 +85,11 @@ function isLocalServerReachable(url) {
  *
  * A running `next start` server can serve HTML that references CSS/JS chunks
  * from a now-stale build (e.g. after `npm run build` replaced .next/ without
- * restarting the server). Those missing chunks return 500, React fails to
- * hydrate, and browser tests time out waiting for elements like #email.
+ * restarting the server). Those missing/erroring chunks cause React to fail
+ * hydration, and browser tests time out waiting for elements like #email.
  *
- * This function fetches /login, extracts the first CSS chunk URL from the HTML,
- * and verifies the chunk returns 200. If it returns anything else (e.g. 500),
- * the server is unhealthy and we should fall back to Vercel.
+ * Checks every CSS href and JS script src referenced in /login HTML. All must
+ * return 200. Checks run in parallel so overhead is one round-trip, not N×RTT.
  */
 async function isLocalServerChunksHealthy(url) {
   const parsed = new URL(url)
@@ -100,17 +99,27 @@ async function isLocalServerChunksHealthy(url) {
   const { status, body } = await httpGet(hostname, port, '/login', 'GET')
   if (status !== 200 || !body) return false
 
-  const cssMatch = body.match(/href="(\/_next\/static\/[^"]+\.css)"/)
-  if (!cssMatch) return true // No CSS chunk to verify; assume healthy
+  // Collect all static asset URLs referenced in the page HTML
+  const cssChunks = [...body.matchAll(/href="(\/_next\/static\/[^"]+\.css)"/g)].map(m => m[1])
+  const jsChunks  = [...body.matchAll(/src="(\/_next\/static\/[^"]+\.js)"/g)].map(m => m[1])
+  const allChunks = [...cssChunks, ...jsChunks]
 
-  const chunkPath = cssMatch[1]
-  const { status: chunkStatus } = await httpGet(hostname, port, chunkPath, 'HEAD')
-  if (chunkStatus !== 200) {
-    process.stderr.write(
-      `[playwright-setup] Local server CSS chunk returned ${chunkStatus} for ${chunkPath} — build is stale\n`
-    )
-    return false
+  if (allChunks.length === 0) return true
+
+  // Check all chunks in parallel — local server responds in milliseconds
+  const results = await Promise.all(
+    allChunks.map(chunkPath => httpGet(hostname, port, chunkPath, 'HEAD'))
+  )
+
+  for (let i = 0; i < allChunks.length; i++) {
+    if (results[i].status !== 200) {
+      process.stderr.write(
+        `[playwright-setup] Local server chunk returned ${results[i].status} for ${allChunks[i]} — JS bundle stale/broken, falling back to Vercel\n`
+      )
+      return false
+    }
   }
+
   return true
 }
 
