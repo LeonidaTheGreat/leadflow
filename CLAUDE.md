@@ -149,6 +149,8 @@ All heartbeat, spawning, learning, health, and dashboard generation code now liv
 
 **Full docs:** `docs/guides/4-LOOP-ARCHITECTURE.md`
 
+**Known gotcha — circuit-breaker false positives from phantom cost (2026-10-03):** when a task's real per-task cost can't be read (no `--output-format json`, no persisted `claude_session_id` — true today for `claude-tmux` spawns), `core/food/cost-estimator.js:historicalCost()` falls back to the median `actual_cost_usd` of recent `done` tasks filtered **only by model**, not by `agent_id`. A cheap PM/PRD task on `sonnet` can get billed the median of recent `dev`/`qc` coding-task costs — one such case billed $29.54 for a $0.74 PRD write and tripped `feat-stripe-webhook-dead-letter-monitor`'s circuit breaker on a phantom overspend (see `docs/reports/2026-10-03-circuit-breaker-stripe-webhook-dead-letter-investigation.md`). If a circuit-breaker investigation finds a cost number that doesn't match the task's actual runtime/output, suspect this fallback before assuming real overspend. Genome fix tracked as task `e325079e-9127-4a2d-b8a6-4e2c0c8ccdad` (`uc-genome-maintenance`).
+
 ## Dashboard
 The live execution dashboard has moved to `~/.openclaw/dashboard/` — it's a system-level orchestration tool, not a LeadFlow product artifact.
 - **Location:** `~/.openclaw/dashboard/dashboard.html`
